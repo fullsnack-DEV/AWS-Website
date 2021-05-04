@@ -335,6 +335,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
 
   challengerFlag: require('../assets/images/challenger_flag.png'),
   challengeeCup: require('../assets/images/challengee_cup.png'),
+  teamPH: require('../assets/images/team_PH.png'),
 
   clubSmallIcon: require('../assets/images/clubSmallIcon.png'),
   teamSmallIcon: require('../assets/images/teamSmallIcon.png'),
@@ -346,6 +347,8 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
 
   selectAddMessageButton: require('../assets/images/selectAddMessageButton.png'),
   selectMessageSearchButton: require('../assets/images/selectMessageSearchButton.png'),
+  challengerInvitePlane: require('../assets/images/challenger_invite_plane.png'),
+
 };
 
 export default images;

@@ -158,6 +158,8 @@ const getTabBarVisibility = (route) => {
     || routeName === 'ChooseVenueScreen'
     || routeName === 'ChallengePreviewScreen'
     || routeName === 'ChallengePaymentScreen'
+    || routeName === 'ChooseTimeSlotScreen'
+    || routeName === 'InviteToChallengeSentScreen'
 
   ) {
     return false;

@@ -1,16 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
- StyleSheet, View, Text, Alert,
+ StyleSheet, View, Text,
  } from 'react-native';
 
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import TCGradientButton from '../../../components/TCGradientButton';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThickDivider from '../../../components/TCThickDivider';
 import TCLabel from '../../../components/TCLabel';
-
+import AuthContext from '../../../auth/context';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TCInfoImageField from '../../../components/TCInfoImageField';
 import TCInfoField from '../../../components/TCInfoField';
@@ -21,8 +20,12 @@ import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import ChallengeStatusView from '../../../components/challenge/ChallengeStatusView';
 import ReservationStatus from '../../../Constants/ReservationStatus';
+import { widthPercentageToDP } from '../../../utils';
+import TCSmallButton from '../../../components/TCSmallButton';
 
-export default function ChallengePreviewScreen() {
+export default function ChallengePreviewScreen({ navigation }) {
+  const authContext = useContext(AuthContext);
+
   return (
     <TCKeyboardView>
       <Text style={styles.challengeNumberStyle}>Request No.111125D3</Text>
@@ -111,6 +114,7 @@ export default function ChallengePreviewScreen() {
         <TCGameDetailRules gameRules={bodyParams?.gameRules}/>
         <TCThickDivider marginTop={20} />
       </View>} */}
+
       <TCLabel title={'Game Duration'} />
       <TCChallengeTitle
         containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
@@ -203,13 +207,43 @@ export default function ChallengePreviewScreen() {
       <GameFeeCard />
       <TCThickDivider marginTop={20} />
 
-      <TCGradientButton
+      {/* <TCGradientButton
         title={strings.nextTitle}
         onPress={() => {
-          Alert.alert('Next');
+          navigation.navigate('ChallengeAcceptedDeclinedScreen', { status: 'accept', teamObj: authContext.entity.obj })
         }}
         outerContainerStyle={{ marginBottom: 45 }}
-      />
+      /> */}
+      <View
+        style={styles.bottomButtonContainer}>
+        <TCSmallButton
+          isBorderButton={true}
+          borderstyle={{
+            borderColor: colors.userPostTimeColor,
+            borderWidth: 1,
+            borderRadious: 80,
+          }}
+          textStyle={{ color: colors.userPostTimeColor }}
+          title={strings.declineTitle}
+          onPress={() => {
+            navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+              status: 'accept',
+              teamObj: authContext.entity.obj,
+            });
+          }}
+          style={{ width: widthPercentageToDP('45%') }}
+        />
+        <TCSmallButton
+          title={strings.acceptTitle}
+          onPress={() => {
+            navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+              status: 'accept',
+              teamObj: authContext.entity.obj,
+            });
+          }}
+          style={{ width: widthPercentageToDP('45%') }}
+        />
+      </View>
     </TCKeyboardView>
   );
 }
@@ -250,5 +284,12 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     margin: 15,
     marginBottom: 0,
+  },
+  bottomButtonContainer: {
+    flexDirection: 'row',
+    marginBottom: 45,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    margin: 15,
   },
 });

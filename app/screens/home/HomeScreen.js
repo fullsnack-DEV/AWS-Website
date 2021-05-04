@@ -4161,12 +4161,12 @@ const HomeScreen = ({ navigation, route }) => {
               }
               if (selectedChallengeOption === 1) {
                 setChallengePopup(false)
-                navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData });
-                // navigation.navigate('InviteChallengeScreen', { groupObj: currentUserData });
+                // navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData });
+                 navigation.navigate('InviteChallengeScreen', { groupObj: currentUserData });
               }
             }}>{(selectedChallengeOption === 0 || selectedChallengeOption === 1) ? 'Next' : ''}</Text>
           </View>
-          <TCThinDivider width={'100%'} marginBottom={15} />
+          <TCThinDivider width={'100%'} marginBottom={15}/>
           <TouchableWithoutFeedback
                   onPress={() => setSelectedChallengeOption(0)}>
             {selectedChallengeOption === 0 ? (
