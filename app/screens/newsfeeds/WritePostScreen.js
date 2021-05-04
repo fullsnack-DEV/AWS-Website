@@ -480,6 +480,11 @@ export default function WritePostScreen({ navigation, route }) {
               onImagePress={onImagePress}
             />}
             <ImageButton
+                source={ images.savedIcon }
+                imageStyle={{ width: 30, height: 30, marginLeft: wp('2%') }}
+                onImagePress={() => {}}
+            />
+            <ImageButton
               source={ images.tagImage }
               imageStyle={{ width: 30, height: 30, marginLeft: wp('2%') }}
               onImagePress={onSelectTagButtonPress}

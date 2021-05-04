@@ -1,11 +1,11 @@
 import React, { memo, useMemo } from 'react';
 import {
-  TouchableOpacity,
   View,
   StyleSheet,
   Text,
 } from 'react-native';
 import moment from 'moment';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { widthPercentageToDP as wp } from '../utils';
 import fonts from '../Constants/Fonts';
 import colors from '../Constants/Colors';

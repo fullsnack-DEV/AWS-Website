@@ -342,7 +342,7 @@ const onClose = () => {
               justifyContent: 'flex-end',
               alignItems: 'center',
             }}>
-            <TouchableOpacity onPress={() => likersModalRef.current.open('top')}>
+            <TouchableOpacity onPress={() => likersModalRef.current.open()}>
               <Text
               style={[
                 styles.commentlengthStyle,
