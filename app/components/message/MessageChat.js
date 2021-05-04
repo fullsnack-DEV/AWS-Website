@@ -63,13 +63,16 @@ const MessageChat = ({
   const [occupantsData, setOccupantsData] = useState([]);
   const scrollRef = useRef(null);
   const refSavedMessagesData = useRef(savedMessagesData);
-  useEffect(() => () => {
+
+  useEffect(() => {
+    console.log(1)
     if (occupantsData?.length) {
       navigation.setParams({ participants: [...occupantsData] });
     }
   }, [occupantsData]);
 
   useEffect(() => {
+    console.log(4)
     const setData = (data) => {
       const dialogDatas = {
         dialogId: data?.id,
@@ -92,6 +95,7 @@ const MessageChat = ({
   }, [route?.params?.dialog])
 
   useEffect(() => {
+    console.log(2)
     const uid = route?.params?.userId;
     const setData = (data) => {
       const dialogDatas = {
@@ -132,6 +136,7 @@ const MessageChat = ({
   }, [route?.params?.userId])
 
   useEffect(() => {
+    console.log(3)
     if (dialogData) {
       if (!route?.params?.dialog) {
         navigation.setParams({ dialog: { ...dialogData, ...route?.params?.dialog } });

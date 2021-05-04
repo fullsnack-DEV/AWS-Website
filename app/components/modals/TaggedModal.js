@@ -13,6 +13,7 @@ import strings from '../../Constants/String';
 import TCGameCard from '../TCGameCard';
 import TaggedEntityView from '../shorts/TaggedEntityView';
 import { getGameHomeScreen } from '../../utils/gameUtils';
+import { heightPercentageToDP as hp } from '../../utils';
 
 const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
     const [gameTagList, setGameTagList] = useState([])
@@ -132,7 +133,7 @@ const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
     return (
       <Portal>
         <Modalize
-          disableScrollIfPossible={true}
+          snapPoint={hp(50)}
           withHandle={false}
           overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
           modalStyle={{
@@ -144,10 +145,11 @@ const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
               shadowRadius: 10,
               elevation: 10,
           }}
-          adjustToContentHeight={true}
+          tapGestureEnabled={false}
           ref={taggedModalRef}
           HeaderComponent={ModalHeader}
             sectionListProps={{
+                bounces: false,
                 showsHorizontalScrollIndicator: false,
                 showsVerticalScrollIndicator: false,
                 ItemSeparatorComponent: renderSeparator,

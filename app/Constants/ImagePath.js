@@ -348,6 +348,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   selectAddMessageButton: require('../assets/images/selectAddMessageButton.png'),
   selectMessageSearchButton: require('../assets/images/selectMessageSearchButton.png'),
   challengerInvitePlane: require('../assets/images/challenger_invite_plane.png'),
+  savedIcon: require('../assets/images/savedIcon.png'),
 
 };
 

@@ -10,6 +10,7 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import TCUserList from '../../screens/account/connections/TCUserList';
 import AuthContext from '../../auth/context';
+import { heightPercentageToDP as hp } from '../../utils';
 
 const LikersModal = ({ likersModalRef }) => {
     const authContext = useContext(AuthContext)
@@ -57,24 +58,23 @@ const LikersModal = ({ likersModalRef }) => {
     return (
       <Portal>
         <Modalize
-          disableScrollIfPossible={true}
-          withHandle={false}
-          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
-          modalStyle={{
-              borderTopRightRadius: 25,
-              borderTopLeftRadius: 25,
-              shadowColor: colors.blackColor,
-              shadowOffset: { width: 0, height: -2 },
-              shadowOpacity: 0.3,
-              shadowRadius: 10,
-              elevation: 10,
-          }}
-          adjustToContentHeight={true}
-          ref={likersModalRef}
-          HeaderComponent={ModalHeader}
-          tapGestureEnabled={false}
-          flatListProps={flatListProps}
-        />
+              snapPoint={hp(50)}
+              withHandle={false}
+              overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+              modalStyle={{
+                  borderTopRightRadius: 25,
+                  borderTopLeftRadius: 25,
+                  shadowColor: colors.blackColor,
+                  shadowOffset: { width: 0, height: -2 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 10,
+                  elevation: 10,
+              }}
+              tapGestureEnabled={false}
+              ref={likersModalRef}
+              HeaderComponent={ModalHeader}
+              flatListProps={flatListProps}
+          />
       </Portal>
     )
 }
