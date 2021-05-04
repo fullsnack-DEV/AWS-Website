@@ -55,6 +55,10 @@ import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteCh
 import ChooseVenueScreen from '../screens/challenge/manageChallenge/ChooseVenueScreen';
 import ChallengePreviewScreen from '../screens/challenge/createChallenge/ChallengePreviewScreen';
 import ChallengePaymentScreen from '../screens/challenge/createChallenge/ChallengePaymentScreen';
+import ChooseTimeSlotScreen from '../screens/challenge/createChallenge/ChooseTimeSlotScreen';
+
+import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen'
+import InviteToChallengeSentScreen from '../screens/challenge/createChallenge/InviteToChallengeSentScreen';
 
 const Stack = createStackNavigator();
 
@@ -725,6 +729,39 @@ const NewsFeedNavigator = () => (
                   borderBottomColor: colors.grayColor,
                   borderBottomWidth: 0.3,
               },
+          }}
+      />
+
+    <Stack.Screen
+          name="ChooseTimeSlotScreen"
+          component={ChooseTimeSlotScreen}
+          options={{
+              title: 'Choose a date & time',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+    <Stack.Screen
+          name="ChallengeAcceptedDeclinedScreen"
+          component={ChallengeAcceptedDeclinedScreen}
+          options={{
+              tabBarVisible: false,
+              headerShown: false,
+          }}
+      />
+    <Stack.Screen
+          name="InviteToChallengeSentScreen"
+          component={InviteToChallengeSentScreen}
+          options={{
+              tabBarVisible: false,
+              headerShown: false,
           }}
       />
   </Stack.Navigator>

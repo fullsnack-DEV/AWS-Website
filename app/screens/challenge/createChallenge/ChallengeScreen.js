@@ -7,7 +7,6 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import {
@@ -177,14 +176,13 @@ export default function ChallengeScreen({ navigation, route }) {
   };
 
   return (
-
     <TCKeyboardView>
       <View>
         <View style={[styles.teamContainer, { marginTop: 15 }]}>
           <View
-              style={{
-                flexDirection: 'row',
-              }}>
+            style={{
+              flexDirection: 'row',
+            }}>
             <Image source={images.teamPlaceholder} style={styles.imageView} />
             <View style={styles.teamTextContainer}>
               <Text style={styles.teamNameLable}>Kishan Team</Text>
@@ -195,57 +193,61 @@ export default function ChallengeScreen({ navigation, route }) {
             </View>
           </View>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('ChooseTimeSlotScreen');
+          }}>
           <View style={[styles.borderButtonView, styles.shadowView]}>
             <View />
             <Text style={styles.detailButtonText}>CHECK AVAILIBILITY</Text>
-            <Image
-                source={images.arrowGraterthan}
-                style={styles.arrowImage}
-              />
+            <Image source={images.arrowGraterthan} style={styles.arrowImage} />
           </View>
         </TouchableOpacity>
         <TCThickDivider marginTop={15} />
 
         <TCChallengeTitle
-            title={'Type of Game'}
-            value={'Official'}
-            tooltipText={
-            'The game result has an effect on TC points of the challengee and you.'
-            }
-            tooltipHeight={hp('6%')}
-            tooltipWidth={wp('50%')}
-            isEdit={true}
-            onEditPress={() => Alert.alert('Edit Pressed')}
-          />
-        <TCThickDivider />
-
-        <TCChallengeTitle title={'Game Fee'} value={'150'} staticValueText={'CAD /Game'} valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-        }}/>
+          title={'Type of Game'}
+          value={'Official'}
+          tooltipText={
+          'The game result has an effect on TC points of the challengee and you.'
+          }
+          tooltipHeight={hp('6%')}
+          tooltipWidth={wp('50%')}
+          isEdit={true}
+          onEditPress={() => Alert.alert('Edit Pressed')}
+        />
         <TCThickDivider />
 
         <TCChallengeTitle
-            title={'Refund Policy'}
-            value={'Flexible'}
-            tooltipText={
-            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
-            }
-            tooltipHeight={hp('18%')}
-            tooltipWidth={wp('50%')}
-          />
+          title={'Game Fee'}
+          value={'150'}
+          staticValueText={'CAD /Game'}
+          valueStyle={{
+            fontFamily: fonts.RBold,
+            fontSize: 16,
+            color: colors.greenColorCard,
+            marginRight: 2,
+          }}
+        />
+        <TCThickDivider />
+
+        <TCChallengeTitle
+          title={'Refund Policy'}
+          value={'Flexible'}
+          tooltipText={
+          '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+          }
+          tooltipHeight={hp('18%')}
+          tooltipWidth={wp('50%')}
+        />
         <TCThickDivider />
       </View>
       <View>
-
         <TCChallengeTitle
-            title={'Home & Away'}
-            isEdit={true}
-            onEditPress={() => Alert.alert('Edit Pressed')}
-          />
+          title={'Home & Away'}
+          isEdit={true}
+          onEditPress={() => Alert.alert('Edit Pressed')}
+        />
         <View style={styles.teamContainer}>
           <Text style={styles.homeLableStyle}>Home</Text>
           <View style={styles.teamViewStyle}>
@@ -272,59 +274,95 @@ export default function ChallengeScreen({ navigation, route }) {
         <TCThickDivider marginTop={20} />
       </View>
       <View>
-
         <TCChallengeTitle
-            title={'Game Duration'}
+          title={'Game Duration'}
+          isEdit={true}
+          onEditPress={() => Alert.alert('Edit Pressed')}
+        />
+        <TCChallengeTitle
+          containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
+          title={'1st period'}
+          titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+          value={'30'}
+          valueStyle={{
+            fontFamily: fonts.RBold,
+            fontSize: 16,
+            color: colors.greenColorCard,
+            marginRight: 2,
+          }}
+          staticValueText={'min.'}
+        />
+        <TCChallengeTitle
+          containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+          title={'Interval'}
+          titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+          value={'35'}
+          valueStyle={{
+            fontFamily: fonts.RBold,
+            fontSize: 16,
+            color: colors.greenColorCard,
+            marginRight: 2,
+          }}
+          staticValueText={'min.'}
+        />
+        <TCChallengeTitle
+          containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 20 }}
+          title={'2nd period'}
+          titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+          value={'25'}
+          valueStyle={{
+            fontFamily: fonts.RBold,
+            fontSize: 16,
+            color: colors.greenColorCard,
+            marginRight: 2,
+          }}
+          staticValueText={'min.'}
+        />
+        <Text style={styles.normalTextStyle}>{strings.gameDurationTitle2}</Text>
+        <TCThickDivider marginTop={20} />
+
+        <View>
+          <TCChallengeTitle
+            title={'Date & Time'}
             isEdit={true}
             onEditPress={() => Alert.alert('Edit Pressed')}
           />
-        <TCChallengeTitle
-            containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
-            title={'1st period'}
-            titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-            value={'30'}
-            valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-            }}
-            staticValueText={'min.'}
-          />
-        <TCChallengeTitle
-            containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
-            title={'Interval'}
-            titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-            value={'35'}
-            valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-            }}
-            staticValueText={'min.'}
-          />
-        <TCChallengeTitle
-            containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 20 }}
-            title={'2nd period'}
-            titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-            value={'25'}
-            valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-            }}
-            staticValueText={'min.'}
-          />
-        <Text
-            style={styles.normalTextStyle}>
-          {strings.gameDurationTitle2}
-        </Text>
-        <TCThickDivider marginTop={20}/>
+
+          <View>
+            <View
+              style={styles.dateTimeValue}>
+              <Text style={styles.dateTimeText}>Start </Text>
+              <Text style={styles.dateTimeText}>Feb 17, 2020 12:00 pm</Text>
+            </View>
+            <View
+              style={styles.dateTimeValue}>
+              <Text style={styles.dateTimeText}>End </Text>
+              <Text style={styles.dateTimeText}>Feb 17, 2020 12:00 pm</Text>
+            </View>
+            <View
+              style={styles.dateTimeValue}>
+              <Text style={styles.dateTimeText}> </Text>
+              <Text style={styles.timeZoneText}>Time zone  <Text style={{ fontFamily: fonts.RRegular }}>Vancouver</Text></Text>
+            </View>
+          </View>
+
+          {/* <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChooseTimeSlotScreen');
+            }}>
+            <View style={[styles.borderButtonView, styles.shadowView]}>
+              <View />
+              <Text style={styles.detailButtonText}>{'CHOOSE DATE & TIME'}</Text>
+              <Image
+                source={images.arrowGraterthan}
+                style={styles.arrowImage}
+              />
+            </View>
+          </TouchableOpacity> */}
+          <TCThickDivider marginTop={10} />
+        </View>
 
         <View>
-
           <TCChallengeTitle
             title={'Venue'}
             isEdit={true}
@@ -344,9 +382,10 @@ export default function ChallengeScreen({ navigation, route }) {
             />
             </View> */}
 
-          <TouchableOpacity onPress={() => {
-              navigation.navigate('ChooseVenueScreen')
-          }}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChooseVenueScreen');
+            }}>
             <View style={[styles.borderButtonView, styles.shadowView]}>
               <View />
               <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>
@@ -360,52 +399,66 @@ export default function ChallengeScreen({ navigation, route }) {
         </View>
 
         <TCChallengeTitle
-            title={'Game Rules'}
-            isEdit={true}
-            onEditPress={() => Alert.alert('Edit Pressed')}
-          />
+          title={'Game Rules'}
+          isEdit={true}
+          onEditPress={() => Alert.alert('Edit Pressed')}
+        />
         <Text style={styles.venueTitle}>General Rules</Text>
         <Text style={styles.rulesDetail}>
-          1. Tackle is not allowed
-          2. 3 times of 30 minute game for 90 minute
+          1. Tackle is not allowed 2. 3 times of 30 minute game for 90 minute
         </Text>
         <TCThickDivider marginTop={20} />
 
-        <TCChallengeTitle title={'Referees'} value={'2'} staticValueText={'Referees'} valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-        }}/>
-        <SecureRefereeView entityName={'Makani Team'} entity={'Referee'} entityNumber={1}/>
-        <TCThickDivider marginTop={20}/>
-
-        <TCChallengeTitle title={'Scorekeepers'} value={'2'} staticValueText={'Scorekeepers'} valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-        }}/>
-        <SecureRefereeView entityName={'Kishan Team'} entity={'Scorekeeper'} entityNumber={1}/>
+        <TCChallengeTitle
+          title={'Referees'}
+          value={'2'}
+          staticValueText={'Referees'}
+          valueStyle={{
+            fontFamily: fonts.RBold,
+            fontSize: 16,
+            color: colors.greenColorCard,
+            marginRight: 2,
+          }}
+        />
+        <SecureRefereeView
+          entityName={'Makani Team'}
+          entity={'Referee'}
+          entityNumber={1}
+        />
         <TCThickDivider marginTop={20} />
 
+        <TCChallengeTitle
+          title={'Scorekeepers'}
+          value={'2'}
+          staticValueText={'Scorekeepers'}
+          valueStyle={{
+            fontFamily: fonts.RBold,
+            fontSize: 16,
+            color: colors.greenColorCard,
+            marginRight: 2,
+          }}
+        />
+        <SecureRefereeView
+          entityName={'Kishan Team'}
+          entity={'Scorekeeper'}
+          entityNumber={1}
+        />
+        <TCThickDivider marginTop={20} />
       </View>
 
       <TCGradientButton
-          title={editableAlter ? strings.doneTitle : strings.reservTitle}
-          onPress={() => {
-                // navigation.push('ChallengePaymentScreen');
-                navigation.push('ChallengePreviewScreen');
-          }}
-          outerContainerStyle={{ marginBottom: 45 }}
-        />
+        title={editableAlter ? strings.doneTitle : strings.reservTitle}
+        onPress={() => {
+          // navigation.push('ChallengePaymentScreen');
+          navigation.push('ChallengePreviewScreen');
+        }}
+        outerContainerStyle={{ marginBottom: 45 }}
+      />
     </TCKeyboardView>
-
   );
 }
 
 const styles = StyleSheet.create({
-
   teamContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -465,7 +518,19 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 5,
   },
+  dateTimeText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 15,
+    marginBottom: 5,
+  },
+  timeZoneText: {
+    fontFamily: fonts.RLight,
+    fontSize: 14,
+    color: colors.lightBlackColor,
 
+  },
   rulesDetail: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
@@ -507,5 +572,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+  },
+  dateTimeValue: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    margin: 25,
+    marginBottom: 10,
+    marginLeft: 15,
+    marginTop: 0,
   },
 });

@@ -44,10 +44,13 @@ const strings = {
     'By continuing you agree to Towny\'s Terms of Service, We will manage information about you as described in our PrivacyPolicy and Cookie Policy.',
   resetText: 'Reset your password.',
   nextTitle: 'NEXT',
+  acceptTitle: 'ACCEPT',
+  declineTitle: 'DECLINE',
   confirmAndPayTitle: 'CONFIRM AND PAY',
   applyTitle: 'APPLY',
   cancelTitle: 'CANCEL',
   reservTitle: 'RESERVE',
+  sendInviteTitle: 'SEND INVITE TO CHALLENGE',
   doneTitle: 'DONE',
   saveTitle: 'SAVE',
   moveTitle: 'MOVE',
@@ -717,6 +720,8 @@ withOverTimeText: 'the game goes into over time.',
 firstOverTimeText: '1st overtime',
 minuteText: 'min.',
 totalTimeTitle: 'Total time :',
+
+inviteToChallengeText: 'Through "Invite to challenge", you can set the custom price for the challenger. Once you invite a team to challenge you, the invitation will be valid for 48 hours. In the mean time, your calendar will remain open.',
 
 };
 export default strings;
