@@ -1,5 +1,5 @@
 import React, {
- memo, useState,
+ memo,
 } from 'react';
 import {
   StyleSheet, View, Text, TouchableWithoutFeedback,
@@ -11,21 +11,15 @@ import {
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import images from '../../Constants/ImagePath';
-import CommonModalPostView from '../../CommonModalPostView';
 
 function PostImageSet({
   data,
   itemNumber,
   totalItemNumber,
-  attachedImages,
   item,
-  caller_id,
   navigation,
-  onImageProfilePress,
-  onLikePress,
   updateCommentCount,
 }) {
-  const [isModalVisible, setModalVisible] = useState(false);
   const uploadImageURL = data && typeof data.thumbnail === 'string'
   && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
 
@@ -44,25 +38,6 @@ function PostImageSet({
         />
         <Text style={ styles.loadingTextStyle }>Loading...</Text>
       </View>
-      <CommonModalPostView
-          visible={isModalVisible}
-          currentPage={itemNumber}
-          onLikePress={onLikePress}
-          navigation={navigation}
-          backBtnPress={() => setModalVisible(false)}
-          data={data}
-          item={item}
-          openPostModal={(commentData) => {
-            updateCommentCount(commentData)
-            setModalVisible(true)
-          }}
-          caller_id={caller_id}
-          attachedImages={attachedImages}
-          onImageProfilePress={() => {
-            setModalVisible(false)
-            onImageProfilePress()
-          }}
-      />
       <TouchableWithoutFeedback onPress={toggleModal}>
         <FastImage
           style={ [styles.uploadedImage, { position: 'absolute' }] }

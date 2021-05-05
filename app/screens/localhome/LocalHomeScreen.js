@@ -35,12 +35,10 @@ import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import strings from '../../Constants/String';
 import TCGameCard from '../../components/TCGameCard';
 import { getSportsList, getShortsList } from '../../api/Games'; // getRecentGameDetails
-
 import { gameData } from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
 import { getHitSlop, widthPercentageToDP } from '../../utils';
 import TCChallengerCard from '../../components/TCChallengerCard';
-
 import TCHiringPlayersCard from '../../components/TCHiringPlayersCard';
 import TCEntityView from '../../components/TCEntityView';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
@@ -51,8 +49,6 @@ import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import Header from '../../components/Home/Header';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
-
-// import AuthContext from '../../auth/context';
 
 let selectedSports = [];
 export default function LocalHomeScreen({ navigation }) {
@@ -167,7 +163,12 @@ export default function LocalHomeScreen({ navigation }) {
 
   const renderStatusView = useCallback(
     () => (
-      <View style={{ marginRight: 15, width: 68 }}>
+      <View style={{
+          width: 45,
+        marginRight: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
         <LinearGradient
           colors={[colors.yellowColor, colors.assistTextColor]}
           style={styles.backgroundStatusView}>
@@ -175,6 +176,7 @@ export default function LocalHomeScreen({ navigation }) {
         </LinearGradient>
         <Text
           style={{
+              width: '100%',
             fontSize: 10,
             fontFamily: fonts.RRegular,
             color: colors.lightBlackColor,
@@ -191,7 +193,7 @@ export default function LocalHomeScreen({ navigation }) {
 
   const renderStatusHeader = useCallback(
     () => (
-      <View style={{ marginRight: 15 }}>
+      <View style={{ marginRight: 18.5, width: 45 }}>
         <View style={styles.backgroundStatusView}>
           <Image
             source={images.soccerBackground}
@@ -212,9 +214,9 @@ export default function LocalHomeScreen({ navigation }) {
         <Image
           source={images.addStatus}
           style={{
-            resizeMode: 'cover',
-            height: 30,
-            width: 30,
+            resizeMode: 'contain',
+            height: 20,
+            width: 20,
             position: 'absolute',
             bottom: 12,
             right: -5,
@@ -392,9 +394,7 @@ export default function LocalHomeScreen({ navigation }) {
             <View>
               <FastImage source={images.tc_message_top_icon} resizeMode={'contain'} style={styles.backImageStyle} />
             </View>
-              // <TouchableOpacity onPress={() => setSettingPopup(true)}>
-              // <Image source={images.home_setting} style={styles.townsCupIcon} />
-              // </TouchableOpacity>
+
           }
           centerComponent={
             <TouchableOpacity
@@ -413,6 +413,9 @@ export default function LocalHomeScreen({ navigation }) {
                   style={styles.townsCupIcon}
                 />
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => setSettingPopup(true)}>
+                <Image source={images.home_setting} style={styles.townsCupIcon} />
+              </TouchableOpacity>
             </View>
           }
         />
@@ -429,10 +432,10 @@ export default function LocalHomeScreen({ navigation }) {
       {/* <ActivityLoader visible={loading} /> */}
       {loading ? (
         <LocalHomeScreenShimmer />
-      ) : (
-        <Fragment>
-          <View style={styles.sportsListView}>
-            <FlatList
+       ) : (
+         <Fragment>
+           <View style={styles.sportsListView}>
+             <FlatList
               ref={refContainer}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
@@ -456,11 +459,11 @@ export default function LocalHomeScreen({ navigation }) {
                 alignContent: 'center',
               }}
             />
-          </View>
+           </View>
 
-          <ScrollView>
-            <View>
-              <FlatList
+           <ScrollView>
+             <View>
+               <FlatList
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
                 data={[
@@ -473,17 +476,14 @@ export default function LocalHomeScreen({ navigation }) {
                 keyExtractor={keyExtractor}
                 renderItem={renderStatusView}
                 ListHeaderComponent={renderStatusHeader}
+                contentContainerStyle={{ paddingHorizontal: 17 }}
                 style={{
-                  width: '100%',
-                  height: 90,
-                  alignContent: 'center',
-                  // backgroundColor: 'red',
-                  margin: 15,
-                  marginBottom: 0,
+                    marginTop: 15,
+                    alignContent: 'center',
                 }}
               />
-              <TCThinDivider width={'100%'} marginTop={10} />
-              <TCTitleWithArrow
+               <TCThinDivider width={'100%'} marginTop={10} />
+               <TCTitleWithArrow
                 title={strings.recentMatchesTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
@@ -492,7 +492,7 @@ export default function LocalHomeScreen({ navigation }) {
                   })
                 }
               />
-              <Carousel
+               <Carousel
                 data={[]} // recentMatch
                 scrollEnabled={recentMatch.length > 0}
                 renderItem={renderRecentMatchItems}
@@ -508,7 +508,7 @@ export default function LocalHomeScreen({ navigation }) {
                   />
                 )}
               />
-              {/* <FlatList
+               {/* <FlatList
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
@@ -522,15 +522,15 @@ export default function LocalHomeScreen({ navigation }) {
           />)}
           style={{ marginLeft: 15 }}
         /> */}
-            </View>
-            <View>
-              <TCTitleWithArrow
+             </View>
+             <View>
+               <TCTitleWithArrow
                 title={strings.upcomingMatchesTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
                 onPress={() => navigation.navigate('UpcomingMatchScreen')}
               />
-              <Carousel
+               <Carousel
                 data={upcomingMatch}
                 scrollEnabled={upcomingMatch.length > 0}
                 renderItem={renderGameItems}
@@ -546,29 +546,29 @@ export default function LocalHomeScreen({ navigation }) {
                   />
                 )}
               />
-            </View>
-            <View>
-              <TCTitleWithArrow
+             </View>
+             <View>
+               <TCTitleWithArrow
                 title={strings.shortsTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
               />
-              <FlatList
+               <FlatList
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
                 data={shortsList}
                 keyExtractor={keyExtractor}
                 renderItem={shortsListView}
               />
-            </View>
-            <View>
-              <TCTitleWithArrow
+             </View>
+             <View>
+               <TCTitleWithArrow
                 title={strings.lookingForTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
                 onPress={() => navigation.navigate('LookingForChallengeScreen')}
               />
-              <Carousel
+               <Carousel
                 data={challengerMatch}
                 scrollEnabled={challengerMatch.length > 0}
                 renderItem={renderChallengerItems}
@@ -584,15 +584,15 @@ export default function LocalHomeScreen({ navigation }) {
                   />
                 )}
               />
-            </View>
-            <View>
-              <TCTitleWithArrow
+             </View>
+             <View>
+               <TCTitleWithArrow
                 title={strings.hiringPlayerTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
                 onPress={() => navigation.navigate('HiringPlayerScreen')}
               />
-              <Carousel
+               <Carousel
                 data={hiringPlayers}
                 scrollEnabled={hiringPlayers.length > 0}
                 renderItem={renderHiringPlayersItems}
@@ -608,15 +608,15 @@ export default function LocalHomeScreen({ navigation }) {
                   />
                 )}
               />
-            </View>
-            <View>
-              <TCTitleWithArrow
+             </View>
+             <View>
+               <TCTitleWithArrow
                 title={strings.lookingForTeamTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
                 onPress={() => navigation.navigate('LookingTeamScreen')}
               />
-              <FlatList
+               <FlatList
                 horizontal={true}
                 scrollEnabled={lookingTeam.length > 0}
                 showsHorizontalScrollIndicator={false}
@@ -632,15 +632,15 @@ export default function LocalHomeScreen({ navigation }) {
                   />
                 )}
               />
-            </View>
-            <View>
-              <TCTitleWithArrow
+             </View>
+             <View>
+               <TCTitleWithArrow
                 title={strings.refereesTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
                 onPress={() => navigation.navigate('RefereesListScreen')}
               />
-              <FlatList
+               <FlatList
                 horizontal={true}
                 scrollEnabled={referees.length > 0}
                 showsHorizontalScrollIndicator={false}
@@ -656,15 +656,15 @@ export default function LocalHomeScreen({ navigation }) {
                   />
                 )}
               />
-            </View>
-            <View>
-              <TCTitleWithArrow
+             </View>
+             <View>
+               <TCTitleWithArrow
                 title={strings.scorekeeperTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
                 onPress={() => navigation.navigate('ScorekeeperListScreen')}
               />
-              <FlatList
+               <FlatList
                 horizontal={true}
                 scrollEnabled={scorekeepers.length > 0}
                 showsHorizontalScrollIndicator={false}
@@ -680,8 +680,8 @@ export default function LocalHomeScreen({ navigation }) {
                   />
                 )}
               />
-            </View>
-            <Modal
+             </View>
+             <Modal
               onBackdropPress={() => setLocationPopup(false)}
               backdropOpacity={1}
               animationType="slide"
@@ -691,31 +691,31 @@ export default function LocalHomeScreen({ navigation }) {
                 backgroundColor: colors.blackOpacityColor,
               }}
               visible={locationPopup}>
-              <View style={styles.bottomPopupContainer}>
-                <View style={styles.viewsContainer}>
-                  <Text
+               <View style={styles.bottomPopupContainer}>
+                 <View style={styles.viewsContainer}>
+                   <Text
                     onPress={() => setLocationPopup(false)}
                     style={styles.cancelText}>
-                    Cancel
-                  </Text>
-                  <Text style={styles.locationText}>Location</Text>
-                  <Text style={styles.doneText}>{'    '}</Text>
-                </View>
-                <TCThinDivider width={'100%'} marginBottom={15} />
-                <TouchableWithoutFeedback
+                     Cancel
+                   </Text>
+                   <Text style={styles.locationText}>Location</Text>
+                   <Text style={styles.doneText}>{'    '}</Text>
+                 </View>
+                 <TCThinDivider width={'100%'} marginBottom={15} />
+                 <TouchableWithoutFeedback
                   onPress={() => setSelectedLocationOption(0)}>
-                  {selectedLocationOption === 0 ? (
-                    <LinearGradient
+                   {selectedLocationOption === 0 ? (
+                     <LinearGradient
                       colors={[colors.yellowColor, colors.orangeGradientColor]}
                       style={styles.backgroundView}>
-                      <Text
+                       <Text
                         style={[
                           styles.curruentLocationText,
                           { color: colors.whiteColor },
                         ]}>
-                        Current location
-                      </Text>
-                    </LinearGradient>
+                         Current location
+                       </Text>
+                     </LinearGradient>
                   ) : (
                     <View style={styles.backgroundView}>
                       <Text style={styles.curruentLocationText}>
@@ -723,54 +723,54 @@ export default function LocalHomeScreen({ navigation }) {
                       </Text>
                     </View>
                   )}
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                 </TouchableWithoutFeedback>
+                 <TouchableWithoutFeedback
                   onPress={() => setSelectedLocationOption(1)}>
-                  {selectedLocationOption === 1 ? (
-                    <LinearGradient
+                   {selectedLocationOption === 1 ? (
+                     <LinearGradient
                       colors={[colors.yellowColor, colors.orangeGradientColor]}
                       style={styles.backgroundView}>
-                      <Text
+                       <Text
                         style={[styles.myCityText, { color: colors.whiteColor }]}>
-                        Home city
-                      </Text>
-                    </LinearGradient>
+                         Home city
+                       </Text>
+                     </LinearGradient>
                   ) : (
                     <View style={styles.backgroundView}>
                       <Text style={styles.myCityText}>Home city</Text>
                     </View>
                   )}
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                 </TouchableWithoutFeedback>
+                 <TouchableWithoutFeedback
                   onPress={() => setSelectedLocationOption(2)}>
-                  {selectedLocationOption === 2 ? (
-                    <LinearGradient
+                   {selectedLocationOption === 2 ? (
+                     <LinearGradient
                       colors={[colors.yellowColor, colors.orangeGradientColor]}
                       style={styles.backgroundView}>
-                      <Text
+                       <Text
                         style={[styles.worldText, { color: colors.whiteColor }]}>
-                        World
-                      </Text>
-                    </LinearGradient>
+                         World
+                       </Text>
+                     </LinearGradient>
                   ) : (
                     <View style={styles.backgroundView}>
                       <Text style={styles.worldText}>World</Text>
                     </View>
                   )}
-                </TouchableWithoutFeedback>
-                <Text style={styles.orText}>Or</Text>
+                 </TouchableWithoutFeedback>
+                 <Text style={styles.orText}>Or</Text>
 
-                <TouchableOpacity
+                 <TouchableOpacity
                   style={styles.sectionStyle}
                   onPress={() => {
                     setLocationPopup(false);
                     navigation.navigate('SearchCityScreen');
                   }}>
-                  <Text style={styles.searchText}>{strings.searchTitle}</Text>
-                </TouchableOpacity>
-              </View>
-            </Modal>
-            <Modal
+                   <Text style={styles.searchText}>{strings.searchTitle}</Text>
+                 </TouchableOpacity>
+               </View>
+             </Modal>
+             <Modal
               onBackdropPress={() => setSettingPopup(false)}
               backdropOpacity={1}
               animationType="slide"
@@ -780,15 +780,15 @@ export default function LocalHomeScreen({ navigation }) {
                 backgroundColor: colors.blackOpacityColor,
               }}
               visible={settingPopup}>
-              <View style={styles.bottomPopupContainer}>
-                <View style={styles.viewsContainer}>
-                  <Text
+               <View style={styles.bottomPopupContainer}>
+                 <View style={styles.viewsContainer}>
+                   <Text
                     onPress={() => setSettingPopup(false)}
                     style={styles.cancelText}>
-                    Cancel
-                  </Text>
-                  <Text style={styles.locationText}>Setting</Text>
-                  <Text
+                     Cancel
+                   </Text>
+                   <Text style={styles.locationText}>Setting</Text>
+                   <Text
                     style={styles.doneText}
                     onPress={() => {
                       if (selectedSettingOption === 1) {
@@ -799,50 +799,50 @@ export default function LocalHomeScreen({ navigation }) {
                         setSportsPopup(true);
                       }
                     }}>
-                    {'Done'}
-                  </Text>
-                </View>
-                <TCThinDivider width={'100%'} marginBottom={15} />
-                <TouchableWithoutFeedback
+                     {'Done'}
+                   </Text>
+                 </View>
+                 <TCThinDivider width={'100%'} marginBottom={15} />
+                 <TouchableWithoutFeedback
                   onPress={() => setSelectedSettingOption(0)}>
-                  {selectedSettingOption === 0 ? (
-                    <LinearGradient
+                   {selectedSettingOption === 0 ? (
+                     <LinearGradient
                       colors={[colors.yellowColor, colors.orangeGradientColor]}
                       style={styles.backgroundView}>
-                      <Text
+                       <Text
                         style={[
                           styles.curruentLocationText,
                           { color: colors.whiteColor },
                         ]}>
-                        Sports
-                      </Text>
-                    </LinearGradient>
+                         Sports
+                       </Text>
+                     </LinearGradient>
                   ) : (
                     <View style={styles.backgroundView}>
                       <Text style={styles.curruentLocationText}>Sports</Text>
                     </View>
                   )}
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                 </TouchableWithoutFeedback>
+                 <TouchableWithoutFeedback
                   onPress={() => setSelectedSettingOption(1)}>
-                  {selectedSettingOption === 1 ? (
-                    <LinearGradient
+                   {selectedSettingOption === 1 ? (
+                     <LinearGradient
                       colors={[colors.yellowColor, colors.orangeGradientColor]}
                       style={styles.backgroundView}>
-                      <Text
+                       <Text
                         style={[styles.myCityText, { color: colors.whiteColor }]}>
-                        Location
-                      </Text>
-                    </LinearGradient>
+                         Location
+                       </Text>
+                     </LinearGradient>
                   ) : (
                     <View style={styles.backgroundView}>
                       <Text style={styles.myCityText}>Location</Text>
                     </View>
                   )}
-                </TouchableWithoutFeedback>
-              </View>
-            </Modal>
-            <Modal
+                 </TouchableWithoutFeedback>
+               </View>
+             </Modal>
+             <Modal
               onBackdropPress={() => setSportsPopup(false)}
               backdropOpacity={1}
               animationType="slide"
@@ -852,24 +852,24 @@ export default function LocalHomeScreen({ navigation }) {
                 backgroundColor: colors.blackOpacityColor,
               }}
               visible={sportsPopup}>
-              <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
-                <View style={styles.viewsContainer}>
-                  <Text
+               <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+                 <View style={styles.viewsContainer}>
+                   <Text
                     onPress={() => setSettingPopup(false)}
                     style={styles.cancelText}>
-                    Cancel
-                  </Text>
-                  <Text style={styles.locationText}>Sports</Text>
-                  <Text
+                     Cancel
+                   </Text>
+                   <Text style={styles.locationText}>Sports</Text>
+                   <Text
                     style={styles.doneText}
                     onPress={() => {
                       console.log('DONE::');
                     }}>
-                    {'Done'}
-                  </Text>
-                </View>
-                <TCThinDivider width={'100%'} marginBottom={15} />
-                <FlatList
+                     {'Done'}
+                   </Text>
+                 </View>
+                 <TCThinDivider width={'100%'} marginBottom={15} />
+                 <FlatList
                   showsHorizontalScrollIndicator={false}
                   data={[
                     'Soccer',
@@ -895,19 +895,19 @@ export default function LocalHomeScreen({ navigation }) {
 
                   // onDragEnd={({ data }) => setSportsSource(data)}
                 />
-                <TouchableOpacity
+                 <TouchableOpacity
                   style={styles.addSportsView}
                   onPress={() => {
                     setSportsPopup(false);
                     setSportsListPopup(true);
                   }}>
-                  <Text style={styles.addSportsTitle}>
-                    Add or delete Sports
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </Modal>
-            <Modal
+                   <Text style={styles.addSportsTitle}>
+                     Add or delete Sports
+                   </Text>
+                 </TouchableOpacity>
+               </View>
+             </Modal>
+             <Modal
               onBackdropPress={() => setSportsListPopup(false)}
               backdropOpacity={1}
               animationType="slide"
@@ -918,43 +918,43 @@ export default function LocalHomeScreen({ navigation }) {
                 backgroundColor: colors.blackOpacityColor,
               }}
               visible={sportsListPopup}>
-              <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
-                <View style={styles.viewsContainer}>
-                  <Text
+               <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+                 <View style={styles.viewsContainer}>
+                   <Text
                     onPress={() => setSportsListPopup(false)}
                     style={styles.cancelText}>
-                    Cancel
-                  </Text>
-                  <Text style={styles.locationText}>Add or delete Sports </Text>
-                  <Text
+                     Cancel
+                   </Text>
+                   <Text style={styles.locationText}>Add or delete Sports </Text>
+                   <Text
                     style={styles.doneText}
                     onPress={() => {
                       console.log('DONE::', selectedSports);
                     }}>
-                    {'Apply'}
-                  </Text>
-                </View>
-                <TCThinDivider width={'100%'} marginBottom={15} />
-                <SportsListView sports={sports} onSelect={isIconCheckedOrNot} />
-              </View>
-            </Modal>
-          </ScrollView>
-        </Fragment>
-      )}
+                     {'Apply'}
+                   </Text>
+                 </View>
+                 <TCThinDivider width={'100%'} marginBottom={15} />
+                 <SportsListView sports={sports} onSelect={isIconCheckedOrNot} />
+               </View>
+             </Modal>
+           </ScrollView>
+         </Fragment>
+       )}
     </View>
   );
 }
 const styles = StyleSheet.create({
   townsCupIcon: {
     resizeMode: 'cover',
-    height: 30,
-    width: 30,
-    marginLeft: 15,
+    height: 21,
+    width: 21,
+    marginLeft: 25,
   },
   gpsIconStyle: {
     resizeMode: 'cover',
-    height: 30,
-    width: 30,
+    height: 18,
+    width: 20,
   },
   sportsIcon: {
     resizeMode: 'cover',
@@ -976,13 +976,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
-  rightHeaderView: {
+    rightHeaderView: {
     flexDirection: 'row',
-    marginRight: 15,
+    marginRight: 5,
+    marginLeft: 25,
   },
   headerTitle: {
     fontFamily: fonts.RBold,
-    fontSize: 15,
+    fontSize: 16,
     color: colors.lightBlackColor,
   },
   sportName: {
@@ -1160,8 +1161,8 @@ const styles = StyleSheet.create({
   backgroundStatusView: {
     backgroundColor: colors.whiteColor,
     elevation: 5,
-    height: 68,
-    width: 68,
+    height: 42,
+    width: 42,
     borderRadius: 34,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
@@ -1172,34 +1173,32 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     resizeMode: 'cover',
-    height: 62,
-    width: 62,
+    height: 38,
+    width: 38,
     borderRadius: 31,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
-
     overflow: 'hidden',
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: 'white',
   },
   myShowCaseImage: {
     resizeMode: 'cover',
-    height: 68,
-    width: 68,
+    height: 38,
+    width: 38,
     borderRadius: 34,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
-
     overflow: 'hidden',
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: 'white',
   },
 backImageStyle: {
-    height: 40,
-    width: 40,
+    height: 30,
+    width: 30,
 },
 });
