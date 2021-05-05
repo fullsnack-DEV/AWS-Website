@@ -97,15 +97,16 @@ const MessageSearchScreen = ({ navigation }) => {
     }
 
     return (<TCHorizontalMessageOverview
+        occupantsIds={item?.occupantsIds}
         entityType={firstTwoChar}
-        profilePic={getQBProfilePic(item?.type, index, firstTwoChar)}
+        profilePic={getQBProfilePic(item?.type, index, firstTwoChar, item?.photo)}
         dialogType={item?.type}
         onPress={() => onDialogPress(item)}
         title={fullName}
         subTitle={item?.lastMessage}
         numberOfMembers={item?.occupantsIds}
         lastMessageDate={new Date(item?.lastMessageDateSent)}
-        numberOfUnreadMessages={''}
+        numberOfUnreadMessages={Number(item?.unreadMessagesCount) > 99 ? '+ 99' : item?.unreadMessagesCount}
     />)
   }, [onDialogPress])
 
@@ -119,8 +120,20 @@ const MessageSearchScreen = ({ navigation }) => {
 
   const onMomentumScrollBegin = useCallback(() => setEndReachedCalled(false), [])
 
+  const ListEmptyComponent = () => (
+    <Text style={{
+      color: colors.userPostTimeColor,
+      fontFamily: fonts.RLight,
+      fontSize: 16,
+      marginTop: 15,
+    }}>
+      No Data Found
+    </Text>
+  )
+
   const renderAllMessages = useMemo(() => (
     <FlatList
+            ListEmptyComponent={ListEmptyComponent}
             refreshing={loading}
             data={savedDialogsData.dialogs ?? []}
             keyExtractor={chatKeyExtractor}

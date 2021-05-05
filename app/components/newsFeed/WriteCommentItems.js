@@ -1,18 +1,19 @@
 import React from 'react';
 import {
-  StyleSheet, View, Text, Image,
+  StyleSheet, View, Text, TouchableOpacity,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
-function WriteCommentItems({ data }) {
+function WriteCommentItems({ data, onProfilePress }) {
   let commentTime = '';
   if (data && data.created_at) {
     commentTime = data.created_at;
@@ -31,21 +32,41 @@ function WriteCommentItems({ data }) {
 
   return (
     <View style={ styles.mainContainer }>
-      <Image
+      <TouchableOpacity onPress={() => onProfilePress(data)}>
+        <FastImage
         style={ styles.background }
         source={ !userProfile ? images.profilePlaceHolder : { uri: userProfile } }
         resizeMode={ 'cover' }
       />
+      </TouchableOpacity>
       <View style={ styles.userNameView }>
         <View style={ styles.userCommentTextStyle }>
           <Text style={ styles.userNameTxt }>
-            {userName}{' '}
+            {userName}{' '} <Text style={ styles.commentTextStyle }>{commentText} </Text>
           </Text>
-          <Text style={ styles.commentTextStyle }>{commentText}</Text>
+          <TouchableOpacity style={{ flex: 0.1, alignSelf: 'flex-start' }}>
+            <FastImage
+                style={styles.commentImage}
+                source={images.unlikeImage}
+                resizeMode={'contain'}
+            />
+          </TouchableOpacity>
         </View>
-        <Text style={ styles.activeTimeAgoTxt }>
-          {commentPostTimeCalculate(commentTime)}
-        </Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={ styles.activeTimeAgoTxt }>
+            {commentPostTimeCalculate(commentTime)}
+          </Text>
+          <TouchableOpacity>
+            <Text style={{ ...styles.activeTimeAgoTxt, marginLeft: 10, fontFamily: fonts.RBold }}>
+              99 Likes
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={{ ...styles.activeTimeAgoTxt, marginLeft: 10, fontFamily: fonts.RBold }}>
+              Reply
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -78,14 +99,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   userNameTxt: {
-    color: colors.lightBlackColor,
+    flex: 0.9,
+    color: colors.extraLightBlackColor,
     fontFamily: fonts.RBold,
     fontSize: 16,
   },
   userNameView: {
     flexDirection: 'column',
     marginLeft: wp('4%'),
-    width: wp('70%'),
+    flex: 1,
+  },
+  commentImage: {
+    marginLeft: 15,
+    height: 15,
+    width: 15,
+    alignSelf: 'flex-end',
   },
 });
 

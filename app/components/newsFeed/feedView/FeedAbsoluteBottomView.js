@@ -38,13 +38,13 @@ const FeedAbsoluteBottomView = ({
 }) => {
     const taggedModalRef = useRef(null);
     const likersModalRef = useRef(null);
+    const commentModalRef = useRef(null);
     const [slidingStatus, setSlidingStatus] = useState(false);
     const sourceData = feedSubItem?.attachments?.[currentViewIndex];
     const authContext = useContext(AuthContext);
     const [like, setLike] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
-    const [ShowComment, setShowModelComment] = useState(false);
 
     useEffect(() => {
         if (feedItem) {
@@ -62,7 +62,7 @@ const FeedAbsoluteBottomView = ({
     }, [authContext?.entity?.uid, feedItem])
 
     const onCommentButtonPress = useCallback(() => {
-      setShowModelComment(true)
+        commentModalRef.current.open();
     }, []);
 
     const onTaggedPress = useCallback(() => {
@@ -214,9 +214,6 @@ const FeedAbsoluteBottomView = ({
         return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
     }
 
-    const onClose = () => {
-      setShowModelComment(false)
-    }
     const renderSeekBar = useMemo(() => (
       <View
             pointerEvents={showParent && !readMore ? 'auto' : 'none'}
@@ -339,9 +336,9 @@ const FeedAbsoluteBottomView = ({
         />
 
         <CommentModal
+            commentModalRef={commentModalRef}
+            navigation={navigation}
             item={feedItem}
-            showCommentModal={ShowComment}
-            onClose={onClose}
             updateCommentCount={(updatedCommentData) => {
                 setCommentCount(updatedCommentData?.count)
                 updateCommentCount(updatedCommentData);

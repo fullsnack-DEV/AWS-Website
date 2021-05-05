@@ -48,6 +48,7 @@ const NewsFeedPostItems = ({
   updateCommentCount,
 }) => {
   const likersModalRef = useRef(null);
+  const commentModalRef = useRef(null);
   const authContext = useContext(AuthContext);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -56,7 +57,6 @@ const NewsFeedPostItems = ({
   const [myItem, setMyItem] = useState();
   const [attachedImages, setAttachedImages] = useState([]);
   const [descriptions, setDescriptions] = useState('');
-  const [ShowComment, setShowModelComment] = useState(false);
 
   useEffect(() => {
     let filterLike = [];
@@ -247,12 +247,9 @@ const NewsFeedPostItems = ({
   ), [attachedImages?.length, descriptions, myItem?.format_tagged_data, navigation]);
 
   const onWriteCommentPress = useCallback(() => {
-    setShowModelComment(true)
+    commentModalRef.current.open();
   }, []);
 
-const onClose = () => {
-  setShowModelComment(false)
-}
   return (
     <View style={{ flex: 1 }}>
       {renderProfileInfo}
@@ -386,9 +383,9 @@ const onClose = () => {
           navigation={navigation}
       />
       <CommentModal
+          navigation={navigation}
+          commentModalRef={commentModalRef}
           item={item}
-          showCommentModal={ShowComment}
-          onClose={onClose}
           updateCommentCount={(updatedCommentData) => {
             updateCommentCount(updatedCommentData)
             setCommentCount(updatedCommentData?.count)

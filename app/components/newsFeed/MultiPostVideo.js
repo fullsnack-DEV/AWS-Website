@@ -11,24 +11,16 @@ import images from '../../Constants/ImagePath';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-// import MultipleImageModal from './MultipleImageModal';
-import CommonModalPostView from '../../CommonModalPostView';
 
 function MultiPostVideo({
   data,
   itemNumber,
   totalItemNumber,
-  attachedImages,
-  // activeIndex,
   item,
-  caller_id,
   navigation,
-  onImageProfilePress,
-  onLikePress,
   updateCommentCount,
 }) {
   const videoPlayerRef = useRef();
-  const [isModalVisible, setModalVisible] = useState(false);
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
   const [videoLoad, setVideoLoad] = useState(false);
@@ -52,25 +44,6 @@ function MultiPostVideo({
         />
         <Text style={styles.loadingTextStyle}>Loading...</Text>
       </View>
-      <CommonModalPostView
-        visible={isModalVisible}
-        currentPage={itemNumber}
-        onLikePress={onLikePress}
-        navigation={navigation}
-        backBtnPress={() => setModalVisible(false)}
-        data={data}
-        item={item}
-        openPostModal={(commentData) => {
-          updateCommentCount(commentData)
-          setModalVisible(true)
-        }}
-        caller_id={caller_id}
-        attachedImages={attachedImages}
-        onImageProfilePress={() => {
-          setModalVisible(false)
-          onImageProfilePress()
-        }}
-      />
       <TouchableWithoutFeedback
         onPress={() => {
           toggleModal();
