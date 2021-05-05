@@ -184,6 +184,8 @@ import RefereesSetting from '../screens/challenge/manageChallenge/settings/Refer
 import ScorekeepersSetting from '../screens/challenge/manageChallenge/settings/ScorekeepersSetting';
 import GameDuration from '../screens/challenge/manageChallenge/settings/GameDuration';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
+import UserGalleryScreen from '../screens/home/user/UserGalleryScreen';
+import UserScoreboardScreen from '../screens/home/user/UserScoreboardScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2293,6 +2295,38 @@ const AccountNavigator = () => (
       }}
     />
     <Stack.Screen name={'FeedViewScreen'} component={FeedViewScreen} options={{ headerShown: false }} />
+    <Stack.Screen
+          name="UserGalleryScreen"
+          component={UserGalleryScreen}
+          options={{
+            title: 'Gallery',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+                fontWeight: '500',
+            },
+            headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+            },
+          }}
+      />
+    <Stack.Screen
+          name="UserScoreboardScreen"
+          component={UserScoreboardScreen}
+          options={{
+            title: 'Scoreboard',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+                fontWeight: '500',
+            },
+            headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+            },
+          }}
+      />
   </Stack.Navigator>
 );
 

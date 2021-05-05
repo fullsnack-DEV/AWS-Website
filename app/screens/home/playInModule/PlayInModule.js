@@ -226,7 +226,11 @@ const PlayInModule = ({
 
           {/* Profile View Section */}
           {useMemo(() => <PlayInProfileViewSection
-              onSettingPress={() => {}}
+              onSettingPress={() => {
+                onClose()
+                navigation.navigate('ManageChallengeScreen')
+              }
+            }
               onMessageButtonPress={onMessageButtonPress}
               isAdmin={isAdmin}
               profileImage={currentUserData?.thumbnail ? { uri: currentUserData?.thumbnail } : images.profilePlaceHolder}

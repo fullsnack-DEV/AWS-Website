@@ -21,6 +21,7 @@ const UserHomeHeader = ({
   onConnectionButtonPress,
   onAction,
   isAdmin,
+  loggedInEntity,
 }) => {
   const [entityData, setEntityData] = useState(null);
   useEffect(() => {
@@ -40,13 +41,34 @@ const UserHomeHeader = ({
     }
   }, [currentUserData]);
 
+  // check member status
+  let isMember = false;
+  console.log(isMember);
+
+  if (loggedInEntity.role === 'club' && currentUserData.clubIds) {
+    const result = currentUserData.clubIds.filter(
+      (clubID) => clubID === loggedInEntity.uid,
+    );
+    if (result.length > 0) {
+      isMember = true;
+    }
+  } else if (loggedInEntity.role === 'team' && currentUserData.teamIds) {
+    const result = currentUserData.teamIds.filter(
+      (teamId) => teamId === loggedInEntity.uid,
+    );
+
+    if (result.length > 0) {
+      isMember = true;
+    }
+  }
+
   return (
     <SafeAreaView>
       <View style={{ width: wp('100%'), margin: 0 }}>
         <View style={{ backgroundColor: colors.whiteColor }}>
           <View style={{ width: '100%', marginBottom: 20 }}>
             <View style={styles.userViewStyle}>
-              <Text style={styles.userTextStyle}>{entityData?.fullName}</Text>
+              {/* <Text style={styles.userTextStyle}>{entityData?.fullName}</Text> */}
               <View
                 style={{
                   flexDirection: 'row',
@@ -63,8 +85,9 @@ const UserHomeHeader = ({
                     }
                   />
                 </View>
-                {isAdmin && (
-                  <TCProfileButton
+                <View style={{ alignItems: 'flex-end' }}>
+                  {isAdmin && (
+                    <TCProfileButton
                     title={strings.editprofiletitle}
                     style={styles.editButtonStyle}
                     textStyle={styles.buttonTextStyle}
@@ -73,8 +96,8 @@ const UserHomeHeader = ({
                   />
                 )}
 
-                {!isAdmin && currentUserData && currentUserData.is_following && (
-                  <TCProfileButton
+                  {!isAdmin && currentUserData && currentUserData.is_following && (
+                    <TCProfileButton
                     title={strings.following}
                     style={styles.firstButtonStyle}
                     rightImage={images.check}
@@ -86,8 +109,8 @@ const UserHomeHeader = ({
                   />
                 )}
 
-                {!isAdmin && currentUserData && !currentUserData.is_following && (
-                  <TCGradientButton
+                  {!isAdmin && currentUserData && !currentUserData.is_following && (
+                    <TCGradientButton
                     outerContainerStyle={styles.firstButtonOuterStyle}
                     style={styles.firstButtonStyle}
                     textStyle={styles.buttonTextStyle}
@@ -97,6 +120,40 @@ const UserHomeHeader = ({
                     }}
                   />
                 )}
+                  {!isAdmin && (
+                    <View style={{ marginTop: 10 }}>
+                      {loggedInEntity.role !== 'user' && (
+                        <View style={styles.messageButtonStyle}>
+                          {isMember && (
+                            <TCProfileButton
+                            title={strings.member}
+                            style={styles.firstButtonStyle}
+                            rightImage={images.check}
+                            imageStyle={styles.checkMarkStyle}
+                            textStyle={styles.buttonTextStyle}
+                          />
+                        )}
+
+                          {!isMember && (
+                            <TCGradientButton
+                            outerContainerStyle={styles.firstButtonOuterStyle}
+                            style={styles.firstButtonStyle}
+                            textStyle={styles.buttonTextStyle}
+                            startGradientColor={colors.greenGradientStart}
+                            endGradientColor={colors.greenGradientEnd}
+                            title={strings.invite}
+                            onPress={() => {
+                              onAction('invite');
+                            }}
+
+                          />
+                        )}
+                        </View>
+                    )}
+                    </View>
+                )}
+                </View>
+
               </View>
 
               <Text
@@ -108,7 +165,6 @@ const UserHomeHeader = ({
                   {currentUserData.description}
                 </Text>
               )}
-
             </View>
 
             {(currentUserData.entity_type === 'user'
@@ -150,24 +206,26 @@ const UserHomeHeader = ({
                   </TouchableOpacity>
 
                   <View style={styles.followingSepratorView} />
-                  {!isAdmin && <TouchableOpacity
-                  onPress={() => onAction('message')}
-                  style={styles.statusInnerViewStyle}>
-                    <Image
-                    style={styles.messageImage}
-                    source={images.messageIcon}
-                  />
+                  {!isAdmin && (
+                    <TouchableOpacity
+                    onPress={() => onAction('message')}
+                    style={styles.statusInnerViewStyle}>
+                      <Image
+                      style={styles.messageImage}
+                      source={images.messageIcon}
+                    />
 
-                    <Text style={styles.followingTextStyle}>
-                      {strings.message}
-                    </Text>
-                  </TouchableOpacity>}
+                      <Text style={styles.followingTextStyle}>
+                        {strings.message}
+                      </Text>
+                    </TouchableOpacity>
+                )}
                 </View>
             )}
           </View>
         </View>
       </View>
-      <TCThinDivider width={'100%'}/>
+      <TCThinDivider width={'100%'} />
     </SafeAreaView>
   );
 };
@@ -238,12 +296,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginBottom: 5,
   },
-  userTextStyle: {
-    fontSize: 22,
-    fontFamily: fonts.RBold,
-    textAlign: 'left',
-    marginLeft: 30,
-  },
+
   cityTextStyle: {
     fontSize: 14,
     fontFamily: fonts.RRegular,

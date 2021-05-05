@@ -7,6 +7,7 @@ import React, {
   useContext,
   useMemo,
   useCallback,
+  useLayoutEffect,
 } from 'react';
 import FastImage from 'react-native-fast-image';
 import {
@@ -483,6 +484,58 @@ const HomeScreen = ({ navigation, route }) => {
         navigation.goBack();
       });
   };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: !!isUserHome,
+      headerTitle: '',
+      headerLeft: () => (
+        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} disabled ={!route?.params?.backButtonVisible} onPress={() => navigation.goBack()}>
+          {route?.params?.backButtonVisible === true && <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 20,
+              resizeMode: 'contain',
+              tintColor: colors.lightBlackColor,
+              marginLeft: 15,
+            }}
+          />}
+          <Text style={styles.userNavigationTextStyle}>
+            {currentUserData?.first_name} {currentUserData?.last_name}
+          </Text>
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <View>
+          {isAdmin && isUserHome && <TouchableOpacity onPress={onThreeDotPressed}>
+            <Image
+                source={images.threeDotIcon}
+                style={{
+                  height: 15,
+                  width: 15,
+                  tintColor: colors.lightBlackColor,
+                  resizeMode: 'contain',
+                  marginRight: 15,
+                }}
+              />
+          </TouchableOpacity>}
+        </View>
+      ),
+
+      headerStyle: {
+        // shadowColor: 'transparent',
+        shadowOpacity: 0,
+        backgroundColor: '#fff',
+        borderBottomWidth: 0,
+      },
+    });
+  }, [
+    currentUserData?.first_name,
+    currentUserData?.last_name,
+    isUserHome,
+    navigation,
+  ]);
 
   const getData = async (uid, role, admin) => {
     const userHome = role === 'user';
@@ -2363,51 +2416,51 @@ const HomeScreen = ({ navigation, route }) => {
     [onBackPress, route],
   );
 
-  const renderUserTopFixedButtons = useMemo(
-    () => (
-      <View
-        style={{
-          zIndex: 5,
-          top: 52,
-          justifyContent: 'space-between',
-          paddingLeft: 15,
-          paddingRight: 15,
-        }}>
-        {route && route.params && route.params.backButtonVisible && (
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              flex: 1,
-            }}>
-            <TouchableOpacity onPress={onBackPress}>
-              <Image
-                source={images.backArrow}
-                style={{
-                  height: 22,
-                  width: 22,
-                  resizeMode: 'contain',
-                  tintColor: colors.lightBlackColor,
-                }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onThreeDotPressed}>
-              <Image
-                source={images.threeDotIcon}
-                style={{
-                  height: 15,
-                  width: 15,
-                  tintColor: colors.lightBlackColor,
-                  resizeMode: 'contain',
-                }}
-              />
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-    ),
-    [onBackPress, route],
-  );
+  // const renderUserTopFixedButtons = useMemo(
+  //   () => (
+  //     <View
+  //       style={{
+  //         zIndex: 5,
+  //         top: 52,
+  //         justifyContent: 'space-between',
+  //         paddingLeft: 15,
+  //         paddingRight: 15,
+  //       }}>
+  //       {route && route.params && route.params.backButtonVisible && (
+  //         <View
+  //           style={{
+  //             flexDirection: 'row',
+  //             justifyContent: 'space-between',
+  //             flex: 1,
+  //           }}>
+  //           <TouchableOpacity onPress={onBackPress}>
+  //             <Image
+  //               source={images.backArrow}
+  //               style={{
+  //                 height: 22,
+  //                 width: 22,
+  //                 resizeMode: 'contain',
+  //                 tintColor: colors.lightBlackColor,
+  //               }}
+  //             />
+  //           </TouchableOpacity>
+  //           <TouchableOpacity onPress={onThreeDotPressed}>
+  //             <Image
+  //               source={images.threeDotIcon}
+  //               style={{
+  //                 height: 15,
+  //                 width: 15,
+  //                 tintColor: colors.lightBlackColor,
+  //                 resizeMode: 'contain',
+  //               }}
+  //             />
+  //           </TouchableOpacity>
+  //         </View>
+  //       )}
+  //     </View>
+  //   ),
+  //   [onBackPress, onThreeDotPressed, route],
+  // );
 
   const renderBackground = useMemo(
     () => (bgImage ? (
@@ -2439,9 +2492,10 @@ const HomeScreen = ({ navigation, route }) => {
         onConnectionButtonPress={onConnectionButtonPress}
         onAction={onUserAction}
         isAdmin={isAdmin}
+        loggedInEntity={authContext.entity}
       />
     ),
-    [currentUserData, isAdmin, onConnectionButtonPress, onUserAction],
+    [authContext.entity, currentUserData, isAdmin, onConnectionButtonPress, onUserAction],
   );
 
   const renderHeaderUserHomeTopSection = useMemo(
@@ -2544,7 +2598,14 @@ const HomeScreen = ({ navigation, route }) => {
                 showArrow={false}
                 textStyle={styles.buttonTextStyle}
                 onPressProfile={() => {
-                  Alert.alert('Gallery');
+                  navigation.navigate('UserGalleryScreen', {
+                   isAdmin,
+                   galleryRef,
+                   entityType: route?.params?.role ?? authContext.entity?.role,
+                   entityID: route?.params?.uid ?? authContext.entity?.uid,
+                   currentUserData,
+                   callFunction: callthis,
+                  })
                 }}
               />
               <TCProfileButton
@@ -2553,7 +2614,9 @@ const HomeScreen = ({ navigation, route }) => {
                 showArrow={false}
                 textStyle={styles.buttonTextStyle}
                 onPressProfile={() => {
-                  Alert.alert('Scoreboard');
+                  navigation.navigate('UserScoreboardScreen', {
+                    uid: route?.params?.uid ?? authContext.entity?.uid,
+                  })
                 }}
               />
             </View>
@@ -2579,7 +2642,7 @@ const HomeScreen = ({ navigation, route }) => {
         )}
       </View>
     ),
-    [isUserHome, isTeamHome, currentTab],
+    [isUserHome, isTeamHome, currentTab, navigation, isAdmin, route?.params?.role, route?.params?.uid, authContext.entity?.role, authContext.entity?.uid, currentUserData, callthis],
   );
 
   const onFeedPress = useCallback(
@@ -2959,7 +3022,8 @@ const HomeScreen = ({ navigation, route }) => {
       <ActivityLoader visible={loading} />
 
       <View style={{ flex: 1 }}>
-        {isUserHome ? renderUserTopFixedButtons : renderTopFixedButtons}
+        {/* renderUserTopFixedButtons */}
+        {!isUserHome && renderTopFixedButtons}
         {!isUserHome && fixedHeader}
         {firstTimeLoading ? (
           // <ShimmerLoader shimmerComponents={['BackgroundProfileShimmer']}/>
@@ -4670,6 +4734,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 20,
     marginRight: 20,
+  },
+  userNavigationTextStyle: {
+    fontSize: 22,
+    fontFamily: fonts.RBold,
+    textAlign: 'left',
+    marginLeft: 15,
   },
 });
 

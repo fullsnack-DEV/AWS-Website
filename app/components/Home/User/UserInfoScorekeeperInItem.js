@@ -2,9 +2,9 @@ import React from 'react';
 import {
   View, Text, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import images from '../../../Constants/ImagePath'
 
 export default function UserInfoScorekeeperInItem({
   title,
@@ -13,21 +13,26 @@ export default function UserInfoScorekeeperInItem({
 }) {
   return (
     <TouchableOpacity style={styles.containerStyle} onPress={onRefereesInPress}>
-      <Image source={images.myScoreKeeping} style={styles.refereeIconStyle}/>
       <Image source={thumbURL} style={styles.imageStyle}/>
       <View style={{ marginLeft: 10, marginRight: 12 }}>
         <Text style={styles.titleStyle}>
           {title}
         </Text>
       </View>
+      <LinearGradient
+        colors={[colors.blueGradiantEnd, colors.blueGradiantStart]}
+        style={styles.overlayStyle}
+        end={{ x: 1, y: 1 }}
+        start={{ x: 1, y: 0 }}></LinearGradient>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   containerStyle: {
-    flexDirection: 'row',
-    height: 50,
+    flexDirection: 'column',
+    height: 90,
+    width: 90,
     borderRadius: 8,
     marginLeft: 15,
     marginBottom: 10,
@@ -39,23 +44,24 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  refereeIconStyle: {
-    height: 30,
-    width: 30,
-    alignSelf: 'flex-start',
-    marginLeft: 2,
-    marginTop: 2,
-    position: 'absolute',
-    zIndex: 1001,
-  },
+
   imageStyle: {
-    height: 24,
-    width: 24,
-    borderRadius: 12,
+    height: 42,
+    width: 42,
+    resizeMode: 'contain',
     borderColor: colors.whiteColor,
     borderWidth: 2,
-    marginLeft: 8,
+
   },
-  titleStyle: { fontFamily: fonts.RMedium, fontSize: 16 },
+  titleStyle: { fontFamily: fonts.RMedium, fontSize: 16, color: colors.lightBlackColor },
+  overlayStyle: {
+    position: 'absolute',
+    bottom: 0,
+    height: 6,
+    width: 90,
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
 })

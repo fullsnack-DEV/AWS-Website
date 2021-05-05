@@ -59,6 +59,8 @@ import ChooseTimeSlotScreen from '../screens/challenge/createChallenge/ChooseTim
 
 import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen'
 import InviteToChallengeSentScreen from '../screens/challenge/createChallenge/InviteToChallengeSentScreen';
+import UserGalleryScreen from '../screens/home/user/UserGalleryScreen';
+import UserScoreboardScreen from '../screens/home/user/UserScoreboardScreen';
 
 const Stack = createStackNavigator();
 
@@ -762,6 +764,39 @@ const NewsFeedNavigator = () => (
           options={{
               tabBarVisible: false,
               headerShown: false,
+          }}
+      />
+    <Stack.Screen
+          name="UserGalleryScreen"
+          component={UserGalleryScreen}
+          options={{
+            title: 'Gallery',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+                fontWeight: '500',
+            },
+            headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+            },
+          }}
+      />
+
+    <Stack.Screen
+          name="UserScoreboardScreen"
+          component={UserScoreboardScreen}
+          options={{
+            title: 'Scoreboard',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+                fontWeight: '500',
+            },
+            headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+            },
           }}
       />
   </Stack.Navigator>
