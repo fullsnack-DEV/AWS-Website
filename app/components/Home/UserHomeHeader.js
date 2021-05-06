@@ -1,4 +1,6 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, {
+ memo, useEffect, useState, useContext,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,6 +17,7 @@ import strings from '../../Constants/String';
 import TCGradientButton from '../TCGradientButton';
 import TCProfileButton from '../TCProfileButton';
 import TCThinDivider from '../TCThinDivider';
+import AuthContext from '../../auth/context';
 
 const UserHomeHeader = ({
   currentUserData,
@@ -23,6 +26,8 @@ const UserHomeHeader = ({
   isAdmin,
   loggedInEntity,
 }) => {
+  const authContext = useContext(AuthContext);
+
   const [entityData, setEntityData] = useState(null);
   useEffect(() => {
     if (currentUserData) {
@@ -96,7 +101,7 @@ const UserHomeHeader = ({
                   />
                 )}
 
-                  {!isAdmin && currentUserData && currentUserData.is_following && (
+                  {!isAdmin && authContext?.entity?.role === 'user' && currentUserData && currentUserData.is_following && (
                     <TCProfileButton
                     title={strings.following}
                     style={styles.firstButtonStyle}
@@ -109,7 +114,7 @@ const UserHomeHeader = ({
                   />
                 )}
 
-                  {!isAdmin && currentUserData && !currentUserData.is_following && (
+                  {!isAdmin && authContext?.entity?.role === 'user' && currentUserData && !currentUserData.is_following && (
                     <TCGradientButton
                     outerContainerStyle={styles.firstButtonOuterStyle}
                     style={styles.firstButtonStyle}

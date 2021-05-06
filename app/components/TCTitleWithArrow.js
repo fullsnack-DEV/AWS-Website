@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'left',
     fontFamily: fonts.RRegular,
-    marginRight: 8,
+    marginRight: 10,
   },
   mendatory: {
     color: 'red',
@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
   },
   arrowStyle: {
     resizeMode: 'cover',
-    width: 7,
-    height: 13,
+    width: 9,
+    height: 16,
   },
   viewContainer: {
     flexDirection: 'row',

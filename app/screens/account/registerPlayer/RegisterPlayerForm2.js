@@ -11,6 +11,7 @@ import {
   FlatList,
   Dimensions,
   Platform,
+  ScrollView,
 } from 'react-native';
 
 import {
@@ -19,6 +20,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import Modal from 'react-native-modal';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
@@ -131,32 +133,34 @@ const doneOnPress = () => {
 }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }} keyboardShouldPersistTaps="never">
       <TCFormProgress totalSteps={2} curruentStep={2} />
-      <ActivityLoader visible={loading} />
+      <KeyboardAwareScrollView>
+        <ScrollView>
+          <ActivityLoader visible={loading} />
 
-      <Text style={styles.LocationText}>{strings.languageText}</Text>
-      <TouchableOpacity onPress={toggleModal}>
-        <View style={styles.searchView}>
-          <TextInput
+          <Text style={styles.LocationText}>{strings.languageText}</Text>
+          <TouchableOpacity onPress={toggleModal}>
+            <View style={styles.searchView}>
+              <TextInput
             style={styles.searchTextField}
             placeholder={strings.languagePlaceholder}
             value={languagesName}
             editable={false}
             pointerEvents="none"
           />
-        </View>
-      </TouchableOpacity>
-      <View
+            </View>
+          </TouchableOpacity>
+          <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
         }}>
-        <Text style={styles.LocationText}>
-          {strings.descriptionTextDetails}
-        </Text>
-      </View>
-      <TextInput
+            <Text style={styles.LocationText}>
+              {strings.descriptionTextDetails}
+            </Text>
+          </View>
+          <TextInput
         style={styles.descriptionTxt}
         onChangeText={(text) => setDescription(text)}
         value={description}
@@ -165,7 +169,9 @@ const doneOnPress = () => {
         numberOfLines={4}
         placeholder={strings.descriptionTextDetails}
       />
-      <View style={{ flex: 1 }} />
+          <View style={{ flex: 1 }} />
+        </ScrollView>
+      </KeyboardAwareScrollView>
       <Modal
         isVisible={isModalVisible}
         backdropColor="black"
@@ -280,6 +286,7 @@ const styles = StyleSheet.create({
     width: wp('92%'),
     alignSelf: 'center',
     marginTop: 12,
+    marginBottom: 5,
     paddingVertical: 12,
     paddingHorizontal: 15,
     color: 'black',

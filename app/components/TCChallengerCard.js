@@ -48,19 +48,20 @@ const TCChallengerCard = ({ cardWidth = '86%', gameStatsData }) => (
             width: wp('32%'),
             resizeMode: 'cover',
             overflow: 'hidden',
-            borderBottomRightRadius: 8,
-            borderTopRightRadius: 8,
+            borderBottomRightRadius: 6,
+            borderTopRightRadius: 6,
             alignItems: 'center',
             justifyContent: 'flex-end',
           }}>
       <TCGradientButton
-          startGradientColor = {colors.kHexColorFF8A01}
-          endGradientColor = {colors.darkThemeColor}
+          startGradientColor = {colors.darkThemeColor}
+          endGradientColor = {colors.kHexColorFF8A01}
             title={'$9999+ CAD'}
             style={{
               height: 25,
               borderRadius: 6,
               width: 95,
+              marginBottom: 15,
             }}
             onPress={() => console.log('Amount Pressed')}
           />
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
   backgroundView: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
-    borderRadius: 8,
+    borderRadius: 6,
     elevation: 5,
     flexDirection: 'row',
     height: 102,

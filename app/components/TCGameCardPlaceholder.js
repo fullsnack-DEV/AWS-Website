@@ -143,7 +143,7 @@ import { widthPercentageToDP } from '../utils';
         </View>
       </View>
       <LinearGradient
-        colors={[colors.yellowColor, colors.assistTextColor]}
+        colors={[colors.localHomeGradientStart, colors.localHomeGradientEnd]}
           style={styles.overlayStyle}>
         <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
         <TouchableOpacity
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   startTitle: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
-    color: colors.themeColor,
+    color: colors.tabFontColor,
     alignSelf: 'center',
   },
 });

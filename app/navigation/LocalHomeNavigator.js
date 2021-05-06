@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { createStackNavigator } from '@react-navigation/stack';
-
 import colors from '../Constants/Colors'
 import LocalHomeScreen from '../screens/localhome/LocalHomeScreen';
 import RecentMatchScreen from '../screens/localhome/RecentMatchScreen';
@@ -25,6 +24,8 @@ const LocalHomeNavigator = () => (
         // headerTitle: true,
         gestureEnabled: false,
         headerBackTitleVisible: false,
+        // <Image source={images.backArrow} style={{height:12,width:12,resizeMode:'contain'}} />,
+
       }}>
     <Stack.Screen
         name="LocalHomeScreen"

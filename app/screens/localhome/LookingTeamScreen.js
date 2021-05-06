@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useLayoutEffect } from 'react';
 import {
+ Dimensions,
  Platform,
  View, StyleSheet, FlatList, Image, TouchableOpacity, Text, TouchableWithoutFeedback,
 } from 'react-native';
@@ -16,14 +17,27 @@ import TCThinDivider from '../../components/TCThinDivider';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import { widthPercentageToDP } from '../../utils';
+import { getHitSlop, widthPercentageToDP } from '../../utils';
 
-export default function LookingTeamScreen() {
+export default function LookingTeamScreen({ navigation }) {
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
   // const [loading, setloading] = useState(false);
 
   // const authContext = useContext(AuthContext);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}
+          hitSlop={getHitSlop(15)}>
+          <Image source={images.navigationBack} style={styles.headerLeftImg} />
+        </TouchableWithoutFeedback>
+      ),
+    });
+  }, [navigation]);
 
   const renderEntityListView = useCallback(
     () => (
@@ -97,7 +111,7 @@ export default function LookingTeamScreen() {
           backgroundColor: colors.blackOpacityColor,
         }}
         visible={settingPopup}>
-        <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+        <View style={[styles.bottomPopupContainer, { height: Dimensions.get('window').height - 100 }]}>
           <View style={styles.viewsContainer}>
             <Text
               onPress={() => setSettingPopup(false)}
@@ -212,11 +226,11 @@ const styles = StyleSheet.create({
     elevation: 5,
     flexDirection: 'row',
     height: 30,
-    shadowColor: colors.googleColor,
+    width: 113,
+    shadowOpacity: 0.16,
+        shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
     shadowRadius: 5,
-    width: widthPercentageToDP('20%'),
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
@@ -287,5 +301,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 20,
     marginRight: 20,
+  },
+  headerLeftImg: {
+    height: 20,
+    marginLeft: 5,
+    resizeMode: 'contain',
+    // width: 10,
   },
 });

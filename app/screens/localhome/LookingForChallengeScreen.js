@@ -1,4 +1,6 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, {
+ useCallback, useState, useEffect, useLayoutEffect,
+ } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,17 +9,18 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Text,
+  Dimensions,
 } from 'react-native';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
 
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import RNPickerSelect from 'react-native-picker-select';
 import { gameData } from '../../utils/constant';
-import { widthPercentageToDP } from '../../utils';
+import { getHitSlop, widthPercentageToDP } from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import TCChallengerCard from '../../components/TCChallengerCard';
@@ -29,7 +32,7 @@ import TCThinDivider from '../../components/TCThinDivider';
 
 import strings from '../../Constants/String';
 
-export default function LookingForChallengeScreen() {
+export default function LookingForChallengeScreen({ navigation }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
@@ -37,13 +40,27 @@ export default function LookingForChallengeScreen() {
 
   const [datePickerFor, setDatePickerFor] = useState();
   const [show, setShow] = useState(false);
-  const [fromDate, setFromDate] = useState();
-  const [toDate, setToDate] = useState();
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
   const [minAge, setMinAge] = useState(0);
   const [maxAge, setMaxAge] = useState(0);
   const [minAgeValue, setMinAgeValue] = React.useState([]);
   const [maxAgeValue, setMaxAgeValue] = React.useState([]);
   // const authContext = useContext(AuthContext);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}
+          hitSlop={getHitSlop(15)}>
+          <Image source={images.navigationBack} style={styles.headerLeftImg} />
+        </TouchableWithoutFeedback>
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const minAgeArray = [];
@@ -121,7 +138,11 @@ export default function LookingForChallengeScreen() {
           backgroundColor: colors.blackOpacityColor,
         }}
         visible={settingPopup}>
-        <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+        <View
+          style={[
+            styles.bottomPopupContainer,
+            { height: Dimensions.get('window').height - 100 },
+          ]}>
           <View style={styles.viewsContainer}>
             <Text
               onPress={() => setSettingPopup(false)}
@@ -188,7 +209,7 @@ export default function LookingForChallengeScreen() {
               <View style={{ marginLeft: 15, flex: 0.8 }}>
                 <View style={{ flexDirection: 'row', marginBottom: 10 }}>
                   <TouchableOpacity
-                    style={styles.fieldView}
+                    style={[styles.fieldView, { width: '92%' }]}
                     onPress={() => {
                       setDatePickerFor('from');
                       setShow(!show);
@@ -202,6 +223,7 @@ export default function LookingForChallengeScreen() {
                         From
                       </Text>
                     </View>
+
                     <View style={{ marginRight: 15, flexDirection: 'row' }}>
                       <Text style={styles.fieldValue} numberOfLines={1}>
                         {moment(fromDate).format('MMM DD, YYYY')} {'   '}
@@ -214,7 +236,7 @@ export default function LookingForChallengeScreen() {
                 </View>
                 <View style={{ flexDirection: 'row' }}>
                   <TouchableOpacity
-                    style={styles.fieldView}
+                    style={[styles.fieldView, { width: '90%' }]}
                     onPress={() => {
                       setDatePickerFor('to');
                       setShow(!show);
@@ -483,8 +505,7 @@ export default function LookingForChallengeScreen() {
               <Text style={styles.filterTitle}>
                 {strings.challengerSecureText}
               </Text>
-              <TouchableWithoutFeedback
-                onPress={() => setSecureLocation(0)}>
+              <TouchableWithoutFeedback onPress={() => setSecureLocation(0)}>
                 <Image
                   source={
                     secureLocation === 0
@@ -505,8 +526,7 @@ export default function LookingForChallengeScreen() {
               <Text style={styles.filterTitle}>
                 {strings.challengeeSecureText}
               </Text>
-              <TouchableWithoutFeedback
-                onPress={() => setSecureLocation(1)}>
+              <TouchableWithoutFeedback onPress={() => setSecureLocation(1)}>
                 <Image
                   source={
                     secureLocation === 1
@@ -518,6 +538,7 @@ export default function LookingForChallengeScreen() {
               </TouchableWithoutFeedback>
             </View>
           </View>
+
           {/* Picker View */}
           <View style={{ flex: 1 }} />
           <TouchableOpacity style={styles.resetButton} onPress={() => {}}>
@@ -601,9 +622,9 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.3,
+        shadowRadius: 1,
       },
       android: {
         elevation: 15,
@@ -637,14 +658,14 @@ const styles = StyleSheet.create({
   fieldView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    flex: 1,
+    // flex: 1,
     height: 40,
     alignItems: 'center',
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.grayColor,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 1,
   },
@@ -667,11 +688,11 @@ const styles = StyleSheet.create({
     elevation: 5,
     flexDirection: 'row',
     height: 30,
+    width: 113,
+    shadowOpacity: 0.16,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
     shadowRadius: 5,
-    width: widthPercentageToDP('20%'),
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
@@ -691,14 +712,14 @@ const styles = StyleSheet.create({
     right: 15,
     tintColor: colors.grayColor,
 
-    top: 15,
+    top: 10,
     width: 12,
   },
   inputIOS: {
-    height: 40,
+    height: 30,
 
     fontSize: widthPercentageToDP('3.5%'),
-    paddingVertical: 12,
+    // paddingVertical: 6,
     paddingHorizontal: 15,
     width: widthPercentageToDP('26%'),
     color: 'black',
@@ -708,7 +729,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.16,
     shadowRadius: 1,
   },
   inputAndroid: {
@@ -725,9 +746,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.16,
     shadowRadius: 1,
 
     elevation: 3,
+  },
+  headerLeftImg: {
+    height: 20,
+    marginLeft: 5,
+    resizeMode: 'contain',
+    // width: 10,
   },
 });

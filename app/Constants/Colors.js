@@ -39,6 +39,8 @@ const colors = {
   skyBlue: '#2269aa',
   pinkColor: '#FF658E',
   yellowColor: '#FFAE01',
+  localHomeGradientStart: '#ffbb01',
+  localHomeGradientEnd: '#ff5800',
   themeColor2: '#FF4E00',
   darkGrayColor: '#565656',
   gameDetailColor: '#45C188',

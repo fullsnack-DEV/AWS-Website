@@ -461,7 +461,12 @@ export default function InviteChallengeScreen({ navigation, route }) {
           // navigation.push('ChallengePaymentScreen');
           navigation.push('InviteToChallengeSentScreen');
         }}
-        outerContainerStyle={{ marginBottom: 45 }}
+        outerContainerStyle={{
+          marginBottom: 45,
+          width: '92%',
+          alignSelf: 'center',
+          marginTop: 15,
+        }}
       />
     </TCKeyboardView>
   );

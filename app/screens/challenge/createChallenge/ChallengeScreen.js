@@ -241,9 +241,7 @@ export default function ChallengeScreen({ navigation, route }) {
         <TCThickDivider />
       </View>
       <View>
-        <TCChallengeTitle
-          title={'Home & Away'}
-        />
+        <TCChallengeTitle title={'Home & Away'} />
         <View style={styles.teamContainer}>
           <Text style={styles.homeLableStyle}>Home</Text>
           <View style={styles.teamViewStyle}>
@@ -270,9 +268,7 @@ export default function ChallengeScreen({ navigation, route }) {
         <TCThickDivider marginTop={20} />
       </View>
       <View>
-        <TCChallengeTitle
-          title={'Game Duration'}
-        />
+        <TCChallengeTitle title={'Game Duration'} />
         <TCChallengeTitle
           containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
           title={'1st period'}
@@ -316,25 +312,23 @@ export default function ChallengeScreen({ navigation, route }) {
         <TCThickDivider marginTop={20} />
 
         <View>
-          <TCChallengeTitle
-            title={'Date & Time'}
-          />
+          <TCChallengeTitle title={'Date & Time'} />
 
           <View>
-            <View
-              style={styles.dateTimeValue}>
+            <View style={styles.dateTimeValue}>
               <Text style={styles.dateTimeText}>Start </Text>
               <Text style={styles.dateTimeText}>Feb 17, 2020 12:00 pm</Text>
             </View>
-            <View
-              style={styles.dateTimeValue}>
+            <View style={styles.dateTimeValue}>
               <Text style={styles.dateTimeText}>End </Text>
               <Text style={styles.dateTimeText}>Feb 17, 2020 12:00 pm</Text>
             </View>
-            <View
-              style={styles.dateTimeValue}>
+            <View style={styles.dateTimeValue}>
               <Text style={styles.dateTimeText}> </Text>
-              <Text style={styles.timeZoneText}>Time zone  <Text style={{ fontFamily: fonts.RRegular }}>Vancouver</Text></Text>
+              <Text style={styles.timeZoneText}>
+                Time zone{' '}
+                <Text style={{ fontFamily: fonts.RRegular }}>Vancouver</Text>
+              </Text>
             </View>
           </View>
 
@@ -355,9 +349,7 @@ export default function ChallengeScreen({ navigation, route }) {
         </View>
 
         <View>
-          <TCChallengeTitle
-            title={'Venue'}
-          />
+          <TCChallengeTitle title={'Venue'} />
 
           {/* <Text style={styles.venueTitle}>Calgary stampede</Text>
             <View style={styles.venueContainer}>
@@ -388,9 +380,7 @@ export default function ChallengeScreen({ navigation, route }) {
           <TCThickDivider marginTop={10} />
         </View>
 
-        <TCChallengeTitle
-          title={'Game Rules'}
-        />
+        <TCChallengeTitle title={'Game Rules'} />
         <Text style={styles.venueTitle}>General Rules</Text>
         <Text style={styles.rulesDetail}>
           1. Tackle is not allowed 2. 3 times of 30 minute game for 90 minute
@@ -440,7 +430,12 @@ export default function ChallengeScreen({ navigation, route }) {
           // navigation.push('ChallengePaymentScreen');
           navigation.push('ChallengePreviewScreen');
         }}
-        outerContainerStyle={{ marginBottom: 45 }}
+        outerContainerStyle={{
+          marginBottom: 45,
+          width: '92%',
+          alignSelf: 'center',
+          marginTop: 15,
+        }}
       />
     </TCKeyboardView>
   );
@@ -517,7 +512,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RLight,
     fontSize: 14,
     color: colors.lightBlackColor,
-
   },
   rulesDetail: {
     fontFamily: fonts.RRegular,
