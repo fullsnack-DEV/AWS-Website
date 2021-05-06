@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import {
-  View, Text, StyleSheet, Image, TouchableOpacity,
+  View, Text, StyleSheet, TouchableOpacity,
 } from 'react-native';
 
 import fonts from '../../../Constants/Fonts';
@@ -8,12 +8,11 @@ import colors from '../../../Constants/Colors';
 
 const UserInfoAddRole = ({
   title,
-  thumbURL,
   onPress,
 }) => (
   <TouchableOpacity onPress={ onPress }>
     <View style={styles.containerStyle}>
-      <Image source={thumbURL} style={styles.imageStyle}/>
+
       <View style={{ marginLeft: 10, marginRight: 12 }}>
         <Text style={styles.titleStyle}>
           {title}
@@ -25,8 +24,9 @@ const UserInfoAddRole = ({
 
 const styles = StyleSheet.create({
   containerStyle: {
-    flexDirection: 'row',
-    height: 50,
+    flexDirection: 'column',
+    height: 90,
+    width: 90,
     borderRadius: 8,
     marginLeft: 15,
     marginBottom: 10,
@@ -38,16 +38,12 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  imageStyle: {
-    height: 24,
-    width: 24,
-    borderRadius: 12,
-    borderColor: colors.whiteColor,
-    borderWidth: 2,
-    marginLeft: 8,
-  },
-  titleStyle: { fontFamily: fonts.RMedium, fontSize: 16 },
+
+  titleStyle: {
+ fontFamily: fonts.RMedium, fontSize: 16, color: colors.lightBlackColor, textAlign: 'center',
+ },
 })
 
 export default memo(UserInfoAddRole)

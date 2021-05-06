@@ -12,15 +12,13 @@ import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import UserInfoPlaysInItem from './UserInfoPlaysInItem';
 import UserInfoRefereesInItem from './UserInfoRefereesInItem';
-import TCProfileButton from '../../TCProfileButton'
-import TCGradientButton from '../../TCGradientButton'
-import fonts from '../../../Constants/Fonts';
+
 import UserInfoAddRole from './UserInfoAddRole';
 import UserInfoScorekeeperInItem from './UserInfoScorekeeperInItem';
 import EntityStatus from '../../../Constants/GeneralConstants';
 
 const UserHomeTopSection = ({
-  userDetails, isAdmin, loggedInEntity, onAction, onRefereesInPress, onScorekeeperInPress, onPlayInPress, onAddRolePress,
+  userDetails, isAdmin, onRefereesInPress, onScorekeeperInPress, onPlayInPress, onAddRolePress,
 }) => {
   useEffect(() => {
     isSectionEnable()
@@ -32,7 +30,7 @@ const UserHomeTopSection = ({
     const scorekeeperLength = userDetails?.scorekeeper_data?.length ?? 0
     const totalLength = gameLength + refereeLength + scorekeeperLength
 
-    if (totalLength > 5) return true
+    if (totalLength > 500) return true
     return false
   }, [userDetails?.games, userDetails?.referee_data, userDetails?.scorekeeper_data]);
 
@@ -67,7 +65,7 @@ const UserHomeTopSection = ({
     return (<UserInfoPlaysInItem
         title={item.sport_name}
         totalGames={item.totalGames}
-        thumbURL={item.thumbnail ? { uri: item.thumbnail } : undefined}
+        thumbURL={ images.goalsImage || undefined}
         onPlayInPress={() => {
           if (onPlayInPress) onPlayInPress(item)
         }}/>)
@@ -80,7 +78,7 @@ const UserHomeTopSection = ({
 
     return (<UserInfoRefereesInItem
         title={item.sport_name}
-        thumbURL={images.gameGoal}
+        thumbURL={images.refereesInImage}
         onRefereesInPress={() => {
           if (onRefereesInPress) onRefereesInPress(item)
         }}
@@ -181,22 +179,6 @@ const UserHomeTopSection = ({
     }
   }, [])
 
-  // check member status
-  let isMember = false;
-
-  if (loggedInEntity.role === 'club' && userDetails.clubIds) {
-    const result = userDetails.clubIds.filter((clubID) => clubID === loggedInEntity.uid);
-    if (result.length > 0) {
-      isMember = true
-    }
-  } else if (loggedInEntity.role === 'team' && userDetails.teamIds) {
-    const result = userDetails.teamIds.filter((teamId) => teamId === loggedInEntity.uid);
-
-    if (result.length > 0) {
-      isMember = true
-    }
-  }
-
   const renderPlayInGames = useMemo(() => userDetails?.games?.length > 0 && (
     <View>
       <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
@@ -216,7 +198,7 @@ const UserHomeTopSection = ({
   return (
     <View style={{ paddingTop: 20, paddingBottom: 20 }}>
 
-      {!isAdmin && <View style={styles.otherUserStyle}>
+      {/* {!isAdmin && <View style={styles.otherUserStyle}>
 
         {loggedInEntity.role !== 'user' && <View style={styles.messageButtonStyle}>
           {isMember && <TCProfileButton
@@ -235,7 +217,7 @@ const UserHomeTopSection = ({
           title={strings.invite}
           onPress = {() => { onAction('invite') }}/> }
         </View>}
-      </View> }
+      </View> } */}
 
       {/* Play in section */}
       { isSectionEnable() ? <View>
@@ -289,49 +271,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     backgroundColor: colors.whiteColor,
   },
-  otherUserStyle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 0,
-    marginHorizontal: 15,
-    height: 28,
-    marginVertical: 0,
-    flexWrap: 'wrap',
-    alignItems: 'center',
-  },
-  firstButtonStyle: {
-    margin: 0,
-    height: 28,
-    width: '100%',
-    borderRadius: 5,
-  },
-  firstButtonOuterStyle: {
-    margin: 0,
-    height: 28,
-    width: '100%',
-    shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  messageButtonStyle: {
-    margin: 0,
-    height: 28,
-    width: '48%',
-  },
-  checkMarkStyle: {
-    alignSelf: 'center',
-    height: 7,
-    resizeMode: 'contain',
-    width: 10,
-    marginLeft: 8,
-    tintColor: colors.lightBlackColor,
-  },
-  buttonTextStyle: {
-    fontFamily: fonts.RBold,
-    fontSize: 14,
-  },
+
 })
 
 export default memo(UserHomeTopSection);

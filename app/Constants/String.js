@@ -490,7 +490,7 @@ const strings = {
   tcpoint: 'TC Points',
   tcranking: 'TC Ranking',
   history: 'History',
-  addrole: 'Add Role',
+  addrole: 'Add Activity',
   addPlaying: 'Add playing',
   addRefereeing: 'Add refereeing',
   addScorekeeping: 'Add scorekeeping',
