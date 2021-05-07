@@ -37,6 +37,8 @@ const TCGradientButton = ({
 const styles = StyleSheet.create({
   outerContainerStyle: {
     overflow: 'hidden',
+    width: '92%',
+    alignSelf: 'center',
   },
   containerStyle: {
     flexDirection: 'row',

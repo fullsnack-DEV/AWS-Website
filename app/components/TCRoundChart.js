@@ -55,7 +55,7 @@ const TCRoundChart = ({
       <View style={styles.containerStyle}>
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <SVGPieChart
-            style={{ height: 62, width: 62 }}
+            style={{ height: 64, width: 64 }}
             data={
               data?.filter((item) => item?.value === 0)?.length === 3 ? [
                 {

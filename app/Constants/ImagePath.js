@@ -239,7 +239,7 @@ const images = {
   leagueDemo: require('../assets/images/leaguedemo.png'),
   whiteTrophySmall: require('../assets/images/minitropy.png'),
   editPencil: require('../assets/images/editPencil.png'),
-  addRole: require('../assets/images/add.png'),
+  addRole: require('../assets/images/add_activity.png'),
   tennisAce: require('../assets/images/ic_tennis_ace.png'),
   tennisFault: require('../assets/images/tennisFault.png'),
   tennisFootFault: require('../assets/images/tennisFootFault.png'),
@@ -351,6 +351,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   savedIcon: require('../assets/images/savedIcon.png'),
 
   messageIcon: require('../assets/images/message_ic.png'),
+  navigationBack: require('../assets/images/navigation_back.png'),
 
 };
 

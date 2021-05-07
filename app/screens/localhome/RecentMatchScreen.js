@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useLayoutEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,25 +8,25 @@ import {
   TouchableOpacity,
   Platform,
   Text,
+ Dimensions,
 } from 'react-native';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
 import Modal from 'react-native-modal';
 import moment from 'moment';
+import { getHitSlop, widthPercentageToDP } from '../../utils';
 
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import TCTextField from '../../components/TCTextField';
-
-import { widthPercentageToDP } from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 
 import TCThinDivider from '../../components/TCThinDivider';
 
-export default function RecentMatchScreen({ route }) {
+export default function RecentMatchScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
@@ -37,6 +37,20 @@ export default function RecentMatchScreen({ route }) {
   const [recentMatch] = useState(route?.params?.gameData);
 
   // const authContext = useContext(AuthContext);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}
+          hitSlop={getHitSlop(15)}>
+          <Image source={images.navigationBack} style={styles.headerLeftImg} />
+        </TouchableWithoutFeedback>
+      ),
+    });
+  }, [navigation]);
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
@@ -87,10 +101,12 @@ export default function RecentMatchScreen({ route }) {
         style={{
           flex: 1,
           margin: 0,
+
+          // marginTop: 100,
           backgroundColor: colors.blackOpacityColor,
         }}
         visible={settingPopup}>
-        <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+        <View style={[styles.bottomPopupContainer, { height: Dimensions.get('window').height - 100 }]}>
           <View style={styles.viewsContainer}>
             <Text
               onPress={() => setSettingPopup(false)}
@@ -355,11 +371,13 @@ const styles = StyleSheet.create({
     elevation: 5,
     flexDirection: 'row',
     height: 30,
+    width: 113,
+    shadowOpacity: 0.16,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
+
     shadowRadius: 5,
-    width: widthPercentageToDP('20%'),
+
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
@@ -371,5 +389,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     // margin: 15,
 
+  },
+  headerLeftImg: {
+    height: 20,
+    marginLeft: 5,
+    resizeMode: 'contain',
+    // width: 10,
   },
 });

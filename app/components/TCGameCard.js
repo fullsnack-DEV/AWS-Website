@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   backgroundView: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
-    borderRadius: 8,
+    borderRadius: 6,
     elevation: 5,
     flexDirection: 'row',
     height: 102,
@@ -179,8 +179,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   colorView: {
-    borderBottomLeftRadius: 8,
-    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 6,
+    borderTopLeftRadius: 6,
     height: 102,
     width: 42,
   },
@@ -188,13 +188,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color: colors.whiteColor,
     fontFamily: fonts.RLight,
-    fontSize: 12,
+    fontSize: 16,
   },
   dateText: {
     alignSelf: 'center',
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: 12,
+    fontSize: 16,
   },
   dateView: {
     marginTop: 15,
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   eventTitle: {
-    color: colors.googleColor,
+    color: colors.tabFontColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
     marginBottom: 1,

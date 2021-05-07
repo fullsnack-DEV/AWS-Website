@@ -1,4 +1,6 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, {
+ useCallback, useState, useEffect, useLayoutEffect,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -8,6 +10,7 @@ import {
   Text,
   TouchableWithoutFeedback,
   Platform,
+ Dimensions,
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -21,7 +24,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import TCEntityView from '../../components/TCEntityView';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import { widthPercentageToDP } from '../../utils';
+import { getHitSlop, widthPercentageToDP } from '../../utils';
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
@@ -29,7 +32,7 @@ import TCTextField from '../../components/TCTextField';
 
 import strings from '../../Constants/String';
 
-export default function RefereesListScreen() {
+export default function RefereesListScreen({ navigation }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
@@ -42,6 +45,20 @@ export default function RefereesListScreen() {
   const [minAgeValue, setMinAgeValue] = React.useState([]);
   const [maxAgeValue, setMaxAgeValue] = React.useState([]);
   // const authContext = useContext(AuthContext);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}
+          hitSlop={getHitSlop(15)}>
+          <Image source={images.navigationBack} style={styles.headerLeftImg} />
+        </TouchableWithoutFeedback>
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const minAgeArray = [];
@@ -129,7 +146,7 @@ export default function RefereesListScreen() {
           backgroundColor: colors.blackOpacityColor,
         }}
         visible={settingPopup}>
-        <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+        <View style={[styles.bottomPopupContainer, { height: Dimensions.get('window').height - 100 }]}>
           <View style={styles.viewsContainer}>
             <Text
               onPress={() => setSettingPopup(false)}
@@ -548,13 +565,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     borderRadius: 5,
     elevation: 5,
-    flexDirection: 'row',
     height: 30,
+    width: 113,
+    shadowOpacity: 0.16,
+    flexDirection: 'row',
     shadowColor: colors.grayColor,
     shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
     shadowRadius: 5,
-    width: widthPercentageToDP('20%'),
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
@@ -612,5 +629,11 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
 
     elevation: 3,
+  },
+  headerLeftImg: {
+    height: 20,
+    marginLeft: 5,
+    resizeMode: 'contain',
+    // width: 10,
   },
 });

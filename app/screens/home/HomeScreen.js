@@ -138,6 +138,7 @@ import GameStatus from '../../Constants/GameStatus';
 import AllInOneGallery from './AllInOneGallery';
 import UserHomeHeader from '../../components/Home/UserHomeHeader';
 import TCProfileButton from '../../components/TCProfileButton';
+import UserProfileScreenShimmer from '../../components/shimmer/account/UserProfileScreenShimmer';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews'];
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews'];
@@ -397,7 +398,7 @@ const HomeScreen = ({ navigation, route }) => {
         Alert.alert(strings.alertmessagetitle, error.message);
       }, 10);
     });
-  }, [authContext.entity, route.params]);
+  }, [authContext.entity, route?.params]);
 
   useEffect(() => {
     if (isTeamHome) {
@@ -3025,11 +3026,9 @@ const HomeScreen = ({ navigation, route }) => {
         {/* renderUserTopFixedButtons */}
         {!isUserHome && renderTopFixedButtons}
         {!isUserHome && fixedHeader}
-        {firstTimeLoading ? (
-          // <ShimmerLoader shimmerComponents={['BackgroundProfileShimmer']}/>
-          <ProfileScreenShimmer />
-        ) : (
-          <HomeFeed
+        {firstTimeLoading && (route?.params?.role === 'user' ?? authContext?.entity?.role === 'user') && <UserProfileScreenShimmer/>}
+        {firstTimeLoading && (route?.params?.role !== 'user' ?? authContext?.entity?.role !== 'user') && <ProfileScreenShimmer />}
+        {!firstTimeLoading && <HomeFeed
             onFeedScroll={handleMainRefOnScroll}
             refs={mainFlatListRef}
             homeFeedHeaderComponent={MainHeaderComponent}
@@ -3039,8 +3038,8 @@ const HomeScreen = ({ navigation, route }) => {
             navigation={navigation}
             setGalleryData={() => {}}
             userID={route?.params?.uid ?? authContext.entity?.uid}
-          />
-        )}
+          />}
+
       </View>
 
       {useMemo(
@@ -4326,7 +4325,8 @@ const HomeScreen = ({ navigation, route }) => {
               Cancel
             </Text>
             <Text style={styles.locationText}>Challenge</Text>
-            <Text
+            <Text style={styles.locationText}>      </Text>
+            {/* <Text
               style={styles.doneText}
               onPress={() => {
                 if (selectedChallengeOption === 0) {
@@ -4346,11 +4346,19 @@ const HomeScreen = ({ navigation, route }) => {
               {selectedChallengeOption === 0 || selectedChallengeOption === 1
                 ? 'Next'
                 : ''}
-            </Text>
+            </Text> */}
           </View>
           <TCThinDivider width={'100%'} marginBottom={15} />
           <TouchableWithoutFeedback
-            onPress={() => setSelectedChallengeOption(0)}>
+            onPress={() => {
+              setSelectedChallengeOption(0)
+              setTimeout(() => {
+                setChallengePopup(false);
+                        navigation.navigate('ChallengeScreen', {
+                          groupObj: currentUserData,
+                        });
+              }, 300);
+            }}>
             {selectedChallengeOption === 0 ? (
               <LinearGradient
                 colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -4372,7 +4380,16 @@ const HomeScreen = ({ navigation, route }) => {
             )}
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
-            onPress={() => setSelectedChallengeOption(1)}>
+            onPress={() => {
+              setSelectedChallengeOption(1)
+
+        setTimeout(() => {
+          setChallengePopup(false);
+          navigation.navigate('InviteChallengeScreen', {
+            groupObj: currentUserData,
+          });
+        }, 300);
+            }}>
             {selectedChallengeOption === 1 ? (
               <LinearGradient
                 colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -4712,11 +4729,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
-  doneText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.themeColor,
-  },
+
   locationText: {
     fontSize: 16,
     fontFamily: fonts.RMedium,

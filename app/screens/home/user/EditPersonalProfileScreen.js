@@ -12,6 +12,8 @@ import {
   ScrollView,
   Alert,
   StyleSheet,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -21,7 +23,6 @@ import ActionSheet from 'react-native-actionsheet';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCTextField from '../../../components/TCTextField';
 import TCLabel from '../../../components/TCLabel';
-import TCProfileImageControl from '../../../components/TCProfileImageControl'
 import { updateUserProfile } from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
@@ -32,6 +33,8 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import AuthContext from '../../../auth/context';
 import * as Utility from '../../../utils';
 import { getQBAccountType, QBupdateUser } from '../../../utils/QuickBlox';
+import images from '../../../Constants/ImagePath';
+import TCImage from '../../../components/TCImage';
 
 export default function EditPersonalProfileScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -245,16 +248,6 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
     });
   }
 
-  const onBGImageClicked = () => {
-    setCurrentImageSelection(0);
-    setTimeout(() => {
-      if (profile.background_thumbnail) {
-        actionSheetWithDelete.current.show();
-      } else {
-        actionSheet.current.show();
-      }
-    }, 0.1)
-  }
   const onProfileImageClicked = () => {
     setCurrentImageSelection(1);
     setTimeout(() => {
@@ -308,12 +301,32 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
       <TCKeyboardView>
         <ScrollView>
           <ActivityLoader visible={loading} />
-          <TCProfileImageControl
+          {/* <TCProfileImageControl
         profileImage={ profile.thumbnail ? { uri: profile.thumbnail } : undefined }
-        bgImage={ profile.background_thumbnail ? { uri: profile.background_thumbnail } : undefined }
-        onPressBGImage={() => onBGImageClicked()}
         onPressProfileImage={() => onProfileImageClicked()}
-        showEditButtons />
+        showEditButtons /> */}
+
+          <View style={{ flex: 1 }}>
+
+            <TCImage
+        imageStyle={[
+          styles.profileImageStyle,
+          { marginTop: 10 },
+        ]}
+        source={profile.thumbnail ? { uri: profile.thumbnail } : images.profilePlaceHolder}
+        defaultSource={images.profilePlaceHolder}
+      />
+
+            <TouchableOpacity
+          style={styles.profileCameraButtonStyle}
+          onPress={() => onProfileImageClicked()}>
+              <Image
+            style={styles.profileImageButtonStyle}
+            source={images.certificateUpload}
+          />
+            </TouchableOpacity>
+
+          </View>
 
           <View>
             <View style={{ flexDirection: 'row' }}>
@@ -370,4 +383,25 @@ const styles = StyleSheet.create({
     color: colors.redColor,
   },
 
+  profileImageStyle: {
+    height: 71,
+    width: 71,
+    marginTop: -36,
+    borderRadius: 35.5,
+    borderWidth: 2,
+    alignSelf: 'center',
+    borderColor: colors.whiteColor,
+  },
+
+  profileCameraButtonStyle: {
+    height: 22,
+    width: 22,
+    marginTop: -22,
+    marginLeft: 48,
+    alignSelf: 'center',
+  },
+  profileImageButtonStyle: {
+    height: 22,
+    width: 22,
+  },
 });

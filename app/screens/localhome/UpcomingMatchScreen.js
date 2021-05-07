@@ -1,13 +1,20 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useLayoutEffect } from 'react';
 import {
-View, StyleSheet, FlatList, Image, TouchableOpacity, Text, TouchableWithoutFeedback,
- Platform,
+  View,
+  StyleSheet,
+  SectionList,
+  Image,
+  TouchableOpacity,
+  Text,
+  TouchableWithoutFeedback,
+  Platform,
+  Dimensions,
 } from 'react-native';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
 import Modal from 'react-native-modal';
 import { gameData } from '../../utils/constant';
-import { widthPercentageToDP } from '../../utils';
+import { getHitSlop, widthPercentageToDP } from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import TCGameCard from '../../components/TCGameCard';
@@ -15,19 +22,31 @@ import TCTextField from '../../components/TCTextField';
 import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
 
-export default function UpcomingMatchScreen() {
+export default function UpcomingMatchScreen({ navigation }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
 
   // const authContext = useContext(AuthContext);
 
-  const keyExtractor = useCallback((item, index) => index.toString(), []);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.goBack();
+          }}
+          hitSlop={getHitSlop(15)}>
+          <Image source={images.navigationBack} style={styles.headerLeftImg} />
+        </TouchableWithoutFeedback>
+      ),
+    });
+  }, [navigation]);
 
   const renderRecentMatchItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCGameCard data={item} cardWidth={'92%'}/>
+        <TCGameCard data={item} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -35,25 +54,41 @@ export default function UpcomingMatchScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <View
-        style={styles.searchView}>
-        <View
-          style={styles.searchViewContainer}>
-          <Image
-          source={images.arrowDown}
-          style={styles.arrowStyle}
-        />
+      <View style={styles.searchView}>
+        <View style={styles.searchViewContainer}>
+          <Image source={images.arrowDown} style={styles.arrowStyle} />
         </View>
         <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
           <Image source={images.homeSetting} style={styles.settingImage} />
         </TouchableWithoutFeedback>
       </View>
-      <FlatList
+      {/* <FlatList
         showsHorizontalScrollIndicator={false}
         data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
         keyExtractor={keyExtractor}
         renderItem={renderRecentMatchItems}
         style={styles.listViewStyle}
+      /> */}
+      <SectionList
+        sections={[
+          {
+            title: 'Today',
+            data: [{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }],
+          },
+          {
+            title: 'Tomorrow',
+            data: [{ ...gameData }, { ...gameData }],
+          },
+          {
+            title: 'Future',
+            data: [{ ...gameData }],
+          },
+        ]}
+        renderItem={renderRecentMatchItems}
+        keyExtractor={(item, index) => index.toString()}
+        renderSectionHeader={({ section: { title } }) => (
+          <Text style={styles.sectionHeader}>{title}</Text>
+        )}
       />
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
@@ -66,7 +101,11 @@ export default function UpcomingMatchScreen() {
           backgroundColor: colors.blackOpacityColor,
         }}
         visible={settingPopup}>
-        <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+        <View
+          style={[
+            styles.bottomPopupContainer,
+            { height: Dimensions.get('window').height - 100 },
+          ]}>
           <View style={styles.viewsContainer}>
             <Text
               onPress={() => setSettingPopup(false)}
@@ -91,22 +130,32 @@ export default function UpcomingMatchScreen() {
               </View>
               <View style={{ marginLeft: 15, flex: 0.8 }}>
                 <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                  <TouchableWithoutFeedback onPress={() => setLocationFilterOpetion(0)}>
+                  <TouchableWithoutFeedback
+                    onPress={() => setLocationFilterOpetion(0)}>
                     <Image
-                    source={locationFilterOpetion === 0 ? images.checkRoundOrange : images.radioUnselect}
-                    style={styles.radioButtonStyle}
-                  />
+                      source={
+                        locationFilterOpetion === 0
+                          ? images.checkRoundOrange
+                          : images.radioUnselect
+                      }
+                      style={styles.radioButtonStyle}
+                    />
                   </TouchableWithoutFeedback>
 
                   <Text style={styles.filterTitle}>World</Text>
                 </View>
                 <View style={{ flexDirection: 'row' }}>
-                  <TouchableWithoutFeedback onPress={() => setLocationFilterOpetion(1)} style={{ alignSelf: 'center' }}>
+                  <TouchableWithoutFeedback
+                    onPress={() => setLocationFilterOpetion(1)}
+                    style={{ alignSelf: 'center' }}>
                     <Image
-                    source={locationFilterOpetion === 1 ? images.checkRoundOrange : images.radioUnselect}
-                    style={styles.radioButtonStyle}
-                  />
-
+                      source={
+                        locationFilterOpetion === 1
+                          ? images.checkRoundOrange
+                          : images.radioUnselect
+                      }
+                      style={styles.radioButtonStyle}
+                    />
                   </TouchableWithoutFeedback>
                   <TCTextField
                     style={{ marginLeft: 0, marginRight: 0 }}
@@ -133,7 +182,10 @@ export default function UpcomingMatchScreen() {
                       </Text>
                     </View>
                     <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                      <Text style={styles.fieldValue} numberOfLines={1}> Feb 15, 2021  1:00 am</Text>
+                      <Text style={styles.fieldValue} numberOfLines={1}>
+                        {' '}
+                        Feb 15, 2021 1:00 am
+                      </Text>
                     </View>
                   </TouchableOpacity>
                 </View>
@@ -149,7 +201,9 @@ export default function UpcomingMatchScreen() {
                       </Text>
                     </View>
                     <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                      <Text style={styles.fieldValue} numberOfLines={1}>Feb 15, 2021  1:00 am</Text>
+                      <Text style={styles.fieldValue} numberOfLines={1}>
+                        Feb 15, 2021 1:00 am
+                      </Text>
                     </View>
                   </TouchableOpacity>
                 </View>
@@ -175,11 +229,8 @@ export default function UpcomingMatchScreen() {
               </View>
             </View>
           </View>
-          <View style={{ flex: 1 }}/>
-          <TouchableOpacity
-              style={styles.resetButton}
-              onPress={() => {
-              }}>
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity style={styles.resetButton} onPress={() => {}}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>
@@ -188,11 +239,6 @@ export default function UpcomingMatchScreen() {
   );
 }
 const styles = StyleSheet.create({
-  listViewStyle: {
-    width: '100%',
-    height: 50,
-    alignContent: 'center',
-  },
   arrowStyle: {
     height: 26,
     width: 14,
@@ -256,11 +302,12 @@ const styles = StyleSheet.create({
     elevation: 5,
     flexDirection: 'row',
     height: 30,
+    width: 113,
+    shadowOpacity: 0.16,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
     shadowRadius: 5,
-    width: widthPercentageToDP('20%'),
+
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
@@ -271,7 +318,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     alignSelf: 'center',
     // margin: 15,
-
   },
 
   radioButtonStyle: {
@@ -331,5 +377,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 20,
     marginRight: 20,
+  },
+  sectionHeader: {
+    fontSize: 20,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    marginLeft: 15,
+    marginBottom: 8,
+    marginTop: 8,
+  },
+  headerLeftImg: {
+    height: 20,
+    marginLeft: 5,
+    resizeMode: 'contain',
+    // width: 10,
   },
 });
