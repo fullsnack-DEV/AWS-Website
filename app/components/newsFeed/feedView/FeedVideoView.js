@@ -24,6 +24,7 @@ const FeedVideoView = ({
    setCurrentTime,
    videoPlayerRef,
     paused,
+    setVideoMetaData,
     setPaused,
 
 }) => {
@@ -135,7 +136,10 @@ const FeedVideoView = ({
                       height: getScreenHeight({ isLandscape, screenInsets }),
                       width: getScreenWidth({ isLandscape, screenInsets }),
                   }}
-                  onLoad={() => videoPlayerRef.current.seek(0)}
+                  onLoad={(videoMetaData) => {
+                      setVideoMetaData(videoMetaData)
+                      videoPlayerRef.current.seek(0)
+                  }}
                   resizeMode={'contain'}
                   onBuffer={(bufferData) => setVideoLoader(bufferData?.isBuffering)}
               />

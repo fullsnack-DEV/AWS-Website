@@ -5,22 +5,20 @@ import {
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
-function TagView({
+const TagView = ({
   source,
   tagText,
   tagTextStyle,
-}) {
-  return (
-    <View style={styles.mainContainerStyle}>
-      <Image
+}) => (
+  <View style={styles.mainContainerStyle}>
+    <Image
         source={source}
         style={styles.imageStyle}
         resizeMode={'contain'}
       />
-      <Text style={{ ...styles.tagTextStyle, ...tagTextStyle }}>{tagText}</Text>
-    </View>
-  );
-}
+    <Text style={{ ...styles.tagTextStyle, ...tagTextStyle }}>{tagText}</Text>
+  </View>
+  )
 
 const styles = StyleSheet.create({
   mainContainerStyle: {
@@ -30,13 +28,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   imageStyle: {
-    height: 30,
-    width: 30,
+    height: 15,
+    width: 15,
+    marginRight: 7.5,
   },
   tagTextStyle: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: fonts.RRegular,
-    color: colors.whiteColor,
+    color: colors.greeColor,
   },
 });
 

@@ -78,6 +78,11 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
   uploadedImage: {
+    shadowColor: colors.googleColor,
+    shadowOpacity: 0.16,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 15,
+    elevation: 15,
     alignItems: 'center',
     alignSelf: 'center',
     borderRadius: wp('5%'),

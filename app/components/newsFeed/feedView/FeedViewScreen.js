@@ -35,6 +35,7 @@ const FeedViewScreen = ({ navigation, route }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [paused, setPaused] = useState(true);
   const [isPostOwner, setIsPostOwner] = useState(false);
+  const [videoMetaData, setVideoMetaData] = useState(null);
   const onFullScreen = useCallback(() => setIsFullScreen((val) => setIsFullScreen(!val)), [])
 
   // On change of current slider image / video
@@ -102,6 +103,7 @@ const FeedViewScreen = ({ navigation, route }) => {
   const renderTopView = useMemo(() => (
     <Fragment>
       <FeedAbsoluteTopView
+        videoMetaData={videoMetaData}
         screenInsets={screenInsets}
         onThreeDotPress={onThreeDotPress}
         currentViewIndex={currentViewIndex}
@@ -119,7 +121,7 @@ const FeedViewScreen = ({ navigation, route }) => {
         setReadMore={setReadMore}
       />
     </Fragment>
-    ), [currentViewIndex, feedItem, feedSubItem, isFullScreen, isLandscape, isMute, navigation, onThreeDotPress, readMore, screenInsets, showParent])
+    ), [currentViewIndex, feedItem, feedSubItem, isFullScreen, isLandscape, isMute, navigation, onThreeDotPress, readMore, screenInsets, showParent, videoMetaData])
 
   // When user click on like button
   const onLikePress = useCallback(() => {
@@ -169,6 +171,7 @@ const FeedViewScreen = ({ navigation, route }) => {
   const renderPostView = useMemo(() => (
     <Fragment>
       <FeedPostView
+          setVideoMetaData={setVideoMetaData}
           screenInsets={screenInsets}
           setisLandscape={setIsLandscape}
           paused={paused}

@@ -95,7 +95,7 @@ const NewsFeedDescription = ({
   }, [])
 
   const renderSelectedGame = useCallback(({ item }) => (
-    <View style={{ marginRight: 10 }}>
+    <View>
       <TCGameCard
           data={item?.entity_data}
           onPress={() => {
@@ -116,16 +116,15 @@ const NewsFeedDescription = ({
           />
       </TouchableOpacity>
       <FlatList
-              bounces={false}
-              contentContainerStyle={{ paddingHorizontal: 15 }}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              pagingEnabled={true}
-              horizontal={true}
-              data={tagData?.filter((item) => item?.entity_type === 'game')}
-              renderItem={renderSelectedGame}
-              keyExtractor={(item) => item?.entity_id }
-          />
+            bounces={false}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            pagingEnabled={true}
+            horizontal={true}
+            data={tagData?.filter((item) => item?.entity_type === 'game')}
+            renderItem={renderSelectedGame}
+            keyExtractor={(item) => item?.entity_id }
+        />
     </View>
     ), [renderSelectedGame, tagData])
 
@@ -171,7 +170,6 @@ const NewsFeedDescription = ({
 
 const styles = StyleSheet.create({
   containerStyle: {
-    // paddingHorizontal: 18,
   },
   descText: {
     color: 'gray',

@@ -6,14 +6,10 @@ import {
   StyleSheet,
   View,
   Image,
-  TouchableOpacity,
-  FlatList,
-  TouchableWithoutFeedback,
 } from 'react-native';
-
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { Text } from 'react-native-elements';
 import ActionSheet from 'react-native-actionsheet';
@@ -29,13 +25,13 @@ import NewsFeedDescription from './NewsFeedDescription';
 import {
   commentPostTimeCalculate,
 } from '../../Constants/LoaderImages';
-
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import AuthContext from '../../auth/context';
 import CommentModal from './CommentModal';
 import LikersModal from '../modals/LikersModal';
 import CustomURLPreview from '../account/CustomURLPreview';
+import { getHitSlop } from '../../utils';
 
 const NewsFeedPostItems = ({
   navigation,
@@ -94,7 +90,7 @@ const NewsFeedPostItems = ({
   const actionSheet = useRef();
   const shareActionSheet = useRef();
 
-  const renderSinglePostItems = useCallback(({ item: attachItem }) => {
+  const RenderSinglePostItems = useCallback((attachItem) => {
     if (attachItem?.type === 'image') {
       return <SingleImage
           updateCommentCount={updateCommentCount}
@@ -121,8 +117,6 @@ const NewsFeedPostItems = ({
     }
     return <View />;
   }, [caller_id, item, navigation, onImageProfilePress, onLikePress, updateCommentCount])
-
-  const listSpace = useMemo(() => <View style={{ width: wp('2%') }} />, [])
 
   const renderMultiplePostItems = useCallback(({ item: multiAttachItem, index }) => {
     if (multiAttachItem?.type === 'image') {
@@ -161,8 +155,6 @@ const NewsFeedPostItems = ({
     }
     return <View />;
   }, [attachedImages, caller_id, item, navigation, onImageProfilePress, onLikePress, updateCommentCount])
-
-  const newsFeedItemsKeyExtractor = useCallback((keyItem, index) => `innerFeed${ index?.id?.toString()}`, [])
 
   const onNewsFeedLikePress = useCallback(() => {
     if (like) setLikeCount((likeCnt) => likeCnt - 1);
@@ -204,21 +196,22 @@ const NewsFeedPostItems = ({
 
   const renderProfileInfo = useMemo(() => (
     <View style={styles.mainContainer}>
-      <TouchableWithoutFeedback onPress={onImageProfilePress}>
+      <TouchableOpacity activeOpacity={1} onPress={onImageProfilePress} style={styles.imageMainContainer}>
         <Image
               style={styles.background}
               source={!item?.actor?.data?.full_image ? images.profilePlaceHolder : { uri: item?.actor?.data?.full_image }}
               resizeMode={'cover'}
           />
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
       <View style={styles.userNameView}>
-        <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
+        <Text numberOfLines={1} style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
         <Text style={styles.activeTimeAgoTxt}>
           {commentPostTimeCalculate(item?.time, true)}
         </Text>
       </View>
 
       {showThreeDot && <TouchableOpacity
+            hitSlop={getHitSlop(15)}
             style={styles.dotImageTouchStyle}
             onPress={() => {
               actionSheet.current.show();
@@ -226,7 +219,6 @@ const NewsFeedPostItems = ({
         <Image
               style={styles.dotImageStyle}
               source={images.threeDotIcon}
-              resizeMode={'contain'}
           />
       </TouchableOpacity>}
     </View>
@@ -251,34 +243,22 @@ const NewsFeedPostItems = ({
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, marginBottom: 15 }}>
       {renderProfileInfo}
       <View>
         {
           attachedImages && attachedImages?.length === 1 ? (
-            <FlatList
-                initialNumToRender={1}
-                maxToRenderPerBatch={5}
-              data={attachedImages}
-              horizontal={true}
-              legacyImplementation={true}
-              windowSize={5}
-              bounces={false}
-              showsHorizontalScrollIndicator={false}
-              ListHeaderComponent={listSpace}
-              ListFooterComponent={listSpace}
-              ItemSeparatorComponent={listSpace}
-              renderItem={renderSinglePostItems}
-              keyExtractor={newsFeedItemsKeyExtractor}
-            />
+            <>
+              {RenderSinglePostItems(attachedImages?.[0])}
+            </>
           ) : (
             <Carousel
-              data={attachedImages}
-              renderItem={renderMultiplePostItems}
-              inactiveSlideScale={1}
-              inactiveSlideOpacity={1}
-              sliderWidth={wp(100)}
-              itemWidth={wp(94)}
+                data={attachedImages}
+                renderItem={renderMultiplePostItems}
+                inactiveSlideScale={1}
+                inactiveSlideOpacity={1}
+                sliderWidth={wp(100)}
+                itemWidth={wp(94)}
             />
           )
         }
@@ -290,34 +270,33 @@ const NewsFeedPostItems = ({
           <View
             style={{
               flexDirection: 'row',
-              width: wp('60%'),
+              alignItems: 'center',
             }}>
-            <View
-              style={{
-                flexDirection: 'row',
-              }}>
-              <TouchableOpacity
+            <TouchableOpacity
                 onPress={onWriteCommentPress}
+                style={{
+                flexDirection: 'row',
+                marginRight: 20,
+                }}>
+              <View
                 style={styles.imageTouchStyle}>
                 <Image
                   style={styles.commentImage}
                   source={images.commentImage}
                   resizeMode={'contain'}
                 />
-              </TouchableOpacity>
-              {commentCount > 0 && (
-                <Text style={styles.commentlengthStyle}>
-                  {commentCount}
-                </Text>
-              )}
-            </View>
+              </View>
+              <Text style={styles.commentlengthStyle}>
+                {commentCount > 0 ? commentCount : ''}
+              </Text>
+            </TouchableOpacity>
 
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginLeft: 10,
+                marginRight: 20,
               }}>
               <TouchableOpacity
                 onPress={() => shareActionSheet.current.show()}
@@ -334,12 +313,13 @@ const NewsFeedPostItems = ({
 
           <View
             style={{
+              flex: 1,
               flexDirection: 'row',
-              width: wp('32%'),
               justifyContent: 'flex-end',
               alignItems: 'center',
+              marginLeft: 20,
             }}>
-            <TouchableOpacity onPress={() => likersModalRef.current.open()}>
+            <TouchableOpacity style={{ marginRight: 5 }} onPress={() => likersModalRef.current.open()}>
               <Text
               style={[
                 styles.commentlengthStyle,
@@ -356,7 +336,7 @@ const NewsFeedPostItems = ({
               <Image
                 style={styles.commentImage}
                 source={like ? images.likeImage : images.unlikeImage}
-                resizeMode={'contain'}
+                resizeMode={'cover'}
               />
             </TouchableOpacity>
           </View>
@@ -404,9 +384,9 @@ const styles = StyleSheet.create({
     top: 2,
   },
   background: {
-    borderRadius: hp('2.5%'),
-    height: hp('5%'),
-    width: hp('5%'),
+    borderRadius: 50,
+    height: 36,
+    width: 36,
   },
   commentImage: {
     height: 15,
@@ -415,23 +395,24 @@ const styles = StyleSheet.create({
   },
   commentShareLikeView: {
     flexDirection: 'row',
-    marginHorizontal: '4%',
-    marginVertical: '2%',
+    marginHorizontal: 15,
+    marginTop: 5,
   },
   commentlengthStyle: {
+    marginLeft: 5,
     alignSelf: 'center',
     color: colors.reactionCountColor,
     fontFamily: fonts.RMedium,
     fontSize: 14,
-    marginHorizontal: 5,
   },
   dotImageStyle: {
-    height: hp('2%'),
-    margin: wp('1.5%'),
+    height: 15,
+    width: 15,
+    resizeMode: 'contain',
     tintColor: colors.googleColor,
-    width: hp('2%'),
   },
   dotImageTouchStyle: {
+    paddingLeft: 15,
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
@@ -441,9 +422,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   mainContainer: {
+    alignItems: 'center',
     flexDirection: 'row',
-    margin: wp('3%'),
-    marginHorizontal: wp('4%'),
+    marginHorizontal: 15,
+    marginBottom: 15,
   },
   userNameTxt: {
     color: colors.lightBlackColor,
@@ -451,9 +433,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   userNameView: {
-    flexDirection: 'column',
-    marginLeft: wp('4%'),
-    width: wp('70%'),
+    flex: 1,
+    // width: '70%',
+  },
+  imageMainContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+    height: 40,
+    width: 40,
+    backgroundColor: colors.whiteColor,
+    borderRadius: 50,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.16,
+    shadowRadius: 6,
+    elevation: 6,
   },
 });
 

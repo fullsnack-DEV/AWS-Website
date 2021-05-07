@@ -70,7 +70,8 @@ const NewsFeedList = ({
       const onDeleteButtonPress = () => onDeletePost(item);
       const onLikeButtonPress = () => onLikePress(item);
       return (
-        <NewsFeedPostItems
+        <View>
+          <NewsFeedPostItems
           updateCommentCount={updateCommentCount}
           pullRefresh={pullRefresh}
           item={item}
@@ -81,6 +82,8 @@ const NewsFeedList = ({
           onLikePress={onLikeButtonPress}
           onDeletePost={onDeleteButtonPress}
         />
+          <View style={{ backgroundColor: colors.grayBackgroundColor, height: 7 }}/>
+        </View>
       );
     },
     [
@@ -148,6 +151,7 @@ const NewsFeedList = ({
         onScroll={onFeedScroll}
         ref={refs}
         style={{ flex: 1 }}
+        contentContainerStyle={{ paddingVertical: 15 }}
         scrollEventThrottle={16}
         removeClippedSubviews={true}
         legacyImplementation={true}
@@ -164,8 +168,7 @@ const NewsFeedList = ({
               }}>
               {noDataFoundText}
             </Text>
-        )
-        }
+        )}
         bounces={true}
         data={postData ?? []}
         ItemSeparatorComponent={newsFeedListItemSeperator}
