@@ -59,6 +59,7 @@ import {
 import strings from '../../Constants/String';
 import Header from '../../components/Home/Header';
 import TCGradientButton from '../../components/TCGradientButton';
+import TCThinDivider from '../../components/TCThinDivider';
 
 export default function AccountScreen({ navigation, route }) {
   const scrollRef = useRef();
@@ -73,6 +74,11 @@ export default function AccountScreen({ navigation, route }) {
   const [notificationCounter, setNotificationCounter] = useState(0);
   const [team, setTeam] = useState([]);
   const [club, setClub] = useState([]);
+
+  const [sportsSelection, setSportsSelection] = useState();
+  const [sports, setSports] = useState('');
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
   // for set/get clubs
@@ -86,6 +92,7 @@ export default function AccountScreen({ navigation, route }) {
   // Account menu opetions
   const userMenu = [
     { key: 'Reservations' },
+    { key: 'Manage Challenge' },
     { key: 'Sports', member: [{ opetions: 'Add a sport' }] },
     { key: 'Refereeing', member: [{ opetions: 'Register as a referee' }] },
     { key: 'Scorekeeping', member: [{ opetions: 'Register as a scorekeeper' }] },
@@ -186,6 +193,7 @@ export default function AccountScreen({ navigation, route }) {
     });
 
   useEffect(() => {
+    console.log('Auth:=>', authContext?.entity);
     if (isFocused) {
       setloading(true);
       getData().then(() => {
@@ -489,7 +497,13 @@ export default function AccountScreen({ navigation, route }) {
       const entity = authContext.entity;
       navigation.navigate('GroupMembersScreen', { groupID: entity.uid });
     } else if (section === 'Manage Challenge') {
-      navigation.navigate('ManageChallengeScreen');
+      const entity = authContext.entity;
+      if (entity.role === 'user') {
+        console.log('sections');
+        setVisibleSportsModal(true);
+      } else {
+        navigation.navigate('ManageChallengeScreen');
+      }
     }
   };
 
@@ -504,10 +518,10 @@ export default function AccountScreen({ navigation, route }) {
         navigation.navigate('RegisterPlayer');
       } else if (options === 'Create Team') {
         setCreateEntity('team');
-        setIsRulesModalVisible(true)
+        setIsRulesModalVisible(true);
       } else if (options === 'Create Club') {
         setCreateEntity('club');
-        setIsRulesModalVisible(true)
+        setIsRulesModalVisible(true);
       } else if (options === 'Payment Method') {
         navigation.navigate('Account', {
           screen: 'PaymentMethodsScreen',
@@ -754,15 +768,15 @@ export default function AccountScreen({ navigation, route }) {
   const renderMenuItems = useCallback(
     (rowItem, rowId, sectionId) => (
       <>
-        {authContext.entity.role === 'user' && sectionId === 1 && (
+        {authContext.entity.role === 'user' && sectionId === 2 && (
           <FlatList
-            data={authContext?.user?.registered_sports}
+            data={authContext?.entity?.auth?.user?.registered_sports}
             keyExtractor={keyExtractorID}
             renderItem={renderSportsList}
             scrollEnabled={false}
           />
         )}
-        {authContext.entity.role === 'user' && sectionId === 2 && (
+        {authContext.entity.role === 'user' && sectionId === 3 && (
           <FlatList
             data={authContext?.entity?.auth?.user?.referee_data}
             keyExtractor={keyExtractorID}
@@ -770,7 +784,7 @@ export default function AccountScreen({ navigation, route }) {
             scrollEnabled={false}
           />
         )}
-        {authContext.entity.role === 'user' && sectionId === 3 && (
+        {authContext.entity.role === 'user' && sectionId === 4 && (
           <FlatList
             data={authContext?.entity?.auth?.user?.scorekeeper_data}
             keyExtractor={keyExtractorID}
@@ -779,9 +793,9 @@ export default function AccountScreen({ navigation, route }) {
           />
         )}
         {authContext.entity.role === 'user'
-          && (sectionId === 4 || sectionId === 5) && (
+          && (sectionId === 5 || sectionId === 6) && (
             <FlatList
-              data={sectionId === 4 ? teamList : clubList}
+              data={sectionId === 5 ? teamList : clubList}
               keyExtractor={keyExtractorID}
               renderItem={renderEntityList}
               scrollEnabled={false}
@@ -843,9 +857,9 @@ export default function AccountScreen({ navigation, route }) {
     ),
     [
       authContext.entity?.auth?.user?.referee_data,
+      authContext.entity?.auth?.user?.registered_sports,
       authContext.entity?.auth?.user?.scorekeeper_data,
       authContext.entity.role,
-      authContext?.user?.registered_sports,
       clubList,
       handleOptions,
       keyExtractorID,
@@ -870,9 +884,14 @@ export default function AccountScreen({ navigation, route }) {
     () => (
       <>
         <Header
-          leftComponent={<View>
-            <FastImage source={images.tc_message_top_icon} resizeMode={'contain'} style={styles.backImageStyle} />
-          </View>
+          leftComponent={
+            <View>
+              <FastImage
+                source={images.tc_message_top_icon}
+                resizeMode={'contain'}
+                style={styles.backImageStyle}
+              />
+            </View>
           }
           showBackgroundColor={true}
           centerComponent={
@@ -887,19 +906,52 @@ export default function AccountScreen({ navigation, route }) {
   );
 
   const onNextPressed = () => {
-    setIsRulesModalVisible(false)
+    setIsRulesModalVisible(false);
     const entity = authContext.entity;
-        if (createEntity === 'team') {
-          if (entity.role === 'user') {
-            navigation.navigate('CreateTeamForm1');
-          } else {
-            navigation.navigate('CreateTeamForm1', { clubObject: group });
-          }
-        }
-        if (createEntity === 'club') {
-          navigation.navigate('CreateClubForm1');
-        }
+    if (createEntity === 'team') {
+      if (entity.role === 'user') {
+        navigation.navigate('CreateTeamForm1');
+      } else {
+        navigation.navigate('CreateTeamForm1', { clubObject: group });
+      }
+    }
+    if (createEntity === 'club') {
+      navigation.navigate('CreateClubForm1');
+    }
   };
+
+  const renderSports = ({ item }) => (
+    <TouchableWithoutFeedback
+      style={styles.listItem}
+      onPress={() => {
+        setSportsSelection(item?.sport_name);
+        setVisibleSportsModal(false);
+        setSports(item?.sport_name);
+        setTimeout(() => {
+          navigation.navigate('ManageChallengeScreen', { sportName: sports });
+        }, 300);
+      }}>
+      <View
+        style={{
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>{item.sport_name}</Text>
+        <View style={styles.checkbox}>
+          {sportsSelection === item?.sport_name ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
+  );
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -1193,7 +1245,10 @@ export default function AccountScreen({ navigation, route }) {
                   <Image source={images.myLeagues} style={styles.menuItem} />
                 )}
                 {section === 'Manage Challenge' && (
-                  <Image source={images.manageChallengeIcon} style={styles.menuItem} />
+                  <Image
+                    source={images.manageChallengeIcon}
+                    style={styles.menuItem}
+                  />
                 )}
                 {section === 'Payment & Payout' && (
                   <Image
@@ -1378,22 +1433,20 @@ export default function AccountScreen({ navigation, route }) {
             <View style={styles.separatorLine} />
             <View style={{ flex: 1 }}>
               <ScrollView>
-
                 <Text style={[styles.rulesText, { margin: 15 }]}>
                   {'When your team creates a club:'}
                 </Text>
                 <Text style={[styles.rulesText, { marginLeft: 15 }]}>
                   {'\n• your team will belong to the club initially.'}
-                </Text >
+                </Text>
                 <Text style={[styles.rulesText, { marginLeft: 15 }]}>
                   {'\n• your team can leave the club anytime later.'}
                 </Text>
                 <Text style={[styles.rulesText, { marginLeft: 15 }]}>
                   {
-                      '\n• the admins of your team will be the admins of the club initially.'
-                    }
+                    '\n• the admins of your team will be the admins of the club initially.'
+                  }
                 </Text>
-
               </ScrollView>
             </View>
             <TCGradientButton
@@ -1406,6 +1459,74 @@ export default function AccountScreen({ navigation, route }) {
         </Modal>
 
         {/* Rules notes modal */}
+
+        <Modal
+          isVisible={visibleSportsModal}
+          backdropColor="black"
+          onBackdropPress={() => setVisibleSportsModal(false)}
+          onRequestClose={() => setVisibleSportsModal(false)}
+          backdropOpacity={0}
+          style={{
+            margin: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          }}>
+          <View
+            style={{
+              width: '100%',
+              height: Dimensions.get('window').height / 1.3,
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.5,
+              shadowRadius: 5,
+              elevation: 15,
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setVisibleSportsModal(false)}>
+                <Image source={images.cancelImage} style={styles.closeButton} />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RBold,
+                  color: colors.lightBlackColor,
+                }}>
+                Sports
+              </Text>
+
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: colors.themeColor,
+                }}></Text>
+            </View>
+            <View style={styles.separatorLine} />
+            <FlatList
+              ItemSeparatorComponent={() => <TCThinDivider />}
+              data={authContext?.entity?.obj?.registered_sports}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderSports}
+            />
+          </View>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );
@@ -1775,13 +1896,33 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 15,
   },
 
- rulesText: {
-  fontFamily: fonts.RRegular,
-  fontSize: 16,
-  color: colors.lightBlackColor,
- },
-backImageStyle: {
+  rulesText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+  },
+  backImageStyle: {
     height: 30,
     width: 30,
-},
+  },
+
+  closeButton: {
+    alignSelf: 'center',
+    width: 13,
+    height: 13,
+    marginLeft: 5,
+    resizeMode: 'contain',
+  },
+
+  languageList: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('4%'),
+  },
+  checkboxImg: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
 });

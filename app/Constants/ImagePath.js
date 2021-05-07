@@ -353,6 +353,8 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   messageIcon: require('../assets/images/message_ic.png'),
   navigationBack: require('../assets/images/navigation_back.png'),
 
+  newFeed: require('../assets/images/new_feed.png'),
+
 };
 
 export default images;

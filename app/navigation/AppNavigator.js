@@ -383,8 +383,8 @@ const AppNavigator = ({ navigation }) => {
           backgroundColor: colors.offwhite,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.4,
-          shadowRadius: 15,
+          shadowOpacity: 0.3,
+          shadowRadius: 12,
           elevation: 2,
           // height:
           //   Platform.OS === 'android'
