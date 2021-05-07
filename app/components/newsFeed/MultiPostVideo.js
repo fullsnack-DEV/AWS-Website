@@ -1,4 +1,6 @@
-import React, { useRef, memo, useState } from 'react';
+import React, {
+ useRef, memo, useState, useCallback,
+} from 'react';
 import {
   StyleSheet, View, Text, TouchableWithoutFeedback, TouchableHighlight,
 } from 'react-native';
@@ -24,11 +26,41 @@ function MultiPostVideo({
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
   const [videoLoad, setVideoLoad] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
 
   const toggleModal = () => {
     // setModalVisible(!isModalVisible);
     navigation.navigate('FeedViewScreen', { feedItem: item, currentPage: itemNumber, updateCommentCount })
   };
+
+  const secondsToHms = (date) => {
+    let hDisplay = '';
+    let mDisplay = '0';
+    let sDisplay = '00';
+
+    const d = Number(date);
+
+    const h = Math.floor(d / 3600);
+    // eslint-disable-next-line no-mixed-operators
+    const m = Math.floor(d % 3600 / 60);
+    const s = Math.floor(d % 3600 % 60);
+
+    // Hour
+    if (h > 0 && h?.toString()?.length === 1) hDisplay = `0${h}`
+    if (h > 0 && h?.toString()?.length > 1) hDisplay = `${h}`
+
+    // Minuites
+    if (m > 0 && m?.toString()?.length === 1) mDisplay = `0${m}`
+    if (m > 0 && m?.toString()?.length > 1) mDisplay = `${m}`
+
+    // Seconds
+    if (s > 0 && s?.toString()?.length === 1) sDisplay = `0${s}`
+    if (s > 0 && s?.toString()?.length > 1) sDisplay = `${s}`
+
+    return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
+  }
+
+  const onProgress = useCallback((curTimeData) => setCurrentTime(curTimeData?.currentTime), []);
 
   return (
     <View style={styles.singleImageDisplayStyle}>
@@ -52,6 +84,7 @@ function MultiPostVideo({
           ref={videoPlayerRef}
           paused={!play}
           muted={!mute}
+          onProgress={onProgress}
           source={{ uri: data.url }}
           style={[styles.singleImageDisplayStyle, { position: 'absolute' }]}
           resizeMode={'cover'}
@@ -70,6 +103,9 @@ function MultiPostVideo({
       </View>
       {videoLoad && (
         <>
+          <Text style={styles.currentTime}>
+            {secondsToHms(Math.ceil((data?.duration / 1000)?.toFixed(0)) - currentTime)}
+          </Text>
           <TouchableHighlight
               style={styles.pauseMuteStyle}
               onPress={() => {
@@ -102,9 +138,9 @@ function MultiPostVideo({
 
 const styles = StyleSheet.create({
   imageStyle: {
-    height: wp('5%'),
+    height: 14,
     tintColor: '#fff',
-    width: wp('5%'),
+    width: 14,
   },
   lengthTextStyle: {
     color: '#fff',
@@ -120,8 +156,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: wp('1.5%'),
     position: 'absolute',
-    right: wp('3%'),
-    top: wp('5%'),
+    right: 10,
+    top: 18,
   },
   loadimageStyle: {
     height: 50,
@@ -138,20 +174,38 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: wp('5%'),
-    bottom: wp('2%'),
-    height: wp('10%'),
     justifyContent: 'center',
     padding: wp('2%'),
     position: 'absolute',
-    right: wp('2%'),
-    width: wp('10%'),
+    bottom: 15,
+    right: 10,
+    height: 25,
+    width: 25,
   },
   playPauseImageStyle: {
-    height: wp('4%'),
+    height: 14,
     tintColor: '#fff',
-    width: wp('4%'),
+    width: 14,
+  },
+  currentTime: {
+    fontSize: 15,
+    color: colors.whiteColor,
+    position: 'absolute',
+    top: 18,
+    left: 10,
+    fontFamily: fonts.RRegular,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 5,
   },
   singleImageDisplayStyle: {
+    shadowColor: colors.googleColor,
+    shadowOpacity: 0.16,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 15,
+    elevation: 15,
     alignItems: 'center',
     alignSelf: 'center',
     borderRadius: wp('4%'),

@@ -22,7 +22,6 @@ import NewsFeedShimmer from '../../components/shimmer/newsFeed/NewsFeedShimmer';
 import { ImageUploadContext } from '../../context/GetContexts';
 import Header from '../../components/Home/Header';
 import fonts from '../../Constants/Fonts';
-import { widthPercentageToDP as wp } from '../../utils';
 
 const FeedsScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext)
@@ -101,10 +100,10 @@ const FeedsScreen = ({ navigation }) => {
 
   const topRightButton = useMemo(() => (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <TouchableOpacity style={{ paddingHorizontal: 7 }} onPress={onFeedPlusPress}>
+      <TouchableOpacity style={{ marginRight: 20 }} onPress={onFeedPlusPress}>
         <FastImage source={images.feedPlusIcon} resizeMode={'contain'} style={styles.rightImageStyle} />
       </TouchableOpacity>
-      <TouchableOpacity style={{ paddingHorizontal: 7 }} onPress={onThreeDotPress}>
+      <TouchableOpacity onPress={onThreeDotPress}>
         <FastImage source={images.messageSearchButton2} resizeMode={'contain'} style={styles.rightImageStyle} />
       </TouchableOpacity>
     </View>
@@ -276,7 +275,9 @@ const FeedsScreen = ({ navigation }) => {
           }
           rightComponent={topRightButton}
       />
-      <View style={styles.separateLine}/>
+      <SingleSidedShadowBox>
+        <View style={styles.separateLine}/>
+      </SingleSidedShadowBox>
     </>
   ), [topRightButton])
 
@@ -293,15 +294,29 @@ const FeedsScreen = ({ navigation }) => {
   );
 }
 
+const SingleSidedShadowBox = ({ children, style }) => (
+  <View style={[styles.shadowContainer, style]}>
+    { children }
+  </View>
+);
+
 const styles = StyleSheet.create({
+  shadowContainer: {
+    overflow: 'hidden',
+    paddingBottom: 5,
+  },
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
   },
   separateLine: {
-    borderColor: colors.grayColor,
-    borderWidth: 0.5,
-    width: wp(100),
+    height: 5,
+    backgroundColor: colors.whiteColor,
+    shadowColor: colors.blackColor,
+    shadowOffset: { width: 0, height: 1.5 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 5,
   },
   eventTitleTextStyle: {
     fontSize: 16,
@@ -310,14 +325,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   rightImageStyle: {
-    height: 18,
-    width: 18,
+    height: 22,
+    width: 22,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },
   backImageStyle: {
-    height: 40,
-    width: 40,
+    height: 30,
+    width: 30,
   },
 });
 

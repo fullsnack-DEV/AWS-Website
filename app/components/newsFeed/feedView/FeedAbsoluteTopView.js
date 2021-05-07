@@ -17,7 +17,8 @@ import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
 import FeedDescriptionSection from './FeedDescriptionSection';
 
-const FeedAbsoluteTopView = ({
+const FeedAbsoluteTopView = memo(({
+    videoMetaData,
     showParent,
     screenInsets,
     feedItem = {},
@@ -52,13 +53,12 @@ const FeedAbsoluteTopView = ({
 
     // When user press full screen icon
     const onFullScreen = useCallback(() => {
-        const sourceData = feedSubItem?.attachments?.[currentViewIndex];
         if (isFullScreen) {
                 Orientation.lockToPortrait();
                 setIsLandscape(false);
                 setIsFullScreen(false);
             setTimeout(() => Orientation.unlockAllOrientations(), 1500);
-        } else if (sourceData?.media_height < sourceData?.media_width) {
+        } else if (videoMetaData?.naturalSize?.orientation === 'landscape') {
                 Orientation.lockToLandscape();
                 setIsLandscape(true);
                 setIsFullScreen(false);
@@ -68,7 +68,7 @@ const FeedAbsoluteTopView = ({
                 setIsFullScreen(true);
             }
         setTimeout(() => Orientation.unlockAllOrientations(), 1500);
-    }, [currentViewIndex, feedSubItem?.attachments, isFullScreen, setIsFullScreen, setIsLandscape])
+    }, [isFullScreen, setIsFullScreen, setIsLandscape, videoMetaData?.naturalSize?.orientation])
 
     // Render Top Description with read More functionality
     const renderDescriptionSection = useMemo(() => (
@@ -118,23 +118,21 @@ const FeedAbsoluteTopView = ({
                             source={isMute ? images.videoMuteSound : images.videoUnMuteSound}
                             resizeMode={'contain'}
                             style={{
-                                marginHorizontal: 10,
-                                height: 18,
-                                width: 18,
+                                height: 22,
+                                width: 22,
                                 tintColor: colors.whiteColor,
                             }}
                         />
             </TouchableOpacity>
 
             {/*  Full Screen Button */}
-            <TouchableOpacity hitSlop={getHitSlop(10)} onPress={onFullScreen}>
+            <TouchableOpacity hitSlop={getHitSlop(10)} onPress={onFullScreen} style={{ marginLeft: 20 }}>
               <FastImage
                             source={isFullScreen ? images.videoNormalScreen : images.videoFullScreen }
                             resizeMode={'contain'}
                             style={{
-                                marginHorizontal: 5,
-                                height: 18,
-                                width: 18,
+                                height: 22,
+                                width: 22,
                                 tintColor: colors.whiteColor,
                             }}
                         />
@@ -142,13 +140,13 @@ const FeedAbsoluteTopView = ({
           </Fragment>
             )}
 
-        <TouchableOpacity onPress={onThreeDotPress}>
+        <TouchableOpacity onPress={onThreeDotPress} style={{ marginLeft: 20 }}>
           <Image
                     source={images.vertical3Dot}
                     resizeMode={'contain'}
                     style={{
-                        height: 18,
-                        width: 18,
+                        height: 22,
+                        width: 22,
                         tintColor: colors.whiteColor,
                         marginHorizontal: 5,
                     }} />
@@ -176,11 +174,13 @@ const FeedAbsoluteTopView = ({
 
         <View style={styles.mainContainer}>
           <TouchableWithoutFeedback onPress={onProfilePress}>
-            <Image
+            <View style={styles.profileImageContainer}>
+              <Image
                         style={styles.background}
                         source={userImage}
                         resizeMode={'cover'}
                     />
+            </View>
           </TouchableWithoutFeedback>
           <View style={styles.userNameView}>
             <Text
@@ -188,7 +188,7 @@ const FeedAbsoluteTopView = ({
                 style={{
                         ...styles.userNameTxt,
                         maxWidth: getScreenWidth({
-                                    isLandscape, screenInsets, portraitWidth: 40,
+                                    isLandscape, screenInsets, portraitWidth: 35,
                                   }),
                 }}
                 onPress={() => {}}>
@@ -229,7 +229,7 @@ const FeedAbsoluteTopView = ({
         {renderDescriptionSection}
       </View>
     )
-}
+})
 
 const styles = StyleSheet.create({
     topMainContainer: {
@@ -269,9 +269,17 @@ const styles = StyleSheet.create({
     },
     background: {
         borderRadius: 50,
+        height: 36,
+        width: 36,
+    },
+    profileImageContainer: {
         height: 40,
         width: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 50,
+        backgroundColor: colors.whiteColor,
     },
 });
 
-export default memo(FeedAbsoluteTopView);
+export default FeedAbsoluteTopView;

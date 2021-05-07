@@ -234,8 +234,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backImageStyle: {
-    height: 40,
-    width: 40,
+    height: 30,
+    width: 30,
   },
   rightImageStyle: {
     height: 20,

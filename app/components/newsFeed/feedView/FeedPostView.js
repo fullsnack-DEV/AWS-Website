@@ -25,6 +25,7 @@ const FeedPostView = ({
     videoPlayerRef,
     paused,
     setPaused,
+    setVideoMetaData,
 }) => {
     const carouselRef = useRef();
     const renderAttachments = useCallback(({ item, index }) => (
@@ -35,6 +36,7 @@ const FeedPostView = ({
                 <>
                   {currentViewIndex === index && (
                     <FeedVideoView
+                              setVideoMetaData={setVideoMetaData}
                               screenInsets={screenInsets}
                               paused={paused}
                               setPaused={setPaused}

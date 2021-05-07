@@ -1781,7 +1781,7 @@ const styles = StyleSheet.create({
   color: colors.lightBlackColor,
  },
 backImageStyle: {
-    height: 40,
-    width: 40,
+    height: 30,
+    width: 30,
 },
 });

@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: wp('1.5%'),
     position: 'absolute',
-    right: wp('3%'),
-    top: wp('5%'),
+    right: 10,
+    top: 18,
   },
   loadingTextStyle: {
     color: colors.googleColor,
@@ -85,6 +85,11 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
   uploadedImage: {
+    shadowColor: colors.googleColor,
+    shadowOpacity: 0.16,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 15,
+    elevation: 15,
     alignItems: 'center',
     alignSelf: 'center',
     borderRadius: wp('4%'),

@@ -42,7 +42,7 @@ import ReservationStatus from '../Constants/ReservationStatus';
   };
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.mainContainer}>
       <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
         <LinearGradient
         colors={data?.status === ReservationStatus.cancelled ? [colors.startGrayGrdient, colors.endGrayGradient] : [colors.yellowColor, colors.assistTextColor]}
@@ -161,19 +161,24 @@ import ReservationStatus from '../Constants/ReservationStatus';
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    borderRadius: 15,
+    padding: 15,
+    elevation: 15,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.16,
+    shadowRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   backgroundView: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
-    borderRadius: 6,
-    elevation: 5,
+    borderRadius: 8,
     flexDirection: 'row',
     height: 102,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
     width: wp('86%'),
-    // marginTop: 15,
   },
   bottomView: {
     flexDirection: 'row',

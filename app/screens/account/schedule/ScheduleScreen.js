@@ -1565,7 +1565,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   backImageStyle: {
-    height: 40,
-    width: 40,
+    height: 30,
+    width: 30,
   },
 });

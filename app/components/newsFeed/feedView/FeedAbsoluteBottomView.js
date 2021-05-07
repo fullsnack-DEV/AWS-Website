@@ -79,7 +79,7 @@ const FeedAbsoluteBottomView = ({
                 flexDirection: 'row',
                 justifyContent: 'flex-start',
                 alignItems: 'center',
-                paddingLeft: 15,
+                paddingLeft: 25,
                 width: getScreenWidth({
                     isLandscape, avoidScreenInsets: false, screenInsets, portraitWidth: 70,
                 }),
@@ -87,19 +87,24 @@ const FeedAbsoluteBottomView = ({
           <View
                     style={{
                         flexDirection: 'row',
+                        marginRight: 20,
                     }}>
             <TouchableOpacity
                         onPress={onCommentButtonPress}
-                        style={styles.imageTouchStyle}>
+                        style={{
+                            ...styles.imageTouchStyle,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}>
               <Image
                             style={[styles.commentImage, { top: 2 }]}
                             source={images.feedViewCommentButton}
                             resizeMode={'cover'}
                         />
+              <Text style={styles.commentlengthStyle}>
+                {commentCount > 0 ? commentCount : ''}
+              </Text>
             </TouchableOpacity>
-            <Text style={styles.commentlengthStyle}>
-              {commentCount > 0 ? commentCount : ''}
-            </Text>
           </View>
 
           {/* Share Button */}
@@ -127,7 +132,7 @@ const FeedAbsoluteBottomView = ({
         {/* Like Button */}
         <View
                 style={{
-                    paddingRight: 15,
+                    paddingRight: 25,
                     width: getScreenWidth({ isLandscape, screenInsets, portraitWidth: 30 }),
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -140,6 +145,7 @@ const FeedAbsoluteBottomView = ({
                     style={[
                         styles.commentlengthStyle,
                         {
+                            marginRight: 5,
                             color: like === true ? '#FF8A01' : colors.whiteColor,
                         },
                     ]}>
@@ -182,8 +188,8 @@ const FeedAbsoluteBottomView = ({
                 shadowRadius: 5,
                 borderRadius: 50,
                 backgroundColor: colors.whiteColor,
-                height: slidingStatus ? 30 : 15,
-                width: slidingStatus ? 30 : 15,
+                height: slidingStatus ? 30 : 10,
+                width: slidingStatus ? 30 : 10,
             }}/>
     ), [slidingStatus]);
 
@@ -219,7 +225,7 @@ const FeedAbsoluteBottomView = ({
             pointerEvents={showParent && !readMore ? 'auto' : 'none'}
             style={{
                 opacity: (showParent && !readMore) ? 1 : 0,
-                paddingHorizontal: 10,
+                paddingHorizontal: 25,
                 height: 50,
                 width: getScreenWidth({ isLandscape, screenInsets }),
                 justifyContent: 'center',
@@ -228,11 +234,9 @@ const FeedAbsoluteBottomView = ({
                 zIndex: 10,
             }}>
         <Text style={{
-                textAlign: 'center',
+                textAlign: 'left',
                 fontSize: 12,
-                width: getScreenWidth({
-                 isLandscape, screenInsets, portraitWidth: 15, landscapeWidth: 7.5,
-                }),
+                marginRight: 15,
                 color: colors.whiteColor,
         }}>
           {currentTime > ((sourceData?.duration ?? 0) / 1000)
@@ -249,7 +253,7 @@ const FeedAbsoluteBottomView = ({
             customMarkerLeft={renderThumb}
             values={[currentTime]}
             sliderLength={getScreenWidth({
-                isLandscape, avoidScreenInsets: false, screenInsets, portraitWidth: 70, landscapeWidth: 85,
+                isLandscape, avoidScreenInsets: false, screenInsets, portraitWidth: 65, landscapeWidth: 80,
             })}
             selectedStyle={{ backgroundColor: colors.whiteColor }}
             trackStyle={{ backgroundColor: colors.userPostTimeColor }}
@@ -259,17 +263,16 @@ const FeedAbsoluteBottomView = ({
                 setSlidingStatus(true);
             }}
             onValuesChangeFinish={(values) => {
+                if (paused) setPaused(false)
                 setSlidingStatus(false);
                 if (videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(values?.[0])
             }}
          />
         <Text style={{
                 fontSize: 12,
-                width: getScreenWidth({
-                    isLandscape, screenInsets, portraitWidth: 15, landscapeWidth: 7.5,
-                }),
+                marginLeft: 15,
                 color: colors.whiteColor,
-                textAlign: 'center',
+                textAlign: 'right',
 
         }}>
           {sourceData?.duration && secondsToHms((sourceData?.duration / 1000))}
@@ -356,7 +359,7 @@ const styles = StyleSheet.create({
     },
     commentShareLikeView: {
         flexDirection: 'row',
-        marginBottom: 15,
+        marginBottom: 25,
         alignSelf: 'center',
     },
     commentlengthStyle: {
@@ -364,7 +367,7 @@ const styles = StyleSheet.create({
         color: colors.whiteColor,
         fontFamily: fonts.RMedium,
         fontSize: 14,
-        marginHorizontal: 5,
+        marginLeft: 5,
     },
     imageTouchStyle: {
         alignItems: 'center',
