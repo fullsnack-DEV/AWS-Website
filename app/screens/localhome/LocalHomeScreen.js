@@ -1,7 +1,6 @@
 import React, {
   useCallback,
   Fragment,
-  useLayoutEffect,
   useState,
   useContext,
   useEffect,
@@ -133,38 +132,38 @@ export default function LocalHomeScreen({ navigation }) {
     },
     [sports],
   );
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        // <Image source={images.townsCupIcon} style={styles.townsCupIcon} />
-        <TouchableOpacity onPress={() => setSettingPopup(true)}>
-          <Image source={images.home_setting} style={styles.townsCupIcon} />
-        </TouchableOpacity>
-      ),
-      headerTitle: () => (
-        <TouchableOpacity
-          style={styles.titleHeaderView}
-          onPress={() => setLocationPopup(true)}
-          hitSlop={getHitSlop(15)}>
-          <Text style={styles.headerTitle}>Vancuver</Text>
-          <Image source={images.home_gps} style={styles.gpsIconStyle} />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <View style={styles.rightHeaderView}>
-          <TouchableOpacity>
-            <Image source={images.home_search} style={styles.townsCupIcon} />
-          </TouchableOpacity>
-        </View>
-      ),
-    });
-  }, [navigation]);
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerLeft: () => (
+  //       // <Image source={images.townsCupIcon} style={styles.townsCupIcon} />
+  //       <TouchableOpacity onPress={() => setSettingPopup(true)}>
+  //         <Image source={images.home_setting} style={styles.townsCupIcon} />
+  //       </TouchableOpacity>
+  //     ),
+  //     headerTitle: () => (
+  //       <TouchableOpacity
+  //         style={styles.titleHeaderView}
+  //         onPress={() => setLocationPopup(true)}
+  //         hitSlop={getHitSlop(15)}>
+  //         <Text style={styles.headerTitle}>Vancuver</Text>
+  //         <Image source={images.home_gps} style={styles.gpsIconStyle} />
+  //       </TouchableOpacity>
+  //     ),
+  //     headerRight: () => (
+  //       <View style={styles.rightHeaderView}>
+  //         <TouchableOpacity>
+  //           <Image source={images.home_search} style={styles.townsCupIcon} />
+  //         </TouchableOpacity>
+  //       </View>
+  //     ),
+  //   });
+  // }, [navigation]);
   const onSportSelect = ({ item }) => setSelectedSport(item);
 
   const renderStatusView = useCallback(
     () => (
       <View style={{
-          width: 45,
+          width: 50,
         marginRight: 15,
         justifyContent: 'center',
         alignItems: 'center',
@@ -1175,7 +1174,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     height: 38,
     width: 38,
-    borderRadius: 31,
+    borderRadius: 72,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
