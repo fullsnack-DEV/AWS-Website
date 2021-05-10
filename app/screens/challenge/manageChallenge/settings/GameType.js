@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,38 +7,69 @@ import {
   TouchableWithoutFeedback,
   FlatList,
   Text,
+  Alert,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-
+import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
+import {
+  patchChallengeSetting,
+} from '../../../../api/Challenge';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
 import strings from '../../../../Constants/String';
 
-export default function GameType({ navigation }) {
-  const [typeSelection, setTypeSelection] = useState({ key: strings.allType, id: 3 });
+const gameTypeList = [
+  { key: strings.officialOnly, id: 1 },
+  { key: strings.friendlyOnly, id: 2 },
+  { key: strings.allType, id: 3 },
+];
+export default function GameType({ navigation, route }) {
+  const { comeFrom } = route?.params;
+  const authContext = useContext(AuthContext);
 
-  const gameTypeList = [
-    { key: strings.officialOnly, id: 1 },
-    { key: strings.friendlyOnly, id: 2 },
-    { key: strings.allType, id: 3 },
-  ];
+  const [loading, setloading] = useState(false);
+  const [typeSelection, setTypeSelection] = useState(route?.params?.settingObj?.game_type ? (route?.params?.settingObj?.game_type === 'Official' && gameTypeList[0]) || (route?.params?.settingObj?.game_type === 'Friendly' && gameTypeList[1]) || (route?.params?.settingObj?.game_type === 'All' && gameTypeList[2]) : gameTypeList[2]);
+
+  const { sportName } = route?.params;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
-              navigation.navigate('ManageChallengeScreen', { gameType: typeSelection.key })
+            onSavePressed()
           }}>
           Save
         </Text>
       ),
     });
-  }, [navigation, typeSelection.key]);
+  }, [comeFrom, navigation, typeSelection.key]);
+
+  const onSavePressed = () => {
+    const bodyParams = {
+      sport: sportName,
+      game_type: (typeSelection.key === strings.officialOnly && 'Official') || (typeSelection.key === strings.friendlyOnly && 'Friendly') || (typeSelection.key === strings.allType && 'All'),
+    }
+    setloading(true);
+    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+    .then((response) => {
+      setloading(false);
+      navigation.navigate(comeFrom, { settingObj: response.payload })
+      console.log('patch challenge response:=>', response.payload);
+    })
+    .catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+  }
 
   const renderGameTypes = ({ item }) => (
     <TouchableWithoutFeedback
@@ -65,6 +96,7 @@ export default function GameType({ navigation }) {
     <ScrollView
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
+      <ActivityLoader visible={loading} />
       <TCLable title={strings.gameTyleTitle} required={false} />
       <FlatList
         // ItemSeparatorComponent={() => <TCThinDivider />}

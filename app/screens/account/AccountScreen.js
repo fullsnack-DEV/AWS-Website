@@ -78,7 +78,7 @@ export default function AccountScreen({ navigation, route }) {
   const [sportsSelection, setSportsSelection] = useState();
   const [sports, setSports] = useState('');
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
-
+console.log(sports);
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
   // for set/get clubs
@@ -502,7 +502,7 @@ export default function AccountScreen({ navigation, route }) {
         console.log('sections');
         setVisibleSportsModal(true);
       } else {
-        navigation.navigate('ManageChallengeScreen');
+        navigation.navigate('ManageChallengeScreen', { sportName: entity?.obj?.sport });
       }
     }
   };
@@ -928,7 +928,8 @@ export default function AccountScreen({ navigation, route }) {
         setVisibleSportsModal(false);
         setSports(item?.sport_name);
         setTimeout(() => {
-          navigation.navigate('ManageChallengeScreen', { sportName: sports });
+          console.log('Sport name:=>', item?.sport_name);
+          navigation.navigate('ManageChallengeScreen', { sportName: item?.sport_name });
         }, 300);
       }}>
       <View

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import {
   StyleSheet,
@@ -11,7 +12,7 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 
-export default function ChallengeHeaderView() {
+export default function ChallengeHeaderView({ challenger, challengee, role }) {
   return (
     <View
     style={{
@@ -36,11 +37,11 @@ export default function ChallengeHeaderView() {
         </LinearGradient>
         <View style={styles.teamView}>
           <Image
-          source={images.teamPlaceholder}
+          source={role === 'user' ? challenger?.thumbnail ? { uri: challenger?.thumbnail } : images.profilePlaceHolder : challenger?.thumbnail ? { uri: challenger?.thumbnail } : images.teamPlaceholder}
           style={styles.teamProfileImage}
         />
           <Text numberOfLines={2} style={styles.entityNameText}>
-            New York Whitecaps FC
+            {challenger?.full_name ?? challenger?.group_name}
           </Text>
         </View>
       </View>
@@ -79,12 +80,11 @@ export default function ChallengeHeaderView() {
         </LinearGradient>
         <View style={styles.teamView}>
           <Image
-          source={images.teamPlaceholder}
+          source={role === 'user' ? challengee?.thumbnail ? { uri: challengee?.thumbnail } : images.profilePlaceHolder : challengee?.thumbnail ? { uri: challengee?.thumbnail } : images.teamPlaceholder}
           style={styles.teamProfileImage}
         />
           <Text numberOfLines={2} style={styles.entityNameText}>
-            Vancouver
-            Whitecaps FC
+            {challengee?.full_name ?? challengee?.group_name}
           </Text>
         </View>
       </View>

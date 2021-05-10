@@ -1,21 +1,32 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, {
+ useState, useLayoutEffect, useContext,
+} from 'react';
 import {
 
   StyleSheet,
   View,
   Text,
-
+  Alert,
   SafeAreaView,
 } from 'react-native';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
+import AuthContext from '../../../../auth/context';
 
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
 import ToggleView from '../../../../components/Schedule/ToggleView';
+import {
+  patchChallengeSetting,
+} from '../../../../api/Challenge';
 
-export default function Availibility({ navigation }) {
-  const [acceptChallenge, setAcceptChallenge] = useState(true);
+export default function Availibility({ navigation, route }) {
+  const { comeFrom, sportName } = route?.params;
+  const authContext = useContext(AuthContext);
+
+  const [loading, setloading] = useState(false);
+  const [acceptChallenge, setAcceptChallenge] = useState(route?.params?.settingObj?.availibility ? route?.params?.settingObj?.availibility === 'On' : true);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -23,17 +34,40 @@ export default function Availibility({ navigation }) {
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
-              navigation.navigate('ManageChallengeScreen', { availibility: acceptChallenge })
+            onSavePressed()
           }}>
           Save
         </Text>
       ),
     });
-  }, [acceptChallenge, navigation]);
+  }, [acceptChallenge, comeFrom, navigation]);
+
+  const onSavePressed = () => {
+    const bodyParams = {
+      sport: sportName,
+      availibility: acceptChallenge ? 'On' : 'Off',
+    }
+    setloading(true);
+    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+    .then((response) => {
+      setloading(false);
+      navigation.navigate(comeFrom, { settingObj: response.payload })
+      console.log('patch challenge response:=>', response.payload);
+    })
+    .catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+  }
 
   return (
+
     <SafeAreaView>
+      <ActivityLoader visible={loading} />
       <View>
+
         <TCLabel title={strings.availibilityTitle} style={{ marginRight: 15 }} />
 
         <View
@@ -53,7 +87,7 @@ export default function Availibility({ navigation }) {
           </Text>
           <ToggleView
             isOn={acceptChallenge}
-            size={20}
+
             onToggle={() => setAcceptChallenge(!acceptChallenge)}
             onColor={colors.themeColor}
             offColor={colors.grayBackgroundColor}
@@ -61,6 +95,7 @@ export default function Availibility({ navigation }) {
         </View>
       </View>
     </SafeAreaView>
+
   );
 }
 const styles = StyleSheet.create({

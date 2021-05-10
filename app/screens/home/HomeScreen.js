@@ -4386,6 +4386,7 @@ const HomeScreen = ({ navigation, route }) => {
         setTimeout(() => {
           setChallengePopup(false);
           navigation.navigate('InviteChallengeScreen', {
+            sportName: currentUserData.sport,
             groupObj: currentUserData,
           });
         }, 300);

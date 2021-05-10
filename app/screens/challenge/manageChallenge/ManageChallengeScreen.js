@@ -1,5 +1,7 @@
 /* eslint-disable no-nested-ternary */
-import React, { useState } from 'react';
+import React, {
+ useState, useEffect, useContext, useCallback,
+ } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,31 +11,50 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   TouchableOpacity,
-
+  Alert,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
-// import AuthContext from '../../../auth/context';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
+import { getChallengeSetting } from '../../../api/Challenge';
 
-export default function ManageChallengeScreen({ navigation }) {
+export default function ManageChallengeScreen({ navigation, route }) {
+  const [loading, setloading] = useState(false);
+  const [settingObject, setSettingObject] = useState();
   const [showBottomNotes, setShowBottomNotes] = useState(true);
-//   const authContext = useContext(AuthContext);
-  //  const [availibility, setAvailibility] = useState(route?.params?.availibility ?? '');
-  //  const [gameType, setGameType] = useState(route?.params?.gameType ?? '');
-  //  const [gameFee, setGameFee] = useState(route?.params?.gameFee ?? '');
-//   const [refundPolicy, setRefundPolicy] = useState();
-//   const [challenge, setChallenge] = useState();
-//   const [homeAway, setHomeAway] = useState();
-//   const [gameDuration, setGameDuration] = useState();
-//   const [venue, setVenue] = useState();
-//   const [gameRules, setGameRules] = useState();
-//   const [referees, setReferees] = useState();
-//   const [scorekeepers, setScorekeepers] = useState();
+  const authContext = useContext(AuthContext);
+
+  const { sportName } = route?.params;
+
+  const getSettings = useCallback(() => {
+    setloading(true)
+    getChallengeSetting(authContext?.entity?.uid, sportName, authContext)
+      .then((response) => {
+        setloading(false);
+        console.log('manage challenge response:=>', response.payload);
+        setSettingObject(response.payload[0]);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext, sportName]);
+
+  useEffect(() => {
+    if (route?.params?.settingObj) {
+      setSettingObject(route?.params?.settingObj);
+    } else {
+      getSettings();
+    }
+  }, [authContext, getSettings, route?.params?.settingObj, sportName]);
 
   const challengeSettingMenu = [
     { key: 'Availability', id: 1 },
@@ -49,60 +70,197 @@ export default function ManageChallengeScreen({ navigation }) {
   ];
   const handleOpetions = async (opetions) => {
     if (opetions === 'Availability') {
-      navigation.navigate('Availibility');
+      if (settingObject) {
+        navigation.navigate('Availibility', {
+          settingObj: settingObject,
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      } else {
+        navigation.navigate('Availibility', {
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      }
     } else if (opetions === 'Game Type') {
-      navigation.navigate('GameType');
+      if (settingObject) {
+        navigation.navigate('GameType', {
+          settingObj: settingObject,
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      } else {
+        navigation.navigate('GameType', {
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      }
     } else if (opetions === 'Game Fee') {
-        navigation.navigate('GameFee');
+      if (settingObject) {
+        navigation.navigate('GameFee', {
+          settingObj: settingObject,
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      } else {
+        navigation.navigate('GameFee', {
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      }
     } else if (opetions === 'Refund Policy') {
-        navigation.navigate('RefundPolicy');
+      if (settingObject) {
+        navigation.navigate('RefundPolicy', {
+          settingObj: settingObject,
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      } else {
+        navigation.navigate('RefundPolicy', {
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      }
     } else if (opetions === 'Home & Away') {
-      navigation.navigate('HomeAway');
+      if (settingObject) {
+        navigation.navigate('HomeAway', {
+          settingObj: settingObject,
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      } else {
+        navigation.navigate('HomeAway', {
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      }
     } else if (opetions === 'Game Duration') {
-      navigation.navigate('GameDuration');
+      if (settingObject) {
+        navigation.navigate('GameDuration', {
+          settingObj: settingObject,
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      } else {
+        navigation.navigate('GameDuration', {
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      }
     } else if (opetions === 'Venue') {
-        navigation.navigate('Venue');
+      if (settingObject) {
+        navigation.navigate('Venue', {
+          settingObj: settingObject,
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      } else {
+        navigation.navigate('Venue', {
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      }
     } else if (opetions === 'Game Rules') {
-        navigation.navigate('GameRules');
+      if (settingObject) {
+        navigation.navigate('GameRules', {
+          settingObj: settingObject,
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      } else {
+        navigation.navigate('GameRules', {
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      }
     } else if (opetions === 'Referees') {
-      navigation.navigate('RefereesSetting');
+      if (settingObject) {
+        navigation.navigate('RefereesSetting', {
+          settingObj: settingObject,
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      } else {
+        navigation.navigate('RefereesSetting', {
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      }
     } else if (opetions === 'Scorekeepers') {
-      navigation.navigate('ScorekeepersSetting');
+      if (settingObject) {
+        navigation.navigate('ScorekeepersSetting', {
+          settingObj: settingObject,
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      } else {
+        navigation.navigate('ScorekeepersSetting', {
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+        });
+      }
     }
   };
-  // const getSettingValue = (item) => {
-  //   if (item.key === 'Availability') {
-  //     if (availibility !== '') {
-  //       if (availibility === true) {
-  //         return 'On'
-  //       }
-  //       if (availibility === false) {
-  //         return 'Off'
-  //       }
-  //     }
-  //   }
+  const getSettingValue = (item) => {
+    if (item.key === 'Availability') {
+      if (settingObject?.availibility) {
+        return settingObject?.availibility;
+      }
+    }
 
-  //   if (item.key === 'Game Type') {
-  //     if (gameType !== '') {
-  //       if (gameType === strings.officialOnly) {
-  //         return 'Official'
-  //       }
-  //       if (gameType === strings.friendlyOnly) {
-  //         return 'Friendly'
-  //       }
-  //       if (gameType === strings.allType) {
-  //         return 'All'
-  //       }
-  //     }
-  //   }
-  //   if (item.key === 'Game Fee') {
-  //     if (gameFee !== '') {
-  //         return `$${gameFee} CAD`
-  //     }
-  //   }
+    if (item.key === 'Game Type') {
+      if (settingObject?.game_type) {
+        return settingObject?.game_type;
+      }
+    }
+    if (item.key === 'Game Fee') {
+      if (settingObject?.game_fee) {
+        return `$${settingObject?.game_fee?.fee} ${settingObject?.game_fee?.currency_type}`;
+      }
+    }
+    if (item.key === 'Refund Policy') {
+      if (settingObject?.refund_policy) {
+        return settingObject?.refund_policy;
+      }
+    }
+    if (item.key === 'Home & Away') {
+      if (settingObject?.home_away) {
+        return `You: ${settingObject?.home_away}`;
+      }
+    }
+    if (item.key === 'Game Duration') {
+      if (settingObject?.game_duration) {
+        return `${settingObject?.game_duration?.totalHours}h ${settingObject?.game_duration?.totalMinutes}m`;
+      }
+    }
 
-  //     return 'incomplete'
-  // }
+    if (item.key === 'Venue') {
+      if (settingObject?.venue) {
+        return `${settingObject?.venue?.length} Venues`;
+      }
+    }
+
+    if (item.key === 'Game Rules') {
+      console.log('settingObject?.general_rules', settingObject?.general_rules);
+      if (settingObject?.general_rules || settingObject?.general_rules === '') {
+        return 'Completed';
+      }
+    }
+
+    if (item.key === 'Referees') {
+      if (settingObject?.responsible_for_referee) {
+        return `${settingObject?.responsible_for_referee?.who_secure?.length} Referees`;
+      }
+    }
+
+    if (item.key === 'Scorekeepers') {
+      if (settingObject?.responsible_for_scorekeeper) {
+        return `${settingObject?.responsible_for_scorekeeper?.who_secure?.length} Scorekeepers`;
+      }
+    }
+
+    return 'incomplete';
+  };
   const renderMenu = ({ item }) => (
     <TouchableWithoutFeedback
       style={styles.listContainer}
@@ -112,18 +270,28 @@ export default function ManageChallengeScreen({ navigation }) {
       <View style={{ flexDirection: 'row' }}>
         <Text style={styles.listItems}>{item.key}</Text>
 
-        <Text style={styles.incompleteStyle}>
-          {/* {getSettingValue(item)} */}
-          incomplete
-        </Text>
+        {getSettingValue(item) === 'incomplete' ? (
+          <Text style={styles.incompleteStyle}>
+            {/* {getSettingValue(item)} */}
+            incomplete
+          </Text>
+        ) : (
+          <Text style={styles.completeStyle}>
+            {getSettingValue(item)}
+            {/* {`$${gameFee?.fee} ${gameFee?.currency_type}`} */}
+          </Text>
+        )}
 
         <Image source={images.nextArrow} style={styles.nextArrow} />
       </View>
     </TouchableWithoutFeedback>
   );
+
   return (
     <>
       <ScrollView style={styles.mainContainer}>
+        <ActivityLoader visible={loading} />
+
         <View
           style={{ padding: 15, backgroundColor: colors.grayBackgroundColor }}>
           <Text
@@ -145,21 +313,21 @@ export default function ManageChallengeScreen({ navigation }) {
         />
         <View style={styles.separatorLine}></View>
       </ScrollView>
-      {showBottomNotes && <LinearGradient
-        colors={[colors.yellowColor, colors.orangeGradientColor]}
-        style={styles.challengeNotesView}>
-
-        <Text
+      {showBottomNotes && (
+        <LinearGradient
+          colors={[colors.yellowColor, colors.orangeGradientColor]}
+          style={styles.challengeNotesView}>
+          <Text
             style={{
               color: colors.whiteColor,
               fontFamily: fonts.RBold,
               fontSize: 14,
               width: '88%',
             }}>
-          {strings.challengeSettingNotes}
-        </Text>
-        <TouchableOpacity onPress={() => setShowBottomNotes(false)}>
-          <Image
+            {strings.challengeSettingNotes}
+          </Text>
+          <TouchableOpacity onPress={() => setShowBottomNotes(false)}>
+            <Image
               source={images.cancelWhite}
               style={{
                 height: 10,
@@ -168,9 +336,9 @@ export default function ManageChallengeScreen({ navigation }) {
                 tintColor: colors.whiteColor,
               }}
             />
-        </TouchableOpacity>
-
-      </LinearGradient>}
+          </TouchableOpacity>
+        </LinearGradient>
+      )}
     </>
   );
 }
@@ -193,6 +361,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.redColor,
+    alignSelf: 'center',
+  },
+  completeStyle: {
+    marginRight: 10,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.completeTextColor,
     alignSelf: 'center',
   },
   mainContainer: {
