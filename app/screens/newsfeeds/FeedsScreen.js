@@ -100,8 +100,8 @@ const FeedsScreen = ({ navigation }) => {
 
   const topRightButton = useMemo(() => (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <TouchableOpacity style={{ paddingHorizontal: 7 }} onPress={onFeedPlusPress}>
-        <FastImage source={images.newFeed} resizeMode={'contain'} style={styles.rightImageStyle} />
+      <TouchableOpacity style={{ marginRight: 20 }} onPress={onFeedPlusPress}>
+        <FastImage source={images.feedPlusIcon} resizeMode={'contain'} style={styles.rightImageStyle} />
       </TouchableOpacity>
       <TouchableOpacity onPress={onThreeDotPress}>
         <FastImage source={images.messageSearchButton2} resizeMode={'contain'} style={styles.rightImageStyle} />

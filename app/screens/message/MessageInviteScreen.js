@@ -16,6 +16,7 @@ import {
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
 import QB from 'quickblox-react-native-sdk';
+import LinearGradient from 'react-native-linear-gradient';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -23,7 +24,6 @@ import fonts from '../../Constants/Fonts';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
 import { getQBProfilePic, QBcreateDialog, QBgetAllUsers } from '../../utils/QuickBlox';
 import AuthContext from '../../auth/context'
-import TCScrollableTabs from '../../components/TCScrollableTabs';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCGroupNameBadge from '../../components/TCGroupNameBadge';
 
@@ -126,7 +126,9 @@ const MessageInviteScreen = ({ navigation }) => {
           <View style={{
             flexDirection: 'row',
           }}>
-            <FastImage resizeMode={'cover'} source={finalImage} style={styles.imageContainer}/>
+            <View style={styles.imageMainContainer}>
+              <FastImage resizeMode={'cover'} source={finalImage} style={styles.imageContainer}/>
+            </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
               <View style={{
                 flex: 3, justifyContent: 'center', marginLeft: hp(1),
@@ -135,7 +137,7 @@ const MessageInviteScreen = ({ navigation }) => {
                 <Text style={{ ...styles.subTitle, color: colors.lightBlackColor }}>{city}</Text>
               </View>
               {isChecked ? <Image source={images.yellowCheckBox} resizeMode={'contain'} style={ styles.checkboxImg }/>
-                : <Image source={images.whiteUncheck} resizeMode={'contain'} style={ styles.checkboxImg }/>
+                : <Image source={images.messageCheckboxBorder} resizeMode={'contain'} style={ styles.checkboxImg }/>
             }
             </View>
           </View>
@@ -153,21 +155,24 @@ const MessageInviteScreen = ({ navigation }) => {
     setSelectedInvitees([...selectedInvitees]);
   }, [selectedInvitees]);
 
-  const renderSelectedContactList = useCallback(({ item, index }) => {
+  const renderSelectedContactList = useCallback(({ item }) => {
     const customData = item && item.customData ? JSON.parse(item.customData) : {};
     const entityType = _.get(customData, ['entity_type'], '');
     const fullName = _.get(customData, ['full_name'], '')
+    const fullImage = _.get(customData, ['full_image'], '')
     const type = entityType === 'player' ? QB.chat.DIALOG_TYPE.CHAT : QB.chat.DIALOG_TYPE.GROUP_CHAT
 
     return (
       <View style={styles.selectedContactInnerView}>
         <View>
           <View>
-            <FastImage
-              resizeMode={'contain'}
-              source={getQBProfilePic(type, index)}
-              style={styles.selectedContactImage}
-            />
+            <View style={styles.selectedContactImageContainer}>
+              <FastImage
+                resizeMode={'contain'}
+                source={getQBProfilePic(type, '', fullImage)}
+                style={styles.selectedContactImage}
+              />
+            </View>
             <TouchableOpacity
               style={styles.selectedContactButtonView}
               onPress={() => toggleSelection(true, item)}>
@@ -175,10 +180,14 @@ const MessageInviteScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           <Text
-            ellipsizeMode={'tail'}
+              ellipsizeMode={'tail'}
             numberOfLines={2}
             style={{
-              fontSize: 10, fontFamily: fonts.RBold, textAlign: 'center', flex: 1, width: wp(20),
+              flex: 1,
+              fontSize: 10,
+              fontFamily: fonts.RBold,
+              textAlign: 'center',
+              width: 50,
             }}>
             {fullName}
           </Text>
@@ -211,6 +220,7 @@ const MessageInviteScreen = ({ navigation }) => {
           legacyImplementation={true}
           maxToRenderPerBatch={10}
           initialNumToRender={5}
+          ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: colors.grayBackgroundColor }}/>}
           ListEmptyComponent={ListEmptyComponent}
           data={data}
           renderItem={renderItem}
@@ -221,7 +231,7 @@ const MessageInviteScreen = ({ navigation }) => {
 
   const renderTabContain = useCallback((tabKey, tabIndex) => {
     const dataTabList = [inviteeData, peopleData, teamsData, clubsData, leaguesData]
-    return (
+    return tabIndex === currentTab && (
       <View tabLabel={tabKey} style={{ flex: 1 }}>
         {loading
             ? <UserListShimmer/>
@@ -229,7 +239,7 @@ const MessageInviteScreen = ({ navigation }) => {
         }
       </View>
     )
-  }, [clubsData, inviteeData, leaguesData, loading, peopleData, renderSingleTab, searchData, searchText, teamsData])
+  }, [clubsData, currentTab, inviteeData, leaguesData, loading, peopleData, renderSingleTab, searchData, searchText, teamsData])
 
   const handlePress = useCallback(() => {
       const occupantsIds = []
@@ -283,6 +293,7 @@ const MessageInviteScreen = ({ navigation }) => {
   const renderSelectedInvitees = useMemo(() => selectedInvitees.length > 0 && (
     <View style={styles.selectedInviteesMainView}>
       <FlatList
+          style={{ paddingHorizontal: 15 }}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
             horizontal={true}
@@ -295,21 +306,68 @@ const MessageInviteScreen = ({ navigation }) => {
   ), [renderSelectedContactList, selectedInvitees])
 
   const renderTabs = useMemo(() => (
-    <TCScrollableTabs
-          onChangeTab={(ChangeTab) => {
-            setCurrentTab(ChangeTab.i)
-            setSearchText('')
-          }}
-      >
-      {TAB_ITEMS?.map(renderTabContain)}
-    </TCScrollableTabs>
-  ), [TAB_ITEMS, renderTabContain])
+    <View>
+      <View style={{
+        alignItems: 'center',
+        flexDirection: 'row',
+        height: 45,
+      }}>
+        {TAB_ITEMS.map((item, index) => (
+          <TouchableOpacity
+              activeOpacity={1}
+              key={index} style={{
+              width: wp(100) / 5,
+              height: 45,
+              alignItems: 'center',
+              justifyContent: 'center',
+              }} onPress={() => {
+            setCurrentTab(index)
+            setSearchText('');
+              }}>
+            <View
+                style={{
+                  width: '100%',
+                  height: 43,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+            >
+              <Text style={{
+              width: '100%',
+              alignSelf: 'center',
+              fontSize: 16,
+              textAlign: 'center',
+              fontFamily: currentTab === index ? fonts.RBold : fonts.RRegular,
+              color: currentTab === index ? colors.darkYellowColor : colors.lightBlackColor,
+              }}>
+                {item}
+              </Text>
+            </View>
+            <LinearGradient
+                    colors={
+                      currentTab === index
+                          ? [colors.themeColor, colors.themeColor3]
+                          : [colors.thinDividerColor, 'transparent']
+                    }
+                    style={{
+                      alignSelf: 'flex-end',
+                      width: '100%',
+                      height: currentTab === index ? 3 : 1,
+                    }}/>
+
+          </TouchableOpacity>
+        ))}
+      </View>
+      <View style={{ flex: 1, width: wp(100) }}>
+        {TAB_ITEMS?.map(renderTabContain)}
+      </View>
+    </View>
+  ), [TAB_ITEMS, currentTab])
 
   return (
     <SafeAreaView style={styles.mainContainer}>
       {renderHeader}
       <View style={ styles.separateLine } />
-      {/* <ActivityLoader visible={loading}/> */}
       {renderSelectedInvitees}
       <View style={{ backgroundColor: colors.grayBackgroundColor, width: '100%', padding: 15 }}>
         <TextInput
@@ -340,28 +398,46 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingHorizontal: 15,
     borderRadius: 20,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.16,
+    shadowRadius: 1,
+    elevation: 1,
   },
   backImageStyle: {
     height: 20,
-    width: 16,
-    tintColor: colors.blackColor,
+    width: 10,
     resizeMode: 'contain',
   },
   eventTitleTextStyle: {
+    color: colors.lightBlackColor,
     fontSize: 16,
     fontFamily: fonts.RBold,
     alignSelf: 'center',
   },
   eventTextStyle: {
+    color: colors.lightBlackColor,
     width: wp(12),
     fontSize: 10,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     alignSelf: 'center',
   },
-
+  imageMainContainer: {
+    height: 40,
+    width: 40,
+    backgroundColor: colors.whiteColor,
+    borderRadius: wp(6),
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.blackColor,
+    shadowOffset: { width: 0, height: 1.5 },
+    shadowOpacity: 0.16,
+    shadowRadius: 1.5,
+    elevation: 1.5,
+  },
   imageContainer: {
-    height: 45,
-    width: 45,
+    height: 36,
+    width: 36,
     borderRadius: wp(6),
   },
 
@@ -403,18 +479,33 @@ const styles = StyleSheet.create({
     borderRadius: hp(2),
     position: 'absolute',
     top: 0,
-    right: 15,
+    right: 0,
     alignSelf: 'flex-start',
     alignItems: 'center',
     justifyContent: 'center',
   },
   selectedContactInnerView: {
     alignItems: 'center',
-    paddingHorizontal: wp(1.5),
+    marginRight: 20,
+  },
+  selectedContactImageContainer: {
+    backgroundColor: colors.whiteColor,
+    width: 45,
+    height: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: wp(6),
+    alignSelf: 'center',
+    shadowColor: colors.blackColor,
+    shadowOffset: { width: 0, height: 1.5 },
+    marginBottom: 5,
+    shadowOpacity: 0.16,
+    shadowRadius: 3,
+    elevation: 3,
   },
   selectedContactImage: {
-    width: wp(12),
-    height: wp(12),
+    width: 41,
+    height: 41,
     borderRadius: wp(6),
     alignSelf: 'center',
     // borderWidth: 0.5,
@@ -427,7 +518,7 @@ const styles = StyleSheet.create({
     // borderWidth: 0.5,
   },
   separateLine: {
-    borderColor: colors.grayColor,
+    borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
     width: wp(100),
   },

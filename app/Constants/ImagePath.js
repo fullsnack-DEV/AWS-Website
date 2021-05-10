@@ -354,7 +354,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   navigationBack: require('../assets/images/navigation_back.png'),
 
   newFeed: require('../assets/images/new_feed.png'),
-
+  messageCheckboxBorder: require('../assets/images/messageCheckboxBorder.png'),
 };
 
 export default images;

@@ -43,7 +43,7 @@ const appSettings = {
 
 export const QBChatConnected = async () => QB.chat.isConnected()
 
-export const getQBProfilePic = (dialogType, index, entityType, originalImage) => {
+export const getQBProfilePic = (dialogType, entityType, originalImage) => {
   if (!originalImage) {
     if (dialogType === QB.chat.DIALOG_TYPE.CHAT) {
       if ([QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(entityType)) {
@@ -51,12 +51,12 @@ export const getQBProfilePic = (dialogType, index, entityType, originalImage) =>
         if (entityType === QB_ACCOUNT_TYPE.CLUB) return images.clubPlaceholder
         if (entityType === QB_ACCOUNT_TYPE.LEAGUE) return images.leaguePlaceholder
       }
-      return index % 2 === 0 ? images.yellowQBUser : images.greenQBUser
+      return images.profilePlaceHolder
     }
   } else {
     return { uri: originalImage }
   }
-  return index % 2 === 0 ? images.yellowQBGroup : images.greenQBGroup
+  return images.groupUsers
 }
 
 export const QBChatDisconnect = () => QBChatConnected().then(() => QB.chat.disconnect()).catch((e) => e);

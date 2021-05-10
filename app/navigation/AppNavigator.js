@@ -382,16 +382,16 @@ const AppNavigator = ({ navigation }) => {
         style: {
           backgroundColor: colors.offwhite,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.3,
-          shadowRadius: 12,
-          elevation: 2,
+          shadowOffset: { width: 0, height: -10 },
+          shadowOpacity: 0.15,
+          shadowRadius: 50,
+          elevation: 50,
+          borderTopColor: colors.thinLineGrayColor,
           // height:
           //   Platform.OS === 'android'
           //     ? '7.5%'
           //     : getHeight(),
           // borderTopWidth: 5,
-          // borderTopColor: 'transparent',
           // height: heightPercentageToDP(10),
         },
         tabStyle: {
