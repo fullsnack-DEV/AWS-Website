@@ -49,38 +49,43 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
     }
   }, [navigation, selectedInvitees]);
 
-  const renderSelectedContactList = useCallback(({ item, index }) => {
+  const renderSelectedContactList = useCallback(({ item }) => {
     const customData = item && item.customData ? JSON.parse(item.customData) : {};
     const entityType = _.get(customData, ['entity_type'], '');
     const fullName = _.get(customData, ['full_name'], '')
+    const fullImage = _.get(customData, ['full_image'], '')
     const type = entityType === 'player' ? QB.chat.DIALOG_TYPE.CHAT : QB.chat.DIALOG_TYPE.GROUP_CHAT
 
     return (
       <View style={styles.selectedContactInnerView}>
         <View>
-          <FastImage
-              resizeMode={'contain'}
-              source={getQBProfilePic(type, index)}
-              style={styles.selectedContactImage}
-            />
-          <TouchableOpacity
-              style={styles.selectedContactButtonView}
-              onPress={() => toggleSelection(true, item)}>
-            <Image source={images.cancelImage} style={styles.deSelectedContactImage} />
-          </TouchableOpacity>
+          <View>
+            <View style={styles.selectedContactImageContainer}>
+              <FastImage
+                    resizeMode={'contain'}
+                    source={getQBProfilePic(type, '', fullImage)}
+                    style={styles.selectedContactImage}
+                />
+            </View>
+            <TouchableOpacity
+                  style={styles.selectedContactButtonView}
+                  onPress={() => toggleSelection(true, item)}>
+              <Image source={images.cancelImage} style={styles.deSelectedContactImage} />
+            </TouchableOpacity>
+          </View>
+          <Text
+                ellipsizeMode={'tail'}
+                numberOfLines={2}
+                style={{
+                  flex: 1,
+                  fontSize: 10,
+                  fontFamily: fonts.RBold,
+                  textAlign: 'center',
+                  width: 50,
+                }}>
+            {fullName}
+          </Text>
         </View>
-        <Text
-            ellipsizeMode={'tail'}
-            numberOfLines={2}
-            style={{
-              fontFamily: fonts.RBold,
-              fontSize: 10,
-              textAlign: 'center',
-              flex: 1,
-              width: wp(20),
-            }}>
-          {fullName}
-        </Text>
       </View>
     );
   }, [toggleSelection]);
@@ -104,7 +109,7 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
     } else {
       Alert.alert('Enter Chatroom Name')
     }
-  }, [groupName, navigation, route?.params?.dialog, route?.params?.participants, selectedInvitees])
+  }, [groupName, navigation, selectedInvitees])
 
   const renderHeader = useMemo(() => (
     <Header
@@ -142,17 +147,32 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
         )}
     </View>
   ), [selectedInvitees])
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       {renderHeader}
       <View style={styles.separateLine}/>
       <View style={styles.avatarContainer}>
         <TouchableOpacity>
-          <FastImage
+          <View style={{
+            height: 80,
+            width: 80,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 100,
+            backgroundColor: colors.whiteColor,
+            shadowColor: colors.googleColor,
+            shadowOffset: { width: 0, height: 1.5 },
+            shadowOpacity: 0.16,
+            shadowRadius: 3,
+            elevation: 3,
+          }}>
+            <FastImage
             resizeMode={'contain'}
-            source={images.yellowQBGroup}
+            source={images.groupUsers}
             style={styles.imageContainer}
           />
+          </View>
           <FastImage
             resizeMode={'contain'}
             source={images.certificateUpload}
@@ -161,7 +181,9 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
         </TouchableOpacity>
         <View style={styles.inputBoxContainer}>
           <Text style={styles.chatRoomName}>Chatroom Name</Text>
-          <TCInputBox placeHolderText={'New Group'} value={groupName} onChangeText={setGroupName}/>
+          <View>
+            <TCInputBox style={{ borderRadius: 10 }} placeHolderText={'New Group'} value={groupName} onChangeText={setGroupName}/>
+          </View>
         </View>
       </View>
       {renderParticipants}
@@ -177,25 +199,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backImageStyle: {
-    height: 20,
-    width: 16,
-    tintColor: colors.blackColor,
+    height: 40,
+    width: 10,
+    tintColor: colors.lightBlackColor,
     resizeMode: 'contain',
   },
   eventTitleTextStyle: {
+    color: colors.lightBlackColor,
     fontSize: 16,
     fontFamily: fonts.RBold,
     alignSelf: 'center',
   },
   eventTextStyle: {
+    color: colors.lightBlackColor,
     fontSize: 16,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     alignSelf: 'center',
   },
 
   imageContainer: {
-    height: 80,
-    width: 80,
+    height: 73,
+    width: 73,
     borderRadius: wp(6),
   },
   selectedInviteesMainView: {
@@ -207,23 +231,39 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
   },
   selectedContactButtonView: {
-    height: 17,
-    width: 17,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    height: hp(2),
+    width: hp(2),
+    backgroundColor: 'rgba(0,0,0,0.7)',
     borderRadius: hp(2),
     position: 'absolute',
     top: 0,
-    right: 10,
+    right: 0,
     alignSelf: 'flex-start',
     alignItems: 'center',
     justifyContent: 'center',
   },
   selectedContactInnerView: {
+    marginHorizontal: 7.5,
     marginBottom: hp(2),
   },
-  selectedContactImage: {
+  selectedContactImageContainer: {
+    backgroundColor: colors.whiteColor,
     width: 45,
     height: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: wp(6),
+    alignSelf: 'center',
+    shadowColor: colors.blackColor,
+    shadowOffset: { width: 0, height: 1.5 },
+    marginBottom: 5,
+    shadowOpacity: 0.16,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  selectedContactImage: {
+    width: 41,
+    height: 41,
     borderRadius: wp(6),
     alignSelf: 'center',
     // borderWidth: 0.5,
@@ -252,13 +292,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 5,
     right: 0,
-    height: wp(5),
-    width: wp(5),
+    height: 22,
+    width: 22,
   },
   inputBoxContainer: {
     marginTop: hp(5),
   },
   chatRoomName: {
+    color: colors.lightBlackColor,
     fontSize: 20,
     fontFamily: fonts.RRegular,
     marginBottom: 10,

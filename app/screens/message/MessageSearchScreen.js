@@ -86,7 +86,7 @@ const MessageSearchScreen = ({ navigation }) => {
       }
   }, [searchText])
 
-  const renderSingleEntityChat = useCallback(({ item, index }) => {
+  const renderSingleEntityChat = useCallback(({ item }) => {
     let fullName = item.name;
     let firstTwoChar = '';
     if (item.type === QB.chat.DIALOG_TYPE.CHAT) {
@@ -99,7 +99,7 @@ const MessageSearchScreen = ({ navigation }) => {
     return (<TCHorizontalMessageOverview
         occupantsIds={item?.occupantsIds}
         entityType={firstTwoChar}
-        profilePic={getQBProfilePic(item?.type, index, firstTwoChar, item?.photo)}
+        profilePic={getQBProfilePic(item?.type, firstTwoChar, item?.photo)}
         dialogType={item?.type}
         onPress={() => onDialogPress(item)}
         title={fullName}

@@ -114,7 +114,7 @@ const MessageMainScreen = ({ navigation }) => {
     }
   }, [endReachedCalled])
 
-  const renderSingleEntityChat = useCallback(({ item, index }) => {
+  const renderSingleEntityChat = useCallback(({ item }) => {
     let fullName = item.name;
     let firstTwoChar = '';
     if (item.type === QB.chat.DIALOG_TYPE.CHAT) {
@@ -127,7 +127,7 @@ const MessageMainScreen = ({ navigation }) => {
     return (<TCHorizontalMessageOverview
         occupantsIds={item?.occupantsIds}
         entityType={firstTwoChar}
-        profilePic={getQBProfilePic(item?.type, index, firstTwoChar, item?.photo)}
+        profilePic={getQBProfilePic(item?.type, firstTwoChar, item?.photo)}
         dialogType={item?.type}
         onPress={() => onDialogPress(item)}
         title={fullName}
@@ -183,7 +183,7 @@ const MessageMainScreen = ({ navigation }) => {
                     activeOpacity={1}
                     onPressIn={() => setPressStatus('messageButton')}
                     onPressOut={() => setPressStatus(null)}
-                    style={{ paddingHorizontal: 5 }}
+                    style={{ marginRight: 20 }}
                     onPress={() => { navigation.navigate('MessageInviteScreen') }}>
                   <FastImage source={pressStatus === 'messageButton' ? images.selectAddMessageButton : images.addMessageChat} resizeMode={'contain'} style={{ ...styles.rightImageStyle }} />
                 </TouchableOpacity>
@@ -191,7 +191,7 @@ const MessageMainScreen = ({ navigation }) => {
                     activeOpacity={1}
                     onPressIn={() => setPressStatus('searchButton')}
                     onPressOut={() => setPressStatus(null)}
-                    style={{ paddingHorizontal: 5 }} onPress={() => { navigation.navigate('MessageSearchScreen') }}>
+                    onPress={() => { navigation.navigate('MessageSearchScreen') }}>
                   <FastImage source={pressStatus === 'searchButton' ? images.selectMessageSearchButton : images.messageSearchButton2} resizeMode={'contain'} style={{ ...styles.rightImageStyle }} />
                 </TouchableOpacity>
               </View>
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   separateLine: {
-    borderColor: colors.grayColor,
+    borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
     width: wp(100),
   },

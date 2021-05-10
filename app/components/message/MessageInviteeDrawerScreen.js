@@ -74,7 +74,9 @@ const MessageInviteeDrawerScreen = ({
     const finalImage = fullImage ? { uri: fullImage } : images.profilePlaceHolder;
     return (
       <TouchableOpacity style={styles.rowContainer} onPress={() => onParticipantsPress(customData)}>
-        <Image style={styles.inviteImage} source={finalImage}/>
+        <View style={styles.imageContainer}>
+          <Image style={styles.inviteImage} source={finalImage}/>
+        </View>
         <TCGroupNameBadge textStyle={styles.rowText} name={customData?.full_name} groupType={customData?.entity_type}/>
       </TouchableOpacity>)
   }, [onParticipantsPress])
@@ -111,7 +113,7 @@ const MessageInviteeDrawerScreen = ({
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.viewContainer}>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, marginLeft: 15 }}>
           <Text style={styles.titleLabel}>
             {dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && 'Chatroom Name'}
           </Text>
@@ -162,8 +164,6 @@ const styles = StyleSheet.create({
   viewContainer: {
     flex: 1,
     marginRight: wp(1),
-    marginLeft: wp(7),
-    marginVertical: hp(1),
   },
   titleLabel: {
     fontSize: 20,
@@ -173,8 +173,9 @@ const styles = StyleSheet.create({
   downArrow: {
     height: 15,
     width: 15,
+    marginRight: 15,
     resizeMode: 'contain',
-    tintColor: colors.grayColor,
+    tintColor: colors.blackColor,
   },
   title: {
     width: '80%',
@@ -187,7 +188,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: hp(1.5),
-    marginLeft: wp(3),
   },
   rowText: {
     width: '75%',
@@ -198,8 +198,8 @@ const styles = StyleSheet.create({
   },
   inviteImage: {
     borderRadius: 25,
-    height: wp(6),
-    width: wp(6),
+    height: 22.5,
+    width: 22.5,
   },
   grayText: {
     fontSize: 12,
@@ -207,14 +207,30 @@ const styles = StyleSheet.create({
     color: colors.userPostTimeColor,
   },
   bottomView: {
-    flexDirection: 'row', alignItems: 'center',
+    height: 50,
+    paddingLeft: 20,
+    backgroundColor: colors.grayBackgroundColor,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   separator: {
-    backgroundColor: '#707070',
+    backgroundColor: colors.thinDividerColor,
     height: 1,
     marginTop: hp(2),
-    marginLeft: wp(2),
-    marginBottom: hp(3),
+    marginBottom: 35,
+  },
+  imageContainer: {
+    backgroundColor: colors.whiteColor,
+    height: 25,
+    width: 25,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.blackColor,
+    shadowOpacity: 0.16,
+    shadowOffset: { width: 0, height: 1.5 },
+    shadowRadius: 3,
+    elevation: 3,
   },
 });
 

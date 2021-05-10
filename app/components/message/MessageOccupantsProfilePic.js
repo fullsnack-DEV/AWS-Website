@@ -53,10 +53,10 @@ const ProfileView = ({ data }) => {
     if (occupantData?.length >= 2) {
         return (
           <View style={styles.mainContainer}>
-            <View style={{ position: 'absolute', right: 0, top: 0 }}>
+            <View style={{ position: 'absolute', left: 0, top: 0 }}>
               <ProfilePreview data={occupantData?.[1]}/>
             </View>
-            <View style={{ position: 'absolute', left: 0, bottom: 0 }}>
+            <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
               <ProfilePreview data={occupantData?.[0]} />
             </View>
           </View>
@@ -88,7 +88,7 @@ const ProfileView = ({ data }) => {
 
 const ProfilePreview = ({ data, isSingle = false }) => {
     const outerCircleSize = isSingle ? 45 : 38;
-    const innerCircleSize = isSingle ? 38 : 32;
+    const innerCircleSize = isSingle ? 38 : 35;
 
     let defaultImage = images.profilePlaceHolder;
     if (data?.entity_type === 'team') defaultImage = images.teamCover

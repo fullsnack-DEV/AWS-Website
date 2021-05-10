@@ -33,7 +33,7 @@ const TCInputBox = ({
         placeholderTextColor={ colors.userPostTimeColor }
         onChangeText={onChangeText}
         onFocus={onFocus}
-       />
+    />
   </View>
 )
 
@@ -47,12 +47,11 @@ const styles = StyleSheet.create({
     paddingLeft: 17,
     paddingRight: 5,
     width: wp('90%'),
-    shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-
-    elevation: 2,
+    shadowColor: colors.blackColor,
+    shadowOffset: { width: 0, height: 0.5 },
+    shadowOpacity: 0.16,
+    shadowRadius: 1,
+    elevation: 1,
 
   },
   textInput: {

@@ -20,16 +20,13 @@ const MessageDrawerNavigator = () => (
           activeTintColor: 'red',
         }}
         openByDefault={false}
-        overlayColor={'white'}
+        overlayColor={'rgba(0,0,0,0.4)'}
         drawerStyle={{
+            marginTop: 25,
+            paddingTop: 25,
           width: '70%',
           backgroundColor: colors.whiteColor,
           borderTopLeftRadius: 10,
-          shadowColor: colors.googleColor,
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.5,
-          shadowRadius: 6,
-          elevation: 13,
         }}>
     <Drawer.Screen
         name="MessageChatRoom"

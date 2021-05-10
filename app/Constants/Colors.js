@@ -17,6 +17,7 @@ const colors = {
   activeIndexColor: '#ff9628',
   eventDefaultColor: '#d3dff6',
   searchGrayColor: '#f0f0f0',
+  thinLineGrayColor: '#B0B0B0',
   assistTextColor: '#FF6A01',
   whiteColor: '#FFFFFF',
   lightWhite: '#F7F7F7',

@@ -465,15 +465,18 @@ const MessageChat = ({
               width: 23,
           }}/>
         </TouchableOpacity>
-        <TCInputBox
+        <View style={{ flex: 1, marginRight: 15 }}>
+          <TCInputBox
               onFocus={onInputBoxFocus}
               value={messageBody}
               placeHolderText={'Type a message'}
               onChangeText={setMessageBody}
-              style={{ flex: 1 }}
+              style={{ width: '100%' }}
           />
-        {uploadImageInProgress ? (
-          <FastImage
+        </View>
+        <View style={{ position: 'absolute', right: '5%' }}>
+          {uploadImageInProgress ? (
+            <FastImage
                   source={ images.imageUploadingGIF }
                   style={styles.imageUploadingLoader}
                   resizeMode={'contain'}
@@ -485,7 +488,7 @@ const MessageChat = ({
               </GradiantContainer>
             </TouchableOpacity>
           )}
-
+        </View>
       </View>
     </View>
   ), [messageBody, onInputBoxFocus, selectedImage, sendMessage, uploadImage, uploadImageInProgress])
@@ -515,19 +518,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sperateLine: {
-    borderColor: colors.grayColor,
+    borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
     width: wp(100),
   },
   backImageStyle: {
     height: 20,
-    width: 16,
+    width: 10,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },
   rightImageStyle: {
     height: 20,
-    width: 16,
+    width: 3,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },
@@ -536,20 +539,21 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   sendButtonContainer: {
-    height: wp(10),
-    width: wp(10),
+    height: 30,
+    width: 30,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: wp(2),
     borderRadius: wp(5),
   },
   sendButton: {
-    height: wp(5),
-    width: wp(5),
+    height: 20,
+    width: 20,
     resizeMode: 'contain',
   },
   eventTextStyle: {
     fontSize: 16,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     alignSelf: 'center',
   },
@@ -569,11 +573,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     bottom: 0,
     left: 0,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 10,
+    // shadowColor: colors.googleColor,
+    // shadowOffset: { width: 0, height: -2 },
+    // shadowOpacity: 0.5,
+    // shadowRadius: 4,
+    // elevation: 10,
     paddingVertical: hp(1),
   },
   messageViewContainer: {
