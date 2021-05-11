@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,25 +11,62 @@ import {
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
+import {
+  patchChallengeSetting,
+} from '../../../../api/Challenge';
+import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors'
 import strings from '../../../../Constants/String';
 import TCLabel from '../../../../components/TCLabel';
 import fonts from '../../../../Constants/Fonts';
 
-export default function GameRules({ navigation }) {
-  const [generalRules, setGeneralRules] = useState();
-  const [specialRules, setSpecialRules] = useState();
+export default function GameRules({ navigation, route }) {
+  const { comeFrom, sportName } = route?.params;
+  const authContext = useContext(AuthContext);
+
+  const [loading, setloading] = useState(false);
+
+  const [generalRules, setGeneralRules] = useState(route?.params?.settingObj?.general_rules ? route?.params?.settingObj?.general_rules : '');
+  const [specialRules, setSpecialRules] = useState(route?.params?.settingObj?.special_rules ? route?.params?.settingObj?.special_rules : '');
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={styles.saveButtonStyle} onPress={() => Alert.alert('Save')}>Save</Text>
+        <Text style={styles.saveButtonStyle} onPress={() => {
+          onSavePressed()
+        }}>Save</Text>
       ),
     });
-  }, [navigation]);
+  }, [comeFrom, navigation, generalRules, specialRules]);
+
+  const onSavePressed = () => {
+    console.log('generalRules:=>', generalRules);
+
+    const bodyParams = {
+      sport: sportName,
+      general_rules: generalRules,
+      special_rules: specialRules,
+    }
+    setloading(true);
+    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+    .then((response) => {
+      setloading(false);
+      navigation.navigate(comeFrom, { settingObj: response.payload })
+      console.log('patch challenge response:=>', response.payload);
+    })
+    .catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+  }
 
   return (
     <View style={ styles.mainContainer }>
+      <ActivityLoader visible={loading} />
+
       <TCLabel title={strings.gameRulesTitle}/>
       <Text style={styles.subTitleText}>{strings.gameRulesSubTitle1}</Text>
 

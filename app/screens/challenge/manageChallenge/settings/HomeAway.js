@@ -1,10 +1,16 @@
+/* eslint-disable no-nested-ternary */
 import React, {
-     useState, useLayoutEffect,
+     useState, useLayoutEffect, useContext,
     } from 'react';
    import {
-    Alert, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView,
+     StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, Alert,
 
    } from 'react-native';
+   import AuthContext from '../../../../auth/context';
+   import {
+    patchChallengeSetting,
+  } from '../../../../api/Challenge';
+  import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
    import strings from '../../../../Constants/String';
    import fonts from '../../../../Constants/Fonts';
@@ -12,29 +18,62 @@ import React, {
    import TCLabel from '../../../../components/TCLabel';
 import images from '../../../../Constants/ImagePath';
 
-   export default function HomeAway({ navigation }) {
-     const [teams, setteams] = useState([{ name: 'Kishan Team', city: 'Vancuver', state_abbr: 'BC' }, { name: 'Challenger' }]);
+   export default function HomeAway({ navigation, route }) {
+    const authContext = useContext(AuthContext);
+    console.log('Auth:=>', authContext);
+    const { comeFrom, sportName } = route?.params;
+
+    const [loading, setloading] = useState(false);
+
+     const [teams, setteams] = useState(route?.params?.settingObj?.home_away ? (route?.params?.settingObj?.home_away === 'Home' ? [authContext?.entity?.obj, { name: 'Challenger' }] : [{ name: 'Challenger' }, authContext?.entity?.obj]) : [authContext?.entity?.obj, { name: 'Challenger' }]);
 
      useLayoutEffect(() => {
        navigation.setOptions({
          headerRight: () => (
            <Text
              style={styles.saveButtonStyle}
-             onPress={() => Alert.alert('Save')}>
+             onPress={() => {
+              onSavePressed()
+             }}>
              Save
            </Text>
          ),
        });
-     }, [navigation]);
+     }, [comeFrom, navigation]);
 
      const swapTeam = () => {
-        setteams([teams[1], teams[0]]);
+         setteams([teams[0], teams[1]] = [teams[1], teams[0]]);
+
+        console.log('Team[0]:=>', teams[0]);
+        console.log('Team[1]:=>', teams[1]);
       };
+
+      const onSavePressed = () => {
+        const bodyParams = {
+          sport: sportName,
+          home_away: authContext?.entity?.uid === teams?.[0]?.user_id || authContext?.entity?.uid === teams?.[0]?.group_id ? 'Home' : 'Away',
+        }
+        setloading(true);
+        patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+        .then((response) => {
+          setloading(false);
+          navigation.navigate(comeFrom, { settingObj: response.payload })
+          console.log('patch challenge response:=>', response.payload);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+      }
 
      return (
 
        <SafeAreaView>
          <View>
+           <ActivityLoader visible={loading} />
+
            <TCLabel title={strings.homeAwayTitle} style={{ marginRight: 15 }} />
 
            <View>
@@ -45,20 +84,19 @@ import images from '../../../../Constants/ImagePath';
                  <View style={styles.imageShadowView}>
                    <Image
                   source={
-                    // teams[0].thumbnail
-                    //   ? { uri: teams[0].thumbnail }
-                    //   : images.teamPlaceholder
-                    images.teamPlaceholder
+                    teams[0]?.thumbnail
+                      ? { uri: teams[0]?.thumbnail }
+                      : images.teamPlaceholder
                   }
                   style={styles.imageView}
                 />
                  </View>
                  <View style={styles.teamTextContainer}>
                    <Text style={styles.teamNameLable}>
-                     {teams[0].name}
+                     {teams[0]?.name ? 'Challenger' : (teams[0]?.entity_type === 'user' || teams[0]?.entity_type === 'player') ? teams[0]?.full_name : teams[0]?.group_name}
                    </Text>
-                   {teams[0].city && <Text style={styles.locationLable}>
-                     {`${teams[0].city}, ${teams[0].state_abbr}`}
+                   {teams[0]?.city && <Text style={styles.locationLable}>
+                     {`${teams[0]?.city}, ${teams[0]?.state_abbr}`}
                    </Text>}
                  </View>
                </View>
@@ -74,20 +112,19 @@ import images from '../../../../Constants/ImagePath';
                  <View style={styles.imageShadowView}>
                    <Image
                   source={
-                    // teams[1].thumbnail
-                    //   ? { uri: teams[1].thumbnail }
-                    //   : images.teamPlaceholder
-                    images.teamPlaceholder
+                    teams[1]?.thumbnail
+                      ? { uri: teams[1]?.thumbnail }
+                      : images.teamPlaceholder
                   }
                   style={styles.imageView}
                 />
                  </View>
                  <View style={styles.teamTextContainer}>
                    <Text style={styles.teamNameLable}>
-                     {teams[1].name}
+                     {teams[1]?.name ? 'Challenger' : (teams[1]?.entity_type === 'user' || teams[1]?.entity_type === 'player') ? teams[1]?.full_name : teams[1]?.group_name}
                    </Text>
-                   {teams[1].city && <Text style={styles.locationLable}>
-                     {`${teams[1].city}, ${teams[1].state_abbr}`}
+                   {teams[1]?.city && <Text style={styles.locationLable}>
+                     {`${teams[1]?.city}, ${teams[1]?.state_abbr}`}
                    </Text>}
                  </View>
                </View>

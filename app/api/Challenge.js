@@ -135,3 +135,16 @@ export const getScorekeeperGameFeeEstimation = async (entityID, params, authCont
   data: params,
   authContext,
 })
+
+export const getChallengeSetting = async (entityId, sport, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}managechallenge/${entityId}?sport=${sport}`,
+  authContext,
+})
+
+export const patchChallengeSetting = async (entityId, params, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}managechallenge/${entityId}`,
+  data: params,
+  authContext,
+})

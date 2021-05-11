@@ -117,5 +117,7 @@ const colors = {
   skyColorCard: '#08D5D5',
   lightGreenColorCard: '#ABDE00',
   lightYellowColorCard: '#FFCE01',
+
+  completeTextColor: '#00c168',
 };
 export default colors;

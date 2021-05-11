@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,25 +7,48 @@ import {
   TouchableWithoutFeedback,
   FlatList,
   Text,
+  Alert,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
+import AuthContext from '../../../../auth/context';
 
 import images from '../../../../Constants/ImagePath';
-
+import {
+  patchChallengeSetting,
+} from '../../../../api/Challenge';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
 import strings from '../../../../Constants/String';
 
-export default function RefundPolicy() {
-  const [typeSelection, setTypeSelection] = useState({ key: strings.strictText, id: 1 });
-
+export default function RefundPolicy({ navigation, route }) {
   const policiesTypeList = [
     { key: strings.strictText, id: 1 },
     { key: strings.moderateText, id: 2 },
     { key: strings.flexibleText, id: 3 },
   ];
+  const { comeFrom, sportName } = route?.params;
+  const authContext = useContext(AuthContext);
+
+  const [loading, setloading] = useState(false);
+
+  const [typeSelection, setTypeSelection] = useState(route?.params?.settingObj?.refund_policy ? (route?.params?.settingObj?.refund_policy === strings.strictText && policiesTypeList[0]) || (route?.params?.settingObj?.refund_policy === strings.moderateText && policiesTypeList[1]) || (route?.params?.settingObj?.refund_policy === strings.flexibleText && policiesTypeList[2]) : policiesTypeList[2]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Text
+          style={styles.saveButtonStyle}
+          onPress={() => {
+            onSavePressed()
+          }}>
+          Save
+        </Text>
+      ),
+    });
+  }, [comeFrom, navigation, typeSelection.key]);
 
   const renderPolicyTypes = ({ item }) => (
     <TouchableWithoutFeedback
@@ -48,10 +71,32 @@ export default function RefundPolicy() {
     </TouchableWithoutFeedback>
   );
 
+  const onSavePressed = () => {
+    const bodyParams = {
+      sport: sportName,
+      refund_policy: typeSelection.key,
+    }
+    setloading(true);
+    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+    .then((response) => {
+      setloading(false);
+      navigation.navigate(comeFrom, { settingObj: response.payload })
+      console.log('patch challenge response:=>', response.payload);
+    })
+    .catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+  }
+
   return (
     <ScrollView
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
+      <ActivityLoader visible={loading} />
+
       <TCLable title={strings.gameTyleTitle} required={false} />
       <FlatList
         // ItemSeparatorComponent={() => <TCThinDivider />}
@@ -242,5 +287,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.veryLightBlack,
   },
-
+  saveButtonStyle: {
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    marginRight: 10,
+  },
 });

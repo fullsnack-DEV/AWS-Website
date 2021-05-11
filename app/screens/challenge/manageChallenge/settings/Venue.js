@@ -1,12 +1,15 @@
 import React, {
- useEffect, useState, useContext, useLayoutEffect,
+  useState, useContext, useLayoutEffect,
  } from 'react';
 import {
  Alert, StyleSheet, View, Text, FlatList,
   SafeAreaView,
 } from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
+import {
+  patchChallengeSetting,
+} from '../../../../api/Challenge';
 import AuthContext from '../../../../auth/context';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
@@ -16,16 +19,15 @@ import TCLabel from '../../../../components/TCLabel';
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTextInputClear from '../../../../components/TCTextInputClear';
 
-let entity = {};
 export default function Venue({ navigation, route }) {
-  const isFocused = useIsFocused();
-  const authContext = useContext(AuthContext);
+  const { comeFrom, sportName } = route?.params;
 
-  const [venue, setVenue] = useState([
+  const authContext = useContext(AuthContext);
+  const [loading, setloading] = useState(false);
+
+  const [venue, setVenue] = useState(route?.params?.settingObj?.venue ? route?.params?.settingObj?.venue : [
     {
       id: 0,
-
-      responsible_team_id: 'none',
       name: '',
       address: '',
       details: '',
@@ -37,35 +39,24 @@ export default function Venue({ navigation, route }) {
       headerRight: () => (
         <Text
           style={styles.saveButtonStyle}
-          onPress={() => Alert.alert('Save')}>
+          onPress={() => {
+            const result = venue.filter((obj) => obj.name === '' || obj.address === '');
+            if (result.length > 0) {
+              Alert.alert('Please fill all fields.')
+            } else {
+              onSavePressed()
+            }
+          }}>
           Save
         </Text>
       ),
     });
-  }, [navigation]);
-
-  useEffect(() => {
-    entity = authContext.entity;
-    console.log(entity);
-    if (route && route.params && route.params.editable && route.params.body) {
-      setVenue([...route.params.body.referee]);
-    }
-    if (
-      route
-      && route.params
-      && route.params.editableAlter
-      && route.params.body
-    ) {
-      setVenue([...route.params.body.referee]);
-    }
-  }, [isFocused]);
+  }, [navigation, venue]);
 
   const addVenue = () => {
     if (venue.length < 10) {
       const obj = {
         id: venue.length === 0 ? 0 : venue.length,
-
-        responsible_team_id: 'none',
         name: '',
         address: '',
         details: '',
@@ -79,6 +70,8 @@ export default function Venue({ navigation, route }) {
   const renderVenue = ({ index }) => (
     <View>
       <View style={styles.viewTitleContainer}>
+        <ActivityLoader visible={loading} />
+
         <Text style={styles.venueCountTitle}>Venue {index + 1}</Text>
         {index !== 0 && (
           <Text
@@ -216,8 +209,33 @@ export default function Venue({ navigation, route }) {
     </View>
   );
 
+  const onSavePressed = () => {
+    const bodyParams = {
+      sport: sportName,
+      venue: venue.map((e) => {
+        delete e.id;
+        return e
+      }),
+    }
+    setloading(true);
+    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+    .then((response) => {
+      setloading(false);
+      navigation.navigate(comeFrom, { settingObj: response.payload })
+      console.log('patch challenge response:=>', response.payload);
+    })
+    .catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+  }
+
   return (
     <TCKeyboardView>
+      <ActivityLoader visible={loading} />
+
       <SafeAreaView>
         <View>
           <TCLabel title={strings.venueTitle} style={{ marginRight: 15 }} />
