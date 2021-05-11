@@ -688,34 +688,48 @@ export default function ScorekeepersSetting({ navigation, route }) {
   );
 
   const onSavePressed = () => {
-    if (scorekeeper.length > 0) {
-      const bodyParams = {
-        sport: sportName,
-        responsible_for_scorekeeper: {
-          who_secure: scorekeeper.map((e) => {
-            delete e.id;
-            return e;
-          }),
-          details: detail,
-        },
-      };
-      console.log('Referee secure:=>', bodyParams);
-      setloading(true);
-      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-        .then((response) => {
-          setloading(false);
-          navigation.navigate(comeFrom, { settingObj: response.payload });
-          console.log('patch challenge response:=>', response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
+    if (comeFrom === 'InviteChallengeScreen') {
+      if (scorekeeper.length > 0) {
+        navigation.navigate(comeFrom, {
+          scorekeeperSetting: {
+            who_secure: scorekeeper.map((e) => {
+              delete e.id;
+              return e;
+            }),
+            details: detail,
+          },
         });
-    } else {
-      Alert.alert('Please choose number of scorekeepers.');
-    }
+      } else {
+        Alert.alert('Please choose number of scorekeepers.');
+      }
+    } else if (scorekeeper.length > 0) {
+        const bodyParams = {
+          sport: sportName,
+          responsible_for_scorekeeper: {
+            who_secure: scorekeeper.map((e) => {
+              delete e.id;
+              return e;
+            }),
+            details: detail,
+          },
+        };
+        console.log('Referee secure:=>', bodyParams);
+        setloading(true);
+        patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+          .then((response) => {
+            setloading(false);
+            navigation.navigate(comeFrom, { settingObj: response.payload });
+            console.log('patch challenge response:=>', response.payload);
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      } else {
+        Alert.alert('Please choose number of scorekeepers.');
+      }
   };
 
   return (

@@ -52,23 +52,27 @@ export default function GameType({ navigation, route }) {
   }, [comeFrom, navigation, typeSelection.key]);
 
   const onSavePressed = () => {
-    const bodyParams = {
-      sport: sportName,
-      game_type: (typeSelection.key === strings.officialOnly && 'Official') || (typeSelection.key === strings.friendlyOnly && 'Friendly') || (typeSelection.key === strings.allType && 'All'),
+    if (comeFrom === 'InviteChallengeScreen') {
+      navigation.navigate(comeFrom, { gameType: (typeSelection.key === strings.officialOnly && 'Official') || (typeSelection.key === strings.friendlyOnly && 'Friendly') || (typeSelection.key === strings.allType && 'All') })
+    } else {
+      const bodyParams = {
+        sport: sportName,
+        game_type: (typeSelection.key === strings.officialOnly && 'Official') || (typeSelection.key === strings.friendlyOnly && 'Friendly') || (typeSelection.key === strings.allType && 'All'),
+      }
+      setloading(true);
+      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+      .then((response) => {
+        setloading(false);
+        navigation.navigate(comeFrom, { settingObj: response.payload })
+        console.log('patch challenge response:=>', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
     }
-    setloading(true);
-    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-    .then((response) => {
-      setloading(false);
-      navigation.navigate(comeFrom, { settingObj: response.payload })
-      console.log('patch challenge response:=>', response.payload);
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
   }
 
   const renderGameTypes = ({ item }) => (

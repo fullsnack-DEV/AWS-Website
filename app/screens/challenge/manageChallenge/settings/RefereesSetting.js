@@ -242,34 +242,48 @@ export default function RefereesSetting({ navigation, route }) {
   );
 
   const onSavePressed = () => {
-    if (referee.length > 0) {
-      const bodyParams = {
-        sport: sportName,
-        responsible_for_referee: {
-          who_secure: referee.map((e) => {
-            delete e.id;
-            return e;
-          }),
-          details: detail,
-        },
-      };
-      console.log('Referee secure:=>', bodyParams);
-      setloading(true);
-      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-        .then((response) => {
-          setloading(false);
-          navigation.navigate(comeFrom, { settingObj: response.payload });
-          console.log('patch challenge response:=>', response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
+    if (comeFrom === 'InviteChallengeScreen') {
+      if (referee.length > 0) {
+        navigation.navigate(comeFrom, {
+          refereeSetting: {
+            who_secure: referee.map((e) => {
+              delete e.id;
+              return e;
+            }),
+            details: detail,
+          },
         });
-    } else {
-      Alert.alert('Please choose number of referees.');
-    }
+      } else {
+        Alert.alert('Please choose number of referees.');
+      }
+    } else if (referee.length > 0) {
+        const bodyParams = {
+          sport: sportName,
+          responsible_for_referee: {
+            who_secure: referee.map((e) => {
+              delete e.id;
+              return e;
+            }),
+            details: detail,
+          },
+        };
+        console.log('Referee secure:=>', bodyParams);
+        setloading(true);
+        patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+          .then((response) => {
+            setloading(false);
+            navigation.navigate(comeFrom, { settingObj: response.payload });
+            console.log('patch challenge response:=>', response.payload);
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      } else {
+        Alert.alert('Please choose number of referees.');
+      }
   };
 
   return (

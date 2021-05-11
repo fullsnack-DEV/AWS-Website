@@ -46,6 +46,11 @@ export default function ChooseAddressScreen({ navigation, route }) {
         venueObj: selectedAddress,
       });
     }
+    if (route.params.comeFrom === 'Venue') {
+      navigation.navigate('Venue', {
+        venueObj: selectedAddress,
+      });
+    }
   };
 
   const renderItem = ({ item, index }) => (

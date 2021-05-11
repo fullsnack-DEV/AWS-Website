@@ -12,17 +12,20 @@ import {
   Alert,
   FlatList,
 } from 'react-native';
+import moment from 'moment';
+
 import { useIsFocused } from '@react-navigation/native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { parseInt } from 'lodash';
 import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
-import { getChallengeSetting } from '../../../api/Challenge';
+import { getChallengeSetting, getFeesEstimation, createChallenge } from '../../../api/Challenge';
+
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-import { getLatLong } from '../../../api/External';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -35,41 +38,28 @@ import AuthContext from '../../../auth/context';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import SecureRefereeView from '../../../components/SecureRefereeView';
 import { getNumberSuffix } from '../../../utils/gameUtils';
+import EventMapView from '../../../components/Schedule/EventMapView';
 
 let entity = {};
-let bodyParams = {};
 export default function InviteChallengeScreen({ navigation, route }) {
   const { sportName, groupObj } = route?.params;
 
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
+  const [totalZero, setTotalZero] = useState(false);
+  const [feeObj, setFeeObj] = useState();
 
-  const [venue, setVenue] = useState(0);
-  const [cordinate, setCordinate] = useState({
-    latitude: 0.0,
-    longitude: 0.0,
-  });
+  const [startDate, setStartDate] = useState(
+    new Date().setHours(new Date().getHours() + 1),
+  );
+  const [endDate, setEndDate] = useState(
+    new Date().setHours(new Date().getHours() + 4),
+  );
 
   const [settingObject, setSettingObject] = useState();
 
   const [teams, setteams] = useState([]);
-  const [region, setRegion] = useState();
-  const [secureVenue, setsecureVenue] = useState(0);
-  const [teamData, setTeamData] = useState();
-  const [editableAlter, setEditableAlter] = useState(false);
-  const [venueTitle, setVenueTitle] = useState('');
-  const [sport, setSport] = useState(route?.params?.groupObj?.sport);
-  const [venueData, setVenueData] = useState({
-    lat: null,
-    long: null,
-    title: null,
-    address: null,
-    venueType: null,
-    city: null,
-    state: null,
-    country: null,
-  });
 
   const getSettings = useCallback(() => {
     setloading(true);
@@ -88,189 +78,213 @@ export default function InviteChallengeScreen({ navigation, route }) {
   }, [authContext, sportName]);
 
   useEffect(() => {
-    if (isFocused) {
-      getSettings();
-    }
-  }, [getSettings, isFocused]);
+    getSettings();
+  }, []);
 
   useEffect(() => {
-    console.log(venue);
+    console.log('useEffect Called');
+    if (isFocused) {
+      const settings = { ...settingObject };
+      if (route?.params?.gameType) {
+        console.log('route?.params?.gameType', route?.params?.gameType);
+        settings.game_type = route?.params?.gameType;
+      }
+      if (route?.params?.gameFee) {
+        console.log('route?.params?.gameFee', route?.params?.gameFee);
+        settings.game_fee = route?.params?.gameFee;
+      }
+      if (route?.params?.refundPolicy) {
+        console.log('route?.params?.refundPolicy', route?.params?.refundPolicy);
+        settings.refund_policy = route?.params?.refundPolicy;
+      }
+      if (route?.params?.homeAway) {
+        settings.home_away = route?.params?.homeAway;
+      }
+      if (route?.params?.gameDuration) {
+        settings.game_duration = route?.params?.gameDuration;
+      }
+      if (route?.params?.gameGeneralRules) {
+        console.log('route?.params?.gameDuration', route?.params?.gameDuration);
+        settings.general_rules = route?.params?.gameGeneralRules;
+        settings.special_rules = route?.params?.gameSpecialRules;
+      }
+      if (route?.params?.refereeSetting) {
+        settings.responsible_for_referee = route?.params?.refereeSetting;
+      }
+      if (route?.params?.scorekeeperSetting) {
+        settings.responsible_for_scorekeeper = route?.params?.scorekeeperSetting;
+      }
+
+      setSettingObject(settings);
+    }
+  }, [
+    isFocused,
+    route?.params?.gameDuration,
+    route?.params?.gameFee,
+    route?.params?.gameGeneralRules,
+    route?.params?.gameSpecialRules,
+    route?.params?.gameType,
+    route?.params?.homeAway,
+    route?.params?.refereeSetting,
+    route?.params?.refundPolicy,
+    route?.params?.scorekeeperSetting,
+  ]);
+
+  useEffect(() => {
     if (isFocused) {
       entity = authContext.entity;
       if (groupObj) {
         setteams([{ ...entity.obj }, { ...groupObj }]);
-        console.log('Home:::-', entity.obj);
-        console.log('Away:::-', route.params.groupObj);
-        setTeamData([{ ...entity.obj }, { ...route.params.groupObj }]);
       }
-      if (
-        route
-        && route.params
-        && route.params.body
-        && ((route && route.params && route.params.editableAlter)
-          || (route && route.params && route.params.editable))
-      ) {
-        if (route && route.params && route.params.editableAlter) {
-          setEditableAlter(true);
-        }
-        bodyParams = { ...route.params.body };
-        console.log('BODY::-', bodyParams);
-        setteams([
-          { ...route.params.body.home_team },
-          { ...route.params.body.away_team },
-        ]);
-        setVenueTitle(route.params.body.venue.title);
-        setVenueData(route.params.body.venue);
-        getLatLongData(route.params.body.venue.address);
-        setSport(route.params.body.sport);
-        setsecureVenue(
-          route.params.body.responsible_to_secure_venue
-            === (entity.obj.group_name
-              || `${entity.obj.first_name} ${entity.obj.last_name}`)
-            ? 0
-            : 1,
-        );
-        setVenue(
-          (route.params.body.venue.venueType === 'HomeTeam' && 1)
-            || (route.params.body.venue.venueType === 'AwayTeam' && 2)
-            || (route.params.body.venue.venueType === 'other' && 0),
-        );
-
-        if (
-          (route?.params?.body?.home_team?.user_id
-            || route?.params?.body?.home_team?.group_id)
-          === (entity.obj.user_id || entity.obj.group_id)
-        ) {
-          setTeamData([{ ...entity.obj }, { ...route.params.body.away_team }]);
-        } else {
-          setTeamData([{ ...entity.obj }, { ...route.params.body.home_team }]);
-        }
-      }
-      if (route && route.params && route.params.venueObj) {
-        getLatLongData(route.params.venueObj.description);
-        setVenue(0);
-        console.log('route.params.venueObj::=>', route.params.venueObj);
-        bodyParams = {
-          ...bodyParams,
-          venue: route.params.venueObj,
-        };
-        setVenueData(route.params.venueObj);
-      }
-
-      if (route && route.params && route.params.from) {
-        bodyParams = {
-          ...bodyParams,
-          start_datetime: new Date(route.params.from).getTime(),
-          end_datetime: new Date(route.params.to).getTime(),
-        };
-      }
+      getFeeDetail()
     }
-  }, [isFocused]);
+  }, [authContext.entity, groupObj, isFocused, route.params.groupObj]);
 
-  const getLatLongData = (addressDescription) => {
-    getLatLong(addressDescription, authContext).then((response) => {
-      console.log('Lat/Long response::=>', response);
-      setCordinate({
-        latitude: response.results[0].geometry.location.lat,
-        longitude: response.results[0].geometry.location.lng,
-      });
-      setRegion({
-        latitude: response.results[0].geometry.location.lat,
-        longitude: response.results[0].geometry.location.lng,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      });
-
-      // const termLength = response.results[0].address_components.length;
-
-      let cityObj, stateObj, countryObj;
-      // eslint-disable-next-line array-callback-return
-      response.results[0].address_components.map((e) => {
-        if (e.types.includes('administrative_area_level_2')) {
-          cityObj = e;
-        }
-        if (e.types.includes('administrative_area_level_1')) {
-          stateObj = e;
-        }
-        if (e.types.includes('country')) {
-          countryObj = e;
-        }
-      });
-      setVenueData({
-        ...venueData,
-        address: addressDescription,
-        venueType: 'other',
-        lat: response.results[0].geometry.location.lat,
-        long: response.results[0].geometry.location.lng,
-        title: venueTitle,
-        city: cityObj.long_name,
-        state: stateObj.long_name,
-        country: countryObj.long_name,
-      });
-    });
-  };
-
-const renderPeriod = ({ item, index }) => (
-  <>
-    <TCChallengeTitle
-          containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
-          title={'Interval'}
-          titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-          value={item.interval}
-          valueStyle={{
-            fontFamily: fonts.RBold,
-            fontSize: 16,
-            color: colors.greenColorCard,
-            marginRight: 2,
-          }}
-          staticValueText={'min.'}
-        />
-    <TCChallengeTitle
-          containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
-          title={ `${getNumberSuffix(index + 2)} Period`}
-          titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-          value={item.period}
-          valueStyle={{
-            fontFamily: fonts.RBold,
-            fontSize: 16,
-            color: colors.greenColorCard,
-            marginRight: 2,
-          }}
-          staticValueText={'min.'}
-        />
-  </>
-  )
+  const renderPeriod = ({ item, index }) => (
+    <>
+      <TCChallengeTitle
+        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        title={'Interval'}
+        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        value={item.interval}
+        valueStyle={{
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.greenColorCard,
+          marginRight: 2,
+        }}
+        staticValueText={'min.'}
+      />
+      <TCChallengeTitle
+        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        title={`${getNumberSuffix(index + 2)} Period`}
+        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        value={item.period}
+        valueStyle={{
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.greenColorCard,
+          marginRight: 2,
+        }}
+        staticValueText={'min.'}
+      />
+    </>
+  );
 
   const renderOverTime = ({ item, index }) => (
     <>
       <TCChallengeTitle
-            containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
-            title={'Interval'}
-            titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-            value={item.interval}
-            valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-            }}
-            staticValueText={'min.'}
-          />
+        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        title={'Interval'}
+        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        value={item.interval}
+        valueStyle={{
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.greenColorCard,
+          marginRight: 2,
+        }}
+        staticValueText={'min.'}
+      />
       <TCChallengeTitle
-            containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
-            title={ `${getNumberSuffix(index + 1)} Over time`}
-            titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-            value={item.overTime}
-            valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-            }}
-            staticValueText={'min.'}
-          />
+        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        title={`${getNumberSuffix(index + 1)} Over time`}
+        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        value={item.overTime}
+        valueStyle={{
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.greenColorCard,
+          marginRight: 2,
+        }}
+        staticValueText={'min.'}
+      />
     </>
-    )
+  );
+
+  const renderReferees = ({ item, index }) => (
+    <SecureRefereeView
+      entityName={
+        item.responsible_to_secure_referee === 'challenger'
+          ? teams[1]?.full_name ?? teams[1]?.group_name
+          : teams[0]?.full_name ?? teams[0]?.group_name
+      }
+      entity={'Referee'}
+      entityNumber={index + 1}
+    />
+  );
+
+  const renderScorekeepers = ({ item, index }) => (
+    <SecureRefereeView
+      entityName={
+        item.responsible_to_secure_scorekeeper === 'challenger'
+          ? teams[1]?.full_name ?? teams[1]?.group_name
+          : teams[0]?.full_name ?? teams[0]?.group_name
+      }
+      entity={'Scorekeeper'}
+      entityNumber={index + 1}
+    />
+  );
+
+  const getFeeDetail = () => {
+        const feeBody = {}
+        feeBody.payment_method_type = 'card';
+        feeBody.currency_type = settingObject?.game_fee?.currency_type?.toLowerCase();
+        feeBody.game_fee = parseInt(settingObject?.game_fee?.fee)
+        setloading(true);
+        getFeesEstimation(feeBody, authContext)
+          .then((response) => {
+            setFeeObj(response.payload)
+            console.log('Body estimate fee:=>', response.payload);
+
+            setloading(false);
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+  };
+
+  // const sendChallengeInvitation = () => {
+  //   entity = authContext.entity.obj;
+
+  //   let entityID;
+  //   let type;
+  //   if (teams?.[0]?.group_id) {
+  //     type = 'teams'
+  //     if (teams?.[0]?.group_id === entity.uid) {
+  //       entityID = teams[1].group_id
+  //     } else {
+  //       entityID = teams[0].group_id
+  //     }
+  //   } else {
+  //     type = 'users'
+  //     if (route.params.teamData[0].user_id === entity.uid) {
+  //       entityID = teams[1].user_id
+  //     } else {
+  //       entityID = teams[0].user_id
+  //     }
+  //   }
+
+  //       const body = { ...settingObject }
+
+  //       setloading(true);
+  //       createChallenge(entityID, type, body, authContext)
+  //         .then((response) => {
+  //           console.log(' challenge response:=>', response.payload);
+
+  //           setloading(false);
+  //         })
+  //         .catch((e) => {
+  //           setloading(false);
+  //           setTimeout(() => {
+  //             Alert.alert(strings.alertmessagetitle, e.message);
+  //           }, 10);
+  //         });
+  // };
+
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
@@ -415,20 +429,21 @@ const renderPeriod = ({ item, index }) => (
           <Text style={styles.homeLableStyle}>Away</Text>
           <View style={styles.teamViewStyle}>
             <Image
-            source={
-              settingObject?.home_away === 'Home'
-                ? groupObj?.thumbnail
-                  ? { uri: groupObj?.thumbnail }
-                  : groupObj?.full_name
+              source={
+                settingObject?.home_away === 'Home'
+                  ? groupObj?.thumbnail
+                    ? { uri: groupObj?.thumbnail }
+                    : groupObj?.full_name
+                    ? images.profilePlaceHolder
+                    : images.teamPlaceholder
+                  : authContext?.entity?.obj?.thumbnail
+                  ? { uri: authContext?.entity?.obj?.thumbnail }
+                  : authContext?.entity?.obj?.full_name
                   ? images.profilePlaceHolder
                   : images.teamPlaceholder
-                : authContext?.entity?.obj?.thumbnail
-                ? { uri: authContext?.entity?.obj?.thumbnail }
-                : authContext?.entity?.obj?.full_name
-                ? images.profilePlaceHolder
-                : images.teamPlaceholder
-            }
-             style={styles.imageView} />
+              }
+              style={styles.imageView}
+            />
 
             <View style={styles.teamTextContainer}>
               <Text style={styles.teamNameLable}>
@@ -472,19 +487,6 @@ const renderPeriod = ({ item, index }) => (
           }}
           staticValueText={'min.'}
         />
-        {/* <TCChallengeTitle
-          containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
-          title={'Interval'}
-          titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-          value={'35'}
-          valueStyle={{
-            fontFamily: fonts.RBold,
-            fontSize: 16,
-            color: colors.greenColorCard,
-            marginRight: 2,
-          }}
-          staticValueText={'min.'}
-        /> */}
 
         <FlatList
           data={settingObject?.game_duration?.period}
@@ -492,7 +494,11 @@ const renderPeriod = ({ item, index }) => (
           keyExtractor={(item, index) => index.toString()}
           style={{ marginBottom: 15 }}
         />
-        {settingObject?.game_duration?.period.length > 0 && <Text style={styles.normalTextStyle}>{strings.gameDurationTitle2}</Text>}
+        {settingObject?.game_duration?.period?.length > 0 && (
+          <Text style={styles.normalTextStyle}>
+            {strings.gameDurationTitle2}
+          </Text>
+        )}
 
         <FlatList
           data={settingObject?.game_duration?.overtime}
@@ -503,20 +509,20 @@ const renderPeriod = ({ item, index }) => (
         <TCThickDivider marginTop={20} />
 
         <View>
-          <TCChallengeTitle
-            title={'Date & Time'}
-            isEdit={true}
-            onEditPress={() => Alert.alert('Edit Pressed')}
-          />
+          <TCChallengeTitle title={'Date & Time'} />
 
           <View>
             <View style={styles.dateTimeValue}>
               <Text style={styles.dateTimeText}>Start </Text>
-              <Text style={styles.dateTimeText}>Feb 17, 2020 12:00 pm</Text>
+              <Text style={styles.dateTimeText}>
+                {moment(startDate).format('MMM DD, YYYY hh:mm a')}
+              </Text>
             </View>
             <View style={styles.dateTimeValue}>
               <Text style={styles.dateTimeText}>End </Text>
-              <Text style={styles.dateTimeText}>Feb 17, 2020 12:00 pm</Text>
+              <Text style={styles.dateTimeText}>
+                {moment(endDate).format('MMM DD, YYYY hh:mm a')}
+              </Text>
             </View>
             <View style={styles.dateTimeValue}>
               <Text style={styles.dateTimeText}> </Text>
@@ -544,55 +550,66 @@ const renderPeriod = ({ item, index }) => (
         </View>
 
         <View>
-          <TCChallengeTitle
-            title={'Venue'}
-            isEdit={true}
-            onEditPress={() => Alert.alert('Edit Pressed')}
-          />
+          <TCChallengeTitle title={'Venue'} />
 
-          {/* <Text style={styles.venueTitle}>Calgary stampede</Text>
+          {route?.params?.selectedVenueObj ? (
             <View style={styles.venueContainer}>
+              <Text style={styles.venueTitle}>
+                {route?.params?.selectedVenueObj?.name}
+              </Text>
               <Text style={styles.venueAddress}>
-                555 Saddledome Rise SE, Calgary, AB T2G 2W1
+                {route?.params?.selectedVenueObj?.address}
               </Text>
 
               <EventMapView
-              coordinate={cordinate}
-              region={region}
-              style={styles.map}
-            />
-            </View> */}
-
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ChooseVenueScreen');
-            }}>
-            <View style={[styles.borderButtonView, styles.shadowView]}>
-              <View />
-              <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>
-              <Image
-                source={images.arrowGraterthan}
-                style={styles.arrowImage}
+                coordinate={route?.params?.selectedVenueObj?.coordinate}
+                region={route?.params?.selectedVenueObj?.region}
+                style={styles.map}
               />
             </View>
-          </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('ChooseVenueScreen', {
+                  venues: settingObject?.venue || [],
+                  comeFrom: 'InviteChallengeScreen',
+                });
+              }}>
+              <View style={[styles.borderButtonView, styles.shadowView]}>
+                <View />
+                <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>
+                <Image
+                  source={images.arrowGraterthan}
+                  style={styles.arrowImage}
+                />
+              </View>
+            </TouchableOpacity>
+          )}
+
           <TCThickDivider marginTop={10} />
         </View>
 
         <TCChallengeTitle
           title={'Game Rules'}
           isEdit={true}
-          onEditPress={() => Alert.alert('Edit Pressed')}
+          onEditPress={() => {
+            navigation.navigate('GameRules', {
+              settingObj: settingObject,
+              comeFrom: 'InviteChallengeScreen',
+              sportName,
+            });
+          }}
         />
-        <Text style={styles.venueTitle}>General Rules</Text>
-        <Text style={styles.rulesDetail}>
-          1. Tackle is not allowed 2. 3 times of 30 minute game for 90 minute
-        </Text>
+        <Text style={styles.rulesTitle}>General Rules</Text>
+        <Text style={styles.rulesDetail}>{settingObject?.general_rules}</Text>
+        <View style={{ marginBottom: 10 }} />
+        <Text style={styles.rulesTitle}>Special Rules</Text>
+        <Text style={styles.rulesDetail}>{settingObject?.special_rules}</Text>
         <TCThickDivider marginTop={20} />
 
         <TCChallengeTitle
           title={'Referees'}
-          value={'2'}
+          value={settingObject?.responsible_for_referee?.who_secure?.length}
           staticValueText={'Referees'}
           valueStyle={{
             fontFamily: fonts.RBold,
@@ -601,18 +618,28 @@ const renderPeriod = ({ item, index }) => (
             marginRight: 2,
           }}
           isEdit={true}
-          onEditPress={() => Alert.alert('Edit Pressed')}
+          onEditPress={() => {
+            navigation.navigate('RefereesSetting', {
+              settingObj: settingObject,
+              comeFrom: 'InviteChallengeScreen',
+              sportName,
+            });
+          }}
         />
-        <SecureRefereeView
-          entityName={'Makani Team'}
-          entity={'Referee'}
-          entityNumber={1}
+
+        <FlatList
+          data={settingObject?.responsible_for_referee?.who_secure}
+          renderItem={renderReferees}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
+          style={{ marginBottom: 15 }}
         />
+
         <TCThickDivider marginTop={20} />
 
         <TCChallengeTitle
           title={'Scorekeepers'}
-          value={'2'}
+          value={settingObject?.responsible_for_scorekeeper?.who_secure?.length}
           staticValueText={'Scorekeepers'}
           valueStyle={{
             fontFamily: fonts.RBold,
@@ -621,17 +648,27 @@ const renderPeriod = ({ item, index }) => (
             marginRight: 2,
           }}
           isEdit={true}
-          onEditPress={() => Alert.alert('Edit Pressed')}
+          onEditPress={() => {
+            navigation.navigate('ScorekeepersSetting', {
+              settingObj: settingObject,
+              comeFrom: 'InviteChallengeScreen',
+              sportName,
+            });
+          }}
         />
-        <SecureRefereeView
-          entityName={'Kishan Team'}
-          entity={'Scorekeeper'}
-          entityNumber={1}
+        <FlatList
+          data={settingObject?.responsible_for_scorekeeper?.who_secure}
+          renderItem={renderScorekeepers}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
+          style={{ marginBottom: 15 }}
         />
         <TCThickDivider marginTop={20} />
 
-        <TCLabel title={'Income'} style={{ marginBottom: 15 }} />
-        <GameFeeCard />
+        {!totalZero && <View>
+          <TCLabel title={'Income'} style={{ marginBottom: 15 }} />
+          <GameFeeCard feeObject={feeObj} currency={settingObject?.game_fee?.currency_type}/>
+        </View>}
         <TCThickDivider marginTop={20} />
       </View>
 
@@ -709,6 +746,13 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.lightBlackColor,
+
+    marginBottom: 5,
+  },
+  rulesTitle: {
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    color: colors.lightBlackColor,
     marginLeft: 15,
     marginBottom: 5,
   },
@@ -773,5 +817,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginLeft: 15,
     marginTop: 0,
+  },
+
+  venueAddress: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+  },
+  venueContainer: {
+    marginLeft: 15,
+    marginRight: 15,
   },
 });

@@ -5,7 +5,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../TCThinDivider';
 
-export default function GameFeeCard() {
+export default function GameFeeCard({ feeObject, currency }) {
   // eslint-disable-next-line no-return-assign
   return (
     <View
@@ -15,7 +15,7 @@ export default function GameFeeCard() {
           <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>Game Fee</Text>
         </View>
         <View>
-          <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>$45 CAD</Text>
+          <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>{`$${feeObject?.total_game_fee} ${currency}`}</Text>
         </View>
       </View>
       <View style={styles.feeContainer} >
@@ -23,7 +23,7 @@ export default function GameFeeCard() {
           <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>Service Fee</Text>
         </View>
         <View>
-          <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>$5 CAD</Text>
+          <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>{`$${feeObject?.total_service_fee2} ${currency}`}</Text>
         </View>
       </View>
       <TCThinDivider marginBottom={10} marginTop={10}/>
@@ -32,7 +32,7 @@ export default function GameFeeCard() {
           <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>Total payment</Text>
         </View>
         <View>
-          <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>$45 CAD</Text>
+          <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>{`$${feeObject?.total_payout} ${currency}`}</Text>
         </View>
       </View>
     </View>
