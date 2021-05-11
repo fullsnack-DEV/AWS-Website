@@ -1,5 +1,5 @@
 import React, {
- useRef, memo, useState, useCallback,
+  useRef, memo, useState, useCallback,
 } from 'react';
 import {
   StyleSheet, View, Text, TouchableWithoutFeedback, TouchableHighlight,
@@ -9,21 +9,24 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
+import { useIsFocused } from '@react-navigation/native';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import { toggleView } from '../../utils';
 
-function VideoPost({
+const VideoPost = memo(({
+  currentParentIndex,
+  parentIndex,
   item,
   data,
   navigation,
   updateCommentCount,
-}) {
+}) => {
+  const isFocused = useIsFocused();
   const videoPlayerRef = useRef();
   const [mute, setMute] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
-  const [play, setPlay] = useState(false);
   const [videoLoad, setVideoLoad] = useState(false);
   const [height, setHeight] = useState(wp(68))
   const setVideoHeight = useCallback((orientation) => {
@@ -31,7 +34,6 @@ function VideoPost({
   }, [])
 
   const toggleModal = useCallback(() => {
-    // setModalVisible((isVisible) => !isVisible);
     navigation.navigate('FeedViewScreen', { feedItem: item, updateCommentCount })
   }, [item, navigation, updateCommentCount]);
 
@@ -40,10 +42,6 @@ function VideoPost({
       videoPlayerRef.current.seek(0)
       setVideoLoad(true);
   }, [setVideoHeight])
-
-  const onPressPlayPause = useCallback(() => {
-    setPlay((val) => !val)
-  }, [])
 
   const onPressMuteUnmute = useCallback(() => {
     setMute((val) => !val);
@@ -96,7 +94,7 @@ function VideoPost({
         <Video
             repeat={true}
             ref={videoPlayerRef}
-            paused={!play}
+            paused={!(isFocused && (currentParentIndex === parentIndex))}
             muted={!mute}
             onProgress={onProgress}
             source={{ uri: data.url }}
@@ -120,21 +118,11 @@ function VideoPost({
                 source={mute ? images.unmute : images.mute}
               />
           </TouchableHighlight>
-          <TouchableHighlight
-                style={[styles.pauseMuteStyle, { right: wp('13.5%') }]}
-                onPress={onPressPlayPause}>
-            <FastImage
-                resizeMode={'contain'}
-                tintColor={'white'}
-                style={styles.playPauseImageStyle}
-                source={play ? images.videoPauseButton : images.videoPlayButton}
-              />
-          </TouchableHighlight>
         </>
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   imageStyle: {
@@ -199,4 +187,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(VideoPost);
+export default VideoPost;

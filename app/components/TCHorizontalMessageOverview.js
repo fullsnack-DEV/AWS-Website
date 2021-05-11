@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   lastMessageDate: {
     fontFamily: fonts.RRegular,
     fontSize: 12,
-    color: colors.grayColor,
+    color: colors.userPostTimeColor,
   },
 })
 export default TCHorizontalMessageOverview;

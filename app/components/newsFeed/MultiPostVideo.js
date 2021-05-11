@@ -1,5 +1,5 @@
 import React, {
- useRef, memo, useState, useCallback,
+  useRef, memo, useState, useCallback,
 } from 'react';
 import {
   StyleSheet, View, Text, TouchableWithoutFeedback, TouchableHighlight,
@@ -9,6 +9,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
+import { useIsFocused } from '@react-navigation/native';
 import images from '../../Constants/ImagePath';
 
 import colors from '../../Constants/Colors'
@@ -21,10 +22,14 @@ function MultiPostVideo({
   item,
   navigation,
   updateCommentCount,
+  parentIndex,
+  currentParentIndex,
+  childIndex,
+  currentChildIndex,
 }) {
   const videoPlayerRef = useRef();
+  const isFocused = useIsFocused();
   const [mute, setMute] = useState(true);
-  const [play, setPlay] = useState(false);
   const [videoLoad, setVideoLoad] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -81,8 +86,9 @@ function MultiPostVideo({
           toggleModal();
         }}>
         <Video
+          repeat={true}
           ref={videoPlayerRef}
-          paused={!play}
+          paused={!((isFocused && parentIndex === currentParentIndex) && (childIndex === currentChildIndex))}
           muted={!mute}
           onProgress={onProgress}
           source={{ uri: data.url }}
@@ -116,18 +122,6 @@ function MultiPostVideo({
                 tintColor={'white'}
                 style={styles.imageStyle}
                 source={mute ? images.unmute : images.mute}
-            />
-          </TouchableHighlight>
-          <TouchableHighlight
-              style={[styles.pauseMuteStyle, { right: wp('13.5%') }]}
-              onPress={() => {
-                setPlay(!play);
-              }}>
-            <FastImage
-                tintColor={'white'}
-                resizeMode={'contain'}
-                style={styles.playPauseImageStyle}
-                source={play ? images.videoPauseButton : images.videoPlayButton}
             />
           </TouchableHighlight>
         </>
@@ -181,11 +175,6 @@ const styles = StyleSheet.create({
     right: 10,
     height: 25,
     width: 25,
-  },
-  playPauseImageStyle: {
-    height: 14,
-    tintColor: '#fff',
-    width: 14,
   },
   currentTime: {
     fontSize: 15,
