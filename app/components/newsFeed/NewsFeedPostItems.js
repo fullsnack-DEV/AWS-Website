@@ -33,7 +33,9 @@ import LikersModal from '../modals/LikersModal';
 import CustomURLPreview from '../account/CustomURLPreview';
 import { getHitSlop } from '../../utils';
 
-const NewsFeedPostItems = ({
+const NewsFeedPostItems = memo(({
+  currentParentIndex,
+  parentIndex,
   navigation,
   item,
   onLikePress,
@@ -46,6 +48,7 @@ const NewsFeedPostItems = ({
   const likersModalRef = useRef(null);
   const commentModalRef = useRef(null);
   const authContext = useContext(AuthContext);
+  const [childIndex, setChildIndex] = useState(0);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
@@ -105,6 +108,8 @@ const NewsFeedPostItems = ({
     if (attachItem?.type === 'video') {
       return (
         <VideoPost
+            currentParentIndex={currentParentIndex}
+            parentIndex={parentIndex}
             updateCommentCount={updateCommentCount}
             item={item}
               data={attachItem}
@@ -116,7 +121,7 @@ const NewsFeedPostItems = ({
       );
     }
     return <View />;
-  }, [caller_id, item, navigation, onImageProfilePress, onLikePress, updateCommentCount])
+  }, [caller_id, currentParentIndex, item, navigation, onImageProfilePress, onLikePress, parentIndex, updateCommentCount])
 
   const renderMultiplePostItems = useCallback(({ item: multiAttachItem, index }) => {
     if (multiAttachItem?.type === 'image') {
@@ -139,6 +144,10 @@ const NewsFeedPostItems = ({
     if (multiAttachItem?.type === 'video') {
       return (
         <MultiPostVideo
+            parentIndex={parentIndex}
+            currentParentIndex={currentParentIndex}
+            childIndex={childIndex}
+            currentChildIndex={index}
             updateCommentCount={updateCommentCount}
             activeIndex={index}
               data={multiAttachItem}
@@ -154,7 +163,7 @@ const NewsFeedPostItems = ({
       );
     }
     return <View />;
-  }, [attachedImages, caller_id, item, navigation, onImageProfilePress, onLikePress, updateCommentCount])
+  }, [attachedImages, caller_id, childIndex, currentParentIndex, item, navigation, onImageProfilePress, onLikePress, parentIndex, updateCommentCount])
 
   const onNewsFeedLikePress = useCallback(() => {
     if (like) setLikeCount((likeCnt) => likeCnt - 1);
@@ -175,9 +184,7 @@ const NewsFeedPostItems = ({
   }, [item, navigation, onDeletePost, onEditPressDone])
 
   const onShareActionSheetItemPress = useCallback((index) => {
-    if (index === 0) {
-      console.log(1);
-    } else if (index === 1) {
+    if (index === 1) {
       authContext.showAlert({ visible: true })
       Clipboard.setString(descriptions);
     } else if (index === 2) {
@@ -253,6 +260,7 @@ const NewsFeedPostItems = ({
             </>
           ) : (
             <Carousel
+                onSnapToItem={setChildIndex}
                 data={attachedImages}
                 renderItem={renderMultiplePostItems}
                 inactiveSlideScale={1}
@@ -374,7 +382,7 @@ const NewsFeedPostItems = ({
       />
     </View>
   );
-}
+})
 
 const styles = StyleSheet.create({
   activeTimeAgoTxt: {
@@ -452,4 +460,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(NewsFeedPostItems);
+export default NewsFeedPostItems;

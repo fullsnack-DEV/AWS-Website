@@ -355,6 +355,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
 
   newFeed: require('../assets/images/new_feed.png'),
   messageCheckboxBorder: require('../assets/images/messageCheckboxBorder.png'),
+  youtubePlayButton: require('../assets/images/youtubePlayButton.png'),
 };
 
 export default images;

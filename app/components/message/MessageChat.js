@@ -474,7 +474,7 @@ const MessageChat = ({
               style={{ width: '100%' }}
           />
         </View>
-        <View style={{ position: 'absolute', right: '5%' }}>
+        <View style={{ position: 'absolute', right: '4%' }}>
           {uploadImageInProgress ? (
             <FastImage
                   source={ images.imageUploadingGIF }
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     height: 20,
-    width: 20,
+    width: 15,
     resizeMode: 'contain',
   },
   eventTextStyle: {

@@ -4,7 +4,7 @@ import React, {
     useState,
     useContext,
     useCallback,
-    useMemo,
+    useMemo, useRef,
 } from 'react';
 import {
  View, ActivityIndicator, FlatList, Text,
@@ -16,6 +16,7 @@ import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
 import fonts from '../../Constants/Fonts';
 
+const viewabilityConfig = { itemVisiblePercentThreshold: 50 }
 const NewsFeedList = ({
   onFeedScroll,
   refs,
@@ -36,6 +37,8 @@ const NewsFeedList = ({
   showEnptyDataText = true,
 }) => {
   const [userID, setUserID] = useState('');
+
+  const [parentIndex, setParentIndex] = useState(0);
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   useEffect(() => {
@@ -66,12 +69,14 @@ const NewsFeedList = ({
   );
 
   const renderNewsFeed = useCallback(
-    ({ item }) => {
+    ({ item, index }) => {
       const onDeleteButtonPress = () => onDeletePost(item);
       const onLikeButtonPress = () => onLikePress(item);
       return (
         <View>
           <NewsFeedPostItems
+          currentParentIndex={index}
+          parentIndex={parentIndex}
           updateCommentCount={updateCommentCount}
           pullRefresh={pullRefresh}
           item={item}
@@ -86,16 +91,7 @@ const NewsFeedList = ({
         </View>
       );
     },
-    [
-      updateCommentCount,
-      pullRefresh,
-      navigation,
-      userID,
-      onEditPressDone,
-      onDeletePost,
-      onLikePress,
-      onProfilePress,
-    ],
+    [parentIndex, updateCommentCount, pullRefresh, navigation, userID, onEditPressDone, onDeletePost, onLikePress, onProfilePress],
   );
 
   const newsFeedListItemSeperator = useCallback(
@@ -143,11 +139,18 @@ const NewsFeedList = ({
     [],
   );
 
+    const onViewableItemsChanged = useCallback(({ viewableItems }) => {
+        if (viewableItems?.length > 0) setParentIndex(viewableItems?.[0]?.index ?? 0)
+    }, []);
+
+  const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
   return (
     <View
       onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
       style={{ flex: 1 }}>
+
       <FlatList
+        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
         onScroll={onFeedScroll}
         ref={refs}
         style={{ flex: 1 }}
