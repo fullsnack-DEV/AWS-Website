@@ -23,7 +23,7 @@ const getYoutubeVideoID = (url) => {
     return (match && match[7].length === 11) ? match[7] : false;
 }
 
-const YOUTUBE_OPTION = 2; // 1 OR 2
+const YOUTUBE_OPTION = 1; // 1 OR 2
 const CustomURLPreview = memo(({ text }) => {
     let desc = text;
     const position = desc?.search(urlRegex)
