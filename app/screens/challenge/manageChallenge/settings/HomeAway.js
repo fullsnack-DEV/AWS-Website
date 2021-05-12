@@ -49,23 +49,29 @@ import images from '../../../../Constants/ImagePath';
       };
 
       const onSavePressed = () => {
-        const bodyParams = {
-          sport: sportName,
-          home_away: authContext?.entity?.uid === teams?.[0]?.user_id || authContext?.entity?.uid === teams?.[0]?.group_id ? 'Home' : 'Away',
+        if (comeFrom === 'InviteChallengeScreen') {
+          navigation.navigate(comeFrom, {
+            homeAway: authContext?.entity?.uid === teams?.[0]?.user_id || authContext?.entity?.uid === teams?.[0]?.group_id ? 'Home' : 'Away',
+          });
+        } else {
+          const bodyParams = {
+            sport: sportName,
+            home_away: authContext?.entity?.uid === teams?.[0]?.user_id || authContext?.entity?.uid === teams?.[0]?.group_id ? 'Home' : 'Away',
+          }
+          setloading(true);
+          patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+          .then((response) => {
+            setloading(false);
+            navigation.navigate(comeFrom, { settingObj: response.payload })
+            console.log('patch challenge response:=>', response.payload);
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
         }
-        setloading(true);
-        patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-        .then((response) => {
-          setloading(false);
-          navigation.navigate(comeFrom, { settingObj: response.payload })
-          console.log('patch challenge response:=>', response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
       }
 
      return (

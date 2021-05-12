@@ -72,23 +72,29 @@ export default function RefundPolicy({ navigation, route }) {
   );
 
   const onSavePressed = () => {
-    const bodyParams = {
-      sport: sportName,
-      refund_policy: typeSelection.key,
+    if (comeFrom === 'InviteChallengeScreen') {
+      navigation.navigate(comeFrom, {
+        refundPolicy: typeSelection.key,
+      });
+    } else {
+      const bodyParams = {
+        sport: sportName,
+        refund_policy: typeSelection.key,
+      }
+      setloading(true);
+      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+      .then((response) => {
+        setloading(false);
+        navigation.navigate(comeFrom, { settingObj: response.payload })
+        console.log('patch challenge response:=>', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
     }
-    setloading(true);
-    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-    .then((response) => {
-      setloading(false);
-      navigation.navigate(comeFrom, { settingObj: response.payload })
-      console.log('patch challenge response:=>', response.payload);
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
   }
 
   return (

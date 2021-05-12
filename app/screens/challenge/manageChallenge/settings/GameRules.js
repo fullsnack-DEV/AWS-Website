@@ -41,26 +41,31 @@ export default function GameRules({ navigation, route }) {
   }, [comeFrom, navigation, generalRules, specialRules]);
 
   const onSavePressed = () => {
-    console.log('generalRules:=>', generalRules);
-
-    const bodyParams = {
-      sport: sportName,
-      general_rules: generalRules,
-      special_rules: specialRules,
+    if (comeFrom === 'InviteChallengeScreen') {
+      navigation.navigate(comeFrom, {
+        gameGeneralRules: generalRules,
+        gameSpecialRules: specialRules,
+      });
+    } else {
+      const bodyParams = {
+        sport: sportName,
+        general_rules: generalRules,
+        special_rules: specialRules,
+      }
+      setloading(true);
+      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+      .then((response) => {
+        setloading(false);
+        navigation.navigate(comeFrom, { settingObj: response.payload })
+        console.log('patch challenge response:=>', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
     }
-    setloading(true);
-    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-    .then((response) => {
-      setloading(false);
-      navigation.navigate(comeFrom, { settingObj: response.payload })
-      console.log('patch challenge response:=>', response.payload);
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
   }
 
   return (

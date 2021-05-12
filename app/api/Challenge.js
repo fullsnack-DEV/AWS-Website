@@ -1,9 +1,9 @@
 import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
 
-export const getFeesEstimation = async (entityID, params, authContext) => makeAPIRequest({
+export const getFeesEstimation = async (params, authContext) => makeAPIRequest({
   method: 'post',
-  url: `${Config.BASE_URL}challenge/${entityID}/estimateGameFee`,
+  url: `${Config.BASE_URL}challenge/estimateGameFee`,
   data: params,
   authContext,
 })

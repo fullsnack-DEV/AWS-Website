@@ -1,15 +1,21 @@
 import React, {
-  useState, useContext, useLayoutEffect,
+ useState, useContext, useLayoutEffect, useEffect,
  } from 'react';
 import {
- Alert, StyleSheet, View, Text, FlatList,
+  Alert,
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  TextInput,
   SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
 
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
-import {
-  patchChallengeSetting,
-} from '../../../../api/Challenge';
+import { patchChallengeSetting } from '../../../../api/Challenge';
+import { getLatLong } from '../../../../api/External';
+
 import AuthContext from '../../../../auth/context';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
@@ -24,15 +30,27 @@ export default function Venue({ navigation, route }) {
 
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
+  const [selectedVenueIndex, setSelectedVenueIndex] = useState();
 
-  const [venue, setVenue] = useState(route?.params?.settingObj?.venue ? route?.params?.settingObj?.venue : [
-    {
-      id: 0,
-      name: '',
-      address: '',
-      details: '',
-    },
-  ]);
+  const [venue, setVenue] = useState(
+    route?.params?.settingObj?.venue
+      ? route?.params?.settingObj?.venue
+      : [
+          {
+            id: 0,
+            name: '',
+            address: '',
+            details: '',
+          },
+        ],
+  );
+  useEffect(() => {
+    if (route?.params?.venueObj) {
+      getLatLongData(route?.params?.venueObj?.description)
+
+      console.log('Venue Object', route?.params?.venueObj);
+    }
+  }, [route?.params?.venueObj]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -40,18 +58,20 @@ export default function Venue({ navigation, route }) {
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
-            const result = venue.filter((obj) => obj.name === '' || obj.address === '');
+            const result = venue.filter(
+              (obj) => obj.name === '' || obj.address === '',
+            );
             if (result.length > 0) {
-              Alert.alert('Please fill all fields.')
+              Alert.alert('Please fill all fields.');
             } else {
-              onSavePressed()
+              onSavePressed();
             }
           }}>
           Save
         </Text>
       ),
     });
-  }, [navigation, venue]);
+  }, [navigation, venue, selectedVenueIndex]);
 
   const addVenue = () => {
     if (venue.length < 10) {
@@ -86,9 +106,8 @@ export default function Venue({ navigation, route }) {
       </View>
 
       <View style={styles.viewContainer}>
-
         <TCTextInputClear
-        placeholder={strings.venueNamePlaceholder}
+          placeholder={strings.venueNamePlaceholder}
           onChangeText={(text) => {
             const ven = [...venue];
             venue[index].name = text;
@@ -103,8 +122,10 @@ export default function Venue({ navigation, route }) {
           multiline={false}
         />
 
-        <TCTextInputClear
-        placeholder={strings.venueAddressPlaceholder}
+        {/* <TCTextInputClear
+editable={false}
+pointerEvents="none"
+          placeholder={strings.venueAddressPlaceholder}
           onChangeText={(text) => {
             const ven = [...venue];
             venue[index].address = text;
@@ -117,10 +138,27 @@ export default function Venue({ navigation, route }) {
             setVenue(ven);
           }}
           multiline={false}
-        />
+        /> */}
+
+        <TouchableOpacity
+          style={styles.detailsSingleContainer}
+          onPress={() => {
+            setSelectedVenueIndex(index);
+            navigation.navigate('ChooseAddressScreen', {
+              comeFrom: 'Venue',
+            });
+          }}>
+          <TextInput
+            editable={false}
+            pointerEvents="none"
+            style={styles.detailsSingleText}
+            placeholder={strings.venueAddressPlaceholder}
+            value={venue[index].address}
+          />
+        </TouchableOpacity>
 
         <TCTextInputClear
-        placeholder={strings.venueDetailsPlaceholder}
+          placeholder={strings.venueDetailsPlaceholder}
           onChangeText={(text) => {
             const ven = [...venue];
             venue[index].details = text;
@@ -214,23 +252,45 @@ export default function Venue({ navigation, route }) {
       sport: sportName,
       venue: venue.map((e) => {
         delete e.id;
-        return e
+        return e;
       }),
-    }
+    };
     setloading(true);
     patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-    .then((response) => {
-      setloading(false);
-      navigation.navigate(comeFrom, { settingObj: response.payload })
-      console.log('patch challenge response:=>', response.payload);
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
+      .then((response) => {
+        setloading(false);
+        navigation.navigate(comeFrom, { settingObj: response.payload });
+        console.log('patch challenge response:=>', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const getLatLongData = (addressDescription) => {
+    getLatLong(addressDescription, authContext).then((response) => {
+      console.log('Lat/Long response::=>', response);
+
+      const ven = [...venue];
+      venue[selectedVenueIndex].address = route?.params?.venueObj?.description;
+
+      venue[selectedVenueIndex].coordinate = {
+        latitude: response.results[0].geometry.location.lat,
+        longitude: response.results[0].geometry.location.lng,
+      }
+
+      venue[selectedVenueIndex].region = {
+        latitude: response.results[0].geometry.location.lat,
+        longitude: response.results[0].geometry.location.lng,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }
+      setVenue(ven);
     });
-  }
+  };
 
   return (
     <TCKeyboardView>
@@ -241,19 +301,19 @@ export default function Venue({ navigation, route }) {
           <TCLabel title={strings.venueTitle} style={{ marginRight: 15 }} />
 
           <FlatList
-          data={venue}
-          renderItem={renderVenue}
-          keyExtractor={(item, index) => index.toString()}
-          style={{ marginBottom: 15 }}
-        />
+            data={venue}
+            renderItem={renderVenue}
+            keyExtractor={(item, index) => index.toString()}
+            style={{ marginBottom: 15 }}
+          />
           <TCMessageButton
-          title={'+ Add Venue'}
-          width={120}
-          alignSelf={'center'}
-          marginTop={15}
-          marginBottom={40}
-          onPress={() => addVenue()}
-        />
+            title={'+ Add Venue'}
+            width={120}
+            alignSelf={'center'}
+            marginTop={15}
+            marginBottom={40}
+            onPress={() => addVenue()}
+          />
         </View>
       </SafeAreaView>
 
@@ -289,7 +349,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 25,
     marginTop: 15,
-
   },
 
   deleteButton: {
@@ -308,5 +367,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 10,
   },
+  detailsSingleContainer: {
+    height: 40,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    width: '92%',
+    alignSelf: 'center',
+    alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 12,
+    paddingHorizontal: 15,
+    color: colors.lightBlackColor,
+    backgroundColor: colors.offwhite,
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    elevation: 3,
+    marginLeft: 25,
+    marginRight: 25,
 
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  detailsSingleText: {
+    alignSelf: 'center',
+    color: colors.lightBlackColor,
+    fontSize: 16,
+    height: 40,
+    fontFamily: fonts.RRegular,
+
+  },
 });

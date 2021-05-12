@@ -273,42 +273,67 @@ export default function GameDuration({ navigation, route }) {
   }
 
   const onSavePressed = () => {
-    const bodyParams = {
-      sport: sportName,
-      game_duration: {
-        period: period.map((e) => {
+    if (comeFrom === 'InviteChallengeScreen') {
+      const gameDuration = {
+
+          period: period.map((e) => {
+            delete e.id;
+            return e;
+          }),
+          first_period: firstPeriod,
+          details,
+
+      };
+      if (withOverTime) {
+        gameDuration.overtime = overTime.map((e) => {
           delete e.id;
           return e;
-        }),
-        first_period: firstPeriod,
-        details,
+        });
+      }
+      gameDuration.totalHours = calculateDuration().hours;
+      gameDuration.totalMinutes = calculateDuration().minutes;
 
-      },
-    };
-    if (withOverTime) {
-      bodyParams.game_duration.overtime = overTime.map((e) => {
-        delete e.id;
-        return e;
+      navigation.navigate(comeFrom, {
+        gameDuration,
       });
+    } else {
+      const bodyParams = {
+        sport: sportName,
+        game_duration: {
+          period: period.map((e) => {
+            delete e.id;
+            return e;
+          }),
+          first_period: firstPeriod,
+          details,
+
+        },
+      };
+      if (withOverTime) {
+        bodyParams.game_duration.overtime = overTime.map((e) => {
+          delete e.id;
+          return e;
+        });
+      }
+
+      bodyParams.game_duration.totalHours = calculateDuration().hours;
+      bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
+      console.log('body params:=>', bodyParams);
+
+      setloading(true);
+      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+        .then((response) => {
+          setloading(false);
+          navigation.navigate(comeFrom, { settingObj: response.payload });
+          console.log('patch challenge response:=>', response.payload);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     }
-
-    bodyParams.game_duration.totalHours = calculateDuration().hours;
-    bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
-    console.log('body params:=>', bodyParams);
-
-    setloading(true);
-    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-      .then((response) => {
-        setloading(false);
-        navigation.navigate(comeFrom, { settingObj: response.payload });
-        console.log('patch challenge response:=>', response.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
   };
 
   return (
