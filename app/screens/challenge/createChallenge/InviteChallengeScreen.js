@@ -22,7 +22,11 @@ import {
 import { parseInt } from 'lodash';
 import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
-import { getChallengeSetting, getFeesEstimation, createChallenge } from '../../../api/Challenge';
+import {
+  getChallengeSetting,
+  getFeesEstimation,
+  createChallenge,
+} from '../../../api/Challenge';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
@@ -49,6 +53,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [totalZero, setTotalZero] = useState(false);
   const [feeObj, setFeeObj] = useState();
+  const [venue, setVenue] = useState();
 
   const [startDate, setStartDate] = useState(
     new Date().setHours(new Date().getHours() + 1),
@@ -61,7 +66,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
 
   const [teams, setteams] = useState([]);
 
-  const getSettings = useCallback(() => {
+  useEffect(() => {
     setloading(true);
     getChallengeSetting(authContext?.entity?.uid, sportName, authContext)
       .then((response) => {
@@ -78,8 +83,23 @@ export default function InviteChallengeScreen({ navigation, route }) {
   }, [authContext, sportName]);
 
   useEffect(() => {
-    getSettings();
-  }, []);
+    if (route?.params?.selectedVenueObj) {
+      setVenue(route?.params?.selectedVenueObj)
+    }
+    if (settingObject?.venue?.length === 1) {
+      setVenue(settingObject?.venue?.[0])
+    }
+    }, [route?.params?.selectedVenueObj, settingObject?.venue])
+
+  useEffect(() => {
+    entity = authContext.entity;
+    if (groupObj) {
+      setteams([{ ...entity.obj }, { ...groupObj }]);
+    }
+    if (settingObject?.game_fee?.fee) {
+      getFeeDetail();
+    }
+  }, [authContext.entity, groupObj, settingObject?.game_fee?.fee]);
 
   useEffect(() => {
     console.log('useEffect Called');
@@ -104,7 +124,10 @@ export default function InviteChallengeScreen({ navigation, route }) {
         settings.game_duration = route?.params?.gameDuration;
       }
       if (route?.params?.gameGeneralRules) {
-        console.log('route?.params?.gameDuration', route?.params?.gameDuration);
+        console.log(
+          'route?.params?.gameGeneralRules',
+          route?.params?.gameGeneralRules,
+        );
         settings.general_rules = route?.params?.gameGeneralRules;
         settings.special_rules = route?.params?.gameSpecialRules;
       }
@@ -118,6 +141,8 @@ export default function InviteChallengeScreen({ navigation, route }) {
       setSettingObject(settings);
     }
   }, [
+    authContext.entity,
+    groupObj,
     isFocused,
     route?.params?.gameDuration,
     route?.params?.gameFee,
@@ -129,16 +154,6 @@ export default function InviteChallengeScreen({ navigation, route }) {
     route?.params?.refundPolicy,
     route?.params?.scorekeeperSetting,
   ]);
-
-  useEffect(() => {
-    if (isFocused) {
-      entity = authContext.entity;
-      if (groupObj) {
-        setteams([{ ...entity.obj }, { ...groupObj }]);
-      }
-      getFeeDetail()
-    }
-  }, [authContext.entity, groupObj, isFocused, route.params.groupObj]);
 
   const renderPeriod = ({ item, index }) => (
     <>
@@ -227,63 +242,82 @@ export default function InviteChallengeScreen({ navigation, route }) {
   );
 
   const getFeeDetail = () => {
-        const feeBody = {}
-        feeBody.payment_method_type = 'card';
-        feeBody.currency_type = settingObject?.game_fee?.currency_type?.toLowerCase();
-        feeBody.game_fee = parseInt(settingObject?.game_fee?.fee)
-        setloading(true);
-        getFeesEstimation(feeBody, authContext)
-          .then((response) => {
-            setFeeObj(response.payload)
-            console.log('Body estimate fee:=>', response.payload);
+    const feeBody = {};
+    feeBody.payment_method_type = 'card';
+    feeBody.currency_type = settingObject?.game_fee?.currency_type?.toLowerCase();
+    feeBody.total_game_fee = Number(settingObject?.game_fee?.fee?.toString());
+    setloading(true);
+    getFeesEstimation(feeBody, authContext)
+      .then((response) => {
+        setFeeObj(response.payload);
+        if (response.payload.total_game_fee === 0) {
+          setTotalZero(true);
+        }
+        console.log('Body estimate fee:=>', response.payload);
 
-            setloading(false);
-          })
-          .catch((e) => {
-            setloading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
 
-  // const sendChallengeInvitation = () => {
-  //   entity = authContext.entity.obj;
+  const sendChallengeInvitation = () => {
+    entity = authContext.entity;
+    console.log('Entity:=>', entity);
 
-  //   let entityID;
-  //   let type;
-  //   if (teams?.[0]?.group_id) {
-  //     type = 'teams'
-  //     if (teams?.[0]?.group_id === entity.uid) {
-  //       entityID = teams[1].group_id
-  //     } else {
-  //       entityID = teams[0].group_id
-  //     }
-  //   } else {
-  //     type = 'users'
-  //     if (route.params.teamData[0].user_id === entity.uid) {
-  //       entityID = teams[1].user_id
-  //     } else {
-  //       entityID = teams[0].user_id
-  //     }
-  //   }
+    // let entityID;
+    // let type;
+    // if (teams?.[0]?.group_id) {
+    //   type = 'teams';
+    //   if (teams?.[0]?.group_id === entity.uid) {
+    //     entityID = teams[1].group_id;
+    //   } else {
+    //     entityID = teams[0].group_id;
+    //   }
+    // } else {
+    //   type = 'users';
+    //   if (route.params.teamData[0].user_id === entity.uid) {
+    //     entityID = teams[1].user_id;
+    //   } else {
+    //     entityID = teams[0].user_id;
+    //   }
+    // }
 
-  //       const body = { ...settingObject }
+    const body = {
+      ...settingObject,
+      ...feeObj,
+      venue,
+      start_datetime: parseFloat(new Date(startDate).getTime() / 1000).toFixed(0),
+      end_datetime: parseFloat(new Date(endDate).getTime() / 1000).toFixed(0),
+      challenger: teams?.[1]?.group_id || teams?.[1]?.user_id,
+      challengee: teams?.[0]?.group_id || teams?.[0]?.user_id,
+      home_team: settingObject?.home_away === 'Home' ? entity?.uid : groupObj?.group_id || groupObj?.user_id,
+      away_team: settingObject?.home_away === 'Home' ? groupObj?.group_id || groupObj?.user_id : entity?.uid,
+      user_challenge: !groupObj?.group_id,
+    };
 
-  //       setloading(true);
-  //       createChallenge(entityID, type, body, authContext)
-  //         .then((response) => {
-  //           console.log(' challenge response:=>', response.payload);
+    console.log('Challenge Object:=>', body);
 
-  //           setloading(false);
-  //         })
-  //         .catch((e) => {
-  //           setloading(false);
-  //           setTimeout(() => {
-  //             Alert.alert(strings.alertmessagetitle, e.message);
-  //           }, 10);
-  //         });
-  // };
+    setloading(true);
+    createChallenge(body, authContext)
+      .then((response) => {
+        console.log(' challenge response:=>', response.payload);
+        navigation.navigate('InviteToChallengeSentScreen', {
+          groupObj,
+        });
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   return (
     <TCKeyboardView>
@@ -509,7 +543,11 @@ export default function InviteChallengeScreen({ navigation, route }) {
         <TCThickDivider marginTop={20} />
 
         <View>
-          <TCChallengeTitle title={'Date & Time'} />
+          <TCChallengeTitle title={'Date & Time'}
+          isEdit={true}
+          onEditPress={() => {
+            navigation.navigate('ChooseTimeSlotScreen');
+          }}/>
 
           <View>
             <View style={styles.dateTimeValue}>
@@ -550,20 +588,28 @@ export default function InviteChallengeScreen({ navigation, route }) {
         </View>
 
         <View>
-          <TCChallengeTitle title={'Venue'} />
+          <TCChallengeTitle title={'Venue'}
+          isEdit={!!venue && settingObject?.venue?.length > 1}
+          onEditPress={() => {
+            navigation.navigate('ChooseVenueScreen', {
+              venues: settingObject?.venue || [],
+              comeFrom: 'InviteChallengeScreen',
+            });
+          }}
+           />
 
-          {route?.params?.selectedVenueObj ? (
+          {venue || settingObject?.venue?.length === 1 ? (
             <View style={styles.venueContainer}>
               <Text style={styles.venueTitle}>
-                {route?.params?.selectedVenueObj?.name}
+                {venue?.name}
               </Text>
               <Text style={styles.venueAddress}>
-                {route?.params?.selectedVenueObj?.address}
+                {venue?.address }
               </Text>
 
               <EventMapView
-                coordinate={route?.params?.selectedVenueObj?.coordinate}
-                region={route?.params?.selectedVenueObj?.region}
+                coordinate={venue?.coordinate }
+                region={venue?.region}
                 style={styles.map}
               />
             </View>
@@ -665,18 +711,26 @@ export default function InviteChallengeScreen({ navigation, route }) {
         />
         <TCThickDivider marginTop={20} />
 
-        {!totalZero && <View>
-          <TCLabel title={'Income'} style={{ marginBottom: 15 }} />
-          <GameFeeCard feeObject={feeObj} currency={settingObject?.game_fee?.currency_type}/>
-        </View>}
-        <TCThickDivider marginTop={20} />
+        {!totalZero && (
+          <View>
+            <TCLabel title={'Income'} style={{ marginBottom: 15 }} />
+            <GameFeeCard
+              feeObject={feeObj}
+              currency={settingObject?.game_fee?.currency_type}
+              isChallenger={false}
+            />
+            <TCThickDivider marginTop={20} />
+          </View>
+        )}
       </View>
 
       <TCGradientButton
+      isDisabled={!venue || startDate === '' || endDate === ''}
         title={strings.sendInviteTitle}
         onPress={() => {
           // navigation.push('ChallengePaymentScreen');
-          navigation.push('InviteToChallengeSentScreen');
+          // navigation.push('InviteToChallengeSentScreen');
+          sendChallengeInvitation();
         }}
         outerContainerStyle={{
           marginBottom: 45,

@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React, {
  useState, useContext, useLayoutEffect, useEffect,
  } from 'react';
@@ -46,7 +47,7 @@ export default function Venue({ navigation, route }) {
   );
   useEffect(() => {
     if (route?.params?.venueObj) {
-      getLatLongData(route?.params?.venueObj?.description)
+      getLatLongData(route?.params?.venueObj?.description);
 
       console.log('Venue Object', route?.params?.venueObj);
     }
@@ -275,19 +276,39 @@ pointerEvents="none"
       console.log('Lat/Long response::=>', response);
 
       const ven = [...venue];
-      venue[selectedVenueIndex].address = route?.params?.venueObj?.description;
+      let city, state, country;
+      response.results[0].address_components.map((e) => {
+        if (e?.types?.includes('country')) {
+          country = e.long_name;
+        }
 
-      venue[selectedVenueIndex].coordinate = {
+       if (e?.types?.includes('administrative_area_level_1')) {
+         state = e.long_name;
+       }
+
+        if (e?.types?.includes('administrative_area_level_2')) {
+          city = e.long_name;
+        }
+      });
+
+      ven[selectedVenueIndex].address = route?.params?.venueObj?.description;
+      ven[selectedVenueIndex].city = city;
+      ven[selectedVenueIndex].state = state;
+      ven[selectedVenueIndex].country = country;
+
+      ven[selectedVenueIndex].coordinate = {
         latitude: response.results[0].geometry.location.lat,
         longitude: response.results[0].geometry.location.lng,
-      }
+      };
 
-      venue[selectedVenueIndex].region = {
+      ven[selectedVenueIndex].region = {
         latitude: response.results[0].geometry.location.lat,
         longitude: response.results[0].geometry.location.lng,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
-      }
+      };
+
+      console.log('Ven:=>', ven);
       setVenue(ven);
     });
   };
@@ -397,6 +418,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     height: 40,
     fontFamily: fonts.RRegular,
-
   },
 });

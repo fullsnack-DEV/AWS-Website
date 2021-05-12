@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View, StyleSheet, Image, Text, TouchableOpacity,
 } from 'react-native';
@@ -12,11 +12,11 @@ import fonts from '../../../Constants/Fonts'
 // import TCBorderButton from '../../../components/TCBorderButton';
 
 export default function ChallengeSentScreen({ navigation, route }) {
-  useEffect(() => {
-    setTimeout(() => {
-      navigation.popToTop()
-    }, 3000);
-  })
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     navigation.popToTop()
+  //   }, 3000);
+  // })
   return (
     <View style={styles.mainContainer}>
 
