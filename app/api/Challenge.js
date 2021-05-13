@@ -55,9 +55,9 @@ export const payAgainScorekeeper = async (reservationID, params, authContext) =>
   authContext,
 })
 
-export const createChallenge = async (entityID, type, params, authContext) => makeAPIRequest({
+export const createChallenge = async (params, authContext) => makeAPIRequest({
   method: 'post',
-  url: `${Config.BASE_URL}${type}/${entityID}/challenge`,
+  url: `${Config.BASE_URL}/challenge`,
   data: params,
   authContext,
   // type = 'teams' or 'users'

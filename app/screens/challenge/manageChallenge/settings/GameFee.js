@@ -51,7 +51,7 @@ export default function GameFee({ navigation, route }) {
     if (comeFrom === 'InviteChallengeScreen') {
       navigation.navigate(comeFrom, {
         gameFee: {
-          fee: basicFee,
+          fee: Number(basicFee),
           currency_type: currencyType,
         },
       });
@@ -59,7 +59,7 @@ export default function GameFee({ navigation, route }) {
       const bodyParams = {
         sport: sportName,
         game_fee: {
-          fee: basicFee,
+          fee: Number(basicFee),
           currency_type: currencyType,
         },
       };
