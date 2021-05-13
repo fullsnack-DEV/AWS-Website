@@ -26,6 +26,7 @@ function MultiPostVideo({
   currentParentIndex,
   childIndex,
   currentChildIndex,
+  onLikePress,
 }) {
   const videoPlayerRef = useRef();
   const isFocused = useIsFocused();
@@ -36,7 +37,12 @@ function MultiPostVideo({
 
   const toggleModal = () => {
     // setModalVisible(!isModalVisible);
-    navigation.navigate('FeedViewScreen', { feedItem: item, currentPage: itemNumber, updateCommentCount })
+    navigation.navigate('FeedViewScreen', {
+      feedItem: item,
+      currentPage: itemNumber,
+      updateCommentCount,
+      onLikePress,
+    })
   };
 
   const secondsToHms = (date) => {

@@ -324,7 +324,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 10,
     // marginBottom: 10,
-    // backgroundColor: 'red',
     // height: 70,
   },
   likeImage: {
