@@ -32,6 +32,7 @@ function MultiPostVideo({
   const [mute, setMute] = useState(true);
   const [videoLoad, setVideoLoad] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [videoDuration, setVideoDuration] = useState(0)
 
   const toggleModal = () => {
     // setModalVisible(!isModalVisible);
@@ -68,7 +69,7 @@ function MultiPostVideo({
   const onProgress = useCallback((curTimeData) => setCurrentTime(curTimeData?.currentTime), []);
 
   return (
-    <View style={styles.singleImageDisplayStyle}>
+    <View style={styles.mainContainer}>
       <View
         style={[
           styles.singleImageDisplayStyle,
@@ -94,7 +95,8 @@ function MultiPostVideo({
           source={{ uri: data.url }}
           style={[styles.singleImageDisplayStyle, { position: 'absolute' }]}
           resizeMode={'cover'}
-          onLoad={() => {
+          onLoad={(metaData) => {
+            setVideoDuration(metaData?.duration)
             setVideoLoad(true);
             videoPlayerRef.current.seek(0);
           }}
@@ -110,7 +112,7 @@ function MultiPostVideo({
       {videoLoad && (
         <>
           <Text style={styles.currentTime}>
-            {secondsToHms(Math.ceil((data?.duration / 1000)?.toFixed(0)) - currentTime)}
+            {secondsToHms(videoDuration?.toFixed(0) - currentTime)}
           </Text>
           <TouchableHighlight
               style={styles.pauseMuteStyle}
@@ -183,24 +185,29 @@ const styles = StyleSheet.create({
     top: 18,
     left: 10,
     fontFamily: fonts.RRegular,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    elevation: 5,
+    textShadowColor: colors.googleColor,
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 5,
   },
-  singleImageDisplayStyle: {
+  mainContainer: {
     shadowColor: colors.googleColor,
     shadowOpacity: 0.16,
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 15,
-    elevation: 15,
+    elevation: 1,
     alignItems: 'center',
     alignSelf: 'center',
     borderRadius: wp('4%'),
     height: wp('91%'),
     justifyContent: 'center',
-    marginVertical: wp('1%'),
+    width: wp('91%'),
+  },
+  singleImageDisplayStyle: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: wp('4%'),
+    height: wp('91%'),
+    justifyContent: 'center',
     width: wp('91%'),
   },
 });

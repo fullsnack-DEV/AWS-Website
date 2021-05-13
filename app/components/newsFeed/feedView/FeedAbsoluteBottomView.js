@@ -18,6 +18,7 @@ import TaggedModal from '../../modals/TaggedModal';
 import LikersModal from '../../modals/LikersModal';
 
 const FeedAbsoluteBottomView = ({
+    videoMetaData,
     feedItem = {},
     feedSubItem = {},
     isLandscape,
@@ -40,12 +41,11 @@ const FeedAbsoluteBottomView = ({
     const likersModalRef = useRef(null);
     const commentModalRef = useRef(null);
     const [slidingStatus, setSlidingStatus] = useState(false);
-    const sourceData = feedSubItem?.attachments?.[currentViewIndex];
     const authContext = useContext(AuthContext);
     const [like, setLike] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
-
+    const videoDuration = Math.floor(videoMetaData?.duration ?? 0)
     useEffect(() => {
         if (feedItem) {
             let filterLike = []
@@ -220,7 +220,7 @@ const FeedAbsoluteBottomView = ({
         return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
     }
 
-    const renderSeekBar = useMemo(() => (
+    const renderSeekBar = useMemo(() => (videoDuration ? (
       <View
             pointerEvents={showParent && !readMore ? 'auto' : 'none'}
             style={{
@@ -239,15 +239,15 @@ const FeedAbsoluteBottomView = ({
                 marginRight: 15,
                 color: colors.whiteColor,
         }}>
-          {currentTime > ((sourceData?.duration ?? 0) / 1000)
-              ? secondsToHms(Math.ceil((sourceData?.duration / 1000)?.toFixed(0)))
+          {currentTime > videoDuration
+              ? secondsToHms(videoDuration?.toFixed(0))
               : secondsToHms(Math.ceil(currentTime?.toFixed(0)))
           }
         </Text>
         <MultiSlider
             smoothSnapped={true}
             markerOffsetX={3}
-            max={((sourceData?.duration ?? 0) / 1000)}
+            max={videoDuration}
             enabledTwo={false}
             isMarkersSeparated={true}
             customMarkerLeft={renderThumb}
@@ -275,11 +275,10 @@ const FeedAbsoluteBottomView = ({
                 textAlign: 'right',
 
         }}>
-          {sourceData?.duration && secondsToHms((sourceData?.duration / 1000))}
+          {videoDuration ? secondsToHms(videoDuration) : null}
         </Text>
-
       </View>
-    ), [currentTime, isLandscape, paused, readMore, renderThumb, screenInsets, setCurrentTime, setPaused, showParent, sourceData?.duration, videoPlayerRef])
+    ) : null), [currentTime, isLandscape, paused, readMore, renderThumb, screenInsets, setCurrentTime, setPaused, showParent, videoDuration, videoPlayerRef])
 
     return (
       <Fragment>

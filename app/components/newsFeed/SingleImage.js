@@ -34,7 +34,7 @@ function SingleImage({
   return (
     <View
       style={ [
-        styles.uploadedImage,
+        styles.mainContainer,
         {
           height,
         },
@@ -77,18 +77,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 25,
   },
-  uploadedImage: {
-    shadowColor: colors.googleColor,
+  mainContainer: {
+    borderRadius: wp('4%'),
+    shadowColor: colors.blackColor,
     shadowOpacity: 0.16,
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 15,
-    elevation: 15,
+    elevation: 5,
+    backgroundColor: 'red',
+    height: wp('91%'),
+    width: wp('91%'),
+    marginVertical: '1%',
     alignItems: 'center',
     alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  uploadedImage: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
     borderRadius: wp('5%'),
     height: wp('96%'),
-    justifyContent: 'center',
-    marginVertical: '2%',
     width: wp('96%'),
   },
 });

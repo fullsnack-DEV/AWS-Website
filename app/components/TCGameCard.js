@@ -162,13 +162,14 @@ import ReservationStatus from '../Constants/ReservationStatus';
 
 const styles = StyleSheet.create({
   mainContainer: {
+    margin: 10,
     borderRadius: 15,
-    padding: 15,
-    elevation: 15,
+    padding: 5,
+    elevation: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.16,
-    shadowRadius: 15,
+    shadowOffset: { width: 0, height: 1.5 },
+    shadowOpacity: 0.27,
+    shadowRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
   },

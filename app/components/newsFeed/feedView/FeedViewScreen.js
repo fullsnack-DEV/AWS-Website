@@ -139,6 +139,7 @@ const FeedViewScreen = ({ navigation, route }) => {
   const renderBottomView = useMemo(() => (
     <Fragment>
       <FeedAbsoluteBottomView
+        videoMetaData={videoMetaData}
         updateCommentCount={route?.params?.updateCommentCount}
         screenInsets={screenInsets}
         shareActionSheetRef={shareActionSheetRef}
@@ -159,7 +160,7 @@ const FeedViewScreen = ({ navigation, route }) => {
         setReadMore={setReadMore}
     />
     </Fragment>
-  ), [currentTime, currentViewIndex, feedItem, feedSubItem, isFullScreen, isLandscape, navigation, onLikePress, paused, readMore, route?.params?.updateCommentCount, screenInsets, showParent])
+  ), [currentTime, currentViewIndex, feedItem, feedSubItem, isFullScreen, isLandscape, navigation, onLikePress, paused, readMore, route?.params?.updateCommentCount, screenInsets, showParent, videoMetaData])
 
   // When user touch the screen for hide top and bottom view
   const setShowParent = useCallback((toggleValue) => {

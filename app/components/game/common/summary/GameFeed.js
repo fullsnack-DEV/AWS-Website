@@ -3,6 +3,7 @@ import React, {
   useCallback, useContext, useEffect, useImperativeHandle, useMemo, useState,
 } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
+import _ from 'lodash';
 import WritePost from '../../../newsFeed/WritePost';
 import colors from '../../../../Constants/Colors';
 import NewsFeedList from '../../../../screens/newsfeeds/NewsFeedList';
@@ -187,10 +188,28 @@ const GameFeed = ({
       activity_id: item.id,
     };
     createReaction(bodyParams, authContext)
-        .catch((e) => {
-          Alert.alert('', e.messages)
-        });
-  }, [authContext])
+        .then((res) => {
+          const pData = _.cloneDeep(gameFeedData)
+          const pIndex = pData.findIndex(((pItem) => pItem?.id === item?.id));
+          const likeIndex = pData[pIndex].own_reactions?.clap?.findIndex((likeItem) => likeItem?.user_id === authContext?.entity?.uid) ?? -1;
+          if (likeIndex === -1) {
+            pData[pIndex].own_reactions = { ...pData?.[pIndex]?.own_reactions }
+            pData[pIndex].own_reactions.clap = [...pData?.[pIndex]?.own_reactions?.clap]
+            pData[pIndex].own_reactions.clap.push(res?.payload)
+            pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts }
+            pData[pIndex].reaction_counts.clap = pData[pIndex].reaction_counts?.clap + 1 ?? 0;
+          } else {
+            pData[pIndex].own_reactions = { ...pData?.[pIndex]?.own_reactions }
+            pData[pIndex].own_reactions.clap = [...pData?.[pIndex]?.own_reactions?.clap]
+            pData[pIndex].own_reactions.clap = pData[pIndex].own_reactions?.clap?.filter((likeItem) => likeItem?.user_id !== authContext?.entity?.uid)
+            pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts }
+            pData[pIndex].reaction_counts.clap = pData[pIndex].reaction_counts?.clap - 1 ?? 0;
+          }
+          setGameFeedData([...pData]);
+        }).catch((e) => {
+      Alert.alert('', e.messages)
+    });
+  }, [authContext, gameFeedData]);
 
   const renderWritePostView = useMemo(() => (
     <WritePost
@@ -217,17 +236,16 @@ const GameFeed = ({
       {renderWritePostView}
       <View style={styles.sepratorView} />
       <NewsFeedList
-          updateCommentCount={updateCommentCount}
-          refs={gameFeedRefs}
-          onDeletePost={onDeletePost}
-          navigation={navigation}
-          postData={gameFeedData}
-          onEditPressDone={editPostDoneCall}
-          onLikePress={onLikePress}
-          scrollEnabled={false}
-          footerLoading={footerLoading && isNextDataLoading}
-      />
-
+            updateCommentCount={updateCommentCount}
+            refs={gameFeedRefs}
+            onDeletePost={onDeletePost}
+            navigation={navigation}
+            postData={gameFeedData}
+            onEditPressDone={editPostDoneCall}
+            onLikePress={onLikePress}
+            scrollEnabled={false}
+            footerLoading={footerLoading && isNextDataLoading}
+        />
     </View>
   )
 }

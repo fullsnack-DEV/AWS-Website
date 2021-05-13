@@ -65,11 +65,21 @@ import WriteCommentItems from './WriteCommentItems';
     if (currentUserDetail && currentUserDetail.thumbnail) {
       userImage = currentUserDetail.thumbnail;
     }
+    const onProfilePress = useCallback((data) => {
+          if (commentModalRef?.current?.close()) commentModalRef.current.close();
+          navigation.navigate('HomeScreen', {
+              uid: data?.user?.id,
+              backButtonVisible: true,
+              role: data?.user?.entity_type === 'player'
+                  ? 'user'
+                  : data?.user?.entity_type,
+          });
+      }, [commentModalRef, navigation])
 
     const renderComments = useCallback(
         ({ item: data }) => (
           <WriteCommentItems data={data} onProfilePress={onProfilePress}/>
-        ), [],
+        ), [onProfilePress],
 );
       const listEmptyComponent = () => (
         <View style={styles.emptyContainer}>
@@ -159,17 +169,6 @@ import WriteCommentItems from './WriteCommentItems';
       renderItem: renderComments,
       keyExtractor: (index) => index.toString(),
       ListEmptyComponent: listEmptyComponent,
-    }
-
-    const onProfilePress = (data) => {
-        if (commentModalRef?.current?.close()) commentModalRef.current.close();
-        navigation.navigate('HomeScreen', {
-            uid: data?.user?.id,
-            backButtonVisible: true,
-            role: data?.user?.entity_type === 'player'
-                    ? 'user'
-                    : data?.user?.entity_type,
-        });
     }
 
     return (

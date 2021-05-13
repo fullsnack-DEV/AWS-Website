@@ -29,7 +29,7 @@ function PostImageSet({
   };
 
   return (
-    <View style={ styles.uploadedImage }>
+    <View style={ styles.mainContainer }>
       <View style={ [styles.uploadedImage, { borderWidth: 1, borderColor: colors.lightgrayColor }] }>
         <FastImage
           style={ styles.imageStyle }
@@ -84,18 +84,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 25,
   },
-  uploadedImage: {
-    shadowColor: colors.googleColor,
+  mainContainer: {
+    borderRadius: wp('4%'),
+    shadowColor: colors.blackColor,
     shadowOpacity: 0.16,
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 15,
-    elevation: 15,
+    elevation: 5,
+    backgroundColor: 'red',
+    height: wp('91%'),
+    width: wp('91%'),
+    marginVertical: '1%',
+  },
+  uploadedImage: {
     alignItems: 'center',
     alignSelf: 'center',
     borderRadius: wp('4%'),
-    height: wp('91%'),
     justifyContent: 'center',
-    marginVertical: '1%',
+    height: wp('91%'),
     width: wp('91%'),
   },
 });

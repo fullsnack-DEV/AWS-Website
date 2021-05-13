@@ -2,6 +2,7 @@ import React, {
     memo, useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 import { Alert, View, StyleSheet } from 'react-native';
+import _ from 'lodash';
 import {
     createPost,
     createReaction, deletePost, getUserPosts, updatePost,
@@ -141,10 +142,28 @@ const HomeFeed = ({
             activity_id: item.id,
         };
         createReaction(bodyParams, authContext)
-            .catch((e) => {
-                Alert.alert('', e.messages)
-            });
-    }, [authContext])
+            .then((res) => {
+                const pData = _.cloneDeep(postData)
+                const pIndex = pData.findIndex(((pItem) => pItem?.id === item?.id));
+                const likeIndex = pData[pIndex].own_reactions?.clap?.findIndex((likeItem) => likeItem?.user_id === authContext?.entity?.uid) ?? -1;
+                if (likeIndex === -1) {
+                    pData[pIndex].own_reactions = { ...pData?.[pIndex]?.own_reactions }
+                    pData[pIndex].own_reactions.clap = [...pData?.[pIndex]?.own_reactions?.clap]
+                    pData[pIndex].own_reactions.clap.push(res?.payload)
+                    pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts }
+                    pData[pIndex].reaction_counts.clap = pData[pIndex].reaction_counts?.clap + 1 ?? 0;
+                } else {
+                    pData[pIndex].own_reactions = { ...pData?.[pIndex]?.own_reactions }
+                    pData[pIndex].own_reactions.clap = [...pData?.[pIndex]?.own_reactions?.clap]
+                    pData[pIndex].own_reactions.clap = pData[pIndex].own_reactions?.clap?.filter((likeItem) => likeItem?.user_id !== authContext?.entity?.uid)
+                    pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts }
+                    pData[pIndex].reaction_counts.clap = pData[pIndex].reaction_counts?.clap - 1 ?? 0;
+                }
+                setPostData([...pData]);
+            }).catch((e) => {
+            Alert.alert('', e.messages)
+        });
+    }, [authContext, postData]);
 
     const createPostAfterUpload = useCallback((dataParams) => {
         createPost(dataParams, authContext)
