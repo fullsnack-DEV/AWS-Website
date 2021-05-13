@@ -22,6 +22,7 @@ const VideoPost = memo(({
   data,
   navigation,
   updateCommentCount,
+  onLikePress,
 }) => {
   const isFocused = useIsFocused();
   const videoPlayerRef = useRef();
@@ -35,7 +36,11 @@ const VideoPost = memo(({
   }, [])
 
   const toggleModal = useCallback(() => {
-    navigation.navigate('FeedViewScreen', { feedItem: item, updateCommentCount })
+    navigation.navigate('FeedViewScreen', {
+      feedItem: item,
+      updateCommentCount,
+      onLikePress,
+    })
   }, [item, navigation, updateCommentCount]);
 
   const onVideoLoad = useCallback((videoMetaData) => {

@@ -151,17 +151,17 @@ const HomeFeed = ({
                     pData[pIndex].own_reactions.clap = [...pData?.[pIndex]?.own_reactions?.clap]
                     pData[pIndex].own_reactions.clap.push(res?.payload)
                     pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts }
-                    pData[pIndex].reaction_counts.clap = pData[pIndex].reaction_counts?.clap + 1 ?? 0;
+                    pData[pIndex].reaction_counts.clap = pData?.[pIndex]?.reaction_counts?.clap + 1 ?? 0;
                 } else {
                     pData[pIndex].own_reactions = { ...pData?.[pIndex]?.own_reactions }
                     pData[pIndex].own_reactions.clap = [...pData?.[pIndex]?.own_reactions?.clap]
-                    pData[pIndex].own_reactions.clap = pData[pIndex].own_reactions?.clap?.filter((likeItem) => likeItem?.user_id !== authContext?.entity?.uid)
+                    pData[pIndex].own_reactions.clap = pData?.[pIndex]?.own_reactions?.clap?.filter((likeItem) => likeItem?.user_id !== authContext?.entity?.uid)
                     pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts }
-                    pData[pIndex].reaction_counts.clap = pData[pIndex].reaction_counts?.clap - 1 ?? 0;
+                    pData[pIndex].reaction_counts.clap = pData?.[pIndex]?.reaction_counts?.clap - 1 ?? 0;
                 }
                 setPostData([...pData]);
             }).catch((e) => {
-            Alert.alert('', e.messages)
+                console.log(e.message)
         });
     }, [authContext, postData]);
 
@@ -239,9 +239,10 @@ const HomeFeed = ({
     ), [StickyHeaderComponent, currentTab, homeFeedHeaderComponent, isAdmin])
 
     const updateCommentCount = (updatedComment) => {
-        const pData = [...postData]
+        const pData = _.cloneDeep(postData)
         const pIndex = pData?.findIndex((item) => item?.id === updatedComment?.id)
         if (pIndex !== -1) {
+            pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts };
             pData[pIndex].reaction_counts.comment = updatedComment?.count
             setPostData([...pData]);
         }

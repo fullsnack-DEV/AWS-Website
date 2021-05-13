@@ -13,7 +13,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '../../../Constants/Colors';
 import FeedAbsoluteTopView from './FeedAbsoluteTopView';
 import FeedAbsoluteBottomView from './FeedAbsoluteBottomView';
-import { createReaction } from '../../../api/NewsFeeds';
 import AuthContext from '../../../auth/context';
 import FeedPostView from './FeedPostView';
 
@@ -125,22 +124,23 @@ const FeedViewScreen = ({ navigation, route }) => {
 
   // When user click on like button
   const onLikePress = useCallback(() => {
-    const bodyParams = {
-      reaction_type: 'clap',
-      activity_id: feedItem?.id,
-    };
-    createReaction(bodyParams, authContext)
-        .catch((e) => {
-          console.log('Error: ', e)
-        });
-  }, [authContext, feedItem?.id]);
+    if (route?.params?.onLikePress) {
+      route.params.onLikePress(feedItem)
+    }
+  }, [feedItem, route?.params]);
+
+  const onUpdateComment = useCallback((updateCommentData) => {
+    if (route?.params?.updateCommentCount) {
+      route.params.updateCommentCount(updateCommentData)
+    }
+  }, [route.params])
 
   // Render bottom bar which contain comment , like , share button and description and tagged
   const renderBottomView = useMemo(() => (
     <Fragment>
       <FeedAbsoluteBottomView
         videoMetaData={videoMetaData}
-        updateCommentCount={route?.params?.updateCommentCount}
+        updateCommentCount={onUpdateComment}
         screenInsets={screenInsets}
         shareActionSheetRef={shareActionSheetRef}
         currentViewIndex={currentViewIndex}

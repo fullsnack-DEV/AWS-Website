@@ -1,7 +1,7 @@
 import React, {
- useCallback, useRef,
+    useCallback, useEffect, useRef, useState,
 } from 'react';
-import { View } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
 import Orientation from 'react-native-orientation';
 import { getScreenHeight, getScreenWidth } from '../../../utils';
@@ -26,9 +26,19 @@ const FeedPostView = ({
     paused,
     setPaused,
     setVideoMetaData,
+    currentPage,
 }) => {
     const carouselRef = useRef();
-    const renderAttachments = useCallback(({ item, index }) => (
+    const [showContent, setShowContent] = useState(false);
+    useEffect(() => {
+        InteractionManager.runAfterInteractions(() => {
+            if (carouselRef.current) {
+                carouselRef.current.snapToItem(Number(currentPage) - 1, false)
+                setShowContent(true);
+            }
+        })
+    }, [currentPage])
+    const renderAttachments = useCallback(({ item, index }) => showContent && (
       <View>
         <>
           {item?.type === 'video'
@@ -63,29 +73,30 @@ const FeedPostView = ({
               )}
         </>
       </View>
-      ), [currentTime, currentViewIndex, isFullScreen, isLandscape, isMute, paused, screenInsets, setCurrentTime, setIsFullScreen, setPaused, setShowParent, showParent, videoPlayerRef])
+      ), [currentTime, currentViewIndex, isFullScreen, isLandscape, isMute, paused, screenInsets, setCurrentTime, setIsFullScreen, setPaused, setShowParent, setVideoMetaData, showContent, showParent, videoPlayerRef])
 
  return (
    <Carousel
-           ref={carouselRef}
-           onSnapToItem={(itemIndex) => {
-                   setCurrentViewIndex(itemIndex)
-                   Orientation.unlockAllOrientations();
-                   setIsFullScreen(false)
-                    setIsMute(false)
-                    setShowParent(true)
-           }}
-           nestedScrollEnabled={false}
-           getItemLayout = {(data, index) => ({ length: getScreenWidth({ isLandscape, screenInsets }), offset: getScreenWidth({ isLandscape, screenInsets }) * index, index })}
-           data={feedSubItem?.attachments ?? []}
-           renderItem={renderAttachments}
-           inactiveSlideScale={1}
-           inactiveSlideOpacity={1}
-           sliderWidth={getScreenWidth({ isLandscape, screenInsets })}
-           itemWidth={getScreenWidth({ isLandscape, screenInsets })}
-           sliderHeight={getScreenHeight({ isLandscape, screenInsets })}
-           itemHeight={getScreenHeight({ isLandscape, screenInsets })}
-       />
-    )
+       initialNumToRender={feedSubItem?.attachments?.length}
+       ref={carouselRef}
+       onSnapToItem={(itemIndex) => {
+               setCurrentViewIndex(itemIndex)
+               Orientation.unlockAllOrientations();
+               setIsFullScreen(false)
+                setIsMute(false)
+                setShowParent(true)
+       }}
+       nestedScrollEnabled={false}
+       getItemLayout = {(data, index) => ({ length: getScreenWidth({ isLandscape, screenInsets }), offset: getScreenWidth({ isLandscape, screenInsets }) * index, index })}
+       data={feedSubItem?.attachments ?? []}
+       renderItem={renderAttachments}
+       inactiveSlideScale={1}
+       inactiveSlideOpacity={1}
+       sliderWidth={getScreenWidth({ isLandscape, screenInsets })}
+       itemWidth={getScreenWidth({ isLandscape, screenInsets })}
+       sliderHeight={getScreenHeight({ isLandscape, screenInsets })}
+       itemHeight={getScreenHeight({ isLandscape, screenInsets })}
+   />
+)
 }
 export default FeedPostView;

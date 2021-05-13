@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
   pauseMuteStyle: {
     alignItems: 'center',
     alignSelf: 'flex-end',
-    backgroundColor: 'red',
     borderRadius: wp('5%'),
     bottom: wp('2%'),
     height: wp('10%'),

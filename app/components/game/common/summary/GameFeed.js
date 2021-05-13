@@ -197,13 +197,13 @@ const GameFeed = ({
             pData[pIndex].own_reactions.clap = [...pData?.[pIndex]?.own_reactions?.clap]
             pData[pIndex].own_reactions.clap.push(res?.payload)
             pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts }
-            pData[pIndex].reaction_counts.clap = pData[pIndex].reaction_counts?.clap + 1 ?? 0;
+            pData[pIndex].reaction_counts.clap = pData?.[pIndex]?.reaction_counts?.clap + 1 ?? 0;
           } else {
             pData[pIndex].own_reactions = { ...pData?.[pIndex]?.own_reactions }
             pData[pIndex].own_reactions.clap = [...pData?.[pIndex]?.own_reactions?.clap]
-            pData[pIndex].own_reactions.clap = pData[pIndex].own_reactions?.clap?.filter((likeItem) => likeItem?.user_id !== authContext?.entity?.uid)
+            pData[pIndex].own_reactions.clap = pData?.[pIndex]?.own_reactions?.clap?.filter((likeItem) => likeItem?.user_id !== authContext?.entity?.uid)
             pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts }
-            pData[pIndex].reaction_counts.clap = pData[pIndex].reaction_counts?.clap - 1 ?? 0;
+            pData[pIndex].reaction_counts.clap = pData?.[pIndex]?.reaction_counts?.clap - 1 ?? 0;
           }
           setGameFeedData([...pData]);
         }).catch((e) => {
@@ -222,9 +222,10 @@ const GameFeed = ({
   ), [currentUserData, navigation, onPressDone])
 
   const updateCommentCount = (updatedComment) => {
-    const pData = [...gameFeedData]
+    const pData = _.cloneDeep(gameFeedData)
     const pIndex = pData?.findIndex((item) => item?.id === updatedComment?.id)
     if (pIndex !== -1) {
+      pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts };
       pData[pIndex].reaction_counts.comment = updatedComment?.count
       setGameFeedData([...pData]);
     }

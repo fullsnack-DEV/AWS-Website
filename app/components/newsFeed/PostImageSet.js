@@ -19,13 +19,19 @@ function PostImageSet({
   item,
   navigation,
   updateCommentCount,
+  onLikePress,
 }) {
   const uploadImageURL = data && typeof data.thumbnail === 'string'
   && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
 
   const toggleModal = () => {
     // setModalVisible(!isModalVisible);
-    navigation.navigate('FeedViewScreen', { feedItem: item, currentPage: itemNumber, updateCommentCount })
+    navigation.navigate('FeedViewScreen', {
+      feedItem: item,
+      currentPage: itemNumber,
+      updateCommentCount,
+      onLikePress,
+    })
   };
 
   return (
@@ -91,7 +97,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 15,
     elevation: 5,
-    backgroundColor: 'red',
     height: wp('91%'),
     width: wp('91%'),
     marginVertical: '1%',

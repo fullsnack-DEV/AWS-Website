@@ -316,10 +316,10 @@ export default function WelcomeScreen({ navigation }) {
   // Login With Apple manage function
 
   const registerWithAnotherProvider = (param) => new Promise((resolve, reject) => {
-    if (param.includes('facebook')) {
+    if (param.includes('facebook.com')) {
       // eslint-disable-next-line prefer-promise-reject-errors
       reject({ provider: 'facebook' });
-    } else if (param.includes('google')) {
+    } else if (param.includes('google.com')) {
       // eslint-disable-next-line prefer-promise-reject-errors
       reject({ provider: 'google' });
     } else if (param.includes('apple.com')) {
