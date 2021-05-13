@@ -120,7 +120,7 @@ function ChallengerInOutView({ data }) {
                   />
           )}
           <Text style={styles.entityName}>
-            {`${getEntityObject().name}   ` }
+            {`${getEntityObject()?.name}   ` }
             <Text style={[styles.requesterText, { color: (getChallengerOrChallengee() === strings.challenger || getChallengerOrChallengee() === strings.requester) ? colors.themeColor : colors.greeColor }]}>
               {getChallengerOrChallengee()}
             </Text>

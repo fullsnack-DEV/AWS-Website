@@ -46,6 +46,7 @@ const strings = {
   nextTitle: 'NEXT',
   acceptTitle: 'ACCEPT',
   declineTitle: 'DECLINE',
+  cancelRequestTitle: 'CANCEL REQUEST',
   confirmAndPayTitle: 'CONFIRM AND PAY',
   applyTitle: 'APPLY',
   cancelTitle: 'CANCEL',

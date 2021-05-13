@@ -11,7 +11,6 @@ import {
 
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
-import images from '../Constants/ImagePath'
 
 export default function TCInfoImageField({
   title,
@@ -24,7 +23,7 @@ export default function TCInfoImageField({
     <View style={[styles.fieldView, Props]}>
       <Text style={styles.fieldTitle} numberOfLines={2}>{title}</Text>
       <View style={styles.fieldValue}>
-        <Image source={image ? { uri: image } : images.teamPlaceholder} style={styles.imageView}/>
+        <Image source={image} style={styles.imageView}/>
         <Text style={{
           marginLeft: 5, fontFamily: fonts.RMedium, fontSize: 16, color,
         }} numberOfLines={1}>{name}</Text>
