@@ -5,10 +5,9 @@ import {
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
-import images from '../Constants/ImagePath';
 
 function SecureRefereeView({
- entityName, entity, entityNumber = 1, style,
+ entityName, entity, entityNumber = 1, style, image,
  }) {
   return (
     <View style={[styles.teamContainer, style]}>
@@ -17,7 +16,7 @@ function SecureRefereeView({
         {entityNumber} {entityNumber === 1 ? '(chief)' : ''}
       </Text>
       <View style={styles.teamViewStyle}>
-        <Image source={images.teamPlaceholder} style={styles.imageView} />
+        <Image source={image} style={styles.imageView} />
         <Text style={styles.teamNameLable}>
           {entityName}{' '}
           <Text style={styles.refereeExtraText}>

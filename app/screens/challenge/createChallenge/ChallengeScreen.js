@@ -52,10 +52,10 @@ export default function ChallengeScreen({ navigation, route }) {
   const [settingObject, setSettingObject] = useState();
   const [teams, setteams] = useState([]);
   const [startDate, setStartDate] = useState(
-    new Date().setHours(new Date().getHours() + 1),
+    new Date().setHours(new Date().getHours() + 48),
   );
   const [endDate, setEndDate] = useState(
-    new Date().setHours(new Date().getHours() + 4),
+    new Date().setHours(new Date().getHours() + 52),
   );
   const [totalZero, setTotalZero] = useState(false);
   const [feeObj, setFeeObj] = useState();

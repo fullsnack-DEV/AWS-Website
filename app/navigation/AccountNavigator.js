@@ -186,6 +186,13 @@ import GameDuration from '../screens/challenge/manageChallenge/settings/GameDura
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import UserGalleryScreen from '../screens/home/user/UserGalleryScreen';
 import UserScoreboardScreen from '../screens/home/user/UserScoreboardScreen';
+import InviteToChallengeSentScreen from '../screens/challenge/createChallenge/InviteToChallengeSentScreen';
+import ChooseTimeSlotScreen from '../screens/challenge/createChallenge/ChooseTimeSlotScreen';
+import ChallengePaymentScreen from '../screens/challenge/createChallenge/ChallengePaymentScreen';
+import ChallengePreviewScreen from '../screens/challenge/createChallenge/ChallengePreviewScreen';
+import ChooseVenueScreen from '../screens/challenge/manageChallenge/ChooseVenueScreen';
+import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteChallengeScreen';
+import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2325,6 +2332,116 @@ const AccountNavigator = () => (
                 borderBottomColor: colors.grayColor,
                 borderBottomWidth: 0.3,
             },
+          }}
+      />
+
+    <Stack.Screen
+          name="ChallengeScreen"
+          component={ChallengeScreen}
+          options={{
+              title: 'Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+
+    <Stack.Screen
+          name="InviteChallengeScreen"
+          component={InviteChallengeScreen}
+          options={{
+              title: 'Invite to Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+
+    <Stack.Screen
+          name="ChooseVenueScreen"
+          component={ChooseVenueScreen}
+          options={{
+              title: 'Venue',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+    <Stack.Screen
+          name="ChallengePreviewScreen"
+          component={ChallengePreviewScreen}
+          options={{
+              title: 'Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+
+    <Stack.Screen
+          name="ChallengePaymentScreen"
+          component={ChallengePaymentScreen}
+          options={{
+              title: 'Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+
+    <Stack.Screen
+          name="ChooseTimeSlotScreen"
+          component={ChooseTimeSlotScreen}
+          options={{
+              title: 'Choose a date & time',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+
+    <Stack.Screen
+          name="InviteToChallengeSentScreen"
+          component={InviteToChallengeSentScreen}
+          options={{
+              tabBarVisible: false,
+              headerShown: false,
           }}
       />
   </Stack.Navigator>

@@ -1,5 +1,6 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-unused-expressions */
-import React, { useEffect } from 'react';
+import React, { useContext } from 'react';
 import {
  View, StyleSheet, Image, Text, Alert, SafeAreaView,
  } from 'react-native';
@@ -9,17 +10,21 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCBorderButton from '../../components/TCBorderButton';
 import strings from '../../Constants/String';
+import AuthContext from '../../auth/context';
 
 // import TCBorderButton from '../../components/TCBorderButton';
 // import strings from '../../Constants/String';
 // import { getGameHomeScreen } from '../../utils/gameUtils';
 
 export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
-  useEffect(() => {
-    setTimeout(() => {
-      navigation.popToTop()
-    }, 3000);
-  })
+  const authContext = useContext(AuthContext);
+  const entity = authContext.entity.obj
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     navigation.popToTop()
+  //   }, 3000);
+  // })
   return (
     <View style={styles.mainContainer}>
       <Image style={styles.background} source={images.orangeLayer} />
@@ -73,7 +78,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
 
           <View style={styles.entityViewContainer}>
             <Image
-            source={images.teamPH}
+            source={entity?.thumbnail ? { uri: entity?.thumbnail } : entity?.full_name ? images.profilePlaceHolder : images.teamPlaceholder}
             style={styles.rotateImage}
           />
             <Text style={styles.vsText}>VS</Text>

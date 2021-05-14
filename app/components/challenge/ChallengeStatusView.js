@@ -1,10 +1,13 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable consistent-return */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import moment from 'moment';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import ReservationStatus from '../../Constants/ReservationStatus';
+
+let timer;
 
 export default function ChallengeStatusView({
   isSender,
@@ -13,7 +16,36 @@ export default function ChallengeStatusView({
   senderName,
   receiverName,
   offerExpiry,
+  challengeObj,
 }) {
+  const [countDown, setCountDown] = useState();
+
+  useEffect(() => {
+    if (!isOfferExpired()) {
+      const timeStamp = moment(new Date(challengeObj?.timestamp * 1000)).add(24, 'h').toDate().getTime();
+    const startDateTime = challengeObj?.start_datetime * 1000
+    let finalDate;
+    if (timeStamp < startDateTime) {
+      finalDate = timeStamp
+    } else {
+      finalDate = startDateTime
+    }
+    if (finalDate > new Date().getTime()) {
+      timer = setInterval(() => {
+        if (challengeObj.status === ReservationStatus.offered || challengeObj.status === ReservationStatus.pendingpayment) {
+          getTwoDateDifference(finalDate, new Date().getTime())
+        }
+      }, 1000);
+    } else {
+      setCountDown()
+    }
+
+    return () => {
+      clearInterval(timer)
+    }
+    }
+  }, [challengeObj?.start_datetime, challengeObj.status, challengeObj?.timestamp])
+
   const isTeamText = () => {
     if (!isTeam) {
       return 'You';
@@ -23,18 +55,36 @@ export default function ChallengeStatusView({
   };
   const isOfferExpired = () => {
     if (status === ReservationStatus.offered) {
-      if (offerExpiry < new Date().getTime()) {
+      if (offerExpiry > new Date().getTime()) {
         return true;
       }
       return false;
     }
     if (status === ReservationStatus.changeRequest) {
-      if (offerExpiry < new Date().getTime()) {
+      if (offerExpiry > new Date().getTime()) {
         return true;
       }
       return false;
     }
   };
+
+  const getTwoDateDifference = (sDate, eDate) => {
+    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+
+    const days = Math.floor(delta / 86400);
+    delta -= days * 86400;
+
+    const hours = Math.floor(delta / 3600) % 24;
+    delta -= hours * 3600;
+
+    const minutes = Math.floor(delta / 60) % 60;
+    delta -= minutes * 60;
+
+    const seconds = delta % 60;
+
+    setCountDown(`${hours}h ${minutes}m ${seconds.toFixed(0)}s`);
+  };
+
   return (
     <View style={styles.viewContainer}>
       {isSender && status === ReservationStatus.offered && (
@@ -56,7 +106,7 @@ export default function ChallengeStatusView({
               </Text>
               <Text style={styles.statusDescription}>
                 {isTeamText()} sent a match reservation request to {receiverName}. This request will be expired in{'\n'}
-                <Text style={{ color: colors.darkThemeColor }}>47h 59m.</Text>
+                <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
               </Text>
             </View>
           )}
@@ -81,7 +131,7 @@ export default function ChallengeStatusView({
               </Text>
               <Text style={styles.statusDescription}>
                 {isTeamText()} received a match reservation request from {senderName}. Please, respond within{'\n'}
-                <Text style={{ color: colors.darkThemeColor }}>47h 59m.</Text>
+                <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
               </Text>
             </View>
           )}
@@ -232,7 +282,7 @@ export default function ChallengeStatusView({
               </Text>
               <Text style={styles.statusDescription}>
                 {isTeamText()} sent a match reservation alteration request to {receiverName}. This request will be expired in{'\n'}
-                <Text style={{ color: colors.darkThemeColor }}>47h 59m.</Text>
+                <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
               </Text>
             </View>
           )}
@@ -257,7 +307,7 @@ export default function ChallengeStatusView({
               </Text>
               <Text style={styles.statusDescription}>
                 {isTeamText()} received a match reservation alteration request from {senderName}. Please, respond within{'\n'}
-                <Text style={{ color: colors.darkThemeColor }}>47h 59m.</Text>
+                <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
               </Text>
             </View>
           )}
