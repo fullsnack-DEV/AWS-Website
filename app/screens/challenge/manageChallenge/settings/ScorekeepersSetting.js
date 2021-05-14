@@ -688,7 +688,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
   );
 
   const onSavePressed = () => {
-    if (comeFrom === 'InviteChallengeScreen') {
+    if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       if (scorekeeper.length > 0) {
         navigation.navigate(comeFrom, {
           scorekeeperSetting: {

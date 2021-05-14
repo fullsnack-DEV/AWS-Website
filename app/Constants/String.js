@@ -419,7 +419,7 @@ const strings = {
   accept: 'ACCEPT',
   calcelRequest: 'CANCEL REQUEST',
   cancelAlterRequest: 'CANCEL ALTERATION REQUEST',
-  cancelMatch: 'CANCEL MATCH',
+  cancelMatch: 'CANCEL GAME',
   cancelreservation: 'CANCEL RESERVATION',
   alterReservation: 'CHANGE RESERVATION',
   sendAlterRequest: 'SEND ALTERATION REQUEST',

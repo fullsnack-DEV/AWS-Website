@@ -41,7 +41,7 @@ export default function GameRules({ navigation, route }) {
   }, [comeFrom, navigation, generalRules, specialRules]);
 
   const onSavePressed = () => {
-    if (comeFrom === 'InviteChallengeScreen') {
+    if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       navigation.navigate(comeFrom, {
         gameGeneralRules: generalRules,
         gameSpecialRules: specialRules,

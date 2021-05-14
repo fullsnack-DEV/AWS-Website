@@ -242,7 +242,7 @@ export default function RefereesSetting({ navigation, route }) {
   );
 
   const onSavePressed = () => {
-    if (comeFrom === 'InviteChallengeScreen') {
+    if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       if (referee.length > 0) {
         navigation.navigate(comeFrom, {
           refereeSetting: {

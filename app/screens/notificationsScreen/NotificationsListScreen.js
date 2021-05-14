@@ -97,7 +97,7 @@ function NotificationsListScreen({ navigation }) {
         Utils.getChallengeDetail(a, authContext)
           .then((obj) => {
             navigation.navigate(obj.screenName, {
-              challengeObj: obj.challengeObj || obj.challengeObj[0],
+              challengeObj: obj.challengeObj,
             });
             setloading(false);
           })

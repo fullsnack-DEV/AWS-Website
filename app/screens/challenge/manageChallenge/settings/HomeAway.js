@@ -49,7 +49,7 @@ import images from '../../../../Constants/ImagePath';
       };
 
       const onSavePressed = () => {
-        if (comeFrom === 'InviteChallengeScreen') {
+        if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
           navigation.navigate(comeFrom, {
             homeAway: authContext?.entity?.uid === teams?.[0]?.user_id || authContext?.entity?.uid === teams?.[0]?.group_id ? 'Home' : 'Away',
           });

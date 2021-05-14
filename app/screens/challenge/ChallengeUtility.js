@@ -15,7 +15,7 @@ export const getChallengeDetail = (challengeID, authContext) => {
       if (ReservationStatus.changeRequest === response.payload[0].status
         || ReservationStatus.pendingrequestpayment === response.payload[0].status) {
         Obj.challengeObj = response.payload
-        Obj.screenName = 'AlterAcceptDeclineScreen'
+        Obj.screenName = 'ChallengePreviewScreen'// AlterAcceptDeclineScreen
         return Obj
       }
       if (ReservationStatus.pendingpayment === response.payload[0].status
@@ -23,7 +23,7 @@ export const getChallengeDetail = (challengeID, authContext) => {
         || ReservationStatus.restored === response.payload[0].status
         || ReservationStatus.cancelled === response.payload[0].status
         || ReservationStatus.offered === response.payload[0].status) {
-        Obj.challengeObj = response.payload[0]
+        Obj.challengeObj = response.payload
         Obj.screenName = 'ChallengePreviewScreen'
         return Obj
       }
