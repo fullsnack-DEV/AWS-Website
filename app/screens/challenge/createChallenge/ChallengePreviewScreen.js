@@ -33,17 +33,20 @@ import { heightPercentageToDP, widthPercentageToDP } from '../../../utils';
 import TCSmallButton from '../../../components/TCSmallButton';
 import images from '../../../Constants/ImagePath';
 import { getNumberSuffix } from '../../../utils/gameUtils';
-import { acceptDeclineChallenge } from '../../../api/Challenge';
+import { acceptDeclineChallenge, acceptDeclineAlterChallenge } from '../../../api/Challenge';
 import GameStatus from '../../../Constants/GameStatus';
 
 let entity = {};
 export default function ChallengePreviewScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(0);
 
   entity = authContext.entity;
 
-  const [challengeData, setChallengeData] = useState(route?.params?.challengeObj[0]);
+  const [challengeData, setChallengeData] = useState(
+    route?.params?.challengeObj[0],
+  );
   const [oldVersion, setOldVersion] = useState();
 
   const [challenger] = useState(
@@ -58,14 +61,6 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       ? challengeData?.home_team
       : challengeData?.away_team,
   );
-  const [feeObj] = useState({
-    total_game_fee: challengeData?.total_game_fee,
-    total_service_fee1: challengeData?.total_service_fee1,
-    total_service_fee2: challengeData?.total_service_fee2,
-    total_stripe_fee: challengeData?.total_stripe_fee,
-    total_payout: challengeData?.total_payout,
-    total_amount: challengeData?.total_amount,
-  });
 
   console.log('challenge Object:=>', route?.params?.challengeObj);
   console.log('challenger Object:=>', challenger);
@@ -75,17 +70,20 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     if (route?.params?.challengeObj?.length > 1) {
       // setIsPendingRequestPayment(true);
       for (let i = 0; i < route?.params?.challengeObj.length; i++) {
-        if (route?.params?.challengeObj?.[i]?.status === ReservationStatus.accepted) {
-            setOldVersion(route?.params?.challengeObj?.[i]);
+        if (
+          route?.params?.challengeObj?.[i]?.status
+          === ReservationStatus.accepted
+        ) {
+          setOldVersion(route?.params?.challengeObj?.[i]);
           break;
         }
       }
-      console.log('challenge Object::', route?.params?.challengeObj?.[0]);
+      console.log('challenge Object::', route?.params?.challengeObj?.[0] || route?.params?.challengeObj);
 
       console.log('Old Version:=>', oldVersion);
     }
-    setChallengeData(route?.params?.challengeObj[0]);
-  }, [oldVersion, route?.params?.challengeObj])
+    setChallengeData(route?.params?.challengeObj[0] || route?.params?.challengeObj);
+  }, [oldVersion, route?.params?.challengeObj]);
 
   const checkSenderOrReceiver = (challengeObj) => {
     if (!challengeObj?.user_challenge) {
@@ -137,6 +135,20 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     return 'receiver';
   };
 
+// eslint-disable-next-line consistent-return
+const getTeamName = (challengeObject) => {
+  if (!challengeObject?.user_challenge) {
+    if (challengeObject?.home_team?.group_id === entity.uid) {
+      return challengeObject?.away_team?.group_name;
+    }
+    return challengeObject?.home_team?.group_name;
+  }
+  if (challengeObject?.home_team?.user_id === entity.uid) {
+    return `${challengeObject?.away_team?.first_name} ${challengeObject?.away_team?.last_name}`;
+  }
+  return `${challengeObject?.home_team?.first_name} ${challengeObject?.home_team?.last_name}`;
+};
+
   const getTimeDifferent = (sDate, eDate) => {
     let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
@@ -163,6 +175,81 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       authContext,
     )
       .then((response) => {
+        setloading(false);
+        let groupObj;
+        if (challengeData?.home_team?.full_name) {
+          if (challengeData?.home_team?.user_id === authContext?.entity?.uid) {
+            groupObj = challengeData?.away_team;
+          } else {
+            groupObj = challengeData?.home_team;
+          }
+        } else if (
+          challengeData?.home_team?.group_id === authContext?.entity?.uid
+        ) {
+          groupObj = challengeData?.away_team;
+        } else {
+          groupObj = challengeData?.home_team;
+        }
+
+        if (status === 'accept') {
+          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+            teamObj: {
+              ...groupObj,
+              game_id: response?.payload?.game_id,
+              sport: challengeData?.sport,
+            },
+            status: 'accept',
+          });
+        } else if (status === 'decline') {
+          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+            teamObj: {
+              ...groupObj,
+              game_id: response?.payload?.game_id,
+              sport: challengeData?.sport,
+            },
+            status: 'decline',
+          });
+        } else if (status === 'cancel') {
+          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+            teamObj: {
+              ...groupObj,
+              game_id: response?.payload?.game_id,
+              sport: challengeData?.sport,
+            },
+            status: 'cancel',
+          });
+        }
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const alterChallengeOperation = (
+    teamID,
+    ChallengeId,
+    versionNo,
+    status,
+    paymentID,
+  ) => {
+    console.log(
+      `teamID:${teamID}challengeID:${ChallengeId}versionNo:${versionNo}status:${status}paymentID:${paymentID}`,
+    );
+    setloading(true);
+
+    acceptDeclineAlterChallenge(
+      teamID,
+      ChallengeId,
+      versionNo,
+      status,
+      paymentID && { source: paymentID },
+      authContext,
+    )
+      .then((response) => {
+        console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
         setloading(false);
         let groupObj;
         if (challengeData?.home_team?.full_name) {
@@ -341,13 +428,14 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             borderRadious: 80,
           }}
           textStyle={{ color: colors.userPostTimeColor }}
-          title={strings.cancelRequestTitle}
+          title={strings.calcelRequest}
           onPress={() => {
-            // navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            //   status: 'accept',
-            //   teamObj: authContext.entity.obj,
-            // });
-            Alert.alert('Offered Request');
+            challengeOperation(
+              entity.uid,
+              challengeData?.challenge_id,
+              challengeData?.version,
+              'cancel',
+            );
           }}
           style={{
             width: widthPercentageToDP('92%'),
@@ -409,11 +497,11 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     if (
       (checkSenderOrReceiver(challengeData) === 'sender'
         || checkSenderOrReceiver(challengeData) === 'receiver')
-      && challengeData?.status === ReservationStatus.accepted
+        && selectedTab !== 1
+      && (challengeData?.status === ReservationStatus.accepted || challengeData?.status === ReservationStatus.declined)
     ) {
       return (
-        <View
-          style={styles.bottomButtonView}>
+        <View style={styles.bottomButtonView}>
           <TCSmallButton
             isBorderButton={true}
             borderstyle={{
@@ -424,18 +512,24 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             textStyle={{ color: colors.userPostTimeColor }}
             title={strings.alterReservation}
             onPress={() => {
-              if (!challengeData?.game_status || challengeData?.game_status === GameStatus.accepted || challengeData?.game_status === GameStatus.reset) {
+              if (
+                !challengeData?.game_status
+                || challengeData?.game_status === GameStatus.accepted
+                || challengeData?.game_status === GameStatus.reset
+              ) {
                 navigation.navigate('ChangeReservationInfoScreen', {
                   screen: 'change',
                   challengeObj: challengeData,
                 });
-              } else if (challengeData?.start_datetime * 1000 < new Date().getTime()) {
+              } else if (
+                challengeData?.start_datetime * 1000
+                < new Date().getTime()
+              ) {
                 Alert.alert(strings.cannotChangeReservationGameStartedText);
               } else {
                 Alert.alert(strings.cannotChangeReservationText);
               }
             }}
-
             style={{
               width: widthPercentageToDP('92%'),
               alignSelf: 'center',
@@ -443,8 +537,138 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           />
           <TCSmallButton
             isBorderButton={false}
-            startGradientColor = {colors.endGrayGradient}
-            endGradientColor = {colors.startGrayGrdient}
+            startGradientColor={colors.endGrayGradient}
+            endGradientColor={colors.startGrayGrdient}
+            title={strings.cancelMatch}
+            onPress={() => {
+              // navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+              //   status: 'accept',
+              //   teamObj: authContext.entity.obj,
+              // });
+              navigation.navigate('ChangeReservationInfoScreen', {
+                screen: 'cancel',
+                challengeObj: challengeData,
+              });
+            }}
+            style={{
+              width: widthPercentageToDP('92%'),
+              alignSelf: 'center',
+            }}
+          />
+        </View>
+      );
+    }
+    if (
+      checkSenderOrReceiver(challengeData) === 'receiver'
+      && challengeData?.status === ReservationStatus.changeRequest
+    ) {
+      return (
+        <View>
+          <View style={styles.bottomButtonContainer}>
+            <TCSmallButton
+            isBorderButton={true}
+            borderstyle={{
+              borderColor: colors.userPostTimeColor,
+              borderWidth: 1,
+              borderRadious: 80,
+            }}
+            textStyle={{ color: colors.userPostTimeColor }}
+            title={strings.declineTitle}
+            onPress={() => {
+              // navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+              //   status: 'accept',
+              //   teamObj: authContext.entity.obj,
+              // });
+              challengeOperation(
+                entity.uid,
+                challengeData?.challenge_id,
+                challengeData?.version,
+                'decline',
+              )
+            }}
+            style={{ width: widthPercentageToDP('45%') }}
+          />
+            <TCSmallButton
+            title={strings.acceptTitle}
+            onPress={() => {
+              alterChallengeOperation(
+                entity.uid,
+                challengeData?.challenge_id,
+                challengeData?.version,
+                'accept',
+              )
+            }}
+            style={{ width: widthPercentageToDP('45%') }}
+          />
+          </View>
+          <TCSmallButton
+            isBorderButton={false}
+            startGradientColor={colors.endGrayGradient}
+            endGradientColor={colors.startGrayGrdient}
+            title={strings.cancelMatch}
+            onPress={() => {
+              // navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+              //   status: 'accept',
+              //   teamObj: authContext.entity.obj,
+              // });
+              navigation.navigate('ChangeReservationInfoScreen', {
+                screen: 'cancel',
+                challengeObj: challengeData,
+              });
+            }}
+            style={{
+              width: widthPercentageToDP('92%'),
+              alignSelf: 'center',
+            }}
+          />
+        </View>
+      );
+    }
+    if (
+      checkSenderOrReceiver(challengeData) === 'sender'
+      && challengeData?.status === ReservationStatus.changeRequest
+    ) {
+      return (
+        <View style={styles.bottomButtonView}>
+          <TCSmallButton
+            isBorderButton={true}
+            borderstyle={{
+              borderColor: colors.userPostTimeColor,
+              borderWidth: 1,
+              borderRadious: 80,
+            }}
+            textStyle={{ color: colors.userPostTimeColor }}
+            title={strings.calcelRequest}
+            onPress={() => {
+              if (
+                !challengeData?.game_status
+                || challengeData?.game_status === GameStatus.accepted
+                || challengeData?.game_status === GameStatus.reset
+              ) {
+                alterChallengeOperation(
+                  entity.uid,
+                  challengeData?.challenge_id,
+                  challengeData?.version,
+                  'cancel',
+                )
+              } else if (
+                challengeData?.start_datetime * 1000
+                < new Date().getTime()
+              ) {
+                Alert.alert(strings.cannotChangeReservationGameStartedText);
+              } else {
+                Alert.alert(strings.cannotChangeReservationText);
+              }
+            }}
+            style={{
+              width: widthPercentageToDP('92%'),
+              alignSelf: 'center',
+            }}
+          />
+          <TCSmallButton
+            isBorderButton={false}
+            startGradientColor={colors.endGrayGradient}
+            endGradientColor={colors.startGrayGrdient}
             title={strings.cancelMatch}
             onPress={() => {
               // navigation.navigate('ChallengeAcceptedDeclinedScreen', {
@@ -470,14 +694,15 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
-      <View >
+      <Text style={styles.challengeNumberStyle}>
+        Request No.{`${challengeData?.challenge_id}`}
+      </Text>
+      {/* <View>
         <Text style={styles.challengeNumberStyle}>
           Request No.{`${challengeData?.challenge_id}`}
         </Text>
-        <Text style={styles.curruentVersion}>
-          Current reservation
-        </Text>
-      </View>
+        <Text style={styles.curruentVersion}>Current reservation</Text>
+      </View> */}
       <ChallengeHeaderView
         challenger={
           challengeData?.challenger === challengeData?.home_team?.user_id
@@ -507,8 +732,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         challengeObj={challengeData}
         isSender={checkSenderOrReceiver(challengeData) === 'sender'}
         isTeam={!!challengeData?.home_team?.group_name}
-        senderName={challenger?.full_name ?? challenger?.group_name}
-        receiverName={challengee?.full_name ?? challengee?.group_name}
+        teamName={getTeamName(challengeData)}
+        // receiverName={challengee?.full_name ?? challengee?.group_name}
         offerExpiry={
           ReservationStatus.offered === 'offered'
           || ReservationStatus.offered === 'changeRequest'
@@ -520,6 +745,29 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       <TCThickDivider />
 
       <View>
+        {route?.params?.challengeObj?.[0]?.status === ReservationStatus.changeRequest && <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            margin: 15,
+          }}>
+          <Text
+            onPress={() => {
+              setSelectedTab(0)
+              setChallengeData(route?.params?.challengeObj[0]);
+            }}>
+            NEW OFFER
+          </Text>
+          <Text
+            onPress={() => {
+              setSelectedTab(1)
+              setChallengeData(oldVersion);
+              // route?.params?.challengeObj[0]
+            }}>
+            CURRENT RESERVATION
+          </Text>
+        </View>}
+
         <TCLabel title={`Game · ${challengeData?.sport}`} />
 
         <TCInfoImageField
@@ -592,15 +840,14 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       </View>
 
       <TCChallengeTitle
-           title={'Type of Game'}
-           value={challengeData?.game_type}
-           tooltipText={
-           'The game result has an effect on TC points of the challengee and you.'
-           }
-           tooltipHeight={heightPercentageToDP('6%')}
-           tooltipWidth={widthPercentageToDP('50%')}
-
-         />
+        title={'Type of Game'}
+        value={challengeData?.game_type}
+        tooltipText={
+        'The game result has an effect on TC points of the challengee and you.'
+        }
+        tooltipHeight={heightPercentageToDP('6%')}
+        tooltipWidth={widthPercentageToDP('50%')}
+      />
       <TCThickDivider />
 
       <TCLabel title={'Game Duration'} />
@@ -696,7 +943,14 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         style={{ marginBottom: 15 }}
       />
       <GameFeeCard
-        feeObject={feeObj}
+        feeObject={{
+          total_game_fee: challengeData?.total_game_fee,
+          total_service_fee1: challengeData?.total_service_fee1,
+          total_service_fee2: challengeData?.total_service_fee2,
+          total_stripe_fee: challengeData?.total_stripe_fee,
+          total_payout: challengeData?.total_payout,
+          total_amount: challengeData?.total_amount,
+        }}
         currency={challengeData?.game_fee?.currency_type}
         isChallenger={checkSenderOrReceiver(challengeData) === 'sender'}
       />
@@ -734,21 +988,19 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     alignSelf: 'flex-end',
     margin: 15,
-marginBottom: 0,
-  },
-  curruentVersion: {
-    fontSize: 14,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
     marginBottom: 0,
-    alignSelf: 'flex-end',
-    margin: 15,
-    textDecorationLine: 'underline',
-
   },
+  // curruentVersion: {
+  //   fontSize: 14,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.lightBlackColor,
+  //   marginBottom: 0,
+  //   alignSelf: 'flex-end',
+  //   margin: 15,
+  //   textDecorationLine: 'underline',
+  // },
   bottomButtonContainer: {
     flexDirection: 'row',
-    marginBottom: 45,
     alignItems: 'center',
     justifyContent: 'space-between',
     margin: 15,
