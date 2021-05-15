@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+
 import React, { memo } from 'react';
 import {
 StyleSheet, Text, View, Image,
