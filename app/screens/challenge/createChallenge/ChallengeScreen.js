@@ -513,7 +513,7 @@ if (settingObject?.venue?.length === 1) {
             onEditPress={() => {
               navigation.navigate('ChooseVenueScreen', {
                 venues: settingObject?.venue || [],
-                comeFrom: 'InviteChallengeScreen',
+                comeFrom: 'ChallengeScreen',
               });
             }}
           />

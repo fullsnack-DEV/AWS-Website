@@ -273,7 +273,7 @@ export default function GameDuration({ navigation, route }) {
   }
 
   const onSavePressed = () => {
-    if (comeFrom === 'InviteChallengeScreen') {
+    if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       const gameDuration = {
 
           period: period.map((e) => {

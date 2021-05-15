@@ -72,7 +72,7 @@ export default function RefundPolicy({ navigation, route }) {
   );
 
   const onSavePressed = () => {
-    if (comeFrom === 'InviteChallengeScreen') {
+    if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       navigation.navigate(comeFrom, {
         refundPolicy: typeSelection.key,
       });

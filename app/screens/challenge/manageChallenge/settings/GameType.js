@@ -52,7 +52,7 @@ export default function GameType({ navigation, route }) {
   }, [comeFrom, navigation, typeSelection.key]);
 
   const onSavePressed = () => {
-    if (comeFrom === 'InviteChallengeScreen') {
+    if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       navigation.navigate(comeFrom, { gameType: (typeSelection.key === strings.officialOnly && 'Official') || (typeSelection.key === strings.friendlyOnly && 'Friendly') || (typeSelection.key === strings.allType && 'All') })
     } else {
       const bodyParams = {

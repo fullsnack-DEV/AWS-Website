@@ -18,8 +18,8 @@ export default function GameFee({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [basicFee, setBasicFee] = useState(
     route?.params?.settingObj?.game_fee
-      ? route?.params?.settingObj?.game_fee?.fee
-      : 0.0,
+      ? route?.params?.settingObj?.game_fee?.fee?.toString()
+      : '0.0',
   );
   const [currencyType] = useState(
     route?.params?.settingObj?.game_fee
@@ -39,16 +39,10 @@ export default function GameFee({ navigation, route }) {
         </Text>
       ),
     });
-  }, [
-    authContext.entity.obj.currency_type,
-    basicFee,
-    comeFrom,
-    currencyType,
-    navigation,
-  ]);
+  }, [authContext.entity.obj.currency_type, basicFee, comeFrom, currencyType, navigation]);
 
   const onSavePressed = () => {
-    if (comeFrom === 'InviteChallengeScreen') {
+    if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       navigation.navigate(comeFrom, {
         gameFee: {
           fee: Number(basicFee),

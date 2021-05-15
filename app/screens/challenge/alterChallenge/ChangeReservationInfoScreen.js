@@ -1,8 +1,9 @@
 import React, {
-  useEffect, useState, useLayoutEffect, useContext,
+   useState, useLayoutEffect, useContext,
 } from 'react';
 import {
   View, StyleSheet, Text, ScrollView, Alert,
+ SafeAreaView,
 } from 'react-native';
 import { acceptDeclineChallenge } from '../../../api/Challenge';
 import AuthContext from '../../../auth/context';
@@ -14,34 +15,24 @@ import strings from '../../../Constants/String';
 
 let entity = {};
 export default function ChangeReservationInfoScreen({ navigation, route }) {
-  const [bodyParams, setBodyParams] = useState();
-  const [screenName, setScreenName] = useState();
+  const { challengeObj, screen } = route.params ?? {};
+  const [screenName] = useState(screen);
   const authContext = useContext(AuthContext);
+  entity = authContext.entity;
   const [loading, setloading] = useState(false);
-  const [awayTeam, setAwayTeam] = useState();
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: (screenName && screenName === 'change' && 'Change Match Reservation') || (screenName && screenName === 'cancel' && 'Cancel Match Reservation'),
     });
-  }, [screenName]);
+  }, [navigation, screenName]);
 
-  useEffect(() => {
-    entity = authContext.entity;
-    const { body, screen } = route.params ?? {};
-    if (entity.obj.group_id === body.home_team.group_id) {
-      setAwayTeam(body.away_team)
-    } else {
-      setAwayTeam(body.home_team)
-    }
-
-    if (screen !== {}) {
-      setScreenName(screen);
-    }
-    if (body !== {}) {
-      setBodyParams(body);
-    }
-  }, []);
+const getOpponentEntity = () => {
+  if (entity?.uid === challengeObj?.home_team?.user_id || entity?.uid === challengeObj?.home_team?.group_id) {
+    return challengeObj?.away_team
+  }
+  return challengeObj?.home_team
+}
 
   const acceptDeclineChallengeOperation = (
     teamID,
@@ -62,7 +53,7 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
         setloading(false);
         console.log('Cancel RESPONSE::', JSON.stringify(response.payload));
         navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-          teamObj: awayTeam,
+          teamObj: getOpponentEntity(),
           status: 'cancel',
         });
       })
@@ -122,11 +113,12 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
           )}
         </View>
       </ScrollView>
-      <TCGradientButton
+      <SafeAreaView>
+        <TCGradientButton
         title={screenName === 'change' ? strings.nextTitle : strings.cancelMatch}
         onPress={() => {
           if (screenName === 'change') {
-            navigation.navigate('EditChallenge', { challengeObj: bodyParams });
+            navigation.navigate('EditChallenge', { groupObj: getOpponentEntity(), sportName: challengeObj?.sport, challengeObj });
           } else {
             Alert.alert(
               'Are you sure that you want to cancel the match reservation?',
@@ -136,8 +128,8 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
                 onPress: () => {
                   acceptDeclineChallengeOperation(
                     entity.uid,
-                    bodyParams.challenge_id,
-                    bodyParams.version,
+                    challengeObj?.challenge_id,
+                    challengeObj?.version,
                     'cancel',
                   );
                 },
@@ -156,6 +148,7 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
           }
         }}
       />
+      </SafeAreaView>
     </>
   );
 }

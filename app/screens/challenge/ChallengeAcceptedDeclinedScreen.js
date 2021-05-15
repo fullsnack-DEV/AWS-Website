@@ -83,7 +83,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           />
             <Text style={styles.vsText}>VS</Text>
             <Image
-            source={route.params.teamObj.thumbnail ? { uri: route.params.teamObj.thumbnail } : images.emailSent1}
+            source={route.params.teamObj.thumbnail ? { uri: route.params.teamObj.thumbnail } : images.teamPlaceholder}
             style={[styles.rotateImage, { opacity: 1.0 }]}
           />
           </View>

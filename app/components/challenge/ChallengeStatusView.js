@@ -32,7 +32,7 @@ export default function ChallengeStatusView({
     }
     if (finalDate > new Date().getTime()) {
       timer = setInterval(() => {
-        if (challengeObj.status === ReservationStatus.offered || challengeObj.status === ReservationStatus.pendingpayment) {
+        if (status === ReservationStatus.offered || status === ReservationStatus.changeRequest) {
           getTwoDateDifference(finalDate, new Date().getTime())
         }
       }, 1000);
@@ -44,7 +44,7 @@ export default function ChallengeStatusView({
       clearInterval(timer)
     }
     }
-  }, [challengeObj?.start_datetime, challengeObj.status, challengeObj?.timestamp])
+  }, [challengeObj?.start_datetime, challengeObj?.timestamp, status])
 
   const isTeamText = () => {
     if (!isTeam) {
@@ -281,7 +281,7 @@ export default function ChallengeStatusView({
                 ALTERATION REQUEST SENT
               </Text>
               <Text style={styles.statusDescription}>
-                {isTeamText()} sent a match reservation alteration request to {receiverName}. This request will be expired in{'\n'}
+                {isTeamText()} sent a match reservation alteration request to {senderName}. This request will be expired in{'\n'}
                 <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
               </Text>
             </View>
@@ -306,7 +306,7 @@ export default function ChallengeStatusView({
                 ALTERATION REQUEST PENDING
               </Text>
               <Text style={styles.statusDescription}>
-                {isTeamText()} received a match reservation alteration request from {senderName}. Please, respond within{'\n'}
+                {isTeamText()} received a match reservation alteration request from {receiverName}. Please, respond within{'\n'}
                 <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
               </Text>
             </View>
