@@ -189,9 +189,12 @@ if (settingObject?.venue?.length === 1) {
     <SecureRefereeView
       entityName={
         item.responsible_to_secure_referee === 'challenger'
-          ? teams[0]?.full_name ?? teams[0]?.group_name
-          : teams[1]?.full_name ?? teams[1]?.group_name
+          ? teams?.[0]?.full_name ?? teams?.[0]?.group_name
+          : teams?.[1]?.full_name ?? teams?.[1]?.group_name
       }
+      image={item.responsible_to_secure_referee === 'challenger'
+      ? teams?.[0]?.thumbnail ? { uri: teams[0]?.thumbnail } : teams?.[0]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder
+      : teams?.[1]?.thumbnail ? { uri: teams[1]?.thumbnail } : teams?.[1]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder}
       entity={'Referee'}
       entityNumber={index + 1}
     />
@@ -204,6 +207,9 @@ if (settingObject?.venue?.length === 1) {
           ? teams[0]?.full_name ?? teams[0]?.group_name
           : teams[1]?.full_name ?? teams[1]?.group_name
       }
+      image={item.responsible_to_secure_scorekeeper === 'challenger'
+      ? teams?.[0]?.thumbnail ? { uri: teams[0]?.thumbnail } : teams?.[0]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder
+      : teams?.[1]?.thumbnail ? { uri: teams[1]?.thumbnail } : teams?.[1]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder}
       entity={'Scorekeeper'}
       entityNumber={index + 1}
     />
@@ -225,60 +231,6 @@ if (settingObject?.venue?.length === 1) {
     return true;
   };
 
-  const sendChallenge = () => {
-    entity = authContext.entity;
-    console.log('Entity:=>', entity);
-
-    // let entityID;
-    // let type;
-    // if (teams?.[0]?.group_id) {
-    //   type = 'teams';
-    //   if (teams?.[0]?.group_id === entity.uid) {
-    //     entityID = teams[1].group_id;
-    //   } else {
-    //     entityID = teams[0].group_id;
-    //   }
-    // } else {
-    //   type = 'users';
-    //   if (route.params.teamData[0].user_id === entity.uid) {
-    //     entityID = teams[1].user_id;
-    //   } else {
-    //     entityID = teams[0].user_id;
-    //   }
-    // }
-
-    const body = {
-      ...settingObject,
-      ...feeObj,
-      venue,
-      start_datetime: parseFloat(new Date(startDate).getTime() / 1000).toFixed(0),
-      end_datetime: parseFloat(new Date(endDate).getTime() / 1000).toFixed(0),
-      challenger: teams?.[0]?.group_id || teams?.[0]?.user_id,
-      challengee: teams?.[1]?.group_id || teams?.[1]?.user_id,
-      home_team: settingObject?.home_away === 'Home' ? entity?.uid : groupObj?.group_id || groupObj?.user_id,
-      away_team: settingObject?.home_away === 'Home' ? groupObj?.group_id || groupObj?.user_id : entity?.uid,
-      user_challenge: !groupObj?.group_id,
-    };
-
-    console.log('Challenge Object:=>', body);
-
-    setloading(true);
-    createChallenge(body, authContext)
-      .then((response) => {
-        console.log(' challenge response:=>', response.payload);
-        navigation.navigate('ChallengeSentScreen', {
-          groupObj,
-        });
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
@@ -288,7 +240,7 @@ if (settingObject?.venue?.length === 1) {
             style={{
               flexDirection: 'row',
             }}>
-            <Image source={images.teamPlaceholder} style={styles.imageView} />
+            <Image source={groupObj?.group_id ? groupObj?.thumbnail ? { uri: groupObj?.thumbnail } : images.teamPlaceholder : groupObj?.thumbnail ? { uri: groupObj?.thumbnail } : images.profilePlaceHolder} style={styles.imageView} />
             <View style={styles.teamTextContainer}>
               <Text style={styles.teamNameLable}>
                 {groupObj?.full_name ?? groupObj?.group_name}
@@ -359,16 +311,16 @@ if (settingObject?.venue?.length === 1) {
             <Image
               source={
                 settingObject?.home_away === 'Home'
-                  ? authContext?.entity?.obj?.thumbnail
+                  ? groupObj?.thumbnail
+                  ? { uri: groupObj?.thumbnail }
+                  : groupObj?.full_name
+                  ? images.profilePlaceHolder
+                  : images.teamPlaceholder : authContext?.entity?.obj?.thumbnail
                     ? { uri: authContext?.entity?.obj?.thumbnail }
                     : authContext?.entity?.obj?.full_name
                     ? images.profilePlaceHolder
                     : images.teamPlaceholder
-                  : groupObj?.thumbnail
-                  ? { uri: groupObj?.thumbnail }
-                  : groupObj?.full_name
-                  ? images.profilePlaceHolder
-                  : images.teamPlaceholder
+
               }
               style={styles.imageView}
             />
@@ -376,14 +328,13 @@ if (settingObject?.venue?.length === 1) {
             <View style={styles.teamTextContainer}>
               <Text style={styles.teamNameLable}>
                 {settingObject?.home_away === 'Home'
-                  ? authContext?.entity?.obj?.full_name
-                    ?? authContext?.entity?.obj?.group_name
-                  : groupObj?.full_name ?? groupObj?.group_name}
+                  ? groupObj?.full_name
+                    ?? groupObj?.group_name
+                  : authContext?.entity?.obj?.full_name ?? authContext?.entity?.obj?.group_name}
               </Text>
               <Text style={styles.locationLable}>
                 {settingObject?.home_away === 'Home'
-                  ? `${authContext?.entity?.obj?.city}, ${authContext?.entity?.obj?.state_abbr}`
-                  : `${groupObj?.city}, ${groupObj?.state_abbr}`}
+                  ? `${groupObj?.city}, ${groupObj?.state_abbr}` : `${authContext?.entity?.obj?.city}, ${authContext?.entity?.obj?.state_abbr}`}
               </Text>
             </View>
           </View>
@@ -395,16 +346,16 @@ if (settingObject?.venue?.length === 1) {
             <Image
               source={
                 settingObject?.home_away === 'Home'
-                  ? groupObj?.thumbnail
+                  ? authContext?.entity?.obj?.thumbnail
+                  ? { uri: authContext?.entity?.obj?.thumbnail }
+                  : authContext?.entity?.obj?.full_name
+                  ? images.profilePlaceHolder
+                  : images.teamPlaceholder : groupObj?.thumbnail
                     ? { uri: groupObj?.thumbnail }
                     : groupObj?.full_name
                     ? images.profilePlaceHolder
                     : images.teamPlaceholder
-                  : authContext?.entity?.obj?.thumbnail
-                  ? { uri: authContext?.entity?.obj?.thumbnail }
-                  : authContext?.entity?.obj?.full_name
-                  ? images.profilePlaceHolder
-                  : images.teamPlaceholder
+
               }
               style={styles.imageView}
             />
@@ -412,14 +363,13 @@ if (settingObject?.venue?.length === 1) {
             <View style={styles.teamTextContainer}>
               <Text style={styles.teamNameLable}>
                 {settingObject?.home_away === 'Home'
-                  ? groupObj?.full_name ?? groupObj?.group_name
-                  : authContext?.entity?.obj?.full_name
-                    ?? authContext?.entity?.obj?.group_name}
+                  ? authContext?.entity?.obj?.full_name
+                    ?? authContext?.entity?.obj?.group_name : groupObj?.full_name ?? groupObj?.group_name}
               </Text>
               <Text style={styles.locationLable}>
                 {settingObject?.home_away === 'Home'
-                  ? `${groupObj?.city}, ${groupObj?.state_abbr}`
-                  : `${authContext?.entity?.obj?.city}, ${authContext?.entity?.obj?.state_abbr}`}
+                  ? `${authContext?.entity?.obj?.city}, ${authContext?.entity?.obj?.state_abbr}` : `${groupObj?.city}, ${groupObj?.state_abbr}`
+                  }
               </Text>
             </View>
           </View>
@@ -622,9 +572,23 @@ if (settingObject?.venue?.length === 1) {
         isDisabled={validation()}
         title={strings.reservTitle}
         onPress={() => {
-          // navigation.push('ChallengePaymentScreen');
+          entity = authContext.entity;
+          const body = {
+            ...settingObject,
+            ...feeObj,
+            venue,
+            start_datetime: parseFloat(new Date(startDate).getTime() / 1000).toFixed(0),
+            end_datetime: parseFloat(new Date(endDate).getTime() / 1000).toFixed(0),
+            challenger: teams?.[0]?.group_id || teams?.[0]?.user_id,
+            challengee: teams?.[1]?.group_id || teams?.[1]?.user_id,
+            home_team: settingObject?.home_away === 'Home' ? entity?.obj : groupObj,
+            away_team: settingObject?.home_away === 'Home' ? groupObj : entity?.obj,
+            user_challenge: !groupObj?.group_id,
+          };
+
+           navigation.push('ChallengePaymentScreen', { challengeObj: body, groupObj, type: 'challenge' });
           // navigation.push('ChallengePreviewScreen');
-          sendChallenge()
+          // sendChallenge()
         }}
         outerContainerStyle={{
           marginBottom: 45,

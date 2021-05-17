@@ -119,6 +119,8 @@ export default function InviteChallengeScreen({ navigation, route }) {
       }
       if (route?.params?.homeAway) {
         settings.home_away = route?.params?.homeAway;
+        settings.home_team = route?.params?.home_team;
+        settings.away_team = route?.params?.away_team;
       }
       if (route?.params?.gameDuration) {
         settings.game_duration = route?.params?.gameDuration;
@@ -224,6 +226,9 @@ export default function InviteChallengeScreen({ navigation, route }) {
           ? teams[1]?.full_name ?? teams[1]?.group_name
           : teams[0]?.full_name ?? teams[0]?.group_name
       }
+      image={item.responsible_to_secure_referee === 'challenger'
+      ? teams?.[1]?.thumbnail ? { uri: teams[1]?.thumbnail } : teams?.[1]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder
+      : teams?.[0]?.thumbnail ? { uri: teams[0]?.thumbnail } : teams?.[0]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder}
       entity={'Referee'}
       entityNumber={index + 1}
     />
@@ -236,6 +241,9 @@ export default function InviteChallengeScreen({ navigation, route }) {
           ? teams[1]?.full_name ?? teams[1]?.group_name
           : teams[0]?.full_name ?? teams[0]?.group_name
       }
+      image={item.responsible_to_secure_scorekeeper === 'challenger'
+      ? teams?.[1]?.thumbnail ? { uri: teams[1]?.thumbnail } : teams?.[1]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder
+      : teams?.[0]?.thumbnail ? { uri: teams[0]?.thumbnail } : teams?.[0]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder}
       entity={'Scorekeeper'}
       entityNumber={index + 1}
     />

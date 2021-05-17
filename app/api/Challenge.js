@@ -74,7 +74,7 @@ export const getReservation = async (bookingType = 'referees', reservationId, ca
   headers: { caller_id: callerID },
   authContext,
 })
-export const acceptDeclineChallenge = async (teamId, challengeId, versionNo, status, params = {}, authContext) => makeAPIRequest({
+export const acceptDeclineChallenge = async (teamId, challengeId, versionNo, status, params, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}teams/${teamId}/challenge/${challengeId}/${status}?version=${versionNo}`,
   data: params,
