@@ -13,6 +13,7 @@ const DataSource = {
   CurrencyType: [
     { label: 'CAD', value: 'CAD' },
     { label: 'USD', value: 'USD' },
+    { label: 'KRW', value: 'KRW' },
   ],
   NumberOfSet: [
     { label: '1', value: '1' },

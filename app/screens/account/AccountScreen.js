@@ -553,6 +553,7 @@ export default function AccountScreen({ navigation, route }) {
               <Image source={images.mySports} style={styles.smallProfileImg} />
               <Text style={styles.entityName}>{item.sport_name}</Text>
             </View>
+            <Image source={images.nextArrow} style={styles.nextArrow} />
           </View>
         ),
         [],
@@ -570,6 +571,7 @@ export default function AccountScreen({ navigation, route }) {
               <Image source={images.myRefereeing} style={styles.smallProfileImg} />
               <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
             </View>
+            <Image source={images.nextArrow} style={styles.nextArrow} />
           </View>
         ),
         [],
@@ -587,6 +589,7 @@ export default function AccountScreen({ navigation, route }) {
               <Image source={images.myRefereeing} style={styles.smallProfileImg} />
               <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
             </View>
+            <Image source={images.nextArrow} style={styles.nextArrow} />
           </View>
         ),
         [],
@@ -597,7 +600,7 @@ export default function AccountScreen({ navigation, route }) {
     const renderSwitchProfile = useCallback(
         ({ item, index }) => (
           <TouchableWithoutFeedback
-                style={styles.listContainer}
+                style={styles.switchProfileListContainer}
                 onPress={() => {
                     setloading(true);
                     onSwitchProfile({ item, index });
@@ -712,22 +715,25 @@ export default function AccountScreen({ navigation, route }) {
                     }
                 }}>
             <View style={styles.entityTextContainer}>
-              {item.entity_type === 'team' && (
-                <Image
+              <View style={styles.smallProfileContainer}>
+                {item.entity_type === 'team' && (
+                  <Image
                             source={
                                 item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder
                             }
                             style={styles.smallProfileImg}
                         />
                     )}
-              {item.entity_type === 'club' && (
-                <Image
+                {item.entity_type === 'club' && (
+                  <Image
                             source={
                                 item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder
                             }
                             style={styles.smallProfileImg}
                         />
                     )}
+              </View>
+
               <Text
                         style={
                             item.group_name.length > 26
@@ -739,9 +745,10 @@ export default function AccountScreen({ navigation, route }) {
               </Text>
               <Text style={styles.teamSportView}> {item.sport}</Text>
             </View>
+            <Image source={images.nextArrow} style={styles.nextArrow} />
           </TouchableWithoutFeedback>
         ),
-        [group.entity_type, group.group_id, navigation],
+        [navigation],
     );
 
     const renderTeamsList = useCallback(
@@ -752,12 +759,14 @@ export default function AccountScreen({ navigation, route }) {
                     console.log('Pressed Team..');
                 }}>
             <View style={styles.entityTextContainer}>
-              <Image
+              <View style={styles.smallProfileContainer}>
+                <Image
                         source={
                             item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder
                         }
                         style={styles.smallProfileImg}
                     />
+              </View>
               <Text style={styles.entityName}>{item.group_name}</Text>
               <Text
                         style={
@@ -769,6 +778,7 @@ export default function AccountScreen({ navigation, route }) {
                 {item.sport}
               </Text>
             </View>
+            <Image source={images.nextArrow} style={styles.nextArrow} />
           </TouchableWithoutFeedback>
         ),
         [],
@@ -782,6 +792,7 @@ export default function AccountScreen({ navigation, route }) {
                         data={authContext?.entity?.auth?.user?.registered_sports}
                         keyExtractor={keyExtractorID}
                         renderItem={renderSportsList}
+                        ItemSeparatorComponent={() => <View style={styles.subItemSeparator}/>}
                         scrollEnabled={false}
                     />
                 )}
@@ -790,6 +801,7 @@ export default function AccountScreen({ navigation, route }) {
                         data={authContext?.entity?.auth?.user?.referee_data}
                         keyExtractor={keyExtractorID}
                         renderItem={renderRefereesList}
+                        ItemSeparatorComponent={() => <View style={styles.subItemSeparator}/>}
                         scrollEnabled={false}
                     />
                 )}
@@ -798,6 +810,7 @@ export default function AccountScreen({ navigation, route }) {
                         data={authContext?.entity?.auth?.user?.scorekeeper_data}
                         keyExtractor={keyExtractorID}
                         renderItem={renderScorekeepersList}
+                        ItemSeparatorComponent={() => <View style={styles.subItemSeparator}/>}
                         scrollEnabled={false}
                     />
                 )}
@@ -807,6 +820,7 @@ export default function AccountScreen({ navigation, route }) {
                         data={sectionId === 5 ? teamList : clubList}
                         keyExtractor={keyExtractorID}
                         renderItem={renderEntityList}
+                        ItemSeparatorComponent={() => <View style={styles.subItemSeparator}/>}
                         scrollEnabled={false}
                     />
                 )}
@@ -815,6 +829,7 @@ export default function AccountScreen({ navigation, route }) {
                         data={teamList}
                         keyExtractor={keyExtractorID}
                         renderItem={renderTeamsList}
+                        ItemSeparatorComponent={() => <View style={styles.subItemSeparator}/>}
                         scrollEnabled={false}
                     />
                 )}
@@ -845,17 +860,17 @@ export default function AccountScreen({ navigation, route }) {
                 <Image source={images.createLeague} style={styles.subMenuItem} />
                     )}
               {rowItem.opetions === 'Payment Method' && (
-                <Image source={images.Payment_method} style={styles.subMenuItem} />
+                <Image source={images.Payment_method} style={{ ...styles.subMenuItem, width: 22, height: 19 }} />
                     )}
 
               {rowItem.opetions === 'Payout Method' && (
-                <Image source={images.Payout_method} style={styles.subMenuItem} />
+                <Image source={images.Payout_method} style={{ ...styles.subMenuItem, width: 20, height: 17 }} />
                     )}
               {rowItem.opetions === 'Invoicing' && (
-                <Image source={images.Invoicing} style={styles.subMenuItem} />
+                <Image source={images.Invoicing} style={{ ...styles.subMenuItem, width: 18, height: 20 }} />
                     )}
               {rowItem.opetions === 'Transactions' && (
-                <Image source={images.Transations} style={styles.subMenuItem} />
+                <Image source={images.Transations} style={{ ...styles.subMenuItem, width: 23, height: 20 }} />
                     )}
 
               <Text style={styles.listItems}>{rowItem.opetions}</Text>
@@ -883,9 +898,9 @@ export default function AccountScreen({ navigation, route }) {
 
     let placeHolder = images.teamSqure;
     if (authContext.entity.role === 'club') {
-        placeHolder = images.club_ph;
+        placeHolder = images.clubPlaceholderSmall;
     } else if (authContext.entity.role === 'team') {
-        placeHolder = images.team_ph;
+        placeHolder = images.teamPlaceholderSmall;
     } else {
         placeHolder = images.profilePlaceHolder;
     }
@@ -1127,18 +1142,46 @@ export default function AccountScreen({ navigation, route }) {
                                 }}
                                 style={{
                                     flexDirection: 'row',
-                                    marginLeft: 25,
-                                    marginRight: 25,
+                                    marginLeft: 20,
+                                    marginRight: 20,
                                     alignContent: 'center',
                                 }}>
-                            <Image
-                                    source={
-                                        authContext?.entity?.obj?.thumbnail
-                                            ? { uri: authContext?.entity?.obj?.thumbnail }
-                                            : placeHolder
-                                    }
-                                    style={styles.profileImg}
-                                />
+                            <View style={styles.profileImageContainer}>
+                              {authContext?.entity?.obj?.thumbnail
+                                  ? (
+                                    <Image
+                                          source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                                          style={styles.profileImg}
+                                      />
+                                  )
+                                  : (
+                                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                      <Image
+                                          source={placeHolder}
+                                          style={{ ...styles.profileImg, resizeMode: 'contain' }}
+                                      />
+                                      <View style={{
+                                          justifyContent: 'center',
+                                          alignItems: 'center',
+                                          alignSelf: 'center',
+                                          position: 'absolute',
+                                          top: 0,
+                                          bottom: 0,
+                                          right: 0,
+                                          left: 0,
+                                      }}>
+                                        <Text style={{
+                                            marginTop: -5,
+                                             textAlign: 'center',
+                                            color: colors.whiteColor,
+                                            fontFamily: fonts.RBold,
+                                            fontSize: 16,
+                                        }}>{authContext?.entity?.obj?.group_name[0]}</Text>
+                                      </View>
+                                    </View>
+                                  )
+                              }
+                            </View>
                             <View
                                     style={{
                                         marginLeft: 15,
@@ -1180,7 +1223,7 @@ export default function AccountScreen({ navigation, route }) {
                                             style={{
                                                 height: 15,
                                                 width: 15,
-                                                marginLeft: 10,
+                                                marginLeft: 5,
                                                 resizeMode: 'cover',
                                             }}
                                         />
@@ -1189,7 +1232,7 @@ export default function AccountScreen({ navigation, route }) {
                                             style={{
                                                 height: 14,
                                                 width: 8,
-                                                marginLeft: 10,
+                                                marginLeft: 5,
                                                 resizeMode: 'cover',
                                                 tintColor: authContext?.entity?.obj
                                                     ?.background_thumbnail
@@ -1645,13 +1688,19 @@ const styles = StyleSheet.create({
     },
     halfSeparatorLine: {
         alignSelf: 'flex-end',
-        backgroundColor: colors.lightgrayColor,
+        backgroundColor: colors.grayBackgroundColor,
         height: 0.5,
         marginRight: 20,
         width: wp('82%'),
     },
     listContainer: {
         flex: 1,
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+    },
+    switchProfileListContainer: {
+        flex: 1,
+        marginLeft: 20,
         flexDirection: 'row',
     },
     listItems: {
@@ -1688,7 +1737,6 @@ const styles = StyleSheet.create({
         color: colors.whiteColor,
         fontFamily: fonts.RBold,
         fontSize: 20,
-        marginRight: 10,
     },
     nextArrow: {
         tintColor: colors.lightBlackColor,
@@ -1696,7 +1744,7 @@ const styles = StyleSheet.create({
         flex: 0.1,
         height: 15,
         width: 15,
-        marginRight: 10,
+        marginRight: 15,
         resizeMode: 'contain',
     },
 
@@ -1792,23 +1840,38 @@ const styles = StyleSheet.create({
         height: 7,
         width: wp('100%'),
     },
+    smallProfileContainer: {
+        justifyContent: 'center',
+        backgroundColor: colors.whiteColor,
+        margin: 15,
+        alignSelf: 'center',
+        borderRadius: 15,
+        height: 23,
+        width: 23,
+        resizeMode: 'cover',
+        shadowColor: colors.blackColor,
+        shadowOpacity: 0.16,
+        shadowOffset: { width: 0, height: 1.5 },
+        shadowRadius: 3,
+        elevation: 1.5,
+    },
     smallProfileImg: {
         alignSelf: 'center',
         borderColor: colors.offwhite,
         borderRadius: 15,
 
         borderWidth: 1,
-        height: 25,
+        height: 20,
         margin: 15,
         resizeMode: 'cover',
-        width: 25,
+        width: 20,
     },
     subMenuItem: {
         alignSelf: 'center',
-        height: 25,
+        height: 25.5,
         marginLeft: 55,
         resizeMode: 'contain',
-        width: 25,
+        width: 25.5,
     },
     switchAccount: {
         fontFamily: fonts.RRegular,
@@ -1827,7 +1890,7 @@ const styles = StyleSheet.create({
         width: 23,
     },
     teamSportView: {
-        color: colors.themeColor,
+        color: colors.greeColor,
         fontFamily: fonts.RRegular,
         fontSize: 12,
     },
@@ -1957,5 +2020,11 @@ const styles = StyleSheet.create({
         height: 22,
         resizeMode: 'contain',
         alignSelf: 'center',
+    },
+    subItemSeparator: {
+        marginLeft: 40,
+        marginRight: 20,
+        height: 1,
+        backgroundColor: colors.grayBackgroundColor,
     },
 });
