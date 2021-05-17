@@ -96,7 +96,7 @@ function MultiPostVideo({
           repeat={true}
           ref={videoPlayerRef}
           paused={!((isFocused && parentIndex === currentParentIndex) && (childIndex === currentChildIndex))}
-          muted={!mute}
+          muted={mute}
           onProgress={onProgress}
           source={{ uri: data.url }}
           style={[styles.singleImageDisplayStyle, { position: 'absolute' }]}
@@ -129,7 +129,7 @@ function MultiPostVideo({
                 resizeMode={'contain'}
                 tintColor={'white'}
                 style={styles.imageStyle}
-                source={mute ? images.unmute : images.mute}
+                source={mute ? images.mute : images.unmute}
             />
           </TouchableHighlight>
         </>
@@ -196,11 +196,12 @@ const styles = StyleSheet.create({
     textShadowRadius: 5,
   },
   mainContainer: {
+    backgroundColor: colors.whiteColor,
     shadowColor: colors.googleColor,
     shadowOpacity: 0.16,
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 15,
-    elevation: 1,
+    elevation: 2,
     alignItems: 'center',
     alignSelf: 'center',
     borderRadius: wp('4%'),
