@@ -13,8 +13,8 @@ export default function ChallengeStatusView({
   isSender,
   isTeam = true,
   status,
-  senderName,
-  receiverName,
+  teamName,
+  // receiverName,
   offerExpiry,
   challengeObj,
 }) {
@@ -105,7 +105,7 @@ export default function ChallengeStatusView({
                 RESERVATION REQUEST SENT
               </Text>
               <Text style={styles.statusDescription}>
-                {isTeamText()} sent a match reservation request to {receiverName}. This request will be expired in{'\n'}
+                {isTeamText()} sent a match reservation request to {teamName}. This request will be expired in{'\n'}
                 <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
               </Text>
             </View>
@@ -121,7 +121,7 @@ export default function ChallengeStatusView({
                 RESERVATION REQUEST EXPIRED
               </Text>
               <Text style={styles.statusDescription}>
-                The match reservation request from {senderName} has been expired.
+                The match reservation request from {teamName} has been expired.
               </Text>
             </View>
           ) : (
@@ -130,7 +130,7 @@ export default function ChallengeStatusView({
                 RESERVATION REQUEST PENDING
               </Text>
               <Text style={styles.statusDescription}>
-                {isTeamText()} received a match reservation request from {senderName}. Please, respond within{'\n'}
+                {isTeamText()} received a match reservation request from {teamName}. Please, respond within{'\n'}
                 <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
               </Text>
             </View>
@@ -138,20 +138,6 @@ export default function ChallengeStatusView({
         </View>
       )}
 
-      {isSender
-        && (status === ReservationStatus.accepted
-          || status === ReservationStatus.restored
-          || status === ReservationStatus.requestcancelled) && (
-            <View>
-              <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
-                RESERVATION CONFIRMED
-              </Text>
-              <Text
-              style={
-                styles.statusDescription
-              }>{receiverName} confirmed your match reservation request.</Text>
-            </View>
-        )}
       {!isSender
         && (status === ReservationStatus.accepted
           || status === ReservationStatus.restored
@@ -163,21 +149,24 @@ export default function ChallengeStatusView({
               <Text
               style={
                 styles.statusDescription
-              }>{isTeamText()} has the confirmed match reservation request against {senderName}.</Text>
+              }>{teamName} confirmed your match reservation request.</Text>
+            </View>
+        )}
+      {isSender
+        && (status === ReservationStatus.accepted
+          || status === ReservationStatus.restored
+          || status === ReservationStatus.requestcancelled) && (
+            <View>
+              <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
+                RESERVATION CONFIRMED
+              </Text>
+              <Text
+              style={
+                styles.statusDescription
+              }>{isTeamText()} has the confirmed match reservation request against {teamName}.</Text>
             </View>
         )}
 
-      {isSender && status === ReservationStatus.declined && (
-        <View>
-          <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
-            RESERVATION REQUEST DECLINED
-          </Text>
-          <Text
-            style={
-              styles.statusDescription
-            }>{receiverName} declined your match reservation request.</Text>
-        </View>
-      )}
       {!isSender && status === ReservationStatus.declined && (
         <View>
           <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
@@ -186,7 +175,18 @@ export default function ChallengeStatusView({
           <Text
             style={
               styles.statusDescription
-            }>{isTeamText()} declined the match reservation request from {senderName}.</Text>
+            }>{teamName} declined your match reservation request.</Text>
+        </View>
+      )}
+      {isSender && status === ReservationStatus.declined && (
+        <View>
+          <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
+            RESERVATION REQUEST DECLINED
+          </Text>
+          <Text
+            style={
+              styles.statusDescription
+            }>{isTeamText()} declined the match reservation request from {teamName}.</Text>
         </View>
       )}
 
@@ -209,7 +209,7 @@ export default function ChallengeStatusView({
           <Text
             style={
               styles.statusDescription
-            }>{senderName} cancelled the match reservation.</Text>
+            }>{teamName} cancelled the match reservation.</Text>
         </View>
       )}
 
@@ -219,7 +219,7 @@ export default function ChallengeStatusView({
           <Text
             style={
               styles.statusDescription
-            }>{receiverName} has accepted your match reservation,but your payment hasn't gone through yet.</Text>
+            }>{teamName} has accepted your match reservation,but your payment hasn't gone through yet.</Text>
           <Text style={styles.pendingRequestText}>This reservation will be canceled unless the payment goes through within<Text style={{ color: colors.darkThemeColor }}> 4h 50m.</Text>
           </Text>
         </View>
@@ -230,7 +230,7 @@ export default function ChallengeStatusView({
           <Text
             style={
               styles.statusDescription
-            }>{isTeamText()} has accepted a game reservation from {senderName}, but the payment hasn't gone through yet.</Text>
+            }>{isTeamText()} has accepted a game reservation from {teamName}, but the payment hasn't gone through yet.</Text>
           <Text style={styles.pendingRequestText}>This reservation will be canceled unless the payment goes through within<Text style={{ color: colors.darkThemeColor }}>4h 50m.</Text>
           </Text>
         </View>
@@ -242,11 +242,11 @@ export default function ChallengeStatusView({
           <Text
             style={
               styles.statusDescription
-            }>{receiverName} has accepted your match reservation alteration request, but your payment hasn't gone through yet.</Text>
+            }>{teamName} has accepted your match reservation alteration request, but your payment hasn't gone through yet.</Text>
           <Text style={styles.pendingRequestText}>
             The accepted alteration won't be applied to the current reservation unless the payment goes through within
             <Text style={{ color: colors.darkThemeColor }}> 4h 50m </Text>
-            {'\n\n'}Meanwhile, {senderName} can cancel acceptance of the alteration request before the payment is completed.
+            {'\n\n'}Meanwhile, {teamName} can cancel acceptance of the alteration request before the payment is completed.
           </Text>
         </View>
       )}
@@ -256,7 +256,7 @@ export default function ChallengeStatusView({
           <Text
             style={
               styles.statusDescription
-            }>{isTeamText()} has accepted a match reservation alteration request from {senderName}, but the payment hasn't gone through yet.</Text>
+            }>{isTeamText()} has accepted a match reservation alteration request from {teamName}, but the payment hasn't gone through yet.</Text>
           <Text style={styles.pendingRequestText}>
             The accepted alteration won't be applied to the current reservation unless the payment goes through within
             <Text style={{ color: colors.darkThemeColor }}>4h 50m </Text>
@@ -281,7 +281,7 @@ export default function ChallengeStatusView({
                 ALTERATION REQUEST SENT
               </Text>
               <Text style={styles.statusDescription}>
-                {isTeamText()} sent a match reservation alteration request to {senderName}. This request will be expired in{'\n'}
+                {isTeamText()} sent a match reservation alteration request to {teamName}. This request will be expired in{'\n'}
                 <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
               </Text>
             </View>
@@ -297,7 +297,7 @@ export default function ChallengeStatusView({
                 ALTERATION REQUEST EXPIRED
               </Text>
               <Text style={styles.statusDescription}>
-                The match reservation request from {senderName} has been expired.
+                The match reservation request from {teamName} has been expired.
               </Text>
             </View>
           ) : (
@@ -306,7 +306,7 @@ export default function ChallengeStatusView({
                 ALTERATION REQUEST PENDING
               </Text>
               <Text style={styles.statusDescription}>
-                {isTeamText()} received a match reservation alteration request from {receiverName}. Please, respond within{'\n'}
+                {isTeamText()} received a match reservation alteration request from {teamName}. Please, respond within{'\n'}
                 <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
               </Text>
             </View>

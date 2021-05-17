@@ -189,8 +189,8 @@ if (settingObject?.venue?.length === 1) {
     <SecureRefereeView
       entityName={
         item.responsible_to_secure_referee === 'challenger'
-          ? teams[1]?.full_name ?? teams[1]?.group_name
-          : teams[0]?.full_name ?? teams[0]?.group_name
+          ? teams[0]?.full_name ?? teams[0]?.group_name
+          : teams[1]?.full_name ?? teams[1]?.group_name
       }
       entity={'Referee'}
       entityNumber={index + 1}
@@ -201,8 +201,8 @@ if (settingObject?.venue?.length === 1) {
     <SecureRefereeView
       entityName={
         item.responsible_to_secure_scorekeeper === 'challenger'
-          ? teams[1]?.full_name ?? teams[1]?.group_name
-          : teams[0]?.full_name ?? teams[0]?.group_name
+          ? teams[0]?.full_name ?? teams[0]?.group_name
+          : teams[1]?.full_name ?? teams[1]?.group_name
       }
       entity={'Scorekeeper'}
       entityNumber={index + 1}

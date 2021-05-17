@@ -36,7 +36,7 @@ export const getChallengeDetail = (challengeID, authContext) => {
           }
         }
         Obj.challengeObj = tempObj
-        Obj.screenName = 'AcceptDeclineChallengeScreen'
+        Obj.screenName = 'ChallengePreviewScreen'// AcceptDeclineChallengeScreen
         return Obj
       }
       if (ReservationStatus.declined === response.payload[0].status) {

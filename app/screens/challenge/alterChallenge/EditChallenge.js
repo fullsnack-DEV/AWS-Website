@@ -242,6 +242,7 @@ import { widthPercentageToDP } from '../../../utils';
      getFeesEstimation(feeBody, authContext)
        .then((response) => {
          setFeeObj(response.payload);
+
          if (response.payload.total_game_fee === 0) {
            setTotalZero(true);
          }
@@ -259,7 +260,7 @@ import { widthPercentageToDP } from '../../../utils';
 
    const updateChallengeDetail = () => {
      setloading(true);
-    const body = { ...challengeObj }
+    const body = { ...challengeObj, ...feeObj }
     const challengeID = body.challenge_id;
     // if (route?.params?.paymentMethod) {
     //   setDefaultCard(route?.params?.paymentMethod)
@@ -277,6 +278,12 @@ import { widthPercentageToDP } from '../../../utils';
     delete body.updated_at;
     delete body.version;
     delete body.reservations;
+
+    // if(body?.home_away === 'Home'){
+    //   const home_id =
+    // }else{
+
+    // }
     const home_id = body?.home_team?.group_id ?? body.home_team.user_id;
     const away_id = body?.away_team?.group_id ?? body.away_team.user_id;
     delete body.home_team;
@@ -329,67 +336,8 @@ import { widthPercentageToDP } from '../../../utils';
 
          <TCThickDivider marginTop={15} />
 
-         <TCChallengeTitle
-           title={'Type of Game'}
-           value={challengeObj?.game_type}
-           tooltipText={
-           'The game result has an effect on TC points of the challengee and you.'
-           }
-           tooltipHeight={hp('6%')}
-           tooltipWidth={wp('50%')}
-          //  isEdit={true}
-          //  onEditPress={() => {
-          //    navigation.navigate('GameType', {
-          //      settingObj: settingObject,
-          //      comeFrom: 'EditChallenge',
-          //      sportName,
-          //    });
-          //  }}
-         />
-         <TCThickDivider />
-
-         <TCChallengeTitle
-           title={'Game Fee'}
-           value={challengeObj?.game_fee?.fee}
-           staticValueText={`${challengeObj?.game_fee?.currency_type} /Game`}
-           valueStyle={{
-             fontFamily: fonts.RBold,
-             fontSize: 16,
-             color: colors.greenColorCard,
-             marginRight: 2,
-           }}
-           isEdit={true}
-           onEditPress={() => {
-             navigation.navigate('GameFee', {
-               settingObj: challengeObj,
-               comeFrom: 'EditChallenge',
-               sportName,
-             });
-           }}
-         />
-         <TCThickDivider />
-
-         <TCChallengeTitle
-           title={'Refund Policy'}
-           value={challengeObj?.refund_policy}
-           tooltipText={
-           '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
-           }
-           tooltipHeight={hp('18%')}
-           tooltipWidth={wp('50%')}
-           isEdit={true}
-           onEditPress={() => {
-             navigation.navigate('RefundPolicy', {
-               settingObj: challengeObj,
-               comeFrom: 'EditChallenge',
-               sportName,
-             });
-           }}
-         />
-         <TCThickDivider />
-       </View>
-       <View>
-         <TCChallengeTitle
+         <View>
+           <TCChallengeTitle
            title={'Home & Away'}
            isEdit={true}
            onEditPress={() => {
@@ -400,10 +348,10 @@ import { widthPercentageToDP } from '../../../utils';
              });
            }}
          />
-         <View style={styles.teamContainer}>
-           <Text style={styles.homeLableStyle}>Home</Text>
-           <View style={styles.teamViewStyle}>
-             <Image
+           <View style={styles.teamContainer}>
+             <Text style={styles.homeLableStyle}>Home</Text>
+             <View style={styles.teamViewStyle}>
+               <Image
                source={
                 challengeObj?.home_away === 'Home'
                    ? authContext?.entity?.obj?.thumbnail
@@ -420,26 +368,26 @@ import { widthPercentageToDP } from '../../../utils';
                style={styles.imageView}
              />
 
-             <View style={styles.teamTextContainer}>
-               <Text style={styles.teamNameLable}>
-                 {challengeObj?.home_away === 'Home'
+               <View style={styles.teamTextContainer}>
+                 <Text style={styles.teamNameLable}>
+                   {challengeObj?.home_away === 'Home'
                    ? authContext?.entity?.obj?.full_name
                      ?? authContext?.entity?.obj?.group_name
                    : groupObj?.full_name ?? groupObj?.group_name}
-               </Text>
-               <Text style={styles.locationLable}>
-                 {challengeObj?.home_away === 'Home'
+                 </Text>
+                 <Text style={styles.locationLable}>
+                   {challengeObj?.home_away === 'Home'
                    ? `${authContext?.entity?.obj?.city}, ${authContext?.entity?.obj?.state_abbr}`
                    : `${groupObj?.city}, ${groupObj?.state_abbr}`}
-               </Text>
+                 </Text>
+               </View>
              </View>
            </View>
-         </View>
 
-         <View style={styles.teamContainer}>
-           <Text style={styles.homeLableStyle}>Away</Text>
-           <View style={styles.teamViewStyle}>
-             <Image
+           <View style={styles.teamContainer}>
+             <Text style={styles.homeLableStyle}>Away</Text>
+             <View style={styles.teamViewStyle}>
+               <Image
                source={
                 challengeObj?.home_away === 'Home'
                    ? groupObj?.thumbnail
@@ -456,24 +404,24 @@ import { widthPercentageToDP } from '../../../utils';
                style={styles.imageView}
              />
 
-             <View style={styles.teamTextContainer}>
-               <Text style={styles.teamNameLable}>
-                 {challengeObj?.home_away === 'Home'
+               <View style={styles.teamTextContainer}>
+                 <Text style={styles.teamNameLable}>
+                   {challengeObj?.home_away === 'Home'
                    ? groupObj?.full_name ?? groupObj?.group_name
                    : authContext?.entity?.obj?.full_name
                      ?? authContext?.entity?.obj?.group_name}
-               </Text>
-               <Text style={styles.locationLable}>
-                 {challengeObj?.home_away === 'Home'
+                 </Text>
+                 <Text style={styles.locationLable}>
+                   {challengeObj?.home_away === 'Home'
                    ? `${groupObj?.city}, ${groupObj?.state_abbr}`
                    : `${authContext?.entity?.obj?.city}, ${authContext?.entity?.obj?.state_abbr}`}
-               </Text>
+                 </Text>
+               </View>
              </View>
            </View>
+           <TCThickDivider marginTop={20} />
          </View>
-         <TCThickDivider marginTop={20} />
-       </View>
-       <View>
+
          <TCChallengeTitle
            title={'Game Duration'}
            isEdit={true}
@@ -594,6 +542,46 @@ import { widthPercentageToDP } from '../../../utils';
          </View>
 
          <TCChallengeTitle
+           title={'Type of Game'}
+           value={challengeObj?.game_type}
+           tooltipText={
+           'The game result has an effect on TC points of the challengee and you.'
+           }
+           tooltipHeight={hp('6%')}
+           tooltipWidth={wp('50%')}
+           isEdit={true}
+           onEditPress={() => {
+             navigation.navigate('GameType', {
+               settingObj: challengeObj,
+               comeFrom: 'EditChallenge',
+               sportName,
+             });
+           }}
+         />
+         <TCThickDivider />
+
+         <TCChallengeTitle
+           title={'Game Fee'}
+           value={challengeObj?.game_fee?.fee}
+           staticValueText={`${challengeObj?.game_fee?.currency_type} /Game`}
+           valueStyle={{
+             fontFamily: fonts.RBold,
+             fontSize: 16,
+             color: colors.greenColorCard,
+             marginRight: 2,
+           }}
+           isEdit={true}
+           onEditPress={() => {
+             navigation.navigate('GameFee', {
+               settingObj: challengeObj,
+               comeFrom: 'EditChallenge',
+               sportName,
+             });
+           }}
+         />
+         <TCThickDivider />
+
+         <TCChallengeTitle
            title={'Game Rules'}
            isEdit={true}
            onEditPress={() => {
@@ -610,6 +598,10 @@ import { widthPercentageToDP } from '../../../utils';
          <Text style={styles.rulesTitle}>Special Rules</Text>
          <Text style={styles.rulesDetail}>{challengeObj?.special_rules}</Text>
          <TCThickDivider marginTop={20} />
+
+       </View>
+
+       <View>
 
          <TCChallengeTitle
            title={'Referees'}
@@ -696,6 +688,24 @@ import { widthPercentageToDP } from '../../../utils';
            marginTop: 15,
          }}
        /> */}
+       <TCChallengeTitle
+           title={'Refund Policy'}
+           value={challengeObj?.refund_policy}
+           tooltipText={
+           '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+           }
+           tooltipHeight={hp('18%')}
+           tooltipWidth={wp('50%')}
+           isEdit={true}
+           onEditPress={() => {
+             navigation.navigate('RefundPolicy', {
+               settingObj: challengeObj,
+               comeFrom: 'EditChallenge',
+               sportName,
+             });
+           }}
+         />
+       <TCThickDivider />
        <SafeAreaView>
          <View
           style={styles.bottomButtonView}>
