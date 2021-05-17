@@ -45,7 +45,7 @@ import ReservationStatus from '../Constants/ReservationStatus';
     <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.mainContainer}>
       <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
         <LinearGradient
-        colors={data?.status === ReservationStatus.cancelled ? [colors.startGrayGrdient, colors.endGrayGradient] : [colors.yellowColor, colors.assistTextColor]}
+         colors={data?.status === ReservationStatus.cancelled ? [colors.startGrayGrdient, colors.endGrayGradient] : [colors.yellowColor, colors.assistTextColor]}
           style={data?.status === ReservationStatus.offered ? [styles.colorView, { opacity: 0.7 }] : styles.colorView}>
           <View style={styles.dateView}>
             <Text style={styles.dateMonthText}>
@@ -162,13 +162,13 @@ import ReservationStatus from '../Constants/ReservationStatus';
 
 const styles = StyleSheet.create({
   mainContainer: {
+    backgroundColor: colors.whiteColor,
     margin: 10,
-    borderRadius: 15,
-    padding: 5,
-    elevation: 5,
+    borderRadius: 8,
+    elevation: 2,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1.5 },
-    shadowOpacity: 0.27,
+    shadowOpacity: 0.16,
     shadowRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',

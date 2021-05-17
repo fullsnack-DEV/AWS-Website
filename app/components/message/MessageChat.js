@@ -465,7 +465,7 @@ const MessageChat = ({
               width: 23,
           }}/>
         </TouchableOpacity>
-        <View style={{ flex: 1, marginRight: 15 }}>
+        <View style={{ flex: 1, marginRight: 15, zIndex: -1 }}>
           <TCInputBox
               onFocus={onInputBoxFocus}
               value={messageBody}

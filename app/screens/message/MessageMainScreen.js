@@ -69,27 +69,31 @@ const MessageMainScreen = ({ navigation }) => {
   }
 
   const getDialogs = async (request = {}, pagination = false) => {
-    const savedDialog = await QBgetDialogs({
+    QBgetDialogs({
       ...request,
       filter: {
         field: QB.chat.DIALOGS_FILTER.FIELD.NAME,
         value: '',
         operator: QB.chat.DIALOGS_FILTER.OPERATOR.CTN,
       },
-    })
-
-    _.map(savedDialog?.dialogs, (x) => {
-      if (x?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && !x?.isJoined) {
-        QB.chat.joinDialog({ dialogId: x?.id });
+    }).then((savedDialog) => {
+      console.log('ERK Success', savedDialog)
+      _.map(savedDialog?.dialogs, (x) => {
+        if (x?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && !x?.isJoined) {
+          QB.chat.joinDialog({ dialogId: x?.id });
+        }
+      })
+      if (pagination) {
+        const data = { ...savedDialog, dialogs: [...savedDialogsData.dialogs, ...savedDialog.dialogs] }
+        setSavedDialogsData({ ...data });
+      } else {
+        setSavedDialogsData(savedDialog);
       }
+      setLoading(false);
+    }).catch((error) => {
+      console.log('ERK Error', error)
+      setLoading(false)
     })
-    if (pagination) {
-      const data = { ...savedDialog, dialogs: [...savedDialogsData.dialogs, ...savedDialog.dialogs] }
-      setSavedDialogsData({ ...data });
-    } else {
-      setSavedDialogsData(savedDialog);
-    }
-    setLoading(false);
   }
 
   const connectAndSubscribe = async () => {

@@ -2362,8 +2362,11 @@ const HomeScreen = ({ navigation, route }) => {
     () => (
       <View
         style={{
-          zIndex: 5,
+          position: 'absolute',
+          zIndex: 100,
           top: 30,
+          right: 0,
+          left: 0,
           justifyContent: 'space-between',
           paddingLeft: 15,
           paddingRight: 15,

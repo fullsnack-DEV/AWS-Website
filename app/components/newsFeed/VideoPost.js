@@ -41,7 +41,7 @@ const VideoPost = memo(({
       updateCommentCount,
       onLikePress,
     })
-  }, [item, navigation, updateCommentCount]);
+  }, [item, navigation, onLikePress, updateCommentCount]);
 
   const onVideoLoad = useCallback((videoMetaData) => {
       setVideoHeight(videoMetaData?.naturalSize?.orientation)
@@ -85,24 +85,24 @@ const VideoPost = memo(({
 
   return (
     <View style={{ ...styles.mainContainer, height }}>
-      {/*     <View */}
-      {/*       style={{ */}
-      {/* ...styles.singleImageDisplayStyle, borderWidth: 1, borderColor: colors.lightgrayColor, height, */}
-      {/*       }}> */}
-      {/*       <FastImage */}
-      {/*         style={styles.loadimageStyle} */}
-      {/*         source={images.imageLoadingGIF} */}
-      {/*         resizeMode={FastImage.resizeMode.contain} */}
-      {/*       /> */}
-      {/*       <Text style={styles.loadingTextStyle}>Loading...</Text> */}
-      {/*     </View> */}
+      <View
+             style={{
+       ...styles.singleImageDisplayStyle, borderWidth: 1, borderColor: colors.lightgrayColor, height,
+             }}>
+        <FastImage
+               style={styles.loadimageStyle}
+               source={images.imageLoadingGIF}
+               resizeMode={FastImage.resizeMode.contain}
+             />
+        <Text style={styles.loadingTextStyle}>Loading...</Text>
+      </View>
 
       <TouchableWithoutFeedback onPress={toggleModal}>
         <Video
             repeat={true}
             ref={videoPlayerRef}
             paused={!(isFocused && (currentParentIndex === parentIndex))}
-            muted={!mute}
+            muted={mute}
             onProgress={onProgress}
             source={{ uri: data.url }}
             style={{ ...styles.singleImageDisplayStyle, height, position: 'absolute' }}
@@ -122,7 +122,7 @@ const VideoPost = memo(({
                 resizeMode={'contain'}
                 tintColor={'white'}
                 style={styles.imageStyle}
-                source={mute ? images.unmute : images.mute}
+                source={mute ? images.mute : images.unmute}
               />
           </TouchableHighlight>
         </>
@@ -166,11 +166,12 @@ const styles = StyleSheet.create({
     width: 14,
   },
   mainContainer: {
+    backgroundColor: colors.whiteColor,
     shadowColor: colors.googleColor,
     shadowOpacity: 0.16,
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 15,
-    elevation: 15,
+    elevation: 2,
     alignItems: 'center',
     alignSelf: 'center',
     borderRadius: wp('4%'),
