@@ -110,6 +110,19 @@ import { widthPercentageToDP } from '../../../utils';
        }
        if (route?.params?.homeAway) {
          settings.home_away = route?.params?.homeAway;
+
+          if (route?.params?.home_team?.name) {
+            settings.home_team = groupObj;
+            settings.away_team = route?.params?.away_team;
+          } else {
+            settings.away_team = groupObj;
+            settings.home_team = route?.params?.home_team;
+          }
+
+        //  settings.home_team = route?.params?.home_team;
+        //  settings.away_team = route?.params?.away_team;
+
+         console.log('setting:=> ', settings);
        }
        if (route?.params?.gameDuration) {
          settings.game_duration = route?.params?.gameDuration;
@@ -353,32 +366,16 @@ import { widthPercentageToDP } from '../../../utils';
              <View style={styles.teamViewStyle}>
                <Image
                source={
-                challengeObj?.home_away === 'Home'
-                   ? authContext?.entity?.obj?.thumbnail
-                     ? { uri: authContext?.entity?.obj?.thumbnail }
-                     : authContext?.entity?.obj?.full_name
-                     ? images.profilePlaceHolder
-                     : images.teamPlaceholder
-                   : groupObj?.thumbnail
-                   ? { uri: groupObj?.thumbnail }
-                   : groupObj?.full_name
-                   ? images.profilePlaceHolder
-                   : images.teamPlaceholder
-               }
+                challengeObj?.home_team?.thumbnail ? { uri: challengeObj?.home_team?.thumbnail } : challengeObj?.home_team?.user_challenge === true ? images.profilePlaceHolder : images.teamPlaceholder }
                style={styles.imageView}
              />
 
                <View style={styles.teamTextContainer}>
                  <Text style={styles.teamNameLable}>
-                   {challengeObj?.home_away === 'Home'
-                   ? authContext?.entity?.obj?.full_name
-                     ?? authContext?.entity?.obj?.group_name
-                   : groupObj?.full_name ?? groupObj?.group_name}
+                   {challengeObj?.home_team?.full_name || challengeObj?.home_team?.group_name}
                  </Text>
                  <Text style={styles.locationLable}>
-                   {challengeObj?.home_away === 'Home'
-                   ? `${authContext?.entity?.obj?.city}, ${authContext?.entity?.obj?.state_abbr}`
-                   : `${groupObj?.city}, ${groupObj?.state_abbr}`}
+                   {`${challengeObj?.home_team?.city}, ${challengeObj?.home_team?.state_abbr}`}
                  </Text>
                </View>
              </View>
@@ -389,32 +386,16 @@ import { widthPercentageToDP } from '../../../utils';
              <View style={styles.teamViewStyle}>
                <Image
                source={
-                challengeObj?.home_away === 'Home'
-                   ? groupObj?.thumbnail
-                     ? { uri: groupObj?.thumbnail }
-                     : groupObj?.full_name
-                     ? images.profilePlaceHolder
-                     : images.teamPlaceholder
-                   : authContext?.entity?.obj?.thumbnail
-                   ? { uri: authContext?.entity?.obj?.thumbnail }
-                   : authContext?.entity?.obj?.full_name
-                   ? images.profilePlaceHolder
-                   : images.teamPlaceholder
-               }
+                challengeObj?.away_team?.thumbnail ? { uri: challengeObj?.away_team?.thumbnail } : challengeObj?.away_team?.user_challenge === true ? images.profilePlaceHolder : images.teamPlaceholder }
                style={styles.imageView}
              />
 
                <View style={styles.teamTextContainer}>
                  <Text style={styles.teamNameLable}>
-                   {challengeObj?.home_away === 'Home'
-                   ? groupObj?.full_name ?? groupObj?.group_name
-                   : authContext?.entity?.obj?.full_name
-                     ?? authContext?.entity?.obj?.group_name}
+                   {challengeObj?.away_team?.full_name ?? challengeObj?.away_team?.group_name}
                  </Text>
                  <Text style={styles.locationLable}>
-                   {challengeObj?.home_away === 'Home'
-                   ? `${groupObj?.city}, ${groupObj?.state_abbr}`
-                   : `${authContext?.entity?.obj?.city}, ${authContext?.entity?.obj?.state_abbr}`}
+                   {`${challengeObj?.away_team?.city}, ${challengeObj?.away_team?.state_abbr}`}
                  </Text>
                </View>
              </View>

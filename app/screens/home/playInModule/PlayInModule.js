@@ -5,10 +5,11 @@ import {
 import Modal from 'react-native-modal';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import React, {
-  useContext, memo, useEffect, useState, useMemo, useCallback,
+  useContext, memo, useEffect, useState, useMemo, useCallback, useRef,
 } from 'react';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
+import ActionSheet from 'react-native-actionsheet';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import Header from '../../../components/Home/Header';
@@ -20,6 +21,7 @@ import PlayInStatsView from './stats/PlayInStatsView';
 import { patchPlayer } from '../../../api/Users';
 import strings from '../../../Constants/String';
 import AuthContext from '../../../auth/context';
+
 import * as Utility from '../../../utils';
 import { getQBAccountType, QBcreateUser } from '../../../utils/QuickBlox';
 import TCGradientDivider from '../../../components/TCThinGradientDivider';
@@ -36,6 +38,7 @@ const PlayInModule = ({
   navigation,
   openPlayInModal,
 }) => {
+  const actionSheetRef = useRef();
   const [sportName, setSportName] = useState('');
   const [singlePlayerGame, setSinglePlayerGame] = useState(true);
   const [mainTitle, setMainTitle] = useState();
@@ -161,11 +164,9 @@ const PlayInModule = ({
   const renderChallengeButton = useMemo(() => currentTab === 0 && authContext?.entity?.uid !== currentUserData?.user_id && ['player', 'user']?.includes(authContext?.entity?.role) && (
     <TouchableOpacity
               onPress={() => {
-                if (authContext?.user?.registered_sports?.some((item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase())) {
-                  onClose();
-                  setTimeout(() => {
-                    navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName, game_fee: playInObject?.fee ?? 0 } })
-                  }, 500)
+                console.log('auth123:=>', authContext);
+                if (authContext?.entity?.obj?.registered_sports?.some((item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase())) {
+                  actionSheetRef.current.show();
                 } else {
                   Alert.alert('Towns Cup', 'Both Player have a different sports')
                 }
@@ -207,7 +208,8 @@ const PlayInModule = ({
     setCurrentTab(ChangeTab.i)
   }, [])
   return (
-    <Modal
+    <>
+      <Modal
             isVisible={visible}
             backdropColor="black"
             style={{
@@ -217,15 +219,15 @@ const PlayInModule = ({
             onBackdropPress={onClose}
             backdropOpacity={0}
         >
-      <View style={styles.modalContainerViewStyle}>
-        <SafeAreaView style={{ flex: 1 }}>
-          {renderHeader}
+        <View style={styles.modalContainerViewStyle}>
+          <SafeAreaView style={{ flex: 1 }}>
+            {renderHeader}
 
-          {/* Challenge Button */}
-          {renderChallengeButton}
+            {/* Challenge Button */}
+            {renderChallengeButton}
 
-          {/* Profile View Section */}
-          {useMemo(() => <PlayInProfileViewSection
+            {/* Profile View Section */}
+            {useMemo(() => <PlayInProfileViewSection
               onSettingPress={() => {
                 onClose()
                 navigation.navigate('ManageChallengeScreen')
@@ -238,19 +240,44 @@ const PlayInModule = ({
               cityName={currentUserData?.city ?? ''}
           />, [currentUserData?.city, currentUserData?.full_name, currentUserData?.thumbnail, isAdmin, onMessageButtonPress])}
 
-          {/* Tabs */}
-          {useMemo(() => (
-            <TCScrollableTabs
+            {/* Tabs */}
+            {useMemo(() => (
+              <TCScrollableTabs
                 locked={false}
                 onChangeTab={onChangeTab}
               >
-              {TAB_ITEMS?.map(renderTabs)}
-            </TCScrollableTabs>
+                {TAB_ITEMS?.map(renderTabs)}
+              </TCScrollableTabs>
           ), [renderTabs])}
 
-        </SafeAreaView>
-      </View>
-    </Modal>
+          </SafeAreaView>
+        </View>
+      </Modal>
+
+      <ActionSheet
+          ref={actionSheetRef}
+          options={['Continue to Challenge', 'Invite to Challenge', 'Cancel']}
+          cancelButtonIndex={2}
+          destructiveButtonIndex={2}
+          onPress={(index) => {
+            if (index === 0) {
+              onClose()
+              navigation.navigate('ChallengeScreen', {
+                sportName: playInObject?.sport_name,
+                groupObj: currentUserData,
+              });
+            }
+            if (index === 1) {
+              onClose()
+              navigation.navigate('InviteChallengeScreen', {
+                sportName: playInObject?.sport_name,
+                groupObj: currentUserData,
+              });
+            }
+          }}
+        />
+
+    </>
   )
 }
 

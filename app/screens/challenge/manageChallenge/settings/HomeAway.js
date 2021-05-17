@@ -52,6 +52,8 @@ import images from '../../../../Constants/ImagePath';
         if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
           navigation.navigate(comeFrom, {
             homeAway: authContext?.entity?.uid === teams?.[0]?.user_id || authContext?.entity?.uid === teams?.[0]?.group_id ? 'Home' : 'Away',
+            home_team: teams[0],
+            away_team: teams[1],
           });
         } else {
           const bodyParams = {
