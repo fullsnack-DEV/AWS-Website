@@ -12,7 +12,7 @@ import {
   ScrollView,
   Alert,
   FlatList,
-  Dimensions, Platform,
+  Dimensions, Platform, SafeAreaView,
 } from 'react-native';
 
 import {
@@ -57,23 +57,9 @@ export default function PersonalInformationScreen({ navigation, route }) {
   const [languages, setLanguages] = useState(authContext?.entity?.obj?.language);
   const selectedLanguage = [];
   useLayoutEffect(() => {
-    if (editMode) {
       navigation.setOptions({
-        title: 'Edit Personal Information',
-        headerRight: () => (
-          <Text></Text>
-        ),
+        headerShown: false,
       });
-    } else {
-      navigation.setOptions({
-        title: 'Personal Information',
-        headerRight: () => (
-          <Text style={ styles.headerRightButton } onPress={ () => {
-            changeEditMode();
-          } }>Edit</Text>
-        ),
-      });
-    }
   }, [navigation, editMode, languages, phoneNumbers]);
 
   useEffect(() => {
@@ -160,6 +146,51 @@ export default function PersonalInformationScreen({ navigation, route }) {
     // setSelectedLanguages(selectedLanguage);
     console.log('language Checked :::', selectedLanguage);
   };
+
+  const onSavePress = () => {
+    if (checkValidation()) {
+      const bodyParams = {};
+      // let registered_sports= [];
+
+      // bodyParams.sport_name = sports;
+      // bodyParams.Tennis = 'single-multiplayer';
+      // bodyParams.descriptions = description;
+      // bodyParams.language=selectedLanguages;
+
+      // registered_sports[0]=bodyParams;
+      // bodyParams={registered_sports};
+      // console.log('bodyPARAMS:: ', JSON.stringify(bodyParams));
+
+      // navigation.navigate('RegisterPlayerForm2',{bodyParams: bodyParams})
+      bodyParams.first_name = userInfo.first_name;
+      bodyParams.last_name = userInfo.last_name;
+      bodyParams.full_name = `${userInfo.first_name} ${userInfo.last_name}`;
+      bodyParams.city = userInfo.city;
+      bodyParams.state_abbr = userInfo.state_abbr;
+      bodyParams.country = userInfo.country;
+      if (userInfo.language) {
+        bodyParams.language = userInfo.language;
+      }
+      if (phoneNumbers) {
+        bodyParams.phone_numbers = userInfo.phone_numbers;
+      }
+      console.log('bodyPARAMS:: ', bodyParams);
+      setloading(true);
+      updateUserProfile(bodyParams, authContext).then(async (response) => {
+        const currentEntity = {
+          ...authContext.entity, obj: response.payload,
+        }
+        authContext.setEntity({ ...currentEntity })
+        Utility.setStorage('authContextEntity', { ...currentEntity })
+        setEditMode(false);
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert('Towns Cup', 'Profile changed sucessfully');
+        }, 1000);
+      })
+    }
+  }
+
   const renderLanguage = ({ item, index }) => (
     <TouchableWithoutFeedback
             style={ styles.listItem }
@@ -224,10 +255,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 paddingRight: 30,
                 backgroundColor: colors.offwhite,
                 borderRadius: 5,
-                shadowColor: colors.googleColor,
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.5,
-                shadowRadius: 1,
+                ...(editMode && shadowStyle),
               },
               inputAndroid: {
                 fontSize: wp('4%'),
@@ -238,11 +266,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 paddingRight: 30,
                 backgroundColor: colors.offwhite,
                 borderRadius: 5,
-                shadowColor: colors.googleColor,
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.5,
-                shadowRadius: 1,
-                elevation: 3,
+                ...(editMode && shadowStyle),
               },
             } }
             Icon={ () => (
@@ -252,10 +276,10 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 />
             ) }
           />
-        <View style={ styles.halfMatchFeeView }>
+        <View style={{ ...styles.halfMatchFeeView, ...(editMode && shadowStyle) }}>
           <TextInput
               placeholder={ 'Phone number' }
-              style={ styles.halffeeText }
+              style={{ ...styles.halffeeText, ...(editMode && shadowStyle) }}
               keyboardType={ 'phone-pad' }
               onChangeText={ (text) => {
                 const tempphoneNumbers = [...phoneNumbers];
@@ -265,59 +289,98 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 setUserInfo({ ...userInfo, phone_numbers: filteredNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
               } }
               editable={ editMode }
-              value={ item.phone_number }></TextInput>
+              value={ item.phone_number }/>
 
         </View>
       </View>
     </View>
   )
-  return (
-    <TCKeyboardView>
-      <ScrollView style={ styles.mainContainer }>
-        <ActivityLoader visible={ loading } />
-        <TCLabel title={'Name'}/>
-        {editMode && <View><TextInput
-            placeholder={ strings.fnameText }
-            style={ styles.matchFeeTxt }
-            onChangeText={ (text) => {
-              setUserInfo({ ...userInfo, first_name: text })
-            }}
-            editable={ editMode }
-            value={ userInfo.first_name }></TextInput>
-          <TextInput
-            placeholder={ strings.lnameText }
-            style={ styles.matchFeeTxt }
-            onChangeText={ (text) => {
-              setUserInfo({ ...userInfo, last_name: text })
-            }}
-            editable={ editMode }
-            value={ userInfo.last_name }></TextInput></View>}
+  const shadowStyle = {
+      elevation: 3,
+      shadowColor: colors.googleColor,
+      shadowOffset: { width: 0, height: 0.5 },
+      shadowOpacity: 0.16,
+      shadowRadius: 1,
+  }
 
-        {!editMode && <TextInput
-            placeholder={ 'Name' }
-            style={ styles.matchFeeTxt }
-            editable={ editMode }
-            value={ `${userInfo.first_name} ${userInfo.last_name}` }></TextInput>
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <Header
+            leftComponent={
+              <TouchableOpacity onPress={() => navigation.goBack() }>
+                <Image source={images.backArrow} style={styles.backImageStyle} />
+              </TouchableOpacity>
+            }
+            centerComponent={
+              <Text style={{
+                fontSize: 16,
+                color: colors.lightBlackColor,
+                textAlign: 'center',
+                fontFamily: fonts.RBold,
+              }}>
+                Personal Information
+              </Text>
+            }
+            rightComponent={
+              <Text style={ styles.headerRightButton } onPress={ () => {
+                if (!editMode) changeEditMode()
+                else onSavePress();
+              } }>
+                {!editMode ? 'Edit' : 'Done'}
+              </Text>
+            }
+        />
+      <View style={{ width: '100%', height: 0.5, backgroundColor: colors.writePostSepratorColor }}/>
+      <TCKeyboardView>
+        <ScrollView bounces={false} style={ styles.mainContainer }>
+          <ActivityLoader visible={ loading } />
+          <TCLabel title={'Name'}/>
+          {editMode && <View style={{ marginHorizontal: 15, flexDirection: 'row' }}><TextInput
+    placeholder={strings.fnameText}
+    style={{
+ ...styles.matchFeeTxt, flex: 1, marginRight: 5, ...(editMode && shadowStyle),
+    }}
+    onChangeText={(text) => {
+      setUserInfo({ ...userInfo, first_name: text })
+    }}
+    editable={editMode}
+    value={userInfo.first_name}/>
+            <TextInput
+    placeholder={strings.lnameText}
+    style={{
+ ...styles.matchFeeTxt, flex: 1, marginLeft: 5, ...(editMode && shadowStyle),
+    }}
+    onChangeText={(text) => {
+      setUserInfo({ ...userInfo, last_name: text })
+    }}
+    editable={editMode}
+    value={userInfo.last_name}/></View>}
+
+          {!editMode && <TextInput
+    placeholder={'Name'}
+    style={{ ...styles.matchFeeTxt, ...(editMode && shadowStyle) }}
+    editable={editMode}
+    value={`${userInfo.first_name} ${userInfo.last_name}`}/>
         }
 
-        <TCLabel title={'E-mail'}/>
-        <TextInput
+          <TCLabel title={'E-mail'}/>
+          <TextInput
             placeholder={ strings.emailPlaceHolder }
-            style={ styles.matchFeeTxt }
+            style={{ ...styles.matchFeeTxt, ...(editMode && shadowStyle) }}
             editable={ false }
-            value={ userInfo.email }></TextInput>
+            value={ userInfo.email }/>
 
-        <TCLabel title={'Phone'}/>
-        <FlatList
+          <TCLabel title={'Phone'}/>
+          <FlatList
             data={ phoneNumbers }
             keyExtractor={(index) => index.toString()}
             renderItem={ renderPhoneNumber }
         />
-        <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>
-        <View style={ styles.fieldView }>
+          {editMode && <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>}
+          <View style={ styles.fieldView }>
 
-          <TCLabel title={strings.locationTitle}/>
-          <TouchableOpacity
+            <TCLabel title={strings.locationTitle}/>
+            <TouchableOpacity
               disabled={!editMode}
               onPress={ () => {
                 // eslint-disable-next-line no-unused-expressions
@@ -325,31 +388,31 @@ export default function PersonalInformationScreen({ navigation, route }) {
                   comeFrom: 'PersonalInformationScreen',
                 })
               }}>
-            <TextInput
+              <TextInput
                 placeholder={ strings.searchCityPlaceholder }
-                style={ styles.matchFeeTxt }
+                style={{ ...styles.matchFeeTxt, ...(editMode && shadowStyle) }}
                 value={userInfo?.city && `${userInfo?.city?.trim()}, ${userInfo.state_abbr?.trim()}, ${userInfo.country?.trim()}`}
                 editable={ false }
                 pointerEvents="none"
-                ></TextInput>
-          </TouchableOpacity>
-        </View>
-        <TCLabel title={strings.languageTitle}/>
-        <TouchableOpacity
-            style={ styles.searchView }
+                />
+            </TouchableOpacity>
+          </View>
+          <TCLabel title={strings.languageTitle}/>
+          <TouchableOpacity
+            style={{ ...styles.searchView, ...(editMode && shadowStyle) }}
             disabled={!editMode}
             onPress={ () => {
               // eslint-disable-next-line no-unused-expressions
               editMode && toggleModal();
             }}>
-          <TextInput
+            <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
             value={ userInfo.language ? languagesName : '' }
             editable={ false }
             pointerEvents="none"/>
-        </TouchableOpacity>
-        <Modal
+          </TouchableOpacity>
+          <Modal
         isVisible={ isModalVisible }
         backdropColor="black"
         hasBackdrop={true}
@@ -358,7 +421,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
         }}
         backdropOpacity={ 0 }
         style={ { marginLeft: 0, marginRight: 0, marginBottom: 0 } }>
-          <View
+            <View
           style={ {
             width: '100%',
             height: Dimensions.get('window').height / 2,
@@ -374,7 +437,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
             shadowRadius: 5,
             elevation: 10,
           } }>
-            <Header
+              <Header
               mainContainerStyle={{ marginTop: 15 }}
               centerComponent={
                 <Text style={styles.headerCenterStyle}>{'Languages'}</Text>
@@ -387,15 +450,15 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 </TouchableOpacity>
               }
             />
-            <View style={styles.sepratorStyle} />
-            <View style={ styles.separatorLine }></View>
-            <FlatList
+              <View style={styles.sepratorStyle} />
+              <View style={ styles.separatorLine }></View>
+              <FlatList
             data={ languageData }
             keyExtractor={(index) => index.toString()}
             renderItem={ renderLanguage }
             style={ { marginBottom: '25%' } }
           />
-            <View
+              <View
             style={ {
               width: '100%',
               height: '25%',
@@ -409,71 +472,22 @@ export default function PersonalInformationScreen({ navigation, route }) {
               shadowOpacity: 0.5,
               shadowRadius: 5,
             } }>
-              <TouchableOpacity
+                <TouchableOpacity
               onPress={ () => {
                 toggleModal();
               } }>
-                <LinearGradient
+                  <LinearGradient
                 colors={ [colors.yellowColor, colors.themeColor] }
                 style={ styles.languageApplyButton }>
-                  <Text style={ styles.nextButtonText }>{strings.applyTitle}</Text>
-                </LinearGradient>
-              </TouchableOpacity>
+                    <Text style={ styles.nextButtonText }>{strings.applyTitle}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Modal>
-
-        {editMode && <TouchableOpacity onPress={ () => {
-          if (checkValidation()) {
-            const bodyParams = {};
-            // let registered_sports= [];
-
-            // bodyParams.sport_name = sports;
-            // bodyParams.Tennis = 'single-multiplayer';
-            // bodyParams.descriptions = description;
-            // bodyParams.language=selectedLanguages;
-
-            // registered_sports[0]=bodyParams;
-            // bodyParams={registered_sports};
-            // console.log('bodyPARAMS:: ', JSON.stringify(bodyParams));
-
-            // navigation.navigate('RegisterPlayerForm2',{bodyParams: bodyParams})
-            bodyParams.first_name = userInfo.first_name;
-            bodyParams.last_name = userInfo.last_name;
-            bodyParams.full_name = `${userInfo.first_name} ${userInfo.last_name}`;
-            bodyParams.city = userInfo.city;
-            bodyParams.state_abbr = userInfo.state_abbr;
-            bodyParams.country = userInfo.country;
-            if (userInfo.language) {
-              bodyParams.language = userInfo.language;
-            }
-            if (phoneNumbers) {
-              bodyParams.phone_numbers = userInfo.phone_numbers;
-            }
-            console.log('bodyPARAMS:: ', bodyParams);
-            setloading(true);
-            updateUserProfile(bodyParams, authContext).then(async (response) => {
-              const currentEntity = {
-                ...authContext.entity, obj: response.payload,
-              }
-              authContext.setEntity({ ...currentEntity })
-              Utility.setStorage('authContextEntity', { ...currentEntity })
-              setEditMode(false);
-              setloading(false);
-              setTimeout(() => {
-                Alert.alert('Towns Cup', 'Profile changed sucessfully');
-              }, 1000);
-            })
-          }
-        } }>
-          <LinearGradient
-            colors={ [colors.yellowColor, colors.themeColor] }
-            style={ styles.nextButton }>
-            <Text style={ styles.nextButtonText }>{strings.saveTitle}</Text>
-          </LinearGradient>
-        </TouchableOpacity>}
-      </ScrollView>
-    </TCKeyboardView>
+          </Modal>
+        </ScrollView>
+      </TCKeyboardView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -482,6 +496,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     position: 'absolute',
     right: wp('5%'),
+  },
+  backImageStyle: {
+    height: 20,
+    width: 10,
+    tintColor: colors.lightBlackColor,
+    resizeMode: 'contain',
   },
   checkboxImg: {
     width: wp('5.5%'),
@@ -501,16 +521,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     color: 'black',
-    elevation: 3,
     flexDirection: 'row',
     fontSize: wp('3.5%'),
     paddingHorizontal: 15,
     paddingRight: 30,
     paddingVertical: Platform.OS === 'ios' ? 12 : 0,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
     width: wp('46%'),
   },
   halffeeText: {
@@ -521,7 +536,6 @@ const styles = StyleSheet.create({
   headerRightButton: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    marginRight: 20,
   },
 
   languageApplyButton: {
@@ -549,18 +563,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     color: colors.lightBlackColor,
-    elevation: 3,
-    fontSize: wp('3.8%'),
+    fontSize: 16,
     marginTop: 12,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     paddingRight: 30,
-
     paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-
     width: wp('92%'),
   },
 
@@ -574,14 +581,6 @@ const styles = StyleSheet.create({
 
     top: 15,
     width: 12,
-  },
-  nextButton: {
-    alignSelf: 'center',
-    borderRadius: 30,
-    height: 45,
-    marginBottom: 40,
-    marginTop: wp('12%'),
-    width: '90%',
   },
   nextButtonText: {
     alignSelf: 'center',
@@ -602,15 +601,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
     borderRadius: 5,
-    elevation: 3,
     flexDirection: 'row',
     marginBottom: 10,
     marginTop: 12,
     paddingLeft: 15,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
     width: wp('92%'),
     paddingVertical: Platform.OS === 'ios' ? 12 : 0,
   },

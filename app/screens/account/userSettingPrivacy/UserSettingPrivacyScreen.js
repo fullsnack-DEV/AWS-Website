@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useLayoutEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,7 +6,7 @@ import {
   Image,
   FlatList,
   TouchableWithoutFeedback,
-  ScrollView,
+  ScrollView, SafeAreaView, TouchableOpacity,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -15,9 +15,16 @@ import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
+import Header from '../../../components/Home/Header';
 
 export default function UserSettingPrivacyScreen({ navigation }) {
   const authContext = useContext(AuthContext);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
 
   const userSettingMenu = [
     { key: 'Account', id: 1 },
@@ -54,8 +61,27 @@ export default function UserSettingPrivacyScreen({ navigation }) {
     </TouchableWithoutFeedback>
   );
   return (
-    <ScrollView style={styles.mainContainer}>
-      <FlatList
+    <SafeAreaView style={{ flex: 1 }}>
+      <Header
+          leftComponent={
+            <TouchableOpacity onPress={() => navigation.goBack() }>
+              <Image source={images.backArrow} style={styles.backImageStyle} />
+            </TouchableOpacity>
+          }
+          centerComponent={
+            <Text style={{
+              fontSize: 16,
+              color: colors.lightBlackColor,
+              textAlign: 'center',
+              fontFamily: fonts.RBold,
+            }}>
+              Settings
+            </Text>
+          }
+      />
+      <View style={{ width: '100%', height: 0.5, backgroundColor: colors.writePostSepratorColor }}/>
+      <ScrollView style={styles.mainContainer}>
+        <FlatList
         data={userSettingMenu}
         keyExtractor={(index) => index.toString()}
         renderItem={renderMenu}
@@ -63,8 +89,9 @@ export default function UserSettingPrivacyScreen({ navigation }) {
           <View style={styles.separatorLine}></View>
         )}
       />
-      <View style={styles.separatorLine}></View>
-    </ScrollView>
+        <View style={styles.separatorLine}></View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -85,7 +112,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    color: colors.themeColor,
+    color: colors.greeColor,
     alignSelf: 'center',
   },
   mainContainer: {
@@ -98,7 +125,7 @@ const styles = StyleSheet.create({
     height: 15,
     marginRight: 10,
     resizeMode: 'contain',
-    tintColor: colors.grayColor,
+    tintColor: colors.lightBlackColor,
     width: 15,
   },
   separatorLine: {
@@ -106,5 +133,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightgrayColor,
     height: 0.5,
     width: wp('90%'),
+  },
+  backImageStyle: {
+    height: 20,
+    width: 10,
+    tintColor: colors.lightBlackColor,
+    resizeMode: 'contain',
   },
 });

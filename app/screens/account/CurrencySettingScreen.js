@@ -1,21 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+ useState, useEffect, useContext, useLayoutEffect,
+} from 'react';
 import {
   StyleSheet,
   Text,
   Image,
   TouchableOpacity,
-  Platform,
   Alert,
-  View,
+  View, SafeAreaView, FlatList,
 } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-
 import { useIsFocused } from '@react-navigation/native';
-import RNPickerSelect from 'react-native-picker-select';
-import LinearGradient from 'react-native-linear-gradient';
 import * as Utility from '../../utils/index';
 import { updateUserProfile } from '../../api/Users';
 import AuthContext from '../../auth/context';
@@ -26,6 +21,7 @@ import strings from '../../Constants/String';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import TCLabel from '../../components/TCLabel';
+import Header from '../../components/Home/Header';
 
 export default function CurrencySettingScreen({ navigation }) {
   const isFocused = useIsFocused();
@@ -33,6 +29,12 @@ export default function CurrencySettingScreen({ navigation }) {
   const [loading, setloading] = useState(false);
 
   const [curruency, setCurruency] = useState(authContext.entity.obj.currency_type ?? 'CAD');
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    })
+  })
 
   useEffect(() => {
     if (isFocused) {
@@ -61,105 +63,62 @@ export default function CurrencySettingScreen({ navigation }) {
       }, 10);
     })
   }
+
+  const renderCurrencyType = ({ item }) => (
+    <TouchableOpacity
+    onPress={() => setCurruency(item?.value)}
+        style={{
+          paddingHorizontal: 25,
+          marginVertical: 5,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+      <Text>{item.label}</Text>
+      <Image source={curruency === item?.value ? images.radioCheckYellow : images.radioUnselect } style={{ height: 22, width: 22 }}/>
+    </TouchableOpacity>
+  )
   return (
-    <>
-      <ActivityLoader visible={ loading } />
+    <SafeAreaView style={{ flex: 1 }}>
+      <Header
+            leftComponent={
+              <TouchableOpacity onPress={() => navigation.goBack() }>
+                <Image source={images.backArrow} style={styles.backImageStyle} />
+              </TouchableOpacity>
+            }
+            centerComponent={
+              <Text style={{
+                fontSize: 16,
+                color: colors.lightBlackColor,
+                textAlign: 'center',
+                fontFamily: fonts.RBold,
+              }}>
+                Currency
+              </Text>
+            }
+            rightComponent={
+              <TouchableOpacity onPress={() => updateCurrency(curruency)}>
+                <Text style={{ fontSize: 16, fontFamily: fonts.RMedium, color: colors.lightBlackColor }}>Done</Text>
+              </TouchableOpacity>
+            }
+        />
+      <View style={{ width: '100%', height: 0.5, backgroundColor: colors.writePostSepratorColor }}/>
+      <>
+        <ActivityLoader visible={ loading } />
 
-      <TCLabel title={strings.curruencyType}/>
-      <RNPickerSelect
-              placeholder={{}}
-              items={DataSource.CurrencyType}
-              onValueChange={(value) => {
-                setCurruency(value)
-              }}
-              useNativeAndroidPickerStyle={false}
-              // eslint-disable-next-line no-sequences
-              style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
-              value={curruency}
-              Icon={() => (
-                <Image source={images.dropDownArrow} style={styles.downArrow} />
-              )}
-            />
-      <View style={{ flex: 1 }} />
-      <TouchableOpacity
-            onPress={() => {
-              updateCurrency(curruency)
-            }}>
-        <LinearGradient
-              colors={[colors.yellowColor, colors.themeColor]}
-              style={styles.nextButton}>
-          <Text style={styles.nextButtonText}>{strings.doneTitle}</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-
-    </>
+        <TCLabel title={strings.curruencyType}/>
+        <FlatList style={{ marginTop: 5 }} data={DataSource.CurrencyType} renderItem={renderCurrencyType}/>
+        <View style={{ flex: 1 }} />
+      </>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
 
-  downArrow: {
-    alignSelf: 'center',
-    height: 12,
+  backImageStyle: {
+    height: 20,
+    width: 10,
+    tintColor: colors.lightBlackColor,
     resizeMode: 'contain',
-
-    right: 25,
-    tintColor: colors.grayColor,
-    top: 25,
-    width: 12,
   },
-  inputAndroid: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('4%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-
-    width: wp('92%'),
-  },
-  inputIOS: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('3.5%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: wp('92%'),
-  },
-
-  nextButton: {
-    alignSelf: 'center',
-    borderRadius: 30,
-    height: 45,
-    marginBottom: 25,
-    marginTop: wp('12%'),
-    width: '90%',
-  },
-
-  nextButtonText: {
-    alignSelf: 'center',
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: wp('4%'),
-    marginVertical: 10,
-  },
-
 });

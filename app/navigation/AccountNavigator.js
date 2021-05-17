@@ -1017,7 +1017,7 @@ const AccountNavigator = () => (
       name="GroupSettingPrivacyScreen"
       component={GroupSettingPrivacyScreen}
       options={{
-        title: 'Setting & Privacy',
+        title: 'Settings',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
