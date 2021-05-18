@@ -265,10 +265,12 @@ const AppNavigator = ({ navigation }) => {
               <LinearGradient
                 colors={[colors.yellowColor, colors.assistTextColor]}
                 style={styles.profileTabBorder}>
-                <Image
+                <View style={styles.profileImageCover}>
+                  <Image
                   source={{ uri: authContext?.entity?.obj?.thumbnail }}
                   style={styles.profileTabImg}
                 />
+                </View>
               </LinearGradient>
             );
           }
@@ -299,10 +301,12 @@ const AppNavigator = ({ navigation }) => {
               <LinearGradient
                 colors={[colors.yellowColor, colors.assistTextColor]}
                 style={styles.profileTabBorder}>
-                <Image
+                <View style={styles.profileImageCover}>
+                  <Image
                   source={{ uri: authContext?.entity?.obj?.thumbnail }}
                   style={styles.profileTabImg}
                 />
+                </View>
               </LinearGradient>
             );
           }
@@ -338,10 +342,12 @@ const AppNavigator = ({ navigation }) => {
               <LinearGradient
                 colors={[colors.yellowColor, colors.assistTextColor]}
                 style={styles.profileTabBorder}>
-                <Image
+                <View style={styles.profileImageCover}>
+                  <Image
                   source={{ uri: authContext?.entity?.obj?.thumbnail }}
                   style={styles.profileTabImg}
-                />
+                 />
+                </View>
               </LinearGradient>
             );
           }
@@ -438,7 +444,9 @@ const AppNavigator = ({ navigation }) => {
         component={MessageNavigator}
         options={({ route }) => ({
             unmountOnBlur: true,
-          ...(unreadCount > 0 && { tabBarBadge: unreadCount }),
+          ...(unreadCount > 0 && {
+            tabBarBadge: unreadCount > 300 ? '300+' : unreadCount,
+          }),
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {
             if (focused) onTabPress();
@@ -480,9 +488,9 @@ const AppNavigator = ({ navigation }) => {
         component={AccountNavigator}
         options={({ route }) => ({
           ...(unreadNotificationCount > 0 && {
-            tabBarBadge: unreadNotificationCount,
+            tabBarBadge: unreadNotificationCount > 300 ? '300+' : unreadNotificationCount,
           }),
-          tabBarBadgeStyle: { zIndex: 10 },
+          tabBarBadgeStyle: { zIndex: 10, fontSize: 12 },
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: renderTabIcon,
 
@@ -493,6 +501,14 @@ const AppNavigator = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  profileImageCover: {
+    height: 21,
+    width: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 40,
+  },
   selectedTabImg: {
     alignSelf: 'center',
     height: 34,
@@ -510,18 +526,18 @@ const styles = StyleSheet.create({
   },
   profileTabImg: {
     alignSelf: 'center',
-    height: 28,
+    height: 14,
     resizeMode: 'cover',
-    width: 28,
+    width: 14,
     borderRadius: 40,
   },
   profileTabBorder: {
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 30,
+    height: 24,
     resizeMode: 'cover',
-    width: 30,
+    width: 24,
     borderRadius: 60,
     shadowColor: colors.blackColor,
     shadowOffset: { width: 0, height: 2 },

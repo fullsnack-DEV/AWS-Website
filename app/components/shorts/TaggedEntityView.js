@@ -42,11 +42,12 @@ const styles = StyleSheet.create({
   profileImage: {
     alignSelf: 'center',
     height: 40,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     width: 40,
     borderRadius: 20,
   },
   profileView: {
+    overflow: 'hidden',
     backgroundColor: colors.whiteColor,
     height: 45,
     width: 45,

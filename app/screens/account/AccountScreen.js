@@ -1155,7 +1155,9 @@ export default function AccountScreen({ navigation, route }) {
                                       />
                                   )
                                   : (
-                                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                    <View style={{
+ height: '100%', width: '100%', alignItems: 'center', justifyContent: 'center',
+                                    }}>
                                       <Image
                                           source={placeHolder}
                                           style={{ ...styles.profileImg, resizeMode: 'contain' }}
@@ -1208,8 +1210,6 @@ export default function AccountScreen({ navigation, route }) {
                                             duration={3000}
                                             marqueeOnStart
                                             loop={true}
-                                            // marqueeDelay={0}
-                                            // marqueeResetDelay={1000}
                                         >
                                   {authContext?.entity?.obj?.group_name}
                                 </MarqueeText>
@@ -1641,10 +1641,7 @@ const styles = StyleSheet.create({
 
     entityImg: {
         alignSelf: 'center',
-        borderColor: colors.offwhite,
         borderRadius: 25,
-
-        borderWidth: 1,
         height: 50,
         margin: 15,
         resizeMode: 'cover',
@@ -1652,9 +1649,7 @@ const styles = StyleSheet.create({
     },
     entityProfileImg: {
         alignSelf: 'center',
-        borderColor: colors.offwhite,
         borderRadius: 25,
-        borderWidth: 1,
         height: 36,
         margin: 15,
         resizeMode: 'cover',
