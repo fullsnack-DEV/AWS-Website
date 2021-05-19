@@ -38,6 +38,7 @@ import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import SecureRefereeView from '../../../components/SecureRefereeView';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
+import TCArrowView from '../../../components/TCArrowView';
 
 let entity = {};
 const bodyParams = {};
@@ -265,6 +266,7 @@ if (settingObject?.venue?.length === 1) {
             <Image source={images.arrowGraterthan} style={styles.arrowImage} />
           </View>
         </TouchableOpacity>
+
         <TCThickDivider marginTop={15} />
 
         <TCChallengeTitle

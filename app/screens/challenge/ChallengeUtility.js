@@ -28,14 +28,14 @@ export const getChallengeDetail = (challengeID, authContext) => {
         return Obj
       }
       if (ReservationStatus.restored === response.payload[0].status || ReservationStatus.requestcancelled === response.payload[0].status) {
-        let tempObj;
-        for (let i = 0; i < response.payload.length; i++) {
-          if (response.payload[i].status === ReservationStatus.accepted) {
-            tempObj = response.payload[i]
-            break;
-          }
-        }
-        Obj.challengeObj = tempObj
+        // let tempObj;
+        // for (let i = 0; i < response.payload.length; i++) {
+        //   if (response.payload[i].status === ReservationStatus.accepted) {
+        //     tempObj = response.payload[i]
+        //     break;
+        //   }
+        // }
+        Obj.challengeObj = response.payload
         Obj.screenName = 'ChallengePreviewScreen'// AcceptDeclineChallengeScreen
         return Obj
       }

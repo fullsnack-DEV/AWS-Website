@@ -15,12 +15,16 @@ import TCGradientButton from '../../../components/TCGradientButton';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCLabel from '../../../components/TCLabel';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
-import MatchFeesCard from '../../../components/challenge/MatchFeesCard';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import * as Utility from '../../../utils';
+import GameFeeCard from '../../../components/challenge/GameFeeCard';
+
+let entity = {};
 
 export default function PayAgainScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
+  entity = authContext.entity;
+
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [challengeObj, setChallengeObj] = useState();
@@ -29,8 +33,8 @@ export default function PayAgainScreen({ navigation, route }) {
 
   useEffect(() => {
     if (isFocused) {
-      const { body, comeFrom } = route.params ?? {};
-      setSourceScreen(comeFrom);
+      const { body, status } = route.params ?? {};
+      setSourceScreen(status);
       setChallengeObj(body)
       if (route?.params?.paymentMethod) {
         setDefaultCard(route?.params?.paymentMethod);
@@ -148,10 +152,22 @@ export default function PayAgainScreen({ navigation, route }) {
       <View style={styles.viewMarginStyle}>
         <TCLabel title={'Payment'} />
         {/* paymentData={paymentInfo} homeTeam={homeTeam && homeTeam} awayTeam={awayTeam && awayTeam} */}
-        <MatchFeesCard
+        {/* <MatchFeesCard
           challengeObj={challengeObj}
           senderOrReceiver={'sender'}
-        />
+        /> */}
+        <GameFeeCard
+        feeObject={{
+          total_game_fee: challengeObj?.total_game_fee,
+          total_service_fee1: challengeObj?.total_service_fee1,
+          total_service_fee2: challengeObj?.total_service_fee2,
+          total_stripe_fee: challengeObj?.total_stripe_fee,
+          total_payout: challengeObj?.total_payout,
+          total_amount: challengeObj?.total_amount,
+        }}
+        currency={challengeObj?.game_fee?.currency_type}
+        isChallenger={challengeObj?.challenger === entity.uid}
+      />
       </View>
 
       <View style={styles.viewMarginStyle}>

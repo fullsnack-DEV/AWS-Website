@@ -38,6 +38,8 @@ export default function ChallengeStatusView({
           if (
             status === ReservationStatus.offered
             || status === ReservationStatus.changeRequest
+            || status === ReservationStatus.pendingpayment
+            || status === ReservationStatus.pendingrequestpayment
           ) {
             getTwoDateDifference(finalDate, new Date().getTime());
           }
@@ -161,7 +163,7 @@ return (
       </View>
       )}
 
-    {!isSender
+    {isSender
         && (status === ReservationStatus.accepted
           || status === ReservationStatus.restored
           || status === ReservationStatus.requestcancelled) && (
@@ -174,7 +176,7 @@ return (
               </Text>
             </View>
         )}
-    {isSender
+    {!isSender
         && (status === ReservationStatus.accepted
           || status === ReservationStatus.restored
           || status === ReservationStatus.requestcancelled) && (
@@ -256,7 +258,7 @@ return (
         </Text>
         <Text style={styles.pendingRequestText}>
           This reservation will be canceled unless the payment goes through
-          within<Text style={{ color: colors.darkThemeColor }}> 4h 50m.</Text>
+          within<Text style={{ color: colors.darkThemeColor }}> {countDown}.</Text>
         </Text>
       </View>
       )}
@@ -269,7 +271,7 @@ return (
         </Text>
         <Text style={styles.pendingRequestText}>
           This reservation will be canceled unless the payment goes through
-          within<Text style={{ color: colors.darkThemeColor }}>4h 50m.</Text>
+          within<Text style={{ color: colors.darkThemeColor }}> {countDown}.</Text>
         </Text>
       </View>
       )}
@@ -284,7 +286,7 @@ return (
         <Text style={styles.pendingRequestText}>
           The accepted alteration won't be applied to the current reservation
           unless the payment goes through within
-          <Text style={{ color: colors.darkThemeColor }}> 4h 50m </Text>
+          <Text style={{ color: colors.darkThemeColor }}> {countDown} </Text>
           {'\n\n'}Meanwhile, {teamName} can cancel acceptance of the
           alteration request before the payment is completed.
         </Text>
@@ -300,7 +302,7 @@ return (
         <Text style={styles.pendingRequestText}>
           The accepted alteration won't be applied to the current reservation
           unless the payment goes through within
-          <Text style={{ color: colors.darkThemeColor }}>4h 50m </Text>
+          <Text style={{ color: colors.darkThemeColor }}>{countDown} </Text>
           {'\n\n'}Meanwhile, you can cancel acceptance of the alteration
           request before the payment will go through.
         </Text>

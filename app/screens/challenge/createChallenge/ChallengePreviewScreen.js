@@ -38,6 +38,8 @@ import {
   acceptDeclineAlterChallenge,
 } from '../../../api/Challenge';
 import GameStatus from '../../../Constants/GameStatus';
+import TCArrowView from '../../../components/TCArrowView';
+import TCGradientButton from '../../../components/TCGradientButton';
 
 let entity = {};
 export default function ChallengePreviewScreen({ navigation, route }) {
@@ -65,10 +67,6 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       : challengeData?.away_team,
   );
 
-  console.log('challenge Object:=>', route?.params?.challengeObj);
-  console.log('challenger Object:=>', challenger);
-  console.log('challengee Object:=>', challengee);
-
   useEffect(() => {
     if (route?.params?.challengeObj?.length > 1) {
       // setIsPendingRequestPayment(true);
@@ -85,17 +83,16 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         'challenge Object::',
         route?.params?.challengeObj?.[0] || route?.params?.challengeObj,
       );
-
-      console.log('Old Version:=>', oldVersion);
     }
     if (
-      route?.params?.challengeObj?.[0]?.status === ReservationStatus.declined
-      || route?.params?.challengeObj?.status === ReservationStatus.declined
+      (route?.params?.challengeObj?.[0]?.status ?? route?.params?.challengeObj?.status) === (ReservationStatus.declined ?? ReservationStatus.requestcancelled)
     ) {
+      console.log('Old Version:=>', oldVersion);
       setChallengeData(oldVersion);
     } else {
+      console.log('new Version:=>', route?.params?.challengeObj?.[0] ?? route?.params?.challengeObj);
       setChallengeData(
-        route?.params?.challengeObj[0] || route?.params?.challengeObj,
+        route?.params?.challengeObj?.[0] ?? route?.params?.challengeObj,
       );
     }
   }, [oldVersion, route?.params?.challengeObj]);
@@ -106,7 +103,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         challengeObj?.status === ReservationStatus.pendingpayment
         || challengeObj?.status === ReservationStatus.pendingrequestpayment
       ) {
-        if (challengeObj?.invited_by === entity.uid) {
+        if (challengeObj?.challenger === entity.uid) {
           return 'sender';
         }
         return 'receiver';
@@ -117,22 +114,27 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         }
         return 'receiver';
       }
-
+      if (challengeObj?.status === ReservationStatus.accepted) {
+        if (challengeObj?.updated_by?.group_id === entity.uid) {
+          return 'receiver';
+        }
+        return 'sender';
+      }
+      // if (challengeObj?.updated_by?.group_id === entity.uid) {
+      //   return 'sender';
+      // }
+      // return 'receiver';
       if (challengeObj?.updated_by?.group_id === entity.uid) {
         return 'sender';
       }
       return 'receiver';
-      // if (challengeObj.change_requested_by === entity.uid) {
-      //   return 'sender';
-      // }
-      // return 'receiver';
     }
     console.log('challenge for user to user');
     if (
       challengeObj?.status === ReservationStatus.pendingpayment
       || challengeObj?.status === ReservationStatus.pendingrequestpayment
     ) {
-      if (challengeObj?.invited_by === entity.uid) {
+      if (challengeObj?.challenger === entity.uid) {
         return 'sender';
       }
       return 'receiver';
@@ -732,6 +734,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         </View>
       );
     }
+
     return <View style={{ marginBottom: 45 }} />;
   };
 
@@ -786,10 +789,45 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         } // only if status offered
         status={challengeData?.status}
       />
+
+      {checkSenderOrReceiver(challengeData) === 'sender'
+        && (challengeData.status === ReservationStatus.pendingrequestpayment
+          || challengeData.status === ReservationStatus.pendingpayment) && (
+            <TCGradientButton
+            title={'TRY TO PAY AGAIN'}
+            onPress={() => {
+              navigation.navigate('PayAgainScreen', {
+                body: { ...challengeData },
+                status: challengeData?.status,
+              });
+            }}
+            marginBottom={15}
+          />
+        )}
+      {checkSenderOrReceiver(challengeData) === 'receiver'
+        && challengeData.status === ReservationStatus.pendingrequestpayment && (
+          <TCGradientButton
+            title={'RESTORE TO PREVIOUS VERSION'}
+            onPress={() => {
+              challengeOperation(
+                entity.uid,
+                challengeData.challenge_id,
+                challengeData.version,
+                'decline',
+                true,
+              );
+            }}
+            marginBottom={15}
+          />
+        )}
+
+      {challengeData?.game_id && (
+        <TCArrowView title={'Match Home '} onPress={() => Alert.alert('ok')} containerStyle={{ marginBottom: 15 }}/>
+      )}
       <TCThickDivider />
 
       <View>
-        {route?.params?.challengeObj?.[0]?.status
+        {challengeData?.status
           === ReservationStatus.changeRequest && (
             <View
             style={{
