@@ -848,7 +848,7 @@ export default function AccountScreen({ navigation, route }) {
                 <Image source={images.registerReferee} style={styles.subMenuItem} />
                     )}
               {rowItem.opetions === 'Register as a scorekeeper' && (
-                <Image source={images.registerReferee} style={styles.subMenuItem} />
+                <Image source={images.registerScorekeeper} style={styles.subMenuItem} />
                     )}
               {rowItem.opetions === 'Create Team' && (
                 <Image source={images.createTeam} style={styles.subMenuItem} />
@@ -860,18 +860,17 @@ export default function AccountScreen({ navigation, route }) {
                 <Image source={images.createLeague} style={styles.subMenuItem} />
                     )}
               {rowItem.opetions === 'Payment Method' && (
-                <Image source={images.Payment_method} style={{ ...styles.subMenuItem, width: 22, height: 19 }} />
+                <Image source={images.Payment_method} style={{ ...styles.subMenuItem }} />
                     )}
 
               {rowItem.opetions === 'Payout Method' && (
-                <Image source={images.Payout_method} style={{ ...styles.subMenuItem, width: 20, height: 17 }} />
+                <Image source={images.Payout_method} style={{ ...styles.subMenuItem }} />
                     )}
               {rowItem.opetions === 'Invoicing' && (
-                <Image source={images.Invoicing} style={{ ...styles.subMenuItem, width: 18, height: 20 }} />
+                <Image source={images.Invoicing} style={{ ...styles.subMenuItem }} />
                     )}
               {rowItem.opetions === 'Transactions' && (
-                <Image source={images.Transations} style={{ ...styles.subMenuItem, width: 23, height: 20 }} />
-                    )}
+                <Image source={images.Transations} style={{ ...styles.subMenuItem }} />)}
 
               <Text style={styles.listItems}>{rowItem.opetions}</Text>
               <Image source={images.nextArrow} style={styles.nextArrow} />
@@ -1268,6 +1267,7 @@ export default function AccountScreen({ navigation, route }) {
                         || (authContext.entity.role === 'club' && clubMenu)
                         || (authContext.entity.role === 'user' && userMenu)
                     }
+                    style={{ marginTop: 15 }}
                     headerKey={'key'}
                     memberKey="member"
                     renderRow={renderMenuItems}
@@ -1281,60 +1281,56 @@ export default function AccountScreen({ navigation, route }) {
                                     onPress={() => {
                                         handleSections(section);
                                     }}>
-                              {section === 'Reservations' && (
-                                <Image source={images.mySchedule} style={{ ...styles.menuItem, height: 22, width: 22 }} />
+                              <View style={{ alignSelf: 'center', alignItems: 'center', justifyContent: 'center' }}>
+                                {section === 'Reservations' && (
+                                  <Image source={images.accountMySchedule} style={{ ...styles.menuItem }} />
                                     )}
-                              {section === 'Sports' && (
-                                <Image source={images.mySports} style={{ ...styles.menuItem, height: 23, width: 24 }} />
+                                {section === 'Sports' && (
+                                  <Image source={images.accountMySports} style={{ ...styles.menuItem }} />
                                     )}
-                              {section === 'Refereeing' && (
-                                <Image source={images.myRefereeing} style={{ ...styles.menuItem, height: 20, width: 24 }} />
+                                {section === 'Refereeing' && (
+                                  <Image source={images.accountMyRefereeing} style={{ ...styles.menuItem }} />
                                     )}
-                              {section === 'Scorekeeping' && (
-                                <Image source={images.myRefereeing} style={{ ...styles.menuItem, height: 22, width: 22 }} />
+                                {section === 'Scorekeeping' && (
+                                  <Image source={images.accountMyScoreKeeping} style={{ ...styles.menuItem }} />
                                     )}
-                              {section === 'Teams' && (
-                                <Image source={images.myTeams} style={{ ...styles.menuItem, height: 24, width: 24 }} />
+                                {section === 'Teams' && (
+                                  <Image source={images.accountMyTeams} style={{ ...styles.menuItem }} />
                                     )}
-                              {section === 'Clubs' && (
-                                <Image source={images.myClubs} style={{ ...styles.menuItem, height: 24, width: 24 }} />
+                                {section === 'Clubs' && (
+                                  <Image source={images.accountMyClubs} style={{ ...styles.menuItem }} />
                                     )}
-                              {section === 'Leagues' && (
-                                <Image source={images.myLeagues} style={{ ...styles.menuItem, height: 24, width: 24 }} />
+                                {section === 'Leagues' && (
+                                  <Image source={images.accountMyLeagues} style={{ ...styles.menuItem }} />
                                     )}
-                              {section === 'Manage Challenge' && (
-                                <Image
+                                {section === 'Manage Challenge' && (
+                                  <Image
                                             source={images.manageChallengeIcon}
                                             style={styles.menuItem}
                                         />
                                     )}
-                              {section === 'Payment & Payout' && (
-                                <Image
-                                            source={images.paymentPayout}
-                                            style={{ ...styles.menuItem, height: 17, width: 22 }}
+                                {section === 'Payment & Payout' && (
+                                  <Image
+                                            source={images.accountPaymentPayout}
+                                            style={{ ...styles.menuItem }}
                                         />
                                     )}
-                              {/* {section === 'Currency' && (
-                  <Image
-                    source={images.paymentPayout}
-                    style={styles.menuItem}
-                  />
-                )} */}
-                              {section === 'Setting & Privacy' && (
-                                <Image
-                                            source={images.SettingPrivacy}
-                                            style={{ ...styles.menuItem, height: 23, width: 23 }}
+                                {section === 'Setting & Privacy' && (
+                                  <Image
+                                            source={images.accountSettingPrivacy}
+                                            style={{ ...styles.menuItem }}
                                         />
                                     )}
-                              {section === 'Log out' && (
-                                <Image
+                                {section === 'Log out' && (
+                                  <Image
                                             source={images.logoutIcon}
-                                            style={{ ...styles.menuItem, height: 20, width: 21 }}
+                                            style={{ ...styles.menuItem }}
                                         />
                                     )}
-                              {section === 'Members' && (
-                                <Image source={images.Members} style={{ ...styles.menuItem, height: 22, width: 22 }} />
+                                {section === 'Members' && (
+                                  <Image source={images.Members} style={{ ...styles.menuItem }} />
                                     )}
+                              </View>
                               <Text style={styles.listItems}>{section}</Text>
                               {section !== 'Log out' && (
                                 <>
@@ -1686,6 +1682,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.grayBackgroundColor,
         height: 0.5,
         marginRight: 20,
+        marginVertical: 7.5,
         width: wp('82%'),
     },
     listContainer: {
@@ -1700,8 +1697,7 @@ const styles = StyleSheet.create({
     },
     listItems: {
         flex: 1,
-        padding: 20,
-        paddingLeft: 15,
+        marginLeft: 5,
         fontSize: 16,
         fontFamily: fonts.RRegular,
         color: colors.blackColor,
@@ -1723,9 +1719,9 @@ const styles = StyleSheet.create({
     menuItem: {
         alignSelf: 'center',
         marginLeft: 20,
-        resizeMode: 'cover',
-        height: 25,
-        width: 25,
+        resizeMode: 'contain',
+        height: 40,
+        width: 40,
     },
     nameText: {
         alignSelf: 'center',
@@ -1827,6 +1823,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: colors.lightgrayColor,
         height: 0.5,
+        marginVertical: 7.5,
         width: wp('90%'),
     },
     separatorView: {
@@ -1863,10 +1860,10 @@ const styles = StyleSheet.create({
     },
     subMenuItem: {
         alignSelf: 'center',
-        height: 25.5,
-        marginLeft: 55,
+        height: 40,
+        marginLeft: 50,
         resizeMode: 'contain',
-        width: 25.5,
+        width: 40,
     },
     switchAccount: {
         fontFamily: fonts.RRegular,
@@ -1879,10 +1876,10 @@ const styles = StyleSheet.create({
     },
     switchAccountIcon: {
         alignSelf: 'center',
-        height: 21,
+        height: 40,
         marginLeft: 20,
-        resizeMode: 'cover',
-        width: 23,
+        resizeMode: 'contain',
+        width: 40,
     },
     teamSportView: {
         color: colors.greeColor,

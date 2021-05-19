@@ -41,6 +41,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     height: 45,
+    backgroundColor: 'red',
 
   },
   leftContainerStyle: {

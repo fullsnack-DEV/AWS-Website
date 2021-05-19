@@ -325,6 +325,9 @@ export default function WelcomeScreen({ navigation }) {
     } else if (param.includes('apple.com')) {
       // eslint-disable-next-line prefer-promise-reject-errors
       reject({ provider: 'apple' });
+    } else if (param.includes('password')) {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({ provider: 'email-password' });
     }
     resolve(true);
   })

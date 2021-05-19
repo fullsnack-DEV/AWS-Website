@@ -141,11 +141,24 @@ const images = {
   refereesInImage: require('../assets/images/referees_in_image.png'),
   Members: require('../assets/images/members.png'),
 
+  // Account Screen Icons
+  accountMySchedule: require('../assets/images/accountMySchedule.png'),
+  accountMySports: require('../assets/images/accountMySports.png'),
+  accountMyRefereeing: require('../assets/images/accountMyRefereeing.png'),
+  accountMyScoreKeeping: require('../assets/images/accountMyScoreKeeping.png'),
+  accountMyTeams: require('../assets/images/accountMyTeams.png'),
+  accountMyClubs: require('../assets/images/accountMyClubs.png'),
+  accountMyLeagues: require('../assets/images/accountMyTeams.png'),
+  accountPaymentPayout: require('../assets/images/accountPaymentPayout.png'),
+  accountSettingPrivacy: require('../assets/images/accountSettingPrivacy.png'),
+  // accountMembers: require('../assets/images/accountMembers.png'),
+
   createTeam: require('../assets/images/Create_a_team.png'),
   createClub: require('../assets/images/Create_a_club.png'),
   createLeague: require('../assets/images/Create_a_league.png'),
   addSport: require('../assets/images/Add_a_sport.png'),
   registerReferee: require('../assets/images/Register_as_a_referee.png'),
+  registerScorekeeper: require('../assets/images/Register_as_a_scorekeeper.png'),
 
   switchAccount: require('../assets/images/switch_account.png'),
   teamPlaceholder: require('../assets/images/team_placeholder.png'),
@@ -356,6 +369,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   newFeed: require('../assets/images/new_feed.png'),
   messageCheckboxBorder: require('../assets/images/messageCheckboxBorder.png'),
   youtubePlayButton: require('../assets/images/youtubePlayButton.png'),
+  smallRight: require('../assets/images/smallRight.png'),
 };
 
 export default images;
