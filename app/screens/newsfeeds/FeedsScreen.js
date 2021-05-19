@@ -2,7 +2,7 @@ import React, {
   useEffect, memo, useState, useContext, useCallback, useMemo,
 } from 'react';
 import {
-  StyleSheet, View, Alert, Text, InteractionManager,
+  StyleSheet, View, Alert, Text,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
@@ -37,7 +37,6 @@ const FeedsScreen = ({ navigation }) => {
   const [pullRefresh, setPullRefresh] = useState(false);
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
       setFirstTimeLoading(true);
       const entity = authContext.entity;
       setCurrentUserDetail(entity.obj || entity.auth.user);
@@ -50,7 +49,6 @@ const FeedsScreen = ({ navigation }) => {
             setFirstTimeLoading(false);
             setTimeout(() => Alert.alert('', e.message), 100)
           });
-    })
   }, [authContext, authContext.entity]);
 
   const onThreeDotPress = useCallback(() => {

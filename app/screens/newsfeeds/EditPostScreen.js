@@ -461,16 +461,16 @@ const EditPostScreen = ({
             />
             <Text style={styles.onlyMeTextStyle}>Only me</Text>
           </View>
-          <View style={[styles.onlyMeViewStyle, { justifyContent: 'flex-end' }]}>
+          <View style={[styles.onlyMeViewStyle, { flex: 1, justifyContent: 'flex-end' }]}>
             {selectImage?.length < MAX_UPLOAD_POST_ASSETS
             && <ImageButton
               source={images.pickImage}
-              imageStyle={{ width: 30, height: 30, marginHorizontal: wp('2%') }}
+              imageStyle={ { width: 30, height: 30 } }
               onImagePress={onImagePress}
             />}
             <ImageButton
               source={images.tagImage}
-              imageStyle={{ width: 30, height: 30, marginLeft: wp('2%') }}
+              imageStyle={{ width: 30, height: 30, marginLeft: 10 }}
               onImagePress={() => {
                 navigation.navigate('UserTagSelectionListScreen', {
                   comeFrom: 'EditPostScreen',
@@ -505,7 +505,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     paddingVertical: hp('1%'),
-    width: wp('92%'),
+    width: wp(100),
+    paddingHorizontal: 10,
   },
   containerStyle: {
     alignSelf: 'center',

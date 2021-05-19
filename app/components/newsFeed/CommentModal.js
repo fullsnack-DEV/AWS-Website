@@ -6,12 +6,10 @@ import {
     StyleSheet,
     View,
     Image,
-    TouchableOpacity,
     Alert,
     SafeAreaView, TextInput,
-    Keyboard,
 } from 'react-native';
-
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
@@ -108,14 +106,13 @@ const CommentModal = ({
                 text: commentTxt,
             },
         };
+        setCommentText('');
         createReaction(bodyParams, authContext)
             .then((response) => {
                 const dataOfComment = [...commentData];
                 dataOfComment.unshift(response.payload);
-                updateCommentCount({ id: item?.id, count: dataOfComment?.length, data: response?.payload });
                 setCommentData([...dataOfComment]);
-                setCommentText('');
-                Keyboard.dismiss();
+                updateCommentCount({ id: item?.id, count: dataOfComment?.length, data: response?.payload });
             })
             .catch((e) => {
                 console.log(e);
@@ -273,14 +270,12 @@ const styles = StyleSheet.create({
     },
     bottomSafeAreaStyle: {
         backgroundColor: colors.whiteColor,
-        shadowOpacity: 0.2,
-        shadowOffset: {
-            height: -5,
-            width: 0,
-        },
+        shadowOpacity: 0.16,
+        shadowOffset: { height: 0, width: 0 },
+        shadowRadius: 3,
+        shadowColor: colors.blackColor,
         width: '100%',
-        elevation: 5,
-        shadowRadius: 10,
+        elevation: 10,
     },
     emptyText: {
         fontSize: 18,
