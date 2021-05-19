@@ -80,7 +80,11 @@ export default function RecentMatchScreen({ navigation, route }) {
     <View style={{ flex: 1 }}>
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
-          <Image source={images.arrowDown} style={styles.arrowStyle} />
+          <View style={{
+ position: 'absolute', top: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', right: 15,
+          }}>
+            <Image source={images.arrowDown} style={styles.arrowStyle} />
+          </View>
         </View>
         <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
           <Image source={images.homeSetting} style={styles.settingImage} />
@@ -251,12 +255,10 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   arrowStyle: {
-    height: 26,
-    width: 14,
+    height: 8.5,
+    width: 15,
     resizeMode: 'contain',
     alignSelf: 'flex-end',
-    marginTop: 8,
-    marginRight: 15,
   },
   searchViewContainer: {
     height: 40,
@@ -270,9 +272,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
   },
   settingImage: {
-    height: 20,
-    width: 20,
-    resizeMode: 'cover',
+    height: 22,
+    width: 22,
+    resizeMode: 'contain',
     alignSelf: 'center',
   },
   radioButtonStyle: {
