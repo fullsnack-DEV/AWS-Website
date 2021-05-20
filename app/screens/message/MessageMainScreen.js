@@ -6,7 +6,6 @@ import {
   StyleSheet,
   NativeEventEmitter,
   Text,
-  SafeAreaView,
   FlatList,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -187,7 +186,7 @@ const MessageMainScreen = ({ navigation }) => {
                     activeOpacity={1}
                     onPressIn={() => setPressStatus('messageButton')}
                     onPressOut={() => setPressStatus(null)}
-                    style={{ marginRight: 20 }}
+                    style={{ marginRight: 10 }}
                     onPress={() => { navigation.navigate('MessageInviteScreen') }}>
                   <FastImage source={pressStatus === 'messageButton' ? images.selectAddMessageButton : images.addMessageChat} resizeMode={'contain'} style={{ ...styles.rightImageStyle }} />
                 </TouchableOpacity>
@@ -204,7 +203,7 @@ const MessageMainScreen = ({ navigation }) => {
     ), [authContext?.entity?.QB, pressStatus, navigation])
 
   return (
-    <SafeAreaView style={ styles.mainContainer }>
+    <View style={ styles.mainContainer }>
       {renderHeader}
       <View style={styles.separateLine}/>
       {!authContext?.entity?.QB && (
@@ -229,7 +228,7 @@ const MessageMainScreen = ({ navigation }) => {
             : renderAllMessages
           : null
       }
-    </SafeAreaView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -238,13 +237,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backImageStyle: {
-    height: 30,
-    width: 30,
+    height: 35,
+    width: 35,
   },
   rightImageStyle: {
-    height: 20,
-    width: 20,
-    tintColor: colors.blackColor,
+    height: 25,
+    width: 25,
     resizeMode: 'contain',
   },
   eventTextStyle: {

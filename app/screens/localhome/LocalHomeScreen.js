@@ -946,14 +946,14 @@ export default function LocalHomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   townsCupIcon: {
     resizeMode: 'cover',
-    height: 21,
-    width: 21,
-    marginLeft: 25,
+    height: 25,
+    width: 25,
+    marginLeft: 10,
   },
   gpsIconStyle: {
     resizeMode: 'cover',
-    height: 18,
-    width: 20,
+    height: 15,
+    width: 15,
   },
   sportsIcon: {
     resizeMode: 'cover',
@@ -1197,7 +1197,7 @@ const styles = StyleSheet.create({
     borderColor: 'white',
   },
 backImageStyle: {
-    height: 30,
-    width: 30,
+    height: 35,
+    width: 35,
 },
 });

@@ -1,20 +1,21 @@
 import React, { useRef } from 'react';
 import {
-  Animated, StyleSheet, TouchableOpacity,
+ Animated, StyleSheet, TouchableOpacity, Text, View,
 } from 'react-native';
-
-import { RectButton } from 'react-native-gesture-handler';
-
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import FastImage from 'react-native-fast-image';
-import { widthPercentageToDP as wp } from '../../utils';
+import LinearGradient from 'react-native-linear-gradient';
 import images from '../../Constants/ImagePath';
+import fonts from '../../Constants/Fonts';
+import colors from '../../Constants/Colors';
 
 const SwipeableRow = ({
-  onPress,
+  onPress = () => {},
   buttons = [{ key: 'delete', fillColor: '#E63E3F', image: images.deleteIcon }],
   enabled = true,
   children,
+  showLabel = true,
+    scaleEnabled = true,
 }) => {
   const swipeableRef = useRef(null);
 
@@ -24,22 +25,31 @@ const SwipeableRow = ({
       outputRange: [0.7, 0],
     })
     let buttonSize = 15;
-    if (buttons?.length >= 2) buttonSize = 25
+    if (buttons?.length >= 2 && scaleEnabled) buttonSize = 25
     return (
       <>
         {buttons?.map((item, index) => (
-          <TouchableOpacity activeOpacity={1} key={index} onPress={() => onItemPress(item?.key)} style={{ backgroundColor: item?.fillColor, justifyContent: 'center' }}>
-            <Animated.View
+          <TouchableOpacity
+              key={index}
+              activeOpacity={1}
+              onPress={() => onItemPress(item?.key)}
+              style={{ justifyContent: 'center', alignItems: 'center', width: 57 }}>
+            <LinearGradient colors={Array.isArray(item.fillColor) ? item.fillColor : [item.fillColor, item.fillColor] } style={{ justifyContent: 'center', alignItems: 'center' }}>
+              <Animated.View
                   style={{
                     paddingHorizontal: 10,
-                    width: wp(20),
-                    transform: [{ scale }],
+                    minWidth: 57,
+                    ...(scaleEnabled && { transform: [{ scale }] }),
                   }}>
-              <RectButton
+                <View
                     style={styles.rightAction}>
-                <FastImage resizeMode={'contain'} source={item?.image} style={{ ...styles.deleteImgContainer, height: buttonSize, width: buttonSize }} />
-              </RectButton>
-            </Animated.View>
+                  <FastImage resizeMode={'contain'} source={item?.image} style={{ ...styles.deleteImgContainer, height: buttonSize, width: buttonSize }} />
+                  {showLabel && (
+                    <Text style={styles.label}>{item?.label}</Text>
+                   )}
+                </View>
+              </Animated.View>
+            </LinearGradient>
           </TouchableOpacity>
         ))}
       </>
@@ -74,6 +84,12 @@ const styles = StyleSheet.create({
   deleteImgContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  label: {
+    marginTop: 5,
+    color: colors.whiteColor,
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
   },
 });
 

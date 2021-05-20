@@ -91,8 +91,9 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flexDirection: 'row',
-    margin: wp('3%'),
-    marginHorizontal: wp('4%'),
+    padding: wp('3%'),
+    paddingHorizontal: wp('4%'),
+    backgroundColor: colors.whiteColor,
   },
   userCommentTextStyle: {
     alignItems: 'center',

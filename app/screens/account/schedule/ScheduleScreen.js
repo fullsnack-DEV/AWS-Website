@@ -744,7 +744,7 @@ export default function ScheduleScreen({ navigation }) {
   const topRightButton = useMemo(
     () => (
       <TouchableOpacity onPress={onThreeDotPress}>
-        <Image source={images.vertical3Dot} style={styles.headerRightImg} />
+        <Image source={images.scheduleThreeDot} style={styles.headerRightImg} />
       </TouchableOpacity>
     ),
     [onThreeDotPress],
@@ -1538,11 +1538,9 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   headerRightImg: {
-    height: 15,
-    marginRight: 20,
+    height: 25,
     resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    width: 15,
+    width: 25,
   },
   eventTitleTextStyle: {
     fontSize: 16,
@@ -1565,7 +1563,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   backImageStyle: {
-    height: 30,
-    width: 30,
+    height: 35,
+    width: 35,
   },
 });

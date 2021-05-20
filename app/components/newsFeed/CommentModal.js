@@ -1,15 +1,15 @@
 /* eslint-disable no-useless-escape */
 import React, {
-    useCallback, useEffect, useState, useContext, useRef,
+    useCallback, useEffect, useState, useContext, useRef, useMemo,
 } from 'react';
 import {
     StyleSheet,
     View,
     Image,
     Alert,
+    TouchableOpacity,
     SafeAreaView, TextInput,
 } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
@@ -26,6 +26,7 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import AuthContext from '../../auth/context';
 import WriteCommentItems from './WriteCommentItems';
+import SwipeableRow from '../gameRecordList/SwipeableRow';
 
 const CommentModal = ({
                           item,
@@ -34,6 +35,7 @@ const CommentModal = ({
                           navigation,
                       }) => {
     const authContext = useContext(AuthContext);
+    const isMyPost = useMemo(() => item?.actor?.id === authContext?.entity?.uid, [authContext?.entity?.uid, item?.actor?.id])
     const isFocused = useIsFocused();
     const writeCommentTextInputRef = useRef(null);
 
@@ -80,10 +82,45 @@ const CommentModal = ({
         });
     }, [commentModalRef, navigation])
 
+    const getButtons = useCallback((data) => {
+        const isMyComment = data.user_id === authContext.entity.uid;
+        const buttons = []
+        if (isMyComment || isMyPost) {
+            buttons.push({
+                key: 'delete',
+                label: 'Delete',
+                fillColor: [colors.themeColor, colors.darkThemeColor],
+                image: images.commentDeleteIcon,
+            })
+        }
+        if (!isMyComment) {
+            buttons.push({
+                key: 'report',
+                label: 'Report',
+                fillColor: [colors.userPostTimeColor, colors.googleColor],
+                image: images.commentReportIcon,
+            })
+        }
+
+        return buttons;
+    }, [authContext.entity.uid, isMyPost]);
+
+    const onCommentOptionsPress = useCallback((key, data) => {
+        console.log(data);
+        alert(key);
+    }, [])
+
     const renderComments = useCallback(
         ({ item: data }) => (
-          <WriteCommentItems data={data} onProfilePress={onProfilePress}/>
-        ), [onProfilePress],
+          <SwipeableRow
+              scaleEnabled={false}
+              showLabel={true}
+              buttons={getButtons(data)}
+              onPress={(key) => onCommentOptionsPress(key, data)}
+          >
+            <WriteCommentItems data={data} onProfilePress={onProfilePress}/>
+          </SwipeableRow>
+        ), [getButtons, onCommentOptionsPress, onProfilePress],
     );
     const listEmptyComponent = () => (
       <View style={styles.emptyContainer}>

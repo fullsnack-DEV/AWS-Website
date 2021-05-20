@@ -49,6 +49,7 @@ const images = {
   backArrow: require('../assets/images/ic_back_arrow.png'),
   menu: require('../assets/images/menu.png'),
   threeDotIcon: require('../assets/images/three_dot_icon.png'),
+  scheduleThreeDot: require('../assets/images/scheduleThreeDot.png'),
   vertical3Dot: require('../assets/images/ic_dot.png'),
   horizontal3Dot: require('../assets/images/ic_horizontal_dot.png'),
   downArrow: require('../assets/images/ic_down_arrow.png'),
@@ -370,6 +371,12 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   messageCheckboxBorder: require('../assets/images/messageCheckboxBorder.png'),
   youtubePlayButton: require('../assets/images/youtubePlayButton.png'),
   smallRight: require('../assets/images/smallRight.png'),
+  commentDeleteIcon: require('../assets/images/commentDeleteIcon.png'),
+  commentReportIcon: require('../assets/images/commentReportIcon.png'),
+
+//  Sports Icons
+  soccerIcon: require('../assets/images/soccerIcon.png'),
+  tennisIcon: require('../assets/images/tennisIcon.png'),
 };
 
 export default images;
