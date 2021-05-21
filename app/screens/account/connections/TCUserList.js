@@ -42,9 +42,16 @@ const TCUserList = ({
           <Text style={{ fontSize: 14, fontFamily: fonts.RRegular, color: colors.userPostTimeColor }}>{subTitle}</Text>
         </TouchableOpacity>
         <View style={{ flex: 0.25, alignItems: 'center' }}>
-
           <View>
             {showFollowUnfollowButton && <TCGradientButton
+                rightIcon={follow && images.check}
+                rightIconStyle={{
+                  height: 6,
+                  width: 10,
+                  resizeMode: 'contain',
+                  marginLeft: 3,
+                  tintColor: colors.lightBlackColor,
+                }}
                 onPress={() => {
                   setFollow(!follow)
                   followUnfollowPress(!follow)
@@ -53,15 +60,13 @@ const TCUserList = ({
                   borderRadius: 5,
                   height: 25,
                   width: 75,
-                  borderWidth: 1,
-                  borderColor: follow ? colors.yellowColor : colors.whiteColor,
                 }}
                 title={follow ? 'Following' : 'Follow'}
                 startGradientColor={!follow ? colors.yellowColor : colors.whiteColor}
                 endGradientColor={!follow ? colors.themeColor : colors.whiteColor}
-                textStyle={{ color: !follow ? colors.whiteColor : colors.themeColor, fontSize: 11, fontFamily: fonts.RBold }}
+                textStyle={{ color: !follow ? colors.whiteColor : colors.lightBlackColor, fontSize: 11, fontFamily: fonts.RBold }}
                 style={{
-                  borderRadius: 0,
+                  borderRadius: 5,
                   height: '100%',
                   width: '100%',
                 }} />}

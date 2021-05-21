@@ -39,8 +39,7 @@ const style = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    height: 50,
+    height: 45,
   },
   leftContainerStyle: {
     width: wp('15%'),

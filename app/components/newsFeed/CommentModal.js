@@ -27,6 +27,7 @@ import fonts from '../../Constants/Fonts'
 import AuthContext from '../../auth/context';
 import WriteCommentItems from './WriteCommentItems';
 import SwipeableRow from '../gameRecordList/SwipeableRow';
+import ReportCommentModal from './ReportCommentModal';
 
 const CommentModal = ({
                           item,
@@ -34,6 +35,7 @@ const CommentModal = ({
                           commentModalRef,
                           navigation,
                       }) => {
+    const reportCommentModalRef = useRef(null);
     const authContext = useContext(AuthContext);
     const isMyPost = useMemo(() => item?.actor?.id === authContext?.entity?.uid, [authContext?.entity?.uid, item?.actor?.id])
     const isFocused = useIsFocused();
@@ -43,6 +45,7 @@ const CommentModal = ({
     const [commentData, setCommentData] = useState([]);
     const [currentUserDetail, setCurrentUserDetail] = useState(null);
     const [showBottomWriteCommentSection, setShowBottomWriteCommentSection] = useState(false);
+    const [selectedCommentData, setSelectedCommentData] = useState(null);
 
     useEffect(() => {
         const entity = authContext.entity;
@@ -106,8 +109,13 @@ const CommentModal = ({
     }, [authContext.entity.uid, isMyPost]);
 
     const onCommentOptionsPress = useCallback((key, data) => {
-        console.log(data);
-        alert(key);
+        if (key === 'report') {
+            console.log(data);
+            setSelectedCommentData(data);
+            reportCommentModalRef.current.open()
+        } else {
+            alert(key);
+        }
     }, [])
 
     const renderComments = useCallback(
@@ -236,8 +244,9 @@ const CommentModal = ({
     )
 
     return (
-      <Portal>
-        <Modalize
+      <View>
+        <Portal>
+          <Modalize
                 onOpen={() => setShowBottomWriteCommentSection(true)}
                 snapPoint={hp(50)}
                 withHandle={false}
@@ -262,7 +271,12 @@ const CommentModal = ({
                 FloatingComponent={FloatingComponent}
                 FooterComponent={FooterComponent}
             />
-      </Portal>
+        </Portal>
+        <ReportCommentModal
+            commentData={selectedCommentData}
+            reportCommentModalRef={reportCommentModalRef}
+        />
+      </View>
 
     );
 }
