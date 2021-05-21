@@ -56,10 +56,10 @@ export default function InviteChallengeScreen({ navigation, route }) {
   const [venue, setVenue] = useState();
 
   const [startDate, setStartDate] = useState(
-    new Date().setHours(new Date().getHours() + 1),
+    new Date().setHours(new Date().getHours() + 10),
   );
   const [endDate, setEndDate] = useState(
-    new Date().setHours(new Date().getHours() + 4),
+    new Date().setHours(new Date().getHours() + 14),
   );
 
   const [settingObject, setSettingObject] = useState();

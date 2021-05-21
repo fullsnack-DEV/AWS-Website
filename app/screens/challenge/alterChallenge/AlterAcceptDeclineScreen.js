@@ -626,7 +626,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     delete body.challenge_id;
     delete body.userChallenge;
     delete body.game_id;
-    delete body.change_requested_by;
+
     delete body.updated_by;
     delete body.updated_at;
     delete body.version;
@@ -675,7 +675,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
   };
 
   const getPendingRequestPaymentMessage = () => {
-    if (bodyParams.change_requested_by === entity.uid) {
+    if (bodyParams.requested_by === entity.uid) {
       return `${getTeamName(
         bodyParams,
       )} has accepted your match reservation alteration request, but `;

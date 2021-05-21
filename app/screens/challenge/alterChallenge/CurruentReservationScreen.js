@@ -130,7 +130,7 @@ export default function CurruentReservationScreen({ route }) {
         return 'sender';
       }
       return 'receiver';
-      // if (challengeObj.change_requested_by === entity.uid) {
+      // if (challengeObj.requested_by === entity.uid) {
       //   return 'sender';
       // }
       // return 'receiver';
@@ -156,7 +156,7 @@ export default function CurruentReservationScreen({ route }) {
       return 'sender';
     }
     return 'receiver';
-    // if (challengeObj.change_requested_by === entity.uid) {
+    // if (challengeObj.requested_by === entity.uid) {
     //   return 'sender';
     // }
     // return 'receiver';

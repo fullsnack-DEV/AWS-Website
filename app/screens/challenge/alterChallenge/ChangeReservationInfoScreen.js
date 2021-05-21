@@ -118,7 +118,9 @@ const getOpponentEntity = () => {
         title={screenName === 'change' ? strings.nextTitle : strings.cancelMatch}
         onPress={() => {
           if (screenName === 'change') {
-            navigation.navigate('EditChallenge', { groupObj: getOpponentEntity(), sportName: challengeObj?.sport, challengeObj });
+            navigation.navigate('EditChallenge', {
+ groupObj: getOpponentEntity(), sportName: challengeObj?.sport, challengeObj,
+});
           } else {
             Alert.alert(
               'Are you sure that you want to cancel the match reservation?',

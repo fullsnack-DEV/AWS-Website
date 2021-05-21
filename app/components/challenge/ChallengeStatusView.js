@@ -191,7 +191,7 @@ return (
             </View>
         )}
 
-    {!isSender && status === ReservationStatus.declined && (
+    {isSender && status === ReservationStatus.declined && (
       <View>
         <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
           {challengeObj?.challenger === challengeObj?.invited_by
@@ -205,7 +205,7 @@ return (
         </Text>
       </View>
       )}
-    {isSender && status === ReservationStatus.declined && (
+    {!isSender && status === ReservationStatus.declined && (
       <View>
         <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
           {challengeObj?.challenger === challengeObj?.invited_by

@@ -629,7 +629,7 @@ export default function EditRefereeReservation({ navigation, route }) {
     return reservationObj?.referee
   }
   const getPendingRequestPaymentMessage = () => {
-    if (bodyParams?.change_requested_by === entity.uid) {
+    if (bodyParams?.requested_by === entity.uid) {
       return `${getEntityName(
         bodyParams,
       )} has accepted your match reservation alteration request, but `;
