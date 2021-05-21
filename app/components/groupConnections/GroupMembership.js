@@ -52,14 +52,14 @@ const GroupMembership = ({
   </>
   )
 const styles = StyleSheet.create({
-  familyView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-    marginLeft: 20,
-    marginRight: 20,
-    alignItems: 'center',
-  },
+  // familyView: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   marginTop: 10,
+  //   marginLeft: 20,
+  //   marginRight: 20,
+  //   alignItems: 'center',
+  // },
   profileImage: {
     alignSelf: 'center',
     height: 40,
