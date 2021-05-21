@@ -29,7 +29,7 @@ const TCTextInputClear = ({
           onChangeText={onChangeText}
           value={value}
         />
-        {value.length > 0 && <TouchableOpacity onPress={onPressClear}>
+        {value?.length > 0 && <TouchableOpacity onPress={onPressClear}>
           <Image
             source={images.cancelWhite}
             style={{
@@ -50,7 +50,7 @@ const TCTextInputClear = ({
           onChangeText={onChangeText}
           value={value}
         />
-        {value.length > 0 && <TouchableOpacity onPress={onPressClear}>
+        {value?.length > 0 && <TouchableOpacity onPress={onPressClear}>
           <Image
             source={images.cancelWhite}
             style={{

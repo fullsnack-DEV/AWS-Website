@@ -657,7 +657,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
     return reservationObj?.scorekeeper;
   };
   const getPendingRequestPaymentMessage = () => {
-    if (bodyParams?.change_requested_by === entity.uid) {
+    if (bodyParams?.requested_by === entity.uid) {
       return `${getEntityName(
         bodyParams,
       )} has accepted your match reservation alteration request, but `;

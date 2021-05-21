@@ -594,7 +594,7 @@ export default function AlterScorekeeperScreen({ navigation, route }) {
   };
 
   const getPendingRequestPaymentMessage = () => {
-    if (bodyParams?.change_requested_by === entity.uid) {
+    if (bodyParams?.requested_by === entity.uid) {
       return `${getEntityName(
         bodyParams,
       )} has accepted your scorekeeper reservation alteration request, but `;

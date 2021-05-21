@@ -36,7 +36,9 @@ import { getNumberSuffix } from '../../../utils/gameUtils';
 import {
   acceptDeclineChallenge,
   acceptDeclineAlterChallenge,
+  getChallengeSetting,
 } from '../../../api/Challenge';
+
 import GameStatus from '../../../Constants/GameStatus';
 import TCArrowView from '../../../components/TCArrowView';
 import TCGradientButton from '../../../components/TCGradientButton';
@@ -48,6 +50,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   const [selectedTab, setSelectedTab] = useState(0);
 
   entity = authContext.entity;
+
+  const [settingObject, setSettingObject] = useState();
 
   const [challengeData, setChallengeData] = useState(
     route?.params?.challengeObj[0],
@@ -79,74 +83,148 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           break;
         }
       }
-      console.log(
-        'challenge Object::',
-        route?.params?.challengeObj?.[0] || route?.params?.challengeObj,
-      );
     }
     if (
-      (route?.params?.challengeObj?.[0]?.status ?? route?.params?.challengeObj?.status) === (ReservationStatus.declined ?? ReservationStatus.requestcancelled)
+      [ReservationStatus.declined, ReservationStatus.requestcancelled].includes(
+        route?.params?.challengeObj?.[0]?.status
+          ?? route?.params?.challengeObj?.status,
+      )
     ) {
       console.log('Old Version:=>', oldVersion);
       setChallengeData(oldVersion);
     } else {
-      console.log('new Version:=>', route?.params?.challengeObj?.[0] ?? route?.params?.challengeObj);
+      console.log(
+        'new Version:=>',
+        route?.params?.challengeObj?.[0] ?? route?.params?.challengeObj,
+      );
       setChallengeData(
         route?.params?.challengeObj?.[0] ?? route?.params?.challengeObj,
       );
     }
   }, [oldVersion, route?.params?.challengeObj]);
 
+  useEffect(() => {
+    setloading(true);
+    getChallengeSetting(
+      challengeData?.challengee,
+      challengeData?.sport,
+      authContext,
+    )
+      .then((response) => {
+        setloading(false);
+        console.log('manage challenge response:=>', response.payload);
+        setSettingObject(response.payload[0]);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext, challengeData?.challengee, challengeData?.sport]);
+
+  // const checkSenderOrReceiver = (challengeObj) => {
+  //   console.log('sender & receiver Obj', challengeObj);
+  //   if (!challengeObj?.user_challenge) {
+  //     if (
+  //       challengeObj?.status === ReservationStatus.pendingpayment
+  //       || challengeObj?.status === ReservationStatus.pendingrequestpayment
+  //     ) {
+  //       if (challengeObj?.challenger === entity.uid) {
+  //         return 'sender';
+  //       }
+  //       return 'receiver';
+  //     }
+  //     if (challengeObj?.status === ReservationStatus.offered) {
+  //       if (entity.uid === challengeData?.created_by?.group_id) {
+  //         return 'sender';
+  //       }
+  //       return 'receiver';
+  //     }
+  //     if (challengeObj?.status === ReservationStatus.accepted) {
+  //       if (challengeObj?.updated_by?.group_id === entity.uid) {
+  //         return 'sender';
+  //       }
+  //       return 'receiver';
+  //     }
+  //     // if (challengeObj?.updated_by?.group_id === entity.uid) {
+  //     //   return 'sender';
+  //     // }
+  //     // return 'receiver';
+  //     if (challengeObj?.updated_by?.group_id === entity.uid) {
+  //       return 'sender';
+  //     }
+  //     return 'receiver';
+  //   }
+  //   console.log('challenge for user to user');
+  //   if (
+  //     challengeObj?.status === ReservationStatus.pendingpayment
+  //     || challengeObj?.status === ReservationStatus.pendingrequestpayment
+  //   ) {
+  //     if (challengeObj?.challenger === entity.uid) {
+  //       return 'sender';
+  //     }
+  //     return 'receiver';
+  //   }
+  //   if (challengeObj?.status === ReservationStatus.offered) {
+  //     if (entity.uid === challengeData?.created_by?.uid) {
+  //       return 'sender';
+  //     }
+  //     return 'receiver';
+  //   }
+
+  //   if (challengeObj?.updated_by?.uid === entity.uid) {
+  //     return 'sender';
+  //   }
+  //   return 'receiver';
+  // };
+
   const checkSenderOrReceiver = (challengeObj) => {
-    if (!challengeObj?.user_challenge) {
-      if (
-        challengeObj?.status === ReservationStatus.pendingpayment
-        || challengeObj?.status === ReservationStatus.pendingrequestpayment
-      ) {
-        if (challengeObj?.challenger === entity.uid) {
-          return 'sender';
-        }
-        return 'receiver';
-      }
-      if (challengeObj?.status === ReservationStatus.offered) {
-        if (entity.uid === challengeData?.created_by?.group_id) {
-          return 'sender';
-        }
-        return 'receiver';
-      }
-      if (challengeObj?.status === ReservationStatus.accepted) {
-        if (challengeObj?.updated_by?.group_id === entity.uid) {
-          return 'receiver';
-        }
-        return 'sender';
-      }
-      // if (challengeObj?.updated_by?.group_id === entity.uid) {
-      //   return 'sender';
-      // }
-      // return 'receiver';
-      if (challengeObj?.updated_by?.group_id === entity.uid) {
-        return 'sender';
-      }
-      return 'receiver';
-    }
-    console.log('challenge for user to user');
+    console.log('sender & receiver Obj', challengeObj);
+
     if (
       challengeObj?.status === ReservationStatus.pendingpayment
       || challengeObj?.status === ReservationStatus.pendingrequestpayment
     ) {
-      if (challengeObj?.challenger === entity.uid) {
+      if (challengeObj?.requested_by === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (
+      challengeObj?.status === ReservationStatus.requestcancelled
+      || challengeObj?.status === ReservationStatus.cancelled
+    ) {
+      if (challengeObj?.requested_by === entity.uid) {
         return 'sender';
       }
       return 'receiver';
     }
     if (challengeObj?.status === ReservationStatus.offered) {
-      if (entity.uid === challengeData?.created_by?.uid) {
+      if (challengeObj?.requested_by === entity.uid) {
         return 'sender';
       }
       return 'receiver';
     }
-
-    if (challengeObj?.updated_by?.uid === entity.uid) {
+    if (challengeObj?.status === ReservationStatus.accepted) {
+      if (challengeObj?.requested_by === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (challengeObj?.status === ReservationStatus.declined) {
+      if (challengeObj?.requested_to === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (challengeObj?.status === ReservationStatus.restored) {
+      if (challengeObj?.requested_to === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (challengeObj?.updated_by?.group_id === entity.uid) {
       return 'sender';
     }
     return 'receiver';
@@ -537,10 +615,11 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         </View>
       );
     }
+    console.log('Challenge Object:=>', challengeData);
     if (
       (checkSenderOrReceiver(challengeData) === 'sender'
         || checkSenderOrReceiver(challengeData) === 'receiver')
-      && selectedTab !== 1
+      && selectedTab === 0
       && (challengeData?.status === ReservationStatus.accepted
         || challengeData?.status === ReservationStatus.declined)
     ) {
@@ -569,6 +648,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                   navigation.navigate('ChangeReservationInfoScreen', {
                     screen: 'change',
                     challengeObj: challengeData,
+                    settingObj: settingObject,
                   });
                 }
               } else {
@@ -590,10 +670,25 @@ export default function ChallengePreviewScreen({ navigation, route }) {
               //   status: 'accept',
               //   teamObj: authContext.entity.obj,
               // });
-              navigation.navigate('ChangeReservationInfoScreen', {
-                screen: 'cancel',
-                challengeObj: challengeData,
-              });
+
+              if (
+                challengeData?.game_status === GameStatus.accepted
+                || challengeData?.game_status === GameStatus.reset
+              ) {
+                if (
+                  challengeData?.start_datetime * 1000
+                  < new Date().getTime()
+                ) {
+                  Alert.alert(strings.cannotChangeReservationGameStartedText);
+                } else {
+                  navigation.navigate('ChangeReservationInfoScreen', {
+                    screen: 'cancel',
+                    challengeObj: challengeData,
+                  });
+                }
+              } else {
+                Alert.alert(strings.cannotChangeReservationText);
+              }
             }}
             style={{
               width: widthPercentageToDP('92%'),
@@ -738,6 +833,92 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     return <View style={{ marginBottom: 45 }} />;
   };
 
+  const topButtons = () => {
+    if (challengeData?.challenger === challengeData?.invited_by) {
+      if (
+        checkSenderOrReceiver(challengeData) === 'sender'
+        && [
+          ReservationStatus.pendingrequestpayment,
+          ReservationStatus.pendingpayment,
+        ].includes(challengeData?.status)
+      ) {
+          return (
+            <TCGradientButton
+              title={'TRY TO PAY AGAIN'}
+              onPress={() => {
+                navigation.navigate('PayAgainScreen', {
+                  body: { ...challengeData },
+                  status: challengeData?.status,
+                });
+              }}
+              marginBottom={15}
+            />
+          );
+      }
+      if (
+        checkSenderOrReceiver(challengeData) === 'receiver'
+        && [ReservationStatus.pendingrequestpayment].includes(challengeData?.status)
+      ) {
+        return (
+          <TCGradientButton
+            title={'RESTORE TO PREVIOUS VERSION'}
+            onPress={() => {
+              challengeOperation(
+                entity.uid,
+                challengeData.challenge_id,
+                challengeData.version,
+                'decline',
+                true,
+              );
+            }}
+            marginBottom={15}
+          />
+        );
+      }
+    } else {
+      if (
+        checkSenderOrReceiver(challengeData) === 'sender'
+        && [
+          ReservationStatus.pendingrequestpayment,
+
+        ].includes(challengeData?.status)
+      ) {
+        return (
+          <TCGradientButton
+            title={'RESTORE TO PREVIOUS VERSION'}
+            onPress={() => {
+              challengeOperation(
+                entity.uid,
+                challengeData.challenge_id,
+                challengeData.version,
+                'decline',
+                true,
+              );
+            }}
+            marginBottom={15}
+          />
+        );
+      }
+      if (
+        checkSenderOrReceiver(challengeData) === 'receiver'
+        && [ReservationStatus.pendingrequestpayment, ReservationStatus.pendingpayment].includes(challengeData?.status)
+      ) {
+        return (
+          <TCGradientButton
+            title={'TRY TO PAY AGAIN'}
+            onPress={() => {
+              navigation.navigate('PayAgainScreen', {
+                body: { ...challengeData },
+                status: challengeData?.status,
+              });
+            }}
+            marginBottom={15}
+          />
+        );
+      }
+    }
+  };
+
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
@@ -790,45 +971,37 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         status={challengeData?.status}
       />
 
-      {checkSenderOrReceiver(challengeData) === 'sender'
-        && (challengeData.status === ReservationStatus.pendingrequestpayment
-          || challengeData.status === ReservationStatus.pendingpayment) && (
-            <TCGradientButton
-            title={'TRY TO PAY AGAIN'}
-            onPress={() => {
-              navigation.navigate('PayAgainScreen', {
-                body: { ...challengeData },
-                status: challengeData?.status,
-              });
-            }}
-            marginBottom={15}
-          />
-        )}
-      {checkSenderOrReceiver(challengeData) === 'receiver'
-        && challengeData.status === ReservationStatus.pendingrequestpayment && (
-          <TCGradientButton
-            title={'RESTORE TO PREVIOUS VERSION'}
-            onPress={() => {
-              challengeOperation(
-                entity.uid,
-                challengeData.challenge_id,
-                challengeData.version,
-                'decline',
-                true,
-              );
-            }}
-            marginBottom={15}
-          />
-        )}
+      {topButtons()}
 
       {challengeData?.game_id && (
-        <TCArrowView title={'Match Home '} onPress={() => Alert.alert('ok')} containerStyle={{ marginBottom: 15 }}/>
+        <TCArrowView
+          title={'Match Home '}
+          onPress={() => {
+            if (
+              challengeData?.sport?.toLocaleLowerCase()
+              === 'soccer'.toLocaleLowerCase()
+            ) {
+              navigation.navigate('SoccerHome', {
+                gameId: challengeData?.game_id,
+              });
+            }
+            if (
+              challengeData?.sport?.toLocaleLowerCase()
+              === 'tennis'.toLocaleLowerCase()
+            ) {
+              navigation.navigate('TennisHome', {
+                gameId: challengeData?.game_id,
+              });
+            }
+          }}
+          containerStyle={{ marginBottom: 15 }}
+        />
       )}
       <TCThickDivider />
 
       <View>
-        {challengeData?.status
-          === ReservationStatus.changeRequest && (
+        {(challengeData?.status === ReservationStatus.changeRequest
+          || selectedTab === 1) && (
             <View
             style={{
               flexDirection: 'row',
