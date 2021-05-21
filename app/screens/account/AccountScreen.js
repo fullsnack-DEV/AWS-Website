@@ -60,6 +60,7 @@ import strings from '../../Constants/String';
 import Header from '../../components/Home/Header';
 import TCGradientButton from '../../components/TCGradientButton';
 import TCThinDivider from '../../components/TCThinDivider';
+import { getSportIcon } from '../../utils/index';
 
 export default function AccountScreen({ navigation, route }) {
     const scrollRef = useRef();
@@ -543,14 +544,9 @@ export default function AccountScreen({ navigation, route }) {
 
     const renderSportsList = useCallback(
         ({ item }) => (
-          <View
-                style={styles.listContainer}
-                onPress={() => {
-                    // navigation.closeDrawer();
-                    // alert('Game Pressed');
-                }}>
+          <View style={styles.listContainer}>
             <View style={styles.entityTextContainer}>
-              <Image source={images.mySports} style={styles.smallProfileImg} />
+              <Image source={getSportIcon(item.sport_name)} style={styles.accountSportIcon} />
               <Text style={styles.entityName}>{item.sport_name}</Text>
             </View>
             <Image source={images.nextArrow} style={styles.nextArrow} />
@@ -561,14 +557,9 @@ export default function AccountScreen({ navigation, route }) {
 
     const renderRefereesList = useCallback(
         ({ item }) => (
-          <View
-                style={styles.listContainer}
-                onPress={() => {
-                    // navigation.closeDrawer();
-                    // alert('Referee Pressed');
-                }}>
+          <View style={styles.listContainer}>
             <View style={styles.entityTextContainer}>
-              <Image source={images.myRefereeing} style={styles.smallProfileImg} />
+              <Image source={getSportIcon(item.sport_name)} style={styles.accountSportIcon} />
               <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
             </View>
             <Image source={images.nextArrow} style={styles.nextArrow} />
@@ -579,14 +570,9 @@ export default function AccountScreen({ navigation, route }) {
 
     const renderScorekeepersList = useCallback(
         ({ item }) => (
-          <View
-                style={styles.listContainer}
-                onPress={() => {
-                    // navigation.closeDrawer();
-                    // alert('Referee Pressed');
-                }}>
+          <View style={styles.listContainer}>
             <View style={styles.entityTextContainer}>
-              <Image source={images.myRefereeing} style={styles.smallProfileImg} />
+              <Image source={getSportIcon(item.sport_name)} style={styles.accountSportIcon} />
               <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
             </View>
             <Image source={images.nextArrow} style={styles.nextArrow} />
@@ -786,9 +772,10 @@ export default function AccountScreen({ navigation, route }) {
 
     const renderMenuItems = useCallback(
         (rowItem, rowId, sectionId) => (
-          <>
+          <View>
             {authContext.entity.role === 'user' && sectionId === 2 && (
               <FlatList
+                        style={{ marginVertical: 10 }}
                         data={authContext?.entity?.auth?.user?.registered_sports}
                         keyExtractor={keyExtractorID}
                         renderItem={renderSportsList}
@@ -798,6 +785,7 @@ export default function AccountScreen({ navigation, route }) {
                 )}
             {authContext.entity.role === 'user' && sectionId === 3 && (
               <FlatList
+                        style={{ marginVertical: 10 }}
                         data={authContext?.entity?.auth?.user?.referee_data}
                         keyExtractor={keyExtractorID}
                         renderItem={renderRefereesList}
@@ -807,6 +795,7 @@ export default function AccountScreen({ navigation, route }) {
                 )}
             {authContext.entity.role === 'user' && sectionId === 4 && (
               <FlatList
+                        style={{ marginVertical: 10 }}
                         data={authContext?.entity?.auth?.user?.scorekeeper_data}
                         keyExtractor={keyExtractorID}
                         renderItem={renderScorekeepersList}
@@ -817,6 +806,7 @@ export default function AccountScreen({ navigation, route }) {
             {authContext.entity.role === 'user'
                 && (sectionId === 5 || sectionId === 6) && (
                   <FlatList
+                        style={{ marginVertical: 10 }}
                         data={sectionId === 5 ? teamList : clubList}
                         keyExtractor={keyExtractorID}
                         renderItem={renderEntityList}
@@ -826,6 +816,7 @@ export default function AccountScreen({ navigation, route }) {
                 )}
             {authContext.entity.role === 'club' && sectionId === 2 && (
               <FlatList
+                        style={{ marginVertical: 10 }}
                         data={teamList}
                         keyExtractor={keyExtractorID}
                         renderItem={renderTeamsList}
@@ -833,8 +824,6 @@ export default function AccountScreen({ navigation, route }) {
                         scrollEnabled={false}
                     />
                 )}
-
-            <View style={styles.halfSeparatorLine} />
 
             <TouchableWithoutFeedback
                     style={styles.listContainer}
@@ -859,24 +848,26 @@ export default function AccountScreen({ navigation, route }) {
               {rowItem.opetions === 'Create a League' && (
                 <Image source={images.createLeague} style={styles.subMenuItem} />
                     )}
-              {rowItem.opetions === 'Payment Method' && (
-                <Image source={images.Payment_method} style={{ ...styles.subMenuItem }} />
-                    )}
+              <View style={{ marginVertical: 5 }}>
+                {rowItem.opetions === 'Payment Method' && (
+                  <Image source={images.Payment_method} style={{ ...styles.subMenuItem }} />
+                )}
 
-              {rowItem.opetions === 'Payout Method' && (
-                <Image source={images.Payout_method} style={{ ...styles.subMenuItem }} />
+                {rowItem.opetions === 'Payout Method' && (
+                  <Image source={images.Payout_method} style={{ ...styles.subMenuItem }} />
                     )}
-              {rowItem.opetions === 'Invoicing' && (
-                <Image source={images.Invoicing} style={{ ...styles.subMenuItem }} />
+                {rowItem.opetions === 'Invoicing' && (
+                  <Image source={images.Invoicing} style={{ ...styles.subMenuItem }} />
                     )}
-              {rowItem.opetions === 'Transactions' && (
-                <Image source={images.Transations} style={{ ...styles.subMenuItem }} />)}
-
+                {rowItem.opetions === 'Transactions' && (
+                  <Image source={images.Transations} style={{ ...styles.subMenuItem }} />
+                )}
+              </View>
               <Text style={styles.listItems}>{rowItem.opetions}</Text>
               <Image source={images.nextArrow} style={styles.nextArrow} />
             </TouchableWithoutFeedback>
-            <View style={styles.halfSeparatorLine} />
-          </>
+
+          </View>
         ),
         [
             authContext.entity?.auth?.user?.referee_data,
@@ -999,7 +990,6 @@ export default function AccountScreen({ navigation, route }) {
                                 style={{
                                     flexDirection: 'row',
                                     marginLeft: 10,
-                                    // backgroundColor: 'red',
                                 }}>
                   <TCNavigationHeader
                                     name={parentGroup?.group_name}
@@ -1271,7 +1261,7 @@ export default function AccountScreen({ navigation, route }) {
                     headerKey={'key'}
                     memberKey="member"
                     renderRow={renderMenuItems}
-                    ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
+                    ItemSeparatorComponent={() => <View style={styles.halfSeparatorLine} />}
                     renderSectionHeaderX={(section, sectionID, isSectionOpen) => {
                         const secData = userMenu?.find((item) => item.key === section);
                         return (
@@ -1342,7 +1332,6 @@ export default function AccountScreen({ navigation, route }) {
                                     )}
 
                             </TouchableWithoutFeedback>
-                            <View style={styles.separatorLine} />
                           </>
                         )
                     }}
@@ -1673,17 +1662,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         height: 40,
         justifyContent: 'center',
-        marginLeft: 40,
+        marginLeft: 30,
         marginRight: 20,
         // width: wp('86%'),
     },
     halfSeparatorLine: {
-        alignSelf: 'flex-end',
+        alignSelf: 'center',
         backgroundColor: colors.grayBackgroundColor,
         height: 0.5,
         marginRight: 20,
-        marginVertical: 7.5,
-        width: wp('82%'),
+        marginVertical: 5,
+        width: wp(90),
     },
     listContainer: {
         flex: 1,
@@ -1823,7 +1812,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: colors.lightgrayColor,
         height: 0.5,
-        marginVertical: 7.5,
+        marginVertical: 5,
         width: wp('90%'),
     },
     separatorView: {
@@ -1858,10 +1847,18 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         width: 20,
     },
+    accountSportIcon: {
+        alignSelf: 'center',
+        height: 40,
+        margin: 15,
+        marginRight: 5,
+        resizeMode: 'contain',
+        width: 40,
+    },
     subMenuItem: {
         alignSelf: 'center',
         height: 40,
-        marginLeft: 50,
+        marginLeft: 45,
         resizeMode: 'contain',
         width: 40,
     },
@@ -1891,8 +1888,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     headerRightImg: {
-        height: 22,
-        width: 20,
+        height: 25,
+        width: 25,
         resizeMode: 'contain',
     },
     roundBadge: {
@@ -1990,8 +1987,8 @@ const styles = StyleSheet.create({
         color: colors.lightBlackColor,
     },
     backImageStyle: {
-        height: 30,
-        width: 30,
+        height: 35,
+        width: 35,
     },
 
     closeButton: {

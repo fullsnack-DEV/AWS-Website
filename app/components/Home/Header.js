@@ -22,7 +22,7 @@ function Header({
   showBackgroundColor = false,
 }) {
   return (
-    <SafeAreaView style={safeAreaStyle}>
+    <SafeAreaView style={{ ...safeAreaStyle, backgroundColor: colors.offwhite }}>
       <StatusBar backgroundColor={statusbarColor || colors.offwhite} barStyle={barStyle || 'dark-content'} translucent={translucent} />
       <View style={ [style.mainContainerStyle, { backgroundColor: showBackgroundColor ? colors.offwhite : 'transparent' }]}>
         <View style={[style.leftContainerStyle, leftContainerStyle]}>{leftComponent}</View>
@@ -40,9 +40,7 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
-    height: 45,
-    backgroundColor: 'red',
-
+    height: 50,
   },
   leftContainerStyle: {
     width: wp('15%'),

@@ -529,3 +529,11 @@ export const getScreenHeight = ({
 }
 
 export const stringContainValidURL = (str) => new RegExp('([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?').test(str)
+
+export const getSportIcon = (sport) => {
+  switch (sport.toLowerCase()) {
+    case 'soccer': return images.soccerIcon;
+    case 'tennis': return images.tennisIcon;
+    default: return images.soccerIcon;
+  }
+}
