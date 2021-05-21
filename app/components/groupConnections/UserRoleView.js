@@ -118,12 +118,12 @@ const styles = StyleSheet.create({
     marginTop: 5,
 
   },
-  skillText: {
-    fontSize: 14,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    flexShrink: 1,
-  },
+  // skillText: {
+  //   fontSize: 14,
+  //   color: colors.lightBlackColor,
+  //   fontFamily: fonts.RRegular,
+  //   flexShrink: 1,
+  // },
   awayStatusText: {
     fontSize: 12,
     color: colors.themeColor,

@@ -23,7 +23,7 @@ export default function TCGroupNameBadge({
   else if (groupType === 'league') typeImage = images.clubC
 
   return (
-    <View style={{ flexDirection: 'row' }} {...otherProps}>
+    <View style={{ flexDirection: 'row', width: '90%' }} {...otherProps}>
       <Text style={{ ...styles.nameText, ...textStyle }} numberOfLines={1}>{name}</Text>
       <Image source={typeImage} style={ styles.teamTImage } />
     </View>
@@ -32,7 +32,7 @@ export default function TCGroupNameBadge({
 const styles = StyleSheet.create({
 
   teamTImage: {
-    marginLeft: 5,
+    marginHorizontal: 5,
     alignSelf: 'center',
     height: 15,
     resizeMode: 'contain',

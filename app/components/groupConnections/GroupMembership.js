@@ -18,78 +18,48 @@ import TCThinDivider from '../TCThinDivider';
 import TCUserRoleBadge from '../TCUserRoleBadge';
 import TCGroupNameBadge from '../TCGroupNameBadge';
 
-export default function GroupMembership({
+const GroupMembership = ({
   groupData, switchID, edit = false, onEditPressed,
-}) {
-  return (
-    <>
-      <View style={styles.topViewContainer}>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={styles.profileView}>
-            <Image source={groupData.thumbnail ? { uri: groupData.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage } />
-          </View>
-          <View style={styles.topTextContainer}>
-            <TCGroupNameBadge name={groupData.group_name} groupType={groupData.entity_type}/>
-            <View style={{ flexDirection: 'row' }}>
-              {groupData.is_admin && <TCUserRoleBadge title='Admin' titleColor={colors.themeColor}/>}
-              {groupData.is_coach && <TCUserRoleBadge title='Coach' titleColor={colors.greeColor}/>}
-              {groupData.is_player && <TCUserRoleBadge title='Player' titleColor={colors.playerBadgeColor}/>}
-            </View>
+}) => (
+  <>
+    <View style={styles.topViewContainer}>
+      <View style={{ flexDirection: 'row' }}>
+        <View style={styles.profileView}>
+          <Image source={groupData.thumbnail ? { uri: groupData.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage } />
+        </View>
+        <View style={styles.topTextContainer}>
+          <TCGroupNameBadge name={groupData.group_name} groupType={groupData.entity_type}/>
+          <View style={{ flexDirection: 'row' }}>
+            {groupData.is_admin && <TCUserRoleBadge title='Admin' titleColor={colors.themeColor}/>}
+            {groupData.is_coach && <TCUserRoleBadge title='Coach' titleColor={colors.greeColor}/>}
+            {groupData.is_player && <TCUserRoleBadge title='Player' titleColor={colors.playerBadgeColor}/>}
           </View>
         </View>
-        {edit || groupData.group_id === switchID ? <TouchableWithoutFeedback onPress={onEditPressed}>
-          <Image source={ images.editSection } style={ styles.editImage } />
-        </TouchableWithoutFeedback> : null}
       </View>
-      {groupData.entity_type === 'team' && <>
-        <TCInfoField title={'Position'} value={groupData.positions ? groupData.positions.join(', ') : 'N/A'} marginLeft={25} marginTop={30}/>
-        <TCInfoField title={'Jersey Number'} value={groupData.jersey_number ? groupData.jersey_number : 'N/A'} marginLeft={25} />
-        <TCInfoField title={'Appearance'} value={groupData.appearance ? groupData.appearance : 'N/A'} marginLeft={25} />
-        <TCInfoField title={'Status'} value={groupData.status ? groupData.status.join(', ') : 'N/A'} marginLeft={25} color={colors.themeColor}/>
-      </>}
-      {groupData.note ? <Text style={styles.groupDescriptionText}>{groupData.note}
-      </Text> : null}
-      <TCThinDivider marginTop={20} width={'100%'}/>
-    </>
-  );
-}
+      {edit || groupData.group_id === switchID ? <TouchableWithoutFeedback onPress={onEditPressed}>
+        <Image source={ images.editSection } style={ styles.editImage } />
+      </TouchableWithoutFeedback> : null}
+    </View>
+    {groupData.entity_type === 'team' && <>
+      <TCInfoField title={'Position'} value={groupData.positions ? groupData.positions.join(', ') : 'N/A'} marginLeft={25} marginTop={30}/>
+      <TCInfoField title={'Jersey Number'} value={groupData.jersey_number ? groupData.jersey_number : 'N/A'} marginLeft={25} />
+      <TCInfoField title={'Appearance'} value={groupData.appearance ? groupData.appearance : 'N/A'} marginLeft={25} />
+      <TCInfoField title={'Status'} value={groupData.status ? groupData.status.join(', ') : 'N/A'} marginLeft={25} color={colors.themeColor}/>
+    </>}
+    {groupData.note ? <Text style={styles.groupDescriptionText}>{groupData.note}
+    </Text> : null}
+    <TCThinDivider marginTop={20} width={'100%'}/>
+  </>
+  )
 const styles = StyleSheet.create({
-  navigationRightItem: {
-    height: 15,
-    marginRight: 20,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    width: 15,
-  },
-  roleViewContainer: {
-    marginTop: 20,
-    marginLeft: 15,
-    marginRight: 15,
-    justifyContent: 'space-between',
-  },
-  undatedTimeText: {
-    marginTop: 10,
-    fontSize: 12,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
-    flexShrink: 1,
-  },
-  basicInfoTitle: {
-    marginTop: 10,
-    marginLeft: 15,
-    fontSize: 20,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-  },
-  familyView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-    marginLeft: 20,
-    marginRight: 20,
-    alignItems: 'center',
-  },
-  ///
+  // familyView: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   marginTop: 10,
+  //   marginLeft: 20,
+  //   marginRight: 20,
+  //   alignItems: 'center',
+  // },
   profileImage: {
     alignSelf: 'center',
     height: 40,
@@ -140,3 +110,5 @@ const styles = StyleSheet.create({
     width: 18,
   },
 });
+
+export default GroupMembership;

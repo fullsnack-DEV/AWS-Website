@@ -235,12 +235,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    width: '100%',
-    height: '100%',
-  },
+  // mainContainer: {
+  //   flex: 1,
+  //   flexDirection: 'column',
+  //   width: '100%',
+  //   height: '100%',
+  // },
 
   nameText: {
     alignSelf: 'center',

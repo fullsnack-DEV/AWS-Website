@@ -23,6 +23,7 @@ import NewsFeedShimmer from '../../components/shimmer/newsFeed/NewsFeedShimmer';
 import { ImageUploadContext } from '../../context/GetContexts';
 import Header from '../../components/Home/Header';
 import fonts from '../../Constants/Fonts';
+import { widthPercentageToDP as wp } from '../../utils';
 
 const FeedsScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext)
@@ -294,9 +295,7 @@ const FeedsScreen = ({ navigation }) => {
           }
           rightComponent={topRightButton}
       />
-      <SingleSidedShadowBox>
-        <View style={styles.separateLine}/>
-      </SingleSidedShadowBox>
+      <View style={styles.separateLine}/>
     </>
   ), [topRightButton])
 
@@ -313,29 +312,25 @@ const FeedsScreen = ({ navigation }) => {
   );
 }
 
-const SingleSidedShadowBox = ({ children, style }) => (
-  <View style={[styles.shadowContainer, style]}>
-    { children }
-  </View>
-);
+// const SingleSidedShadowBox = ({ children, style }) => (
+//   <View style={[styles.shadowContainer, style]}>
+//     { children }
+//   </View>
+// );
 
 const styles = StyleSheet.create({
-  shadowContainer: {
-    overflow: 'hidden',
-    paddingBottom: 5,
-  },
+  // shadowContainer: {
+  //   overflow: 'hidden',
+  //   paddingBottom: 5,
+  // },
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
   },
   separateLine: {
-    height: 5,
-    backgroundColor: colors.whiteColor,
-    shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1.5 },
-    shadowOpacity: 0.4,
-    shadowRadius: 3,
-    elevation: 5,
+    borderColor: colors.writePostSepratorColor,
+    borderWidth: 0.5,
+    width: wp(100),
   },
   eventTitleTextStyle: {
     fontSize: 16,
