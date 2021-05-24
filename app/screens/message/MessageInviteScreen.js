@@ -268,6 +268,7 @@ const MessageInviteScreen = ({ navigation }) => {
 
   const renderHeader = useMemo(() => (
     <Header
+        leftContainerStyle={{ paddingLeft: 10 }}
           leftComponent={
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <FastImage resizeMode={'contain'} source={images.backArrow} style={styles.backImageStyle}/>
@@ -277,7 +278,7 @@ const MessageInviteScreen = ({ navigation }) => {
             <Text style={styles.eventTitleTextStyle}>Invite</Text>
           }
           rightComponent={
-            <TouchableOpacity style={{ padding: 2 }} onPress={handlePress}>
+            <TouchableOpacity onPress={handlePress}>
               <Text style={{ ...styles.eventTextStyle, fontSize: 14 }}>
                 {
                   selectedInvitees
@@ -405,8 +406,8 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   backImageStyle: {
-    height: 20,
-    width: 10,
+    height: 25,
+    width: 25,
     resizeMode: 'contain',
   },
   eventTitleTextStyle: {
@@ -421,6 +422,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: fonts.RMedium,
     alignSelf: 'center',
+    textAlign: 'right',
   },
   imageMainContainer: {
     height: 40,

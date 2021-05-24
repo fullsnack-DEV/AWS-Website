@@ -33,7 +33,7 @@ const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
 const MessageMainScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [endReachedCalled, setEndReachedCalled] = useState(false);
   const [pressStatus, setPressStatus] = useState(null);
   const [savedDialogsData, setSavedDialogsData] = useState({
@@ -76,7 +76,6 @@ const MessageMainScreen = ({ navigation }) => {
         operator: QB.chat.DIALOGS_FILTER.OPERATOR.CTN,
       },
     }).then((savedDialog) => {
-      console.log('ERK Success', savedDialog)
       _.map(savedDialog?.dialogs, (x) => {
         if (x?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && !x?.isJoined) {
           QB.chat.joinDialog({ dialogId: x?.id });
@@ -89,14 +88,12 @@ const MessageMainScreen = ({ navigation }) => {
         setSavedDialogsData(savedDialog);
       }
       setLoading(false);
-    }).catch((error) => {
-      console.log('ERK Error', error)
+    }).catch(() => {
       setLoading(false)
     })
   }
 
   const connectAndSubscribe = async () => {
-    setLoading(true);
     await QBconnectAndSubscribe(authContext?.entity);
     await QBsetupSettings();
     await getDialogs();

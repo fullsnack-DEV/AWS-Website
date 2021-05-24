@@ -82,7 +82,7 @@ const ReportCommentModal = ({
                 onPressOut={() => reportCommentModalRef?.current?.close()}
                 underlayColor={colors.underlayColor}
                 style={styles.bottomContentContainer}>
-              <Text style={{ ...styles.textStyle, color: colors.redColor }}>Cancel</Text>
+              <Text style={{ ...styles.textStyle, fontFamily: fonts.RMedium, color: colors.redColor }}>Cancel</Text>
             </TouchableHighlight>
           </View>
         </Modalize>
