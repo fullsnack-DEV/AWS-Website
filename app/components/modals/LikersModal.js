@@ -36,6 +36,7 @@ const LikersModal = ({ likersModalRef }) => {
             title={'Raj Kapoor'}
             subTitle={'Vancouver'}
             entityType={'player'}
+            followUnfollowPress={() => {}}
             showFollowUnfollowButton={userRole === 'user'}
         />
     )
