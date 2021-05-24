@@ -11,8 +11,15 @@ import React, {
   useCallback,
 } from 'react';
 import {
- StyleSheet, View, Text, Alert, SectionList,
- } from 'react-native';
+  StyleSheet,
+  View,
+  Text,
+  Alert,
+  FlatList,
+  TouchableOpacity,
+ ScrollView,
+ SafeAreaView,
+} from 'react-native';
 import moment from 'moment';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import colors from '../../../Constants/Colors';
@@ -24,9 +31,11 @@ import { blockedSlots } from '../../../api/Schedule';
 import strings from '../../../Constants/String';
 
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
+import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 
 let selectedDayMarking = {};
-export default function ChooseTimeSlotScreen({ navigation }) {
+export default function ChooseTimeSlotScreen({ navigation, route }) {
+  const { gameDuration, comeFrom } = route?.params;
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -36,15 +45,19 @@ export default function ChooseTimeSlotScreen({ navigation }) {
   const [listView, setListView] = useState(true);
   const [markingDays, setMarkingDays] = useState({});
   const [slots, setSlots] = useState();
+  const [selectedSlot, setselectedSlot] = useState();
+  const [availableSlot, setAvailavbleSlot] = useState();
+  const [from, setFrom] = useState();
+  const [to, setTo] = useState();
 
-  const [blockedGroups, setBlockedGroups] = useState([]);
+  const [pickerVisible, setPickerVisible] = useState(false);
 
   useEffect(() => {
-    selectedDayMarking[moment(new Date()).format('yyyy-MM-DD')] = {
-      selected: true,
-    };
-    console.log('temp mark:', selectedDayMarking);
-    setMarkingDays(selectedDayMarking);
+    // selectedDayMarking[moment(new Date()).format('yyyy-MM-DD')] = {
+    //   selected: true,
+    // };
+    // console.log('temp mark:', selectedDayMarking);
+    // setMarkingDays(selectedDayMarking);
     getBlockedSlots();
   }, []);
 
@@ -59,13 +72,26 @@ export default function ChooseTimeSlotScreen({ navigation }) {
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
-            navigation.navigate('ManageChallengeScreen');
+            if (from > to) {
+              Alert.alert(
+                strings.alertmessagetitle,
+                'Please choose valid time slot.',
+              );
+            } else if (!selectedSlot) {
+              console.log('selected slot', selectedSlot);
+                Alert.alert(
+                  strings.alertmessagetitle,
+                  'Please choose time slot from the list.',
+                );
+            } else {
+              navigation.navigate(comeFrom, { startTime: from, endTime: to });
+            }
           }}>
           Save
         </Text>
       ),
     });
-  }, [navigation]);
+  }, [comeFrom, from, navigation, selectedSlot, to]);
 
   const getBlockedSlots = () => {
     setloading(true);
@@ -93,14 +119,7 @@ export default function ChooseTimeSlotScreen({ navigation }) {
           groups[title].push(data);
           return groups;
         }, {});
-        const groupArrays = Object.keys(group).map((date) => ({
-          title: date,
-          data: group[date],
-        }));
 
-        setBlockedGroups(
-          groupArrays.sort((b, a) => new Date(b.title) - new Date(a.title)),
-        );
         console.log('Groups:=>', group);
         // eslint-disable-next-line array-callback-return
         (bookSlots || []).map((e) => {
@@ -193,6 +212,12 @@ export default function ChooseTimeSlotScreen({ navigation }) {
   }, []);
 
   const onDayPress = (dateObj) => {
+    setFrom();
+    setTo();
+    getFreeslot(
+      new Date(dateObj.dateString),
+      gameDuration?.totalMinutes * 60 + gameDuration?.totalHours * 60 * 60,
+    );
     console.log('Date string:=>', dateObj.dateString);
     getSelectedDayEvents(dateObj.dateString);
 
@@ -215,52 +240,107 @@ export default function ChooseTimeSlotScreen({ navigation }) {
     setListView(!listView);
   };
 
-  // const getFreeslot = (calendars) => {
-  //   const date = new Date()
-  //   date.setHours(0, 0, 0, 0)
-  //   let starttime = Math.round((date.getTime()) / 1000) + (2 * 24 * 3600)
-  //   date.setHours(23, 59, 59, 0)
-  //   const endtime = Math.round((date.getTime()) / 1000) + (2 * 24 * 3600)
+  const getFreeslot = (selectdate, slotTime) => {
+    const date = new Date(selectdate);
+    date.setHours(0, 0, 0, 0);
+    let starttime = Math.round(date.getTime() / 1000);
+    date.setHours(23, 59, 59, 0);
+    const endtime = Math.round(date.getTime() / 1000);
 
-  //   let blockedSlots = calendars.filter((slot) => (slot.blocked === true
-  //   && ((slot.start_datetime >= starttime && slot.start_datetime <= endtime)
-  //   || (slot.end_datetime >= starttime && slot.end_datetime <= endtime))))
-  //   blockedSlots = blockedSlots.map((calendar) => ({
-  //   starttime: calendar.start_datetime,
-  //   endtime: calendar.end_datetime,
-  //   }))
-  //   // eslint-disable-next-line no-undef
-  //   blockedSlots = _.orderBy(blockedSlots, 'starttime', 'asc')
+    console.log('Start/End time:=>', starttime, endtime);
 
-  //   const freeslot = []
+    let blockedSlot = slots.filter(
+      (slot) => slot.blocked === true
+        && ((slot.start_datetime >= starttime && slot.start_datetime <= endtime)
+          || (slot.end_datetime >= starttime && slot.end_datetime <= endtime)),
+    );
 
-  //   blockedSlots.forEach((slot) => {
-  //   if (starttime < slot.starttime) {
-  //   const startDateTime = starttime
-  //   const endDateTime = slot.starttime - 60
-  //   const diff = endDateTime - startDateTime
-  //   if (diff > 60) {
-  //   freeslot.push({ starttime: startDateTime, endtime: endDateTime, diff })
-  //   }
-  //   starttime = slot.endtime + 60
-  //   } else if (starttime < slot.endtime) {
-  //   starttime = slot.endtime + 60
-  //   }
-  //   })
+    blockedSlot = blockedSlot.map((calendar) => ({
+      starttime: calendar.start_datetime,
+      endtime: calendar.end_datetime,
+    }));
+    console.log('Blocked Slots:=>', blockedSlot);
+    // eslint-disable-next-line no-undef
+    // blockedSlot = _.orderBy(blockedSlot, 'starttime', 'asc')
 
-  //   const diff = endtime - starttime
+    // blockedSlot = blockedSlot.sort((b, a) => new Date(b.starttime) - new Date(a.starttime));
+    const freeslot = [];
 
-  //   if (diff > 60) {
-  //   freeslot.push({ starttime, endtime, diff })
-  //   }
+    blockedSlot.forEach((slot) => {
+      if (starttime < slot.starttime) {
+        const startDateTime = starttime;
+        const endDateTime = slot.starttime - 60;
+        const diff = endDateTime - startDateTime;
+        if (diff > 60) {
+          freeslot.push({ starttime: startDateTime, endtime: endDateTime, diff });
+        }
+        starttime = slot.endtime + 60;
+      } else if (starttime < slot.endtime) {
+        starttime = slot.endtime + 60;
+      }
+    });
 
-  //   return freeslot
-  //  }
+    const diff = endtime - starttime;
 
+    if (diff > 60) {
+      freeslot.push({ starttime, endtime, diff });
+    }
+
+    const getSlot = freeslot.filter((slot) => slot.diff > slotTime);
+
+    console.log('Free slot:=>', getSlot);
+    setAvailavbleSlot(getSlot);
+    // return freeslot
+  };
+
+  const renderSlotsList = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => {
+        setselectedSlot(item);
+        setFrom(item.starttime * 1000);
+
+        const dt = new Date(item.starttime * 1000);
+        dt.setHours(dt.getHours() + gameDuration?.totalHours);
+        dt.setMinutes(dt.getMinutes() + gameDuration?.totalMinutes);
+
+        setTo(dt.getTime());
+      }}>
+      <BlockSlotView
+        startDate={item.starttime}
+        endDate={item.endtime}
+        allDay={item.allDay}
+        selected={selectedSlot === item}
+      />
+    </TouchableOpacity>
+  );
+  const handleCancelPress = () => {
+    setPickerVisible(false);
+  };
+
+  const onDone = (date) => {
+    setFrom(date.getTime());
+
+    const dt = date;
+    dt.setHours(dt.getHours() + gameDuration?.totalHours);
+    dt.setMinutes(dt.getMinutes() + gameDuration?.totalMinutes);
+
+    setTo(dt.getTime());
+    setPickerVisible(false);
+  };
+
+  const maxDate = () => {
+    const dt = new Date(selectedSlot?.endtime * 1000);
+    dt.setHours(dt.getHours() - gameDuration?.totalHours);
+    dt.setMinutes(dt.getMinutes() - gameDuration?.totalMinutes);
+
+    console.log('Date max:=>', dt);
+    return dt;
+  };
   return (
-    <View style={{ marginTop: 15 }}>
-      <ActivityLoader visible={loading} />
-      <EventAgendaSection
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ marginTop: 15, flex: 1 }}>
+        <ActivityLoader visible={loading} />
+        <EventAgendaSection
         onKnobPress={onKnobPress}
         showTimeTable={showTimeTable}
         isMenu={isMenu}
@@ -271,9 +351,9 @@ export default function ChooseTimeSlotScreen({ navigation }) {
         // selectedCalendarDate={selectedCalendarDateString}
         calendarMarkedDates={markingDays}
       />
-      <View>
-        <Text style={styles.slotHeader}>Available Time Zone</Text>
-        <SectionList
+        <ScrollView style={{ flex: 1 }}>
+          <Text style={styles.slotHeader}>Available Time Zone</Text>
+          {/* <SectionList
           sections={blockedGroups}
           renderItem={({ item }) => (
             <BlockSlotView
@@ -288,22 +368,101 @@ export default function ChooseTimeSlotScreen({ navigation }) {
               {moment(new Date(title)).format('dddd, MMM DD, YYYY')}
             </Text>
           )}
+        /> */}
+          <FlatList
+          data={availableSlot}
+          keyExtractor={(index) => index.toString()}
+          renderItem={renderSlotsList}
+          ItemSeparatorComponent={() => (
+            <View style={styles.separatorLine}></View>
+          )}
+          style={{ marginTop: 10, marginBottom: 10 }}
         />
+
+          <Text style={[styles.slotHeader, { marginBottom: 10 }]}>
+            Choose The Game Time
+          </Text>
+          <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+            <TouchableOpacity
+            style={styles.fieldView}
+            onPress={() => setPickerVisible(!pickerVisible)}>
+              <View
+              style={{
+                height: 35,
+                justifyContent: 'center',
+              }}>
+                <Text style={styles.fieldTitle} numberOfLines={1}>
+                  From
+                </Text>
+              </View>
+              <View style={{ marginRight: 15, flexDirection: 'row' }}>
+                <Text style={styles.fieldValue} numberOfLines={1}>
+                  {from
+                  ? moment(new Date(from)).format('MMM DD, yyyy hh:mm a')
+                  : ''}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+            <TouchableOpacity style={styles.fieldView}>
+              <View
+              style={{
+                height: 35,
+                justifyContent: 'center',
+              }}>
+                <Text style={styles.fieldTitle} numberOfLines={1}>
+                  To
+                </Text>
+              </View>
+              <View style={{ marginRight: 15, flexDirection: 'row' }}>
+                <Text style={styles.fieldValue} numberOfLines={1}>
+                  {to ? moment(new Date(to)).format('MMM DD, yyyy hh:mm a') : ''}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            margin: 15,
+          }}>
+            <Text
+            style={{
+              fontSize: 16,
+              fontFamily: fonts.RRegular,
+              color: colors.lightBlackColor,
+            }}>
+              Total Game Duration
+            </Text>
+            <Text
+            style={{
+              fontSize: 16,
+              fontFamily: fonts.RBold,
+              color: colors.themeColor,
+            }}>{`${gameDuration?.totalHours} Hours ${gameDuration?.totalMinutes} Minutes`}</Text>
+          </View>
+          <DateTimePickerView
+          title={'Choose a Time'}
+          date={new Date(from)}
+          visible={pickerVisible}
+          onDone={onDone}
+          onCancel={handleCancelPress}
+          onHide={handleCancelPress}
+          minimumDate={new Date(gameDuration?.starttime * 1000)}
+          maximumDate={maxDate()}
+          // minutesGap={5}
+          mode={'time'}
+        />
+        </ScrollView>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionHeader: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginLeft: 15,
-    marginBottom: 8,
-    marginTop: 8,
-  },
-
   saveButtonStyle: {
     fontFamily: fonts.RMedium,
     fontSize: 16,
@@ -314,7 +473,33 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     textAlign: 'center',
-    marginBottom: 8,
     marginTop: 8,
+  },
+  fieldView: {
+    flexDirection: 'row',
+    width: '92%',
+    justifyContent: 'space-between',
+    marginLeft: 15,
+    height: 40,
+    alignItems: 'center',
+    backgroundColor: colors.offwhite,
+    borderRadius: 5,
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
+    elevation: 1,
+  },
+  fieldTitle: {
+    fontSize: 16,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RLight,
+    marginLeft: 10,
+  },
+  fieldValue: {
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    textAlign: 'center',
   },
 });
