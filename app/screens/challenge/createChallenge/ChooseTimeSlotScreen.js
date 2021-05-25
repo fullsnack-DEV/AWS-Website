@@ -35,7 +35,8 @@ import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal
 
 let selectedDayMarking = {};
 export default function ChooseTimeSlotScreen({ navigation, route }) {
-  const { gameDuration, comeFrom } = route?.params;
+  const { settingObject, comeFrom } = route?.params;
+  console.log('settingObject :=>', settingObject);
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -50,7 +51,8 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
   const [from, setFrom] = useState();
   const [to, setTo] = useState();
 
-  const [pickerVisible, setPickerVisible] = useState(false);
+  const [fromPickerVisible, setFromPickerVisible] = useState(false);
+  const [toPickerVisible, setToPickerVisible] = useState(false);
 
   useEffect(() => {
     // selectedDayMarking[moment(new Date()).format('yyyy-MM-DD')] = {
@@ -216,7 +218,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     setTo();
     getFreeslot(
       new Date(dateObj.dateString),
-      gameDuration?.totalMinutes * 60 + gameDuration?.totalHours * 60 * 60,
+      settingObject?.game_duration?.totalMinutes * 60 + settingObject?.game_duration?.totalHours * 60 * 60,
     );
     console.log('Date string:=>', dateObj.dateString);
     getSelectedDayEvents(dateObj.dateString);
@@ -296,12 +298,13 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
   const renderSlotsList = ({ item }) => (
     <TouchableOpacity
       onPress={() => {
+        console.log('selected:=> ', item);
         setselectedSlot(item);
         setFrom(item.starttime * 1000);
 
         const dt = new Date(item.starttime * 1000);
-        dt.setHours(dt.getHours() + gameDuration?.totalHours);
-        dt.setMinutes(dt.getMinutes() + gameDuration?.totalMinutes);
+        dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
+        dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
 
         setTo(dt.getTime());
       }}>
@@ -314,28 +317,50 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     </TouchableOpacity>
   );
   const handleCancelPress = () => {
-    setPickerVisible(false);
+    setFromPickerVisible(false);
+    setToPickerVisible(false);
   };
 
-  const onDone = (date) => {
+  const onFromDone = (date) => {
     setFrom(date.getTime());
 
     const dt = date;
-    dt.setHours(dt.getHours() + gameDuration?.totalHours);
-    dt.setMinutes(dt.getMinutes() + gameDuration?.totalMinutes);
+    dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
+    dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
 
     setTo(dt.getTime());
-    setPickerVisible(false);
+    setFromPickerVisible(false);
   };
 
-  const maxDate = () => {
+  const onToDone = (date) => {
+    setTo(date.getTime());
+
+    const dt = date;
+    dt.setHours(dt.getHours() - settingObject?.game_duration?.totalHours);
+    dt.setMinutes(dt.getMinutes() - settingObject?.game_duration?.totalMinutes);
+
+    setFrom(dt.getTime());
+    setToPickerVisible(false);
+  };
+
+  const maxFromDate = () => {
     const dt = new Date(selectedSlot?.endtime * 1000);
-    dt.setHours(dt.getHours() - gameDuration?.totalHours);
-    dt.setMinutes(dt.getMinutes() - gameDuration?.totalMinutes);
+    dt.setHours(dt.getHours() - settingObject?.game_duration?.totalHours);
+    dt.setMinutes(dt.getMinutes() - settingObject?.game_duration?.totalMinutes);
 
     console.log('Date max:=>', dt);
     return dt;
   };
+
+  const maxToDate = () => {
+    const dt = new Date(selectedSlot?.starttime * 1000);
+    dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
+    dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
+
+    console.log('Date max:=>', dt);
+    return dt;
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ marginTop: 15, flex: 1 }}>
@@ -385,7 +410,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
           <View style={{ flexDirection: 'row', marginBottom: 10 }}>
             <TouchableOpacity
             style={styles.fieldView}
-            onPress={() => setPickerVisible(!pickerVisible)}>
+            onPress={() => setFromPickerVisible(!fromPickerVisible)}>
               <View
               style={{
                 height: 35,
@@ -406,7 +431,8 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
           </View>
 
           <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-            <TouchableOpacity style={styles.fieldView}>
+            <TouchableOpacity style={styles.fieldView}
+             onPress={() => setToPickerVisible(!toPickerVisible)}>
               <View
               style={{
                 height: 35,
@@ -442,17 +468,29 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
               fontSize: 16,
               fontFamily: fonts.RBold,
               color: colors.themeColor,
-            }}>{`${gameDuration?.totalHours} Hours ${gameDuration?.totalMinutes} Minutes`}</Text>
+            }}>{`${settingObject?.game_duration?.totalHours} Hours ${settingObject?.game_duration?.totalMinutes} Minutes`}</Text>
           </View>
           <DateTimePickerView
           title={'Choose a Time'}
           date={new Date(from)}
-          visible={pickerVisible}
-          onDone={onDone}
+          visible={fromPickerVisible}
+          onDone={onFromDone}
           onCancel={handleCancelPress}
           onHide={handleCancelPress}
-          minimumDate={new Date(gameDuration?.starttime * 1000)}
-          maximumDate={maxDate()}
+          minimumDate={new Date(selectedSlot?.starttime * 1000)}
+          maximumDate={maxFromDate()}
+          // minutesGap={5}
+          mode={'time'}
+        />
+          <DateTimePickerView
+          title={'Choose a Time'}
+          date={new Date(from)}
+          visible={toPickerVisible}
+          onDone={onToDone}
+          onCancel={handleCancelPress}
+          onHide={handleCancelPress}
+          minimumDate={maxToDate()}
+          maximumDate={new Date(selectedSlot?.endtime * 1000)}
           // minutesGap={5}
           mode={'time'}
         />

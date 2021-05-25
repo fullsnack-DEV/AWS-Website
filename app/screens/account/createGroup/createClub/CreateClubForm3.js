@@ -468,7 +468,7 @@ export default function CreateClubForm3({ navigation, route }) {
   };
 
   const deleteImage = () => {
-    if (currentImageSelection) {
+    if (currentImageSelection === 1) {
       // 1 means profile image
       // setGroupProfile({ ...groupProfile, thumbnail: '', full_image: '' })
       setThumbnail();

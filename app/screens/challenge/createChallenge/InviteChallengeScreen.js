@@ -577,10 +577,10 @@ export default function InviteChallengeScreen({ navigation, route }) {
         <View>
           <TCChallengeTitle
             title={'Date & Time'}
-            isEdit={true}
+            isEdit={!!route?.params?.endTime}
             onEditPress={() => {
               navigation.navigate('ChooseTimeSlotScreen', {
-                gameDuration: settingObject?.game_duration,
+                settingObject,
                 comeFrom: 'InviteChallengeScreen',
               });
             }}
@@ -616,7 +616,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('ChooseTimeSlotScreen', {
-                  gameDuration: settingObject?.game_duration,
+                  settingObject,
                   comeFrom: 'InviteChallengeScreen',
                 });
               }}>

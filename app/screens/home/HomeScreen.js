@@ -4213,7 +4213,7 @@ const HomeScreen = ({ navigation, route }) => {
             <TouchableOpacity
               style={styles.goToProfileButton}
               onPress={() => {
-                Alert.alert('Manage challenge');
+                confirmationRef.current.close()
               }}>
               <Text style={styles.goToProfileTitle}>
                 {route?.params?.role === 'club'

@@ -22,7 +22,7 @@ import Modal from 'react-native-modal';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import { getSportsList } from '../../../../api/Games';
 import { getUserFollowerFollowing } from '../../../../api/Users';
-
+import { getGroupSearch } from '../../../../api/Groups';
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
@@ -161,43 +161,55 @@ export default function CreateTeamForm1({ navigation, route }) {
   };
 
   const nextOnPress = () => {
-    console.log('Auth:=>', authContext?.entity);
+    getGroupSearch(teamName, city, authContext).then((response) => {
+      setloading(false);
 
-    const obj = {
-      sport: sports,
-      group_name: teamName,
-      city,
-      state_abbr: state,
-      country,
-      currency_type: authContext?.entity?.obj?.currency_type,
+      if (response.payload.length === 0) {
+        const obj = {
+          sport: sports,
+          group_name: teamName,
+          city,
+          state_abbr: state,
+          country,
+          currency_type: authContext?.entity?.obj?.currency_type,
 
-    };
-    if (parentGroupID) {
-      obj.parent_group_id = parentGroupID;
-    }
-    console.log('Form1 Object:=>', obj);
+        };
+        if (parentGroupID) {
+          obj.parent_group_id = parentGroupID;
+        }
+        console.log('Form1 Object:=>', obj);
 
-    if (
-      sports.toLowerCase() === 'Tennis Double'.toLowerCase()
-      && authContext?.entity?.role === ('user' || 'player')
-    ) {
-      if (followersData?.length > 0) {
-        navigation.navigate('CreateTeamForm2', {
-          followersList: followersData,
-          createTeamForm1: {
-            ...obj,
-          },
-        });
+        if (
+          sports.toLowerCase() === 'Tennis Double'.toLowerCase()
+          && authContext?.entity?.role === ('user' || 'player')
+        ) {
+          if (followersData?.length > 0) {
+            navigation.navigate('CreateTeamForm2', {
+              followersList: followersData,
+              createTeamForm1: {
+                ...obj,
+              },
+            });
+          } else {
+            Alert.alert(strings.noFollowersTocreateTeam);
+          }
+        } else {
+          navigation.navigate('CreateTeamForm2', {
+            createTeamForm1: {
+              ...obj,
+            },
+          });
+        }
       } else {
-        Alert.alert(strings.noFollowersTocreateTeam);
+        Alert.alert(strings.teamExist);
       }
-    } else {
-      navigation.navigate('CreateTeamForm2', {
-        createTeamForm1: {
-          ...obj,
-        },
-      });
-    }
+    })
+    .catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
 
     // if (sports.toLowerCase() === 'tennis') {
     //   navigation.navigate('CreateTeamForm2', {
@@ -399,8 +411,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingHorizontal: 15,
     paddingRight: 30,
-
-    paddingVertical: 12,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,

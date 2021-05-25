@@ -248,7 +248,6 @@ export default function ChallengeScreen({ navigation, route }) {
 
   return (
     <TCKeyboardView>
-      <ActivityLoader visible={loading} />
       <View>
         <View style={[styles.teamContainer, { marginTop: 15 }]}>
           <View
@@ -281,22 +280,69 @@ export default function ChallengeScreen({ navigation, route }) {
             </View>
           </View>
         </View>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('ChooseTimeSlotScreen', {
-              gameDuration: settingObject?.game_duration,
-              comeFrom: 'ChallengeScreen',
-            });
-          }}>
-          <View style={[styles.borderButtonView, styles.shadowView]}>
-            <View />
-            <Text style={styles.detailButtonText}>CHECK AVAILIBILITY</Text>
-            <Image source={images.arrowGraterthan} style={styles.arrowImage} />
-          </View>
-        </TouchableOpacity>
+        {!route?.params?.endTime && (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChooseTimeSlotScreen', {
+                settingObject,
+                comeFrom: 'ChallengeScreen',
+              });
+            }}>
+            <View style={[styles.borderButtonView, styles.shadowView]}>
+              <View />
+              <Text style={styles.detailButtonText}>CHECK AVAILIBILITY</Text>
+              <Image
+                source={images.arrowGraterthan}
+                style={styles.arrowImage}
+              />
+            </View>
+          </TouchableOpacity>
+        )}
 
         <TCThickDivider marginTop={15} />
 
+        {route?.params?.endTime && (
+          <View>
+            <TCChallengeTitle
+              title={'Date & Time'}
+              isEdit={!!route?.params?.endTime}
+              onEditPress={() => {
+                navigation.navigate('ChooseTimeSlotScreen', {
+                  settingObject,
+                  comeFrom: 'ChallengeScreen',
+                });
+              }}
+            />
+
+            <View>
+              <View style={styles.dateTimeValue}>
+                <Text style={styles.dateTimeText}>Start </Text>
+                <Text style={styles.dateTimeText}>
+                  {moment(route?.params?.startTime).format(
+                    'MMM DD, YYYY hh:mm a',
+                  )}
+                </Text>
+              </View>
+              <View style={styles.dateTimeValue}>
+                <Text style={styles.dateTimeText}>End </Text>
+                <Text style={styles.dateTimeText}>
+                  {moment(route?.params?.endTime).format(
+                    'MMM DD, YYYY hh:mm a',
+                  )}
+                </Text>
+              </View>
+              <View style={styles.dateTimeValue}>
+                <Text style={styles.dateTimeText}> </Text>
+                <Text style={styles.timeZoneText}>
+                  Time zone{' '}
+                  <Text style={{ fontFamily: fonts.RRegular }}>Vancouver</Text>
+                </Text>
+              </View>
+            </View>
+
+            <TCThickDivider marginTop={10} />
+          </View>
+        )}
         <TCChallengeTitle
           title={'Type of Game'}
           value={settingObject?.game_type}
@@ -443,58 +489,6 @@ export default function ChallengeScreen({ navigation, route }) {
           style={{ marginBottom: 15 }}
         />
         <TCThickDivider marginTop={20} />
-
-        <View>
-          <TCChallengeTitle title={'Date & Time'} />
-
-          {route?.params?.endTime ? (
-            <View>
-              <View style={styles.dateTimeValue}>
-                <Text style={styles.dateTimeText}>Start </Text>
-                <Text style={styles.dateTimeText}>
-                  {moment(route?.params?.startTime).format(
-                    'MMM DD, YYYY hh:mm a',
-                  )}
-                </Text>
-              </View>
-              <View style={styles.dateTimeValue}>
-                <Text style={styles.dateTimeText}>End </Text>
-                <Text style={styles.dateTimeText}>
-                  {moment(route?.params?.endTime).format(
-                    'MMM DD, YYYY hh:mm a',
-                  )}
-                </Text>
-              </View>
-              <View style={styles.dateTimeValue}>
-                <Text style={styles.dateTimeText}> </Text>
-                <Text style={styles.timeZoneText}>
-                  Time zone{' '}
-                  <Text style={{ fontFamily: fonts.RRegular }}>Vancouver</Text>
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('ChooseTimeSlotScreen', {
-                  gameDuration: settingObject?.game_duration,
-                  comeFrom: 'ChallengeScreen',
-                });
-              }}>
-              <View style={[styles.borderButtonView, styles.shadowView]}>
-                <View />
-                <Text style={styles.detailButtonText}>
-                  {'CHOOSE DATE & TIME'}
-                </Text>
-                <Image
-                  source={images.arrowGraterthan}
-                  style={styles.arrowImage}
-                />
-              </View>
-            </TouchableOpacity>
-          )}
-          <TCThickDivider marginTop={10} />
-        </View>
 
         <View>
           <TCChallengeTitle

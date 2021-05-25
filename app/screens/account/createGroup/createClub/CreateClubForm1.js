@@ -139,7 +139,7 @@ import React, {
 
    const onNextPressed = () => {
      const obj = {
-      sport: 'Soccer', // selectedSports,
+      sport: selectedSports.toString(), // 'Soccer',
       group_name: clubName,
       city,
       state_abbr: state,

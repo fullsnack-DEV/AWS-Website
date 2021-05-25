@@ -14,11 +14,14 @@ import {
   SectionList,
   Text,
   Alert,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
 import Moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
+import Modal from 'react-native-modal';
 import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
 import NotificationProfileItem from '../../components/notificationComponent/NotificationProfileItem';
 import NotificationItem from '../../components/notificationComponent/NotificationItem';
@@ -55,6 +58,7 @@ import { getUserDetails } from '../../api/Users';
 import { getGroupDetails } from '../../api/Groups';
 import NotificationListShimmer from '../../components/shimmer/account/NotificationListShimmer';
 import NotificationListTopHeaderShimmer from '../../components/shimmer/account/NotificationListTopHeaderShimmer';
+import TCGradientButton from '../../components/TCGradientButton';
 
 function NotificationsListScreen({ navigation }) {
   const actionSheet = useRef();
@@ -67,6 +71,9 @@ function NotificationsListScreen({ navigation }) {
   const currentDate = new Date();
   const [selectedEntity, setSelectedEntity] = useState();
   const [activeScreen, setActiveScreen] = useState(false);
+
+  const [isRulesModalVisible, setIsRulesModalVisible] = useState(false);
+
   const isFocused = useIsFocused();
 
   const [loading, setloading] = useState(false);
@@ -340,7 +347,7 @@ function NotificationsListScreen({ navigation }) {
 
   const onDelete = ({ item }) => {
     if (activeScreen) {
-     // setloading(true);
+      // setloading(true);
       const ids = item.activities.map((activity) => activity.id);
       // setMainNotificationsList(mainNotificationsList.filter((obj) => obj.id !== ids))
       deleteNotification(ids, item.type, authContext)
@@ -419,18 +426,22 @@ function NotificationsListScreen({ navigation }) {
     }
   };
   const onNotificationClick = (notificationItem) => {
-      console.log(notificationItem?.verb)
-      const verbTypes = [NotificationType.clap, NotificationType.tagged, NotificationType.comment]
-      if (verbTypes.includes(notificationItem?.verb)) {
-          navigation.navigate('SingleNotificationScreen', { notificationItem })
-      }
-  }
+    console.log(notificationItem?.verb);
+    const verbTypes = [
+      NotificationType.clap,
+      NotificationType.tagged,
+      NotificationType.comment,
+    ];
+    if (verbTypes.includes(notificationItem?.verb)) {
+      navigation.navigate('SingleNotificationScreen', { notificationItem });
+    }
+  };
   const renderPendingRequestComponent = ({ item }) => (
     <AppleStyleSwipeableRow
       onPress={() => onDelete({ item })}
       color={colors.redDelColor}
       image={images.deleteIcon}>
-      {isInvite(item.activities[0].verb) && (
+      {isInvite(item.activities[0].verb) ? (
         <PRNotificationInviteCell
           item={item}
           selectedEntity={selectedEntity}
@@ -439,9 +450,7 @@ function NotificationsListScreen({ navigation }) {
           onPress={() => onNotificationClick(item)}
           onPressFirstEntity={openHomePage}
         />
-      )}
-
-      {!isInvite(item.activities[0].verb) && (
+      ) : (
         <PRNotificationDetailMessageItem
           item={item}
           selectedEntity={selectedEntity}
@@ -555,6 +564,7 @@ function NotificationsListScreen({ navigation }) {
       getNotificationsList(params, authContext)
         .then(async (response) => {
           const pendingReqNotification = response.payload.requests;
+          console.log('pendingReqNotification:=>', pendingReqNotification);
           const todayNotifications = response.payload.notifications.filter(
             (item) => Moment(item.created_at).format('yyyy-MM-DD')
               === Moment(currentDate).format('yyyy-MM-DD'),
@@ -614,15 +624,17 @@ function NotificationsListScreen({ navigation }) {
   };
 
   const renderGroupItem = ({ item, index }) => (
-    <TouchableOpacity onPress={() => {
-      if (groupList.length === 2) {
-        if (index !== 2) {
-          activeTab(index)
+    <TouchableOpacity
+      onPress={() => {
+        if (groupList.length === 2) {
+          if (index !== 2) {
+            activeTab(index);
+          }
+        } else {
+          activeTab(index);
         }
-      } else {
-        activeTab(index)
-      }
-    }} key={index}>
+      }}
+      key={index}>
       <NotificationProfileItem
         data={item}
         indexNumber={index}
@@ -654,32 +666,44 @@ function NotificationsListScreen({ navigation }) {
     }
   };
 
+  const onNextPressed = () => {
+    setIsRulesModalVisible(false);
+    navigation.navigate('RespondToInviteScreen', { teamObject: {} });
+  };
+
   return (
-    <View style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]} needsOffscreenAlphaCompositing>
+    <View
+      style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]}
+      needsOffscreenAlphaCompositing>
       <View>
         {groupList?.length <= 0 ? (
           <NotificationListTopHeaderShimmer />
         ) : (
-          groupList?.length > 1 && <FlatList
-            ref={refContainer}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            data={groupList.length === 2 ? [...groupList, {}] : groupList}
-            renderItem={renderGroupItem}
-            keyExtractor={keyExtractor}
-            initialScrollIndex={currentTab}
-            initialNumToRender={30}
-            style={{ paddingTop: 8, backgroundColor: colors.grayBackgroundColor }}
-            onScrollToIndexFailed={(info) => {
-              const wait = new Promise((resolve) => setTimeout(resolve, 500));
-              wait.then(() => {
-                refContainer.current.scrollToIndex({
-                  animated: true,
-                  index: info.index,
+          groupList?.length > 1 && (
+            <FlatList
+              ref={refContainer}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              data={groupList.length === 2 ? [...groupList, {}] : groupList}
+              renderItem={renderGroupItem}
+              keyExtractor={keyExtractor}
+              initialScrollIndex={currentTab}
+              initialNumToRender={30}
+              style={{
+                paddingTop: 8,
+                backgroundColor: colors.grayBackgroundColor,
+              }}
+              onScrollToIndexFailed={(info) => {
+                const wait = new Promise((resolve) => setTimeout(resolve, 500));
+                wait.then(() => {
+                  refContainer.current.scrollToIndex({
+                    animated: true,
+                    index: info.index,
+                  });
                 });
-              });
-            }}
-          />
+              }}
+            />
+          )
         )}
       </View>
       <ActivityLoader visible={loading} />
@@ -719,6 +743,81 @@ function NotificationsListScreen({ navigation }) {
           }
         }}
       />
+
+      {/* Rules notes modal */}
+      <Modal
+        isVisible={isRulesModalVisible} // isRulesModalVisible
+        backdropColor="black"
+        onBackdropPress={() => setIsRulesModalVisible(false)}
+        onRequestClose={() => setIsRulesModalVisible(false)}
+        backdropOpacity={0}
+        style={{
+          margin: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.7,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              Respond to invite to create team
+            </Text>
+          </View>
+          <View style={styles.separatorLine} />
+          <View style={{ flex: 1 }}>
+            <ScrollView>
+              <Text style={[styles.rulesText, { margin: 15 }]}>
+                {'When your team creates a club:'}
+              </Text>
+              <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                {'\n• your team will belong to the club initially.'}
+              </Text>
+              <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                {'\n• your team can leave the club anytime later.'}
+              </Text>
+              <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                {
+                  '\n• the admins of your team will be the admins of the club initially.'
+                }
+              </Text>
+            </ScrollView>
+          </View>
+          <TCGradientButton
+            isDisabled={false}
+            title={strings.nextTitle}
+            style={{ marginBottom: 30 }}
+            onPress={onNextPressed}
+          />
+        </View>
+      </Modal>
+
+      {/* Rules notes modal */}
     </View>
   );
 }
@@ -746,7 +845,6 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.linesepratorColor,
   },
-
 });
 
 export default NotificationsListScreen;

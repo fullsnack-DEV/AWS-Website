@@ -162,6 +162,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'InviteToChallengeSentScreen'
     || routeName === 'ChangeReservationInfoScreen'
     || routeName === 'EditChallenge'
+    || routeName === 'RespondToInviteScreen'
 
   ) {
     return false;

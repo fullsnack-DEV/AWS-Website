@@ -68,6 +68,7 @@ import AlterScorekeeperScreen from '../screens/scorekeeper/alterScorekeeper/Alte
 import ScorekeeperSelectMatch from '../screens/game/bookScorekeeper/selectMatch/ScorekeeperSelectMatch';
 import ScorekeeperAcceptDeclineScreen from '../screens/scorekeeper/ScorekeeperAcceptDeclineScreen';
 import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
+import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 
 const Stack = createStackNavigator();
 
@@ -809,6 +810,23 @@ function NotificationNavigator() {
            headerShown: false,
          }}
         />
+
+      <Stack.Screen
+        name="RespondToInviteScreen"
+        component={ RespondToInviteScreen }
+        options={ {
+          title: 'Respond to invite to create team',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
     </Stack.Navigator>
   );
 }
