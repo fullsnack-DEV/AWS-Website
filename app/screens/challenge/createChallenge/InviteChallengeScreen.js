@@ -1,7 +1,6 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
 import React, {
- useEffect, useState, useContext, useCallback,
+ useEffect, useState, useContext,
  } from 'react';
 import {
   StyleSheet,
@@ -19,7 +18,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { parseInt } from 'lodash';
 import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import {
@@ -55,12 +53,12 @@ export default function InviteChallengeScreen({ navigation, route }) {
   const [feeObj, setFeeObj] = useState();
   const [venue, setVenue] = useState();
 
-  const [startDate, setStartDate] = useState(
-    new Date().setHours(new Date().getHours() + 10),
-  );
-  const [endDate, setEndDate] = useState(
-    new Date().setHours(new Date().getHours() + 14),
-  );
+  // const [startDate, setStartDate] = useState(
+  //   new Date().setHours(new Date().getHours() + 10),
+  // );
+  // const [endDate, setEndDate] = useState(
+  //   new Date().setHours(new Date().getHours() + 14),
+  // );
 
   const [settingObject, setSettingObject] = useState();
 
@@ -84,12 +82,12 @@ export default function InviteChallengeScreen({ navigation, route }) {
 
   useEffect(() => {
     if (route?.params?.selectedVenueObj) {
-      setVenue(route?.params?.selectedVenueObj)
+      setVenue(route?.params?.selectedVenueObj);
     }
     if (settingObject?.venue?.length === 1) {
-      setVenue(settingObject?.venue?.[0])
+      setVenue(settingObject?.venue?.[0]);
     }
-    }, [route?.params?.selectedVenueObj, settingObject?.venue])
+  }, [route?.params?.selectedVenueObj, settingObject?.venue]);
 
   useEffect(() => {
     entity = authContext.entity;
@@ -226,9 +224,19 @@ export default function InviteChallengeScreen({ navigation, route }) {
           ? teams[1]?.full_name ?? teams[1]?.group_name
           : teams[0]?.full_name ?? teams[0]?.group_name
       }
-      image={item.responsible_to_secure_referee === 'challenger'
-      ? teams?.[1]?.thumbnail ? { uri: teams[1]?.thumbnail } : teams?.[1]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder
-      : teams?.[0]?.thumbnail ? { uri: teams[0]?.thumbnail } : teams?.[0]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder}
+      image={
+        item.responsible_to_secure_referee === 'challenger'
+          ? teams?.[1]?.thumbnail
+            ? { uri: teams[1]?.thumbnail }
+            : teams?.[1]?.full_name
+            ? images.profilePlaceHolder
+            : images.teamPlaceholder
+          : teams?.[0]?.thumbnail
+          ? { uri: teams[0]?.thumbnail }
+          : teams?.[0]?.full_name
+          ? images.profilePlaceHolder
+          : images.teamPlaceholder
+      }
       entity={'Referee'}
       entityNumber={index + 1}
     />
@@ -241,9 +249,19 @@ export default function InviteChallengeScreen({ navigation, route }) {
           ? teams[1]?.full_name ?? teams[1]?.group_name
           : teams[0]?.full_name ?? teams[0]?.group_name
       }
-      image={item.responsible_to_secure_scorekeeper === 'challenger'
-      ? teams?.[1]?.thumbnail ? { uri: teams[1]?.thumbnail } : teams?.[1]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder
-      : teams?.[0]?.thumbnail ? { uri: teams[0]?.thumbnail } : teams?.[0]?.full_name ? images.profilePlaceHolder : images.teamPlaceholder}
+      image={
+        item.responsible_to_secure_scorekeeper === 'challenger'
+          ? teams?.[1]?.thumbnail
+            ? { uri: teams[1]?.thumbnail }
+            : teams?.[1]?.full_name
+            ? images.profilePlaceHolder
+            : images.teamPlaceholder
+          : teams?.[0]?.thumbnail
+          ? { uri: teams[0]?.thumbnail }
+          : teams?.[0]?.full_name
+          ? images.profilePlaceHolder
+          : images.teamPlaceholder
+      }
       entity={'Scorekeeper'}
       entityNumber={index + 1}
     />
@@ -299,12 +317,18 @@ export default function InviteChallengeScreen({ navigation, route }) {
       ...settingObject,
       ...feeObj,
       venue,
-      start_datetime: parseFloat(new Date(startDate).getTime() / 1000).toFixed(0),
-      end_datetime: parseFloat(new Date(endDate).getTime() / 1000).toFixed(0),
+      start_datetime: route?.params?.startTime / 1000,
+      end_datetime: route?.params?.endTime / 1000,
       challenger: teams?.[1]?.group_id || teams?.[1]?.user_id,
       challengee: teams?.[0]?.group_id || teams?.[0]?.user_id,
-      home_team: settingObject?.home_away === 'Home' ? entity?.uid : groupObj?.group_id || groupObj?.user_id,
-      away_team: settingObject?.home_away === 'Home' ? groupObj?.group_id || groupObj?.user_id : entity?.uid,
+      home_team:
+        settingObject?.home_away === 'Home'
+          ? entity?.uid
+          : groupObj?.group_id || groupObj?.user_id,
+      away_team:
+        settingObject?.home_away === 'Home'
+          ? groupObj?.group_id || groupObj?.user_id
+          : entity?.uid,
       user_challenge: !groupObj?.group_id,
     };
 
@@ -551,72 +575,85 @@ export default function InviteChallengeScreen({ navigation, route }) {
         <TCThickDivider marginTop={20} />
 
         <View>
-          <TCChallengeTitle title={'Date & Time'}
-          isEdit={true}
-          onEditPress={() => {
-            navigation.navigate('ChooseTimeSlotScreen');
-          }}/>
+          <TCChallengeTitle
+            title={'Date & Time'}
+            isEdit={true}
+            onEditPress={() => {
+              navigation.navigate('ChooseTimeSlotScreen', {
+                gameDuration: settingObject?.game_duration,
+                comeFrom: 'InviteChallengeScreen',
+              });
+            }}
+          />
 
-          <View>
-            <View style={styles.dateTimeValue}>
-              <Text style={styles.dateTimeText}>Start </Text>
-              <Text style={styles.dateTimeText}>
-                {moment(startDate).format('MMM DD, YYYY hh:mm a')}
-              </Text>
+          {route?.params?.endTime ? (
+            <View>
+              <View style={styles.dateTimeValue}>
+                <Text style={styles.dateTimeText}>Start </Text>
+                <Text style={styles.dateTimeText}>
+                  {moment(route?.params?.startTime).format(
+                    'MMM DD, YYYY hh:mm a',
+                  )}
+                </Text>
+              </View>
+              <View style={styles.dateTimeValue}>
+                <Text style={styles.dateTimeText}>End </Text>
+                <Text style={styles.dateTimeText}>
+                  {moment(route?.params?.endTime).format(
+                    'MMM DD, YYYY hh:mm a',
+                  )}
+                </Text>
+              </View>
+              <View style={styles.dateTimeValue}>
+                <Text style={styles.dateTimeText}> </Text>
+                <Text style={styles.timeZoneText}>
+                  Time zone{' '}
+                  <Text style={{ fontFamily: fonts.RRegular }}>Vancouver</Text>
+                </Text>
+              </View>
             </View>
-            <View style={styles.dateTimeValue}>
-              <Text style={styles.dateTimeText}>End </Text>
-              <Text style={styles.dateTimeText}>
-                {moment(endDate).format('MMM DD, YYYY hh:mm a')}
-              </Text>
-            </View>
-            <View style={styles.dateTimeValue}>
-              <Text style={styles.dateTimeText}> </Text>
-              <Text style={styles.timeZoneText}>
-                Time zone{' '}
-                <Text style={{ fontFamily: fonts.RRegular }}>Vancouver</Text>
-              </Text>
-            </View>
-          </View>
-
-          {/* <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ChooseTimeSlotScreen');
-            }}>
-            <View style={[styles.borderButtonView, styles.shadowView]}>
-              <View />
-              <Text style={styles.detailButtonText}>{'CHOOSE DATE & TIME'}</Text>
-              <Image
-                source={images.arrowGraterthan}
-                style={styles.arrowImage}
-              />
-            </View>
-          </TouchableOpacity> */}
+          ) : (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('ChooseTimeSlotScreen', {
+                  gameDuration: settingObject?.game_duration,
+                  comeFrom: 'InviteChallengeScreen',
+                });
+              }}>
+              <View style={[styles.borderButtonView, styles.shadowView]}>
+                <View />
+                <Text style={styles.detailButtonText}>
+                  {'CHOOSE DATE & TIME'}
+                </Text>
+                <Image
+                  source={images.arrowGraterthan}
+                  style={styles.arrowImage}
+                />
+              </View>
+            </TouchableOpacity>
+          )}
           <TCThickDivider marginTop={10} />
         </View>
 
         <View>
-          <TCChallengeTitle title={'Venue'}
-          isEdit={!!venue && settingObject?.venue?.length > 1}
-          onEditPress={() => {
-            navigation.navigate('ChooseVenueScreen', {
-              venues: settingObject?.venue || [],
-              comeFrom: 'InviteChallengeScreen',
-            });
-          }}
-           />
+          <TCChallengeTitle
+            title={'Venue'}
+            isEdit={!!venue && settingObject?.venue?.length > 1}
+            onEditPress={() => {
+              navigation.navigate('ChooseVenueScreen', {
+                venues: settingObject?.venue || [],
+                comeFrom: 'InviteChallengeScreen',
+              });
+            }}
+          />
 
           {venue || settingObject?.venue?.length === 1 ? (
             <View style={styles.venueContainer}>
-              <Text style={styles.venueTitle}>
-                {venue?.name}
-              </Text>
-              <Text style={styles.venueAddress}>
-                {venue?.address }
-              </Text>
+              <Text style={styles.venueTitle}>{venue?.name}</Text>
+              <Text style={styles.venueAddress}>{venue?.address}</Text>
 
               <EventMapView
-                coordinate={venue?.coordinate }
+                coordinate={venue?.coordinate}
                 region={venue?.region}
                 style={styles.map}
               />
@@ -733,7 +770,11 @@ export default function InviteChallengeScreen({ navigation, route }) {
       </View>
 
       <TCGradientButton
-      isDisabled={!venue || startDate === '' || endDate === ''}
+        isDisabled={
+          !route?.params?.startTime
+          || !route?.params?.endTime
+          || !venue
+        }
         title={strings.sendInviteTitle}
         onPress={() => {
           // navigation.push('ChallengePaymentScreen');

@@ -48,6 +48,7 @@ export default function ChallengePaymentScreen({ route, navigation }) {
     const [challengeData] = useState(
       route?.params?.challengeObj,
     );
+    console.log(' route?.params?.challengeObj,', route?.params?.challengeObj);
     const [groupObj] = useState(
       route?.params?.groupObj,
     );
