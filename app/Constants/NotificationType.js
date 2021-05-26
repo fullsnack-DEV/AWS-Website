@@ -5,6 +5,7 @@ const NotificationType = {
   invitePlayerToJoinClub: 'inviteUserToJoinclub',
   inviteToConnectProfile: 'inviteToConnectProfile',
   invitePlayerToJoingame: 'inviteUserToJoingame',
+  inviteToDoubleTeam: 'inviteToDoubleTeam',
   // Challenge notificaton
   challengeOffered: 'challengeOffered',
   challengeAltered: 'challengeAltered',

@@ -377,6 +377,9 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
 //  Sports Icons
   soccerIcon: require('../assets/images/soccerIcon.png'),
   tennisIcon: require('../assets/images/tennisIcon.png'),
+
+  backgroundGrayPlceholder: require('../assets/images/background_placeholder.png'),
+
 };
 
 export default images;

@@ -164,7 +164,7 @@ export default function CreateTeamForm1({ navigation, route }) {
     getGroupSearch(teamName, city, authContext).then((response) => {
       setloading(false);
 
-      if (response.payload.length === 0) {
+      if (!response.payload) {
         const obj = {
           sport: sports,
           group_name: teamName,
