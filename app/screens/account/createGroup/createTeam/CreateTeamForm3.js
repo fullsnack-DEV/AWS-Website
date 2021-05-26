@@ -17,7 +17,7 @@ import {
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import TCInfoField from '../../../../components/TCInfoField';
-import { createGroup } from '../../../../api/Groups';
+import { createGroupRequest } from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 
 import AuthContext from '../../../../auth/context';
@@ -191,7 +191,13 @@ export default function CreateTeamForm3({ navigation, route }) {
             bodyParams.background_full_image = bgInfo.url;
           }
 
-          createGroup(
+          // createGroup(
+          //   bodyParams,
+          //   entity.uid,
+          //   entity.role === 'club' ? 'club' : 'user',
+          //   authContext,
+          // )
+          createGroupRequest(
             bodyParams,
             entity.uid,
             entity.role === 'club' ? 'club' : 'user',
@@ -235,7 +241,13 @@ export default function CreateTeamForm3({ navigation, route }) {
           }, 0.1);
         });
     } else {
-      createGroup(
+      // createGroup(
+      //   bodyParams,
+      //   entity.uid,
+      //   entity.role === 'club' ? 'club' : 'user',
+      //   authContext,
+      // )
+      createGroupRequest(
         bodyParams,
         entity.uid,
         entity.role === 'club' ? 'club' : 'user',
