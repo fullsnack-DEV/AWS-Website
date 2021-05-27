@@ -298,7 +298,7 @@ export default function CreateTeamForm3({ navigation, route }) {
         <TCProfileImageControl
           profileImage={thumbnail ? { uri: thumbnail } : undefined}
           profileImagePlaceholder={images.teamPlaceholder}
-          bgImage={backgroundThumbnail ? { uri: backgroundThumbnail } : undefined}
+          bgImage={backgroundThumbnail ? { uri: backgroundThumbnail } : images.backgroundGrayPlceholder}
           onPressBGImage={() => onBGImageClicked()}
           onPressProfileImage={() => onProfileImageClicked()}
           showEditButtons

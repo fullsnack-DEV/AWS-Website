@@ -27,7 +27,13 @@ export const createGroupRequest = (params, caller_id, caller, authContext) => ma
 
 export const getGroupSearch = (name, city, authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/groups/search?group_name=${name}&city=${city}`,
+  url: `${Config.BASE_URL}/groups/exist?group_name=${name}&city=${city}`,
+  authContext,
+})
+
+export const getGroupRequest = (requestType, groupID, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/groups/request/${requestType}/${groupID}`,
   authContext,
 })
 

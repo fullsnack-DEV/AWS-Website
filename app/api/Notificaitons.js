@@ -40,6 +40,12 @@ export const declineRequest = (requestId, authContext) => makeAPIRequest({
   authContext,
 });
 
+export const getRequestDetail = (requestId, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/groups/requests/${requestId}`,
+  authContext,
+});
+
 export const getTrash = (params, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}trash`,

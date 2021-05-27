@@ -193,6 +193,7 @@ import ChallengePreviewScreen from '../screens/challenge/createChallenge/Challen
 import ChooseVenueScreen from '../screens/challenge/manageChallenge/ChooseVenueScreen';
 import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteChallengeScreen';
 import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
+import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2444,6 +2445,23 @@ const AccountNavigator = () => (
               headerShown: false,
           }}
       />
+
+    <Stack.Screen
+      name="RespondToInviteScreen"
+      component={RespondToInviteScreen}
+      options={{
+        title: 'Respond to invite to create team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
   </Stack.Navigator>
 );
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, {
   useEffect,
   useRef,
@@ -33,6 +34,7 @@ import {
   acceptRequest,
   declineRequest,
   deleteNotification,
+  getRequestDetail,
 } from '../../api/Notificaitons';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils/index';
@@ -59,6 +61,7 @@ import { getGroupDetails } from '../../api/Groups';
 import NotificationListShimmer from '../../components/shimmer/account/NotificationListShimmer';
 import NotificationListTopHeaderShimmer from '../../components/shimmer/account/NotificationListTopHeaderShimmer';
 import TCGradientButton from '../../components/TCGradientButton';
+import PRNotificationTeamInvite from '../../components/notificationComponent/PRNotificationTeamInvite';
 
 function NotificationsListScreen({ navigation }) {
   const actionSheet = useRef();
@@ -73,7 +76,7 @@ function NotificationsListScreen({ navigation }) {
   const [activeScreen, setActiveScreen] = useState(false);
 
   const [isRulesModalVisible, setIsRulesModalVisible] = useState(false);
-
+const [groupData, setGroupData] = useState();
   const isFocused = useIsFocused();
 
   const [loading, setloading] = useState(false);
@@ -405,11 +408,35 @@ function NotificationsListScreen({ navigation }) {
     }
   };
 
+  const onRespond = (groupId) => {
+    setloading(true);
+    if (activeScreen) {
+      getRequestDetail(groupId, authContext)
+        .then((response) => {
+          setloading(false);
+          console.log('details: =>', response.payload);
+          setGroupData(response.payload)
+          setIsRulesModalVisible(true)
+        })
+        .catch((error) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    } else {
+      showSwitchProfilePopup();
+    }
+    // setGroupData(groupdata)
+    // setIsRulesModalVisible(true)
+  };
+
   const isInvite = (verb) => verb.includes(NotificationType.inviteToJoinClub)
     || verb.includes(NotificationType.invitePlayerToJoinTeam)
     || verb.includes(NotificationType.invitePlayerToJoinClub)
     || verb.includes(NotificationType.inviteToConnectProfile)
-    || verb.includes(NotificationType.invitePlayerToJoingame);
+    || verb.includes(NotificationType.invitePlayerToJoingame)
+    || verb.includes(NotificationType.inviteToDoubleTeam);
 
   const openHomePage = (item) => {
     if (activeScreen) {
@@ -441,8 +468,18 @@ function NotificationsListScreen({ navigation }) {
       onPress={() => onDelete({ item })}
       color={colors.redDelColor}
       image={images.deleteIcon}>
-      {isInvite(item.activities[0].verb) ? (
-        <PRNotificationInviteCell
+      {isInvite(item.activities[0].verb)
+
+        ? item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ? (
+          <PRNotificationTeamInvite
+          item={item}
+          selectedEntity={selectedEntity}
+          // onAccept={() => onAccept(item.activities[0].id)}
+          onRespond={() => onRespond(JSON.parse(item.activities[0].object)?.groupData?.group_id)} // JSON.parse(item.activities[0].object))
+          onPress={() => onNotificationClick(item)}
+          onPressFirstEntity={openHomePage}
+        />
+        ) : (<PRNotificationInviteCell
           item={item}
           selectedEntity={selectedEntity}
           onAccept={() => onAccept(item.activities[0].id)}
@@ -667,8 +704,8 @@ function NotificationsListScreen({ navigation }) {
   };
 
   const onNextPressed = () => {
+    navigation.navigate('RespondToInviteScreen', { teamObject: groupData });
     setIsRulesModalVisible(false);
-    navigation.navigate('RespondToInviteScreen', { teamObject: {} });
   };
 
   return (

@@ -174,6 +174,7 @@ import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveRe
 import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
 import ManageChallengeScreen from '../screens/challenge/manageChallenge/ManageChallengeScreen';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
+import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2120,6 +2121,24 @@ const HomeNavigator = () => (
         },
       }}
     />
+
+    <Stack.Screen
+      name="RespondToInviteScreen"
+      component={RespondToInviteScreen}
+      options={{
+        title: 'Respond to invite to create team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
   </Stack.Navigator>
 );
 

@@ -417,6 +417,7 @@ const strings = {
   responsetimeexpired: 'RESPONSE PERIOD EXPIRED',
   decline: 'DECLINE',
   accept: 'ACCEPT',
+  respond: 'RESPOND',
   calcelRequest: 'CANCEL REQUEST',
   cancelAlterRequest: 'CANCEL ALTERATION REQUEST',
   cancelMatch: 'CANCEL GAME',
@@ -662,6 +663,9 @@ maxOverTime: 'Maximum 10 overtime can be added.',
   photoUploadTitle:
     'Review the team, and add the profile photo and cover photo.',
 
+    invitetocreateteam: 'Invite to create team',
+
+    whouldYouLikeToAccept: 'Would you like to accept this invite create a team?',
   photoUploadClubTitle:
     'Review the club, and add the profile photo and cover photo.',
 
