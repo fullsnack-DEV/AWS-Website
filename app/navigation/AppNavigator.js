@@ -283,7 +283,7 @@ const AppNavigator = ({ navigation }) => {
               ]}>
               <Image
                 source={{ uri: authContext?.entity?.obj?.thumbnail }}
-                style={styles.profileTabImg}
+                style={[styles.profileTabImg, { height: 27, width: 27 }]}
               />
             </View>
           );
@@ -503,8 +503,8 @@ const AppNavigator = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   profileImageCover: {
-    height: 21,
-    width: 21,
+    height: 27,
+    width: 27,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.whiteColor,
@@ -527,18 +527,18 @@ const styles = StyleSheet.create({
   },
   profileTabImg: {
     alignSelf: 'center',
-    height: 14,
+    height: 24,
     resizeMode: 'cover',
-    width: 14,
-    borderRadius: 40,
+    width: 24,
+    borderRadius: 48,
   },
   profileTabBorder: {
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 24,
+    height: 30,
     resizeMode: 'cover',
-    width: 24,
+    width: 30,
     borderRadius: 60,
     shadowColor: colors.blackColor,
     shadowOffset: { width: 0, height: 2 },

@@ -79,6 +79,7 @@ export default function AccountScreen({ navigation, route }) {
   const [sportsSelection, setSportsSelection] = useState();
   const [sports, setSports] = useState('');
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+
   console.log(sports);
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
@@ -1679,6 +1680,7 @@ export default function AccountScreen({ navigation, route }) {
             />
           </View>
         </Modal>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -2110,4 +2112,5 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
   },
+
 });

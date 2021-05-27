@@ -728,7 +728,7 @@ totalTimeTitle: 'Total time :',
 
 inviteToChallengeText: 'Through "Invite to challenge", you can set the custom price for the challenger. Once you invite a team to challenge you, the invitation will be valid for 48 hours. In the mean time, your calendar will remain open.',
 
-teamExist: 'This team name is already exist in this city, please choose different name for the team.',
+teamExist: 'The team name in the sports already exists in the city.',
 
 };
 export default strings;
