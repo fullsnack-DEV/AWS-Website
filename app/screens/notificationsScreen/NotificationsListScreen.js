@@ -855,6 +855,7 @@ const [groupData, setGroupData] = useState();
       </Modal>
 
       {/* Rules notes modal */}
+
     </View>
   );
 }
@@ -882,6 +883,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.linesepratorColor,
   },
+
 });
 
 export default NotificationsListScreen;

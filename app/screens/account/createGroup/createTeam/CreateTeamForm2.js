@@ -321,6 +321,7 @@ export default function CreateTeamForm2({ navigation, route }) {
                     value={gender}
                     editable={false}
                     pointerEvents="none"
+                    placeholderTextColor={colors.userPostTimeColor}
                   />
                   </View>
                 </TouchableOpacity>
@@ -803,8 +804,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color: colors.blackColor,
     flex: 1,
-    marginLeft: 10,
     width: wp('80%'),
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
   },
   searchView: {
     alignSelf: 'center',
@@ -813,7 +815,6 @@ const styles = StyleSheet.create({
     color: 'black',
     elevation: 3,
     flexDirection: 'row',
-    fontSize: wp('3.5%'),
 
     height: 40,
     marginTop: 12,

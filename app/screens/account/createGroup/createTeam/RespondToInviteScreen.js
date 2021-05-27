@@ -22,6 +22,7 @@ import TCThinDivider from '../../../../components/TCThinDivider';
 import TCPlayerImageInfo from '../../../../components/TCPlayerImageInfo';
 import TCSmallButton from '../../../../components/TCSmallButton';
 import { widthPercentageToDP } from '../../../../utils';
+import TeamStatus from './TeamStatus';
 
 export default function RespondToInviteScreen({ navigation, route }) {
   const { teamObject } = route?.params;
@@ -49,6 +50,8 @@ export default function RespondToInviteScreen({ navigation, route }) {
         //     name: teamObject?.player2?.full_name,
         //   });
         // } else {
+
+        console.log('Team created res:=>', response.payload);
           if (type === 'accept') {
             navigation.push('HomeScreen', {
               uid: response.payload.group_id,
@@ -74,13 +77,19 @@ export default function RespondToInviteScreen({ navigation, route }) {
   };
 
   const getStatusMessage = () => {
-    if (teamObject?.status === 'declined') {
-      return 'This request is declined.';
+    if (teamObject?.status === TeamStatus.declined) {
+      return 'This request is already declined.';
     }
-    if (teamObject?.status === 'deleted') {
-      return 'This request is deleted.';
+    if (teamObject?.status === TeamStatus.cancelled) {
+      return 'This request is already deleted.';
     }
-    return 'status not defined'
+    if (teamObject?.status === TeamStatus.accepted) {
+      return 'This request is already accepted.';
+    }
+    if (teamObject?.status === TeamStatus.invalid) {
+      return 'This request is not valid now.';
+    }
+    return 'status not defined';
   };
 
   return (

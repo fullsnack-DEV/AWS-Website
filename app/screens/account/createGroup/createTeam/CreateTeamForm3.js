@@ -17,7 +17,7 @@ import {
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import TCInfoField from '../../../../components/TCInfoField';
-import { createGroupRequest } from '../../../../api/Groups';
+import { createGroup, createGroupRequest } from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 
 import AuthContext from '../../../../auth/context';
@@ -39,6 +39,7 @@ export default function CreateTeamForm3({ navigation, route }) {
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
   const authContext = useContext(AuthContext);
+  const entity = authContext.entity;
   const [loading, setloading] = useState(false);
 
   const [currentImageSelection, setCurrentImageSelection] = useState(0);
@@ -118,7 +119,7 @@ export default function CreateTeamForm3({ navigation, route }) {
     });
   };
 
-  const nextOnPress = () => {
+  const userNextPressed = () => {
     let player1 = {};
     let player2 = {};
     setloading(true);
@@ -161,7 +162,6 @@ export default function CreateTeamForm3({ navigation, route }) {
 
     console.log('bodyPARAMS:: ', bodyParams);
 
-    const entity = authContext.entity;
     if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
       const imageArray = [];
       if (bodyParams?.thumbnail) {
@@ -191,42 +191,24 @@ export default function CreateTeamForm3({ navigation, route }) {
             bodyParams.background_full_image = bgInfo.url;
           }
 
-          // createGroup(
-          //   bodyParams,
-          //   entity.uid,
-          //   entity.role === 'club' ? 'club' : 'user',
-          //   authContext,
-          // )
           createGroupRequest(
             bodyParams,
             entity.uid,
             entity.role === 'club' ? 'club' : 'user',
             authContext,
           )
-            .then((response) => {
+            .then(() => {
               setloading(false);
 
-              if (entity.role === ('user' || 'player') && bodyParams?.sport?.toLowerCase() === 'Tennis Double'.toLowerCase()) {
                 navigation.push('HomeScreen', {
-                  uid: response.payload.group_id,
-                  role: response.payload.entity_type,
+                  uid: entity.uid,
+                  role: entity.role,
                   backButtonVisible: false,
                   menuBtnVisible: false,
                   isDoubleSportTeamCreated: true,
                   name: player2?.full_name,
 
                 });
-              } else {
-                navigation.push('HomeScreen', {
-                  uid: response.payload.group_id,
-                  role: response.payload.entity_type,
-                  backButtonVisible: false,
-                  menuBtnVisible: false,
-                  isEntityCreated: true,
-                  groupName: response.payload.group_name,
-                  entityObj: response.payload,
-                });
-              }
             })
             .catch((e) => {
               setloading(false);
@@ -253,19 +235,153 @@ export default function CreateTeamForm3({ navigation, route }) {
         entity.role === 'club' ? 'club' : 'user',
         authContext,
       )
-        .then((response) => {
+        .then(() => {
           setloading(false);
-          if ((entity.role === 'user' || entity.role === 'player') && bodyParams?.sport?.toLowerCase() === 'Tennis Double'.toLowerCase()) {
+
             navigation.push('HomeScreen', {
-              uid: response.payload.group_id,
-              role: response.payload.entity_type,
+              uid: entity.uid,
+              role: entity.role,
               backButtonVisible: false,
               menuBtnVisible: false,
               isDoubleSportTeamCreated: true,
               name: player2?.full_name,
 
             });
-          } else {
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  };
+
+  const clubNextPressed = () => {
+    let player1 = {};
+    let player2 = {};
+    setloading(true);
+    const bodyParams = {
+      ...createTeamForm2,
+      entity_type: 'team',
+    //   is_admin: true,
+    //  invite_required: true,
+    //  privacy_profile: 'members',
+    //  createdAt: 0.0,
+    //  unread: 0,
+    //  homefield_address_longitude: 0.0,
+    //  homefield_address_latitude: 0.0,
+    //  office_address_latitude: 0.0,
+    //  office_address_longitude: 0.0,
+    //  privacy_members: 'everyone',
+    //  approval_required: false,
+    //  is_following: false,
+    //  privacy_events: 'everyone',
+    //  is_joined: false,
+    //  privacy_followers: 'everyone',
+    //  should_hide: false,
+    };
+
+  if (bodyParams?.player1) {
+     player1 = bodyParams?.player1;
+    player2 = bodyParams?.player2;
+    delete bodyParams.player1;
+    delete bodyParams.player2;
+    bodyParams.player1 = player1.user_id;
+    bodyParams.player2 = player2.user_id;
+  }
+
+    if (thumbnail) {
+      bodyParams.thumbnail = thumbnail;
+    }
+    if (backgroundThumbnail) {
+      bodyParams.background_thumbnail = backgroundThumbnail;
+    }
+
+    console.log('bodyPARAMS:: ', bodyParams);
+
+    if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
+      const imageArray = [];
+      if (bodyParams?.thumbnail) {
+        imageArray.push({ path: bodyParams?.thumbnail });
+      }
+      if (bodyParams?.background_thumbnail) {
+        imageArray.push({ path: bodyParams?.background_thumbnail });
+      }
+      uploadImages(imageArray, authContext)
+        .then((responses) => {
+          const attachments = responses.map((item) => ({
+            type: 'image',
+            url: item.fullImage,
+            thumbnail: item.thumbnail,
+          }));
+          if (bodyParams?.thumbnail) {
+            bodyParams.thumbnail = attachments[0].thumbnail;
+            bodyParams.full_image = attachments[0].url;
+          }
+
+          if (bodyParams?.background_thumbnail) {
+            let bgInfo = attachments[0];
+            if (attachments.length > 1) {
+              bgInfo = attachments[1];
+            }
+            bodyParams.background_thumbnail = bgInfo.thumbnail;
+            bodyParams.background_full_image = bgInfo.url;
+          }
+
+          createGroup(
+            bodyParams,
+            entity.uid,
+            'club',
+            authContext,
+          )
+          // createGroupRequest(
+          //   bodyParams,
+          //   entity.uid,
+          //   entity.role === 'club' ? 'club' : 'user',
+          //   authContext,
+          // )
+            .then((response) => {
+              setloading(false);
+
+                navigation.push('HomeScreen', {
+                  uid: response.payload.group_id,
+                  role: response.payload.entity_type,
+                  backButtonVisible: false,
+                  menuBtnVisible: false,
+                  isEntityCreated: true,
+                  groupName: response.payload.group_name,
+                  entityObj: response.payload,
+                });
+            })
+            .catch((e) => {
+              setloading(false);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            });
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert('Towns Cup', e.messages);
+          }, 0.1);
+        });
+    } else {
+      createGroup(
+        bodyParams,
+        entity.uid,
+        'club',
+        authContext,
+      )
+      // createGroupRequest(
+      //   bodyParams,
+      //   entity.uid,
+      //   entity.role === 'club' ? 'club' : 'user',
+      //   authContext,
+      // )
+        .then((response) => {
+          setloading(false);
+
             navigation.push('HomeScreen', {
               uid: response.payload.group_id,
               role: response.payload.entity_type,
@@ -275,7 +391,6 @@ export default function CreateTeamForm3({ navigation, route }) {
               groupName: response.payload.group_name,
               entityObj: response.payload,
             });
-          }
         })
         .catch((e) => {
           setloading(false);
@@ -303,7 +418,6 @@ export default function CreateTeamForm3({ navigation, route }) {
           onPressProfileImage={() => onProfileImageClicked()}
           showEditButtons
         />
-
         <TCInfoField
           title={'Sport'}
           value={createTeamForm2?.sport}
@@ -372,111 +486,13 @@ export default function CreateTeamForm3({ navigation, route }) {
         </Text>
         <View style={{ flex: 1 }} />
 
-        {/*
-         {parentGroupID !== '' && (
-           <TouchableOpacity
-             onPress={() => {
-               checkValidation();
-
-               if (sports !== '' && teamName !== '' && location !== '') {
-                 const obj = {
-                   sport: sports,
-                   group_name: teamName,
-                   gender,
-                   min_age: minAge,
-                   max_age: maxAge,
-                   city,
-                   state_abbr: state,
-                   country,
-                   currency_type: curruency,
-
-                 };
-                 if (thumbnail) {
-                   obj.thumbnail = thumbnail;
-                 }
-                 if (backgroundThumbnail) {
-                   obj.background_thumbnail = backgroundThumbnail;
-                 }
-                 if (player1ID !== '' && player2 !== '') {
-                   navigation.navigate('CreateTeamForm2', {
-                     createTeamForm1: {
-                       ...obj,
-                       parent_group_id: parentGroupID,
-                       player1: player1ID,
-                       player2: player2ID,
-                     },
-                   });
-                 } else {
-                   navigation.navigate('CreateTeamForm2', {
-                     createTeamForm1: {
-                       ...obj,
-                       parent_group_id: parentGroupID,
-                     },
-                   });
-                 }
-               }
-             }}>
-             <LinearGradient
-               colors={[colors.yellowColor, colors.themeColor]}
-               style={styles.nextButton}>
-               <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
-             </LinearGradient>
-           </TouchableOpacity>
-         )}
-         {parentGroupID === '' && (
-           <TouchableOpacity
-             onPress={() => {
-               checkValidation();
-
-               if (sports !== '' && teamName !== '' && location !== '') {
-                 const obj = {
-                   sport: sports,
-                   group_name: teamName,
-                   gender,
-                   min_age: minAge,
-                   max_age: maxAge,
-                   city,
-                   state_abbr: state,
-                   country,
-                   currency_type: curruency,
-                 };
-                 if (thumbnail) {
-                   obj.thumbnail = thumbnail;
-                 }
-                 if (backgroundThumbnail) {
-                   obj.background_thumbnail = backgroundThumbnail;
-                 }
-                 if (player1ID !== '' && player2 !== '') {
-                   navigation.navigate('CreateTeamForm2', {
-                     createTeamForm1: {
-                       ...obj,
-                       player1: player1ID,
-                       player2: player2ID,
-                     },
-                   });
-                 } else {
-                   console.log('MOVE TO NEXT');
-                   navigation.navigate('CreateTeamForm2', {
-                     createTeamForm1: {
-                       ...obj,
-                     },
-                   });
-                 }
-               }
-             }}>
-             <LinearGradient
-               colors={[colors.yellowColor, colors.themeColor]}
-               style={styles.nextButton}>
-               <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
-             </LinearGradient>
-           </TouchableOpacity>
-         )} */}
       </ScrollView>
       <TCGradientButton
         isDisabled={false}
         title={strings.doneTitle}
-        style={{ marginBottom: 30 }}
-        onPress={nextOnPress}
+        style={{ marginBottom: 30, marginTop: 20 }}
+        onPress={entity.role === 'club' ? clubNextPressed : userNextPressed}
+
       />
       <ActionSheet
         ref={actionSheet}

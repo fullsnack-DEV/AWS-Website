@@ -107,11 +107,13 @@ const styles = StyleSheet.create({
   topTextContainer: {
     marginLeft: 10,
     alignSelf: 'center',
+    flex: 1,
   },
   nameText: {
     fontSize: 16,
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
+    marginRight: 10,
   },
   bottomViewContainer: {
     marginLeft: 55,

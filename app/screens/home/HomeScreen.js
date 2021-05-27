@@ -491,17 +491,22 @@ const HomeScreen = ({ navigation, route }) => {
       headerShown: !!isUserHome,
       headerTitle: '',
       headerLeft: () => (
-        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} disabled ={!route?.params?.backButtonVisible} onPress={() => navigation.goBack()}>
-          {route?.params?.backButtonVisible === true && <Image
-            source={images.backArrow}
-            style={{
-              height: 20,
-              width: 20,
-              resizeMode: 'contain',
-              tintColor: colors.lightBlackColor,
-              marginLeft: 15,
-            }}
-          />}
+        <TouchableOpacity
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+          disabled={!route?.params?.backButtonVisible}
+          onPress={() => navigation.goBack()}>
+          {route?.params?.backButtonVisible === true && (
+            <Image
+              source={images.backArrow}
+              style={{
+                height: 20,
+                width: 20,
+                resizeMode: 'contain',
+                tintColor: colors.lightBlackColor,
+                marginLeft: 15,
+              }}
+            />
+          )}
           <Text style={styles.userNavigationTextStyle}>
             {currentUserData?.first_name} {currentUserData?.last_name}
           </Text>
@@ -509,8 +514,9 @@ const HomeScreen = ({ navigation, route }) => {
       ),
       headerRight: () => (
         <View>
-          {isAdmin && isUserHome && <TouchableOpacity onPress={onThreeDotPressed}>
-            <Image
+          {isAdmin && isUserHome && (
+            <TouchableOpacity onPress={onThreeDotPressed}>
+              <Image
                 source={images.threeDotIcon}
                 style={{
                   height: 15,
@@ -520,7 +526,8 @@ const HomeScreen = ({ navigation, route }) => {
                   marginRight: 15,
                 }}
               />
-          </TouchableOpacity>}
+            </TouchableOpacity>
+          )}
         </View>
       ),
 
@@ -577,7 +584,7 @@ const HomeScreen = ({ navigation, route }) => {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, strings.defaultError);
           }, 10);
-          navigation.goBack();
+         // navigation.goBack();
         });
     }
   };
@@ -2499,7 +2506,13 @@ const HomeScreen = ({ navigation, route }) => {
         loggedInEntity={authContext.entity}
       />
     ),
-    [authContext.entity, currentUserData, isAdmin, onConnectionButtonPress, onUserAction],
+    [
+      authContext.entity,
+      currentUserData,
+      isAdmin,
+      onConnectionButtonPress,
+      onUserAction,
+    ],
   );
 
   const renderHeaderUserHomeTopSection = useMemo(
@@ -2603,13 +2616,13 @@ const HomeScreen = ({ navigation, route }) => {
                 textStyle={styles.buttonTextStyle}
                 onPressProfile={() => {
                   navigation.navigate('UserGalleryScreen', {
-                   isAdmin,
-                   galleryRef,
-                   entityType: route?.params?.role ?? authContext.entity?.role,
-                   entityID: route?.params?.uid ?? authContext.entity?.uid,
-                   currentUserData,
-                   callFunction: callthis,
-                  })
+                    isAdmin,
+                    galleryRef,
+                    entityType: route?.params?.role ?? authContext.entity?.role,
+                    entityID: route?.params?.uid ?? authContext.entity?.uid,
+                    currentUserData,
+                    callFunction: callthis,
+                  });
                 }}
               />
               <TCProfileButton
@@ -2620,7 +2633,7 @@ const HomeScreen = ({ navigation, route }) => {
                 onPressProfile={() => {
                   navigation.navigate('UserScoreboardScreen', {
                     uid: route?.params?.uid ?? authContext.entity?.uid,
-                  })
+                  });
                 }}
               />
             </View>
@@ -2646,7 +2659,19 @@ const HomeScreen = ({ navigation, route }) => {
         )}
       </View>
     ),
-    [isUserHome, isTeamHome, currentTab, navigation, isAdmin, route?.params?.role, route?.params?.uid, authContext.entity?.role, authContext.entity?.uid, currentUserData, callthis],
+    [
+      isUserHome,
+      isTeamHome,
+      currentTab,
+      navigation,
+      isAdmin,
+      route?.params?.role,
+      route?.params?.uid,
+      authContext.entity?.role,
+      authContext.entity?.uid,
+      currentUserData,
+      callthis,
+    ],
   );
 
   const onFeedPress = useCallback(
@@ -3029,9 +3054,16 @@ const HomeScreen = ({ navigation, route }) => {
         {/* renderUserTopFixedButtons */}
         {!isUserHome && renderTopFixedButtons}
         {!isUserHome && fixedHeader}
-        {firstTimeLoading && (route?.params?.role === 'user' ?? authContext?.entity?.role === 'user') && <UserProfileScreenShimmer/>}
-        {firstTimeLoading && (route?.params?.role !== 'user' ?? authContext?.entity?.role !== 'user') && <ProfileScreenShimmer />}
-        {!firstTimeLoading && <HomeFeed
+        {firstTimeLoading
+          && (route?.params?.role === 'user'
+            ?? authContext?.entity?.role === 'user') && (
+              <UserProfileScreenShimmer />
+          )}
+        {firstTimeLoading
+          && (route?.params?.role !== 'user'
+            ?? authContext?.entity?.role !== 'user') && <ProfileScreenShimmer />}
+        {!firstTimeLoading && (
+          <HomeFeed
             onFeedScroll={handleMainRefOnScroll}
             refs={mainFlatListRef}
             homeFeedHeaderComponent={MainHeaderComponent}
@@ -3041,8 +3073,8 @@ const HomeScreen = ({ navigation, route }) => {
             navigation={navigation}
             setGalleryData={() => {}}
             userID={route?.params?.uid ?? authContext.entity?.uid}
-          />}
-
+          />
+        )}
       </View>
 
       {useMemo(
@@ -4163,9 +4195,10 @@ const HomeScreen = ({ navigation, route }) => {
               }}>
               <ImageBackground
                 source={
-                  route?.params?.entityObj?.thumbnail
-                    ? route?.params?.entityObj?.thumbnail
-                    : route?.params?.role === 'club'
+                  (route?.params?.entityObj?.thumbnail && {
+                    uri: route?.params?.entityObj?.thumbnail,
+                  })
+                  || route?.params?.role === 'club'
                     ? images.clubPlaceholder
                     : images.teamGreenPH
                 }
@@ -4213,7 +4246,7 @@ const HomeScreen = ({ navigation, route }) => {
             <TouchableOpacity
               style={styles.goToProfileButton}
               onPress={() => {
-                confirmationRef.current.close()
+                confirmationRef.current.close();
               }}>
               <Text style={styles.goToProfileTitle}>
                 {route?.params?.role === 'club'
@@ -4328,7 +4361,7 @@ const HomeScreen = ({ navigation, route }) => {
               Cancel
             </Text>
             <Text style={styles.locationText}>Challenge</Text>
-            <Text style={styles.locationText}>      </Text>
+            <Text style={styles.locationText}> </Text>
             {/* <Text
               style={styles.doneText}
               onPress={() => {
@@ -4354,13 +4387,13 @@ const HomeScreen = ({ navigation, route }) => {
           <TCThinDivider width={'100%'} marginBottom={15} />
           <TouchableWithoutFeedback
             onPress={() => {
-              setSelectedChallengeOption(0)
+              setSelectedChallengeOption(0);
               setTimeout(() => {
                 setChallengePopup(false);
-                        navigation.navigate('ChallengeScreen', {
-                          sportName: currentUserData.sport,
-                          groupObj: currentUserData,
-                        });
+                navigation.navigate('ChallengeScreen', {
+                  sportName: currentUserData.sport,
+                  groupObj: currentUserData,
+                });
               }, 300);
             }}>
             {selectedChallengeOption === 0 ? (
@@ -4385,15 +4418,15 @@ const HomeScreen = ({ navigation, route }) => {
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
             onPress={() => {
-              setSelectedChallengeOption(1)
+              setSelectedChallengeOption(1);
 
-        setTimeout(() => {
-          setChallengePopup(false);
-          navigation.navigate('InviteChallengeScreen', {
-            sportName: currentUserData.sport,
-            groupObj: currentUserData,
-          });
-        }, 300);
+              setTimeout(() => {
+                setChallengePopup(false);
+                navigation.navigate('InviteChallengeScreen', {
+                  sportName: currentUserData.sport,
+                  groupObj: currentUserData,
+                });
+              }, 300);
             }}>
             {selectedChallengeOption === 1 ? (
               <LinearGradient
