@@ -21,7 +21,7 @@ import {
 import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import {
-  getChallengeSetting,
+
   getFeesEstimation,
   createChallenge,
 } from '../../../api/Challenge';
@@ -44,7 +44,7 @@ import EventMapView from '../../../components/Schedule/EventMapView';
 
 let entity = {};
 export default function InviteChallengeScreen({ navigation, route }) {
-  const { sportName, groupObj } = route?.params;
+  const { setting, sportName, groupObj } = route?.params;
 
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
@@ -60,25 +60,25 @@ export default function InviteChallengeScreen({ navigation, route }) {
   //   new Date().setHours(new Date().getHours() + 14),
   // );
 
-  const [settingObject, setSettingObject] = useState();
+  const [settingObject, setSettingObject] = useState(setting);
 
   const [teams, setteams] = useState([]);
 
-  useEffect(() => {
-    setloading(true);
-    getChallengeSetting(authContext?.entity?.uid, sportName, authContext)
-      .then((response) => {
-        setloading(false);
-        console.log('manage challenge response:=>', response.payload);
-        setSettingObject(response.payload[0]);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [authContext, sportName]);
+  // useEffect(() => {
+  //   setloading(true);
+  //   getChallengeSetting(authContext?.entity?.uid, sportName, authContext)
+  //     .then((response) => {
+  //       setloading(false);
+  //       console.log('manage challenge response:=>', response.payload);
+  //       setSettingObject(response.payload[0]);
+  //     })
+  //     .catch((e) => {
+  //       setloading(false);
+  //       setTimeout(() => {
+  //         Alert.alert(strings.alertmessagetitle, e.message);
+  //       }, 10);
+  //     });
+  // }, [authContext, sportName]);
 
   useEffect(() => {
     if (route?.params?.selectedVenueObj) {
@@ -406,7 +406,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
         <TCChallengeTitle
           title={'Game Fee'}
           value={settingObject?.game_fee?.fee}
-          staticValueText={`${settingObject?.game_fee?.currency_type} /Game`}
+          staticValueText={`${settingObject?.game_fee?.currency_type || ''} /Game`}
           valueStyle={{
             fontFamily: fonts.RBold,
             fontSize: 16,
@@ -779,7 +779,14 @@ export default function InviteChallengeScreen({ navigation, route }) {
         onPress={() => {
           // navigation.push('ChallengePaymentScreen');
           // navigation.push('InviteToChallengeSentScreen');
+          if (new Date(route?.params?.startTime).getTime() < new Date().getTime()) {
+            Alert.alert(
+              strings.alertmessagetitle,
+              'Please choose future time for challenge.',
+            );
+        } else {
           sendChallengeInvitation();
+        }
         }}
         outerContainerStyle={{
           marginBottom: 45,
@@ -788,6 +795,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
           marginTop: 15,
         }}
       />
+
     </TCKeyboardView>
   );
 }

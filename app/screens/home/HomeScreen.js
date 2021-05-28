@@ -53,6 +53,8 @@ import {
   getScorekeeperMatch,
 } from '../../api/Games';
 
+import { getChallengeSetting } from '../../api/Challenge';
+
 import AuthContext from '../../auth/context';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import {
@@ -435,7 +437,7 @@ const HomeScreen = ({ navigation, route }) => {
     // setloading(true);
     const promises = [
       getUserDetails(uid, authContext),
-      getJoinedGroups(uid, authContext),
+      getJoinedGroups(authContext),
     ];
     Promise.all(promises)
       .then(([res1, res2]) => {
@@ -584,7 +586,7 @@ const HomeScreen = ({ navigation, route }) => {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, strings.defaultError);
           }, 10);
-         // navigation.goBack();
+          // navigation.goBack();
         });
     }
   };
@@ -4388,13 +4390,53 @@ const HomeScreen = ({ navigation, route }) => {
           <TouchableWithoutFeedback
             onPress={() => {
               setSelectedChallengeOption(0);
-              setTimeout(() => {
-                setChallengePopup(false);
-                navigation.navigate('ChallengeScreen', {
-                  sportName: currentUserData.sport,
-                  groupObj: currentUserData,
+
+              setloading(true);
+              getChallengeSetting(
+                currentUserData?.user_id || currentUserData?.group_id,
+                currentUserData.sport,
+                authContext,
+              )
+                .then((response) => {
+                  setloading(false);
+                  const obj = response.payload[0];
+                  if (
+                    obj?.game_duration
+                    && obj?.availibility
+                    && obj?.special_rules
+                    && obj?.general_rules
+                    && obj?.responsible_for_referee
+                    && obj?.responsible_for_scorekeeper
+                    && obj?.game_fee
+                    && obj?.venue
+                    && obj?.refund_policy
+                    && obj?.home_away
+                    && obj?.game_type
+
+                  ) {
+                    setChallengePopup(false);
+                    navigation.navigate('ChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData.sport,
+                      groupObj: currentUserData,
+                    });
+                  } else {
+                    Alert.alert('Please complete all challengee setting before make a challenge.')
+                  }
+                })
+                .catch((e) => {
+                  setloading(false);
+                  setTimeout(() => {
+                    Alert.alert(strings.alertmessagetitle, e.message);
+                  }, 10);
                 });
-              }, 300);
+              // setTimeout(() => {
+              //   setChallengePopup(false);
+              //   navigation.navigate('ChallengeScreen', {
+              //     sportName: currentUserData.sport,
+              //     groupObj: currentUserData,
+              //   });
+              // }, 300);
             }}>
             {selectedChallengeOption === 0 ? (
               <LinearGradient
@@ -4420,13 +4462,53 @@ const HomeScreen = ({ navigation, route }) => {
             onPress={() => {
               setSelectedChallengeOption(1);
 
-              setTimeout(() => {
-                setChallengePopup(false);
-                navigation.navigate('InviteChallengeScreen', {
-                  sportName: currentUserData.sport,
-                  groupObj: currentUserData,
+              setloading(true);
+              getChallengeSetting(
+                authContext?.entity?.uid,
+                currentUserData.sport,
+                authContext,
+              )
+                .then((response) => {
+                  setloading(false);
+                  const obj = response.payload[0];
+                  if (
+                    obj?.game_duration
+                    && obj?.availibility
+                    && obj?.special_rules
+                    && obj?.general_rules
+                    && obj?.responsible_for_referee
+                    && obj?.responsible_for_scorekeeper
+                    && obj?.game_fee
+                    && obj?.venue
+                    && obj?.refund_policy
+                    && obj?.home_away
+                    && obj?.game_type
+
+                  ) {
+                    setChallengePopup(false);
+                    navigation.navigate('InviteChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData.sport,
+                      groupObj: currentUserData,
+                    });
+                  } else {
+                    Alert.alert('Please complete your all setting before send a challenge invitation.')
+                  }
+                })
+                .catch((e) => {
+                  setloading(false);
+                  setTimeout(() => {
+                    Alert.alert(strings.alertmessagetitle, e.message);
+                  }, 10);
                 });
-              }, 300);
+
+              // setTimeout(() => {
+              //   setChallengePopup(false);
+              //   navigation.navigate('InviteChallengeScreen', {
+              //     sportName: currentUserData.sport,
+              //     groupObj: currentUserData,
+              //   });
+              // }, 300);
             }}>
             {selectedChallengeOption === 1 ? (
               <LinearGradient

@@ -285,7 +285,7 @@ export default function AccountScreen({ navigation, route }) {
             }, 10);
           });
       } else {
-        getJoinedGroups(authContext.entity.uid, authContext)
+        getJoinedGroups(authContext)
           .then((response) => {
             setTeamList(response.payload.teams);
           })
@@ -300,7 +300,7 @@ export default function AccountScreen({ navigation, route }) {
   );
 
   const getClubList = useCallback(() => {
-    getJoinedGroups(authContext.entity.uid, authContext)
+    getJoinedGroups(authContext)
       .then((response) => {
         setClubList(response.payload.clubs);
       })
@@ -707,55 +707,66 @@ export default function AccountScreen({ navigation, route }) {
 
   const renderEntityList = useCallback(
     ({ item }) => (
-      <TouchableWithoutFeedback
-        style={styles.listContainer}
-        onPress={() => {
-          const uid = item?.entity_type === 'player' ? item?.user_id : item?.group_id;
-          if (uid && item?.entity_type) {
-            navigation.navigate('HomeScreen', {
-              uid,
-              backButtonVisible: true,
-              role: item?.entity_type === 'player' ? 'user' : item?.entity_type,
-            });
-          }
-        }}>
-        <View style={styles.entityTextContainer}>
-          <View style={styles.smallProfileContainer}>
-            {item.entity_type === 'team' && (
-              <Image
-                source={
-                  item.thumbnail
-                    ? { uri: item.thumbnail }
-                    : images.teamPlaceholder
-                }
-                style={styles.smallProfileImg}
-              />
-            )}
-            {item.entity_type === 'club' && (
-              <Image
-                source={
-                  item.thumbnail
-                    ? { uri: item.thumbnail }
-                    : images.clubPlaceholder
-                }
-                style={styles.smallProfileImg}
-              />
-            )}
-          </View>
-
-          <Text
-            style={
-              item.group_name.length > 26
-                ? [styles.entityName, { width: wp('50%') }]
-                : styles.entityName
+      <View>
+        <TouchableWithoutFeedback
+          disabled={!item?.group_id}
+          style={styles.listContainer}
+          onPress={() => {
+            const uid = item?.entity_type === 'player' ? item?.user_id : item?.group_id;
+            if (uid && item?.entity_type) {
+              navigation.navigate('HomeScreen', {
+                uid,
+                backButtonVisible: true,
+                role:
+                  item?.entity_type === 'player' ? 'user' : item?.entity_type,
+              });
             }
-            numberOfLines={1}>
-            {item.group_name}
-          </Text>
-          <Text style={styles.teamSportView}> {item.sport}</Text>
-        </View>
-        <Image source={images.nextArrow} style={styles.nextArrow} />
-      </TouchableWithoutFeedback>
+          }}>
+          <View style={styles.entityTextContainer}>
+            <View style={styles.smallProfileContainer}>
+              {item.entity_type === 'team' && (
+                <Image
+                  source={
+                    item.thumbnail
+                      ? { uri: item.thumbnail }
+                      : images.teamPlaceholder
+                  }
+                  style={styles.smallProfileImg}
+                />
+              )}
+              {item.entity_type === 'club' && (
+                <Image
+                  source={
+                    item.thumbnail
+                      ? { uri: item.thumbnail }
+                      : images.clubPlaceholder
+                  }
+                  style={styles.smallProfileImg}
+                />
+              )}
+            </View>
+
+            <Text
+              style={
+                item.group_name.length > 26
+                  ? [styles.entityName, { width: wp('50%') }]
+                  : styles.entityName
+              }
+              numberOfLines={1}>
+              {item.group_name}
+            </Text>
+            <Text style={styles.teamSportView}> {item.sport}</Text>
+          </View>
+          {/* <Image source={images.nextArrow} style={styles.nextArrow} /> */}
+        </TouchableWithoutFeedback>
+        {!item?.group_id && <TouchableWithoutFeedback onPress={() => Alert.alert('cancel')}>
+          <View style={styles.buttonView}>
+            <Text style={styles.textStyle} numberOfLines={1}>
+              Cancel request
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>}
+      </View>
     ),
     [navigation],
   );
@@ -1680,7 +1691,6 @@ export default function AccountScreen({ navigation, route }) {
             />
           </View>
         </Modal>
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -2112,5 +2122,29 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
   },
-
+  buttonView: {
+    marginTop: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    height: 25,
+    width: '30%',
+    marginBottom: 5,
+    marginLeft: 80,
+    backgroundColor: colors.whiteColor,
+    paddingHorizontal: 5,
+    shadowColor: colors.blackColor,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  textStyle: {
+    alignSelf: 'center',
+    fontFamily: fonts.RMedium,
+    fontSize: 12,
+    textAlign: 'center',
+    color: colors.lightBlackColor,
+  },
 });
