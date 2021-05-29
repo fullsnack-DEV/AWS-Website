@@ -42,6 +42,7 @@ import {
   getGroupDetails,
   getJoinedGroups,
   getTeamsOfClub,
+  getGroupRequest,
 } from '../../api/Groups';
 
 import { getUnreadCount } from '../../api/Notificaitons';
@@ -285,9 +286,10 @@ export default function AccountScreen({ navigation, route }) {
             }, 10);
           });
       } else {
-        getJoinedGroups(authContext)
+        getJoinedGroups(true, 'team', authContext)
           .then((response) => {
-            setTeamList(response.payload.teams);
+            console.table(response?.payload);
+            setTeamList(response.payload);
           })
           .catch((e) => {
             setTimeout(() => {
@@ -299,10 +301,38 @@ export default function AccountScreen({ navigation, route }) {
     [authContext],
   );
 
-  const getClubList = useCallback(() => {
-    getJoinedGroups(authContext)
+  const oncalcelTeamRequest = (type, requestID) => {
+    setloading(true);
+    getGroupRequest(type, requestID, authContext)
       .then((response) => {
-        setClubList(response.payload.clubs);
+        setloading(false);
+
+        if (response.status) {
+          setTimeout(() => {
+            Alert.alert('Your team request cancelled.');
+          }, 10);
+        } else {
+          setTimeout(() => {
+            Alert.alert('Something wrong with your request, please try again.');
+          }, 10);
+        }
+
+        getTeamsList(authContext.entity);
+
+        // }
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const getClubList = useCallback(() => {
+    getJoinedGroups(false, 'club', authContext)
+      .then((response) => {
+        setClubList(response.payload);
       })
       .catch((e) => {
         setTimeout(() => {
@@ -759,13 +789,16 @@ export default function AccountScreen({ navigation, route }) {
           </View>
           {/* <Image source={images.nextArrow} style={styles.nextArrow} /> */}
         </TouchableWithoutFeedback>
-        {!item?.group_id && <TouchableWithoutFeedback onPress={() => Alert.alert('cancel')}>
-          <View style={styles.buttonView}>
-            <Text style={styles.textStyle} numberOfLines={1}>
-              Cancel request
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>}
+        {!item?.group_id && (
+          <TouchableWithoutFeedback
+            onPress={() => oncalcelTeamRequest('cancel', item?.request_id)}>
+            <View style={styles.buttonView}>
+              <Text style={styles.textStyle} numberOfLines={1}>
+                Cancel request
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+        )}
       </View>
     ),
     [navigation],

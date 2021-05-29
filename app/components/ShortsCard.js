@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     height: 250,
     width: 150,
     resizeMode: 'cover',
-    borderRadius: 10,
+    borderRadius: 5,
     marginLeft: 15,
     overflow: 'hidden',
   },
@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 12,
     color: colors.whiteColor,
+
   },
   entityLable: {
     fontFamily: fonts.RBold,
@@ -96,14 +97,14 @@ const styles = StyleSheet.create({
   durationContainer: {
     width: 30,
     height: 16,
-    backgroundColor: colors.blackColor,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+
     borderRadius: 4,
     alignItems: 'center',
     position: 'absolute',
     top: 10,
     left: 22,
     right: 0,
-    opacity: 0.5,
 
     // bottom: 15,
   },
