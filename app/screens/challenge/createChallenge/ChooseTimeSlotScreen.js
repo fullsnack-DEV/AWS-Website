@@ -79,6 +79,11 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
                 strings.alertmessagetitle,
                 'Please choose valid time slot.',
               );
+            } else if (new Date(from).getTime() < new Date().getTime()) {
+                Alert.alert(
+                  strings.alertmessagetitle,
+                  'Please choose future time for challenge.',
+                );
             } else if (!selectedSlot) {
               console.log('selected slot', selectedSlot);
                 Alert.alert(
@@ -300,13 +305,23 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
       onPress={() => {
         console.log('selected:=> ', item);
         setselectedSlot(item);
-        setFrom(item.starttime * 1000);
+        const date = new Date();
 
-        const dt = new Date(item.starttime * 1000);
+        if (item.starttime * 1000 < date.getTime()) {
+          setFrom(date.setMinutes(date.getMinutes() + 5));
+          const dt = new Date(date.getTime());
         dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
         dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
 
         setTo(dt.getTime());
+        } else {
+          setFrom(item.starttime * 1000);
+          const dt = new Date(item.starttime * 1000);
+        dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
+        dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
+
+        setTo(dt.getTime());
+        }
       }}>
       <BlockSlotView
         startDate={item.starttime}

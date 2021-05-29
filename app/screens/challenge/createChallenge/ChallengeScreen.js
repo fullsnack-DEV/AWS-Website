@@ -43,14 +43,14 @@ import TCArrowView from '../../../components/TCArrowView';
 let entity = {};
 const bodyParams = {};
 export default function ChallengeScreen({ navigation, route }) {
-  const { sportName, groupObj } = route?.params;
+  const { sportName, setting, groupObj } = route?.params;
 
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
 
   const [venue, setVenue] = useState();
-  const [settingObject, setSettingObject] = useState();
+  const [settingObject, setSettingObject] = useState(setting);
   const [teams, setteams] = useState([]);
   const [totalZero, setTotalZero] = useState(false);
   const [feeObj, setFeeObj] = useState();
@@ -65,25 +65,25 @@ export default function ChallengeScreen({ navigation, route }) {
     }
   }, [authContext.entity, groupObj, settingObject?.game_fee?.fee]);
 
-  useEffect(() => {
-    setloading(true);
-    getChallengeSetting(
-      groupObj?.user_id || groupObj?.group_id,
-      sportName,
-      authContext,
-    )
-      .then((response) => {
-        setloading(false);
-        console.log('manage challenge response:=>', response.payload);
-        setSettingObject(response.payload[0]);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [authContext, sportName]);
+  // useEffect(() => {
+  //   setloading(true);
+  //   getChallengeSetting(
+  //     groupObj?.user_id || groupObj?.group_id,
+  //     sportName,
+  //     authContext,
+  //   )
+  //     .then((response) => {
+  //       setloading(false);
+  //       console.log('manage challenge response:=>', response.payload);
+  //       setSettingObject(response.payload[0]);
+  //     })
+  //     .catch((e) => {
+  //       setloading(false);
+  //       setTimeout(() => {
+  //         Alert.alert(strings.alertmessagetitle, e.message);
+  //       }, 10);
+  //     });
+  // }, [authContext, sportName]);
 
   useEffect(() => {
     if (route?.params?.selectedVenueObj) {
@@ -606,6 +606,12 @@ export default function ChallengeScreen({ navigation, route }) {
         }
         title={strings.reservTitle}
         onPress={() => {
+           if (new Date(route?.params?.startTime).getTime() < new Date().getTime()) {
+            Alert.alert(
+              strings.alertmessagetitle,
+              'Please choose future time for challenge.',
+            );
+        } else {
           entity = authContext.entity;
           const body = {
             ...settingObject,
@@ -627,6 +633,8 @@ export default function ChallengeScreen({ navigation, route }) {
             groupObj,
             type: 'challenge',
           });
+        }
+
           // navigation.push('ChallengePreviewScreen');
           // sendChallenge()
         }}

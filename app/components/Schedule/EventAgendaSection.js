@@ -25,7 +25,7 @@ import images from '../../Constants/ImagePath';
 import { getHitSlop } from '../../utils';
 
 const selectedCalendarDate = moment();
-const minimumDate = moment().add(-1, 'day'); // one day before for midnight check-in usecase
+// const minimumDate = moment().add(-1, 'day'); // one day before for midnight check-in usecase
 const currentDate = moment();
 
 class EventAgendaSection extends React.Component {
@@ -80,7 +80,7 @@ class EventAgendaSection extends React.Component {
         <SafeAreaView>
           <Calendar
             current={this.state.selectedCalendarMonthString}
-            minDate={minimumDate.format('YYYY-MM-DD')}
+            minDate={currentDate.format('YYYY-MM-DD')}
             dayComponent={CalendarDayComponent}
             calendarHeaderComponent={CalendarHeaderComponent}
             headerData={this.state.calendarHeaderData}
