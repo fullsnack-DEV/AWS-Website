@@ -68,7 +68,8 @@ import {
 import { createPost, createReaction } from '../../api/NewsFeeds';
 import {
   getGroupDetails,
-  getJoinedGroups,
+
+  getGroups,
   getTeamsOfClub,
   getGroupMembers,
   followGroup,
@@ -437,7 +438,7 @@ const HomeScreen = ({ navigation, route }) => {
     // setloading(true);
     const promises = [
       getUserDetails(uid, authContext),
-      getJoinedGroups(authContext),
+      getGroups(false, authContext),
     ];
     Promise.all(promises)
       .then(([res1, res2]) => {

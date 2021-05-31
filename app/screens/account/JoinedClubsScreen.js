@@ -26,14 +26,14 @@ export default function JoinedClubsScreen() {
   const [clubList, setClubList] = useState([]);
 
   useEffect(() => {
-    getJoinedGroups(authContext).then((response) => {
-      setClubList(response.payload.clubs);
+    getJoinedGroups(false, 'club', authContext).then((response) => {
+      setClubList(response.payload);
     }).catch((e) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
       }, 10);
     });
-  }, []);
+  }, [authContext]);
 
   return (
     <ScrollView style={ styles.mainContainer }>

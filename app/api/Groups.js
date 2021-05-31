@@ -45,11 +45,20 @@ export const getGroupRequest = (requestType, groupID, authContext) => makeAPIReq
 //     authContext,
 //   })
 // }
-export const getJoinedGroups = (authContext) => makeAPIRequest({
+export const getJoinedGroups = (request = false, entityType = '', authContext) => {
+  const q = entityType === '' ? '' : `&entity_type=${entityType}`
+  return makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}groups/joined`,
+    url: `${Config.BASE_URL}groups/joined?get_request=${request}${q}`,
     authContext,
   })
+  }
+
+  export const getGroups = (request = false, authContext) => makeAPIRequest({
+      method: 'get',
+      url: `${Config.BASE_URL}groups/joined?get_request=${request}`,
+      authContext,
+    })
 
 export const getTeamsOfClub = (clubID, authContext) => makeAPIRequest({
   method: 'get',

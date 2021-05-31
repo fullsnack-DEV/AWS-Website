@@ -40,7 +40,7 @@ export default function GameDuration({ navigation, route }) {
   const [firstPeriod, setFirstPeriod] = useState(
     route?.params?.settingObj?.game_duration
       ? route?.params?.settingObj?.game_duration?.first_period
-      : '',
+      : 0,
   );
 
   const [loading, setloading] = useState(false);
@@ -88,7 +88,7 @@ export default function GameDuration({ navigation, route }) {
             if (
               resultPeriod.length > 0
               || resultOvertime.length > 0
-              || firstPeriod === ''
+              || firstPeriod === 0
             ) {
               Alert.alert('Please fill all fields.');
             } else {
@@ -254,22 +254,23 @@ export default function GameDuration({ navigation, route }) {
 
     period.map((e) => {
       if (e.interval !== '') {
-        sum += parseInt(e.interval);
+        sum += parseInt(e?.interval);
       }
       if (e.period !== '') {
-        sum += parseInt(e.period);
+        sum += parseInt(e?.period);
       }
     })
 
     overTime.map((e) => {
       if (e.interval !== '') {
-        sum += parseInt(e.interval);
+        sum += parseInt(e?.interval);
       }
       if (e.overTime !== '') {
-        sum += parseInt(e.overTime);
+        sum += parseInt(e?.overTime);
       }
     })
-    return { hours: Math.floor(sum / 60), minutes: sum % 60 }
+
+      return { hours: Math.floor(sum / 60), minutes: sum % 60 }
   }
 
   const onSavePressed = () => {
@@ -357,6 +358,7 @@ export default function GameDuration({ navigation, route }) {
             <View style={styles.textInputContainer}>
               <TextInput
                 keyboardType="numeric"
+                numeric
                 style={styles.textInput}
                 onChangeText={(text) => {
                   setFirstPeriod(text);
