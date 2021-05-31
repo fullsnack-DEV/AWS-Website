@@ -67,6 +67,8 @@ export default function AccountScreen({ navigation, route }) {
   const scrollRef = useRef();
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
+
+  console.log('authContext?.entity?.auth?.user?.registered_sports', authContext?.entity);
   const [isSportCreateModalVisible, setIsSportCreateModalVisible] = useState(
     false,
   );
@@ -186,7 +188,9 @@ export default function AccountScreen({ navigation, route }) {
   );
 
   const getData = () => new Promise((resolve, reject) => {
+    setloading(true);
       const entity = authContext.entity;
+
       const promises = [
         getNotificationUnreadCount(entity),
         getTeamsList(entity),
@@ -199,24 +203,16 @@ export default function AccountScreen({ navigation, route }) {
     });
 
   useEffect(() => {
-    console.log('Auth:=>', authContext?.entity);
     if (isFocused) {
-      setloading(true);
-      getData().then(() => {
-        setloading(false);
-      });
+      getData()
     }
-  }, [isFocused]);
+  }, [authContext?.entity, isFocused]);
 
   useEffect(() => {
     if (route?.params?.createdSportName) {
       setIsSportCreateModalVisible(true);
     }
   }, [route?.params?.createdSportName]);
-
-  useEffect(() => {
-    getData();
-  }, []);
 
   const getParentClub = useCallback(
     (item) => {
@@ -230,6 +226,7 @@ export default function AccountScreen({ navigation, route }) {
         })
         .catch((e) => {
           setloading(false);
+          console.log('6');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -265,6 +262,7 @@ export default function AccountScreen({ navigation, route }) {
           }
         })
         .catch((e) => {
+          console.log('7');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -278,9 +276,12 @@ export default function AccountScreen({ navigation, route }) {
       if (currentEntity.role === 'club') {
         getTeamsOfClub(authContext.entity.uid, authContext)
           .then((response) => {
+            setloading(false);
             setTeamList(response.payload);
           })
           .catch((e) => {
+            setloading(false);
+            console.log('2');
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
@@ -288,10 +289,12 @@ export default function AccountScreen({ navigation, route }) {
       } else {
         getJoinedGroups(true, 'team', authContext)
           .then((response) => {
-            console.table(response?.payload);
+            setloading(false);
             setTeamList(response.payload);
           })
           .catch((e) => {
+            setloading(false);
+            console.log('1');
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
@@ -323,6 +326,7 @@ export default function AccountScreen({ navigation, route }) {
       })
       .catch((e) => {
         setloading(false);
+        console.log('3');
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -335,6 +339,7 @@ export default function AccountScreen({ navigation, route }) {
         setClubList(response.payload);
       })
       .catch((e) => {
+        console.log('4');
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -461,17 +466,18 @@ export default function AccountScreen({ navigation, route }) {
 
   const onSwitchProfile = useCallback(
     async ({ item }) => {
-      setloading(true);
       switchProfile(item)
         .then((currentEntity) => {
           scrollRef.current.scrollTo({ x: 0, y: 0 });
-          setloading(false);
+
           authContext.setEntity({ ...currentEntity });
           Utility.setStorage('authContextEntity', { ...currentEntity });
           switchQBAccount(item, currentEntity);
+          setloading(false);
         })
         .catch((e) => {
           setloading(false);
+          console.log('5');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -533,13 +539,18 @@ export default function AccountScreen({ navigation, route }) {
       navigation.navigate('GroupMembersScreen', { groupID: entity.uid });
     } else if (section === 'Manage Challenge') {
       const entity = authContext.entity;
-      if (entity.role === 'user') {
-        console.log('sections');
-        setVisibleSportsModal(true);
+
+      if (entity?.obj?.registered_sports?.length > 0) {
+        if (entity.role === 'user') {
+          console.log('sections');
+          setVisibleSportsModal(true);
+        } else {
+          navigation.navigate('ManageChallengeScreen', {
+            sportName: entity?.obj?.sport,
+          });
+        }
       } else {
-        navigation.navigate('ManageChallengeScreen', {
-          sportName: entity?.obj?.sport,
-        });
+        Alert.alert('There is no registerd sports.');
       }
     } else if (section === 'Log out') {
       handleLogOut();
@@ -635,10 +646,9 @@ export default function AccountScreen({ navigation, route }) {
       <TouchableWithoutFeedback
         style={styles.switchProfileListContainer}
         onPress={() => {
-          setloading(true);
           onSwitchProfile({ item, index });
         }}>
-        <View>
+        <View >
           {item.entity_type === 'player' && (
             <View style={styles.placeholderView}>
               <Image
@@ -691,6 +701,30 @@ export default function AccountScreen({ navigation, route }) {
               )}
             </View>
           )}
+          {/*
+          {item.unread > 0 && (
+            <View
+              style={
+                item.thumbnail
+                  ? [styles.badgeView, { right: 10, top: 15 }]
+                  : [
+                      styles.badgeView,
+                      {
+                        right: 10,
+                        top: 10,
+
+                      },
+              ]
+              }>
+              <Text
+                style={{
+                  ...styles.badgeCounter,
+                  ...(item.unread > 9 ? { paddingHorizontal: 5 } : { width: 15 }),
+                }}>
+                {item.unread > 9 ? `+${9}` : item.unread}
+              </Text>
+            </View>
+          )} */}
 
           {item.unread > 0 && (
             <View
@@ -1063,8 +1097,9 @@ export default function AccountScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
-      {renderTopHeader}
       <ActivityLoader visible={loading} />
+      {renderTopHeader}
+
       <ScrollView style={styles.mainContainer} ref={scrollRef}>
         <View
           style={{
@@ -1571,7 +1606,10 @@ export default function AccountScreen({ navigation, route }) {
             <TouchableOpacity
               style={styles.goToProfileButton}
               onPress={() => {
-                Alert.alert('Manage challenge');
+                // Alert.alert('Manage challenge');
+                navigation.navigate('ManageChallengeScreen', {
+                  sportName: route?.params?.entityObj?.sport,
+                });
               }}>
               <Text style={styles.goToProfileTitle}>
                 {strings.manageChallengeText}
@@ -1745,6 +1783,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
+    elevation: 3,
+
   },
 
   clubLableView: {
