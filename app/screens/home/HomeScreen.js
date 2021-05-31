@@ -3046,7 +3046,7 @@ const HomeScreen = ({ navigation, route }) => {
         onPress={(index) => {
           if (index === 0) {
             // Add Playing
-            navigation.navigate('ManageChallengeScreen');
+            navigation.navigate('ManageChallengeScreen', { sportName: authContext?.entity?.obj?.sport });
           }
         }}
       />
@@ -4250,6 +4250,9 @@ const HomeScreen = ({ navigation, route }) => {
               style={styles.goToProfileButton}
               onPress={() => {
                 confirmationRef.current.close();
+                navigation.navigate('ManageChallengeScreen', {
+                  sportName: route?.params?.entityObj?.sport,
+                });
               }}>
               <Text style={styles.goToProfileTitle}>
                 {route?.params?.role === 'club'

@@ -42,35 +42,37 @@ export default function GameFee({ navigation, route }) {
   }, [authContext.entity.obj.currency_type, basicFee, comeFrom, currencyType, navigation]);
 
   const onSavePressed = () => {
-    if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
-      navigation.navigate(comeFrom, {
-        gameFee: {
-          fee: Number(basicFee),
-          currency_type: currencyType,
-        },
-      });
-    } else {
-      const bodyParams = {
-        sport: sportName,
-        game_fee: {
-          fee: Number(basicFee),
-          currency_type: currencyType,
-        },
-      };
-      setloading(true);
-      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-        .then((response) => {
-          setloading(false);
-          navigation.navigate(comeFrom, { settingObj: response.payload });
-          console.log('patch challenge response:=>', response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
+    if (basicFee < 1) {
+      Alert.alert('User should not allow less than $1 game fee.');
+    } else if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
+        navigation.navigate(comeFrom, {
+          gameFee: {
+            fee: Number(basicFee),
+            currency_type: currencyType,
+          },
         });
-    }
+      } else {
+        const bodyParams = {
+          sport: sportName,
+          game_fee: {
+            fee: Number(basicFee),
+            currency_type: currencyType,
+          },
+        };
+        setloading(true);
+        patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+          .then((response) => {
+            setloading(false);
+            navigation.navigate(comeFrom, { settingObj: response.payload });
+            console.log('patch challenge response:=>', response.payload);
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      }
   };
 
   const IsNumeric = (num) => num >= 0 || num < 0;
