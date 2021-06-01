@@ -84,7 +84,7 @@ export default function App() {
       showNetworkAlert,
       showAlert,
     }),
-    [role, user, entity, tokenData, networkConnected],
+    [role, user, entity, tokenData, setTokenData, updateAuth, networkConnected],
   );
   QBinit();
   return (

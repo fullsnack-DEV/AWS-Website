@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   detailsText: {
+    flex: 1,
     height: 90,
     fontSize: 16,
     fontFamily: fonts.RRegular,

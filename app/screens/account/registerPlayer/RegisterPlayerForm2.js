@@ -116,12 +116,13 @@ const doneOnPress = () => {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
-
+          console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({ ...entity });
           authContext.setUser(response.payload);
-          await Utility.setStorage('authContextUser', response.payload);
+          await Utility.setStorage('authContextUser', response.payload)
+          await Utility.setStorage('authContextEntity', { ...entity })
           navigation.navigate('AccountScreen', { createdSportName: route?.params?.bodyParams?.sport_name });
         } else {
           Alert.alert('Towns Cup', response.messages);

@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
   profileImage: {
     alignSelf: 'center',
     height: 40,
-    resizeMode: 'contain',
     width: 40,
     borderRadius: 80,
   },
@@ -52,7 +51,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     height: 44,
     width: 44,
-    borderRadius: 22,
+    borderRadius: 88,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,

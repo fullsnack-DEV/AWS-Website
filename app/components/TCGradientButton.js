@@ -3,9 +3,9 @@ import {
   StyleSheet,
   Text,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
@@ -36,6 +36,7 @@ const TCGradientButton = ({
 
 const styles = StyleSheet.create({
   outerContainerStyle: {
+
     width: '92%',
     alignSelf: 'center',
     shadowColor: colors.blackColor,

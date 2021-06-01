@@ -4407,8 +4407,8 @@ const HomeScreen = ({ navigation, route }) => {
                   if (
                     obj?.game_duration
                     && obj?.availibility
-                    && obj?.special_rules
-                    && obj?.general_rules
+                    && obj?.special_rules !== undefined
+                    && obj?.general_rules !== undefined
                     && obj?.responsible_for_referee
                     && obj?.responsible_for_scorekeeper
                     && obj?.game_fee
@@ -4478,8 +4478,8 @@ const HomeScreen = ({ navigation, route }) => {
                   if (
                     obj?.game_duration
                     && obj?.availibility
-                    && obj?.special_rules
-                    && obj?.general_rules
+                    && obj?.special_rules !== undefined
+                    && obj?.general_rules !== undefined
                     && obj?.responsible_for_referee
                     && obj?.responsible_for_scorekeeper
                     && obj?.game_fee

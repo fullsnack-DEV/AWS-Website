@@ -12,6 +12,7 @@ import {
   FlatList,
   Text,
   Dimensions,
+ SafeAreaView,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -268,7 +269,7 @@ export default function CreateTeamForm1({ navigation, route }) {
             }>
             <TextInput
               placeholder={strings.searchCityPlaceholder}
-              style={styles.matchFeeTxt}
+              style={[styles.matchFeeTxt, { marginBottom: 5 }]}
               value={location}
               editable={false}
               pointerEvents="none"></TextInput>
@@ -276,12 +277,14 @@ export default function CreateTeamForm1({ navigation, route }) {
         </View>
         <View style={{ flex: 1 }} />
       </ScrollView>
-      <TCGradientButton
+      <SafeAreaView>
+        <TCGradientButton
         isDisabled={sports === '' || teamName === '' || location === ''}
         title={strings.nextTitle}
-        style={{ marginBottom: 30 }}
+        style={{ marginBottom: 5 }}
         onPress={nextOnPress}
       />
+      </SafeAreaView>
       <Modal
         isVisible={visibleSportsModal}
         backdropColor="black"

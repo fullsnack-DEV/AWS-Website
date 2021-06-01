@@ -1,13 +1,9 @@
 import React from 'react';
-import {
- StyleSheet, Text, View, Image,
- } from 'react-native';
-
-import { Tooltip } from 'react-native-elements';
+import { StyleSheet, View, Text } from 'react-native';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
-import images from '../Constants/ImagePath';
+import TCToolTip from './TCToolTip';
 
 function TCChallengeTitle({
   title,
@@ -34,28 +30,14 @@ function TCChallengeTitle({
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Text style={[styles.valueText, valueStyle]}>{value}</Text><Text style={styles.staticValueText}>{staticValueText}</Text>
+        <Text style={[styles.valueText, valueStyle]}>{value}</Text>
+        <Text style={styles.staticValueText}>{staticValueText}</Text>
         {tooltipText !== '' && (
-          <Tooltip
-            popover={
-              <Text
-                style={{
-                  color: colors.whiteColor,
-
-                  fontSize: 11,
-                  fontFamily: fonts.RRegular,
-                }}>
-                {tooltipText}
-              </Text>
-            }
-            height={tooltipHeight}
-            width={tooltipWidth}
-            backgroundColor={colors.themeColor}
-            overlayColor={'transparent'}
-            skipAndroidStatusBar={true}>
-            <Image source={images.infoToolTipIcon} style={styles.infoImage} />
-            {/* <Text style={ styles.whyAskingText } >Info</Text> */}
-          </Tooltip>
+          <TCToolTip
+            tooltipText={tooltipText}
+            tooltipHeight={tooltipHeight}
+            tooltipWidth={tooltipWidth}
+          />
         )}
         {isEdit && (
           <Text
@@ -87,12 +69,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     margin: 15,
   },
-  infoImage: {
-    width: 15,
-    height: 15,
-    resizeMode: 'contain',
-    marginLeft: 10,
-  },
+
   staticValueText: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
