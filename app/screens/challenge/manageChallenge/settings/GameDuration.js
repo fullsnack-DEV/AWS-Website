@@ -44,14 +44,14 @@ export default function GameDuration({ navigation, route }) {
   );
 
   const [loading, setloading] = useState(false);
-  const [withOverTime, setWithOverTime] = useState(true);
+  const [withOverTime, setWithOverTime] = useState(!!route?.params?.settingObj?.game_duration?.overtime);
   const [details, setDetails] = useState(
     route?.params?.settingObj?.game_duration
       ? route?.params?.settingObj?.game_duration?.details
       : '',
   );
   const [period, setPeriod] = useState(
-    route?.params?.settingObj?.game_duration
+    route?.params?.settingObj?.game_duration?.period
       ? route?.params?.settingObj?.game_duration?.period
       : [
           {
@@ -62,7 +62,7 @@ export default function GameDuration({ navigation, route }) {
         ],
   );
   const [overTime, setOverTime] = useState(
-    route?.params?.settingObj?.game_duration
+    route?.params?.settingObj?.game_duration?.overtime
       ? route?.params?.settingObj?.game_duration?.overtime
       : [
           {
@@ -85,11 +85,9 @@ export default function GameDuration({ navigation, route }) {
             const resultOvertime = overTime.filter(
               (obj) => obj.interval === '' || obj.overTime === '',
             );
-            if (
-              resultPeriod.length > 0
-              || resultOvertime.length > 0
-              || firstPeriod === 0
-            ) {
+            if (resultPeriod.length > 0 || firstPeriod === 0) {
+              Alert.alert('Please fill all fields.');
+            } else if (withOverTime && resultOvertime.length > 0) {
               Alert.alert('Please fill all fields.');
             } else {
               onSavePressed();
@@ -259,31 +257,30 @@ export default function GameDuration({ navigation, route }) {
       if (e.period !== '') {
         sum += parseInt(e?.period);
       }
-    })
+    });
+    if (withOverTime) {
+      overTime.map((e) => {
+        if (e.interval !== '') {
+          sum += parseInt(e?.interval);
+        }
+        if (e.overTime !== '') {
+          sum += parseInt(e?.overTime);
+        }
+      });
+    }
 
-    overTime.map((e) => {
-      if (e.interval !== '') {
-        sum += parseInt(e?.interval);
-      }
-      if (e.overTime !== '') {
-        sum += parseInt(e?.overTime);
-      }
-    })
-
-      return { hours: Math.floor(sum / 60), minutes: sum % 60 }
-  }
+    return { hours: Math.floor(sum / 60), minutes: sum % 60 };
+  };
 
   const onSavePressed = () => {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       const gameDuration = {
-
-          period: period.map((e) => {
-            delete e.id;
-            return e;
-          }),
-          first_period: firstPeriod,
-          details,
-
+        period: period.map((e) => {
+          delete e.id;
+          return e;
+        }),
+        first_period: firstPeriod,
+        details,
       };
       if (withOverTime) {
         gameDuration.overtime = overTime.map((e) => {
@@ -291,6 +288,7 @@ export default function GameDuration({ navigation, route }) {
           return e;
         });
       }
+
       gameDuration.totalHours = calculateDuration().hours;
       gameDuration.totalMinutes = calculateDuration().minutes;
 
@@ -307,7 +305,6 @@ export default function GameDuration({ navigation, route }) {
           }),
           first_period: firstPeriod,
           details,
-
         },
       };
       if (withOverTime) {
@@ -315,6 +312,8 @@ export default function GameDuration({ navigation, route }) {
           delete e.id;
           return e;
         });
+      } else {
+        delete bodyParams.game_duration.overtime;
       }
 
       bodyParams.game_duration.totalHours = calculateDuration().hours;
@@ -469,7 +468,12 @@ export default function GameDuration({ navigation, route }) {
               {strings.totalTimeTitle}
             </Text>
 
-            <Text style={styles.totalTimeText}>{`${calculateDuration().hours !== null && calculateDuration().hours }h ${calculateDuration().minutes !== null && calculateDuration().minutes}m`}</Text>
+            <Text style={styles.totalTimeText}>{`${
+              calculateDuration().hours !== null && calculateDuration().hours
+            }h ${
+              calculateDuration().minutes !== null
+              && calculateDuration().minutes
+            }m`}</Text>
           </View>
           <TCLabel title={strings.detailsTitleText} style={{ marginRight: 15 }} />
           <TCTextInputClear

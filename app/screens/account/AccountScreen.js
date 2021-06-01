@@ -30,7 +30,6 @@ import MarqueeText from 'react-native-marquee';
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { useIsFocused } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -65,10 +64,8 @@ import { getSportIcon } from '../../utils/index';
 
 export default function AccountScreen({ navigation, route }) {
   const scrollRef = useRef();
-  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
 
-  console.log('authContext?.entity?.auth?.user?.registered_sports', authContext?.entity);
   const [isSportCreateModalVisible, setIsSportCreateModalVisible] = useState(
     false,
   );
@@ -203,10 +200,9 @@ export default function AccountScreen({ navigation, route }) {
     });
 
   useEffect(() => {
-    if (isFocused) {
+      console.log('useEffect get data Called..');
       getData()
-    }
-  }, [authContext?.entity, isFocused]);
+  }, [authContext?.entity]);
 
   useEffect(() => {
     if (route?.params?.createdSportName) {
@@ -540,19 +536,18 @@ export default function AccountScreen({ navigation, route }) {
     } else if (section === 'Manage Challenge') {
       const entity = authContext.entity;
 
-      if (entity?.obj?.registered_sports?.length > 0) {
         if (entity.role === 'user') {
-          console.log('sections');
-          setVisibleSportsModal(true);
+          if (entity?.obj?.registered_sports?.length > 0) {
+            setVisibleSportsModal(true);
+          } else {
+            Alert.alert('There is no registerd sports.');
+          }
         } else {
           navigation.navigate('ManageChallengeScreen', {
             sportName: entity?.obj?.sport,
           });
         }
-      } else {
-        Alert.alert('There is no registerd sports.');
-      }
-    } else if (section === 'Log out') {
+      } else if (section === 'Log out') {
       handleLogOut();
     }
   };
@@ -1046,6 +1041,7 @@ export default function AccountScreen({ navigation, route }) {
 
   const onNextPressed = () => {
     setIsRulesModalVisible(false);
+    console.log('************************************');
     const entity = authContext.entity;
     if (createEntity === 'team') {
       if (entity.role === 'user') {
@@ -1060,7 +1056,7 @@ export default function AccountScreen({ navigation, route }) {
   };
 
   const renderSports = ({ item }) => (
-    <TouchableWithoutFeedback
+    <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
         setSportsSelection(item?.sport_name);
@@ -1092,7 +1088,7 @@ export default function AccountScreen({ navigation, route }) {
           )}
         </View>
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 
   return (
@@ -1631,14 +1627,15 @@ export default function AccountScreen({ navigation, route }) {
             margin: 0,
             backgroundColor: 'rgba(0,0,0,0.5)',
           }}>
-          <View
+          <SafeAreaView
             style={{
-              width: '100%',
+
               height: Dimensions.get('window').height / 1.7,
               backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
+               position: 'absolute',
+               bottom: 0,
+               left: 0,
+               right: 0,
               borderTopLeftRadius: 30,
               borderTopRightRadius: 30,
               shadowColor: '#000',
@@ -1667,30 +1664,29 @@ export default function AccountScreen({ navigation, route }) {
             </View>
             <View style={styles.separatorLine} />
             <View style={{ flex: 1 }}>
-              <ScrollView>
-                <Text style={[styles.rulesText, { margin: 15 }]}>
-                  {'When your team creates a club:'}
-                </Text>
-                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
-                  {'\n• your team will belong to the club initially.'}
-                </Text>
-                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
-                  {'\n• your team can leave the club anytime later.'}
-                </Text>
-                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
-                  {
+
+              <Text style={[styles.rulesText, { margin: 15 }]}>
+                {'When your team creates a club:'}
+              </Text>
+              <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                {'\n• your team will belong to the club initially.'}
+              </Text>
+              <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                {'\n• your team can leave the club anytime later.'}
+              </Text>
+              <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                {
                     '\n• the admins of your team will be the admins of the club initially.'
                   }
-                </Text>
-              </ScrollView>
+              </Text>
+
             </View>
             <TCGradientButton
-              isDisabled={false}
               title={strings.nextTitle}
-              style={{ marginBottom: 30 }}
               onPress={onNextPressed}
             />
-          </View>
+
+          </SafeAreaView>
         </Modal>
 
         {/* Rules notes modal */}

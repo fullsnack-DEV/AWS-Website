@@ -123,7 +123,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
       if (route?.params?.gameDuration) {
         settings.game_duration = route?.params?.gameDuration;
       }
-      if (route?.params?.gameGeneralRules) {
+      if (route?.params?.gameGeneralRules !== undefined) {
         console.log(
           'route?.params?.gameGeneralRules',
           route?.params?.gameGeneralRules,

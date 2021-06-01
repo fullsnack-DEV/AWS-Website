@@ -1,6 +1,4 @@
-import React, {
- useState, useEffect, useContext,
- } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -30,7 +28,11 @@ import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
-import { getHitSlop, groupMemberGenderItems, languageList } from '../../../../utils';
+import {
+  getHitSlop,
+  groupMemberGenderItems,
+  languageList,
+} from '../../../../utils';
 import TCFormProgress from '../../../../components/TCFormProgress';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
@@ -278,230 +280,226 @@ export default function CreateTeamForm2({ navigation, route }) {
       <TCFormProgress totalSteps={3} curruentStep={2} />
       <KeyboardAwareScrollView>
         <ScrollView
-        style={styles.mainContainer}
-        showsVerticalScrollIndicator={false}>
-
+          style={styles.mainContainer}
+          showsVerticalScrollIndicator={false}>
           {followersList ? (
             <View style={styles.fieldView}>
               <TCLabel title={strings.followersDescription} />
               {follower && (
                 <View
-                style={{
-                  margin: 15,
-                  marginTop: 25,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}>
-                  <TCProfileView
-                  type={'medium'}
-                  name={follower?.full_name}
-                  location={follower?.city}
-                  image={follower?.thumbnail}
-                />
-                  <TouchableOpacity
-                  style={styles.closeButton}
-                  hitSlop={getHitSlop(15)}
-                  onPress={() => {
-                    setFollower();
-                    setFollowersSelection();
+                  style={{
+                    margin: 15,
+                    marginTop: 25,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
                   }}>
-                    <Image
-                    source={images.cancelImage}
-                    style={styles.closeButton}
+                  <TCProfileView
+                    type={'medium'}
+                    name={follower?.full_name}
+                    location={follower?.city}
+                    image={follower?.thumbnail}
                   />
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    hitSlop={getHitSlop(15)}
+                    onPress={() => {
+                      setFollower();
+                      setFollowersSelection();
+                    }}>
+                    <Image
+                      source={images.cancelImage}
+                      style={styles.closeButton}
+                    />
                   </TouchableOpacity>
                 </View>
-            )}
+              )}
               {!follower && (
-                <TouchableOpacity onPress={() => setVisibleFollowersModal(true)}>
+
+                <TouchableOpacity
+                  style={styles.languageView}
+                  onPress={() => setVisibleFollowersModal(true)}>
+                  <Text
+                    style={styles.languagePlaceholderText}
+                    numberOfLines={1}>
+                    {strings.followersPlaceholder}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          ) : (
+            <View style={{ flex: 1 }}>
+              <View style={styles.fieldView}>
+                <TCLabel title={strings.genderTitle} />
+                <TouchableOpacity onPress={() => setVisibleGendersModal(true)}>
                   <View style={styles.searchView}>
                     <TextInput
-                    style={styles.searchTextField}
-                    placeholder={strings.followersPlaceholder}
-                    value={gender}
-                    editable={false}
-                    pointerEvents="none"
-                    placeholderTextColor={colors.userPostTimeColor}
-                  />
+                      style={styles.searchTextField}
+                      placeholder={strings.selectGenderPlaceholder}
+                      value={gender}
+                      editable={false}
+                      pointerEvents="none"
+                    />
                   </View>
                 </TouchableOpacity>
-            )}
-            </View>
-        ) : (
-          <View style={{ flex: 1 }}>
-            <View style={styles.fieldView}>
-              <TCLabel title={strings.genderTitle} />
-              <TouchableOpacity onPress={() => setVisibleGendersModal(true)}>
-                <View style={styles.searchView}>
-                  <TextInput
-                    style={styles.searchTextField}
-                    placeholder={strings.selectGenderPlaceholder}
-                    value={gender}
-                    editable={false}
-                    pointerEvents="none"
+              </View>
+
+              <View style={styles.fieldView}>
+                <TCLabel title={strings.membersAgeTitle} />
+
+                <View
+                  style={{
+                    flexDirection: 'row',
+
+                    marginTop: 12,
+
+                    align: 'center',
+                    marginLeft: 15,
+                    marginRight: 15,
+                    justifyContent: 'space-between',
+                  }}>
+                  <RNPickerSelect
+                    placeholder={{
+                      label: strings.minPlaceholder,
+                      value: 0,
+                    }}
+                    items={minAgeValue}
+                    onValueChange={(value) => {
+                      setMinAge(value);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      iconContainer: {
+                        top: 0,
+                        right: 0,
+                      },
+                      inputIOS: {
+                        height: 40,
+
+                        fontSize: wp('3.5%'),
+                        paddingVertical: 12,
+                        paddingHorizontal: 15,
+                        width: wp('45%'),
+                        color: 'black',
+                        paddingRight: 30,
+                        backgroundColor: colors.offwhite,
+
+                        borderRadius: 5,
+                        shadowColor: colors.googleColor,
+                        shadowOffset: { width: 0, height: 1 },
+                        shadowOpacity: 0.5,
+                        shadowRadius: 1,
+                      },
+                      inputAndroid: {
+                        height: 40,
+
+                        fontSize: wp('4%'),
+                        paddingVertical: 12,
+                        paddingHorizontal: 15,
+                        width: wp('45%'),
+                        color: 'black',
+
+                        backgroundColor: colors.offwhite,
+                        borderRadius: 5,
+                        borderWidth: 1,
+                        borderColor: '#fff',
+
+                        elevation: 3,
+                      },
+                    }}
+                    value={minAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
+                  />
+                  <RNPickerSelect
+                    placeholder={{
+                      label: strings.maxPlaceholder,
+                      value: 0,
+                    }}
+                    items={maxAgeValue}
+                    onValueChange={(value) => {
+                      setMaxAge(value);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      inputIOS: {
+                        height: 40,
+
+                        fontSize: wp('3.5%'),
+                        paddingVertical: 12,
+                        paddingHorizontal: 15,
+                        width: wp('45%'),
+                        color: 'black',
+
+                        backgroundColor: colors.offwhite,
+
+                        borderRadius: 5,
+                        shadowColor: colors.googleColor,
+                        shadowOffset: { width: 0, height: 1 },
+                        shadowOpacity: 0.5,
+                        shadowRadius: 1,
+                      },
+                      inputAndroid: {
+                        height: 40,
+                        fontSize: wp('4%'),
+                        paddingVertical: 12,
+                        paddingHorizontal: 15,
+                        width: wp('45%'),
+                        color: 'black',
+                        backgroundColor: colors.offwhite,
+                        borderRadius: 5,
+                        elevation: 3,
+                      },
+                    }}
+                    value={maxAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
                   />
                 </View>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.fieldView}>
-              <TCLabel title={strings.membersAgeTitle} />
-
-              <View
-                style={{
-                  flexDirection: 'row',
-
-                  marginTop: 12,
-
-                  align: 'center',
-                  marginLeft: 15,
-                  marginRight: 15,
-                  justifyContent: 'space-between',
-                }}>
-                <RNPickerSelect
-                  placeholder={{
-                    label: strings.minPlaceholder,
-                    value: 0,
-                  }}
-                  items={minAgeValue}
-                  onValueChange={(value) => {
-                    setMinAge(value);
-                  }}
-                  useNativeAndroidPickerStyle={false}
-                  style={{
-                    iconContainer: {
-                      top: 0,
-                      right: 0,
-                    },
-                    inputIOS: {
-                      height: 40,
-
-                      fontSize: wp('3.5%'),
-                      paddingVertical: 12,
-                      paddingHorizontal: 15,
-                      width: wp('45%'),
-                      color: 'black',
-                      paddingRight: 30,
-                      backgroundColor: colors.offwhite,
-
-                      borderRadius: 5,
-                      shadowColor: colors.googleColor,
-                      shadowOffset: { width: 0, height: 1 },
-                      shadowOpacity: 0.5,
-                      shadowRadius: 1,
-                    },
-                    inputAndroid: {
-                      height: 40,
-
-                      fontSize: wp('4%'),
-                      paddingVertical: 12,
-                      paddingHorizontal: 15,
-                      width: wp('45%'),
-                      color: 'black',
-
-                      backgroundColor: colors.offwhite,
-                      borderRadius: 5,
-                      borderWidth: 1,
-                      borderColor: '#fff',
-
-                      elevation: 3,
-                    },
-                  }}
-                  value={minAge}
-                  Icon={() => (
-                    <Image
-                      source={images.dropDownArrow}
-                      style={styles.miniDownArrow}
-                    />
-                  )}
-                />
-                <RNPickerSelect
-                  placeholder={{
-                    label: strings.maxPlaceholder,
-                    value: 0,
-                  }}
-                  items={maxAgeValue}
-                  onValueChange={(value) => {
-                    setMaxAge(value);
-                  }}
-                  useNativeAndroidPickerStyle={false}
-                  style={{
-                    inputIOS: {
-                      height: 40,
-
-                      fontSize: wp('3.5%'),
-                      paddingVertical: 12,
-                      paddingHorizontal: 15,
-                      width: wp('45%'),
-                      color: 'black',
-
-                      backgroundColor: colors.offwhite,
-
-                      borderRadius: 5,
-                      shadowColor: colors.googleColor,
-                      shadowOffset: { width: 0, height: 1 },
-                      shadowOpacity: 0.5,
-                      shadowRadius: 1,
-                    },
-                    inputAndroid: {
-                      height: 40,
-                      fontSize: wp('4%'),
-                      paddingVertical: 12,
-                      paddingHorizontal: 15,
-                      width: wp('45%'),
-                      color: 'black',
-                      backgroundColor: colors.offwhite,
-                      borderRadius: 5,
-                      elevation: 3,
-                    },
-                  }}
-                  value={maxAge}
-                  Icon={() => (
-                    <Image
-                      source={images.dropDownArrow}
-                      style={styles.miniDownArrow}
-                    />
-                  )}
-                />
               </View>
             </View>
-          </View>
-        )}
+          )}
           <Text style={styles.LocationText}>{strings.languageText}</Text>
           <TouchableOpacity style={styles.languageView} onPress={toggleModal}>
             <Text
-            style={
-              languagesName
-                ? styles.languageText
-                : styles.languagePlaceholderText
-            }
-            numberOfLines={50}>
+              style={
+                languagesName
+                  ? styles.languageText
+                  : styles.languagePlaceholderText
+              }
+              numberOfLines={50}>
               {languagesName || 'Add language'}
             </Text>
           </TouchableOpacity>
 
           <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
             <Text style={styles.LocationText}>
               {strings.descriptionTeamTextDetails}
             </Text>
           </View>
           <TextInput
-          style={styles.descriptionTxt}
-          onChangeText={(text) => setDescription(text)}
-          value={description}
-          multiline
-          textAlignVertical={'top'}
-          numberOfLines={4}
-          placeholder={strings.descriptionTeamTextPlaceholder}
-          placeholderTextColor={colors.userPostTimeColor}
-        />
+            style={styles.descriptionTxt}
+            onChangeText={(text) => setDescription(text)}
+            value={description}
+            multiline
+            textAlignVertical={'top'}
+            numberOfLines={4}
+            placeholder={strings.descriptionTeamTextPlaceholder}
+            placeholderTextColor={colors.userPostTimeColor}
+          />
 
           {/* <View style={{ flex: 1 }} /> */}
-
         </ScrollView>
       </KeyboardAwareScrollView>
       <TCGradientButton
@@ -609,7 +607,7 @@ export default function CreateTeamForm2({ navigation, route }) {
         <View
           style={{
             width: '100%',
-             height: Dimensions.get('window').height / 2.8,
+            height: Dimensions.get('window').height / 2.8,
             backgroundColor: 'white',
             position: 'absolute',
             bottom: 0,

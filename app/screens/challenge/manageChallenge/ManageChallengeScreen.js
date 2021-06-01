@@ -135,6 +135,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
         });
       }
     } else if (opetions === 'Game Duration') {
+      console.log(settingObject);
       if (settingObject) {
         navigation.navigate('GameDuration', {
           settingObj: settingObject,
