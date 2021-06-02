@@ -15,9 +15,7 @@ import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import AuthContext from '../../../../auth/context';
 
 import images from '../../../../Constants/ImagePath';
-import {
-  patchChallengeSetting,
-} from '../../../../api/Challenge';
+import { patchChallengeSetting } from '../../../../api/Challenge';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
@@ -34,7 +32,15 @@ export default function RefundPolicy({ navigation, route }) {
 
   const [loading, setloading] = useState(false);
 
-  const [typeSelection, setTypeSelection] = useState(route?.params?.settingObj?.refund_policy ? (route?.params?.settingObj?.refund_policy === strings.strictText && policiesTypeList[0]) || (route?.params?.settingObj?.refund_policy === strings.moderateText && policiesTypeList[1]) || (route?.params?.settingObj?.refund_policy === strings.flexibleText && policiesTypeList[2]) : policiesTypeList[2]);
+  const [typeSelection, setTypeSelection] = useState(
+    (route?.params?.settingObj?.refund_policy === strings.strictText
+          && policiesTypeList[0])
+          || (route?.params?.settingObj?.refund_policy === strings.moderateText
+            && policiesTypeList[1])
+          || (route?.params?.settingObj?.refund_policy === strings.flexibleText
+            && policiesTypeList[2]),
+
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -42,7 +48,7 @@ export default function RefundPolicy({ navigation, route }) {
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
-            onSavePressed()
+            onSavePressed();
           }}>
           Save
         </Text>
@@ -80,22 +86,22 @@ export default function RefundPolicy({ navigation, route }) {
       const bodyParams = {
         sport: sportName,
         refund_policy: typeSelection.key,
-      }
+      };
       setloading(true);
       patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-      .then((response) => {
-        setloading(false);
-        navigation.navigate(comeFrom, { settingObj: response.payload })
-        console.log('patch challenge response:=>', response.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+        .then((response) => {
+          setloading(false);
+          navigation.navigate(comeFrom, { settingObj: response.payload });
+          console.log('patch challenge response:=>', response.payload);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     }
-  }
+  };
 
   return (
     <ScrollView
@@ -110,95 +116,73 @@ export default function RefundPolicy({ navigation, route }) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderPolicyTypes}
       />
-      {typeSelection.key === strings.strictText && <View
-        style={styles.policyTypeNotes}>
-        <Text
-          style={styles.policyTypeHeading}>
-          {strings.strictText}
-        </Text>
-        <Text
-          style={styles.policyTypeTitle}>
-          {strings.strictPoint1Title}
-        </Text>
-        <Text
-          style={styles.policyTypeDetail}>
-          {strings.strictPoint1Desc}
-        </Text>
-        <Text
-          style={[styles.policyTypeTitle, { marginTop: 25 }]}>
-          {strings.strictPoint2Title}
-        </Text>
-        <Text
-          style={styles.policyTypeDetail}>
-          {strings.strictPoint2Desc}
-        </Text>
-        <Text
-           style={[styles.policyTypeTitle, { marginTop: 25 }]}>
-          {strings.strictPoint3Title}
-        </Text>
-        <Text
-          style={styles.policyTypeDetail}>
-          {strings.strictPoint3Desc}
-        </Text>
-      </View>}
+      {typeSelection.key === strings.strictText && (
+        <View style={styles.policyTypeNotes}>
+          <Text style={styles.policyTypeHeading}>{strings.strictText}</Text>
+          <Text style={styles.policyTypeTitle}>
+            {strings.strictPoint1Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.strictPoint1Desc}
+          </Text>
+          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+            {strings.strictPoint2Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.strictPoint2Desc}
+          </Text>
+          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+            {strings.strictPoint3Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.strictPoint3Desc}
+          </Text>
+        </View>
+      )}
 
-      {typeSelection.key === strings.moderateText && <View
-        style={styles.policyTypeNotes}>
-        <Text
-          style={styles.policyTypeHeading}>
-          {strings.moderateText}
-        </Text>
-        <Text
-           style={styles.policyTypeTitle}>
-          {strings.moderatePoint1Title}
-        </Text>
-        <Text
-          style={styles.policyTypeDetail}>
-          {strings.moderatePoint1Desc}
-        </Text>
+      {typeSelection.key === strings.moderateText && (
+        <View style={styles.policyTypeNotes}>
+          <Text style={styles.policyTypeHeading}>{strings.moderateText}</Text>
+          <Text style={styles.policyTypeTitle}>
+            {strings.moderatePoint1Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.moderatePoint1Desc}
+          </Text>
 
-        <Text
-           style={[styles.policyTypeTitle, { marginTop: 25 }]}>
-          {strings.moderatePoint2Title}
-        </Text>
-        <Text
-          style={styles.policyTypeDetail}>
-          {strings.moderatePoint2Desc}
-        </Text>
+          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+            {strings.moderatePoint2Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.moderatePoint2Desc}
+          </Text>
 
-        <Text
-           style={[styles.policyTypeTitle, { marginTop: 25 }]}>
-          {strings.moderatePoint3Title}
-        </Text>
-        <Text
-          style={styles.policyTypeDetail}>
-          {strings.moderatePoint3Desc}
-        </Text>
-      </View>}
+          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+            {strings.moderatePoint3Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.moderatePoint3Desc}
+          </Text>
+        </View>
+      )}
 
-      {typeSelection.key === strings.flexibleText && <View
-        style={styles.policyTypeNotes}>
-        <Text
-          style={styles.policyTypeHeading}>
-          {strings.flexibleText}
-        </Text>
-        <Text
-          style={styles.policyTypeTitle}>
-          {strings.flexiblePoint1Title}
-        </Text>
-        <Text
-          style={styles.policyTypeDetail}>
-          {strings.flexiblePoint1Desc}
-        </Text>
-        <Text
-          style={[styles.policyTypeTitle, { marginTop: 25 }]}>
-          {strings.flexiblePoint2Title}
-        </Text>
-        <Text
-          style={styles.policyTypeDetail}>
-          {strings.flexiblePoint2Desc}
-        </Text>
-      </View>}
+      {typeSelection.key === strings.flexibleText && (
+        <View style={styles.policyTypeNotes}>
+          <Text style={styles.policyTypeHeading}>{strings.flexibleText}</Text>
+          <Text style={styles.policyTypeTitle}>
+            {strings.flexiblePoint1Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.flexiblePoint1Desc}
+          </Text>
+          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+            {strings.flexiblePoint2Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.flexiblePoint2Desc}
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -273,10 +257,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: 10,
     shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.2,
-      shadowRadius: 1,
-      elevation: 15,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 15,
   },
   policyTypeTitle: {
     fontSize: 16,
