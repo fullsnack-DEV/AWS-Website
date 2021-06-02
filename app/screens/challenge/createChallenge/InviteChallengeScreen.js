@@ -280,6 +280,8 @@ export default function InviteChallengeScreen({ navigation, route }) {
         setFeeObj(response.payload);
         if (response.payload.total_game_fee === 0) {
           setTotalZero(true);
+        } else {
+          setTotalZero(false);
         }
         console.log('Body estimate fee:=>', response.payload);
 

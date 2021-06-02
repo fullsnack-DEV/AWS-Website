@@ -110,6 +110,7 @@ function MatchReservation({ data, onPressButon = () => {}, onPressGameCard = () 
     <View>
       <ReservationNumber reservationNumber={data.reservation_id || data.challenge_id}/>
       <ReservationStatusView data={data}/>
+
       <ChallengerInOutView data={data}/>
       <TCGameCard data={data.game || data} onPress={onPressGameCard}/>
       {isPendingButtonOrDetailButton() ? <ReservationPendingButton onPressButon={onPressButon}/> : <ReservationDetailButton onPressButon={onPressButon}/>}
