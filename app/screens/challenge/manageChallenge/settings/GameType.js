@@ -13,9 +13,7 @@ import {
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
-import {
-  patchChallengeSetting,
-} from '../../../../api/Challenge';
+import { patchChallengeSetting } from '../../../../api/Challenge';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 import fonts from '../../../../Constants/Fonts';
@@ -33,7 +31,14 @@ export default function GameType({ navigation, route }) {
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
-  const [typeSelection, setTypeSelection] = useState(route?.params?.settingObj?.game_type ? (route?.params?.settingObj?.game_type === 'Official' && gameTypeList[0]) || (route?.params?.settingObj?.game_type === 'Friendly' && gameTypeList[1]) || (route?.params?.settingObj?.game_type === 'All' && gameTypeList[2]) : gameTypeList[2]);
+  const [typeSelection, setTypeSelection] = useState(
+    (route?.params?.settingObj?.game_type === 'Official'
+          && gameTypeList[0])
+          || (route?.params?.settingObj?.game_type === 'Friendly'
+            && gameTypeList[1])
+          || (route?.params?.settingObj?.game_type === 'All' && gameTypeList[2]),
+
+  );
 
   const { sportName } = route?.params;
 
@@ -43,7 +48,7 @@ export default function GameType({ navigation, route }) {
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
-            onSavePressed()
+            onSavePressed();
           }}>
           Save
         </Text>
@@ -53,27 +58,35 @@ export default function GameType({ navigation, route }) {
 
   const onSavePressed = () => {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
-      navigation.navigate(comeFrom, { gameType: (typeSelection.key === strings.officialOnly && 'Official') || (typeSelection.key === strings.friendlyOnly && 'Friendly') || (typeSelection.key === strings.allType && 'All') })
+      navigation.navigate(comeFrom, {
+        gameType:
+          (typeSelection.key === strings.officialOnly && 'Official')
+          || (typeSelection.key === strings.friendlyOnly && 'Friendly')
+          || (typeSelection.key === strings.allType && 'All'),
+      });
     } else {
       const bodyParams = {
         sport: sportName,
-        game_type: (typeSelection.key === strings.officialOnly && 'Official') || (typeSelection.key === strings.friendlyOnly && 'Friendly') || (typeSelection.key === strings.allType && 'All'),
-      }
+        game_type:
+          (typeSelection.key === strings.officialOnly && 'Official')
+          || (typeSelection.key === strings.friendlyOnly && 'Friendly')
+          || (typeSelection.key === strings.allType && 'All'),
+      };
       setloading(true);
       patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-      .then((response) => {
-        setloading(false);
-        navigation.navigate(comeFrom, { settingObj: response.payload })
-        console.log('patch challenge response:=>', response.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+        .then((response) => {
+          setloading(false);
+          navigation.navigate(comeFrom, { settingObj: response.payload });
+          console.log('patch challenge response:=>', response.payload);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     }
-  }
+  };
 
   const renderGameTypes = ({ item }) => (
     <TouchableWithoutFeedback
@@ -108,29 +121,25 @@ export default function GameType({ navigation, route }) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderGameTypes}
       />
-      {(typeSelection.key === strings.officialOnly || typeSelection.key === strings.allType) && <View
-        style={styles.gameTypeNotes}>
-        <Text
-          style={styles.gameTypeTitle}>
-          {strings.officialGameType}
-        </Text>
-        <Text
-          style={styles.gameTypeNotesDetail}>
-          {strings.challengeSettingTitle}
-        </Text>
-      </View>}
+      {(typeSelection.key === strings.officialOnly
+        || typeSelection.key === strings.allType) && (
+          <View style={styles.gameTypeNotes}>
+            <Text style={styles.gameTypeTitle}>{strings.officialGameType}</Text>
+            <Text style={styles.gameTypeNotesDetail}>
+              {strings.challengeSettingTitle}
+            </Text>
+          </View>
+      )}
 
-      {(typeSelection.key === strings.friendlyOnly || typeSelection.key === strings.allType) && <View
-        style={styles.gameTypeNotes}>
-        <Text
-          style={styles.gameTypeTitle}>
-          {strings.friendlyGameType}
-        </Text>
-        <Text
-          style={styles.gameTypeNotesDetail}>
-          {strings.challengeSettingTitle}
-        </Text>
-      </View>}
+      {(typeSelection.key === strings.friendlyOnly
+        || typeSelection.key === strings.allType) && (
+          <View style={styles.gameTypeNotes}>
+            <Text style={styles.gameTypeTitle}>{strings.friendlyGameType}</Text>
+            <Text style={styles.gameTypeNotesDetail}>
+              {strings.challengeSettingTitle}
+            </Text>
+          </View>
+      )}
     </ScrollView>
   );
 }
@@ -205,10 +214,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: 10,
     shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.2,
-      shadowRadius: 1,
-      elevation: 15,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 15,
   },
   gameTypeTitle: {
     fontSize: 16,

@@ -24,7 +24,7 @@ export default function GameFee({ navigation, route }) {
   const [currencyType] = useState(
     route?.params?.settingObj?.game_fee
       ? route?.params?.settingObj?.game_fee?.currency_type
-      : authContext?.entity?.obj?.currency_type,
+      : authContext?.entity?.obj?.currency_type ?? 'CAD',
   );
 
   useLayoutEffect(() => {
@@ -42,9 +42,10 @@ export default function GameFee({ navigation, route }) {
   }, [authContext.entity.obj.currency_type, basicFee, comeFrom, currencyType, navigation]);
 
   const onSavePressed = () => {
-    if (basicFee < 1) {
-      Alert.alert('User should not allow less than $1 game fee.');
-    } else if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
+    // if (basicFee < 1) {
+    //   Alert.alert('User should not allow less than $1 game fee.');
+    // } else
+     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
         navigation.navigate(comeFrom, {
           gameFee: {
             fee: Number(basicFee),

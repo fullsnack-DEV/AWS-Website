@@ -94,7 +94,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
     if (groupObj) {
       setteams([{ ...entity.obj }, { ...groupObj }]);
     }
-    if (settingObject?.game_fee?.fee) {
+    if (settingObject?.game_fee?.fee || settingObject?.game_fee?.fee >= 0) {
       getFeeDetail();
     }
   }, [authContext.entity, groupObj, settingObject?.game_fee?.fee]);
@@ -109,7 +109,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
       }
       if (route?.params?.gameFee) {
         console.log('route?.params?.gameFee', route?.params?.gameFee);
-        settings.game_fee = route?.params?.gameFee;
+        settings.game_fee = route?.params?.gameFee ?? 0;
       }
       if (route?.params?.refundPolicy) {
         console.log('route?.params?.refundPolicy', route?.params?.refundPolicy);
@@ -273,6 +273,8 @@ export default function InviteChallengeScreen({ navigation, route }) {
     feeBody.currency_type = settingObject?.game_fee?.currency_type?.toLowerCase();
     feeBody.total_game_fee = Number(settingObject?.game_fee?.fee?.toString());
     setloading(true);
+
+    console.log('Body estimate fee:=>', feeBody);
     getFeesEstimation(feeBody, authContext)
       .then((response) => {
         setFeeObj(response.payload);
