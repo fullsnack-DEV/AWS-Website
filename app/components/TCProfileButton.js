@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     width: 5,
     marginLeft: 8,
+    tintColor: colors.lightBlackColor,
   },
 });
 

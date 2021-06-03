@@ -6,6 +6,9 @@ import {
   View,
   Text,
   Alert,
+  TouchableOpacity,
+  SafeAreaView,
+  Image,
 } from 'react-native';
 import {
     widthPercentageToDP as wp,
@@ -13,6 +16,7 @@ import {
   } from 'react-native-responsive-screen';
   import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
+  import Modal from 'react-native-modal';
   import ActivityLoader from '../../../components/loader/ActivityLoader';
 
   import AuthContext from '../../../auth/context';
@@ -44,6 +48,8 @@ export default function ChallengePaymentScreen({ route, navigation }) {
   entity = authContext.entity;
     const isFocused = useIsFocused();
     const [loading, setloading] = useState(false);
+
+    const [modalVisible, setModalVisible] = useState(false);
 
     const [challengeData] = useState(
       route?.params?.challengeObj,
@@ -102,9 +108,10 @@ export default function ChallengePaymentScreen({ route, navigation }) {
         createChallenge(body, authContext)
           .then((response) => {
             console.log(' challenge response:=>', response.payload);
-            navigation.navigate('ChallengeSentScreen', {
-              groupObj,
-            });
+            // navigation.navigate('ChallengeSentScreen', {
+            //   groupObj,
+            // });
+            setModalVisible(true)
             setloading(false);
           })
           .catch((e) => {
@@ -327,6 +334,60 @@ export default function ChallengePaymentScreen({ route, navigation }) {
         }}
         outerContainerStyle={{ marginBottom: 45 }}
       />
+      {/* <ChallengeModalView
+      navigation = {navigation}
+      modalVisible = {modalVisible}
+      backdropPress = {() => setModalVisible(false)}
+      onClose = {() => setModalVisible(false)}
+      groupObj = {groupObj}
+      status = {'sent'}/> */}
+
+      <Modal
+        isVisible={modalVisible}
+        backdropColor="black"
+        //   onBackdropPress={backdropPress}
+        //   onRequestClose={onClose}
+        backdropOpacity={0.5}
+        style={{
+          margin: 0,
+          marginTop: 50,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          borderTopLeftRadius: 15,
+          borderTopRightRadius: 15,
+        }}>
+        <View style={styles.mainContainer}>
+          <Image style={styles.background} source={images.orangeLayer} />
+          <Image style={styles.background} source={images.entityCreatedBG} />
+
+          <View style={styles.mailContainer}>
+            <Text style={styles.invitationText}>Challenge sent</Text>
+            <Text style={styles.infoText}>
+              When{' '}
+              {groupObj?.group_name
+                  ?? `${groupObj?.first_name} ${groupObj?.last_name}`}{' '}
+              accepts your match reservation request, you will be notified.
+            </Text>
+            <View style={styles.imageContainer}>
+              <Image
+                source={images.challengeSentPlane}
+                style={styles.rotateImage}
+              />
+            </View>
+          </View>
+
+          <SafeAreaView>
+            <TouchableOpacity
+                style={styles.goToProfileButton}
+                onPress={() => {
+                  setModalVisible(false)
+                  navigation.popToTop();
+                }}>
+              <Text style={styles.goToProfileTitle}>OK</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+
+        </View>
+      </Modal>
     </TCKeyboardView>
   );
 }
@@ -353,5 +414,62 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     margin: 15,
+  },
+
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  background: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    resizeMode: 'stretch',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  goToProfileButton: {
+    alignSelf: 'center',
+    borderColor: colors.whiteColor,
+    borderRadius: 40,
+    borderWidth: 1,
+    height: 45,
+
+    width: '92%',
+  },
+  goToProfileTitle: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 15,
+    height: 50,
+    padding: 12,
+    textAlign: 'center',
+  },
+  mailContainer: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    alignItems: 'center',
+  },
+  invitationText: {
+    fontSize: 25,
+    fontFamily: fonts.RBold,
+    color: colors.whiteColor,
+  },
+  infoText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.whiteColor,
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 15,
+    marginBottom: 25,
+    textAlign: 'center',
+    lineHeight: 25,
+  },
+  rotateImage: {
+    resizeMode: 'contain',
+    width: 230,
+    height: 150,
   },
 });

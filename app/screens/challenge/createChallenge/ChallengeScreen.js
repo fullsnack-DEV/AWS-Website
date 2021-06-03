@@ -60,7 +60,7 @@ export default function ChallengeScreen({ navigation, route }) {
     if (groupObj) {
       setteams([{ ...entity.obj }, { ...groupObj }]);
     }
-    if (settingObject?.game_fee?.fee) {
+    if (settingObject?.game_fee?.fee || settingObject?.game_fee?.fee >= 0) {
       getFeeDetail();
     }
   }, [authContext.entity, groupObj, settingObject?.game_fee?.fee]);
@@ -102,11 +102,13 @@ export default function ChallengeScreen({ navigation, route }) {
     setloading(true);
     getFeesEstimation(feeBody, authContext)
       .then((response) => {
+        console.log('Body estimate fee:=>', response.payload);
         setFeeObj(response.payload);
         if (response.payload.total_game_fee === 0) {
           setTotalZero(true);
+        } else {
+          setTotalZero(false);
         }
-        console.log('Body estimate fee:=>', response.payload);
 
         setloading(false);
       })
@@ -601,7 +603,7 @@ export default function ChallengeScreen({ navigation, route }) {
         isDisabled={
           !route?.params?.startTime
           || !route?.params?.endTime
-          || settingObject?.venue?.length !== 1
+          // || settingObject?.venue?.length !== 1
           || !venue
         }
         title={strings.reservTitle}

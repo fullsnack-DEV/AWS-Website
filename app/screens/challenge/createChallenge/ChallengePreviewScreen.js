@@ -8,9 +8,12 @@ import {
   FlatList,
   Alert,
   SafeAreaView,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
 import moment from 'moment';
 
+import Modal from 'react-native-modal';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -32,7 +35,7 @@ import ReservationStatus from '../../../Constants/ReservationStatus';
 import { heightPercentageToDP, widthPercentageToDP } from '../../../utils';
 import TCSmallButton from '../../../components/TCSmallButton';
 import images from '../../../Constants/ImagePath';
-import { getNumberSuffix } from '../../../utils/gameUtils';
+import { getGameHomeScreen, getNumberSuffix } from '../../../utils/gameUtils';
 import {
   acceptDeclineChallenge,
   acceptDeclineAlterChallenge,
@@ -43,6 +46,8 @@ import GameStatus from '../../../Constants/GameStatus';
 import TCArrowView from '../../../components/TCArrowView';
 import TCGradientButton from '../../../components/TCGradientButton';
 
+import TCBorderButton from '../../../components/TCBorderButton';
+
 let entity = {};
 export default function ChallengePreviewScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -52,6 +57,13 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   entity = authContext.entity;
 
   const [settingObject, setSettingObject] = useState();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const [alterModalVisible, setAlterModalVisible] = useState(false);
+
+  const [challengeStatus, setChallengeStatus] = useState();
+  const [teamObject, setTeamObject] = useState();
+  const [groupObject, setGroupObject] = useState();
 
   const [challengeData, setChallengeData] = useState(
     route?.params?.challengeObj[0],
@@ -285,35 +297,42 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         } else {
           groupObj = challengeData?.home_team;
         }
-
-        if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: {
-              ...groupObj,
-              game_id: response?.payload?.game_id,
-              sport: challengeData?.sport,
-            },
-            status: 'accept',
-          });
-        } else if (status === 'decline') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: {
-              ...groupObj,
-              game_id: response?.payload?.game_id,
-              sport: challengeData?.sport,
-            },
-            status: 'decline',
-          });
-        } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: {
-              ...groupObj,
-              game_id: response?.payload?.game_id,
-              sport: challengeData?.sport,
-            },
-            status: 'cancel',
-          });
-        }
+        setChallengeStatus(status);
+        setModalVisible(true);
+        setGroupObject(groupObj);
+        setTeamObject({
+          ...groupObj,
+          game_id: response?.payload?.game_id,
+          sport: challengeData?.sport,
+        });
+        // if (status === 'accept') {
+        //   navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //     teamObj: {
+        //       ...groupObj,
+        //       game_id: response?.payload?.game_id,
+        //       sport: challengeData?.sport,
+        //     },
+        //     status: 'accept',
+        //   });
+        // } else if (status === 'decline') {
+        //   navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //     teamObj: {
+        //       ...groupObj,
+        //       game_id: response?.payload?.game_id,
+        //       sport: challengeData?.sport,
+        //     },
+        //     status: 'decline',
+        //   });
+        // } else if (status === 'cancel') {
+        //   navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //     teamObj: {
+        //       ...groupObj,
+        //       game_id: response?.payload?.game_id,
+        //       sport: challengeData?.sport,
+        //     },
+        //     status: 'cancel',
+        //   });
+        // }
       })
       .catch((e) => {
         setloading(false);
@@ -345,6 +364,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     )
       .then((response) => {
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
+
         setloading(false);
         let groupObj;
         if (challengeData?.home_team?.full_name) {
@@ -360,35 +380,59 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         } else {
           groupObj = challengeData?.home_team;
         }
+        setChallengeStatus(status);
+        setAlterModalVisible(true);
+        setGroupObject(groupObj);
+        setTeamObject({
+          ...groupObj,
+          game_id: response?.payload?.game_id,
+          sport: challengeData?.sport,
+        });
 
-        if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: {
-              ...groupObj,
-              game_id: response?.payload?.game_id,
-              sport: challengeData?.sport,
-            },
-            status: 'accept',
-          });
-        } else if (status === 'decline') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: {
-              ...groupObj,
-              game_id: response?.payload?.game_id,
-              sport: challengeData?.sport,
-            },
-            status: 'decline',
-          });
-        } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: {
-              ...groupObj,
-              game_id: response?.payload?.game_id,
-              sport: challengeData?.sport,
-            },
-            status: 'cancel',
-          });
-        }
+        //   setloading(false);
+        //   let groupObj;
+        //   if (challengeData?.home_team?.full_name) {
+        //     if (challengeData?.home_team?.user_id === authContext?.entity?.uid) {
+        //       groupObj = challengeData?.away_team;
+        //     } else {
+        //       groupObj = challengeData?.home_team;
+        //     }
+        //   } else if (
+        //     challengeData?.home_team?.group_id === authContext?.entity?.uid
+        //   ) {
+        //     groupObj = challengeData?.away_team;
+        //   } else {
+        //     groupObj = challengeData?.home_team;
+        //   }
+
+        //   if (status === 'accept') {
+        //     navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //       teamObj: {
+        //         ...groupObj,
+        //         game_id: response?.payload?.game_id,
+        //         sport: challengeData?.sport,
+        //       },
+        //       status: 'accept',
+        //     });
+        //   } else if (status === 'decline') {
+        //     navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //       teamObj: {
+        //         ...groupObj,
+        //         game_id: response?.payload?.game_id,
+        //         sport: challengeData?.sport,
+        //       },
+        //       status: 'decline',
+        //     });
+        //   } else if (status === 'cancel') {
+        //     navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //       teamObj: {
+        //         ...groupObj,
+        //         game_id: response?.payload?.game_id,
+        //         sport: challengeData?.sport,
+        //       },
+        //       status: 'cancel',
+        //     });
+        //   }
       })
       .catch((e) => {
         setloading(false);
@@ -842,22 +886,24 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           ReservationStatus.pendingpayment,
         ].includes(challengeData?.status)
       ) {
-          return (
-            <TCGradientButton
-              title={'TRY TO PAY AGAIN'}
-              onPress={() => {
-                navigation.navigate('PayAgainScreen', {
-                  body: { ...challengeData },
-                  status: challengeData?.status,
-                });
-              }}
-              marginBottom={15}
-            />
-          );
+        return (
+          <TCGradientButton
+            title={'TRY TO PAY AGAIN'}
+            onPress={() => {
+              navigation.navigate('PayAgainScreen', {
+                body: { ...challengeData },
+                status: challengeData?.status,
+              });
+            }}
+            marginBottom={15}
+          />
+        );
       }
       if (
         checkSenderOrReceiver(challengeData) === 'receiver'
-        && [ReservationStatus.pendingrequestpayment].includes(challengeData?.status)
+        && [ReservationStatus.pendingrequestpayment].includes(
+          challengeData?.status,
+        )
       ) {
         return (
           <TCGradientButton
@@ -878,10 +924,9 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     } else {
       if (
         checkSenderOrReceiver(challengeData) === 'sender'
-        && [
-          ReservationStatus.pendingrequestpayment,
-
-        ].includes(challengeData?.status)
+        && [ReservationStatus.pendingrequestpayment].includes(
+          challengeData?.status,
+        )
       ) {
         return (
           <TCGradientButton
@@ -901,7 +946,10 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       }
       if (
         checkSenderOrReceiver(challengeData) === 'receiver'
-        && [ReservationStatus.pendingrequestpayment, ReservationStatus.pendingpayment].includes(challengeData?.status)
+        && [
+          ReservationStatus.pendingrequestpayment,
+          ReservationStatus.pendingpayment,
+        ].includes(challengeData?.status)
       ) {
         return (
           <TCGradientButton
@@ -1211,6 +1259,263 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       <TCThickDivider marginTop={20} />
 
       <SafeAreaView>{bottomButtonView()}</SafeAreaView>
+
+      {/* <ChallengeModalView
+        navigation={navigation}
+        modalVisible={modalVisible}
+        // backdropPress={() => setModalVisible(false)}
+        // onClose={() => setModalVisible(false)}
+        groupObj={groupObject}
+        teamObj={teamObject}
+        entity={entity}
+        status={challengeStatus}
+      /> */}
+      <Modal
+        isVisible={modalVisible}
+        backdropColor="black"
+        //   onBackdropPress={backdropPress}
+        //   onRequestClose={onClose}
+        backdropOpacity={0.5}
+        style={{
+          margin: 0,
+          marginTop: 50,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          borderTopLeftRadius: 15,
+          borderTopRightRadius: 15,
+        }}>
+        <View style={styles.mainContainer}>
+          <Image style={styles.background} source={images.orangeLayer} />
+          <Image style={styles.background} source={images.entityCreatedBG} />
+
+          {challengeStatus === 'sent' && (
+            <View style={styles.mailContainer}>
+              <Text style={styles.invitationText}>Challenge sent</Text>
+              <Text style={styles.infoText}>
+                When{' '}
+                {groupObject?.group_name
+                  ?? `${groupObject?.first_name} ${groupObject?.last_name}`}{' '}
+                accepts your match reservation request, you will be notified.
+              </Text>
+            </View>
+          )}
+
+          {challengeStatus !== 'sent' && (
+            <View style={styles.mailContainer}>
+              <Text style={styles.invitationText}>
+                {(challengeStatus === 'accept' && 'Challenge accepted')
+                  || (challengeStatus === 'decline' && 'Challenge declined')
+                  || (challengeStatus === 'cancel' && 'Challenge cancelled')
+                  || (challengeStatus === 'restored' && 'Challenge Restored')}
+              </Text>
+
+              {challengeStatus === 'accept' && (
+                <Text style={styles.infoText}>
+                  A match between{' '}
+                  <Text style={styles.entityNameBoldText}>
+                    {teamObject?.group_name
+                      ? teamObject?.group_name
+                      : teamObject?.first_name + teamObject?.last_name}
+                  </Text>{' '}
+                  and {teamObject?.group_name ? 'your team' : 'you'} has been
+                  scheduled.
+                </Text>
+              )}
+
+              {challengeStatus === 'decline' && (
+                <Text style={styles.infoText}>
+                  A match reservation request from{' '}
+                  <Text style={styles.entityNameBoldText}>
+                    {teamObject?.group_name
+                      ? teamObject?.group_name
+                      : teamObject?.first_name + teamObject?.last_name}
+                  </Text>{' '}
+                  has been declined.
+                </Text>
+              )}
+
+              {challengeStatus === 'cancel' && (
+                <Text style={styles.infoText}>
+                  A match reservation from{' '}
+                  <Text style={styles.entityNameBoldText}>
+                    {teamObject?.group_name
+                      ? teamObject?.group_name
+                      : teamObject?.first_name + teamObject?.last_name}
+                  </Text>{' '}
+                  has been cancelled.
+                </Text>
+              )}
+
+              {challengeStatus === 'restored' && (
+                <Text style={styles.infoText}>
+                  Reservation alteration request restored.
+                </Text>
+              )}
+
+              {challengeStatus !== 'sent' && (
+                <View style={styles.entityViewContainer}>
+                  <Image
+                    source={
+                      entity?.thumbnail
+                        ? { uri: entity?.thumbnail }
+                        : entity?.full_name
+                        ? images.profilePlaceHolder
+                        : images.teamPlaceholder
+                    }
+                    style={styles.entityImage}
+                  />
+                  <Text style={styles.vsText}>VS</Text>
+                  <Image
+                    source={
+                      teamObject?.thumbnail
+                        ? { uri: teamObject?.thumbnail }
+                        : images.teamPlaceholder
+                    }
+                    style={[
+                      styles.entityImage,
+                      { opacity: challengeStatus === 'decline' ? 0.5 : 1.0 },
+                      teamObject?.thumbnail
+                        ? {
+                            height: 82,
+                            width: 82,
+                          }
+                        : {
+                            height: 75,
+                            width: 75,
+                          },
+                    ]}
+                  />
+                </View>
+              )}
+            </View>
+          )}
+          {challengeStatus === 'sent' ? (
+            <SafeAreaView>
+              <TouchableOpacity
+                style={styles.goToProfileButton}
+                onPress={() => {
+                  navigation.popToTop();
+                }}>
+                <Text style={styles.goToProfileTitle}>OK</Text>
+              </TouchableOpacity>
+            </SafeAreaView>
+          ) : (
+            <SafeAreaView>
+              <View style={{ height: 95, justifyContent: 'space-between' }}>
+                <TCBorderButton
+                  title={`GO TO ${
+                    teamObject?.group_name?.toUpperCase()
+                    || `${teamObject?.first_name?.toUpperCase()} ${teamObject?.last_name?.toUpperCase()}`
+                  }`}
+                  textColor={colors.whiteColor}
+                  borderColor={colors.whiteColor}
+                  backgroundColor={'transparent'}
+                  height={40}
+                  shadow={true}
+                  // marginBottom={15}// route?.params?.status === 'accept' ? 34 : 55
+                  onPress={() => {
+                    setModalVisible(false);
+
+                    navigation.push('HomeScreen', {
+                      sourceScreen: 'orangeScreen',
+                      uid: teamObject?.group_id || teamObject?.user_id,
+                      backButtonVisible: true,
+                      menuBtnVisible: false,
+                      role:
+                        teamObject?.entity_type === 'player'
+                          ? 'user'
+                          : teamObject?.entity_type,
+                    });
+                  }}
+                />
+
+                {challengeStatus !== 'decline' && (
+                  <TCBorderButton
+                    title={strings.goToGameHome}
+                    textColor={colors.themeColor}
+                    borderColor={'transparent'}
+                    height={40}
+                    shadow={true}
+                    // marginBottom={55}
+                    onPress={() => {
+                      setModalVisible(false);
+                      const gameHome = getGameHomeScreen(teamObject?.sport);
+                      if (teamObject?.game_id) {
+                        navigation.navigate(gameHome, {
+                          gameId: teamObject?.game_id,
+                        });
+                      } else {
+                        Alert.alert('Game ID does not exist.');
+                      }
+                    }}
+                  />
+                )}
+              </View>
+            </SafeAreaView>
+          )}
+        </View>
+      </Modal>
+
+      {/* <AlterChallengeModalView
+        navigation={navigation}
+        modalVisible={alterModalVisible}
+        status={challengeStatus}
+      /> */}
+
+      <Modal
+        isVisible={alterModalVisible}
+        backdropColor="black"
+        //   onBackdropPress={backdropPress}
+        //   onRequestClose={onClose}
+        backdropOpacity={0.5}
+        style={{
+          margin: 0,
+          marginTop: 50,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          borderTopLeftRadius: 15,
+          borderTopRightRadius: 15,
+        }}>
+        <View style={styles.mainContainer}>
+          <Image style={styles.background} source={images.orangeLayer} />
+          <Image style={styles.background} source={images.entityCreatedBG} />
+
+          {challengeStatus === 'sent' && (
+            <View style={styles.mailContainer}>
+              <Text style={styles.invitationText}>Alteration request sent</Text>
+              <View style={styles.imageContainer}>
+                <Image
+                  source={images.challengeSentPlane}
+                  style={styles.rotateImage}
+                />
+              </View>
+            </View>
+          )}
+
+          {challengeStatus !== 'sent' && (
+            <View style={styles.mailContainer}>
+              <Text style={styles.invitationText}>
+                {(challengeStatus === 'accept'
+                  && 'Alteration request\naccepted')
+                  || (challengeStatus === 'decline'
+                    && 'Alteration request\ndeclined')
+                  || (challengeStatus === 'cancel'
+                    && 'Alteration request\ncancelled')
+                  || (challengeStatus === 'restored'
+                    && 'Alteration request\nRestored')}
+              </Text>
+            </View>
+          )}
+          <SafeAreaView>
+            <TouchableOpacity
+              style={styles.goToProfileButton}
+              onPress={() => {
+                setAlterModalVisible(false);
+                navigation.popToTop();
+              }}>
+              <Text style={styles.goToProfileTitle}>OK</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        </View>
+      </Modal>
     </TCKeyboardView>
   );
 }
@@ -1272,5 +1577,89 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     height: 95,
     justifyContent: 'space-between',
+  },
+
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  background: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    resizeMode: 'stretch',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  goToProfileButton: {
+    alignSelf: 'center',
+    borderColor: colors.whiteColor,
+    borderRadius: 40,
+    borderWidth: 1,
+    height: 45,
+
+    width: '92%',
+  },
+  goToProfileTitle: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 15,
+    height: 50,
+    padding: 12,
+    textAlign: 'center',
+  },
+  mailContainer: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    alignItems: 'center',
+  },
+  invitationText: {
+    fontSize: 25,
+    fontFamily: fonts.RBold,
+    color: colors.whiteColor,
+    textAlign: 'center',
+  },
+  infoText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.whiteColor,
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 15,
+    marginBottom: 25,
+    textAlign: 'center',
+    lineHeight: 25,
+  },
+  imageContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rotateImage: {
+    width: 230,
+    height: 150,
+    resizeMode: 'contain',
+  },
+  entityImage: {
+    resizeMode: 'contain',
+    borderRadius: 150,
+  },
+  entityViewContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    margin: 20,
+    marginTop: 40,
+    width: 250,
+  },
+  vsText: {
+    fontSize: 20,
+    fontFamily: fonts.RBlack,
+    color: colors.whiteColor,
+  },
+  entityNameBoldText: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.whiteColor,
   },
 });
