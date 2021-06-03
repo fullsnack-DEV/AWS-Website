@@ -4425,7 +4425,7 @@ const HomeScreen = ({ navigation, route }) => {
                       groupObj: currentUserData,
                     });
                   } else {
-                    Alert.alert('Please complete all challengee setting before make a challenge.')
+                    Alert.alert('Opponent team has no completed challenge setting.')
                   }
                 })
                 .catch((e) => {

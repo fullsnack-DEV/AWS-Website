@@ -14,7 +14,7 @@ import AuthContext from '../../auth/context';
 
 // import TCBorderButton from '../../components/TCBorderButton';
 // import strings from '../../Constants/String';
-// import { getGameHomeScreen } from '../../utils/gameUtils';
+ import { getGameHomeScreen } from '../../utils/gameUtils';
 
 export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -120,7 +120,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
             }}
           />
 
-          <TCBorderButton
+          {route.params.status !== 'decline' && <TCBorderButton
             title={strings.goToGameHome}
             textColor={colors.themeColor}
             borderColor={'transparent'}
@@ -128,16 +128,18 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
             shadow={true}
             // marginBottom={55}
             onPress={() => {
-              // if (route?.params?.teamObj) {
-              //   const gameHome = getGameHomeScreen(route?.params?.teamObj?.sport);
-              //   if (route?.params?.teamObj?.game_id) {
-              //     navigation.navigate(gameHome, {
-              //       gameId: route?.params?.teamObj?.game_id,
-              //     })
-              //   } else {
-              Alert.alert('Game ID not exist');
+              if (route?.params?.teamObj) {
+                const gameHome = getGameHomeScreen(route?.params?.teamObj?.sport);
+                if (route?.params?.teamObj?.game_id) {
+                  navigation.navigate(gameHome, {
+                    gameId: route?.params?.teamObj?.game_id,
+                  })
+                } else {
+                    Alert.alert('Game ID does not exist.');
+                }
+            }
             }}
-          />
+          />}
         </View>
       </SafeAreaView>
     </View>

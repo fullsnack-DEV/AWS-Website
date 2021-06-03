@@ -9,163 +9,17 @@ import AuthContext from '../../auth/context';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ReservationStatus from '../../Constants/ReservationStatus';
 import strings from '../../Constants/String';
+import ChallengeStatusTitle from '../challenge/ChallengeStatusTitle';
 
 let entity = {};
  function ReservationStatusView({ data }) {
   const authContext = useContext(AuthContext);
   useEffect(() => {
     entity = authContext.entity;
-  }, [data])
-  const getReservationStatus = () => {
-    if (data.responsible_to_secure_venue) {
-      if (data.status === ReservationStatus.offered) {
-        if ((data.offer_expiry < new Date().getTime() / 1000) || (data.start_datetime < new Date().getTime() / 1000)) {
-          return { status: strings.responsetimeexpired, color: colors.userPostTimeColor }
-        }
-        if (data.invited_by === entity.uid) {
-          return { status: strings.reservationRequestSent, color: colors.darkOrangColor }
-        }
-        return { status: strings.reservationRequestPending, color: colors.darkOrangColor }
-      }
-      if (data.status === ReservationStatus.accepted) {
-        return { status: strings.reservationConfirmed, color: colors.requestConfirmColor }
-      }
-      if (data.status === ReservationStatus.declined) {
-        return { status: strings.reservationDeclined, color: colors.googleColor }
-      }
-      if (data.status === ReservationStatus.changeRequest) {
-        if ((data.offer_expiry < new Date().getTime() / 1000) || (data.start_datetime < new Date().getTime() / 1000)) {
-          return { status: strings.responsetimeexpired, color: colors.userPostTimeColor }
-        }
-        if (data.userChallenge) {
-          if (data.updated_by.uid === entity.uid) {
-            return { status: strings.alterationRequestSent, color: colors.darkOrangColor }
-          }
-          return { status: strings.alterationRequestPending, color: colors.darkOrangColor }
-        }
+  }, [authContext.entity, data])
 
-        if (data.updated_by.group_id === entity.uid) {
-          return { status: strings.alterationRequestSent, color: colors.darkOrangColor }
-        }
-        return { status: strings.alterationRequestPending, color: colors.darkOrangColor }
-      }
-      if (data.status === ReservationStatus.cancelled) {
-        return { status: strings.reservationCancelled, color: colors.userPostTimeColor }
-      }
-      if (data.status === ReservationStatus.restored) {
-        return { status: strings.reservationRestored, color: colors.darkOrangColor }
-      }
-      if (data.status === ReservationStatus.pendingpayment || data.status === ReservationStatus.pendingrequestpayment) {
-        return { status: strings.reservationAwaitingPayment, color: colors.darkOrangColor }
-      }
-    } else if (data.referee) {
-      if (data.status === RefereeReservationStatus.offered) {
-        if ((data.expiry_datetime < new Date().getTime() / 1000) || (data.game.start_datetime < new Date().getTime() / 1000)) {
-          return { status: strings.responsetimeexpired, color: colors.userPostTimeColor }
-        }
-        if (data.initiated_by === entity.uid) {
-          return { status: strings.reservationRequestSent, color: colors.darkOrangColor }
-        }
-        return { status: strings.reservationRequestPending, color: colors.darkOrangColor }
-      }
-      if (data.status === RefereeReservationStatus.accepted || data.status === RefereeReservationStatus.confirmed) {
-        return { status: strings.reservationConfirmed, color: colors.requestConfirmColor }
-      }
-      if (data.status === RefereeReservationStatus.declined) {
-        return { status: strings.reservationDeclined, color: colors.googleColor }
-      }
-      if (data.status === RefereeReservationStatus.changeRequest) {
-        if ((data.expiry_datetime < new Date().getTime() / 1000) || (data.game.start_datetime < new Date().getTime() / 1000)) {
-          return { status: strings.responsetimeexpired, color: colors.userPostTimeColor }
-        }
-        if (data.referee.user_id === entity.uid) {
-          if (data?.updated_by?.uid === entity.uid) {
-            return { status: strings.alterationRequestSent, color: colors.darkOrangColor }
-          }
-          return { status: strings.alterationRequestPending, color: colors.darkOrangColor }
-        }
-
-        if (data.game.singlePlayerGame) {
-          if (data?.updated_by?.uid === entity.uid) {
-            return { status: strings.alterationRequestSent, color: colors.darkOrangColor }
-          }
-          return { status: strings.alterationRequestPending, color: colors.darkOrangColor }
-        }
-
-        if (data.updated_by.group_id === entity.uid) {
-          return { status: strings.alterationRequestSent, color: colors.darkOrangColor }
-        }
-        return { status: strings.alterationRequestPending, color: colors.darkOrangColor }
-      }
-      if (data.status === RefereeReservationStatus.cancelled) {
-        return { status: strings.reservationCancelled, color: colors.userPostTimeColor }
-      }
-      if (data.status === RefereeReservationStatus.restored) {
-        return { status: strings.reservationRestored, color: colors.darkOrangColor }
-      }
-      if (data.status === RefereeReservationStatus.pendingpayment || data.status === RefereeReservationStatus.pendingrequestpayment) {
-        return { status: strings.reservationAwaitingPayment, color: colors.darkOrangColor }
-      }
-      if (data.status === RefereeReservationStatus.requestcancelled) {
-        return { status: strings.alterationRequestCancelled, color: colors.userPostTimeColor }
-      }
-    } else if (data.scorekeeper) {
-      if (data.status === RefereeReservationStatus.offered) {
-        if ((data.expiry_datetime < new Date().getTime() / 1000) || (data.game.start_datetime < new Date().getTime() / 1000)) {
-          return { status: strings.responsetimeexpired, color: colors.userPostTimeColor }
-        }
-        if (data.initiated_by === entity.uid) {
-          return { status: strings.reservationRequestSent, color: colors.darkOrangColor }
-        }
-        return { status: strings.reservationRequestPending, color: colors.darkOrangColor }
-      }
-      if (data.status === RefereeReservationStatus.accepted || data.status === RefereeReservationStatus.confirmed) {
-        return { status: strings.reservationConfirmed, color: colors.requestConfirmColor }
-      }
-      if (data.status === RefereeReservationStatus.declined) {
-        return { status: strings.reservationDeclined, color: colors.googleColor }
-      }
-      if (data.status === RefereeReservationStatus.changeRequest) {
-        if ((data.expiry_datetime < new Date().getTime() / 1000) || (data.game.start_datetime < new Date().getTime() / 1000)) {
-          return { status: strings.responsetimeexpired, color: colors.userPostTimeColor }
-        }
-        if (data.scorekeeper.user_id === entity.uid) {
-          if (data?.updated_by?.uid === entity.uid) {
-            return { status: strings.alterationRequestSent, color: colors.darkOrangColor }
-          }
-          return { status: strings.alterationRequestPending, color: colors.darkOrangColor }
-        }
-
-        if (data.game.singlePlayerGame) {
-          if (data?.updated_by?.uid === entity.uid) {
-            return { status: strings.alterationRequestSent, color: colors.darkOrangColor }
-          }
-          return { status: strings.alterationRequestPending, color: colors.darkOrangColor }
-        }
-
-        if (data.updated_by.group_id === entity.uid) {
-          return { status: strings.alterationRequestSent, color: colors.darkOrangColor }
-        }
-        return { status: strings.alterationRequestPending, color: colors.darkOrangColor }
-      }
-      if (data.status === RefereeReservationStatus.cancelled) {
-        return { status: strings.reservationCancelled, color: colors.userPostTimeColor }
-      }
-      if (data.status === RefereeReservationStatus.restored) {
-        return { status: strings.reservationRestored, color: colors.darkOrangColor }
-      }
-      if (data.status === RefereeReservationStatus.pendingpayment || data.status === RefereeReservationStatus.pendingrequestpayment) {
-        return { status: strings.reservationAwaitingPayment, color: colors.darkOrangColor }
-      }
-      if (data.status === RefereeReservationStatus.requestcancelled) {
-        return { status: strings.alterationRequestCancelled, color: colors.userPostTimeColor }
-      }
-    }
-    return ''
-  }
   const getDate = () => {
     if (data.game) {
       return `${moment(data.game.start_datetime * 1000).format('MMM')}\n${moment(data.game.start_datetime * 1000).format('DD')}`
@@ -186,6 +40,72 @@ let entity = {};
       return strings.requester
     }
   }
+
+  const checkSenderOrReceiver = (challengeObj) => {
+    console.log('sender & receiver Obj', challengeObj);
+
+    if (
+      challengeObj?.status === ReservationStatus.pendingpayment
+      || challengeObj?.status === ReservationStatus.pendingrequestpayment
+    ) {
+      if (challengeObj?.requested_by === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (
+      challengeObj?.status === ReservationStatus.requestcancelled
+      || challengeObj?.status === ReservationStatus.cancelled
+    ) {
+      if (challengeObj?.requested_by === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (challengeObj?.status === ReservationStatus.offered) {
+      if (challengeObj?.requested_by === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (challengeObj?.status === ReservationStatus.accepted) {
+      if (challengeObj?.requested_by === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (challengeObj?.status === ReservationStatus.declined) {
+      if (challengeObj?.requested_to === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (challengeObj?.status === ReservationStatus.restored) {
+      if (challengeObj?.requested_to === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (challengeObj?.updated_by?.group_id === entity.uid) {
+      return 'sender';
+    }
+    return 'receiver';
+  };
+
+  // eslint-disable-next-line consistent-return
+  const getTeamName = (challengeObject) => {
+    if (!challengeObject?.user_challenge) {
+      if (challengeObject?.home_team?.group_id === entity.uid) {
+        return challengeObject?.away_team?.group_name;
+      }
+      return challengeObject?.home_team?.group_name;
+    }
+    if (challengeObject?.home_team?.user_id === entity.uid) {
+      return `${challengeObject?.away_team?.first_name} ${challengeObject?.away_team?.last_name}`;
+    }
+    return `${challengeObject?.home_team?.first_name} ${challengeObject?.home_team?.last_name}`;
+  };
+
   return (
 
     <View style={styles.reservationTitleView}>
@@ -199,9 +119,23 @@ let entity = {};
         </LinearGradient>
       </TouchableOpacity>
       <View style={styles.reservationTypeView}>
-        <Text style={[styles.reservationText, { color: getReservationStatus().color }]}>
+        {/* <Text style={[styles.reservationText, { color: getReservationStatus().color }]}>
           {getReservationStatus().status}
-        </Text>
+        </Text> */}
+        <ChallengeStatusTitle
+        challengeObj={data}
+        isSender={checkSenderOrReceiver(data) === 'sender'}
+        isTeam={!!data?.home_team?.group_name}
+        teamName={getTeamName(data)}
+        // receiverName={challengee?.full_name ?? challengee?.group_name}
+        offerExpiry={
+          ReservationStatus.offered === 'offered'
+          || ReservationStatus.offered === 'changeRequest'
+            ? new Date().getTime()
+            : ''
+        } // only if status offered
+        status={data?.status}
+      />
 
         {data.responsible_to_secure_venue && (
           <Text style={styles.matchText}>Match · {data.sport}</Text>
@@ -216,7 +150,7 @@ let entity = {};
         )}
       </View>
       <View style={styles.amountView}>
-        <Text style={styles.amountText}>${data.total_game_charges || 0} CAD</Text>
+        <Text style={styles.amountText}>${data.total_game_fee || 0} CAD</Text>
         {/* <Text style={styles.cancelAmountText}>$35 CAD</Text> */}
       </View>
     </View>
@@ -276,10 +210,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 
-  reservationText: {
-    fontFamily: fonts.RBold,
-    fontSize: 14,
-  },
   reservationTitleView: {
     flexDirection: 'row',
 
