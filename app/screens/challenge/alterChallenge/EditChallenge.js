@@ -22,6 +22,7 @@ import {
 } from 'react-native-responsive-screen';
 import { parseInt } from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
+import Modal from 'react-native-modal';
 import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import {
@@ -60,6 +61,7 @@ export default function EditChallenge({ navigation, route }) {
   const [feeObj, setFeeObj] = useState();
   const [venueList, setVenueList] = useState();
   const [venue, setVenue] = useState();
+  const [alterModalVisible, setAlterModalVisible] = useState(false);
 
   const [startDate, setStartDate] = useState(
     new Date().setHours(new Date().getHours() + 1),
@@ -344,7 +346,8 @@ export default function EditChallenge({ navigation, route }) {
     updateChallenge(challengeID, body, authContext)
       .then(() => {
         setloading(false);
-        navigation.navigate('AlterRequestSent');
+        // navigation.navigate('AlterRequestSent');
+        setAlterModalVisible(true)
       })
       .catch((e) => {
         setloading(false);
@@ -762,6 +765,46 @@ export default function EditChallenge({ navigation, route }) {
           />
         </View>
       </SafeAreaView>
+
+      <Modal
+        isVisible={alterModalVisible}
+        backdropColor="black"
+        //   onBackdropPress={backdropPress}
+        //   onRequestClose={onClose}
+        backdropOpacity={0.5}
+        style={{
+          margin: 0,
+          marginTop: 50,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          borderTopLeftRadius: 15,
+          borderTopRightRadius: 15,
+        }}>
+        <View style={styles.mainContainer}>
+          <Image style={styles.background} source={images.orangeLayer} />
+          <Image style={styles.background} source={images.entityCreatedBG} />
+
+          <View style={styles.mailContainer}>
+            <Text style={styles.invitationText}>{'Alteration request\nsent'}</Text>
+            <View style={styles.imageContainer}>
+              <Image
+                  source={images.challengeSentPlane}
+                  style={styles.rotateImage}
+                />
+            </View>
+          </View>
+
+          <SafeAreaView>
+            <TouchableOpacity
+              style={styles.goToProfileButton}
+              onPress={() => {
+                setAlterModalVisible(false);
+                navigation.popToTop();
+              }}>
+              <Text style={styles.goToProfileTitle}>OK</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        </View>
+      </Modal>
     </TCKeyboardView>
   );
 }
@@ -890,4 +933,58 @@ const styles = StyleSheet.create({
     height: 95,
     justifyContent: 'space-between',
   },
+
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  background: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    resizeMode: 'stretch',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  goToProfileButton: {
+    alignSelf: 'center',
+    borderColor: colors.whiteColor,
+    borderRadius: 40,
+    borderWidth: 1,
+    height: 45,
+
+    width: '92%',
+  },
+  goToProfileTitle: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 15,
+    height: 50,
+    padding: 12,
+    textAlign: 'center',
+  },
+  mailContainer: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    alignItems: 'center',
+  },
+  invitationText: {
+    fontSize: 25,
+    fontFamily: fonts.RBold,
+    color: colors.whiteColor,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+
+  imageContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rotateImage: {
+    width: 230,
+    height: 150,
+    resizeMode: 'contain',
+  },
+
 });

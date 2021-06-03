@@ -63,7 +63,7 @@ export default function UserRoleView({ data, onPressProfile, onPressMessage }) {
                 })
             }}/>}
           <View style={{ marginBottom: 5, marginTop: 5 }}></View>
-          <TCProfileButton onPressProfile={onPressProfile} />
+          <TCProfileButton onPressProfile={onPressProfile} showArrow={true} />
         </View>
       </View>
       <TCThinDivider marginTop={20}/>
