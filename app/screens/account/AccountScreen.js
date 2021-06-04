@@ -581,6 +581,8 @@ export default function AccountScreen({ navigation, route }) {
         });
       } else if (options === 'Payout Method') {
         navigation.navigate('PayoutMethodScreen');
+      } else if (options === 'Invoicing') {
+        navigation.navigate('InvoiceScreen');
       }
     },
     [authContext.entity, navigation],
