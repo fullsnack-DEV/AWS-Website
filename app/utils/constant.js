@@ -24,6 +24,13 @@ export const monthsSelectionData = [
   { label: 'Past 12 Months', value: 'Past 12 Months' },
 ]
 
+export const invoiceMonthsSelectionData = [
+  { label: 'For past 3 Months', value: 'For past 3 Months' },
+  { label: 'For past 6 Months', value: 'For past 6 Months' },
+  { label: 'For past 9 Months', value: 'For past 9 Months' },
+  { label: 'For past 12 Months', value: 'For past 12 Months' },
+]
+
 export const gameData = {
   challenge_referee: [{ is_chief: true, responsible_team_id: 'aCqH9ixc23SSPyrwzUbNDDw3YGG3' }, { is_chief: false, responsible_team_id: 'aLaV61nfhEfmVgDKy5MAnDOtLHu1' }],
   status: 'ended',

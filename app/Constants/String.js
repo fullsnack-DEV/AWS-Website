@@ -28,6 +28,7 @@ const strings = {
   thisAndFollowingEvent: 'This and all following events',
   recurringEventTitle: 'Update Recurring Event',
   selectTimePlaceholder: 'Select Repeat',
+  selectInvoiceDuration: 'Select invoicing duration',
   addressPlaceholder: 'Address',
   positionPlaceholder: 'Position',
   birthDatePlaceholder: 'Birthday',
