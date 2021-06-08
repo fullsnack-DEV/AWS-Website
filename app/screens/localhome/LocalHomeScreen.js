@@ -20,8 +20,6 @@ import {
   InteractionManager,
 } from 'react-native';
 
-import axios from 'axios';
-
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import bodybuilder from 'bodybuilder';
@@ -40,6 +38,9 @@ import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import strings from '../../Constants/String';
 import TCGameCard from '../../components/TCGameCard';
 import { getSportsList, getShortsList } from '../../api/Games'; // getRecentGameDetails
+
+import { postElasticSearch } from '../../api/elasticSearch'
+
 import { gameData } from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
 import { getHitSlop, widthPercentageToDP } from '../../utils';
@@ -518,16 +519,6 @@ export default function LocalHomeScreen({ navigation }) {
                     cardWidth={'94%'}
                     placeholderText={strings.recentMatchPlaceholderText}
                     onStartPress={async () => {
-                      // const body = bodybuilder()
-                      //   .query('match', 'message', 'this is a test')
-                      //   .filter('term', 'user', 'kimchy')
-                      //   .notFilter('term', 'user', 'cassie')
-                      //   .aggregation('terms', 'user')
-                      //   .sort('timestamp', 'desc')
-                      //   .size(5)
-                      //   .from(10)
-                      //   .build();
-
                       const body = bodybuilder()
                         .query('match', 'sport', 'soccer')
                         .query('match', 'status', 'ended')
@@ -535,8 +526,12 @@ export default function LocalHomeScreen({ navigation }) {
                           query: 'vancouver',
                           fields: ['city', 'country', 'state'],
                         })
-                        // .sort('actual_enddatetime', 'desc')
+                        // .query('nested', 'path', 'groups', (q) => q.query('match', 'groups.group_id', 'ef08a9c9-d412-440e-834b-3e1c4306bc93'))
+                        .sort('actual_enddatetime', 'desc')
                         .build();
+
+                      //  .query('ids', 'values', ['ef08a9c9-d412-440e-834b-3e1c4306bc93', 'a2f13e03-5911-4625-8573-23bfc206148a'])
+                      //   .build();
 
                       // const body = {
                       //   size: 5,
@@ -553,38 +548,23 @@ export default function LocalHomeScreen({ navigation }) {
                       //         },
                       //       ],
                       //     },
+
                       //   },
+
                       //   sort: [{ actual_enddatetime: 'desc' }],
                       // };
 
-                      await axios
-                        .post(
-                          'https://townscup.es.us-east-1.aws.found.io:9243/gameindex/game',
-                          body,
-                          {
-                            auth: {
-                              username: 'elastic',
-                              password: 'tqRPhYFnjqGuh99bLp4F6jZZ',
-                            },
-                          },
-                          // {
-                          //   headers: {
-                          //     Accept: 'application/json',
-                          //     'Content-Type': 'application/json',
-                          //   },
-                          // },
-                        )
-                        .then((res) => {
-                          console.log('Then response', res);
-                        })
-                        .catch((err) => {
-                          console.log(err);
-                        });
-
-                      // const body = bodybuilder()
+                        // const body = bodybuilder()
                       //   .query('nested', 'path', 'obj1', (q) => q.query('match', 'obj1.color', 'blue'))
                       //   .build();
+
                       console.log('Query:=>', body);
+
+                      postElasticSearch(body).then((res) => {
+                        console.log('Then response', res);
+                      }).catch((err) => {
+                             console.log(err);
+                           });
                     }}
                   />
                 )}
