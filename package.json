@@ -40,6 +40,7 @@
     "@welldone-software/why-did-you-render": "^6.0.5",
     "axios": "^0.20.0",
     "base-64": "^1.0.0",
+    "bodybuilder": "^2.4.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.20",
     "moment": "^2.29.0",

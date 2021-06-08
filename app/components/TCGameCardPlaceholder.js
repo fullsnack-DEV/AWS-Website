@@ -12,7 +12,9 @@ import fonts from '../Constants/Fonts'
 import ReservationStatus from '../Constants/ReservationStatus';
 import { widthPercentageToDP } from '../utils';
 
- function TCGameCardPlaceholder({ data, cardWidth = '86%', placeholderText = '' }) {
+ function TCGameCardPlaceholder({
+ data, cardWidth = '86%', placeholderText = '', onStartPress,
+ }) {
   const months = [
     'Jan',
     'Feb',
@@ -148,8 +150,7 @@ import { widthPercentageToDP } from '../utils';
         <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
         <TouchableOpacity
               style={styles.startButton}
-              onPress={() => {
-              }}>
+              onPress={onStartPress}>
           <Text style={styles.startTitle}>Start</Text>
         </TouchableOpacity>
       </LinearGradient>
