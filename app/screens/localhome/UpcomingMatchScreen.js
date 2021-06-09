@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, { useCallback, useState, useLayoutEffect } from 'react';
 import {
   View,
@@ -13,7 +14,7 @@ import {
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
 import Modal from 'react-native-modal';
-import { gameData } from '../../utils/constant';
+// import { gameData } from '../../utils/constant';
 import { getHitSlop, widthPercentageToDP } from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -22,10 +23,11 @@ import TCTextField from '../../components/TCTextField';
 import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
 
-export default function UpcomingMatchScreen({ navigation }) {
+export default function UpcomingMatchScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  const [upcomingMatch] = useState(route?.params?.gameData);
 
   // const authContext = useContext(AuthContext);
 
@@ -46,7 +48,7 @@ export default function UpcomingMatchScreen({ navigation }) {
   const renderRecentMatchItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCGameCard data={item} cardWidth={'92%'} />
+        <TCGameCard data={item._source} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -77,21 +79,56 @@ export default function UpcomingMatchScreen({ navigation }) {
         sections={[
           {
             title: 'Today',
-            data: [{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }],
+            data: upcomingMatch?.filter((obj) => {
+              const date = new Date();
+              date.setHours(0, 0, 0, 0);
+
+              const start = new Date(obj?._source?.start_datetime * 1000);
+              start.setHours(0, 0, 0, 0);
+
+              return start.getTime() === date.getTime();
+          }),
+
+            // upcomingMatch?.filter((obj) => obj._source.start_datetime === new Date().getTime() / 1000),
+            // [{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }],
           },
           {
             title: 'Tomorrow',
-            data: [{ ...gameData }, { ...gameData }],
+            data: upcomingMatch?.filter((obj) => {
+              const date = new Date();
+              date.setDate(date.getDate() + 1);
+              date.setHours(0, 0, 0, 0);
+
+              const tomorrow = new Date(obj?._source?.start_datetime * 1000);
+              tomorrow.setHours(0, 0, 0, 0);
+
+              return tomorrow.getTime() === date.getTime();
+          }),
           },
           {
             title: 'Future',
-            data: [{ ...gameData }],
+            data: upcomingMatch?.filter((obj) => {
+              const dt = new Date();
+              dt.setHours(0, 0, 0, 0);
+
+              const start = new Date(obj?._source?.start_datetime * 1000);
+              start.setHours(0, 0, 0, 0);
+
+              const date = new Date();
+              date.setDate(date.getDate() + 1);
+              date.setHours(0, 0, 0, 0);
+
+              const tomorrow = new Date(obj?._source?.start_datetime * 1000);
+              tomorrow.setHours(0, 0, 0, 0);
+
+              return start.getTime() !== dt.getTime() && tomorrow.getTime() !== date.getTime();
+          }),
           },
         ]}
         renderItem={renderRecentMatchItems}
         keyExtractor={(item, index) => index.toString()}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.sectionHeader}>{title}</Text>
+        renderSectionHeader={({ section }) => (
+          section.data.length > 0 ? <Text style={styles.sectionHeader}>{section.title}</Text> : null
         )}
       />
       <Modal

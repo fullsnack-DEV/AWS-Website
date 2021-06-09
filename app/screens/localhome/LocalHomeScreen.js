@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, {
   useCallback,
   Fragment,
@@ -17,7 +18,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Alert,
-  InteractionManager,
+  // InteractionManager,
 } from 'react-native';
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -79,9 +80,9 @@ export default function LocalHomeScreen({ navigation }) {
 
   const [shortsList, setShortsList] = useState([]);
 
-  const [recentMatch] = useState([]);
+  const [recentMatch, setRecentMatch] = useState([]);
 
-  const [upcomingMatch] = useState([]); // { ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }
+  const [upcomingMatch, setUpcomingMatch] = useState([]); // { ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }
   const [challengerMatch] = useState([]); // [{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]
   const [hiringPlayers] = useState([]);
   const [lookingTeam] = useState([]); // ['', '', '', '', '']
@@ -91,23 +92,47 @@ export default function LocalHomeScreen({ navigation }) {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
+    // InteractionManager.runAfterInteractions(() => {
       if (isFocused) {
+        const recentMatchbody = bodybuilder()
+        .query('match', 'sport', selectedSport)
+        .query('match', 'status', 'ended')
+        .query('multi_match', {
+          query: location,
+          fields: ['city', 'country', 'state'],
+        })
+        .query('range', 'start_datetime', { lt: new Date().getTime() / 1000 })
+        .sort('actual_enddatetime', 'desc')
+        .build();
+
+        const upcomingMatchbody = bodybuilder()
+        .query('match', 'sport', selectedSport)
+        .query('multi_match', {
+          query: location,
+          fields: ['city', 'country', 'state'],
+        })
+        .query('range', 'start_datetime', { gt: new Date().getTime() / 1000 })
+        .sort('actual_enddatetime', 'desc')
+        .build();
         setloading(true);
         const promises = [
+          postElasticSearch(recentMatchbody),
           // getRecentGameDetails('Soccer', 'ended', location, authContext),
           getSportsList(authContext),
           getShortsList(location, authContext),
+          postElasticSearch(upcomingMatchbody),
         ];
         Promise.all(promises)
-          .then(([res2, res3]) => {
+          .then(([res1, res2, res3, res4]) => {
             // console.log('Recent API Response:=>', res1);
+            console.log('recent  API Response:=>', res1);
             console.log('Sport API Response:=>', res2);
             console.log('Shorts API Response:=>', res3);
+            console.log('upcoming  API Response:=>', res4);
             setloading(false);
-            // if (res1.payload) {
-            //   setRecentMatch(res1.payload.results);
-            // }
+            if (res1.hits) {
+              setRecentMatch(res1.hits.hits);
+            }
             if (res2.payload) {
               const arr = [];
               for (const tempData of res2.payload) {
@@ -120,6 +145,9 @@ export default function LocalHomeScreen({ navigation }) {
             if (res3.payload) {
               setShortsList(res3.payload.results);
             }
+            if (res4.hits) {
+              setUpcomingMatch(res4.hits.hits);
+            }
           })
           .catch((e) => {
             setloading(false);
@@ -128,8 +156,8 @@ export default function LocalHomeScreen({ navigation }) {
             }, 10);
           });
       }
-    });
-  }, [authContext, isFocused, location]);
+    // });
+  }, [authContext, isFocused, location, selectedSport]);
 
   const isIconCheckedOrNot = useCallback(
     ({ item, index }) => {
@@ -333,18 +361,21 @@ export default function LocalHomeScreen({ navigation }) {
   );
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const renderRecentMatchItems = useCallback(
-    ({ item }) => (
-      <View style={{ marginBottom: 15 }}>
-        <TCRecentMatchCard data={item} cardWidth={'92%'} />
-      </View>
-    ),
+    ({ item }) => {
+      console.log('Recent Item:=>', item);
+      return (
+        <View style={{ marginBottom: 15 }}>
+          <TCRecentMatchCard data={item._source} cardWidth={'92%'} />
+        </View>
+    )
+ },
     [],
   );
 
   const renderGameItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCGameCard data={item} cardWidth={'92%'} />
+        <TCGameCard data={item._source} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -506,8 +537,8 @@ export default function LocalHomeScreen({ navigation }) {
                 }
               />
               <Carousel
-                data={[]} // recentMatch
-                scrollEnabled={recentMatch.length > 0}
+                data={recentMatch} // recentMatch
+                scrollEnabled={recentMatch?.length > 0}
                 renderItem={renderRecentMatchItems}
                 inactiveSlideScale={1}
                 inactiveSlideOpacity={1}
@@ -589,7 +620,11 @@ export default function LocalHomeScreen({ navigation }) {
                 title={strings.upcomingMatchesTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
-                onPress={() => navigation.navigate('UpcomingMatchScreen')}
+                onPress={() => {
+                  navigation.navigate('UpcomingMatchScreen', {
+                    gameData: upcomingMatch,
+                  })
+                }}
               />
               <Carousel
                 data={upcomingMatch}

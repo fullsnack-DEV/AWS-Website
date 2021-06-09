@@ -194,13 +194,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color: colors.whiteColor,
     fontFamily: fonts.RLight,
-    fontSize: 16,
+    fontSize: 12,
   },
   dateText: {
     alignSelf: 'center',
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: 16,
+    fontSize: 12,
   },
   dateView: {
     marginTop: 15,

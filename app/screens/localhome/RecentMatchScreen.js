@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, { useCallback, useState, useLayoutEffect } from 'react';
 import {
   View,
@@ -57,7 +58,7 @@ export default function RecentMatchScreen({ navigation, route }) {
   const renderRecentMatchItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCRecentMatchCard data={item} cardWidth={'92%'} />
+        <TCRecentMatchCard data={item._source} cardWidth={'92%'} />
       </View>
     ),
     [],
