@@ -17,7 +17,8 @@ import TCRoundChart from './TCRoundChart';
 import { widthPercentageToDP } from '../utils';
 
 const TCTeamsCardPlaceholder = ({
-  cardWidth = '86%', gameStatsData, placeholderText = '',
+  cardWidth = '86%', gameStatsData, placeholderText = '', onStartPress,
+
 }) => (
 
   <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
@@ -76,8 +77,7 @@ const TCTeamsCardPlaceholder = ({
       <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
       <TouchableOpacity
               style={styles.startButton}
-              onPress={() => {
-              }}>
+              onPress={onStartPress}>
         <Text style={styles.startTitle}>Start</Text>
       </TouchableOpacity>
     </LinearGradient>
