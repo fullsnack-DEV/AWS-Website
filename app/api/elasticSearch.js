@@ -2,9 +2,17 @@ import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
 import makeElasticAPIRequest from '../utils/ElasticGloble';
 
+const elasticBaseURL = 'https://townscup.es.us-east-1.aws.found.io:9243';
+
 export const postElasticSearch = async (query) => makeElasticAPIRequest({
   method: 'post',
-  url: 'https://townscup.es.us-east-1.aws.found.io:9243/gameindex/game/_search',
+  url: `${elasticBaseURL}/gameindex/game/_search`,
+  data: query,
+})
+
+export const postMultiElasticSearch = async (query) => makeElasticAPIRequest({
+  method: 'post',
+  url: `${elasticBaseURL}/gameindex/_msearch`,
   data: query,
 })
 

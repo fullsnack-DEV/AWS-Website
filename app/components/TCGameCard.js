@@ -1,19 +1,23 @@
 import React, { memo } from 'react';
 import {
-  View, Text, TouchableOpacity, StyleSheet, Image,
-} from 'react-native';
+ View, Text, TouchableOpacity, StyleSheet, Image,
+ } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import images from '../Constants/ImagePath';
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
 import ReservationStatus from '../Constants/ReservationStatus';
 
- function GameCard({
- data, onPress, cardWidth = '86%', isSelected = false, showSelectionCheckBox = false,
+function GameCard({
+  data,
+  onPress,
+  cardWidth = '86%',
+  isSelected = false,
+  showSelectionCheckBox = false,
 }) {
   const months = [
     'Jan',
@@ -42,11 +46,22 @@ import ReservationStatus from '../Constants/ReservationStatus';
   };
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.mainContainer}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      style={styles.mainContainer}>
       <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
         <LinearGradient
-         colors={data?.status === ReservationStatus.cancelled ? [colors.startGrayGrdient, colors.endGrayGradient] : [colors.yellowColor, colors.assistTextColor]}
-          style={data?.status === ReservationStatus.offered ? [styles.colorView, { opacity: 0.7 }] : styles.colorView}>
+          colors={
+            data?.status === ReservationStatus.cancelled
+              ? [colors.startGrayGrdient, colors.endGrayGradient]
+              : [colors.yellowColor, colors.assistTextColor]
+          }
+          style={
+            data?.status === ReservationStatus.offered
+              ? [styles.colorView, { opacity: 0.7 }]
+              : styles.colorView
+          }>
           <View style={styles.dateView}>
             <Text style={styles.dateMonthText}>
               {months[new Date(data?.start_datetime * 1000).getMonth()]}
@@ -61,12 +76,21 @@ import ReservationStatus from '../Constants/ReservationStatus';
             <Text style={styles.eventTitle}>{data?.sport}</Text>
             <View style={{ marginRight: 7, marginBottom: 5 }}>
               {/* eslint-disable-next-line no-nested-ternary */}
-              {showSelectionCheckBox
-                ? isSelected ? (
-                  <FastImage source={ images.orangeCheckBox } resizeMode={'contain'} style={ styles.checkboxImg } />
-                  ) : (
-                    <FastImage resizeMode={'contain'} source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
-                ) : null}
+              {showSelectionCheckBox ? (
+                isSelected ? (
+                  <FastImage
+                    source={images.orangeCheckBox}
+                    resizeMode={'contain'}
+                    style={styles.checkboxImg}
+                  />
+                ) : (
+                  <FastImage
+                    resizeMode={'contain'}
+                    source={images.uncheckWhite}
+                    style={styles.unCheckboxImg}
+                  />
+                )
+              ) : null}
             </View>
           </View>
           <View style={styles.bottomView}>
@@ -298,4 +322,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(GameCard)
+export default memo(GameCard);

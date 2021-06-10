@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, { memo } from 'react';
 import {
   View,
@@ -83,31 +84,31 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
           }>
           <View style={styles.dateView}>
             <Text style={styles.dateMonthText}>
-              {months[new Date(data.start_datetime * 1000).getMonth()]}
+              {months[new Date(data?.start_datetime * 1000).getMonth()]}
             </Text>
             <Text style={styles.dateText}>
-              {new Date(data.start_datetime * 1000).getDate()}
+              {new Date(data?.start_datetime * 1000).getDate()}
             </Text>
           </View>
         </LinearGradient>
         <View style={styles.eventText}>
-          <Text style={styles.eventTitle}>{data.sport}</Text>
+          <Text style={styles.eventTitle}>{data?.sport}</Text>
           <View style={styles.bottomView}>
             <Text style={styles.eventTimeLocation}>
-              {formatAMPM(new Date(data.start_datetime * 1000))} -{' '}
-              {formatAMPM(new Date(data.end_datetime * 1000))}
+              {formatAMPM(new Date(data?.start_datetime * 1000))} -{' '}
+              {formatAMPM(new Date(data?.end_datetime * 1000))}
             </Text>
             <Text style={styles.textSaperator}> | </Text>
             <Text style={styles.addressView} numberOfLines={1}>
-              {data.venue.address}
+              {data?.venue?.address}
             </Text>
           </View>
           <View style={styles.gameVSView}>
-            {data.userChallenge || data.singlePlayerGame ? (
+            {data?.userChallenge || data?.singlePlayerGame ? (
               <View style={styles.leftGameView}>
-                {data.home_team.thumbnail ? (
+                {data?.home_team?._source?.thumbnail ? (
                   <Image
-                    source={{ uri: data.home_team.thumbnail }}
+                    source={{ uri: data?.home_team?._source?.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -117,14 +118,14 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
                   />
                 )}
                 <Text style={styles.leftEntityText} numberOfLines={2}>
-                  {data.home_team.full_name}
+                  {data?.home_team?._source?.full_name}
                 </Text>
               </View>
             ) : (
               <View style={styles.leftGameView}>
-                {data.home_team.thumbnail ? (
+                {data?.home_team?._source?.thumbnail ? (
                   <Image
-                    source={{ uri: data.home_team.thumbnail }}
+                    source={{ uri: data?.home_team?._source?.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -134,23 +135,23 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
                   />
                 )}
                 <Text style={styles.leftEntityText} numberOfLines={2}>
-                  {data.home_team.group_name}
+                  {data?.home_team?._source?.group_name}
                 </Text>
               </View>
             )}
 
-            <Text style={styles.scoreView}>{data.home_team_goal}</Text>
+            <Text style={styles.scoreView}>{data?.home_team_goal}</Text>
             <Text style={styles.vsView}>:</Text>
-            <Text style={styles.scoreView}>{data.away_team_goal}</Text>
+            <Text style={styles.scoreView}>{data?.away_team_goal}</Text>
 
-            {data.userChallenge || data.singlePlayerGame ? (
+            {data?.userChallenge || data?.singlePlayerGame ? (
               <View style={styles.rightGameView}>
                 <Text style={styles.rightEntityText} numberOfLines={2}>
-                  {data.away_team.full_name}
+                  {data?.away_team?._source?.full_name}
                 </Text>
-                {data.away_team.thumbnail ? (
+                {data?.away_team?._source?.thumbnail ? (
                   <Image
-                    source={{ uri: data.away_team.thumbnail }}
+                    source={{ uri: data?.away_team?._source.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -163,11 +164,11 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
             ) : (
               <View style={styles.rightGameView}>
                 <Text style={styles.rightEntityText} numberOfLines={2}>
-                  {data.away_team.group_name}
+                  {data?.away_team?._source?.group_name}
                 </Text>
-                {data.away_team.thumbnail ? (
+                {data?.away_team?._source?.thumbnail ? (
                   <Image
-                    source={{ uri: data.away_team.thumbnail }}
+                    source={{ uri: data?.away_team?._source?.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -253,7 +254,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   eventTitle: {
-    color: colors.googleColor,
+    color: colors.tabFontColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
     marginBottom: 1,
