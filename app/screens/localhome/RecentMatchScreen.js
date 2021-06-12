@@ -537,10 +537,5 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     // margin: 15,
   },
-  headerLeftImg: {
-    height: 20,
-    marginLeft: 5,
-    resizeMode: 'contain',
-    // width: 10,
-  },
+
 });
