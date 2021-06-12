@@ -25,6 +25,7 @@ console.disableYellowBox = true
 // }
 export default function App() {
   const [networkConnected, setNetworkConntected] = useState(true);
+
   useEffect(() => {
     if (!networkConnected) {
       showNetworkAlert();

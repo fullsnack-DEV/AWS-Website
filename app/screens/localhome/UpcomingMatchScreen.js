@@ -1,9 +1,11 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable no-underscore-dangle */
-import React, { useCallback, useState, useLayoutEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
-  SectionList,
+  Alert,
+  FlatList,
   Image,
   TouchableOpacity,
   Text,
@@ -14,41 +16,123 @@ import {
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
 import Modal from 'react-native-modal';
+import bodybuilder from 'bodybuilder';
+
 // import { gameData } from '../../utils/constant';
-import { getHitSlop, widthPercentageToDP } from '../../utils';
+import { widthPercentageToDP } from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import TCGameCard from '../../components/TCGameCard';
 import TCTextField from '../../components/TCTextField';
 import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
+import TCUpcomingMatch from '../../components/TCUpcomingMatch';
+import { postElasticSearch } from '../../api/elasticSearch';
+import strings from '../../Constants/String';
 
-export default function UpcomingMatchScreen({ navigation, route }) {
+export default function UpcomingMatchScreen({ route }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
-  const [upcomingMatch] = useState(route?.params?.gameData);
+  const [upcomingMatch, setUpcomingMatch] = useState([]);
 
+  const [pageSize] = useState(10);
+  const [pageNumber, setPageNumber] = useState(0);
+  const [totalRecord, setTotalRecord] = useState();
+
+  const [location] = useState(route?.params?.location);
+  const [selectedSport] = useState(route?.params?.selectedSport);
   // const authContext = useContext(AuthContext);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableWithoutFeedback
-          onPress={() => {
-            navigation.goBack();
-          }}
-          hitSlop={getHitSlop(15)}>
-          <Image source={images.navigationBack} style={styles.headerLeftImg} />
-        </TouchableWithoutFeedback>
-      ),
-    });
-  }, [navigation]);
+  useEffect(() => {
+    handleLoadMore();
+  }, []);
+
+  const handleLoadMore = () => {
+    console.log('Page Size:', pageSize);
+    console.log('Page Number:', pageNumber);
+    console.log('Total:', totalRecord);
+    const upcomingMatchbody = bodybuilder()
+      .size(pageSize)
+      .from((pageNumber * pageSize))
+      .query('match', 'sport', selectedSport)
+      .query('multi_match', {
+        query: location,
+        fields: ['city', 'country', 'state'],
+      })
+      .query('range', 'start_datetime', {
+        gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+      })
+      .sort('actual_enddatetime', 'desc')
+      .build();
+
+    setPageNumber(pageNumber + 1);
+    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+
+    postElasticSearch(upcomingMatchbody, 'gameindex')
+      .then((res1) => {
+        console.log('recent  API Response:=>', res1);
+        console.log('Total record:=>', res1.hits.total.value);
+        setTotalRecord(res1.hits.total.value);
+        let entityArr = [];
+        let recentArr = [];
+
+        if (res1.hits) {
+          const arr = [];
+          res1.hits.hits.map((e) => {
+            arr.push(e._source.away_team);
+            arr.push(e._source.home_team);
+          });
+          const uniqueArray = [...new Set(arr)];
+          entityArr = uniqueArray;
+          recentArr = res1.hits.hits;
+        }
+
+        const ids = {
+          query: {
+            ids: {
+              values: entityArr,
+            },
+          },
+        };
+
+        postElasticSearch(ids, 'entityindex/entity')
+          .then((response) => {
+            const arr = [];
+            recentArr.map((e) => {
+              const obj = {
+                ...e._source,
+                home_team: response.hits.hits.find(
+                  (x) => x._source.group_id === e._source.home_team,
+                ),
+                away_team: response.hits.hits.find(
+                  (x) => x._source.group_id === e._source.away_team,
+                ),
+              };
+
+              arr.push(obj);
+            });
+
+            setUpcomingMatch(upcomingMatch.concat(arr));
+
+            console.log(' USER response.hits.hits:=>', response.hits.hits);
+          })
+          .catch((e) => {
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   const renderRecentMatchItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCGameCard data={item._source} cardWidth={'92%'} />
+        <TCUpcomingMatch data={item} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -58,9 +142,15 @@ export default function UpcomingMatchScreen({ navigation, route }) {
     <View style={{ flex: 1 }}>
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
-          <View style={{
-            position: 'absolute', top: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', right: 15,
-          }}>
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              justifyContent: 'center',
+              alignItems: 'center',
+              right: 15,
+            }}>
             <Image source={images.arrowDown} style={styles.arrowStyle} />
           </View>
         </View>
@@ -68,14 +158,17 @@ export default function UpcomingMatchScreen({ navigation, route }) {
           <Image source={images.homeSetting} style={styles.settingImage} />
         </TouchableWithoutFeedback>
       </View>
-      {/* <FlatList
+      <FlatList
         showsHorizontalScrollIndicator={false}
-        data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
-        keyExtractor={keyExtractor}
+        data={upcomingMatch}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={renderRecentMatchItems}
         style={styles.listViewStyle}
-      /> */}
-      <SectionList
+        scrollEnabled={true}
+        // onScroll={onScroll}
+        onScrollEndDrag={handleLoadMore}
+      />
+      {/* <SectionList
         sections={[
           {
             title: 'Today',
@@ -130,7 +223,7 @@ export default function UpcomingMatchScreen({ navigation, route }) {
         renderSectionHeader={({ section }) => (
           section.data.length > 0 ? <Text style={styles.sectionHeader}>{section.title}</Text> : null
         )}
-      />
+      /> */}
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
         backdropOpacity={1}
@@ -417,19 +510,19 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-  sectionHeader: {
-    fontSize: 20,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginLeft: 15,
-    marginBottom: 8,
-    marginTop: 8,
-  },
-  headerLeftImg: {
-    tintColor: colors.lightBlackColor,
-    height: 22,
-    marginLeft: 15,
-    resizeMode: 'contain',
-    width: 12,
-  },
+  // sectionHeader: {
+  //   fontSize: 20,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.lightBlackColor,
+  //   marginLeft: 15,
+  //   marginBottom: 8,
+  //   marginTop: 8,
+  // },
+  // headerLeftImg: {
+  //   tintColor: colors.lightBlackColor,
+  //   height: 22,
+  //   marginLeft: 15,
+  //   resizeMode: 'contain',
+  //   width: 12,
+  // },
 });

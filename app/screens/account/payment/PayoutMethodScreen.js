@@ -56,6 +56,7 @@ export default function PayoutMethodScreen({ navigation }) {
   }
 
   const callAddMercentAccountAPI = async (code) => {
+    console.log('CODE::=>', code);
     setloading(true)
     addMerchantAccount(authContext.entity.uid, { code }, authContext)
       .then(() => {
@@ -91,8 +92,11 @@ export default function PayoutMethodScreen({ navigation }) {
           if (!url) return false;
           if (url.includes(redirectURI) && url.indexOf('?')) {
             const querystring = url.substring(url.indexOf('?') + 1, url.length)
+            console.log('QUERY STRING:', querystring);
             if (url.includes(`state=${state}`)) {
               const totalValues = querystring.split('&')
+
+              console.log('totalValues STRING:', totalValues);
               for (const value of totalValues) {
                 const nameValue = value.split('=')
                 if (nameValue[0] === 'code') {
