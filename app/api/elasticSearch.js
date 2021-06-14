@@ -4,9 +4,9 @@ import makeElasticAPIRequest from '../utils/ElasticGloble';
 
 const elasticBaseURL = 'https://townscup.es.us-east-1.aws.found.io:9243';
 
-export const postElasticSearch = async (query) => makeElasticAPIRequest({
+export const postElasticSearch = async (query, path) => makeElasticAPIRequest({
   method: 'post',
-  url: `${elasticBaseURL}/gameindex/game/_search`,
+  url: `${elasticBaseURL}/${path}/_search`,
   data: query,
 })
 

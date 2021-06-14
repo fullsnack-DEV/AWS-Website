@@ -19,7 +19,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Alert,
-  // InteractionManager,
+  InteractionManager,
 } from 'react-native';
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -38,10 +38,13 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import strings from '../../Constants/String';
-import TCGameCard from '../../components/TCGameCard';
 import { getSportsList, getShortsList } from '../../api/Games'; // getRecentGameDetails
+import * as Utility from '../../utils';
 
-import { postElasticSearch } from '../../api/elasticSearch';
+import {
+  postElasticSearch,
+  postMultiElasticSearch,
+} from '../../api/elasticSearch';
 
 import { gameData } from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
@@ -57,6 +60,8 @@ import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import Header from '../../components/Home/Header';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
+import TCUpcomingMatch from '../../components/TCUpcomingMatch';
+import { getAppSettings } from '../../api/Users';
 
 let selectedSports = [];
 export default function LocalHomeScreen({ navigation }) {
@@ -84,104 +89,207 @@ export default function LocalHomeScreen({ navigation }) {
   const [recentMatch, setRecentMatch] = useState([]);
 
   const [upcomingMatch, setUpcomingMatch] = useState([]); // { ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }
-  const [challengerMatch] = useState([]); // [{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]
+  const [challengeeMatch, setChallengeeMatch] = useState([]); // [{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]
   const [hiringPlayers] = useState([]);
   const [lookingTeam] = useState([]); // ['', '', '', '', '']
   const [referees] = useState([]); // ['', '', '', '', '']
   const [scorekeepers] = useState([]); // ['', '', '', '', '']
 
-  const [entityIDs, setEntityIDs] = useState([]);
-
   const authContext = useContext(AuthContext);
 
+useEffect(() => {
+  getAppSettings(authContext).then((response) => {
+    console.log('Settings:=>', response);
+    setSettings(response.payload.app)
+  }).catch((e) => {
+    setTimeout(() => {
+      Alert.alert(strings.alertmessagetitle, e.message);
+    }, 10);
+  });
+}, [authContext])
+
+const setSettings = useCallback(async (appSettingObj) => {
+  await Utility.setStorage('appSetting', appSettingObj);
+}, []);
   useEffect(() => {
-    // InteractionManager.runAfterInteractions(() => {
-    if (isFocused) {
-      const recentMatchbody = bodybuilder()
-        .query('match', 'sport', selectedSport)
-        .query('match', 'status', 'ended')
-        .query('multi_match', {
-          query: location,
-          fields: ['city', 'country', 'state'],
-        })
-        .query('range', 'start_datetime', {
-          lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-        })
-        .sort('actual_enddatetime', 'desc')
-        .build();
+    InteractionManager.runAfterInteractions(() => {
+      if (isFocused) {
+        // const recentMatchbody = bodybuilder()
+        //   .query('match', 'sport', selectedSport)
+        //   .query('match', 'status', 'ended')
+        //   .query('multi_match', {
+        //     query: location,
+        //     fields: ['city', 'country', 'state'],
+        //   })
+        //   .query('range', 'start_datetime', {
+        //     lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+        //   })
+        //   .sort('actual_enddatetime', 'desc')
+        //   .build();
 
-      const upcomingMatchbody = bodybuilder()
-        .query('match', 'sport', selectedSport)
-        .query('multi_match', {
-          query: location,
-          fields: ['city', 'country', 'state'],
-        })
-        .query('range', 'start_datetime', {
-          gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-        })
-        .sort('actual_enddatetime', 'desc')
-        .build();
+        // const upcomingMatchbody = bodybuilder()
+        //   .query('match', 'sport', selectedSport)
+        //   .query('multi_match', {
+        //     query: location,
+        //     fields: ['city', 'country', 'state'],
+        //   })
+        //   .query('range', 'start_datetime', {
+        //     gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+        //   })
+        //   .sort('actual_enddatetime', 'desc')
+        //   .build();
 
-      setloading(true);
-      const promises = [
-        postElasticSearch(recentMatchbody),
-        // getRecentGameDetails('Soccer', 'ended', location, authContext),
-        getSportsList(authContext),
-        getShortsList(location, authContext),
-        postElasticSearch(upcomingMatchbody),
-      ];
-      Promise.all(promises)
-        .then(([res1, res2, res3, res4]) => {
-          // console.log('Recent API Response:=>', res1);
-          console.log('recent  API Response:=>', res1);
-          console.log('Sport API Response:=>', res2);
-          console.log('Shorts API Response:=>', res3);
-          console.log('upcoming  API Response:=>', res4);
-          setloading(false);
-          if (res1.hits) {
-            const arr = [];
-            res1.hits.hits.map((e) => {
-              arr.push(e._source.away_team);
-              arr.push(e._source.home_team);
-            });
-            const uniqueArray = [...new Set(arr)]
-            setEntityIDs(uniqueArray)
+        // const challengeeBody = bodybuilder()
+        //   .query('match', 'sport', selectedSport)
+        //   .query('multi_match', {
+        //     query: location,
+        //     fields: ['city', 'country', 'state'],
+        //   })
+        //   .build();
 
-            setRecentMatch(res1.hits.hits);
-          }
-          if (res2.payload) {
-            const arr = [];
-            for (const tempData of res2.payload) {
-              tempData.isChecked = false;
-              arr.push(tempData);
+        //   console.log('challengee body', JSON.stringify(challengeeBody));
+
+        const challengeeBody = `{"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`
+        const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+        const upcomingMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"gt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+        console.log('upcomingMatchbody', JSON.stringify(upcomingMatchbody));
+
+        const a = `{ }\n${recentMatchbody}\n{ }\n${upcomingMatchbody}\n{"index":"entityindex"}\n${challengeeBody}\n`;
+
+        console.log('Full object :=>', a);
+        // const a = '{ }\n{"query" : {"match" : { "message": "this is a test"}}}\n{"index": "entityindex"}\n{"query" : {"match_all" : {}}}\n'
+        setloading(true);
+        const promises = [
+          // postElasticSearch(recentMatchbody, 'gameindex'),
+          // // getRecentGameDetails('Soccer', 'ended', location, authContext),
+          // getSportsList(authContext),
+          // getShortsList(location, authContext),
+          // postElasticSearch(upcomingMatchbody, 'gameindex'),
+
+          postMultiElasticSearch(a),
+          // getRecentGameDetails('Soccer', 'ended', location, authContext),
+          getSportsList(authContext),
+          getShortsList(location, authContext),
+        ];
+        Promise.all(promises)
+          .then(([res1, res2, res3, res4]) => {
+            // console.log('Recent API Response:=>', res1);
+            console.log('recent  API Response:=>', res1);
+            console.log('Sport API Response:=>', res2);
+            console.log('Shorts API Response:=>', res3);
+            console.log('upcoming  API Response:=>', res4);
+
+            let entityArr = [];
+            let recentArr = [];
+            let upcomingArr = [];
+
+            setloading(false);
+            if (res1.responses) {
+              const arr = [];
+              res1.responses[0].hits.hits.map((e) => {
+                arr.push(e._source.away_team);
+                arr.push(e._source.home_team);
+              });
+              const uniqueArray = [...new Set(arr)];
+              entityArr = uniqueArray;
+              recentArr = res1.responses[0].hits.hits;
+
+              const arr1 = [];
+              res1.responses[1].hits.hits.map((e) => {
+                arr1.push(e._source.away_team);
+                arr1.push(e._source.home_team);
+              });
+              const uniqueArray1 = [...new Set(arr1)];
+              entityArr.concat(uniqueArray1);
+              upcomingArr = res1.responses[1].hits.hits;
+
+              setChallengeeMatch(res1.responses[2].hits.hits)
             }
-            setSports(arr);
-            setTimeout(() => setloading(false), 1000);
-          }
-          if (res3.payload) {
-            setShortsList(res3.payload.results);
-          }
-          if (res4.hits) {
-            const arr = [];
-            res1.hits.hits.map((e) => {
-              arr.push(e._source.away_team);
-              arr.push(e._source.home_team);
-            });
+            if (res2.payload) {
+              const arr = [];
+              for (const tempData of res2.payload) {
+                tempData.isChecked = false;
+                arr.push(tempData);
+              }
+              setSports(arr);
+              setTimeout(() => setloading(false), 1000);
+            }
+            if (res3.payload) {
+              setShortsList(res3.payload.results);
+            }
+            // if (res4.hits) {
+            //   const arr = [];
+            //   res1.hits.hits.map((e) => {
+            //     arr.push(e._source.away_team);
+            //     arr.push(e._source.home_team);
+            //   });
+            //   const uniqueArray = [...new Set(arr)];
+            //   entityArr.concat(uniqueArray)
+            //   upcomingArr = res4.hits.hits;
+            //   // setUpcomingMatch(res4.hits.hits);
+            // }
 
-            const uniqueArray = [...new Set([...entityIDs, ...arr])]
-            setEntityIDs(uniqueArray)
+            const ids = {
+              query: {
+                ids: {
+                  values: entityArr,
+                },
+              },
+            };
+            setloading(true);
+            postElasticSearch(ids, 'entityindex/entity')
+              .then((response) => {
+                const arr = [];
+                recentArr.map((e) => {
+                  const obj = {
+                    ...e._source,
+                    home_team: response.hits.hits.find(
+                      (x) => x._source.group_id === e._source.home_team,
+                    ),
+                    away_team: response.hits.hits.find(
+                      (x) => x._source.group_id === e._source.away_team,
+                    ),
+                  };
 
-            setUpcomingMatch(res4.hits.hits);
-          }
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    }
-    // });
+                  arr.push(obj);
+                });
+
+                setRecentMatch(arr);
+
+                const arr1 = [];
+                upcomingArr.map((e) => {
+                  const obj = {
+                    ...e._source,
+                    home_team: response.hits.hits.find(
+                      (x) => x._source.group_id === e._source.home_team,
+                    ),
+                    away_team: response.hits.hits.find(
+                      (x) => x._source.group_id === e._source.away_team,
+                    ),
+                  };
+
+                  arr1.push(obj);
+                });
+
+                setUpcomingMatch(arr1);
+
+                console.log(' USER response.hits.hits:=>', response.hits.hits);
+              })
+              .catch((e) => {
+                setloading(false);
+                setTimeout(() => {
+                  Alert.alert(strings.alertmessagetitle, e.message);
+                }, 10);
+              });
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      }
+    });
   }, [authContext, isFocused, location, selectedSport]);
 
   const isIconCheckedOrNot = useCallback(
@@ -389,7 +497,19 @@ export default function LocalHomeScreen({ navigation }) {
     console.log('Recent Item:=>', item);
     return (
       <View style={{ marginBottom: 15 }}>
-        <TCRecentMatchCard data={item._source} cardWidth={'92%'} />
+        <TCRecentMatchCard
+          // data={{
+          //   ...item._source,
+          //   home_team: entityObj.find(
+          //     (x) => x._source.group_id === item._source.home_team,
+          //   ),
+          //   away_team: entityObj.find(
+          //     (x) => x._source.group_id === item._source.away_team,
+          //   ),
+          // }}
+          data={item}
+          cardWidth={'92%'}
+        />
       </View>
     );
   }, []);
@@ -397,7 +517,7 @@ export default function LocalHomeScreen({ navigation }) {
   const renderGameItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCGameCard data={item._source} cardWidth={'92%'} />
+        <TCUpcomingMatch data={item} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -405,7 +525,7 @@ export default function LocalHomeScreen({ navigation }) {
   const renderChallengerItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCChallengerCard data={item} cardWidth={'92%'} />
+        <TCChallengerCard data={item._source} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -554,7 +674,8 @@ export default function LocalHomeScreen({ navigation }) {
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
                 onPress={() => navigation.navigate('RecentMatchScreen', {
-                    gameData: recentMatch,
+                    location,
+                    selectedSport,
                   })
                 }
               />
@@ -613,13 +734,13 @@ export default function LocalHomeScreen({ navigation }) {
 
                       console.log('Query:=>', body);
 
-                      postElasticSearch(body)
-                        .then((res) => {
-                          console.log('Then response', res);
-                        })
-                        .catch((err) => {
-                          console.log(err);
-                        });
+                      // postElasticSearch(body)
+                      //   .then((res) => {
+                      //     console.log('Then response', res);
+                      //   })
+                      //   .catch((err) => {
+                      //     console.log(err);
+                      //   });
                     }}
                   />
                 )}
@@ -646,7 +767,8 @@ export default function LocalHomeScreen({ navigation }) {
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
                 onPress={() => {
                   navigation.navigate('UpcomingMatchScreen', {
-                    gameData: upcomingMatch,
+                    location,
+                    selectedSport,
                   });
                 }}
               />
@@ -690,8 +812,8 @@ export default function LocalHomeScreen({ navigation }) {
                 onPress={() => navigation.navigate('LookingForChallengeScreen')}
               />
               <Carousel
-                data={challengerMatch}
-                scrollEnabled={challengerMatch.length > 0}
+                data={challengeeMatch}
+                scrollEnabled={challengeeMatch.length > 0}
                 renderItem={renderChallengerItems}
                 inactiveSlideScale={1}
                 inactiveSlideOpacity={1}
@@ -703,42 +825,37 @@ export default function LocalHomeScreen({ navigation }) {
                     cardWidth={'94%'}
                     placeholderText={strings.challengerPlaceholderText}
                     onStartPress={async () => {
-                      const body = {
-                        query: {
-                          bool: {
-                            must: [
-                              { match: { sport: 'soccer' } },
-                              { match: { status: 'ended' } },
-                              {
-                                multi_match: {
-                                  query: 'vancouver',
-                                  fields: ['city', 'country', 'state'],
-                                },
-                              },
-                            ],
-                          },
-                        },
-                      };
+                      // const body = {
+                      //   query: {
+                      //     bool: {
+                      //       must: [
+                      //         { match: { sport: 'soccer' } },
+                      //         { match: { status: 'ended' } },
+                      //         {
+                      //           multi_match: {
+                      //             query: 'vancouver',
+                      //             fields: ['city', 'country', 'state'],
+                      //           },
+                      //         },
+                      //       ],
+                      //     },
+                      //   },
+                      // };
 
-                      // const body = bodybuilder()
-                      //   .query('match', 'sport', 'soccer')
-                      //   .query('match', 'status', 'ended')
-                      //   .query('multi_match', {
-                      //     query: 'vancouver',
-                      //     fields: ['city', 'country', 'state'],
-                      //   })
-                      //    .query('nested', 'path', 'group', (q) => q.query('match', 'group_id', 'ef08a9c9-d412-440e-834b-3e1c4306bc93'))
-                      //   .sort('actual_enddatetime', 'desc')
-                      //   .build();
+                      // const a = '{ }\n{"query" : {"match" : { "message": "this is a test"}}}\n{"index": "entityindex"}\n{"query" : {"match_all" : {}}}\n';
 
-                      console.log('Query:=>', body);
+                      const a = '{ }\n{"query" : {"match" : { "message": "this is a test"}}}\n{"index": "entityindex"}\n{"query" : {"match_all" : {}}}\n';
+                      console.log('Query:=>', a);
 
-                      postElasticSearch(body)
+                      postMultiElasticSearch(a)
                         .then((res) => {
-                          console.log('Then response', res);
+                          console.log(
+                            'Then s response',
+                            res.responses[0].hits.hits,
+                          );
                         })
                         .catch((err) => {
-                          console.log(err);
+                          console.log(err.message);
                         });
                     }}
                   />
