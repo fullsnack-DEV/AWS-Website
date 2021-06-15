@@ -15,7 +15,7 @@ import fonts from '../Constants/Fonts';
 import TCGradientButton from './TCGradientButton';
 import TCRoundChart from './TCRoundChart';
 
-const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData }) => (
+const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData, data }) => (
   <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
     <View style={styles.eventText}>
       <View
@@ -33,12 +33,11 @@ const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData }) => (
           <Text style={styles.levelText}>Lv.0</Text>
           <Text style={styles.textSaperator}> | </Text>
           <Text style={styles.pointView} numberOfLines={1}>
-            0 points
+            {data?.point} points
           </Text>
         </View>
         <Text style={styles.eventTitle} numberOfLines={3}>
-          United States women’s soccer team sdafs dsfafdsa fas fdsfa fdsaf
-          fadfasf df dsfads fs
+          {data?.group_name}
         </Text>
       </View>
     </View>

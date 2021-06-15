@@ -258,7 +258,7 @@ export default function AccountScreen({ navigation, route }) {
           }
         })
         .catch((e) => {
-          console.log('7');
+          console.log('catch -> Account Screen unread count api');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);

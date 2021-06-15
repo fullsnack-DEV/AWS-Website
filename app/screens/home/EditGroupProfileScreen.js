@@ -11,7 +11,10 @@ import {
   Text,
   ScrollView,
   Alert,
-  StyleSheet, Keyboard, TouchableOpacity, Image,
+  StyleSheet,
+  Keyboard,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -19,7 +22,7 @@ import ActionSheet from 'react-native-actionsheet';
 import TCTouchableLabel from '../../components/TCTouchableLabel';
 import TCTextField from '../../components/TCTextField';
 import TCLabel from '../../components/TCLabel';
-import TCProfileImageControl from '../../components/TCProfileImageControl'
+import TCProfileImageControl from '../../components/TCProfileImageControl';
 import { updateGroupProfile } from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
@@ -31,6 +34,7 @@ import images from '../../Constants/ImagePath';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import * as Utility from '../../utils';
 import { getQBAccountType, QBupdateUser } from '../../utils/QuickBlox';
+import ToggleView from '../../components/Schedule/ToggleView';
 
 export default function EditGroupProfileScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -48,24 +52,34 @@ export default function EditGroupProfileScreen({ navigation, route }) {
     navigation.setOptions({
       title: strings.editprofiletitle,
       headerLeft: () => (
-        <View style={ styles.backIconViewStyle }>
-          <TouchableOpacity onPress={ () => navigation.goBack() }>
-            <Image source={ images.backArrow } style={ styles.backImage } />
+        <View style={styles.backIconViewStyle}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image source={images.backArrow} style={styles.backImage} />
           </TouchableOpacity>
         </View>
       ),
       headerRight: () => (
-        <Text style={ {
-          marginRight: 15,
-          fontSize: 16,
-          fontFamily: fonts.RMedium,
-          color: colors.lightBlackColor,
-        } } onPress={ () => {
-          onSaveButtonClicked();
-        } }>{strings.save}</Text>
+        <Text
+          style={{
+            marginRight: 15,
+            fontSize: 16,
+            fontFamily: fonts.RMedium,
+            color: colors.lightBlackColor,
+          }}
+          onPress={() => {
+            onSaveButtonClicked();
+          }}>
+          {strings.save}
+        </Text>
       ),
     });
-  }, [navigation, profileImageChanged, backgroundImageChanged, currentImageSelection, groupProfile]);
+  }, [
+    navigation,
+    profileImageChanged,
+    backgroundImageChanged,
+    currentImageSelection,
+    groupProfile,
+  ]);
 
   useEffect(() => {
     getUserInformation();
@@ -80,7 +94,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
         city: route.params.city,
         state_abbr: route.params.state,
         country: route.params.country,
-      })
+      });
     }
   }, [isFocused]);
 
@@ -88,22 +102,23 @@ export default function EditGroupProfileScreen({ navigation, route }) {
   const checkValidation = () => {
     if (groupProfile.group_name === '') {
       Alert.alert('Towns Cup', 'First name cannot be blank');
-      return false
-    } if (groupProfile.location === '') {
-      Alert.alert('Towns Cup', 'Location cannot be blank');
-      return false
+      return false;
     }
-    return true
+    if (groupProfile.location === '') {
+      Alert.alert('Towns Cup', 'Location cannot be blank');
+      return false;
+    }
+    return true;
   };
 
   // Get user information from async store
   const getUserInformation = async () => {
-    const entity = authContext.entity
+    const entity = authContext.entity;
     setGroupProfile({
       ...entity.obj,
-      location: (`${entity.obj.city}, ${entity.obj.state_abbr}, ${entity.obj.country}`),
+      location: `${entity.obj.city}, ${entity.obj.state_abbr}, ${entity.obj.country}`,
     });
-  }
+  };
 
   const onSaveButtonClicked = () => {
     Keyboard.dismiss();
@@ -111,93 +126,110 @@ export default function EditGroupProfileScreen({ navigation, route }) {
       setloading(true);
       const userProfile = { ...groupProfile };
       if (profileImageChanged || backgroundImageChanged) {
-        const imageArray = []
+        const imageArray = [];
         if (profileImageChanged) {
           imageArray.push({ path: groupProfile.thumbnail });
         }
         if (backgroundImageChanged) {
           imageArray.push({ path: groupProfile.background_thumbnail });
         }
-        uploadImages(imageArray, authContext).then((responses) => {
-          const attachments = responses.map((item) => ({
-            type: 'image',
-            url: item.fullImage,
-            thumbnail: item.thumbnail,
-          }))
-          if (profileImageChanged) {
-            setGroupProfile({ ...groupProfile, thumbnail: attachments[0].thumbnail, full_image: attachments[0].url })
-            setProfileImageChanged(false)
-            userProfile.full_image = attachments[0].thumbnail;
-            userProfile.thumbnail = attachments[0].url;
-          }
-
-          if (backgroundImageChanged) {
-            let bgInfo = attachments[0]
-            if (attachments.length > 1) {
-              bgInfo = attachments[1];
+        uploadImages(imageArray, authContext)
+          .then((responses) => {
+            const attachments = responses.map((item) => ({
+              type: 'image',
+              url: item.fullImage,
+              thumbnail: item.thumbnail,
+            }));
+            if (profileImageChanged) {
+              setGroupProfile({
+                ...groupProfile,
+                thumbnail: attachments[0].thumbnail,
+                full_image: attachments[0].url,
+              });
+              setProfileImageChanged(false);
+              userProfile.full_image = attachments[0].thumbnail;
+              userProfile.thumbnail = attachments[0].url;
             }
-            setGroupProfile({ ...groupProfile, background_thumbnail: bgInfo.thumbnail, background_full_image: bgInfo.url })
-            setBackgroundImageChanged(false)
-            userProfile.background_full_image = bgInfo.url;
-            userProfile.background_thumbnail = bgInfo.thumbnail;
-          }
-          callUpdateUserAPI(userProfile, groupProfile.group_id);
-        })
+
+            if (backgroundImageChanged) {
+              let bgInfo = attachments[0];
+              if (attachments.length > 1) {
+                bgInfo = attachments[1];
+              }
+              setGroupProfile({
+                ...groupProfile,
+                background_thumbnail: bgInfo.thumbnail,
+                background_full_image: bgInfo.url,
+              });
+              setBackgroundImageChanged(false);
+              userProfile.background_full_image = bgInfo.url;
+              userProfile.background_thumbnail = bgInfo.thumbnail;
+            }
+            callUpdateUserAPI(userProfile, groupProfile.group_id);
+          })
           .catch((e) => {
             setTimeout(() => {
-              Alert.alert('Towns Cup', e.messages)
-            }, 0.1)
-          }).finally(() => {
+              Alert.alert('Towns Cup', e.messages);
+            }, 0.1);
+          })
+          .finally(() => {
             setloading(false);
           });
       } else {
         callUpdateUserAPI(userProfile, groupProfile.group_id);
       }
     }
-  }
+  };
 
   const callUpdateUserAPI = (userProfile, paramGroupID) => {
     setloading(true);
-    updateGroupProfile(userProfile, paramGroupID, authContext).then(async (response) => {
-      const entity = authContext.entity
-      entity.obj = response.payload;
-      entity.auth.user = response.payload;
-      const entity_id = ['user', 'player']?.includes(response?.payload?.entity_type) ? response?.payload?.user_id : response?.payload?.group_id;
-      const accountType = getQBAccountType(response?.payload?.entity_type);
-      QBupdateUser(entity_id, response?.payload, accountType, authContext).then(async (responseJSON) => {
-        const qbUser = responseJSON?.user;
-        entity.QB = {
-          ...entity.QB,
-          fullName: qbUser?.full_name,
-          customData: qbUser?.custom_data,
-          lastRequestAt: qbUser?.last_request_at,
-
-        };
-        authContext.setEntity({ ...entity })
-        await Utility.setStorage('authContextEntity', { ...entity })
-        setloading(false);
-        navigation.goBack();
-      }).catch(async (error) => {
-        console.log('QB error : ', error);
-        authContext.setEntity({ ...entity })
-        await Utility.setStorage('authContextEntity', { ...entity })
-        setloading(false);
-        navigation.goBack();
+    updateGroupProfile(userProfile, paramGroupID, authContext)
+      .then(async (response) => {
+        const entity = authContext.entity;
+        entity.obj = response.payload;
+        entity.auth.user = response.payload;
+        const entity_id = ['user', 'player']?.includes(
+          response?.payload?.entity_type,
+        )
+          ? response?.payload?.user_id
+          : response?.payload?.group_id;
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(entity_id, response?.payload, accountType, authContext)
+          .then(async (responseJSON) => {
+            const qbUser = responseJSON?.user;
+            entity.QB = {
+              ...entity.QB,
+              fullName: qbUser?.full_name,
+              customData: qbUser?.custom_data,
+              lastRequestAt: qbUser?.last_request_at,
+            };
+            authContext.setEntity({ ...entity });
+            await Utility.setStorage('authContextEntity', { ...entity });
+            setloading(false);
+            navigation.goBack();
+          })
+          .catch(async (error) => {
+            console.log('QB error : ', error);
+            authContext.setEntity({ ...entity });
+            await Utility.setStorage('authContextEntity', { ...entity });
+            setloading(false);
+            navigation.goBack();
+          });
       })
-    }).catch((error) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert('Towns Cup', error.message);
-      }, 0.1)
-    });
-  }
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert('Towns Cup', error.message);
+        }, 0.1);
+      });
+  };
 
   const onLocationClicked = async () => {
     console.log('call on location');
     navigation.navigate('SearchLocationScreen', {
       comeFrom: 'EditGroupProfileScreen',
-    })
-  }
+    });
+  };
 
   const openImagePicker = (width = 400, height = 400) => {
     let cropCircle = false;
@@ -209,30 +241,33 @@ export default function EditGroupProfileScreen({ navigation, route }) {
       height,
       cropping: true,
       cropperCircleOverlay: cropCircle,
-
     }).then((data) => {
       // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
-        setGroupProfile({ ...groupProfile, thumbnail: data.path })
-        setProfileImageChanged(true)
+        setGroupProfile({ ...groupProfile, thumbnail: data.path });
+        setProfileImageChanged(true);
       } else {
-        setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
-        setBackgroundImageChanged(true)
+        setGroupProfile({ ...groupProfile, background_thumbnail: data.path });
+        setBackgroundImageChanged(true);
       }
     });
-  }
+  };
 
   const deleteImage = () => {
     if (currentImageSelection) {
       // 1 means profile image
-      setGroupProfile({ ...groupProfile, thumbnail: '', full_image: '' })
-      setProfileImageChanged(false)
+      setGroupProfile({ ...groupProfile, thumbnail: '', full_image: '' });
+      setProfileImageChanged(false);
     } else {
       // 0 means profile image
-      setGroupProfile({ ...groupProfile, background_thumbnail: '', background_full_image: '' })
-      setBackgroundImageChanged(false)
+      setGroupProfile({
+        ...groupProfile,
+        background_thumbnail: '',
+        background_full_image: '',
+      });
+      setBackgroundImageChanged(false);
     }
-  }
+  };
 
   const openCamera = (width = 400, height = 400) => {
     ImagePicker.openCamera({
@@ -242,14 +277,14 @@ export default function EditGroupProfileScreen({ navigation, route }) {
     }).then((data) => {
       // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
-        setGroupProfile({ ...groupProfile, thumbnail: data.path })
-        setProfileImageChanged(true)
+        setGroupProfile({ ...groupProfile, thumbnail: data.path });
+        setProfileImageChanged(true);
       } else {
-        setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
-        setBackgroundImageChanged(true)
+        setGroupProfile({ ...groupProfile, background_thumbnail: data.path });
+        setBackgroundImageChanged(true);
       }
     });
-  }
+  };
 
   const onBGImageClicked = () => {
     setCurrentImageSelection(0);
@@ -259,8 +294,8 @@ export default function EditGroupProfileScreen({ navigation, route }) {
       } else {
         actionSheet.current.show();
       }
-    }, 0.1)
-  }
+    }, 0.1);
+  };
 
   const onProfileImageClicked = () => {
     setCurrentImageSelection(1);
@@ -270,92 +305,127 @@ export default function EditGroupProfileScreen({ navigation, route }) {
       } else {
         actionSheet.current.show();
       }
-    }, 0.1)
-  }
+    }, 0.1);
+  };
 
   return (
     <TCKeyboardView>
       <>
         <ActionSheet
-                  ref={actionSheet}
-                  // title={'News Feed Post'}
-                  options={[strings.camera, strings.album, strings.cancelTitle]}
-                  cancelButtonIndex={2}
-                  onPress={(index) => {
-                    if (index === 0) {
-                      openCamera();
-                    } else if (index === 1) {
-                      if (currentImageSelection) {
-                        openImagePicker();
-                      } else {
-                        openImagePicker(750, 348);
-                      }
-                    }
-                  }}
-                />
+          ref={actionSheet}
+          // title={'News Feed Post'}
+          options={[strings.camera, strings.album, strings.cancelTitle]}
+          cancelButtonIndex={2}
+          onPress={(index) => {
+            if (index === 0) {
+              openCamera();
+            } else if (index === 1) {
+              if (currentImageSelection) {
+                openImagePicker();
+              } else {
+                openImagePicker(750, 348);
+              }
+            }
+          }}
+        />
         <ActionSheet
-                  ref={actionSheetWithDelete}
-                  // title={'News Feed Post'}
-                  options={[strings.camera, strings.album, strings.deleteTitle, strings.cancelTitle]}
-                  cancelButtonIndex={3}
-                  destructiveButtonIndex={2}
-                  onPress={(index) => {
-                    if (index === 0) {
-                      openCamera();
-                    } else if (index === 1) {
-                      if (currentImageSelection) {
-                        openImagePicker();
-                      } else {
-                        openImagePicker(750, 348);
-                      }
-                    } else if (index === 2) {
-                      deleteImage();
-                    }
-                  }}
-                />
+          ref={actionSheetWithDelete}
+          // title={'News Feed Post'}
+          options={[
+            strings.camera,
+            strings.album,
+            strings.deleteTitle,
+            strings.cancelTitle,
+          ]}
+          cancelButtonIndex={3}
+          destructiveButtonIndex={2}
+          onPress={(index) => {
+            if (index === 0) {
+              openCamera();
+            } else if (index === 1) {
+              if (currentImageSelection) {
+                openImagePicker();
+              } else {
+                openImagePicker(750, 348);
+              }
+            } else if (index === 2) {
+              deleteImage();
+            }
+          }}
+        />
 
         <ScrollView style={styles.mainContainer}>
           <ActivityLoader visible={loading} />
           <TCProfileImageControl
-          profileImage={ groupProfile.thumbnail ? { uri: groupProfile.thumbnail } : undefined }
-          profileImagePlaceholder = {images.teamPlaceholder}
-          bgImage={ groupProfile.background_thumbnail ? { uri: groupProfile.background_thumbnail } : undefined }
-          onPressBGImage={() => onBGImageClicked()}
-          onPressProfileImage={() => onProfileImageClicked()}
-          showEditButtons />
+            profileImage={
+              groupProfile.thumbnail ? { uri: groupProfile.thumbnail } : undefined
+            }
+            profileImagePlaceholder={images.teamPlaceholder}
+            bgImage={
+              groupProfile.background_thumbnail
+                ? { uri: groupProfile.background_thumbnail }
+                : undefined
+            }
+            onPressBGImage={() => onBGImageClicked()}
+            onPressProfileImage={() => onProfileImageClicked()}
+            showEditButtons
+          />
           <View>
-            <TCLabel title= {route.params.nameTitle}
-          style={{ marginTop: 37 }}
-          required = {true}/>
+            <TCLabel
+              title={route.params.nameTitle}
+              style={{ marginTop: 37 }}
+              required={true}
+            />
             <TCTextField
               placeholder={route.params.placeholder}
-              onChangeText={(text) => setGroupProfile({ ...groupProfile, group_name: text })}
-              value={groupProfile.group_name}/>
+              onChangeText={(text) => setGroupProfile({ ...groupProfile, group_name: text })
+              }
+              value={groupProfile.group_name}
+            />
           </View>
           <View>
-            <TCLabel title= {strings.currentCity}
-          required = {true}
-            />
+            <TCLabel title={strings.currentCity} required={true} />
             <TCTouchableLabel
-             title = {groupProfile.location}
-             onPress = {() => onLocationClicked()}
-             placeholder = {strings.searchCityPlaceholder}
-             showNextArrow = {true}
+              title={groupProfile.location}
+              onPress={() => onLocationClicked()}
+              placeholder={strings.searchCityPlaceholder}
+              showNextArrow={true}
             />
           </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginRight: 15,
+            }}>
+            <TCLabel title={strings.hiringPlayers} style={{ marginTop: 15 }} />
+            <ToggleView
+              isOn={groupProfile?.hiringPlayers}
+              onToggle={() => {
+                setGroupProfile({
+                  ...groupProfile,
+                  hiringPlayers: !groupProfile?.hiringPlayers,
+                });
+              }}
+              onColor={colors.themeColor}
+              offColor={colors.grayBackgroundColor}
+            />
+          </View>
+
           <View>
-            <TCLabel title= {strings.slogan}/>
+            <TCLabel title={strings.slogan} />
             <TCTextField
               placeholder={'Enter your slogan'}
-              onChangeText={(text) => setGroupProfile({ ...groupProfile, description: text })}
+              onChangeText={(text) => setGroupProfile({ ...groupProfile, description: text })
+              }
               multiline
               maxLength={150}
               value={groupProfile.description}
               height={120}
-              />
+            />
           </View>
         </ScrollView>
-
       </>
     </TCKeyboardView>
   );
@@ -375,6 +445,5 @@ const styles = StyleSheet.create({
     height: 20,
     tintColor: colors.lightBlackColor,
     width: 10,
-
   },
 });

@@ -23,15 +23,15 @@ import {
 } from 'react-native';
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
+import Geolocation from '@react-native-community/geolocation';
 import bodybuilder from 'bodybuilder';
 
 import Modal from 'react-native-modal';
-import { useIsFocused } from '@react-navigation/native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
+import { getLocationNameWithLatLong } from '../../api/External';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
@@ -64,10 +64,9 @@ import TCUpcomingMatch from '../../components/TCUpcomingMatch';
 import { getAppSettings } from '../../api/Users';
 
 let selectedSports = [];
-export default function LocalHomeScreen({ navigation }) {
+export default function LocalHomeScreen({ navigation, route }) {
   const refContainer = useRef();
-
-  const isFocused = useIsFocused();
+  const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
   const [sports, setSports] = useState([]);
@@ -76,7 +75,10 @@ export default function LocalHomeScreen({ navigation }) {
   const [selectedLocationOption, setSelectedLocationOption] = useState();
   const [selectedSettingOption, setSelectedSettingOption] = useState();
 
-  const [location] = useState('india');
+  const [location, setLocation] = useState(
+    authContext?.entity?.obj?.city.charAt(0).toUpperCase()
+      + authContext?.entity?.obj?.city.slice(1),
+  );
 
   const [selectedSport, setSelectedSport] = useState('Soccer');
   const [settingPopup, setSettingPopup] = useState(false);
@@ -88,32 +90,38 @@ export default function LocalHomeScreen({ navigation }) {
 
   const [recentMatch, setRecentMatch] = useState([]);
 
-  const [upcomingMatch, setUpcomingMatch] = useState([]); // { ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }
-  const [challengeeMatch, setChallengeeMatch] = useState([]); // [{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]
-  const [hiringPlayers] = useState([]);
-  const [lookingTeam] = useState([]); // ['', '', '', '', '']
-  const [referees] = useState([]); // ['', '', '', '', '']
-  const [scorekeepers] = useState([]); // ['', '', '', '', '']
-
-  const authContext = useContext(AuthContext);
+  const [upcomingMatch, setUpcomingMatch] = useState([]);
+  const [challengeeMatch, setChallengeeMatch] = useState([]);
+  const [hiringPlayers, setHiringPlayers] = useState([]);
+  const [lookingTeam, setLookingTeam] = useState([]);
+  const [referees] = useState([]);
+  const [scorekeepers] = useState([]);
 
 useEffect(() => {
-  getAppSettings(authContext).then((response) => {
-    console.log('Settings:=>', response);
-    setSettings(response.payload.app)
-  }).catch((e) => {
-    setTimeout(() => {
-      Alert.alert(strings.alertmessagetitle, e.message);
-    }, 10);
-  });
-}, [authContext])
+if (route?.params?.locationText) {
+  setLocation(route?.params?.locationText)
+}
+}, [route?.params?.locationText])
 
-const setSettings = useCallback(async (appSettingObj) => {
-  await Utility.setStorage('appSetting', appSettingObj);
-}, []);
+  useEffect(() => {
+    getAppSettings(authContext)
+      .then((response) => {
+        console.log('Settings:=>', response);
+        setSettings(response.payload.app);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          console.log('catch -> local home Screen setting api');
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext]);
+
+  const setSettings = useCallback(async (appSettingObj) => {
+    await Utility.setStorage('appSetting', appSettingObj);
+  }, []);
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      if (isFocused) {
         // const recentMatchbody = bodybuilder()
         //   .query('match', 'sport', selectedSport)
         //   .query('match', 'status', 'ended')
@@ -149,15 +157,30 @@ const setSettings = useCallback(async (appSettingObj) => {
 
         //   console.log('challengee body', JSON.stringify(challengeeBody));
 
-        const challengeeBody = `{"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`
-        const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
-        const upcomingMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"gt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
-        console.log('upcomingMatchbody', JSON.stringify(upcomingMatchbody));
+        // let challengeeBody = '';
+        // if (authContext.entity.role === 'team') {
+        //   challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        // } else {
+        //   challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"registered_sports.sport_name":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        // }
 
-        const a = `{ }\n${recentMatchbody}\n{ }\n${upcomingMatchbody}\n{"index":"entityindex"}\n${challengeeBody}\n`;
+        const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(
+          new Date().getTime() / 1000,
+        ).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`;
+        const upcomingMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"gt":${parseFloat(
+          new Date().getTime() / 1000,
+        ).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`;
+
+        const challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+
+        const hiringPlayersBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"hiringPlayers": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        const lookingTeamBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"lookingForTeam": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+
+        console.log('upcomingMatchbody', challengeeBody);
+
+        const a = `{ }\n${recentMatchbody}\n{ }\n${upcomingMatchbody}\n{"index":"entityindex"}\n${challengeeBody}\n{"index":"entityindex"}\n${hiringPlayersBody}\n{"index":"entityindex"}\n${lookingTeamBody}\n`;
 
         console.log('Full object :=>', a);
-        // const a = '{ }\n{"query" : {"match" : { "message": "this is a test"}}}\n{"index": "entityindex"}\n{"query" : {"match_all" : {}}}\n'
         setloading(true);
         const promises = [
           // postElasticSearch(recentMatchbody, 'gameindex'),
@@ -172,12 +195,11 @@ const setSettings = useCallback(async (appSettingObj) => {
           getShortsList(location, authContext),
         ];
         Promise.all(promises)
-          .then(([res1, res2, res3, res4]) => {
+          .then(([res1, res2, res3]) => {
             // console.log('Recent API Response:=>', res1);
             console.log('recent  API Response:=>', res1);
             console.log('Sport API Response:=>', res2);
             console.log('Shorts API Response:=>', res3);
-            console.log('upcoming  API Response:=>', res4);
 
             let entityArr = [];
             let recentArr = [];
@@ -199,11 +221,14 @@ const setSettings = useCallback(async (appSettingObj) => {
                 arr1.push(e._source.away_team);
                 arr1.push(e._source.home_team);
               });
+
               const uniqueArray1 = [...new Set(arr1)];
-              entityArr.concat(uniqueArray1);
+              entityArr = [...entityArr, ...uniqueArray1];
               upcomingArr = res1.responses[1].hits.hits;
 
-              setChallengeeMatch(res1.responses[2].hits.hits)
+              setChallengeeMatch(res1.responses[2].hits.hits);
+              setHiringPlayers(res1.responses[3].hits.hits);
+              setLookingTeam(res1.responses[4].hits.hits);
             }
             if (res2.payload) {
               const arr = [];
@@ -224,11 +249,12 @@ const setSettings = useCallback(async (appSettingObj) => {
             //     arr.push(e._source.home_team);
             //   });
             //   const uniqueArray = [...new Set(arr)];
-            //   entityArr.concat(uniqueArray)
+            //   entityArr = [...entityArr, ...uniqueArray];
             //   upcomingArr = res4.hits.hits;
             //   // setUpcomingMatch(res4.hits.hits);
             // }
 
+            console.log('entityArr api:=>', entityArr);
             const ids = {
               query: {
                 ids: {
@@ -239,15 +265,16 @@ const setSettings = useCallback(async (appSettingObj) => {
             setloading(true);
             postElasticSearch(ids, 'entityindex/entity')
               .then((response) => {
+                console.log('ID api:=>', response);
                 const arr = [];
                 recentArr.map((e) => {
                   const obj = {
                     ...e._source,
                     home_team: response.hits.hits.find(
-                      (x) => x._source.group_id === e._source.home_team,
+                      (x) => x._source?.group_id === e._source?.home_team,
                     ),
                     away_team: response.hits.hits.find(
-                      (x) => x._source.group_id === e._source.away_team,
+                      (x) => x._source?.group_id === e._source?.away_team,
                     ),
                   };
 
@@ -261,10 +288,10 @@ const setSettings = useCallback(async (appSettingObj) => {
                   const obj = {
                     ...e._source,
                     home_team: response.hits.hits.find(
-                      (x) => x._source.group_id === e._source.home_team,
+                      (x) => x._source?.group_id === e._source?.home_team,
                     ),
                     away_team: response.hits.hits.find(
-                      (x) => x._source.group_id === e._source.away_team,
+                      (x) => x._source?.group_id === e._source?.away_team,
                     ),
                   };
 
@@ -276,6 +303,7 @@ const setSettings = useCallback(async (appSettingObj) => {
                 console.log(' USER response.hits.hits:=>', response.hits.hits);
               })
               .catch((e) => {
+                console.log('catch -> local home Screen id api');
                 setloading(false);
                 setTimeout(() => {
                   Alert.alert(strings.alertmessagetitle, e.message);
@@ -283,14 +311,14 @@ const setSettings = useCallback(async (appSettingObj) => {
               });
           })
           .catch((e) => {
+            console.log('catch -> local home Screen recent, upcoming,shorts  api');
             setloading(false);
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
           });
-      }
     });
-  }, [authContext, isFocused, location, selectedSport]);
+  }, [authContext, location, selectedSport]);
 
   const isIconCheckedOrNot = useCallback(
     ({ item, index }) => {
@@ -533,16 +561,16 @@ const setSettings = useCallback(async (appSettingObj) => {
   const renderHiringPlayersItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCHiringPlayersCard data={item} cardWidth={'92%'} />
+        <TCHiringPlayersCard data={item._source} cardWidth={'92%'} />
       </View>
     ),
     [],
   );
 
   const renderEntityListView = useCallback(
-    () => (
+    ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCEntityView />
+        <TCEntityView data={item._source} />
       </View>
     ),
     [],
@@ -582,9 +610,15 @@ const setSettings = useCallback(async (appSettingObj) => {
           centerComponent={
             <TouchableOpacity
               style={styles.titleHeaderView}
-              onPress={() => setLocationPopup(true)}
+              onPress={() => {
+                if (!loading) {
+                  setLocationPopup(true)
+                }
+              }}
               hitSlop={getHitSlop(15)}>
-              <Text style={styles.headerTitle}>Vancuver</Text>
+              <Text style={styles.headerTitle}>
+                {location.charAt(0).toUpperCase() + location.slice(1)}
+              </Text>
               <Image source={images.home_gps} style={styles.gpsIconStyle} />
             </TouchableOpacity>
           }
@@ -608,8 +642,41 @@ const setSettings = useCallback(async (appSettingObj) => {
         <View style={styles.separateLine} />
       </>
     ),
-    [],
+    [location],
   );
+
+  const getLocation = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        console.log('Lat/long to position::=>', position);
+        // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
+        getLocationNameWithLatLong(
+          position.coords.latitude,
+          position.coords.longitude,
+          authContext,
+        ).then((res) => {
+          console.log(
+            'Lat/long to address::=>',
+            res.results[0].address_components,
+          );
+          let city;
+          res.results[0].address_components.map((e) => {
+            if (e.types.includes('administrative_area_level_2')) {
+              city = e.short_name;
+            }
+          });
+          console.log('Location:=>', city.charAt(0).toUpperCase() + city.slice(1));
+          setLocation(city.charAt(0).toUpperCase() + city.slice(1));
+        });
+        console.log(position.coords.latitude);
+      },
+      (error) => {
+        // See error code charts below.
+        console.log(error.code, error.message);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+    );
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -670,6 +737,7 @@ const setSettings = useCallback(async (appSettingObj) => {
               />
               <TCThinDivider width={'100%'} marginTop={10} />
               <TCTitleWithArrow
+                isDisabled={!(recentMatch.length > 0)}
                 title={strings.recentMatchesTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
@@ -693,46 +761,7 @@ const setSettings = useCallback(async (appSettingObj) => {
                     cardWidth={'94%'}
                     placeholderText={strings.recentMatchPlaceholderText}
                     onStartPress={async () => {
-                      const body = bodybuilder()
-                        .query('match', 'sport', 'soccer')
-                        .query('match', 'status', 'ended')
-                        .query('multi_match', {
-                          query: 'vancouver',
-                          fields: ['city', 'country', 'state'],
-                        })
-                        // .query('nested', 'path', 'groups', (q) => q.query('match', 'groups.group_id', 'ef08a9c9-d412-440e-834b-3e1c4306bc93'))
-                        .sort('actual_enddatetime', 'desc')
-                        .build();
-
-                      //  .query('ids', 'values', ['ef08a9c9-d412-440e-834b-3e1c4306bc93', 'a2f13e03-5911-4625-8573-23bfc206148a'])
-                      //   .build();
-
-                      // const body = {
-                      //   size: 5,
-                      //   query: {
-                      //     bool: {
-                      //       must: [
-                      //         { match: { sport: 'soccer' } },
-                      //         { match: { status: 'ended' } },
-                      //         {
-                      //           multi_match: {
-                      //             query: 'vancouver',
-                      //             fields: ['city', 'country', 'state'],
-                      //           },
-                      //         },
-                      //       ],
-                      //     },
-
-                      //   },
-
-                      //   sort: [{ actual_enddatetime: 'desc' }],
-                      // };
-
-                      // const body = bodybuilder()
-                      //   .query('nested', 'path', 'obj1', (q) => q.query('match', 'obj1.color', 'blue'))
-                      //   .build();
-
-                      console.log('Query:=>', body);
+                      console.log('Query');
 
                       // postElasticSearch(body)
                       //   .then((res) => {
@@ -762,6 +791,7 @@ const setSettings = useCallback(async (appSettingObj) => {
             </View>
             <View>
               <TCTitleWithArrow
+                isDisabled={!(upcomingMatch.length > 0)}
                 title={strings.upcomingMatchesTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
@@ -792,6 +822,7 @@ const setSettings = useCallback(async (appSettingObj) => {
             </View>
             <View>
               <TCTitleWithArrow
+                isDisabled={!(shortsList.length > 0)}
                 title={strings.shortsTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
@@ -806,6 +837,7 @@ const setSettings = useCallback(async (appSettingObj) => {
             </View>
             <View>
               <TCTitleWithArrow
+                isDisabled={!(challengeeMatch.length > 0)}
                 title={strings.lookingForTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
@@ -844,15 +876,25 @@ const setSettings = useCallback(async (appSettingObj) => {
 
                       // const a = '{ }\n{"query" : {"match" : { "message": "this is a test"}}}\n{"index": "entityindex"}\n{"query" : {"match_all" : {}}}\n';
 
-                      const a = '{ }\n{"query" : {"match" : { "message": "this is a test"}}}\n{"index": "entityindex"}\n{"query" : {"match_all" : {}}}\n';
-                      console.log('Query:=>', a);
+                      console.log('Registerd sports', authContext.entity);
 
-                      postMultiElasticSearch(a)
+                      const body = bodybuilder()
+                        .query('match', 'entity_type', 'player')
+                        .query(
+                          'match',
+                          'registered_sports.sport_name',
+                          'Tennis',
+                        )
+                        .query('multi_match', {
+                          query: 'india',
+                          fields: ['city', 'country', 'state'],
+                        })
+                        .build();
+                      console.log('Query:=>', JSON.stringify(body));
+
+                      postElasticSearch(body, 'entityindex')
                         .then((res) => {
-                          console.log(
-                            'Then s response',
-                            res.responses[0].hits.hits,
-                          );
+                          console.log('Then s response', res);
                         })
                         .catch((err) => {
                           console.log(err.message);
@@ -864,6 +906,7 @@ const setSettings = useCallback(async (appSettingObj) => {
             </View>
             <View>
               <TCTitleWithArrow
+                isDisabled={!(hiringPlayers.length > 0)}
                 title={strings.hiringPlayerTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
@@ -888,6 +931,7 @@ const setSettings = useCallback(async (appSettingObj) => {
             </View>
             <View>
               <TCTitleWithArrow
+                isDisabled={!(lookingTeam.length > 0)}
                 title={strings.lookingForTeamTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
@@ -976,11 +1020,21 @@ const setSettings = useCallback(async (appSettingObj) => {
                     Cancel
                   </Text>
                   <Text style={styles.locationText}>Location</Text>
-                  <Text style={styles.doneText}>{'    '}</Text>
+                  <Text style={styles.doneText}>{'            '}</Text>
                 </View>
                 <TCThinDivider width={'100%'} marginBottom={15} />
                 <TouchableWithoutFeedback
-                  onPress={() => setSelectedLocationOption(0)}>
+                  onPress={() => {
+                    // Geolocation.getCurrentPosition((info) => console.log('Location info:=>', info));
+
+                    setSelectedLocationOption(0);
+                     getLocation();
+                    // setLocation('India');
+
+                    setTimeout(() => {
+                      setLocationPopup(false);
+                    }, 300);
+                  }}>
                   {selectedLocationOption === 0 ? (
                     <LinearGradient
                       colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -990,19 +1044,31 @@ const setSettings = useCallback(async (appSettingObj) => {
                           styles.curruentLocationText,
                           { color: colors.whiteColor },
                         ]}>
-                        Current location
+                        Current city
                       </Text>
                     </LinearGradient>
                   ) : (
                     <View style={styles.backgroundView}>
                       <Text style={styles.curruentLocationText}>
-                        Current location
+                        Current city
                       </Text>
                     </View>
                   )}
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
-                  onPress={() => setSelectedLocationOption(1)}>
+                  onPress={() => {
+                    setSelectedLocationOption(1);
+                    console.log('Location:=>', authContext?.entity?.obj?.city.charAt(0).toUpperCase()
+                    + authContext?.entity?.obj?.city.slice(1));
+                    setLocation(
+                      authContext?.entity?.obj?.city.charAt(0).toUpperCase()
+                        + authContext?.entity?.obj?.city.slice(1),
+                    );
+
+                    setTimeout(() => {
+                      setLocationPopup(false);
+                    }, 300);
+                  }}>
                   {selectedLocationOption === 1 ? (
                     <LinearGradient
                       colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -1019,7 +1085,13 @@ const setSettings = useCallback(async (appSettingObj) => {
                   )}
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
-                  onPress={() => setSelectedLocationOption(2)}>
+                  onPress={() => {
+                    setSelectedLocationOption(2)
+                    setLocation('surat')
+                    setTimeout(() => {
+                      setLocationPopup(false);
+                    }, 300);
+                  }}>
                   {selectedLocationOption === 2 ? (
                     <LinearGradient
                       colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -1081,7 +1153,10 @@ const setSettings = useCallback(async (appSettingObj) => {
                 </View>
                 <TCThinDivider width={'100%'} marginBottom={15} />
                 <TouchableWithoutFeedback
-                  onPress={() => setSelectedSettingOption(0)}>
+                  onPress={() => {
+                    setSelectedSettingOption(0);
+                    setLocationPopup(false);
+                  }}>
                   {selectedSettingOption === 0 ? (
                     <LinearGradient
                       colors={[colors.yellowColor, colors.orangeGradientColor]}
