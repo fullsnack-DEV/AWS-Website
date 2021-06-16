@@ -12,7 +12,7 @@ import TCThinDivider from '../../components/TCThinDivider';
 import strings from '../../Constants/String';
 import fonts from '../../Constants/Fonts';
 
-export default function SearchCityScreen() {
+export default function SearchCityScreen({ navigation }) {
   // const [loading, setloading] = useState(false);
   const [cityData, setCityData] = useState([]);
   const authContext = useContext(AuthContext);
@@ -33,11 +33,14 @@ export default function SearchCityScreen() {
   //   ).then((response) => {});
   // };
   const keyExtractor = useCallback((item, index) => index.toString(), []);
-  const renderItem = ({ item, index }) => (
+  const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.listItem}
-      onPress={() => console.log('ITEM::=>', item)}>
-      <Text style={styles.cityList}>{cityData[index]?.structured_formatting?.main_text}</Text>
+      onPress={() => {
+        console.log('selected ITEM:=>', item);
+        navigation.navigate('LocalHomeScreen', { locationText: item?.structured_formatting?.main_text })
+      }}>
+      <Text style={styles.cityList}>{item?.structured_formatting?.main_text}</Text>
 
       <TCThinDivider />
     </TouchableOpacity>

@@ -2871,6 +2871,9 @@ const HomeScreen = ({ navigation, route }) => {
     [bgImage, fullName, mainFlatListFromTop],
   );
 
+  console.log('authContext.entity.role ', authContext.entity.role === 'team');
+  console.log('isTeamHome', isTeamHome);
+
   const renderChallengeButton = useMemo(
     () => !loading
       && isTeamHome

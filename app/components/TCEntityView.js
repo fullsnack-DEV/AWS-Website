@@ -7,7 +7,7 @@ import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
-function TCEntityView({ onPress, showStar = false }) {
+function TCEntityView({ onPress, showStar = false, data }) {
   return (
     <TouchableOpacity onPress={onPress}>
       <View
@@ -21,7 +21,7 @@ function TCEntityView({ onPress, showStar = false }) {
         <Text
           style={styles.entityName}
           numberOfLines={2}>
-          Kishan Makani
+          {data?.full_name}
         </Text>
         {showStar && <View style={{
  flexDirection: 'row', alignItems: 'center', marginTop: 5,

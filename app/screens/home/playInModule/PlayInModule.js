@@ -1,11 +1,22 @@
 import {
   Alert,
-  SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import React, {
-  useContext, memo, useEffect, useState, useMemo, useCallback, useRef,
+  useContext,
+  memo,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
 } from 'react';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
@@ -28,7 +39,7 @@ import TCGradientDivider from '../../../components/TCThinGradientDivider';
 import PlayInReviewsView from './stats/PlayInReviewsView';
 import TCScrollableTabs from '../../../components/TCScrollableTabs';
 
-let TAB_ITEMS = []
+let TAB_ITEMS = [];
 const PlayInModule = ({
   visible = false,
   onModalClose = () => {},
@@ -51,7 +62,7 @@ const PlayInModule = ({
       setCurrentTab(0);
     }, 1000);
     setTimeout(() => onModalClose(), 0);
-  }, [onModalClose])
+  }, [onModalClose]);
 
   useEffect(() => {
     if (userData) setCurrentUserData(userData);
@@ -62,58 +73,84 @@ const PlayInModule = ({
     if (playInObject?.sport_type !== 'single') {
       TAB_ITEMS = ['Info', 'Scoreboard', 'Stats'];
       setSinglePlayerGame(false);
-    } else TAB_ITEMS = ['Info', 'Scoreboard', 'Stats', 'Reviews']
-  }, [playInObject])
+    } else TAB_ITEMS = ['Info', 'Scoreboard', 'Stats', 'Reviews'];
+  }, [playInObject]);
 
   useEffect(() => {
     if (sportName) {
       if (sportName.toLowerCase() === 'tennis') {
-        setMainTitle({ title: `Player in ${sportName}`, titleIcon: images.tennisSingleHeaderIcon })
+        setMainTitle({
+          title: `Player in ${sportName}`,
+          titleIcon: images.tennisSingleHeaderIcon,
+        });
       } else {
-        setMainTitle({ title: `Play in ${sportName}`, titleIcon: images.soccerImage })
+        setMainTitle({
+          title: `Play in ${sportName}`,
+          titleIcon: images.soccerImage,
+        });
       }
     }
-  }, [sportName, singlePlayerGame])
-  const onSave = useCallback((params) => new Promise((resolve, reject) => {
-    patchPlayer(params, authContext).then(async (res) => {
-      const entity = authContext.entity
-      entity.auth.user = res.payload;
-      entity.obj = res.payload;
-      authContext.setEntity({ ...entity })
-      await Utility.setStorage('authContextUser', res.payload);
-      authContext.setUser(res.payload)
-      setCurrentUserData({ ...res?.payload });
-      resolve(res);
-    }).catch((error) => {
-      reject(error);
-      Alert.alert(strings.alertmessagetitle, error.message)
-    })
-  }), [authContext])
+  }, [sportName, singlePlayerGame]);
+  const onSave = useCallback(
+    (params) => new Promise((resolve, reject) => {
+        patchPlayer(params, authContext)
+          .then(async (res) => {
+            const entity = authContext.entity;
+            entity.auth.user = res.payload;
+            entity.obj = res.payload;
+            authContext.setEntity({ ...entity });
+            await Utility.setStorage('authContextUser', res.payload);
+            authContext.setUser(res.payload);
+            setCurrentUserData({ ...res?.payload });
+            resolve(res);
+          })
+          .catch((error) => {
+            reject(error);
+            Alert.alert(strings.alertmessagetitle, error.message);
+          });
+      }),
+    [authContext],
+  );
 
-  const renderHeader = useMemo(() => (
-    <>
-      <Header
-            safeAreaStyle={{ marginTop: 10 }}
-            mainContainerStyle={styles.headerMainContainerStyle}
-            centerComponent={
-              <View style={styles.headerCenterViewStyle}>
-                <FastImage source={mainTitle?.titleIcon} style={styles.soccerImageStyle} resizeMode={'contain'} />
-                <Text style={styles.playInTextStyle}>{mainTitle?.title ?? ''}</Text>
-              </View>
-            }
-            rightComponent={
-              <TouchableOpacity onPress={onClose}>
-                <FastImage source={images.cancelWhite} tintColor={colors.lightBlackColor} style={styles.cancelImageStyle} resizeMode={'contain'} />
-              </TouchableOpacity>
-            }
+  const renderHeader = useMemo(
+    () => (
+      <>
+        <Header
+          safeAreaStyle={{ marginTop: 10 }}
+          mainContainerStyle={styles.headerMainContainerStyle}
+          centerComponent={
+            <View style={styles.headerCenterViewStyle}>
+              <FastImage
+                source={mainTitle?.titleIcon}
+                style={styles.soccerImageStyle}
+                resizeMode={'contain'}
+              />
+              <Text style={styles.playInTextStyle}>
+                {mainTitle?.title ?? ''}
+              </Text>
+            </View>
+          }
+          rightComponent={
+            <TouchableOpacity onPress={onClose}>
+              <FastImage
+                source={images.cancelWhite}
+                tintColor={colors.lightBlackColor}
+                style={styles.cancelImageStyle}
+                resizeMode={'contain'}
+              />
+            </TouchableOpacity>
+          }
         />
-      <TCGradientDivider width={'100%'} height={3}/>
-    </>
-  ), [mainTitle?.title, mainTitle?.titleIcon, onClose])
+        <TCGradientDivider width={'100%'} height={3} />
+      </>
+    ),
+    [mainTitle?.title, mainTitle?.titleIcon, onClose],
+  );
 
-  const renderPlayInInfoTab = useMemo(() => (
-    <ScrollView style={{ flex: 1 }}>
-      <PlayInInfoView
+  const renderPlayInInfoTab = useMemo(
+    () => (
+      <ScrollView style={{ flex: 1 }}>
+        <PlayInInfoView
           openPlayInModal={openPlayInModal}
           onSave={onSave}
           sportName={playInObject?.sport_name}
@@ -121,104 +158,162 @@ const PlayInModule = ({
           currentUserData={currentUserData}
           isAdmin={isAdmin}
           navigation={navigation}
-      />
-    </ScrollView>
-  ), [currentUserData, isAdmin, navigation, onClose, onSave, openPlayInModal, playInObject?.sport_name]);
+        />
+      </ScrollView>
+    ),
+    [
+      currentUserData,
+      isAdmin,
+      navigation,
+      onClose,
+      onSave,
+      openPlayInModal,
+      playInObject?.sport_name,
+    ],
+  );
 
-  const renderScoreboardTab = useMemo(() => (
-    <PlayInScoreboardView
-          openPlayInModal={openPlayInModal}
-          closePlayInModal={onClose}
-          navigation={navigation}
-          sportName={playInObject?.sport_name}
+  const renderScoreboardTab = useMemo(
+    () => (
+      <PlayInScoreboardView
+        openPlayInModal={openPlayInModal}
+        closePlayInModal={onClose}
+        navigation={navigation}
+        sportName={playInObject?.sport_name}
       />
-  ), [navigation, onClose, openPlayInModal, playInObject?.sport_name])
+    ),
+    [navigation, onClose, openPlayInModal, playInObject?.sport_name],
+  );
 
-  const renderStatsViewTab = useMemo(() => (
-    <ScrollView style={{ flex: 1 }}>
-      <PlayInStatsView
+  const renderStatsViewTab = useMemo(
+    () => (
+      <ScrollView style={{ flex: 1 }}>
+        <PlayInStatsView
           currentUserData={currentUserData}
           playInObject={playInObject}
           sportName={playInObject?.sport_name}
+        />
+      </ScrollView>
+    ),
+    [currentUserData, playInObject],
+  );
+
+  const renderReviewTab = useMemo(
+    () => (
+      <PlayInReviewsView
+        currentUserData={currentUserData}
+        playInObject={playInObject}
+        sportName={playInObject?.sport_name}
       />
-    </ScrollView>
-  ), [currentUserData, playInObject])
+    ),
+    [currentUserData, playInObject],
+  );
 
-  const renderReviewTab = useMemo(() => (
-    <PlayInReviewsView
-          currentUserData={currentUserData}
-          playInObject={playInObject}
-          sportName={playInObject?.sport_name}
-      />
-  ), [currentUserData, playInObject])
+  const renderTabs = useCallback(
+    (item, index) => (
+      <View tabLabel={item} style={{ flex: 1 }}>
+        {index === 0 ? renderPlayInInfoTab : null}
+        {index === 1 ? renderScoreboardTab : null}
+        {index === 2 ? renderStatsViewTab : null}
+        {index === 3 ? renderReviewTab : null}
+      </View>
+    ),
+    [
+      renderPlayInInfoTab,
+      renderReviewTab,
+      renderScoreboardTab,
+      renderStatsViewTab,
+    ],
+  );
 
-  const renderTabs = useCallback((item, index) => (
-    <View tabLabel={item} style={{ flex: 1 }}>
-      {index === 0 ? renderPlayInInfoTab : null}
-      {index === 1 ? renderScoreboardTab : null}
-      {index === 2 ? renderStatsViewTab : null}
-      {index === 3 ? renderReviewTab : null}
-    </View>
-    ), [renderPlayInInfoTab, renderReviewTab, renderScoreboardTab, renderStatsViewTab])
-
-  const renderChallengeButton = useMemo(() => currentTab === 0 && authContext?.entity?.uid !== currentUserData?.user_id && ['player', 'user']?.includes(authContext?.entity?.role) && (
-    <TouchableOpacity
-              onPress={() => {
-                console.log('auth123:=>', authContext);
-                if (authContext?.entity?.obj?.registered_sports?.some((item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase())) {
-                  actionSheetRef.current.show();
-                } else {
-                  Alert.alert('Towns Cup', 'Both Player have a different sports')
-                }
-              }}
-              style={styles.challengeButtonContainer}>
-      <LinearGradient
-                colors={[colors.themeColor, '#FF3B00']}
-                style={styles.challengeLinearContainer}>
-        <View style={{
-                width: '100%', paddingHorizontal: 25, flexDirection: 'row', justifyContent: 'space-between',
-        }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={styles.challengeTextStyle}>{`$${playInObject?.fee ?? 0}`}</Text>
-            <Text style={{ ...styles.challengeTextStyle, fontSize: 13, fontFamily: fonts.RRegular }}> (per hours)</Text>
-          </View>
-          <Text style={styles.challengeTextStyle}>CHALLENGE</Text>
-        </View>
-      </LinearGradient>
-    </TouchableOpacity>
-      ), [authContext?.entity?.role, authContext?.entity?.uid, authContext?.user?.registered_sports, currentTab, currentUserData, navigation, onClose, playInObject?.fee, sportName])
+  const renderChallengeButton = useMemo(
+    () => currentTab === 0
+      && authContext?.entity?.uid !== currentUserData?.user_id
+      && (authContext?.entity?.role === 'user' && 'player') === currentUserData?.entity_type
+      && playInObject?.sport_type !== 'multiplayer' && (
+        <TouchableOpacity
+          onPress={() => {
+            console.log('auth123:=>', authContext);
+            if (
+              authContext?.entity?.obj?.registered_sports?.some(
+                (item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase(),
+              )
+            ) {
+              actionSheetRef.current.show();
+            } else {
+              Alert.alert('Towns Cup', 'Both Player have a different sports');
+            }
+          }}
+          style={styles.challengeButtonContainer}>
+          <LinearGradient
+            colors={[colors.themeColor, '#FF3B00']}
+            style={styles.challengeLinearContainer}>
+            <View
+              style={{
+                width: '100%',
+                paddingHorizontal: 25,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Text style={styles.challengeTextStyle}>{`$${
+                  playInObject?.fee ?? 0
+                }`}</Text>
+                <Text
+                  style={{
+                    ...styles.challengeTextStyle,
+                    fontSize: 13,
+                    fontFamily: fonts.RRegular,
+                  }}>
+                  {' '}
+                  (per hours)
+                </Text>
+              </View>
+              <Text style={styles.challengeTextStyle}>CHALLENGE</Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      ),
+    [authContext, currentTab, currentUserData?.entity_type, currentUserData?.user_id, playInObject?.fee, playInObject?.sport_type, sportName],
+  );
 
   const onMessageButtonPress = useCallback(() => {
     const navigateToMessage = (userId) => {
       navigation.push('MessageChat', {
         screen: 'MessageChatRoom',
         params: { userId },
-      })
-    }
+      });
+    };
     const accountType = getQBAccountType(currentUserData?.entity_type);
-    const entityId = ['user', 'player']?.includes(currentUserData?.entity_type) ? currentUserData?.user_id : currentUserData?.group_id
-    QBcreateUser(entityId, currentUserData, accountType)
-        .finally(() => {
-          onClose();
-          navigateToMessage(entityId);
-        })
-  }, [currentUserData, navigation, onClose])
+    const entityId = ['user', 'player']?.includes(currentUserData?.entity_type)
+      ? currentUserData?.user_id
+      : currentUserData?.group_id;
+    QBcreateUser(entityId, currentUserData, accountType).finally(() => {
+      onClose();
+      navigateToMessage(entityId);
+    });
+  }, [currentUserData, navigation, onClose]);
 
   const onChangeTab = useCallback((ChangeTab) => {
-    setCurrentTab(ChangeTab.i)
-  }, [])
+    setCurrentTab(ChangeTab.i);
+  }, []);
   return (
     <>
       <Modal
-            isVisible={visible}
-            backdropColor="black"
-            style={{
-              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
-            }}
-            hasBackdrop
-            onBackdropPress={onClose}
-            backdropOpacity={0}
-        >
+        isVisible={visible}
+        backdropColor="black"
+        style={{
+          margin: 0,
+          justifyContent: 'flex-end',
+          backgroundColor: colors.blackOpacityColor,
+        }}
+        hasBackdrop
+        onBackdropPress={onClose}
+        backdropOpacity={0}>
         <View style={styles.modalContainerViewStyle}>
           <SafeAreaView style={{ flex: 1 }}>
             {renderHeader}
@@ -227,59 +322,73 @@ const PlayInModule = ({
             {renderChallengeButton}
 
             {/* Profile View Section */}
-            {useMemo(() => <PlayInProfileViewSection
-              onSettingPress={() => {
-                onClose()
-                navigation.navigate('ManageChallengeScreen')
-              }
-            }
-              onMessageButtonPress={onMessageButtonPress}
-              isAdmin={isAdmin}
-              profileImage={currentUserData?.thumbnail ? { uri: currentUserData?.thumbnail } : images.profilePlaceHolder}
-              userName={currentUserData?.full_name ?? ''}
-              cityName={currentUserData?.city ?? ''}
-          />, [currentUserData?.city, currentUserData?.full_name, currentUserData?.thumbnail, isAdmin, onMessageButtonPress])}
+            {useMemo(
+              () => (
+                <PlayInProfileViewSection
+                  onSettingPress={() => {
+                    onClose();
+                    navigation.navigate('ManageChallengeScreen');
+                  }}
+                  onMessageButtonPress={onMessageButtonPress}
+                  isAdmin={isAdmin}
+                  profileImage={
+                    currentUserData?.thumbnail
+                      ? { uri: currentUserData?.thumbnail }
+                      : images.profilePlaceHolder
+                  }
+                  userName={currentUserData?.full_name ?? ''}
+                  cityName={currentUserData?.city ?? ''}
+                />
+              ),
+              [
+                currentUserData?.city,
+                currentUserData?.full_name,
+                currentUserData?.thumbnail,
+                isAdmin,
+                navigation,
+                onClose,
+                onMessageButtonPress,
+              ],
+            )}
 
             {/* Tabs */}
-            {useMemo(() => (
-              <TCScrollableTabs
-                locked={false}
-                onChangeTab={onChangeTab}
-              >
-                {TAB_ITEMS?.map(renderTabs)}
-              </TCScrollableTabs>
-          ), [renderTabs])}
-
+            {useMemo(
+              () => (
+                <TCScrollableTabs locked={false} onChangeTab={onChangeTab}>
+                  {TAB_ITEMS?.map(renderTabs)}
+                </TCScrollableTabs>
+              ),
+              [renderTabs],
+            )}
           </SafeAreaView>
         </View>
       </Modal>
 
       <ActionSheet
-          ref={actionSheetRef}
-          options={['Continue to Challenge', 'Invite to Challenge', 'Cancel']}
-          cancelButtonIndex={2}
-          destructiveButtonIndex={2}
-          onPress={(index) => {
-            if (index === 0) {
-              onClose()
-              navigation.navigate('ChallengeScreen', {
-                sportName: playInObject?.sport_name,
-                groupObj: currentUserData,
-              });
-            }
-            if (index === 1) {
-              onClose()
-              navigation.navigate('InviteChallengeScreen', {
-                sportName: playInObject?.sport_name,
-                groupObj: currentUserData,
-              });
-            }
-          }}
-        />
-
+        ref={actionSheetRef}
+        options={['Continue to Challenge', 'Invite to Challenge', 'Cancel']}
+        cancelButtonIndex={2}
+        destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            onClose();
+            navigation.navigate('ChallengeScreen', {
+              sportName: playInObject?.sport_name,
+              groupObj: currentUserData,
+            });
+          }
+          if (index === 1) {
+            onClose();
+            navigation.navigate('InviteChallengeScreen', {
+              sportName: playInObject?.sport_name,
+              groupObj: currentUserData,
+            });
+          }
+        }}
+      />
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   modalContainerViewStyle: {

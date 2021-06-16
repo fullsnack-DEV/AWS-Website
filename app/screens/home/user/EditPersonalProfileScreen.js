@@ -35,6 +35,7 @@ import * as Utility from '../../../utils';
 import { getQBAccountType, QBupdateUser } from '../../../utils/QuickBlox';
 import images from '../../../Constants/ImagePath';
 import TCImage from '../../../components/TCImage';
+import ToggleView from '../../../components/Schedule/ToggleView';
 
 export default function EditPersonalProfileScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -62,8 +63,7 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
         } }>{strings.save}</Text>
       ),
     });
-  }, [navigation, profileImageChanged,
-    backgroundImageChanged, currentImageSelection, profile]);
+  }, [navigation, profileImageChanged, backgroundImageChanged, currentImageSelection, profile]);
 
   useEffect(() => {
     getUserInformation();
@@ -97,10 +97,12 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
   const getUserInformation = async () => {
     const entity = authContext.entity
     const userDetails = entity.obj;
+    console.log('user Details:=>', userDetails);
     setProfile({
       ...userDetails,
       location: (`${userDetails.city}, ${userDetails.state_abbr}, ${userDetails.country}`),
     });
+    // setLookingForTeam(userDetails.lookingForTeam)
   }
 
   const onSaveButtonClicked = () => {
@@ -354,6 +356,25 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
            onPress = {() => onLocationClicked()}
            placeholder = {strings.searchCityPlaceholder}
            showNextArrow = {true}
+          />
+          </View>
+
+          <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginRight: 15,
+          }}>
+            <TCLabel title= {strings.lookingForTeam} style={{ marginTop: 15 }}/>
+            <ToggleView
+            isOn={profile?.lookingForTeam}
+
+            onToggle={() => {
+              setProfile({ ...profile, lookingForTeam: !profile?.lookingForTeam })
+            }}
+            onColor={colors.themeColor}
+            offColor={colors.grayBackgroundColor}
+
           />
           </View>
 

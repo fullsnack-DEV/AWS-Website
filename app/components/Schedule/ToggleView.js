@@ -11,6 +11,7 @@ function ToggleView({
         offColor={offColor}
         size={size}
         onToggle={onToggle}
+
     />
   );
 }

@@ -17,10 +17,11 @@ function TCTitleWithArrow({
   required = false,
   showArrow = false,
   onPress,
+  isDisabled = false,
   ...otherProps
 }) {
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
+    <TouchableWithoutFeedback onPress={onPress} disabled={isDisabled}>
       <View style={[styles.viewContainer, viewStyle]}>
         <Text style={[styles.labelText, style]} {...otherProps}>
           {title}
