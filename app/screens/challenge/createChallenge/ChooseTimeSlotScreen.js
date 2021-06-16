@@ -348,6 +348,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
   };
 
   const onToDone = (date) => {
+    console.log('To Date:=>', date);
     setTo(date.getTime());
 
     const dt = date;
@@ -499,7 +500,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
         />
           <DateTimePickerView
           title={'Choose a Time'}
-          date={new Date(from)}
+          date={new Date(to)}
           visible={toPickerVisible}
           onDone={onToDone}
           onCancel={handleCancelPress}

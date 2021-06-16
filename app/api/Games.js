@@ -11,7 +11,7 @@ const GameRecordStatus = {
 }
 const getSportsList = async (authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/games/sports/`,
+  url: `${Config.BASE_URL}/games/sports`,
   authContext,
 })
 

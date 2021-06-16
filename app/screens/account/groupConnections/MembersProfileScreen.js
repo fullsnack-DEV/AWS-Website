@@ -254,19 +254,22 @@ export default function MembersProfileScreen({ navigation, route }) {
                       { cancelable: false },
                     );
                   } else if (index === 1) {
+                    // Alert.alert('ok')
                     Alert.alert(
                       strings.alertmessagetitle,
                       `Do you want to remove ${memberDetail.first_name} ${memberDetail.last_name} from ${switchUser.obj.group_name}?`,
                       [
                         {
-                          text: 'Ok',
-                          onPress: deleteMemberProfile(switchUser.uid, memberDetail.user_id),
-                        },
-                        {
                           text: 'Cancel',
+                          onPress: () => console.log('Cancel cancel'),
                           style: 'cancel',
                         },
+                        {
+                          text: 'Ok',
+                          onPress: () => deleteMemberProfile(switchUser.uid, memberDetail.user_id),
+                        },
                       ],
+                      { cancelable: false },
                     );
                   }
                 }}

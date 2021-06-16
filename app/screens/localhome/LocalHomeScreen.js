@@ -171,7 +171,7 @@ if (route?.params?.locationText) {
           new Date().getTime() / 1000,
         ).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`;
 
-        const challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        const challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
 
         const hiringPlayersBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"hiringPlayers": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
         const lookingTeamBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"lookingForTeam": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
@@ -841,7 +841,12 @@ if (route?.params?.locationText) {
                 title={strings.lookingForTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
-                onPress={() => navigation.navigate('LookingForChallengeScreen')}
+                onPress={() => {
+                  navigation.navigate('LookingForChallengeScreen', {
+                    location,
+                    selectedSport,
+                  });
+                }}
               />
               <Carousel
                 data={challengeeMatch}
