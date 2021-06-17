@@ -3,15 +3,15 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import images from '../Constants/ImagePath';
-import { getScreenHeight, getScreenWidth } from '../utils';
+// import { getScreenHeight, getScreenWidth } from '../utils';
 
 const TCZoomableImage = ({
   source,
-  screenInsets,
+  // screenInsets,
   style,
   onClick = () => {},
   thumbnailSource,
-  isLandscape = false,
+  // isLandscape = false,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -27,8 +27,8 @@ const TCZoomableImage = ({
           right: 0,
           justifyContent: 'center',
           alignItems: 'center',
-          height: getScreenHeight({ isLandscape, screenInsets }),
-          width: getScreenWidth({ isLandscape, screenInsets }),
+          // height: getScreenHeight({ isLandscape, screenInsets }),
+          // width: getScreenWidth({ isLandscape, screenInsets }),
         }}>
           <FastImage
               style={style}

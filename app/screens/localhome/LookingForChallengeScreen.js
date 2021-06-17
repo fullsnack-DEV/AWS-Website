@@ -1,3 +1,5 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable no-underscore-dangle */
 import React, {
  useCallback, useState, useEffect, useLayoutEffect,
  } from 'react';
@@ -10,16 +12,20 @@ import {
   Platform,
   Text,
   Dimensions,
+  Alert,
 } from 'react-native';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
 
+import bodybuilder from 'bodybuilder';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import RNPickerSelect from 'react-native-picker-select';
-import { gameData } from '../../utils/constant';
+import {
+  postElasticSearch,
+} from '../../api/elasticSearch';
 import { getHitSlop, widthPercentageToDP } from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -32,7 +38,7 @@ import TCThinDivider from '../../components/TCThinDivider';
 
 import strings from '../../Constants/String';
 
-export default function LookingForChallengeScreen({ navigation }) {
+export default function LookingForChallengeScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
@@ -48,6 +54,14 @@ export default function LookingForChallengeScreen({ navigation }) {
   const [maxAgeValue, setMaxAgeValue] = React.useState([]);
   // const authContext = useContext(AuthContext);
 
+  const [location] = useState(route?.params?.location);
+  const [selectedSport] = useState(route?.params?.selectedSport);
+  const [lookingChallengee, setLookingChallengee] = useState([]);
+
+  const [pageSize] = useState(10);
+  const [pageNumber, setPageNumber] = useState(0);
+  const [totalRecord, setTotalRecord] = useState();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -61,6 +75,44 @@ export default function LookingForChallengeScreen({ navigation }) {
       ),
     });
   }, [navigation]);
+
+  useEffect(() => {
+    handleLoadMore();
+  }, []);
+
+  const handleLoadMore = () => {
+    console.log('Page Size:', pageSize);
+    console.log('Page Number:', pageNumber);
+    console.log('Total:', totalRecord);
+
+      const challengeeBody = bodybuilder()
+        .size(pageSize)
+        .from((pageNumber * pageSize))
+        .query('match', 'sport', selectedSport)
+        .query('match', 'entity_type', 'team')
+        .query('multi_match', {
+          query: location,
+          fields: ['city', 'country', 'state'],
+        })
+        .build();
+
+      setPageNumber(pageNumber + 1);
+      // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+
+      postElasticSearch(challengeeBody, 'gameindex')
+        .then((res1) => {
+          console.log('looking challengee  API Response:=>', res1);
+          console.log('Total record:=>', res1.hits.total.value);
+          setTotalRecord(res1.hits.total.value);
+
+          setLookingChallengee([...lookingChallengee, ...res1.hits.hits]);
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+  };
 
   useEffect(() => {
     const minAgeArray = [];
@@ -104,7 +156,7 @@ export default function LookingForChallengeScreen({ navigation }) {
   const renderRecentMatchItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCChallengerCard data={item} cardWidth={'92%'} />
+        <TCChallengerCard data={item._source} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -122,10 +174,13 @@ export default function LookingForChallengeScreen({ navigation }) {
       </View>
       <FlatList
         showsHorizontalScrollIndicator={false}
-        data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
+        data={lookingChallengee}
         keyExtractor={keyExtractor}
         renderItem={renderRecentMatchItems}
         style={styles.listViewStyle}
+        scrollEnabled={true}
+          // onScroll={onScroll}
+          onScrollEndDrag={handleLoadMore}
       />
       <Modal
         onBackdropPress={() => setSettingPopup(false)}

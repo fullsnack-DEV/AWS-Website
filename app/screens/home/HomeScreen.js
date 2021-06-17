@@ -281,6 +281,10 @@ const HomeScreen = ({ navigation, route }) => {
   const timeTableSelectionDate = moment(timetableSelectDate).format(
     'YYYY-MM-DD',
   );
+
+  const [sportsSelection, setSportsSelection] = useState();
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+
   const eventEditDeleteAction = useRef();
   const addRoleActionSheet = useRef();
   const manageChallengeActionSheet = useRef();
@@ -3018,6 +3022,42 @@ const HomeScreen = ({ navigation, route }) => {
     return currentEntity;
   };
 
+  const renderSports = ({ item }) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => {
+        setSportsSelection(item?.sport_name);
+        setVisibleSportsModal(false);
+
+        setTimeout(() => {
+          console.log('Sport name:=>', item?.sport_name);
+          navigation.navigate('ManageChallengeScreen', {
+            sportName: item?.sport_name,
+          });
+        }, 300);
+      }}>
+      <View
+        style={{
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>{item.sport_name}</Text>
+        <View style={styles.checkbox}>
+          {sportsSelection === item?.sport_name ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.mainContainer}>
       <ActionSheet
@@ -3049,7 +3089,16 @@ const HomeScreen = ({ navigation, route }) => {
         onPress={(index) => {
           if (index === 0) {
             // Add Playing
-            navigation.navigate('ManageChallengeScreen', { sportName: authContext?.entity?.obj?.sport });
+
+            const entity = authContext.entity;
+
+        if (entity.role === 'user') {
+          if (entity?.obj?.registered_sports?.length > 0) {
+            setVisibleSportsModal(true);
+          } else {
+            Alert.alert('There is no registerd sports.');
+          }
+        }
           }
         }}
       />
@@ -4535,6 +4584,75 @@ const HomeScreen = ({ navigation, route }) => {
       </Modal>
       {/* Create Challenge modal */}
 
+      {/* Sports list  modal */}
+      <Modal
+          isVisible={visibleSportsModal}
+          backdropColor="black"
+          onBackdropPress={() => setVisibleSportsModal(false)}
+          onRequestClose={() => setVisibleSportsModal(false)}
+          backdropOpacity={0}
+          style={{
+            margin: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          }}>
+        <View
+            style={{
+              width: '100%',
+              height: Dimensions.get('window').height / 1.3,
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.5,
+              shadowRadius: 5,
+              elevation: 15,
+            }}>
+          <View
+              style={{
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+            <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setVisibleSportsModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RBold,
+                  color: colors.lightBlackColor,
+                }}>
+              Sports
+            </Text>
+
+            <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: colors.themeColor,
+                }}></Text>
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+              ItemSeparatorComponent={() => <TCThinDivider />}
+              data={authContext?.entity?.obj?.registered_sports}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderSports}
+            />
+        </View>
+      </Modal>
+
       {!createEventModal && currentTab === 3 && (
         <CreateEventButton
           source={images.plus}
@@ -4881,6 +4999,27 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginLeft: 15,
   },
+
+  closeButton: {
+    alignSelf: 'center',
+    width: 13,
+    height: 13,
+    marginLeft: 5,
+    resizeMode: 'contain',
+  },
+
+  languageList: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('4%'),
+  },
+  checkboxImg: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+
 });
 
 export default HomeScreen;

@@ -2,7 +2,8 @@ import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
 import makeElasticAPIRequest from '../utils/ElasticGloble';
 
-const elasticBaseURL = 'https://townscup.es.us-east-1.aws.found.io:9243';
+const elasticBaseURL = 'https://5341ba2ac4474551a2e48ba9bfa519cd.us-east-1.aws.found.io:9243';
+// 'https://townscup.es.us-east-1.aws.found.io:9243';
 
 export const postElasticSearch = async (query, path) => makeElasticAPIRequest({
   method: 'post',

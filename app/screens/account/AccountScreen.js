@@ -1043,7 +1043,6 @@ export default function AccountScreen({ navigation, route }) {
 
   const onNextPressed = () => {
     setIsRulesModalVisible(false);
-    console.log('************************************');
     const entity = authContext.entity;
     if (createEntity === 'team') {
       if (entity.role === 'user') {
