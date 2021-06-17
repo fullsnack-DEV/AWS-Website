@@ -2,12 +2,11 @@
 
 import React, { memo } from 'react';
 import {
-StyleSheet, Text, View, Image,
+StyleSheet, View, Image,
 } from 'react-native';
 import { PieChart as SVGPieChart } from 'react-native-svg-charts';
 import { Defs, LinearGradient, Stop } from 'react-native-svg';
 import colors from '../Constants/Colors';
-import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 
 let data = [];
@@ -53,11 +52,11 @@ const TCRoundChart = ({
     );
   };
   return (
-    <View style={{ paddingVertical: 6 }}>
+    <View style={{ margin: 10, marginLeft: 15 }}>
       <View style={styles.containerStyle}>
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <SVGPieChart
-            style={{ height: 64, width: 64 }}
+            style={{ height: 80, width: 80 }}
             data={
               data?.filter((item) => item?.value === 0)?.length === 3 ? [
                 {
@@ -68,9 +67,9 @@ const TCRoundChart = ({
             ] : data
             }
             spacing={0}
-            radius={30}
-            outerRadius={30}
-            innerRadius={25}>
+            radius={35}
+            outerRadius={35}
+            innerRadius={30}>
             <GradientView keyName={'looser'} />
             <GradientView keyName={'draw'} />
             <GradientView keyName={'winner'} />
@@ -88,16 +87,16 @@ const TCRoundChart = ({
               <Image
                 source={images.soccerBackground}
                 style={{
-                  height: 40,
-                  width: 40,
+                  height: 50,
+                  width: 50,
                   resizeMode: 'cover',
-                  borderRadius: 20,
+                  borderRadius: 100,
                 }}
               />
             </View>
           </View>
         </View>
-        <Text style={styles.winTextStyle}>
+        {/* <Text style={styles.winTextStyle}>
           Wins{' '}
           <Text style={styles.percentageStyle}>
             {(gameStatsData.winner !== 0
@@ -106,7 +105,7 @@ const TCRoundChart = ({
             ).toFixed(0)}
             %
           </Text>
-        </Text>
+        </Text> */}
       </View>
     </View>
   );
@@ -125,18 +124,18 @@ const styles = StyleSheet.create({
 
     borderRadius: 31,
   },
-  winTextStyle: {
-    fontSize: 12,
-    fontFamily: fonts.RRegular,
-    color: colors.userPostTimeColor,
-    textAlign: 'center',
-    marginTop: 10,
-  },
-  percentageStyle: {
-    fontSize: 12,
-    fontFamily: fonts.RBold,
-    color: colors.userPostTimeColor,
-  },
+  // winTextStyle: {
+  //   fontSize: 12,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.userPostTimeColor,
+  //   textAlign: 'center',
+  //   marginTop: 10,
+  // },
+  // percentageStyle: {
+  //   fontSize: 12,
+  //   fontFamily: fonts.RBold,
+  //   color: colors.userPostTimeColor,
+  // },
 });
 
 export default memo(TCRoundChart);

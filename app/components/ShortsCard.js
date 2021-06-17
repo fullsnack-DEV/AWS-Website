@@ -17,19 +17,20 @@ function millisToMinutesAndSeconds(millis) {
 
 function ShortsCard({ onPress, cardItem }) {
   const json = JSON.parse(cardItem.object);
+  console.log('json?.attachments?.[0]?.thumbnail:=>', json?.attachments?.[0]?.thumbnail);
   return (
     <TouchableOpacity onPress={() => onPress({ cardItem }) }>
 
       <View>
         <Video
-        source={{ uri: json.attachments[0].thumbnail }}
+        source={{ uri: json?.attachments?.[0]?.thumbnail }}
         style={styles.shortView}
         resizeMode={'cover'}
         paused={true}
       />
         <View style={styles.durationContainer}>
           <Text style={styles.durationLable}>
-            {millisToMinutesAndSeconds(json.attachments[0].duration)}
+            {millisToMinutesAndSeconds(json?.attachments?.[0]?.duration)}
           </Text>
         </View>
         <LinearGradient
