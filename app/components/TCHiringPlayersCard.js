@@ -28,7 +28,7 @@ const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData, data }) => (
             }}>
         <TCRoundChart gameStatsData ={gameStatsData}/>
       </View>
-      <View style={{ width: wp('40%'), marginLeft: 10 }}>
+      <View style={{ width: wp('40%'), marginLeft: 10, marginTop: 10 }}>
         <View style={styles.bottomView}>
           <Text style={styles.levelText}>Lv.0</Text>
           <Text style={styles.textSaperator}> | </Text>
@@ -58,8 +58,9 @@ const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData, data }) => (
             style={{
               height: 25,
               borderRadius: 6,
-              width: 95,
+              width: 75,
               marginBottom: 15,
+              alignSelf: 'center',
             }}
             onPress={() => console.log('Join Press')}
           />
@@ -94,8 +95,8 @@ const styles = StyleSheet.create({
   },
   levelText: {
     fontSize: 12,
-    fontFamily: fonts.RRegular,
-    color: colors.userPostTimeColor,
+    fontFamily: fonts.RMedium,
+    color: colors.orangeColorCard,
   },
   eventTitle: {
     color: colors.lightBlackColor,
@@ -107,13 +108,13 @@ const styles = StyleSheet.create({
 
   pointView: {
     fontSize: 12,
-    fontFamily: fonts.RRegular,
-    color: colors.userPostTimeColor,
+    fontFamily: fonts.RMedium,
+    color: colors.orangeColorCard,
 
     flex: 1,
   },
   textSaperator: {
-    color: colors.userPostTimeColor,
+    color: colors.orangeColorCard,
     marginLeft: 5,
     marginRight: 5,
     opacity: 0.4,

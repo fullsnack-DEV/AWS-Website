@@ -12,7 +12,7 @@ import TCThinDivider from '../../components/TCThinDivider';
 import strings from '../../Constants/String';
 import fonts from '../../Constants/Fonts';
 
-export default function SearchCityScreen({ navigation }) {
+export default function SearchCityScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
   const [cityData, setCityData] = useState([]);
   const authContext = useContext(AuthContext);
@@ -38,7 +38,7 @@ export default function SearchCityScreen({ navigation }) {
       style={styles.listItem}
       onPress={() => {
         console.log('selected ITEM:=>', item);
-        navigation.navigate('LocalHomeScreen', { locationText: item?.structured_formatting?.main_text })
+        navigation.navigate(route?.params?.comeFrom, { locationText: item?.structured_formatting?.main_text })
       }}>
       <Text style={styles.cityList}>{item?.structured_formatting?.main_text}</Text>
 

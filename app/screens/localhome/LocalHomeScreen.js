@@ -97,11 +97,12 @@ export default function LocalHomeScreen({ navigation, route }) {
   const [referees] = useState([]);
   const [scorekeepers] = useState([]);
 
-useEffect(() => {
-if (route?.params?.locationText) {
-  setLocation(route?.params?.locationText)
-}
-}, [route?.params?.locationText])
+  useEffect(() => {
+    if (route?.params?.locationText) {
+      console.log('route location:=>', route?.params?.locationText);
+      setLocation(route?.params?.locationText);
+    }
+  }, [route?.params?.locationText]);
 
   useEffect(() => {
     getAppSettings(authContext)
@@ -120,203 +121,229 @@ if (route?.params?.locationText) {
   const setSettings = useCallback(async (appSettingObj) => {
     await Utility.setStorage('appSetting', appSettingObj);
   }, []);
+
+  useEffect(() => {
+    getSportsList(authContext)
+      .then((res) => {
+        setloading(false);
+        if (res.payload) {
+          const arr = [];
+          for (const tempData of res.payload) {
+            tempData.isChecked = false;
+            arr.push(tempData);
+          }
+          setSports(arr);
+          setTimeout(() => setloading(false), 1000);
+        }
+      })
+      .catch((e) => {
+        console.log('catch -> sports list api');
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext]);
+
+  useEffect(() => {
+    getShortsList(location === 'world' ? '#world#' : location, authContext)
+      .then((res) => {
+        setloading(false);
+        if (res.payload) {
+          setShortsList(res.payload.results);
+        }
+      })
+      .catch((e) => {
+        console.log('catch -> shorts list api');
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext, location]);
+
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-        // const recentMatchbody = bodybuilder()
-        //   .query('match', 'sport', selectedSport)
-        //   .query('match', 'status', 'ended')
-        //   .query('multi_match', {
-        //     query: location,
-        //     fields: ['city', 'country', 'state'],
-        //   })
-        //   .query('range', 'start_datetime', {
-        //     lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-        //   })
-        //   .sort('actual_enddatetime', 'desc')
-        //   .build();
+      // const recentMatchbody = bodybuilder()
+      //   .query('match', 'sport', selectedSport)
+      //   .query('match', 'status', 'ended')
+      //   .query('multi_match', {
+      //     query: location,
+      //     fields: ['city', 'country', 'state'],
+      //   })
+      //   .query('range', 'start_datetime', {
+      //     lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+      //   })
+      //   .sort('actual_enddatetime', 'desc')
+      //   .build();
 
-        // const upcomingMatchbody = bodybuilder()
-        //   .query('match', 'sport', selectedSport)
-        //   .query('multi_match', {
-        //     query: location,
-        //     fields: ['city', 'country', 'state'],
-        //   })
-        //   .query('range', 'start_datetime', {
-        //     gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-        //   })
-        //   .sort('actual_enddatetime', 'desc')
-        //   .build();
+      // const upcomingMatchbody = bodybuilder()
+      //   .query('match', 'sport', selectedSport)
+      //   .query('multi_match', {
+      //     query: location,
+      //     fields: ['city', 'country', 'state'],
+      //   })
+      //   .query('range', 'start_datetime', {
+      //     gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+      //   })
+      //   .sort('actual_enddatetime', 'desc')
+      //   .build();
 
-        // const challengeeBody = bodybuilder()
-        //   .query('match', 'sport', selectedSport)
-        //   .query('multi_match', {
-        //     query: location,
-        //     fields: ['city', 'country', 'state'],
-        //   })
-        //   .build();
+      // const challengeeBody = bodybuilder()
+      //   .query('match', 'sport', selectedSport)
+      //   .query('multi_match', {
+      //     query: location,
+      //     fields: ['city', 'country', 'state'],
+      //   })
+      //   .build();
 
-        //   console.log('challengee body', JSON.stringify(challengeeBody));
+      //   console.log('challengee body', JSON.stringify(challengeeBody));
 
-        // let challengeeBody = '';
-        // if (authContext.entity.role === 'team') {
-        //   challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
-        // } else {
-        //   challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"registered_sports.sport_name":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
-        // }
+      // let challengeeBody = '';
+      // if (authContext.entity.role === 'team') {
+      //   challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+      // } else {
+      //   challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"registered_sports.sport_name":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+      // }
 
-        const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(
+      let recentMatchbody = '';
+      let upcomingMatchbody = '';
+      let challengeeBody = '';
+      let hiringPlayersBody = '';
+      let lookingTeamBody = '';
+
+      if (location === 'world') {
+        recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"range":{"start_datetime":{"lt":${parseFloat(
           new Date().getTime() / 1000,
         ).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`;
-        const upcomingMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"gt":${parseFloat(
+        upcomingMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"range":{"start_datetime":{"gt":${parseFloat(
           new Date().getTime() / 1000,
         ).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`;
 
-        const challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}}]}}}`;
 
-        const hiringPlayersBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"hiringPlayers": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
-        const lookingTeamBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"lookingForTeam": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        hiringPlayersBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"hiringPlayers": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}}]}}}`;
+        lookingTeamBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"lookingForTeam": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}}]}}}`;
+      } else {
+        recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(
+          new Date().getTime() / 1000,
+        ).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`;
+        upcomingMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"gt":${parseFloat(
+          new Date().getTime() / 1000,
+        ).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`;
 
-        console.log('upcomingMatchbody', challengeeBody);
+        challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
 
-        const a = `{ }\n${recentMatchbody}\n{ }\n${upcomingMatchbody}\n{"index":"entityindex"}\n${challengeeBody}\n{"index":"entityindex"}\n${hiringPlayersBody}\n{"index":"entityindex"}\n${lookingTeamBody}\n`;
+        hiringPlayersBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"hiringPlayers": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        lookingTeamBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"lookingForTeam": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+      }
 
-        console.log('Full object :=>', a);
-        setloading(true);
-        const promises = [
-          // postElasticSearch(recentMatchbody, 'gameindex'),
-          // // getRecentGameDetails('Soccer', 'ended', location, authContext),
-          // getSportsList(authContext),
-          // getShortsList(location, authContext),
-          // postElasticSearch(upcomingMatchbody, 'gameindex'),
+      console.log('upcomingMatchbody', challengeeBody);
 
-          postMultiElasticSearch(a),
-          // getRecentGameDetails('Soccer', 'ended', location, authContext),
-          getSportsList(authContext),
-          getShortsList(location, authContext),
-        ];
-        Promise.all(promises)
-          .then(([res1, res2, res3]) => {
-            // console.log('Recent API Response:=>', res1);
-            console.log('recent  API Response:=>', res1);
-            console.log('Sport API Response:=>', res2);
-            console.log('Shorts API Response:=>', res3);
+      const a = `{ }\n${recentMatchbody}\n{ }\n${upcomingMatchbody}\n{"index":"entityindex"}\n${challengeeBody}\n{"index":"entityindex"}\n${hiringPlayersBody}\n{"index":"entityindex"}\n${lookingTeamBody}\n`;
 
-            let entityArr = [];
-            let recentArr = [];
-            let upcomingArr = [];
+      console.log('Full object :=>', a);
 
-            setloading(false);
-            if (res1.responses) {
+      postMultiElasticSearch(a)
+        .then((res) => {
+          // console.log('Recent API Response:=>', res1);
+          console.log('recent  API Response:=>', res);
+
+          let entityArr = [];
+          let recentArr = [];
+          let upcomingArr = [];
+
+          setloading(false);
+          if (res.responses) {
+            const arr = [];
+            res.responses[0].hits.hits.map((e) => {
+              arr.push(e._source.away_team);
+              arr.push(e._source.home_team);
+            });
+            const uniqueArray = [...new Set(arr)];
+            entityArr = uniqueArray;
+            recentArr = res.responses[0].hits.hits;
+
+            const arr1 = [];
+            res.responses[1].hits.hits.map((e) => {
+              arr1.push(e._source.away_team);
+              arr1.push(e._source.home_team);
+            });
+
+            const uniqueArray1 = [...new Set(arr1)];
+            entityArr = [...entityArr, ...uniqueArray1];
+            upcomingArr = res.responses[1].hits.hits;
+
+            setChallengeeMatch(res.responses[2].hits.hits);
+            setHiringPlayers(res.responses[3].hits.hits);
+            setLookingTeam(res.responses[4].hits.hits);
+          }
+
+          console.log('entityArr api:=>', entityArr);
+          const ids = {
+            query: {
+              ids: {
+                values: entityArr,
+              },
+            },
+          };
+
+          postElasticSearch(ids, 'entityindex/entity')
+            .then((response) => {
+              console.log('ID api:=>', response);
               const arr = [];
-              res1.responses[0].hits.hits.map((e) => {
-                arr.push(e._source.away_team);
-                arr.push(e._source.home_team);
+              recentArr.map((e) => {
+                const obj = {
+                  ...e._source,
+                  home_team: response.hits.hits.find(
+                    (x) => x._source?.group_id === e._source?.home_team,
+                  ),
+                  away_team: response.hits.hits.find(
+                    (x) => x._source?.group_id === e._source?.away_team,
+                  ),
+                };
+
+                arr.push(obj);
               });
-              const uniqueArray = [...new Set(arr)];
-              entityArr = uniqueArray;
-              recentArr = res1.responses[0].hits.hits;
+
+              setRecentMatch([...arr]);
 
               const arr1 = [];
-              res1.responses[1].hits.hits.map((e) => {
-                arr1.push(e._source.away_team);
-                arr1.push(e._source.home_team);
+              upcomingArr.map((e) => {
+                const obj = {
+                  ...e._source,
+                  home_team: response.hits.hits.find(
+                    (x) => x._source?.group_id === e._source?.home_team,
+                  ),
+                  away_team: response.hits.hits.find(
+                    (x) => x._source?.group_id === e._source?.away_team,
+                  ),
+                };
+
+                arr1.push(obj);
               });
 
-              const uniqueArray1 = [...new Set(arr1)];
-              entityArr = [...entityArr, ...uniqueArray1];
-              upcomingArr = res1.responses[1].hits.hits;
+              setUpcomingMatch([...arr1]);
 
-              setChallengeeMatch(res1.responses[2].hits.hits);
-              setHiringPlayers(res1.responses[3].hits.hits);
-              setLookingTeam(res1.responses[4].hits.hits);
-            }
-            if (res2.payload) {
-              const arr = [];
-              for (const tempData of res2.payload) {
-                tempData.isChecked = false;
-                arr.push(tempData);
-              }
-              setSports(arr);
-              setTimeout(() => setloading(false), 1000);
-            }
-            if (res3.payload) {
-              setShortsList(res3.payload.results);
-            }
-            // if (res4.hits) {
-            //   const arr = [];
-            //   res1.hits.hits.map((e) => {
-            //     arr.push(e._source.away_team);
-            //     arr.push(e._source.home_team);
-            //   });
-            //   const uniqueArray = [...new Set(arr)];
-            //   entityArr = [...entityArr, ...uniqueArray];
-            //   upcomingArr = res4.hits.hits;
-            //   // setUpcomingMatch(res4.hits.hits);
-            // }
-
-            console.log('entityArr api:=>', entityArr);
-            const ids = {
-              query: {
-                ids: {
-                  values: entityArr,
-                },
-              },
-            };
-            setloading(true);
-            postElasticSearch(ids, 'entityindex/entity')
-              .then((response) => {
-                console.log('ID api:=>', response);
-                const arr = [];
-                recentArr.map((e) => {
-                  const obj = {
-                    ...e._source,
-                    home_team: response.hits.hits.find(
-                      (x) => x._source?.group_id === e._source?.home_team,
-                    ),
-                    away_team: response.hits.hits.find(
-                      (x) => x._source?.group_id === e._source?.away_team,
-                    ),
-                  };
-
-                  arr.push(obj);
-                });
-
-                setRecentMatch(arr);
-
-                const arr1 = [];
-                upcomingArr.map((e) => {
-                  const obj = {
-                    ...e._source,
-                    home_team: response.hits.hits.find(
-                      (x) => x._source?.group_id === e._source?.home_team,
-                    ),
-                    away_team: response.hits.hits.find(
-                      (x) => x._source?.group_id === e._source?.away_team,
-                    ),
-                  };
-
-                  arr1.push(obj);
-                });
-
-                setUpcomingMatch(arr1);
-
-                console.log(' USER response.hits.hits:=>', response.hits.hits);
-              })
-              .catch((e) => {
-                console.log('catch -> local home Screen id api');
-                setloading(false);
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, e.message);
-                }, 10);
-              });
-          })
-          .catch((e) => {
-            console.log('catch -> local home Screen recent, upcoming,shorts  api');
-            setloading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
+              console.log(' USER response.hits.hits:=>', response.hits.hits);
+            })
+            .catch((e) => {
+              console.log('catch -> local home Screen id api');
+              setloading(false);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            });
+        })
+        .catch((e) => {
+          console.log(
+            'catch -> local home Screen recent, upcoming,shorts  api',
+          );
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     });
   }, [authContext, location, selectedSport]);
 
@@ -552,7 +579,7 @@ if (route?.params?.locationText) {
   );
   const renderChallengerItems = useCallback(
     ({ item }) => (
-      <View style={{ marginBottom: 15 }}>
+      <View style={{ marginBottom: 15, flex: 1 }}>
         <TCChallengerCard data={item._source} cardWidth={'92%'} />
       </View>
     ),
@@ -612,7 +639,7 @@ if (route?.params?.locationText) {
               style={styles.titleHeaderView}
               onPress={() => {
                 if (!loading) {
-                  setLocationPopup(true)
+                  setLocationPopup(true);
                 }
               }}
               hitSlop={getHitSlop(15)}>
@@ -665,7 +692,10 @@ if (route?.params?.locationText) {
               city = e.short_name;
             }
           });
-          console.log('Location:=>', city.charAt(0).toUpperCase() + city.slice(1));
+          console.log(
+            'Location:=>',
+            city.charAt(0).toUpperCase() + city.slice(1),
+          );
           setLocation(city.charAt(0).toUpperCase() + city.slice(1));
         });
         console.log(position.coords.latitude);
@@ -742,9 +772,10 @@ if (route?.params?.locationText) {
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
                 onPress={() => navigation.navigate('RecentMatchScreen', {
-                    location,
-                    selectedSport,
-                  })
+                  location,
+                  selectedSport,
+                  sports,
+                })
                 }
               />
               <Carousel
@@ -762,32 +793,10 @@ if (route?.params?.locationText) {
                     placeholderText={strings.recentMatchPlaceholderText}
                     onStartPress={async () => {
                       console.log('Query');
-
-                      // postElasticSearch(body)
-                      //   .then((res) => {
-                      //     console.log('Then response', res);
-                      //   })
-                      //   .catch((err) => {
-                      //     console.log(err);
-                      //   });
                     }}
                   />
                 )}
               />
-              {/* <FlatList
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
-          keyExtractor={keyExtractor}
-          renderItem={renderRecentMatchItems}
-          ItemSeparatorComponent={() => (<View
-            style={{
-              height: 50,
-              width: 10,
-            }}
-          />)}
-          style={{ marginLeft: 15 }}
-        /> */}
             </View>
             <View>
               <TCTitleWithArrow
@@ -799,6 +808,7 @@ if (route?.params?.locationText) {
                   navigation.navigate('UpcomingMatchScreen', {
                     location,
                     selectedSport,
+                    sports,
                   });
                 }}
               />
@@ -822,7 +832,7 @@ if (route?.params?.locationText) {
             </View>
             <View>
               <TCTitleWithArrow
-                isDisabled={!(shortsList.length > 0)}
+                isDisabled={!(shortsList?.length > 0)}
                 title={strings.shortsTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
@@ -1033,7 +1043,7 @@ if (route?.params?.locationText) {
                     // Geolocation.getCurrentPosition((info) => console.log('Location info:=>', info));
 
                     setSelectedLocationOption(0);
-                     getLocation();
+                    getLocation();
                     // setLocation('India');
 
                     setTimeout(() => {
@@ -1063,8 +1073,11 @@ if (route?.params?.locationText) {
                 <TouchableWithoutFeedback
                   onPress={() => {
                     setSelectedLocationOption(1);
-                    console.log('Location:=>', authContext?.entity?.obj?.city.charAt(0).toUpperCase()
-                    + authContext?.entity?.obj?.city.slice(1));
+                    console.log(
+                      'Location:=>',
+                      authContext?.entity?.obj?.city.charAt(0).toUpperCase()
+                        + authContext?.entity?.obj?.city.slice(1),
+                    );
                     setLocation(
                       authContext?.entity?.obj?.city.charAt(0).toUpperCase()
                         + authContext?.entity?.obj?.city.slice(1),
@@ -1091,8 +1104,8 @@ if (route?.params?.locationText) {
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
                   onPress={() => {
-                    setSelectedLocationOption(2)
-                    setLocation('surat')
+                    setSelectedLocationOption(2);
+                    setLocation('world');
                     setTimeout(() => {
                       setLocationPopup(false);
                     }, 300);
@@ -1118,7 +1131,7 @@ if (route?.params?.locationText) {
                   style={styles.sectionStyle}
                   onPress={() => {
                     setLocationPopup(false);
-                    navigation.navigate('SearchCityScreen');
+                    navigation.navigate('SearchCityScreen', { comeFrom: 'LocalHomeScreen' });
                   }}>
                   <Text style={styles.searchText}>{strings.searchTitle}</Text>
                 </TouchableOpacity>

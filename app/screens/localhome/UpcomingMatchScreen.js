@@ -12,40 +12,134 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Dimensions,
+  TextInput,
 } from 'react-native';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
 import Modal from 'react-native-modal';
+import moment from 'moment';
 import bodybuilder from 'bodybuilder';
 
 // import { gameData } from '../../utils/constant';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { widthPercentageToDP } from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import TCTextField from '../../components/TCTextField';
 import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
 import TCUpcomingMatch from '../../components/TCUpcomingMatch';
 import { postElasticSearch } from '../../api/elasticSearch';
 import strings from '../../Constants/String';
+import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 
-export default function UpcomingMatchScreen({ route }) {
+export default function UpcomingMatchScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
   const [upcomingMatch, setUpcomingMatch] = useState([]);
 
   const [pageSize] = useState(10);
-  const [pageNumber, setPageNumber] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
   const [totalRecord, setTotalRecord] = useState();
 
   const [location] = useState(route?.params?.location);
-  const [selectedSport] = useState(route?.params?.selectedSport);
+  const [selectedSport, setSelectedSport] = useState(
+    route?.params?.selectedSport,
+  );
+
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+
+  const [from, setFrom] = useState(new Date());
+  const [to, setTo] = useState(
+    new Date().setMinutes(new Date().getMinutes() + 5),
+  );
+
+  const [fromPickerVisible, setFromPickerVisible] = useState(false);
+  const [toPickerVisible, setToPickerVisible] = useState(false);
   // const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    handleLoadMore();
-  }, []);
+    console.log('USEEFFECT CALLED..');
+    const upcomingMatchbody = bodybuilder()
+      .size(pageSize)
+      .query('match', 'sport', selectedSport)
+      .query('multi_match', {
+        query: location,
+        fields: ['city', 'country', 'state'],
+      })
+      .query('range', 'start_datetime', {
+        gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+      })
+      .sort('actual_enddatetime', 'desc')
+      .build();
+
+    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+
+    postElasticSearch(upcomingMatchbody, 'gameindex/game')
+      .then((res1) => {
+        if (res1.hits.hits.length === 0) {
+          setUpcomingMatch([]);
+        } else {
+          console.log('upcoming  API Response:=>', res1.hits.hits);
+          console.log('Total record:=>', res1.hits.total.value);
+          setTotalRecord(res1.hits.total.value);
+          let entityArr = [];
+          let recentArr = [];
+
+          if (res1.hits) {
+            const arr = [];
+            res1.hits.hits.map((e) => {
+              arr.push(e._source.away_team);
+              arr.push(e._source.home_team);
+            });
+            const uniqueArray = [...new Set(arr)];
+            entityArr = uniqueArray;
+            recentArr = res1.hits.hits;
+          }
+
+          const ids = {
+            query: {
+              ids: {
+                values: entityArr,
+              },
+            },
+          };
+          if (entityArr?.length > 0) {
+            postElasticSearch(ids, 'entityindex/entity')
+              .then((response) => {
+                const arr = [];
+                recentArr.map((e) => {
+                  const obj = {
+                    ...e._source,
+                    home_team: response.hits.hits.find(
+                      (x) => x._source.group_id === e._source.home_team,
+                    ),
+                    away_team: response.hits.hits.find(
+                      (x) => x._source.group_id === e._source.away_team,
+                    ),
+                  };
+
+                  arr.push(obj);
+                });
+
+                setUpcomingMatch(arr);
+
+                console.log(' USER response.hits.hits:=>', arr);
+              })
+              .catch((e) => {
+                setTimeout(() => {
+                  Alert.alert(strings.alertmessagetitle, e.message);
+                }, 10);
+              });
+          }
+        }
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [location, pageSize, selectedSport]);
 
   const handleLoadMore = () => {
     console.log('Page Size:', pageSize);
@@ -53,7 +147,7 @@ export default function UpcomingMatchScreen({ route }) {
     console.log('Total:', totalRecord);
     const upcomingMatchbody = bodybuilder()
       .size(pageSize)
-      .from((pageNumber * pageSize))
+      .from(pageNumber * pageSize)
       .query('match', 'sport', selectedSport)
       .query('multi_match', {
         query: location,
@@ -67,10 +161,13 @@ export default function UpcomingMatchScreen({ route }) {
 
     setPageNumber(pageNumber + 1);
     // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+    if (pageNumber < 1) {
+      setUpcomingMatch([]);
+    }
 
-    postElasticSearch(upcomingMatchbody, 'gameindex')
+    postElasticSearch(upcomingMatchbody, 'gameindex/game')
       .then((res1) => {
-        console.log('recent  API Response:=>', res1);
+        console.log('upcoming  API Response:=>', res1.hits.hits);
         console.log('Total record:=>', res1.hits.total.value);
         setTotalRecord(res1.hits.total.value);
         let entityArr = [];
@@ -94,33 +191,37 @@ export default function UpcomingMatchScreen({ route }) {
             },
           },
         };
+        if (entityArr?.length > 0) {
+          postElasticSearch(ids, 'entityindex/entity')
+            .then((response) => {
+              const arr = [];
+              recentArr.map((e) => {
+                const obj = {
+                  ...e._source,
+                  home_team: response.hits.hits.find(
+                    (x) => x._source.group_id === e._source.home_team,
+                  ),
+                  away_team: response.hits.hits.find(
+                    (x) => x._source.group_id === e._source.away_team,
+                  ),
+                };
 
-        postElasticSearch(ids, 'entityindex/entity')
-          .then((response) => {
-            const arr = [];
-            recentArr.map((e) => {
-              const obj = {
-                ...e._source,
-                home_team: response.hits.hits.find(
-                  (x) => x._source.group_id === e._source.home_team,
-                ),
-                away_team: response.hits.hits.find(
-                  (x) => x._source.group_id === e._source.away_team,
-                ),
-              };
+                arr.push(obj);
+              });
 
-              arr.push(obj);
+              setUpcomingMatch(upcomingMatch.concat(arr));
+
+              console.log(
+                ' USER response.hits.hits:=>',
+                upcomingMatch.concat(arr),
+              );
+            })
+            .catch((e) => {
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
             });
-
-            setUpcomingMatch(upcomingMatch.concat(arr));
-
-            console.log(' USER response.hits.hits:=>', response.hits.hits);
-          })
-          .catch((e) => {
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
+        }
       })
       .catch((e) => {
         setTimeout(() => {
@@ -138,22 +239,72 @@ export default function UpcomingMatchScreen({ route }) {
     [],
   );
 
+  const renderSports = ({ item }) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => {
+        setSelectedSport(item?.sport_name);
+
+        // setUpcomingMatch([]);
+
+        setVisibleSportsModal(false);
+      }}>
+      <View
+        style={{
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>{item.sport_name}</Text>
+        <View style={styles.checkbox}>
+          {selectedSport === item?.sport_name ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const onFromDone = (date) => {
+    setFrom(date.getTime());
+    if (new Date(to) < new Date(from)) {
+      setTo(date.getTime());
+    }
+
+    setFromPickerVisible(false);
+  };
+
+  const onToDone = (date) => {
+    console.log('To Date:=>', date);
+    setTo(date.getTime());
+    if (new Date(to) < new Date(from)) {
+      setFrom(date.getTime());
+    }
+
+    setToPickerVisible(false);
+  };
+
+  const handleCancelPress = () => {
+    setFromPickerVisible(false);
+    setToPickerVisible(false);
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.searchView}>
-        <View style={styles.searchViewContainer}>
-          <View
-            style={{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              justifyContent: 'center',
-              alignItems: 'center',
-              right: 15,
-            }}>
-            <Image source={images.arrowDown} style={styles.arrowStyle} />
-          </View>
-        </View>
+        <TouchableOpacity
+          style={styles.searchViewContainer}
+          onPress={() => setVisibleSportsModal(true)}>
+          <Text>{selectedSport}</Text>
+          <Image source={images.arrowDown} style={styles.arrowStyle} />
+        </TouchableOpacity>
+
         <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
           <Image source={images.homeSetting} style={styles.settingImage} />
         </TouchableWithoutFeedback>
@@ -250,8 +401,108 @@ export default function UpcomingMatchScreen({ route }) {
             <Text
               style={styles.doneText}
               onPress={() => {
-                setSettingPopup(false);
-                console.log('DONE::');
+                if (new Date(from).getTime() > new Date(to).getTime()) {
+                  Alert.alert('From date should be less than to date.')
+                } else {
+                  setSettingPopup(false);
+                  let upcomingMatchbody = ''
+                  if (locationFilterOpetion === 0) {
+                    upcomingMatchbody = bodybuilder()
+                    .size(pageSize)
+                    .query('match', 'sport', selectedSport)
+                    .query('range', 'start_datetime', {
+                      gt: parseFloat(new Date(from).getTime() / 1000).toFixed(0),
+                    })
+                    .query('range', 'start_datetime', {
+                      lt: parseFloat(new Date(to).getTime() / 1000).toFixed(0),
+                    })
+                    .sort('actual_enddatetime', 'desc')
+                    .build();
+                  } else {
+                    upcomingMatchbody = bodybuilder()
+                    .size(pageSize)
+                    .query('match', 'sport', selectedSport)
+                    .query('multi_match', {
+                      query: location,
+                      fields: ['city', 'country', 'state'],
+                    })
+                    .query('range', 'start_datetime', {
+                      gt: parseFloat(new Date(from).getTime() / 1000).toFixed(0),
+                    })
+                    .query('range', 'start_datetime', {
+                      lt: parseFloat(new Date(to).getTime() / 1000).toFixed(0),
+                    })
+                    .sort('actual_enddatetime', 'desc')
+                    .build();
+                  }
+
+                  // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+
+                  postElasticSearch(upcomingMatchbody, 'gameindex/game')
+                    .then((res1) => {
+                      if (res1.hits.hits.length === 0) {
+                        setUpcomingMatch([]);
+                      } else {
+                        console.log('upcoming  API Response:=>', res1.hits.hits);
+                        console.log('Total record:=>', res1.hits.total.value);
+                        setTotalRecord(res1.hits.total.value);
+                        let entityArr = [];
+                        let recentArr = [];
+
+                        if (res1.hits) {
+                          const arr = [];
+                          res1.hits.hits.map((e) => {
+                            arr.push(e._source.away_team);
+                            arr.push(e._source.home_team);
+                          });
+                          const uniqueArray = [...new Set(arr)];
+                          entityArr = uniqueArray;
+                          recentArr = res1.hits.hits;
+                        }
+
+                        const ids = {
+                          query: {
+                            ids: {
+                              values: entityArr,
+                            },
+                          },
+                        };
+                        if (entityArr?.length > 0) {
+                          postElasticSearch(ids, 'entityindex/entity')
+                            .then((response) => {
+                              const arr = [];
+                              recentArr.map((e) => {
+                                const obj = {
+                                  ...e._source,
+                                  home_team: response.hits.hits.find(
+                                    (x) => x._source.group_id === e._source.home_team,
+                                  ),
+                                  away_team: response.hits.hits.find(
+                                    (x) => x._source.group_id === e._source.away_team,
+                                  ),
+                                };
+
+                                arr.push(obj);
+                              });
+
+                              setUpcomingMatch(arr);
+
+                              console.log(' USER response.hits.hits:=>', arr);
+                            })
+                            .catch((e) => {
+                              setTimeout(() => {
+                                Alert.alert(strings.alertmessagetitle, e.message);
+                              }, 10);
+                            });
+                        }
+                      }
+                    })
+                    .catch((e) => {
+                      setTimeout(() => {
+                        Alert.alert(strings.alertmessagetitle, e.message);
+                      }, 10);
+                    });
+                }
               }}>
               {'Apply'}
             </Text>
@@ -291,11 +542,42 @@ export default function UpcomingMatchScreen({ route }) {
                       style={styles.radioButtonStyle}
                     />
                   </TouchableWithoutFeedback>
-                  <TCTextField
+
+                  {/* <TCTextField
+                    value={location}
                     style={{ marginLeft: 0, marginRight: 0 }}
                     textStyle={styles.fieldTitle}
                     placeholder={'Country, State or City '}
-                  />
+                    editable={false}
+                    pointerEvents="none"
+                  /> */}
+                  <TouchableOpacity
+                    onPress={() => {
+                      console.log('OK');
+                      navigation.navigate('SearchCityScreen', {
+                        comeFrom: 'UpcomingMatchScreen',
+                      });
+                    }}
+                    style={[
+                      styles.textContainer,
+                      { marginLeft: 0, marginRight: 0, height: 40 },
+                    ]}>
+                    <TextInput
+                      style={[styles.textInput, styles.fieldTitle]}
+                      placeholder={'Country, State or City '}
+                      editable={false}
+                      pointerEvents="none"
+                    />
+                  </TouchableOpacity>
+
+                  {/* <TouchableOpacity
+                  style={{ marginLeft: 0, marginRight: 0 }}
+                  onPress={() => {
+                    setLocationPopup(false);
+                    navigation.navigate('SearchCityScreen', { comeFrom: 'LocalHomeScreen' });
+                  }}>
+                  <Text style={styles.fieldTitle}>{strings.searchTitle}</Text>
+                </TouchableOpacity> */}
                 </View>
               </View>
             </View>
@@ -305,7 +587,12 @@ export default function UpcomingMatchScreen({ route }) {
               </View>
               <View style={{ marginLeft: 15, flex: 0.8 }}>
                 <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                  <TouchableOpacity style={styles.fieldView}>
+                  <TouchableOpacity
+                    style={styles.fieldView}
+                    onPress={() => {
+                      setFromPickerVisible(true);
+                      setToPickerVisible(false);
+                    }}>
                     <View
                       style={{
                         height: 35,
@@ -318,13 +605,22 @@ export default function UpcomingMatchScreen({ route }) {
                     <View style={{ marginRight: 15, flexDirection: 'row' }}>
                       <Text style={styles.fieldValue} numberOfLines={1}>
                         {' '}
-                        Feb 15, 2021 1:00 am
+                        {from
+                          ? moment(new Date(from)).format(
+                              'MMM DD, yyyy hh:mm a',
+                            )
+                          : ''}
                       </Text>
                     </View>
                   </TouchableOpacity>
                 </View>
                 <View style={{ flexDirection: 'row' }}>
-                  <TouchableOpacity style={styles.fieldView}>
+                  <TouchableOpacity
+                    style={styles.fieldView}
+                    onPress={() => {
+                      setFromPickerVisible(false);
+                      setToPickerVisible(true);
+                    }}>
                     <View
                       style={{
                         height: 35,
@@ -336,7 +632,9 @@ export default function UpcomingMatchScreen({ route }) {
                     </View>
                     <View style={{ marginRight: 15, flexDirection: 'row' }}>
                       <Text style={styles.fieldValue} numberOfLines={1}>
-                        Feb 15, 2021 1:00 am
+                        {to
+                          ? moment(new Date(to)).format('MMM DD, yyyy hh:mm a')
+                          : ''}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -368,6 +666,100 @@ export default function UpcomingMatchScreen({ route }) {
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>
+        <DateTimePickerView
+          title={'Choose a Date & Time'}
+          date={new Date(from)}
+          visible={fromPickerVisible}
+          onDone={onFromDone}
+          onCancel={handleCancelPress}
+          onHide={handleCancelPress}
+          minimumDate={new Date()}
+          // maximumDate={maxFromDate()}
+          // minutesGap={5}
+          mode={'datetime'}
+          style={{ zIndex: 100 }}
+        />
+        <DateTimePickerView
+          title={'Choose a Date & Time'}
+          date={new Date(to)}
+          visible={toPickerVisible}
+          onDone={onToDone}
+          onCancel={handleCancelPress}
+          onHide={handleCancelPress}
+          minimumDate={new Date(from)}
+          // maximumDate={new Date(selectedSlot?.endtime * 1000)}
+          // minutesGap={5}
+          mode={'datetime'}
+        />
+      </Modal>
+
+      {/* Sports modal */}
+      <Modal
+        isVisible={visibleSportsModal}
+        backdropColor="black"
+        onBackdropPress={() => setVisibleSportsModal(false)}
+        onRequestClose={() => setVisibleSportsModal(false)}
+        backdropOpacity={0}
+        style={{
+          margin: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.3,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setVisibleSportsModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              Sports
+            </Text>
+
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.themeColor,
+              }}></Text>
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={route?.params?.sports}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderSports}
+          />
+        </View>
       </Modal>
     </View>
   );
@@ -377,9 +769,12 @@ const styles = StyleSheet.create({
     height: 8.5,
     width: 15,
     resizeMode: 'contain',
-    alignSelf: 'flex-end',
+    // alignSelf: 'flex-end',
   },
   searchViewContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     height: 40,
     width: widthPercentageToDP('85%'),
     borderRadius: 20,
@@ -389,6 +784,9 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     elevation: 2,
     backgroundColor: colors.offwhite,
+    padding: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
   },
   settingImage: {
     height: 22,
@@ -525,4 +923,47 @@ const styles = StyleSheet.create({
   //   resizeMode: 'contain',
   //   width: 12,
   // },
+
+  closeButton: {
+    alignSelf: 'center',
+    width: 13,
+    height: 13,
+    marginLeft: 5,
+    resizeMode: 'contain',
+  },
+
+  languageList: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('4%'),
+  },
+  checkboxImg: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+
+  textContainer: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    alignContent: 'center',
+    marginHorizontal: 15,
+    backgroundColor: colors.offwhite,
+    borderRadius: 2,
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
+    elevation: 1,
+    flex: 1,
+  },
+  textInput: {
+    height: '100%',
+    flex: 1,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    paddingHorizontal: 10,
+    color: colors.lightBlackColor,
+  },
 });
