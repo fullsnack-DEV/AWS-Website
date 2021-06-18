@@ -297,7 +297,7 @@ export default function CreateTeamForm2({ navigation, route }) {
                     type={'medium'}
                     name={follower?.full_name}
                     location={follower?.city}
-                    image={follower?.thumbnail}
+                    image={follower?.thumbnail ? { uri: follower?.thumbnail } : images.profilePlaceHolder}
                   />
                   <TouchableOpacity
                     style={styles.closeButton}

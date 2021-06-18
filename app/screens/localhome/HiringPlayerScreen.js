@@ -1,7 +1,10 @@
-import React, { useCallback, useState, useLayoutEffect } from 'react';
+/* eslint-disable array-callback-return */
+/* eslint-disable no-underscore-dangle */
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
+  Alert,
   FlatList,
   Image,
   TouchableOpacity,
@@ -9,68 +12,187 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Dimensions,
+  TextInput,
+
 } from 'react-native';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
 import Modal from 'react-native-modal';
-import { gameData } from '../../utils/constant';
-import { getHitSlop, widthPercentageToDP } from '../../utils';
+import bodybuilder from 'bodybuilder';
+
+// import { gameData } from '../../utils/constant';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { widthPercentageToDP } from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import TCHiringPlayersCard from '../../components/TCHiringPlayersCard';
-import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
-import TCTextField from '../../components/TCTextField';
+import fonts from '../../Constants/Fonts';
+import TCHiringPlayersCard from '../../components/TCHiringPlayersCard';
+import { postElasticSearch } from '../../api/elasticSearch';
+import strings from '../../Constants/String';
 
-export default function HiringPlayerScreen({ navigation }) {
+export default function HiringPlayerScreen({ navigation, route }) {
+  // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
-  // const [loading, setloading] = useState(false);
+  const [hiringPlayerMatch, setHiringPlayerMatch] = useState([]);
+
+  const [pageSize] = useState(10);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [totalRecord, setTotalRecord] = useState();
+
+  const [location] = useState(route?.params?.location);
+  const [selectedSport, setSelectedSport] = useState(
+    route?.params?.selectedSport,
+  );
+
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
   // const authContext = useContext(AuthContext);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableWithoutFeedback
-          onPress={() => {
-            navigation.goBack();
-          }}
-          hitSlop={getHitSlop(15)}>
-          <Image source={images.navigationBack} style={styles.headerLeftImg} />
-        </TouchableWithoutFeedback>
-      ),
-    });
-  }, [navigation]);
+  useEffect(() => {
+    // ,{"match":{"sport":"${selectedSport}"}}]}}}`
 
-  const keyExtractor = useCallback((item, index) => index.toString(), []);
+    const hiringPlayerBody = bodybuilder()
+      .size(pageSize)
+      .query('match', 'entity_type', 'team')
+      .query('match', 'hiringPlayers', true)
+      .query('match', 'sport', selectedSport)
+      .query('multi_match', {
+        query: location,
+        fields: ['city', 'country', 'state'],
+      })
+      .build();
+
+    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+
+    postElasticSearch(hiringPlayerBody, 'entityindex/entity')
+      .then((res1) => {
+        if (res1.hits.hits.length === 0) {
+          setHiringPlayerMatch([]);
+        } else {
+          console.log('hiringplayer  API Response:=>', res1.hits.hits);
+          console.log('Total record:=>', res1.hits.total.value);
+          setTotalRecord(res1.hits.total.value);
+
+          setHiringPlayerMatch(res1.hits.hits)
+        }
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [location, pageSize, selectedSport]);
+
+  const handleLoadMore = () => {
+    console.log('Page Size:', pageSize);
+    console.log('Page Number:', pageNumber);
+    console.log('Total:', totalRecord);
+
+    const hiringPlayerBody = bodybuilder()
+    .size(pageSize)
+    .from(pageNumber * pageSize)
+    .query('match', 'entity_type', 'team')
+    .query('match', 'hiringPlayers', true)
+    .query('match', 'sport', selectedSport)
+    .query('multi_match', {
+      query: location,
+      fields: ['city', 'country', 'state'],
+    })
+    .build();
+
+    setPageNumber(pageNumber + 1);
+    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+    if (pageNumber < 1) {
+      setHiringPlayerMatch([]);
+    }
+
+    postElasticSearch(hiringPlayerBody, 'gameindex/game')
+      .then((res1) => {
+        console.log('hiringplayer  API Response:=>', res1.hits.hits);
+        console.log('Total record:=>', res1.hits.total.value);
+        setTotalRecord(res1.hits.total.value);
+
+        if (res1.hits.hits.length > 0) {
+          setHiringPlayerMatch(hiringPlayerMatch.concat(res1.hits.hits));
+        }
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   const renderRecentMatchItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCHiringPlayersCard data={item} cardWidth={'92%'} />
+        <TCHiringPlayersCard data={item._source} cardWidth={'92%'} />
       </View>
     ),
     [],
   );
 
+  const renderSports = ({ item }) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => {
+        setSelectedSport(item?.sport_name);
+
+        // setUpcomingMatch([]);
+
+        setVisibleSportsModal(false);
+      }}>
+      <View
+        style={{
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>{item.sport_name}</Text>
+        <View style={styles.checkbox}>
+          {selectedSport === item?.sport_name ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const keyExtractor = useCallback((item, index) => index.toString(), []);
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.searchView}>
-        <View style={styles.searchViewContainer}>
+        <TouchableOpacity
+          style={styles.searchViewContainer}
+          onPress={() => setVisibleSportsModal(true)}>
+          <Text>{selectedSport}</Text>
           <Image source={images.arrowDown} style={styles.arrowStyle} />
-        </View>
+        </TouchableOpacity>
+
         <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
           <Image source={images.homeSetting} style={styles.settingImage} />
         </TouchableWithoutFeedback>
       </View>
       <FlatList
         showsHorizontalScrollIndicator={false}
-        data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
+        data={hiringPlayerMatch}
         keyExtractor={keyExtractor}
         renderItem={renderRecentMatchItems}
         style={styles.listViewStyle}
+        scrollEnabled={true}
+          // onScroll={onScroll}
+          onScrollEndDrag={handleLoadMore}
       />
+
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
         backdropOpacity={1}
@@ -97,8 +219,49 @@ export default function HiringPlayerScreen({ navigation }) {
             <Text
               style={styles.doneText}
               onPress={() => {
-                setSettingPopup(false);
-                console.log('DONE::');
+                  setSettingPopup(false);
+                  let challengeeBody = ''
+                  if (locationFilterOpetion === 0) {
+                    challengeeBody = bodybuilder()
+                    .size(pageSize)
+                    .query('match', 'entity_type', 'team')
+                    .query('match', 'hiringPlayers', true)
+                    .query('match', 'sport', selectedSport)
+                    .build();
+                  } else {
+                    challengeeBody = bodybuilder()
+                    .size(pageSize)
+                    .query('match', 'entity_type', 'team')
+                    .query('match', 'hiringPlayers', true)
+                    .query('match', 'sport', selectedSport)
+                    .query('multi_match', {
+                      query: location,
+                      fields: ['city', 'country', 'state'],
+                    })
+                    .build();
+                  }
+
+                  // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+
+                  postElasticSearch(challengeeBody, 'entityindex/entity')
+                    .then((res1) => {
+                      if (res1.hits.hits.length === 0) {
+                        setHiringPlayerMatch([]);
+                      } else {
+                        console.log('hiringplayer  API Response:=>', res1.hits.hits);
+                        console.log('Total record:=>', res1.hits.total.value);
+                        setTotalRecord(res1.hits.total.value);
+
+                        if (res1.hits.hits.length > 0) {
+                          setHiringPlayerMatch(res1.hits.hits);
+                        }
+                      }
+                    })
+                    .catch((e) => {
+                      setTimeout(() => {
+                        Alert.alert(strings.alertmessagetitle, e.message);
+                      }, 10);
+                    });
               }}>
               {'Apply'}
             </Text>
@@ -138,39 +301,139 @@ export default function HiringPlayerScreen({ navigation }) {
                       style={styles.radioButtonStyle}
                     />
                   </TouchableWithoutFeedback>
-                  <TCTextField
+
+                  {/* <TCTextField
+                    value={location}
                     style={{ marginLeft: 0, marginRight: 0 }}
                     textStyle={styles.fieldTitle}
                     placeholder={'Country, State or City '}
-                  />
+                    editable={false}
+                    pointerEvents="none"
+                  /> */}
+                  <TouchableOpacity
+                    onPress={() => {
+                      console.log('OK');
+                      navigation.navigate('SearchCityScreen', {
+                        comeFrom: 'LookingForChallengeScreen',
+                      });
+                    }}
+                    style={[
+                      styles.textContainer,
+                      { marginLeft: 0, marginRight: 0, height: 40 },
+                    ]}>
+                    <TextInput
+                      style={[styles.textInput, styles.fieldTitle]}
+                      placeholder={'Country, State or City '}
+                      editable={false}
+                      pointerEvents="none"
+                    />
+                  </TouchableOpacity>
+
+                  {/* <TouchableOpacity
+                  style={{ marginLeft: 0, marginRight: 0 }}
+                  onPress={() => {
+                    setLocationPopup(false);
+                    navigation.navigate('SearchCityScreen', { comeFrom: 'LocalHomeScreen' });
+                  }}>
+                  <Text style={styles.fieldTitle}>{strings.searchTitle}</Text>
+                </TouchableOpacity> */}
                 </View>
               </View>
             </View>
+
           </View>
+
           <View style={{ flex: 1 }} />
+
           <TouchableOpacity style={styles.resetButton} onPress={() => {}}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
+        </View>
+
+      </Modal>
+
+      {/* Sports modal */}
+      <Modal
+        isVisible={visibleSportsModal}
+        backdropColor="black"
+        onBackdropPress={() => setVisibleSportsModal(false)}
+        onRequestClose={() => setVisibleSportsModal(false)}
+        backdropOpacity={0}
+        style={{
+          margin: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.3,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setVisibleSportsModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              Sports
+            </Text>
+
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.themeColor,
+              }}></Text>
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={route?.params?.sports}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderSports}
+          />
         </View>
       </Modal>
     </View>
   );
 }
 const styles = StyleSheet.create({
-  listViewStyle: {
-    width: '100%',
-    height: 50,
-    alignContent: 'center',
-  },
   arrowStyle: {
-    height: 26,
-    width: 14,
+    height: 8.5,
+    width: 15,
     resizeMode: 'contain',
-    alignSelf: 'flex-end',
-    marginTop: 8,
-    marginRight: 15,
+    // alignSelf: 'flex-end',
   },
   searchViewContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     height: 40,
     width: widthPercentageToDP('85%'),
     borderRadius: 20,
@@ -180,11 +443,14 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     elevation: 2,
     backgroundColor: colors.offwhite,
+    padding: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
   },
   settingImage: {
-    height: 20,
-    width: 20,
-    resizeMode: 'cover',
+    height: 22,
+    width: 22,
+    resizeMode: 'contain',
     alignSelf: 'center',
   },
   searchView: {
@@ -192,12 +458,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     margin: 15,
   },
+
   fieldTitle: {
     fontSize: 16,
-    color: colors.lightBlackColor,
+    color: colors.userPostTimeColor,
     fontFamily: fonts.RLight,
     marginLeft: 10,
   },
+
   resetButton: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
@@ -210,6 +478,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 5,
+
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
@@ -280,10 +549,63 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-  headerLeftImg: {
-    height: 20,
+  // sectionHeader: {
+  //   fontSize: 20,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.lightBlackColor,
+  //   marginLeft: 15,
+  //   marginBottom: 8,
+  //   marginTop: 8,
+  // },
+  // headerLeftImg: {
+  //   tintColor: colors.lightBlackColor,
+  //   height: 22,
+  //   marginLeft: 15,
+  //   resizeMode: 'contain',
+  //   width: 12,
+  // },
+
+  closeButton: {
+    alignSelf: 'center',
+    width: 13,
+    height: 13,
     marginLeft: 5,
     resizeMode: 'contain',
-    // width: 10,
   },
+
+  languageList: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('4%'),
+  },
+  checkboxImg: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+
+  textContainer: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    alignContent: 'center',
+    marginHorizontal: 15,
+    backgroundColor: colors.offwhite,
+    borderRadius: 2,
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
+    elevation: 1,
+    flex: 1,
+  },
+  textInput: {
+    height: '100%',
+    flex: 1,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    paddingHorizontal: 10,
+    color: colors.lightBlackColor,
+  },
+
 });

@@ -36,8 +36,8 @@ const UserHomeTopSection = ({
 
   const oneLineSection = useMemo(() => {
     let games = []
-    if (userDetails?.games?.length) {
-      games = userDetails?.games?.map((obj) => {
+    if (userDetails?.registered_sports && userDetails?.registered_sports?.length > 0) {
+      games = userDetails?.registered_sports?.map((obj) => {
         const o = { ...obj };
         o.type = EntityStatus.playin;
         return o;
@@ -55,7 +55,7 @@ const UserHomeTopSection = ({
       return o;
     }) ?? []
     return [...games, ...referee, ...scorekeeper, { sport_name: strings.addrole, item_type: EntityStatus.addNew }]
-  }, [userDetails?.games, userDetails?.referee_data, userDetails?.scorekeeper_data])
+  }, [userDetails])
 
   const renderPlayIn = ({ item }) => {
     if (item.item_type) {

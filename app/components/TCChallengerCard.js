@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import {
- View, Text, StyleSheet, ImageBackground, Image,
+ View, Text, StyleSheet, ImageBackground,
  } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -36,7 +36,7 @@ const TCChallengerCard = ({ cardWidth = '86%', gameStatsData, data }) => (
         <View style={{ flexDirection: 'row' }}>
           <Text style={styles.eventTitle} numberOfLines={3}>
             {data?.group_name}
-            <Image source={images.teamT} style={styles.teamTImage} />
+            {/* <Image source={images.teamT} style={styles.teamTImage} /> */}
           </Text>
         </View>
       </View>
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
-
+    width: wp('30%'),
   },
 
   pointView: {
@@ -121,13 +121,13 @@ const styles = StyleSheet.create({
     marginRight: 5,
     opacity: 0.4,
   },
-  teamTImage: {
-    resizeMode: 'contain',
-    marginLeft: 5,
-    alignSelf: 'center',
-    height: 15,
-    width: 15,
-  },
+  // teamTImage: {
+  //   resizeMode: 'contain',
+  //   marginLeft: 5,
+  //   alignSelf: 'center',
+  //   height: 15,
+  //   width: 15,
+  // },
 });
 
 export default memo(TCChallengerCard);
