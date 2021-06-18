@@ -280,17 +280,20 @@ export default function ScheduleScreen({ navigation }) {
       console.log('selectedObj:=>', selectedObj);
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = selectedObj; // authContext.entity;
-      const entityRole = (entity?.entity_type === 'user' || entity?.entity_type === 'player') ? 'users' : 'groups';
+      const entityRole = entity?.entity_type === 'user' || entity?.entity_type === 'player'
+          ? 'users'
+          : 'groups';
       const uid = entity?.group_id || entity?.user_id;
       const eventdata = [];
       const timetabledata = [];
       let eventTimeTableData = [];
-      getEvents(entityRole, uid, authContext)
+       getEvents(entityRole, uid, authContext)
+      // blockedSlots(entityRole, uid, authContext)
         .then((response) => {
           getSlots(entityRole, uid, authContext)
             .then((res) => {
               eventTimeTableData = [...response.payload, ...res.payload];
-              console.log('Event data::', eventTimeTableData);
+              console.log('Event & challenge data::', response);
 
               setEventData(
                 (eventTimeTableData || []).sort(
@@ -298,6 +301,7 @@ export default function ScheduleScreen({ navigation }) {
                     - new Date(b.start_datetime * 1000),
                 ),
               );
+
               // setSearchEvents(eventTimeTableData);
               setTimeTable(eventTimeTableData);
 
@@ -383,7 +387,8 @@ export default function ScheduleScreen({ navigation }) {
     return 2;
   };
   const goToChallengeDetail = (data) => {
-    if (data?.responsible_to_secure_venue) {
+    console.log('Go To Challenge', data);
+    // if (data?.responsible_to_secure_venue) { //Write condition for soccer
       setloading(true);
       Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
         setloading(false);
@@ -394,7 +399,7 @@ export default function ScheduleScreen({ navigation }) {
         });
         setloading(false);
       });
-    }
+    // }
   };
   const actionSheetOpetions = () => {
     if (selectedEventItem !== null && selectedEventItem.game) {
@@ -686,7 +691,7 @@ export default function ScheduleScreen({ navigation }) {
       <View style={{ flex: 1 }}>
         {event?.cal_type === 'event' && event?.game && (
           <CalendarTimeTableView
-          type='game'
+            type="game"
             eventObj={event}
             containerStyle={{
               borderLeftColor: event_color,
@@ -705,20 +710,18 @@ export default function ScheduleScreen({ navigation }) {
               }
             }}
           />
-
         )}
         {event?.cal_type === 'event' && !event?.game && (
           <CalendarTimeTableView
-          type='event'
-          eventObj={event}
-
+            type="event"
+            eventObj={event}
             containerStyle={{
               borderLeftColor: event_color,
               width: event.width,
             }}
             eventTitleStyle={{ color: event_color }}
             onPress={() => {
-              Alert.alert('This is normal event')
+              Alert.alert('This is normal event');
             }}
           />
         )}
@@ -754,10 +757,15 @@ export default function ScheduleScreen({ navigation }) {
     () => (
       <>
         <Header
-           leftComponent={<View>
-             <FastImage source={images.tc_message_top_icon} resizeMode={'contain'} style={styles.backImageStyle} />
-           </View>
-            }
+          leftComponent={
+            <View>
+              <FastImage
+                source={images.tc_message_top_icon}
+                resizeMode={'contain'}
+                style={styles.backImageStyle}
+              />
+            </View>
+          }
           showBackgroundColor={true}
           centerComponent={
             <Text style={styles.eventTitleTextStyle}>Schedule</Text>
@@ -897,6 +905,16 @@ export default function ScheduleScreen({ navigation }) {
   const onScrollCalender = (event) => {
     onReachedCalenderTop(event);
   };
+
+  console.log(
+    'OKOKOKOKOKOKOK::=>',
+    eventSelectDate
+      ? (eventData || []).filter(
+          (e) => moment(eventSelectDate).format('YYYY-MM-DD')
+            === moment(e.start_datetime * 1000).format('YYYY-MM-DD'),
+        )
+      : eventData,
+  );
   return (
     <View
       style={[styles.mainContainer, { opacity: activeScreen ? 1.0 : 0.5 }]}
@@ -1014,89 +1032,193 @@ export default function ScheduleScreen({ navigation }) {
         <TCInnerLoader visible={loading} />
         {!loading && scheduleIndexCounter === 0 && (
           <View style={{ flex: 1 }}>
-            <SpringScrollView
-              style={{ flex: 1 }}
-              onScroll={onScrollCalender}
-              nestedScrollEnabled
-              stickyHeaderIndices={[0]}>
-              {isMenu && <MonthHeader />}
-              {!isMenu && (
-                <EventAgendaSection
-                  showTimeTable={showTimeTable}
-                  isMenu={isMenu}
-                  horizontal={listView}
-                  onPressListView={onPressListView}
-                  onPressGridView={onPressGridView}
-                  onDayPress={onDayPress}
-                  selectedCalendarDate={selectedCalendarDateString}
-                  calendarMarkedDates={markingDays}
-                />
-              )}
-
-              {showTimeTable ? (
-                <View style={{ marginBottom: 100 }}>
-                  <EventCalendar
-                    eventTapped={(event) => {
-                      console.log('Event ::--', event);
-                    }}
-                    events={filterTimeTable}
-                    width={width}
-                    initDate={selectionDate}
-                    // scrollToFirst={false}
-                    renderEvent={(event) => renderCalenderEvent(event)}
-                    styles={{
-                      event: styles.eventViewStyle,
-                      line: { backgroundColor: colors.lightgrayColor },
-                    }}
+            {Platform.OS === 'android' ? (
+              <SpringScrollView
+                style={{ flex: 1 }}
+                onScroll={onScrollCalender}
+                nestedScrollEnabled
+                stickyHeaderIndices={[0]}>
+                {isMenu && <MonthHeader />}
+                {!isMenu && (
+                  <EventAgendaSection
+                    showTimeTable={showTimeTable}
+                    isMenu={isMenu}
+                    horizontal={listView}
+                    onPressListView={onPressListView}
+                    onPressGridView={onPressGridView}
+                    onDayPress={onDayPress}
+                    selectedCalendarDate={selectedCalendarDateString}
+                    calendarMarkedDates={markingDays}
                   />
-                </View>
-              ) : (
-                <EventScheduleScreen
-                  eventData={eventSelectDate ? (eventData || []).filter((e) => moment(eventSelectDate).format('YYYY-MM-DD') === moment(e.start_datetime * 1000).format('YYYY-MM-DD')) : eventData}
-                  navigation={navigation}
-                  profileID={authContext.entity.uid}
-                  onThreeDotPress={(item) => {
-                    if (activeScreen) {
-                      setSelectedEventItem(item);
-                    } else {
-                      showSwitchProfilePopup();
+                )}
+
+                {showTimeTable ? (
+                  <View style={{ marginBottom: 100 }}>
+                    <EventCalendar
+                      eventTapped={(event) => {
+                        console.log('Event ::--', event);
+                      }}
+                      events={filterTimeTable}
+                      width={width}
+                      initDate={selectionDate}
+                      // scrollToFirst={false}
+                      renderEvent={(event) => renderCalenderEvent(event)}
+                      styles={{
+                        event: styles.eventViewStyle,
+                        line: { backgroundColor: colors.lightgrayColor },
+                      }}
+                    />
+                  </View>
+                ) : (
+                  <EventScheduleScreen
+                    eventData={
+                      eventSelectDate
+                        ? (eventData || []).filter(
+                            (e) => moment(eventSelectDate).format('YYYY-MM-DD')
+                              === moment(e.start_datetime * 1000).format(
+                                'YYYY-MM-DD',
+                              ),
+                          )
+                        : eventData
                     }
-                  }}
-                  onItemPress={async (item) => {
-                    if (activeScreen) {
-                      const entity = authContext.entity;
-                      if (item?.game_id) {
-                        if (item?.game?.sport) {
-                          const gameHome = getGameHomeScreen(item.game.sport);
-                          navigation.navigate(gameHome, {
-                            gameId: item?.game_id,
-                          });
+                    navigation={navigation}
+                    profileID={authContext.entity.uid}
+                    onThreeDotPress={(item) => {
+                      if (activeScreen) {
+                        setSelectedEventItem(item);
+                      } else {
+                        showSwitchProfilePopup();
+                      }
+                    }}
+                    onItemPress={async (item) => {
+                      if (activeScreen) {
+                        const entity = authContext.entity;
+                        if (item?.game_id) {
+                          if (item?.game?.sport) {
+                            const gameHome = getGameHomeScreen(item.game.sport);
+                            navigation.navigate(gameHome, {
+                              gameId: item?.game_id,
+                            });
+                          }
+                        } else {
+                          getEventById(
+                            entity.role === 'user' ? 'users' : 'groups',
+                            entity.uid || entity.auth.user_id,
+                            item.cal_id,
+                            authContext,
+                          )
+                            .then((response) => {
+                              navigation.navigate('EventScreen', {
+                                data: response.payload,
+                                gameData: item,
+                              });
+                            })
+                            .catch((e) => {
+                              console.log('Error :-', e);
+                            });
                         }
                       } else {
-                        getEventById(
-                          entity.role === 'user' ? 'users' : 'groups',
-                          entity.uid || entity.auth.user_id,
-                          item.cal_id,
-                          authContext,
-                        )
-                          .then((response) => {
-                            navigation.navigate('EventScreen', {
-                              data: response.payload,
-                              gameData: item,
-                            });
-                          })
-                          .catch((e) => {
-                            console.log('Error :-', e);
-                          });
+                        showSwitchProfilePopup();
                       }
-                    } else {
-                      showSwitchProfilePopup();
+                    }}
+                    entity={authContext.entity}
+                  />
+                )}
+              </SpringScrollView>
+            ) : (
+              <ScrollView
+                style={{ flex: 1 }}
+                onScroll={onScrollCalender}
+                nestedScrollEnabled
+                stickyHeaderIndices={[0]}>
+                {isMenu && <MonthHeader />}
+                {!isMenu && (
+                  <EventAgendaSection
+                    showTimeTable={showTimeTable}
+                    isMenu={isMenu}
+                    horizontal={listView}
+                    onPressListView={onPressListView}
+                    onPressGridView={onPressGridView}
+                    onDayPress={onDayPress}
+                    selectedCalendarDate={selectedCalendarDateString}
+                    calendarMarkedDates={markingDays}
+                  />
+                )}
+
+                {showTimeTable ? (
+                  <View style={{ marginBottom: 100 }}>
+                    <EventCalendar
+                      eventTapped={(event) => {
+                        console.log('Event ::--', event);
+                      }}
+                      events={filterTimeTable}
+                      width={width}
+                      initDate={selectionDate}
+                      // scrollToFirst={false}
+                      renderEvent={(event) => renderCalenderEvent(event)}
+                      styles={{
+                        event: styles.eventViewStyle,
+                        line: { backgroundColor: colors.lightgrayColor },
+                      }}
+                    />
+                  </View>
+                ) : (
+                  <EventScheduleScreen
+                    eventData={
+                      eventSelectDate
+                        ? (eventData || []).filter(
+                            (e) => moment(eventSelectDate).format('YYYY-MM-DD')
+                              === moment(e.start_datetime * 1000).format(
+                                'YYYY-MM-DD',
+                              ),
+                          )
+                        : eventData
                     }
-                  }}
-                  entity={authContext.entity}
-                />
-              )}
-            </SpringScrollView>
+                    navigation={navigation}
+                    profileID={authContext.entity.uid}
+                    onThreeDotPress={(item) => {
+                      if (activeScreen) {
+                        setSelectedEventItem(item);
+                      } else {
+                        showSwitchProfilePopup();
+                      }
+                    }}
+                    onItemPress={async (item) => {
+                      if (activeScreen) {
+                        const entity = authContext.entity;
+                        if (item?.game_id) {
+                          if (item?.game?.sport) {
+                            const gameHome = getGameHomeScreen(item.game.sport);
+                            navigation.navigate(gameHome, {
+                              gameId: item?.game_id,
+                            });
+                          }
+                        } else {
+                          getEventById(
+                            entity.role === 'user' ? 'users' : 'groups',
+                            entity.uid || entity.auth.user_id,
+                            item.cal_id,
+                            authContext,
+                          )
+                            .then((response) => {
+                              navigation.navigate('EventScreen', {
+                                data: response.payload,
+                                gameData: item,
+                              });
+                            })
+                            .catch((e) => {
+                              console.log('Error :-', e);
+                            });
+                        }
+                      } else {
+                        showSwitchProfilePopup();
+                      }
+                    }}
+                    entity={authContext.entity}
+                  />
+                )}
+              </ScrollView>
+            )}
             {!createEventModal && (
               <CreateEventButton
                 source={images.plus}

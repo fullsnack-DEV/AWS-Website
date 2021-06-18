@@ -94,6 +94,7 @@ export default function RegisterPlayer({ navigation }) {
   );
 
   const nextOnPress = () => {
+    console.log('authContext?.entity?.auth?.user', authContext?.entity?.auth?.user);
     if (sports !== '') {
       if (
         authContext?.entity?.auth?.user?.registered_sports?.some(

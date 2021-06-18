@@ -84,6 +84,7 @@ export default function EventScheduleScreen({
             <Text style={styles.dataNotFoundText}>Data Not Found</Text>
           }
           renderItem={({ item }) => {
+            console.log('render event item:=>', item);
             if (item.cal_type === 'event') {
               return (
                 <TCEventView
@@ -110,6 +111,7 @@ export default function EventScheduleScreen({
           }
           sections={filterData}
           keyExtractor={(item, index) => index.toString()}
+
         />
       )}
     </View>

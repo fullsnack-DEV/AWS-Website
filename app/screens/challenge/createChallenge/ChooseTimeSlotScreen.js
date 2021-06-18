@@ -426,7 +426,11 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
           <View style={{ flexDirection: 'row', marginBottom: 10 }}>
             <TouchableOpacity
             style={styles.fieldView}
-            onPress={() => setFromPickerVisible(!fromPickerVisible)}>
+            onPress={() => {
+              if (from) {
+                setFromPickerVisible(!fromPickerVisible)
+              }
+            }}>
               <View
               style={{
                 height: 35,
@@ -448,7 +452,11 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
 
           <View style={{ flexDirection: 'row', marginBottom: 10 }}>
             <TouchableOpacity style={styles.fieldView}
-             onPress={() => setToPickerVisible(!toPickerVisible)}>
+             onPress={() => {
+               if (to) {
+                 setToPickerVisible(!toPickerVisible)
+               }
+             }}>
               <View
               style={{
                 height: 35,

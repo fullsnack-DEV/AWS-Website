@@ -45,6 +45,7 @@ const bodyParams = {};
 export default function ChallengeScreen({ navigation, route }) {
   const { sportName, setting, groupObj } = route?.params;
 
+  console.log('setting', setting);
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);

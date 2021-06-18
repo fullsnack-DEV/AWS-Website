@@ -18,9 +18,11 @@ import React, {
   useCallback,
   useRef,
 } from 'react';
+
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import Header from '../../../components/Home/Header';
@@ -32,6 +34,7 @@ import PlayInStatsView from './stats/PlayInStatsView';
 import { patchPlayer } from '../../../api/Users';
 import strings from '../../../Constants/String';
 import AuthContext from '../../../auth/context';
+import { getChallengeSetting } from '../../../api/Challenge';
 
 import * as Utility from '../../../utils';
 import { getQBAccountType, QBcreateUser } from '../../../utils/QuickBlox';
@@ -56,6 +59,8 @@ const PlayInModule = ({
   const authContext = useContext(AuthContext);
   const [currentUserData, setCurrentUserData] = useState();
   const [currentTab, setCurrentTab] = useState(0);
+
+  const [loading, setloading] = useState(false);
 
   const onClose = useCallback(() => {
     setTimeout(() => {
@@ -303,6 +308,8 @@ const PlayInModule = ({
   }, []);
   return (
     <>
+      <ActivityLoader visible={loading} />
+
       <Modal
         isVisible={visible}
         backdropColor="black"
@@ -372,17 +379,95 @@ const PlayInModule = ({
         onPress={(index) => {
           if (index === 0) {
             onClose();
-            navigation.navigate('ChallengeScreen', {
-              sportName: playInObject?.sport_name,
-              groupObj: currentUserData,
-            });
+            // navigation.navigate('ChallengeScreen', {
+            //   sportName: playInObject?.sport_name,
+            //   groupObj: currentUserData,
+            // });
+            setloading(true)
+              getChallengeSetting(
+                currentUserData?.user_id || currentUserData?.group_id,
+                playInObject?.sport_name,
+                authContext,
+              )
+                .then((response) => {
+                  setloading(false)
+console.log('challenge setting:=>', response);
+                  const obj = response.payload[0];
+                  if (
+                    obj?.game_duration
+                    && obj?.availibility
+                    && obj?.special_rules !== undefined
+                    && obj?.general_rules !== undefined
+                    && obj?.responsible_for_referee
+                    && obj?.responsible_for_scorekeeper
+                    && obj?.game_fee
+                    && obj?.venue
+                    && obj?.refund_policy
+                    && obj?.home_away
+                    && obj?.game_type
+
+                  ) {
+                    navigation.navigate('ChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData.sport,
+                      groupObj: currentUserData,
+                    });
+                  } else {
+                    Alert.alert('Opponent player has no completed challenge setting.')
+                  }
+                })
+                .catch((e) => {
+                  setloading(false)
+
+                  setTimeout(() => {
+                    Alert.alert(strings.alertmessagetitle, e.message);
+                  }, 10);
+                });
           }
           if (index === 1) {
             onClose();
-            navigation.navigate('InviteChallengeScreen', {
-              sportName: playInObject?.sport_name,
-              groupObj: currentUserData,
-            });
+            setloading(true);
+              getChallengeSetting(
+                authContext?.entity?.uid,
+                playInObject?.sport_name,
+                authContext,
+              )
+                .then((response) => {
+                  setloading(false);
+                  const obj = response.payload[0];
+                  if (
+                    obj?.game_duration
+                    && obj?.availibility
+                    && obj?.special_rules !== undefined
+                    && obj?.general_rules !== undefined
+                    && obj?.responsible_for_referee
+                    && obj?.responsible_for_scorekeeper
+                    && obj?.game_fee
+                    && obj?.venue
+                    && obj?.refund_policy
+                    && obj?.home_away
+                    && obj?.game_type
+
+                  ) {
+                    navigation.navigate('InviteChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData.sport,
+                      groupObj: currentUserData,
+                    });
+                  } else {
+                    Alert.alert('Please complete your all setting before send a challenge invitation.')
+                  }
+                })
+                .catch((e) => {
+                  setloading(false);
+                  setTimeout(() => {
+                    Alert.alert(strings.alertmessagetitle, e.message);
+                  }, 10);
+                });
+            // navigation.navigate('InviteChallengeScreen', {
+            //   sportName: playInObject?.sport_name,
+            //   groupObj: currentUserData,
+            // });
           }
         }}
       />

@@ -220,10 +220,10 @@ export default function LocalHomeScreen({ navigation, route }) {
           new Date().getTime() / 1000,
         ).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`;
 
-        challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}}]}}}`;
+        challengeeBody = `{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}}]}}}`;
 
-        hiringPlayersBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"hiringPlayers": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}}]}}}`;
-        lookingTeamBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"lookingForTeam": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}}]}}}`;
+        hiringPlayersBody = `{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"hiringPlayers": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}}]}}}`;
+        lookingTeamBody = `{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"lookingForTeam": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}}]}}}`;
       } else {
         recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(
           new Date().getTime() / 1000,
@@ -232,10 +232,10 @@ export default function LocalHomeScreen({ navigation, route }) {
           new Date().getTime() / 1000,
         ).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`;
 
-        challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        challengeeBody = `{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
 
-        hiringPlayersBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"hiringPlayers": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
-        lookingTeamBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"lookingForTeam": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        hiringPlayersBody = `{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"hiringPlayers": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        lookingTeamBody = `{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"lookingForTeam": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
       }
 
       console.log('upcomingMatchbody', challengeeBody);
@@ -855,6 +855,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                   navigation.navigate('LookingForChallengeScreen', {
                     location,
                     selectedSport,
+                    sports,
                   });
                 }}
               />
@@ -925,7 +926,13 @@ export default function LocalHomeScreen({ navigation, route }) {
                 title={strings.hiringPlayerTitle}
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
-                onPress={() => navigation.navigate('HiringPlayerScreen')}
+                onPress={() => {
+                  navigation.navigate('HiringPlayerScreen', {
+                    location,
+                    selectedSport,
+                    sports,
+                  });
+                }}
               />
               <Carousel
                 data={hiringPlayers}
