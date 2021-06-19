@@ -669,7 +669,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     ) {
       return (
         <View style={styles.bottomButtonView}>
-          <TCSmallButton
+          {(challengeData?.game_status === GameStatus.accepted
+                || challengeData?.game_status === GameStatus.reset) && <TCSmallButton
             isBorderButton={true}
             borderstyle={{
               borderColor: colors.userPostTimeColor,
@@ -703,7 +704,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
               width: widthPercentageToDP('92%'),
               alignSelf: 'center',
             }}
-          />
+          />}
           <TCSmallButton
             isBorderButton={false}
             startGradientColor={colors.endGrayGradient}

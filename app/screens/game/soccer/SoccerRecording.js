@@ -413,7 +413,10 @@ export default function SoccerRecording({ navigation, route }) {
         <View style={styles.mainContainer}>
           <ActivityLoader visible={loading} />
           <View>
-            <View style={styles.headerView}>
+            <TouchableOpacity style={styles.headerView} onPress={() => {
+              console.log('Clicked..');
+              setPickerShow(false)
+            }}>
               {gameObj && (
                 <View style={styles.leftView}>
                   <View style={styles.profileShadow}>
@@ -505,7 +508,7 @@ export default function SoccerRecording({ navigation, route }) {
                   </View>
                 </View>
               )}
-            </View>
+            </TouchableOpacity>
 
             <View style={styles.timeView}>
               <Text style={styles.timer}>{timelineTimer}</Text>
@@ -566,7 +569,12 @@ export default function SoccerRecording({ navigation, route }) {
               </View>
             )}
           </View>
-          <View
+          <TouchableOpacity
+
+           onPress={() => {
+             console.log('OKOKOKO');
+             setPickerShow(false)
+           }}
             style={{
               flex: 1,
               justifyContent: 'center',
@@ -758,7 +766,7 @@ export default function SoccerRecording({ navigation, route }) {
                 </View>
               )}
             </View>
-          </View>
+          </TouchableOpacity>
           <View>
             <View style={{ flex: 1 }} />
             <View style={styles.bottomLine}></View>
