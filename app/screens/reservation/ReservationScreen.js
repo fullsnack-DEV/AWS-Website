@@ -35,6 +35,7 @@ export default function ReservationScreen({ navigation }) {
 
   const getReservationListByCaller = () => {
     getReservationList(authContext.entity.uid, authContext).then((response) => {
+      console.log('reservation list :=>', response);
       const upcomingData = [];
       const pastData = [];
       for (const temp of response.payload) {
