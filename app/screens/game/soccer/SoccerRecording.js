@@ -80,9 +80,8 @@ export default function SoccerRecording({ navigation, route }) {
     } else if (
 
       (obj?.status === GameStatus.accepted || obj?.status === GameStatus.reset)) {
-      setTimelineTimer(
-        getTimeDifferent(new Date().getTime(), new Date().getTime()),
-      );
+        // getTimeDifferent(new Date().getTime(), new Date().getTime()),
+      setTimelineTimer('00 : 00 : 00');
     } else if (obj?.status === GameStatus.paused) {
      console.log('last status::=', obj?.status);
       setTimelineTimer(
@@ -101,7 +100,9 @@ export default function SoccerRecording({ navigation, route }) {
           ),
         );
       } else {
+        console.log('Come here')
         setTimelineTimer(
+
           getTimeDifferent(
             new Date().getTime(),
             new Date(date).getTime(),

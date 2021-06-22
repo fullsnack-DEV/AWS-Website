@@ -27,7 +27,7 @@ const UserHomeHeader = ({
   loggedInEntity,
 }) => {
   const authContext = useContext(AuthContext);
-
+console.log('Home currentUserData', currentUserData);
   const [entityData, setEntityData] = useState(null);
   useEffect(() => {
     if (currentUserData) {
