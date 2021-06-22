@@ -19,7 +19,6 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Alert,
-  InteractionManager,
 } from 'react-native';
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -31,6 +30,7 @@ import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
+import { useIsFocused } from '@react-navigation/native';
 import { getLocationNameWithLatLong } from '../../api/External';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
@@ -45,7 +45,6 @@ import {
   postElasticSearch,
   postMultiElasticSearch,
 } from '../../api/elasticSearch';
-
 import { gameData } from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
 import { getHitSlop, widthPercentageToDP } from '../../utils';
@@ -66,6 +65,8 @@ import { getAppSettings } from '../../api/Users';
 let selectedSports = [];
 export default function LocalHomeScreen({ navigation, route }) {
   const refContainer = useRef();
+  const isFocused = useIsFocused();
+
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -105,7 +106,8 @@ export default function LocalHomeScreen({ navigation, route }) {
   }, [route?.params?.locationText]);
 
   useEffect(() => {
-    getAppSettings(authContext)
+    if (isFocused) {
+      getAppSettings(authContext)
       .then((response) => {
         console.log('Settings:=>', response);
         setSettings(response.payload.app);
@@ -116,6 +118,7 @@ export default function LocalHomeScreen({ navigation, route }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
+    }
   }, [authContext]);
 
   const setSettings = useCallback(async (appSettingObj) => {
@@ -123,6 +126,7 @@ export default function LocalHomeScreen({ navigation, route }) {
   }, []);
 
   useEffect(() => {
+    if (isFocused) {
     getSportsList(authContext)
       .then((res) => {
         setloading(false);
@@ -143,11 +147,14 @@ export default function LocalHomeScreen({ navigation, route }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext]);
+    }
+  }, [authContext, isFocused]);
 
   useEffect(() => {
+    if (isFocused) {
     getShortsList(location === 'world' ? '#world#' : location, authContext)
       .then((res) => {
+        console.log('Shorts list response:=>', res);
         setloading(false);
         if (res.payload) {
           setShortsList(res.payload.results);
@@ -160,10 +167,12 @@ export default function LocalHomeScreen({ navigation, route }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext, location]);
+    }
+  }, [authContext, isFocused, location]);
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
+    // InteractionManager.runAfterInteractions(() => {
+
       // const recentMatchbody = bodybuilder()
       //   .query('match', 'sport', selectedSport)
       //   .query('match', 'status', 'ended')
@@ -206,6 +215,7 @@ export default function LocalHomeScreen({ navigation, route }) {
       //   challengeeBody = `{"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"registered_sports.sport_name":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
       // }
 
+      if (isFocused) {
       let recentMatchbody = '';
       let upcomingMatchbody = '';
       let challengeeBody = '';
@@ -344,8 +354,9 @@ export default function LocalHomeScreen({ navigation, route }) {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
-    });
-  }, [authContext, location, selectedSport]);
+   // });
+      }
+  }, [authContext, isFocused, location, selectedSport]);
 
   const isIconCheckedOrNot = useCallback(
     ({ item, index }) => {

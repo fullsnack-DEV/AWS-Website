@@ -287,7 +287,7 @@ export default function ScheduleScreen({ navigation }) {
       const eventdata = [];
       const timetabledata = [];
       let eventTimeTableData = [];
-       getEvents(entityRole, uid, authContext)
+      blockedSlots(entityRole, uid, authContext)
       // blockedSlots(entityRole, uid, authContext)
         .then((response) => {
           getSlots(entityRole, uid, authContext)

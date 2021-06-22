@@ -19,6 +19,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { useIsFocused } from '@react-navigation/native';
+import { parseInt } from 'lodash';
 import Header from '../../../components/Home/Header';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
@@ -366,7 +367,7 @@ export default function EditEventScreen({ navigation, route }) {
           <TouchableOpacity
             style={{ padding: 2 }}
             onPress={async () => {
-              setloading(true);
+               setloading(true);
               const entity = authContext.entity;
               console.log('Auth:=>', entity);
               const u_id = entity.uid;
@@ -378,12 +379,12 @@ export default function EditEventScreen({ navigation, route }) {
                 title: eventTitle,
                 descriptions: aboutDesc,
                 color: singleSelectEventColor,
-                start_datetime: parseFloat(
+                start_datetime: parseInt(
                   new Date(eventStartDateTime).getTime() / 1000,
-                ).toFixed(0),
-                end_datetime: parseFloat(
+                ),
+                end_datetime: parseInt(
                   new Date(eventEndDateTime).getTime() / 1000,
-                ).toFixed(0),
+                ),
                 location: searchLocation,
                 latitude: locationDetail.lat,
                 longitude: locationDetail.lng,
@@ -412,13 +413,14 @@ export default function EditEventScreen({ navigation, route }) {
                 rules = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`;
               }
               if (selectWeekMonth !== 'Does not repeat') {
-                params.untilDate = parseFloat(
+                params.untilDate = parseInt(
                   new Date(eventUntilDateTime).getTime() / 1000,
                 ).toFixed(0);
                 params.rrule = `FREQ=${rules}`;
               }
 
               console.log('Edit Event object:=>', params);
+
               editEvent(entityRole, u_id, params, authContext)
                 .then((response) => {
                   console.log('Edit Response :-', response);
