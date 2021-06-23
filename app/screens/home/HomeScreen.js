@@ -2407,7 +2407,7 @@ const HomeScreen = ({ navigation, route }) => {
                 style={{ height: 15, width: 15, tintColor: colors.whiteColor }}
               />
             </TouchableOpacity>
-            <TouchableOpacity
+            {((authContext.entity.uid === currentUserData?.user_id) || (authContext.entity.uid === currentUserData?.group_id)) && !isClubHome && <TouchableOpacity
               style={{
                 backgroundColor: 'rgba(0,0,0,0.4)',
                 height: 30,
@@ -2426,12 +2426,12 @@ const HomeScreen = ({ navigation, route }) => {
                   resizeMode: 'contain',
                 }}
               />
-            </TouchableOpacity>
+            </TouchableOpacity>}
           </View>
         )}
       </View>
     ),
-    [onBackPress, route],
+    [authContext.entity.uid, currentUserData?.group_id, currentUserData?.user_id, isClubHome, onBackPress, onThreeDotPressed, route],
   );
 
   // const renderUserTopFixedButtons = useMemo(
@@ -3098,6 +3098,11 @@ const HomeScreen = ({ navigation, route }) => {
           } else {
             Alert.alert('There is no registerd sports.');
           }
+        }
+        if (entity.role === 'team') {
+          navigation.navigate('ManageChallengeScreen', {
+            sportName: currentUserData?.sport,
+          });
         }
           }
         }}

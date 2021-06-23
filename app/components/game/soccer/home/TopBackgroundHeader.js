@@ -246,6 +246,7 @@ const TopBackgroundHeader = ({
             </View>
           }
       />
+
   ), [handleGoBack, headerTitleShown])
 
   return (
@@ -257,9 +258,9 @@ const TopBackgroundHeader = ({
           bounces={false}
           scrollEventThrottle={400}
             backgroundColor="transparent"
-            contentBackgroundColor="white"
+             contentBackgroundColor="white"
             parallaxHeaderHeight={200}
-            stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
+             stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
             fadeOutForeground={false}
             onChangeHeaderVisibility={(isShown) => isShown !== headerTitleShown && setHeaderTitleShown(isShown)}
             renderFixedHeader={renderFixedHeader}
@@ -267,6 +268,7 @@ const TopBackgroundHeader = ({
             renderForeground={renderForeground}
             renderBackground={renderBackground}
         >
+
         {useMemo(() => {
           let destructiveButtonIndex = null;
           const options = [];
