@@ -264,7 +264,6 @@ const ScheduleNavigator = () => (
           name="SoccerHome"
           component={SoccerHome}
           options={{
-            tabBarVisible: false,
             headerShown: false,
           }}
       />

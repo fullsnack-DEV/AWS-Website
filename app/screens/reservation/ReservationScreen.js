@@ -59,16 +59,7 @@ export default function ReservationScreen({ navigation }) {
   };
 
   const goToReservationDetail = useCallback((data) => {
-    if (data?.responsible_to_secure_venue) {
-      setloading(true);
-      Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
-        setloading(false);
-        navigation.navigate(obj.screenName, {
-          challengeObj: obj.challengeObj || obj.challengeObj[0],
-        });
-        setloading(false);
-      });
-    } else if (data?.scorekeeper) {
+   if (data?.scorekeeper) {
       setloading(true);
       ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
         setloading(false);
@@ -77,12 +68,21 @@ export default function ReservationScreen({ navigation }) {
         });
         setloading(false);
       });
-    } else {
+    } else if (data?.referee) {
       setloading(true);
       RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
         setloading(false);
         navigation.navigate(obj.screenName, {
           reservationObj: obj.reservationObj || obj.reservationObj[0],
+        });
+        setloading(false);
+      });
+    } else {
+      setloading(true);
+      Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
+        setloading(false);
+        navigation.navigate(obj.screenName, {
+          challengeObj: obj.challengeObj || obj.challengeObj[0],
         });
         setloading(false);
       });
