@@ -21,7 +21,7 @@ import moment from 'moment';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
-import DatePicker from 'react-native-date-picker'
+import DatePicker from 'react-native-date-picker';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
 import GameVerb from '../../../Constants/GameVerb';
@@ -78,12 +78,13 @@ export default function SoccerRecording({ navigation, route }) {
         ),
       );
     } else if (
-
-      (obj?.status === GameStatus.accepted || obj?.status === GameStatus.reset)) {
-        // getTimeDifferent(new Date().getTime(), new Date().getTime()),
+      obj?.status === GameStatus.accepted
+      || obj?.status === GameStatus.reset
+    ) {
+      // getTimeDifferent(new Date().getTime(), new Date().getTime()),
       setTimelineTimer('00 : 00 : 00');
     } else if (obj?.status === GameStatus.paused) {
-     console.log('last status::=', obj?.status);
+      console.log('last status::=', obj?.status);
       setTimelineTimer(
         getTimeDifferent(
           obj?.pause_datetime * 1000,
@@ -100,20 +101,17 @@ export default function SoccerRecording({ navigation, route }) {
           ),
         );
       } else {
-        console.log('Come here')
+        console.log('Come here');
         setTimelineTimer(
-
-          getTimeDifferent(
-            new Date().getTime(),
-            new Date(date).getTime(),
-          ),
+          getTimeDifferent(new Date().getTime(), new Date(date).getTime()),
         );
       }
     } else {
       timerForTimeline = setInterval(() => {
         setTimelineTimer(
           getTimeDifferent(
-            new Date().getTime(), obj?.actual_startdatetime * 1000,
+            new Date().getTime(),
+            obj?.actual_startdatetime * 1000,
           ),
         );
       }, 1000);
@@ -188,7 +186,7 @@ export default function SoccerRecording({ navigation, route }) {
 
   useFocusEffect(() => {
     if (![GameStatus.accepted, GameStatus.reset].includes(gameObj?.status)) {
-      startStopTimerTimeline(gameObj)
+      startStopTimerTimeline(gameObj);
     }
     console.log('route?.params?.gameDetail', route?.params?.gameDetail);
     timer = setInterval(() => {
@@ -202,10 +200,10 @@ export default function SoccerRecording({ navigation, route }) {
     // }, 1000);
 
     return () => {
-      clearInterval(timer)
-      clearInterval(timerForTimeline)
-    }
-  }, [])
+      clearInterval(timer);
+      clearInterval(timerForTimeline);
+    };
+  }, []);
 
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
@@ -254,12 +252,14 @@ export default function SoccerRecording({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableWithoutFeedback onPress={() => actionSheet.current.show()} hitSlop={getHitSlop(15)}>
+        <TouchableWithoutFeedback
+          onPress={() => actionSheet.current.show()}
+          hitSlop={getHitSlop(15)}>
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),
     });
-  }, [navigation, date]);
+  }, [navigation]);
 
   const getDateFormat = (dateValue) => {
     moment.locale('en');
@@ -312,7 +312,7 @@ export default function SoccerRecording({ navigation, route }) {
         getGameDetail(gameId, true);
 
         setloading(false);
-        startStopTimerTimeline(gameObj)
+        startStopTimerTimeline(gameObj);
         console.log('RESET GAME RESPONSE::', response);
       })
       .catch((e) => {
@@ -352,8 +352,8 @@ export default function SoccerRecording({ navigation, route }) {
     addGameRecord(gameId, params, authContext)
       .then((response) => {
         setloading(false);
-       // setDate();
-       date = null;
+        // setDate();
+        date = null;
         if (lastVerb === GameVerb.Goal) {
           if (selectedTeam === gameObj?.home_team?.group_id) {
             setGameObj({
@@ -408,20 +408,26 @@ export default function SoccerRecording({ navigation, route }) {
     startStopTimerTimeline(gameObj);
     setPickerShow(Platform.OS === 'ios' || Platform.OS === 'android');
   };
+
+  console.log('gameObj?.home_team_goal', gameObj?.home_team_goal);
+  console.log('gameObj?.away_team_goal', gameObj?.away_team_goal);
+
   return (
     <>
       {gameObj && (
         <View style={styles.mainContainer}>
           <ActivityLoader visible={loading} />
           <View>
-            <TouchableOpacity style={styles.headerView} onPress={() => {
-              console.log('Clicked..');
-              setPickerShow(false)
-            }}>
-              {gameObj && (
-                <View style={styles.leftView}>
-                  <View style={styles.profileShadow}>
-                    <Image
+            <TouchableOpacity
+              style={styles.headerView}
+              onPress={() => {
+                console.log('Clicked..');
+                setPickerShow(false);
+              }}>
+
+              <View style={styles.leftView}>
+                <View style={styles.profileShadow}>
+                  <Image
                       source={
                         gameObj?.home_team?.thumbnail
                           ? { uri: gameObj?.home_team?.thumbnail }
@@ -429,86 +435,74 @@ export default function SoccerRecording({ navigation, route }) {
                       }
                       style={styles.profileImg}
                     />
-                  </View>
-                  {gameObj?.home_team_goal > gameObj?.away_team_goal ? (
-                    <Text
-                      style={[styles.leftText, { color: colors.themeColor }]}
-                      numberOfLines={2}>
-                      {gameObj?.home_team?.group_name}
-                    </Text>
-                  ) : (
-                    <Text style={styles.leftText} numberOfLines={2}>
-                      {gameObj?.home_team?.group_name}
-                    </Text>
-                  )}
                 </View>
-              )}
+                <Text
+                    style={
+                      gameObj?.home_team_goal <= gameObj?.away_team_goal
+                        ? styles.leftText
+                        : [styles.leftText, { color: colors.themeColor }]
+                    }
+                    numberOfLines={2}>
+                  {gameObj?.home_team?.group_name}
+                </Text>
+              </View>
 
               <View style={styles.centerView}>
                 <Text style={styles.centerText}>
-                  {gameObj?.home_team_goal > gameObj?.away_team_goal ? (
-                    <Text
-                      style={{
-                        fontFamily: fonts.RBold,
-                        color: colors.themeColor,
-                      }}>
-                      {gameObj?.home_team_goal}
-                    </Text>
-                  ) : (
-                    <Text
-                      style={{
-                        fontFamily: fonts.RLight,
-                        color: colors.lightBlackColor,
-                      }}>
-                      {gameObj?.home_team_goal}
-                    </Text>
-                  )}{' '}
-                  :{' '}
-                  {gameObj?.away_team_goal > gameObj?.home_team_goal ? (
-                    <Text
-                      style={{
-                        fontFamily: fonts.RBold,
-                        color: colors.themeColor,
-                      }}>
-                      {gameObj.away_team_goal}
-                    </Text>
-                  ) : (
-                    <Text
-                      style={{
-                        fontFamily: fonts.RLight,
-                        color: colors.lightBlackColor,
-                      }}>
-                      {gameObj.away_team_goal}
-                    </Text>
-                  )}
+                  <Text
+                    style={
+                      gameObj?.home_team_goal <= gameObj?.away_team_goal
+                        ? {
+                          fontFamily: fonts.RLight,
+                          color: colors.lightBlackColor,
+                  }
+                        : {
+                      fontFamily: fonts.RBold,
+                      color: colors.themeColor,
+                    }
+                    }>
+                    {gameObj?.home_team_goal} :{' '}
+                  </Text>
+
+                  <Text
+                    style={
+                      gameObj?.away_team_goal <= gameObj?.home_team_goal
+                        ? {
+                          fontFamily: fonts.RLight,
+                          color: colors.lightBlackColor,
+                  }
+                        : {
+                          fontFamily: fonts.RBold,
+                          color: colors.themeColor,
+                    }
+                    }>
+                    {gameObj.away_team_goal}
+                  </Text>
                 </Text>
               </View>
-              {gameObj && gameObj?.away_team && (
-                <View style={styles.rightView}>
-                  {gameObj?.away_team?.group_name
-                  && gameObj?.away_team_goal > gameObj?.home_team_goal ? (
-                    <Text
-                      style={[styles.rightText, { color: colors.themeColor }]}
-                      numberOfLines={2}>
-                      {gameObj?.away_team?.group_name}
-                    </Text>
-                    ) : (
-                      <Text style={styles.rightText} numberOfLines={2}>
-                        {gameObj?.away_team?.group_name}
-                      </Text>
-                    )}
-                  <View style={styles.profileShadow}>
-                    <Image
-                      source={
-                        gameObj?.away_team?.thumbnail
-                          ? { uri: gameObj?.away_team?.thumbnail }
-                          : images.teamPlaceholder
-                      }
-                      style={styles.profileImg}
-                    />
-                  </View>
+
+              <View style={styles.rightView}>
+                <Text
+                  style={
+                    gameObj?.away_team_goal <= gameObj?.home_team_goal
+                      ? styles.rightText
+                      : [styles.rightText, { color: colors.themeColor }]
+                  }
+                  numberOfLines={2}>
+                  {gameObj?.away_team?.group_name}
+                </Text>
+
+                <View style={styles.profileShadow}>
+                  <Image
+                    source={
+                      gameObj?.away_team?.thumbnail
+                        ? { uri: gameObj?.away_team?.thumbnail }
+                        : images.teamPlaceholder
+                    }
+                    style={styles.profileImg}
+                  />
                 </View>
-              )}
+              </View>
             </TouchableOpacity>
 
             <View style={styles.timeView}>
@@ -557,25 +551,29 @@ export default function SoccerRecording({ navigation, route }) {
                   maximumDate={new Date()}
                 /> */}
                 <DatePicker
-                testID={'startsDateDateTimePicker'}
-                style={styles.dateTimePickerStyle}
-                date={date || new Date()}
-                onDateChange={(dt) => {
-                  onChange(dt)
-                }}
-                minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date(gameObj.actual_startdatetime * 1000)}
-                    maximumDate={new Date()}
-              />
+                  testID={'startsDateDateTimePicker'}
+                  style={styles.dateTimePickerStyle}
+                  date={date || new Date()}
+                  onDateChange={(dt) => {
+                    onChange(dt);
+                  }}
+                  minimumDate={
+                    gameObj.status === GameStatus.accepted
+                    || gameObj.status === GameStatus.reset
+                      ? new Date(1950, 0, 1)
+                      : new Date(gameObj.actual_startdatetime * 1000)
+                  }
+                  maximumDate={new Date()}
+                />
                 <View style={styles.separatorLine} />
               </View>
             )}
           </View>
           <TouchableOpacity
-
-           onPress={() => {
-             console.log('OKOKOKO');
-             setPickerShow(false)
-           }}
+            onPress={() => {
+              console.log('OKOKOKO');
+              setPickerShow(false);
+            }}
             style={{
               flex: 1,
               justifyContent: 'center',
@@ -695,7 +693,9 @@ export default function SoccerRecording({ navigation, route }) {
                           )}`,
                         );
                         lastTimeStamp = date
-                          ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+                          ? parseFloat(
+                              date.setMilliseconds(0, 0) / 1000,
+                            ).toFixed(0)
                           : parseFloat(new Date().getTime() / 1000).toFixed(0);
                         lastVerb = GameVerb.Goal;
                         const body = [
@@ -786,7 +786,9 @@ export default function SoccerRecording({ navigation, route }) {
                       );
                     } else {
                       lastTimeStamp = date
-                        ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+                        ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(
+                            0,
+                          )
                         : parseFloat(new Date().getTime() / 1000).toFixed(0);
                       lastVerb = GameVerb.Start;
                       const body = [
@@ -809,7 +811,9 @@ export default function SoccerRecording({ navigation, route }) {
                 <TCGameButton
                   title="Resume"
                   onPress={() => {
-                    lastTimeStamp = parseFloat(new Date().getTime() / 1000).toFixed(0);
+                    lastTimeStamp = parseFloat(
+                      new Date().getTime() / 1000,
+                    ).toFixed(0);
                     lastVerb = GameVerb.Resume;
                     const body = [
                       {

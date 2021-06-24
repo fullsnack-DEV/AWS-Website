@@ -184,89 +184,24 @@ export default function AccountScreen({ navigation, route }) {
     [navigation, notificationCounter],
   );
 
-  const getData = useCallback(() => {
+  const getData = () => new Promise((resolve, reject) => {
     setloading(true);
-    console.log('::1');
       const entity = authContext.entity;
-
-   getUnreadCount(authContext)
-     .then((response) => {
-       const { teams } = response.payload;
-       const { clubs } = response.payload;
-       const switchEntityObject = [...clubs, ...teams].filter(
-         (e) => e.group_id === authContext.entity.uid,
-       );
-       setTeam(teams);
-       setClub(clubs);
-       setNotificationCounter(switchEntityObject?.[0]?.unread);
-       if (entity.role === 'user') {
-         setGroupList([...clubs, ...teams]);
-       } else if (entity.role === 'team') {
-         const updatedTeam = teams.filter(
-           (item) => item.group_id !== authContext.entity.uid,
-         );
-         setGroupList([entity.auth.user, ...clubs, ...updatedTeam]);
-       } else if (authContext.entity.role === 'club') {
-         const updatedClub = clubs.filter(
-           (item) => item.group_id !== authContext.entity.uid,
-         );
-         setGroupList([entity.auth.user, ...updatedClub, ...teams]);
-       }
-
-       setloading(false)
-       console.log('::2');
-     }).then(() => {
-       setloading(true);
-       console.log('::3');
-      if (entity.role === 'club') {
-          getTeamsOfClub(authContext.entity.uid, authContext)
-         .then((response) => {
-           setloading(false);
-           console.log('::4');
-           setTeamList(response.payload);
-         })
-         .catch((e) => {
-           setloading(false);
-           console.log('::5');
-           setTimeout(() => {
-             Alert.alert(strings.alertmessagetitle, e.message);
-           }, 10);
-         });
-     } else {
-       getJoinedGroups(true, 'team', authContext)
-         .then((response) => {
-           setloading(false);
-           console.log('::6');
-           setTeamList(response.payload);
-         })
-         .catch((e) => {
-           setloading(false);
-           console.log('::7');
-
-           setTimeout(() => {
-             Alert.alert(strings.alertmessagetitle, e.message);
-           }, 10);
-         });
-     }
-     }).then(() => {
-       if (entity.role !== 'club') {
-         getClubList(entity)
-       }
-     })
-     .catch((e) => {
-       setloading(false)
-       console.log('::8');
-       console.log('catch -> Account Screen unread count api');
-       setTimeout(() => {
-         Alert.alert(strings.alertmessagetitle, e.message);
-       }, 10);
-     });
-   }, [authContext])
+      const promises = [
+        getNotificationUnreadCount(entity),
+        getTeamsList(entity),
+      ];
+      if (entity.role !== 'club') promises.push(getClubList(entity));
+      Promise.all(promises)
+        .then(() => resolve(true))
+        // eslint-disable-next-line prefer-promise-reject-errors
+        .catch(() => reject('error'));
+    });
 
   useEffect(() => {
       console.log('useEffect get data Called..');
       getData()
-  }, [authContext.entity]);
+  }, [authContext]);
 
   useEffect(() => {
     if (route?.params?.createdSportName) {
@@ -286,7 +221,43 @@ export default function AccountScreen({ navigation, route }) {
         })
         .catch((e) => {
           setloading(false);
-          console.log('::9');
+          console.log('6');
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    },
+    [authContext],
+  );
+
+  const getNotificationUnreadCount = useCallback(
+    (currentEntity) => {
+      getUnreadCount(authContext)
+        .then((response) => {
+          const { teams } = response.payload;
+          const { clubs } = response.payload;
+          const switchEntityObject = [...clubs, ...teams].filter(
+            (e) => e.group_id === authContext.entity.uid,
+          );
+          setTeam(teams);
+          setClub(clubs);
+          setNotificationCounter(switchEntityObject?.[0]?.unread);
+          if (currentEntity.role === 'user') {
+            setGroupList([...clubs, ...teams]);
+          } else if (currentEntity.role === 'team') {
+            const updatedTeam = teams.filter(
+              (item) => item.group_id !== authContext.entity.uid,
+            );
+            setGroupList([currentEntity.auth.user, ...clubs, ...updatedTeam]);
+          } else if (authContext.entity.role === 'club') {
+            const updatedClub = clubs.filter(
+              (item) => item.group_id !== authContext.entity.uid,
+            );
+            setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
+          }
+        })
+        .catch((e) => {
+          console.log('catch -> Account Screen unread count api');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -297,18 +268,14 @@ export default function AccountScreen({ navigation, route }) {
 
   const getTeamsList = useCallback(
     (currentEntity) => {
-      setloading(true);
-      console.log('::10');
       if (currentEntity.role === 'club') {
         getTeamsOfClub(authContext.entity.uid, authContext)
           .then((response) => {
-            setloading(false);
-            console.log('::11');
             setTeamList(response.payload);
           })
           .catch((e) => {
             setloading(false);
-            console.log('::12');
+            console.log('2');
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
@@ -317,12 +284,11 @@ export default function AccountScreen({ navigation, route }) {
         getJoinedGroups(true, 'team', authContext)
           .then((response) => {
             setloading(false);
-            console.log('::13');
             setTeamList(response.payload);
           })
           .catch((e) => {
             setloading(false);
-            console.log('::14');
+            console.log('1');
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
@@ -337,7 +303,6 @@ export default function AccountScreen({ navigation, route }) {
     getGroupRequest(type, requestID, authContext)
       .then((response) => {
         setloading(false);
-        console.log('::15');
 
         if (response.status) {
           setTimeout(() => {
@@ -355,7 +320,7 @@ export default function AccountScreen({ navigation, route }) {
       })
       .catch((e) => {
         setloading(false);
-        console.log('::16');
+        console.log('3');
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -368,6 +333,8 @@ export default function AccountScreen({ navigation, route }) {
         setClubList(response.payload);
       })
       .catch((e) => {
+        setloading(false);
+        console.log('4');
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -468,7 +435,6 @@ export default function AccountScreen({ navigation, route }) {
                     ...currentEntity,
                   });
                   setloading(false);
-
                   if (qbRes?.error) console.log('Towns Cup', qbRes?.error);
                 })
                 .catch(async () => {
@@ -506,13 +472,13 @@ export default function AccountScreen({ navigation, route }) {
         })
         .catch((e) => {
           setloading(false);
-
+          console.log('5');
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
     },
-    [authContext, switchProfile, switchQBAccount],
+    [switchProfile, switchQBAccount],
   );
 
   const onLogout = useCallback(async () => {
@@ -1076,6 +1042,7 @@ export default function AccountScreen({ navigation, route }) {
 
   const onNextPressed = () => {
     setIsRulesModalVisible(false);
+    console.log('************************************');
     const entity = authContext.entity;
     if (createEntity === 'team') {
       if (entity.role === 'user') {
@@ -1128,7 +1095,6 @@ export default function AccountScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-
       {renderTopHeader}
 
       <ScrollView style={styles.mainContainer} ref={scrollRef}>

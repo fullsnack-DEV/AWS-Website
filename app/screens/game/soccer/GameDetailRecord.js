@@ -897,87 +897,84 @@ export default function GameDetailRecord({ navigation, route }) {
         <View style={styles.mainContainer}>
           <ActivityLoader visible={loading} />
           <View style={styles.headerView}>
-            {gameObj && gameObj.home_team && (
-              <View style={styles.leftView}>
-                <View style={styles.profileShadow}>
-                  <Image
-                    source={
-                      gameObj.home_team && gameObj.home_team.thumbnail
-                        ? { uri: gameObj.home_team.thumbnail }
-                        : images.teamPlaceholder
-                    }
-                    style={styles.profileImg}
-                  />
-                </View>
-                {gameObj.home_team.group_name
-                && gameObj.home_team_goal > gameObj.away_team_goal ? (
-                  <Text
-                    style={[styles.leftText, { color: colors.themeColor }]}
-                    numberOfLines={2}>
-                    {gameObj.home_team.group_name}
-                  </Text>
-                  ) : (
-                    <Text style={styles.leftText} numberOfLines={2}>
-                      {gameObj.home_team.group_name}
-                    </Text>
-                  )}
+            <View style={styles.leftView}>
+              <View style={styles.profileShadow}>
+                <Image
+                      source={
+                        gameObj?.home_team?.thumbnail
+                          ? { uri: gameObj?.home_team?.thumbnail }
+                          : images.teamPlaceholder
+                      }
+                      style={styles.profileImg}
+                    />
               </View>
-            )}
-
-            <View style={styles.centerView}>
-              <Text style={styles.centerText}>
-                {gameObj.home_team_goal > gameObj.away_team_goal ? (
-                  <Text
-                    style={{
-                      fontFamily: fonts.RBold,
-                      color: colors.themeColor,
-                    }}>
-                    {gameObj.home_team_goal}
-                  </Text>
-                ) : (
-                  <Text>{gameObj.home_team_goal}</Text>
-                )}{' '}
-                :{' '}
-                {gameObj.away_team_goal > gameObj.home_team_goal ? (
-                  <Text
-                    style={{
-                      fontFamily: fonts.RBold,
-                      color: colors.themeColor,
-                    }}>
-                    {gameObj.away_team_goal}
-                  </Text>
-                ) : (
-                  <Text>{gameObj.away_team_goal}</Text>
-                )}
+              <Text
+                    style={
+                      gameObj?.home_team_goal <= gameObj?.away_team_goal
+                        ? styles.leftText
+                        : [styles.leftText, { color: colors.themeColor }]
+                    }
+                    numberOfLines={2}>
+                {gameObj?.home_team?.group_name}
               </Text>
             </View>
 
-            {gameObj && gameObj.away_team && (
-              <View style={styles.rightView}>
-                {gameObj.away_team.group_name
-                && gameObj.away_team_goal > gameObj.home_team_goal ? (
-                  <Text
-                    style={[styles.rightText, { color: colors.themeColor }]}
-                    numberOfLines={2}>
-                    {gameObj.away_team.group_name}
-                  </Text>
-                  ) : (
-                    <Text style={styles.rightText} numberOfLines={2}>
-                      {gameObj.away_team.group_name}
-                    </Text>
-                  )}
-                <View style={styles.profileShadow}>
-                  <Image
+            <View style={styles.centerView}>
+              <Text style={styles.centerText}>
+                <Text
+                    style={
+                      gameObj?.home_team_goal <= gameObj?.away_team_goal
+                        ? {
+                          fontFamily: fonts.RLight,
+                          color: colors.lightBlackColor,
+                  }
+                        : {
+                      fontFamily: fonts.RBold,
+                      color: colors.themeColor,
+                    }
+                    }>
+                  {gameObj?.home_team_goal} :{' '}
+                </Text>
+
+                <Text
+                    style={
+                      gameObj?.away_team_goal <= gameObj?.home_team_goal
+                        ? {
+                          fontFamily: fonts.RLight,
+                          color: colors.lightBlackColor,
+                  }
+                        : {
+                          fontFamily: fonts.RBold,
+                          color: colors.themeColor,
+                    }
+                    }>
+                  {gameObj.away_team_goal}
+                </Text>
+              </Text>
+            </View>
+
+            <View style={styles.rightView}>
+              <Text
+                  style={
+                    gameObj?.away_team_goal <= gameObj?.home_team_goal
+                      ? styles.rightText
+                      : [styles.rightText, { color: colors.themeColor }]
+                  }
+                  numberOfLines={2}>
+                {gameObj?.away_team?.group_name}
+              </Text>
+
+              <View style={styles.profileShadow}>
+                <Image
                     source={
-                      gameObj.away_team && gameObj.away_team.thumbnail
-                        ? { uri: gameObj.away_team.thumbnail }
+                      gameObj?.away_team?.thumbnail
+                        ? { uri: gameObj?.away_team?.thumbnail }
                         : images.teamPlaceholder
                     }
                     style={styles.profileImg}
                   />
-                </View>
               </View>
-            )}
+            </View>
           </View>
           {messageToast && (
             <Animatable.View
@@ -1528,6 +1525,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     fontFamily: fonts.RMedium,
     fontSize: 16,
+    color: colors.lightBlackColor,
   },
   leftView: {
     // backgroundColor: 'green',
