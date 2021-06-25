@@ -206,9 +206,12 @@ export default function AccountScreen({ navigation, route }) {
         .catch(() => reject('error'));
     });
 
+    useEffect(() => {
+        onSwitchProfile(authContext?.entity)
+    }, []);
+
   useEffect(() => {
     if (isFocused) {
-      console.log('useEffect get data Called..');
       getData();
     }
   }, [authContext, isFocused]);
@@ -269,7 +272,7 @@ export default function AccountScreen({ navigation, route }) {
             );
             setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
           }
-           setloading(false);
+           // setloading(false);
 
           // if (authContext?.entity?.QB) {
           //   setloading(false);
