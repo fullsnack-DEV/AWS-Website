@@ -187,7 +187,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
       .then(async (response) => {
         const entity = authContext.entity;
         entity.obj = response.payload;
-        entity.auth.user = response.payload;
+        // entity.auth.user = response.payload;
         const entity_id = ['user', 'player']?.includes(
           response?.payload?.entity_type,
         )
