@@ -6,7 +6,7 @@ import * as Utility from '.';
 
 const makeElasticAPIRequest = async ({ method, url, data }) => NetInfo.fetch().then(async (netStat) => {
     const elasticCredential = await Utility.getStorage('appSetting');
-
+console.log('elasticCredential', elasticCredential);
     if (!netStat || !netStat.isConnected) {
       throw new Error(strings.networkConnectivityErrorMessage);
     } else {

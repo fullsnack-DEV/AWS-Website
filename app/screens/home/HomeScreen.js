@@ -2364,7 +2364,7 @@ const HomeScreen = ({ navigation, route }) => {
       navigation.popToTop();
     } else {
       if (route.params?.onBackPress) route.params.onBackPress();
-      navigation.goBack();
+      navigation.navigate('AccountScreen');
     }
   }, [navigation, route.params]);
 
