@@ -68,7 +68,6 @@ import {
 import { createPost, createReaction } from '../../api/NewsFeeds';
 import {
   getGroupDetails,
-
   getGroups,
   getTeamsOfClub,
   getGroupMembers,
@@ -2407,31 +2406,43 @@ const HomeScreen = ({ navigation, route }) => {
                 style={{ height: 15, width: 15, tintColor: colors.whiteColor }}
               />
             </TouchableOpacity>
-            {((authContext.entity.uid === currentUserData?.user_id) || (authContext.entity.uid === currentUserData?.group_id)) && !isClubHome && <TouchableOpacity
-              style={{
-                backgroundColor: 'rgba(0,0,0,0.4)',
-                height: 30,
-                width: 30,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 25,
-              }}
-              onPress={onThreeDotPressed}>
-              <Image
-                source={images.threeDotIcon}
-                style={{
-                  height: 15,
-                  width: 15,
-                  tintColor: colors.whiteColor,
-                  resizeMode: 'contain',
-                }}
-              />
-            </TouchableOpacity>}
+            {(authContext.entity.uid === currentUserData?.user_id
+              || authContext.entity.uid === currentUserData?.group_id)
+              && !isClubHome && (
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: 'rgba(0,0,0,0.4)',
+                    height: 30,
+                    width: 30,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 25,
+                  }}
+                  onPress={onThreeDotPressed}>
+                  <Image
+                    source={images.threeDotIcon}
+                    style={{
+                      height: 15,
+                      width: 15,
+                      tintColor: colors.whiteColor,
+                      resizeMode: 'contain',
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
           </View>
         )}
       </View>
     ),
-    [authContext.entity.uid, currentUserData?.group_id, currentUserData?.user_id, isClubHome, onBackPress, onThreeDotPressed, route],
+    [
+      authContext.entity.uid,
+      currentUserData?.group_id,
+      currentUserData?.user_id,
+      isClubHome,
+      onBackPress,
+      onThreeDotPressed,
+      route,
+    ],
   );
 
   // const renderUserTopFixedButtons = useMemo(
@@ -3092,18 +3103,18 @@ const HomeScreen = ({ navigation, route }) => {
 
             const entity = authContext.entity;
 
-        if (entity.role === 'user') {
-          if (entity?.obj?.registered_sports?.length > 0) {
-            setVisibleSportsModal(true);
-          } else {
-            Alert.alert('There is no registerd sports.');
-          }
-        }
-        if (entity.role === 'team') {
-          navigation.navigate('ManageChallengeScreen', {
-            sportName: currentUserData?.sport,
-          });
-        }
+            if (entity.role === 'user') {
+              if (entity?.obj?.registered_sports?.length > 0) {
+                setVisibleSportsModal(true);
+              } else {
+                Alert.alert('There is no registerd sports.');
+              }
+            }
+            if (entity.role === 'team') {
+              navigation.navigate('ManageChallengeScreen', {
+                sportName: currentUserData?.sport,
+              });
+            }
           }
         }}
       />
@@ -4473,7 +4484,6 @@ const HomeScreen = ({ navigation, route }) => {
                     && obj?.refund_policy
                     && obj?.home_away
                     && obj?.game_type
-
                   ) {
                     setChallengePopup(false);
                     navigation.navigate('ChallengeScreen', {
@@ -4482,7 +4492,9 @@ const HomeScreen = ({ navigation, route }) => {
                       groupObj: currentUserData,
                     });
                   } else {
-                    Alert.alert('Opponent team has no completed challenge setting.')
+                    Alert.alert(
+                      'Opponent team has no completed challenge setting.',
+                    );
                   }
                 })
                 .catch((e) => {
@@ -4544,7 +4556,6 @@ const HomeScreen = ({ navigation, route }) => {
                     && obj?.refund_policy
                     && obj?.home_away
                     && obj?.game_type
-
                   ) {
                     setChallengePopup(false);
                     navigation.navigate('InviteChallengeScreen', {
@@ -4553,7 +4564,9 @@ const HomeScreen = ({ navigation, route }) => {
                       groupObj: currentUserData,
                     });
                   } else {
-                    Alert.alert('Please complete your all setting before send a challenge invitation.')
+                    Alert.alert(
+                      'Please complete your all setting before send a challenge invitation.',
+                    );
                   }
                 })
                 .catch((e) => {
@@ -4591,70 +4604,70 @@ const HomeScreen = ({ navigation, route }) => {
 
       {/* Sports list  modal */}
       <Modal
-          isVisible={visibleSportsModal}
-          backdropColor="black"
-          onBackdropPress={() => setVisibleSportsModal(false)}
-          onRequestClose={() => setVisibleSportsModal(false)}
-          backdropOpacity={0}
-          style={{
-            margin: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-          }}>
+        isVisible={visibleSportsModal}
+        backdropColor="black"
+        onBackdropPress={() => setVisibleSportsModal(false)}
+        onRequestClose={() => setVisibleSportsModal(false)}
+        backdropOpacity={0}
+        style={{
+          margin: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+        }}>
         <View
-            style={{
-              width: '100%',
-              height: Dimensions.get('window').height / 1.3,
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-              elevation: 15,
-            }}>
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.3,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
           <View
-              style={{
-                flexDirection: 'row',
-                paddingHorizontal: 15,
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
             <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setVisibleSportsModal(false)}>
+              style={styles.closeButton}
+              onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RBold,
-                  color: colors.lightBlackColor,
-                }}>
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
               Sports
             </Text>
 
             <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.themeColor,
-                }}></Text>
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.themeColor,
+              }}></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList
-              ItemSeparatorComponent={() => <TCThinDivider />}
-              data={authContext?.entity?.obj?.registered_sports}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderSports}
-            />
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={authContext?.entity?.obj?.registered_sports}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderSports}
+          />
         </View>
       </Modal>
 
@@ -5024,7 +5037,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-
 });
 
 export default HomeScreen;
