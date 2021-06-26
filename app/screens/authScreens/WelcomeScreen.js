@@ -363,6 +363,7 @@ export default function WelcomeScreen({ navigation }) {
     })
   }
   const handleIOSAppleLogin = async () => {
+    console.log('Apple login clicked..');
     if (!appleAuth.isSupported) {
       alert('Apple Login not supported')
     } else {
@@ -371,6 +372,7 @@ export default function WelcomeScreen({ navigation }) {
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
       }).then(async (appleAuthRequestResponse) => {
+        console.log('appleAuthRequestResponse', appleAuthRequestResponse);
         if (!appleAuthRequestResponse?.identityToken) {
           setloading(false);
           setTimeout(() => {
