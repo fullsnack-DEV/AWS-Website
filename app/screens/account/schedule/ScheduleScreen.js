@@ -280,7 +280,7 @@ export default function ScheduleScreen({ navigation }) {
       console.log('selectedObj:=>', selectedObj);
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = selectedObj; // authContext.entity;
-      const entityRole = entity?.entity_type === 'user' || entity?.entity_type === 'player'
+      const entityRole = entity?.obj?.entity_type === 'user' || entity?.obj?.entity_type === 'player'
           ? 'users'
           : 'groups';
       const uid = entity?.group_id || entity?.user_id;

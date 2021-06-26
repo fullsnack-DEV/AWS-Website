@@ -207,8 +207,10 @@ export default function AccountScreen({ navigation, route }) {
     });
 
     useEffect(() => {
+      if (isFocused) {
         onSwitchProfile(authContext?.entity)
-    }, []);
+      }
+    }, [isFocused]);
 
   useEffect(() => {
     if (isFocused) {

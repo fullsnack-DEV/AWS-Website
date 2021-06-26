@@ -1,14 +1,16 @@
+/* eslint-disable consistent-return */
 import React, {
-    useEffect,
-    memo,
-    useState,
-    useContext,
-    useCallback,
-    useMemo, useRef,
+  useEffect,
+  memo,
+  useState,
+  useContext,
+  useCallback,
+  useMemo,
+  useRef,
 } from 'react';
 import {
  View, ActivityIndicator, FlatList, Text,
- } from 'react-native';
+} from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useIsFocused } from '@react-navigation/native';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
@@ -16,7 +18,7 @@ import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
 import fonts from '../../Constants/Fonts';
 
-const viewabilityConfig = { itemVisiblePercentThreshold: 50 }
+const viewabilityConfig = { itemVisiblePercentThreshold: 50 };
 const NewsFeedList = ({
   onFeedScroll,
   refs,
@@ -75,23 +77,35 @@ const NewsFeedList = ({
       return (
         <View>
           <NewsFeedPostItems
-          currentParentIndex={index}
-          parentIndex={parentIndex}
-          updateCommentCount={updateCommentCount}
-          pullRefresh={pullRefresh}
-          item={item}
-          navigation={navigation}
-          caller_id={userID}
-          onEditPressDone={onEditPressDone}
-          onImageProfilePress={() => onProfilePress(item)}
-          onLikePress={onLikeButtonPress}
-          onDeletePost={onDeleteButtonPress}
-        />
-          <View style={{ backgroundColor: colors.grayBackgroundColor, height: 7 }}/>
+            currentParentIndex={index}
+            parentIndex={parentIndex}
+            updateCommentCount={updateCommentCount}
+            pullRefresh={pullRefresh}
+            item={item}
+            navigation={navigation}
+            caller_id={userID}
+            onEditPressDone={onEditPressDone}
+            onImageProfilePress={() => onProfilePress(item)}
+            onLikePress={onLikeButtonPress}
+            onDeletePost={onDeleteButtonPress}
+          />
+          <View
+            style={{ backgroundColor: colors.grayBackgroundColor, height: 7 }}
+          />
         </View>
       );
     },
-    [parentIndex, updateCommentCount, pullRefresh, navigation, userID, onEditPressDone, onDeletePost, onLikePress, onProfilePress],
+    [
+      parentIndex,
+      updateCommentCount,
+      pullRefresh,
+      navigation,
+      userID,
+      onEditPressDone,
+      onDeletePost,
+      onLikePress,
+      onProfilePress,
+    ],
   );
 
   const newsFeedListItemSeperator = useCallback(
@@ -139,16 +153,34 @@ const NewsFeedList = ({
     [],
   );
 
-    const onViewableItemsChanged = useCallback(({ viewableItems }) => {
-        if (viewableItems?.length > 0) setParentIndex(viewableItems?.[0]?.index ?? 0)
-    }, []);
+  const onViewableItemsChanged = useCallback(({ viewableItems }) => {
+    if (viewableItems?.length > 0) { setParentIndex(viewableItems?.[0]?.index ?? 0); }
+  }, []);
 
-  const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
+  const viewabilityConfigCallbackPairs = useRef([
+    { viewabilityConfig, onViewableItemsChanged },
+  ]);
+
+  const listEmpty = useCallback(() => {
+    if (showEnptyDataText) {
+      return (
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: fonts.RLight,
+            textAlign: 'center',
+            padding: 15,
+          }}>
+          {noDataFoundText}
+        </Text>
+      );
+    }
+  }, [noDataFoundText, showEnptyDataText]);
+
   return (
     <View
       onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
       style={{ flex: 1 }}>
-
       <FlatList
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
         onScroll={onFeedScroll}
@@ -160,20 +192,9 @@ const NewsFeedList = ({
         legacyImplementation={true}
         maxToRenderPerBatch={10}
         initialNumToRender={5}
-        ListEmptyComponent={
-          showEnptyDataText && (
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: fonts.RLight,
-                textAlign: 'center',
-                padding: 15,
-              }}>
-              {noDataFoundText}
-            </Text>
-        )}
+        ListEmptyComponent={listEmpty}
         bounces={true}
-        data={postData ?? []}
+        data={postData}
         ItemSeparatorComponent={newsFeedListItemSeperator}
         ListHeaderComponent={ListHeaderComponent}
         scrollEnabled={scrollEnabled}
@@ -187,6 +208,7 @@ const NewsFeedList = ({
         nestedScrollEnabled={true}
         keyExtractor={newsFeedKeyExtractor}
       />
+
     </View>
   );
 };

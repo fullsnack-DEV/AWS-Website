@@ -23,7 +23,8 @@ import TCTouchableLabel from '../../components/TCTouchableLabel';
 import TCTextField from '../../components/TCTextField';
 import TCLabel from '../../components/TCLabel';
 import TCProfileImageControl from '../../components/TCProfileImageControl';
-import { updateGroupProfile } from '../../api/Groups';
+import { updateGroupProfile, getGroupSearch } from '../../api/Groups';
+
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import AuthContext from '../../auth/context';
@@ -67,7 +68,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
             color: colors.lightBlackColor,
           }}
           onPress={() => {
-            onSaveButtonClicked();
+            nextOnPress();
           }}>
           {strings.save}
         </Text>
@@ -117,6 +118,26 @@ export default function EditGroupProfileScreen({ navigation, route }) {
     setGroupProfile({
       ...entity.obj,
       location: `${entity.obj.city}, ${entity.obj.state_abbr}, ${entity.obj.country}`,
+    });
+  };
+
+  const nextOnPress = () => {
+    setloading(true)
+    getGroupSearch(groupProfile?.group_name, groupProfile?.city, authContext).then((response) => {
+      setloading(false);
+      if (!response.payload) {
+        onSaveButtonClicked()
+      } else {
+        setTimeout(() => {
+          Alert.alert(strings.teamExist);
+        }, 10);
+      }
+    })
+    .catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
     });
   };
 
