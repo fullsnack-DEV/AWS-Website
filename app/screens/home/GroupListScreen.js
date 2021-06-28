@@ -1,14 +1,8 @@
-import React, {
-  useLayoutEffect,
-  useState,
-} from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 
 import {
-  View,
-  FlatList,
-  StyleSheet,
-  Text,
-} from 'react-native';
+ View, FlatList, StyleSheet, Text,
+ } from 'react-native';
 
 import strings from '../../Constants/String';
 import GroupListItemView from '../../components/Home/GroupListItemView';
@@ -18,7 +12,10 @@ export default function GroupListScreen({ navigation, route }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: route.params.entity_type === 'club' ? strings.clubstitle : strings.teamstitle,
+      title:
+        route.params.entity_type === 'club'
+          ? strings.clubstitle
+          : strings.teamstitle,
     });
   }, [navigation]);
 
@@ -28,30 +25,27 @@ export default function GroupListScreen({ navigation, route }) {
       backButtonVisible: true,
       menuBtnVisible: false,
       role: group.entity_type,
-    })
-  }
+    });
+  };
 
   const renderItems = ({ item }) => (
-    <GroupListItemView groupData={item}
-          onPress={onPressGroupList}
-      />
-  )
+    <GroupListItemView groupData={item} onPress={onPressGroupList} />
+  );
 
   return (
     <>
       <View stryle={styles.mainContainer}>
         <FlatList
-              keyExtractor={(item) => item?.group_id}
-              bounces={false}
-              data={groups}
-              renderItem={renderItems}
-              ListEmptyComponent={() => (
-                <View>
-                  <Text>
-                    No Groups Found
-                  </Text>
-                </View>
-              )}/>
+          keyExtractor={(item) => item?.group_id}
+          bounces={false}
+          data={groups}
+          renderItem={renderItems}
+          ListEmptyComponent={() => (
+            <View>
+              <Text>No Groups Found</Text>
+            </View>
+          )}
+        />
       </View>
     </>
   );
