@@ -32,17 +32,9 @@ export default function TCGameScoreLeft(
     style,
   },
 ) {
-  const getScoreText = (firstTeamScore = recordData?.scoreboard?.home_team, secondTeamScore = recordData?.scoreboard?.away_team) => {
-    const isGreterTeam = firstTeamScore > secondTeamScore ? 1 : 2;
-    let firstTeamColor = colors.lightBlackColor
-    let secondTeamColor = colors.lightBlackColor
-    if (firstTeamScore !== secondTeamScore) {
-      if (isGreterTeam === 1) firstTeamColor = colors.themeColor
-      if (isGreterTeam === 2) secondTeamColor = colors.themeColor
-    }
-    return (
-      <View style={{ width: wp(100), backgroundColor: colors.whiteColor }}>
-        <Text
+  const getScoreText = (homeTeamScore = recordData?.scoreboard?.home_team, awayTeamScore = recordData?.scoreboard?.away_team) => (
+    <View style={{ width: wp(100), backgroundColor: colors.whiteColor }}>
+      <Text
         style={ {
           textAlign: 'center',
           fontFamily: fonts.RLight,
@@ -53,12 +45,28 @@ export default function TCGameScoreLeft(
           position: 'absolute',
           bottom: 0,
         } }>
-          <Text style={{ color: secondTeamColor }}>{recordData?.scoreboard?.away_team ?? 0}</Text>{' : '}
-          <Text style={{ color: firstTeamColor }}>{recordData?.scoreboard?.home_team ?? 0}</Text>
+        <Text
+            style={[styles.scoreText, {
+              color:
+                homeTeamScore > awayTeamScore
+                  ? colors.themeColor
+                  : colors.lightBlackColor,
+            }]}>
+          {recordData?.scoreboard?.home_team ?? 0}
         </Text>
-      </View>
+        {' : '}
+        <Text
+            style={[styles.scoreText, {
+              color:
+                homeTeamScore < awayTeamScore
+                  ? colors.themeColor
+                  : colors.lightBlackColor,
+            }]}>
+          {recordData?.scoreboard?.away_team ?? 0}
+        </Text>
+      </Text>
+    </View>
     )
-  }
   return (
     <View style={style}>
       <View
@@ -145,7 +153,7 @@ export default function TCGameScoreLeft(
                     position: 'absolute',
                   } }>
             <Text style={ styles.recordedBy }>
-              Recorded by {recordData?.recorded_by_team_name ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
+              Recorded by {`${recordData?.recorded_by?.first_name } ${ recordData?.recorded_by?.last_name}` ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
             </Text>
           </View>
         </View>
@@ -225,5 +233,8 @@ const styles = StyleSheet.create({
   },
   rightBlankView: {
     marginLeft: 10,
+  },
+  scoreText: {
+    color: colors.lightBlackColor,
   },
 });

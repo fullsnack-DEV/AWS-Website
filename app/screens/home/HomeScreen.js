@@ -4322,7 +4322,7 @@ const HomeScreen = ({ navigation, route }) => {
                   sportName: route?.params?.entityObj?.sport,
                 });
               }}>
-              <Text style={styles.goToProfileTitle}>
+              <Text style={styles.goTPorofileTitle}>
                 {route?.params?.role === 'club'
                   ? 'OK'
                   : strings.manageChallengeText}

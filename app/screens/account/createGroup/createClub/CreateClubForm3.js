@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 // import React, { useState, useContext } from 'react';
 // import {
 //   StyleSheet,
@@ -395,6 +396,9 @@ import {
 // } from 'react-native-responsive-screen';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
+import {
+ check, PERMISSIONS, RESULTS, request,
+} from 'react-native-permissions';
 import TCInfoField from '../../../../components/TCInfoField';
 import { createGroup } from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
@@ -464,6 +468,8 @@ export default function CreateClubForm3({ navigation, route }) {
         // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
         setBackgroundThumbnail(data.path);
       }
+    }).catch((e) => {
+      Alert.alert(e)
     });
   };
 
@@ -480,20 +486,61 @@ export default function CreateClubForm3({ navigation, route }) {
   };
 
   const openCamera = (width = 400, height = 400) => {
-    ImagePicker.openCamera({
-      width,
-      height,
-      cropping: true,
-    }).then((data) => {
-      // 1 means profile, 0 - means background
-      if (currentImageSelection === 1) {
-        // setGroupProfile({ ...groupProfile, thumbnail: data.path })
-        setThumbnail(data.path);
-      } else {
-        // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
-        setBackgroundThumbnail(data.path);
-      }
-    });
+    check(PERMISSIONS.IOS.CAMERA)
+  .then((result) => {
+    switch (result) {
+      case RESULTS.UNAVAILABLE:
+        Alert.alert('This feature is not available (on this device / in this context)')
+        break;
+      case RESULTS.DENIED:
+        request(PERMISSIONS.IOS.CAMERA).then(() => {
+          ImagePicker.openCamera({
+            width,
+            height,
+            cropping: true,
+          }).then((data) => {
+            // 1 means profile, 0 - means background
+            if (currentImageSelection === 1) {
+              // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+              setThumbnail(data.path);
+            } else {
+              // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+              setBackgroundThumbnail(data.path);
+            }
+          }).catch((e) => {
+            Alert.alert(e)
+          });
+        })
+        break;
+      case RESULTS.LIMITED:
+        console.log('The permission is limited: some actions are possible');
+        break;
+      case RESULTS.GRANTED:
+        ImagePicker.openCamera({
+          width,
+          height,
+          cropping: true,
+        }).then((data) => {
+          // 1 means profile, 0 - means background
+          if (currentImageSelection === 1) {
+            // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+            setThumbnail(data.path);
+          } else {
+            // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+            setBackgroundThumbnail(data.path);
+          }
+        }).catch((e) => {
+          Alert.alert(e)
+        });
+        break;
+      case RESULTS.BLOCKED:
+        console.log('The permission is denied and not requestable anymore');
+        break;
+    }
+  })
+  .catch((error) => {
+    Alert.alert(error)
+  });
   };
 
   const nextOnPress = () => {
@@ -685,6 +732,7 @@ export default function CreateClubForm3({ navigation, route }) {
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
+            console.log('Open camera');
             openCamera();
           } else if (index === 1) {
             if (currentImageSelection) {

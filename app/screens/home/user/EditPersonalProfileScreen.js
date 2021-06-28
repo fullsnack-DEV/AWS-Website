@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 import React, {
   useState,
   useEffect,
@@ -18,6 +19,9 @@ import {
 
 import { useIsFocused } from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
+import {
+  check, PERMISSIONS, RESULTS, request,
+ } from 'react-native-permissions';
 import ActionSheet from 'react-native-actionsheet';
 // import TCGradientButton from '../../components/TCGradientButton';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
@@ -230,25 +234,87 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
     }
   }
 
+  // const openCamera = (width = 400, height = 400) => {
+  //   let cropCircle = false;
+  //   if (currentImageSelection === 1) cropCircle = true;
+  //   ImagePicker.openCamera({
+  //     width,
+  //     height,
+  //     cropping: true,
+  //     cropperCircleOverlay: cropCircle,
+  //   }).then((data) => {
+  //     // 1 means profile, 0 - means background
+  //     if (currentImageSelection === 1) {
+  //       setProfile({ ...profile, thumbnail: data.path })
+  //       setProfileImageChanged(true)
+  //     } else {
+  //       setProfile({ ...profile, background_thumbnail: data.path })
+  //       setBackgroundImageChanged(true)
+  //     }
+  //   });
+  // }
+
   const openCamera = (width = 400, height = 400) => {
-    let cropCircle = false;
-    if (currentImageSelection === 1) cropCircle = true;
-    ImagePicker.openCamera({
-      width,
-      height,
-      cropping: true,
-      cropperCircleOverlay: cropCircle,
-    }).then((data) => {
-      // 1 means profile, 0 - means background
-      if (currentImageSelection === 1) {
-        setProfile({ ...profile, thumbnail: data.path })
-        setProfileImageChanged(true)
-      } else {
-        setProfile({ ...profile, background_thumbnail: data.path })
-        setBackgroundImageChanged(true)
-      }
-    });
-  }
+    check(PERMISSIONS.IOS.CAMERA)
+  .then((result) => {
+    switch (result) {
+      case RESULTS.UNAVAILABLE:
+        Alert.alert('This feature is not available (on this device / in this context)')
+        break;
+      case RESULTS.DENIED:
+        request(PERMISSIONS.IOS.CAMERA).then(() => {
+          let cropCircle = false;
+          if (currentImageSelection === 1) cropCircle = true;
+          ImagePicker.openCamera({
+            width,
+            height,
+            cropping: true,
+            cropperCircleOverlay: cropCircle,
+          }).then((data) => {
+            if (currentImageSelection === 1) {
+              setProfile({ ...profile, thumbnail: data.path })
+              setProfileImageChanged(true)
+            } else {
+              setProfile({ ...profile, background_thumbnail: data.path })
+              setBackgroundImageChanged(true)
+            }
+          }).catch((e) => {
+            Alert.alert(e)
+          });
+        })
+        break;
+      case RESULTS.LIMITED:
+        console.log('The permission is limited: some actions are possible');
+        break;
+      case RESULTS.GRANTED:
+        { let cropCircle = false;
+        if (currentImageSelection === 1) cropCircle = true;
+        ImagePicker.openCamera({
+          width,
+          height,
+          cropping: true,
+          cropperCircleOverlay: cropCircle,
+        }).then((data) => {
+          if (currentImageSelection === 1) {
+            setProfile({ ...profile, thumbnail: data.path })
+            setProfileImageChanged(true)
+          } else {
+            setProfile({ ...profile, background_thumbnail: data.path })
+            setBackgroundImageChanged(true)
+          }
+        }).catch((e) => {
+          Alert.alert(e)
+        }); }
+        break;
+      case RESULTS.BLOCKED:
+        console.log('The permission is denied and not requestable anymore');
+        break;
+    }
+  })
+  .catch((error) => {
+    Alert.alert(error)
+  });
+  };
 
   const onProfileImageClicked = () => {
     setCurrentImageSelection(1);

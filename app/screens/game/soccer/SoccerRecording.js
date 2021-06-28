@@ -701,7 +701,7 @@ export default function SoccerRecording({ navigation, route }) {
                         const body = [
                           {
                             verb: lastVerb,
-                            timestamp: lastTimeStamp * 1000,
+                            timestamp: lastTimeStamp,
                             team_id: selectedTeam,
                           },
                         ];

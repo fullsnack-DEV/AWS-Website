@@ -1,22 +1,16 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-
-} from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  widthPercentageToDP as wp,
-
-} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Dash from 'react-native-dash';
 
 import images from '../../Constants/ImagePath';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 import {
-  soccerGamePlayerStatusStats, soccerGamePlayStats, soccerGamePlayStatsImage,
+  soccerGamePlayerStatusStats,
+  soccerGamePlayStats,
+  soccerGamePlayStatsImage,
   getGameConvertMinsToTime,
   getGameDateTimeInHMSformat,
   getGameTimeAgo,
@@ -29,107 +23,124 @@ export default function TCGameScoreRight({
   recordData,
   style,
 }) {
-  const getScoreText = (firstTeamScore = recordData?.scoreboard?.home_team, secondTeamScore = recordData?.scoreboard?.away_team) => {
-    const isGreterTeam = firstTeamScore > secondTeamScore ? 1 : 2;
-    let firstTeamColor = colors.lightBlackColor
-    let secondTeamColor = colors.lightBlackColor
-    if (firstTeamScore !== secondTeamScore) {
-      if (isGreterTeam === 1) firstTeamColor = colors.themeColor
-      if (isGreterTeam === 2) secondTeamColor = colors.themeColor
-    }
-    return (
-      <View style={{ width: wp(100), backgroundColor: colors.whiteColor }}>
+  const getScoreText = (
+    homeTeamScore = recordData?.scoreboard?.home_team,
+    awayTeamScore = recordData?.scoreboard?.away_team,
+  ) => (
+    <View style={{ width: wp(100), backgroundColor: colors.whiteColor }}>
+      <Text
+          style={{
+            textAlign: 'center',
+            fontFamily: fonts.RLight,
+            fontSize: 20,
+            color: colors.lightBlackColor,
+            backgroundColor: 'transparent',
+            alignSelf: 'center',
+            bottom: 0,
+          }}>
         <Text
-            style={ {
-              textAlign: 'center',
-              fontFamily: fonts.RLight,
-              fontSize: 20,
-              color: colors.lightBlackColor,
-              backgroundColor: 'transparent',
-              alignSelf: 'center',
-              bottom: 0,
-            } }>
-          <Text style={{ color: secondTeamColor }}>{recordData?.scoreboard?.away_team ?? 0}</Text>{' : '}
-          <Text style={{ color: firstTeamColor }}>{recordData?.scoreboard?.home_team ?? 0}</Text>
+            style={[styles.scoreText, {
+              color:
+                homeTeamScore > awayTeamScore
+                  ? colors.themeColor
+                  : colors.lightBlackColor,
+            }]}>
+          {recordData?.scoreboard?.home_team ?? 0}
         </Text>
-      </View>
-    )
-  }
+        {' : '}
+        <Text
+            style={[styles.scoreText, {
+              color:
+                homeTeamScore < awayTeamScore
+                  ? colors.themeColor
+                  : colors.lightBlackColor,
+            }]}>
+          {recordData?.scoreboard?.away_team ?? 0}
+        </Text>
+      </Text>
+    </View>
+    );
   return (
     <View style={style}>
       <View style={{ ...styles.headerView, backgroundColor }}>
-        <View style={ styles.leftBlankView }>
+        <View style={styles.leftBlankView}>
           <Text
-            style={ { fontFamily: fonts.RBold, fontSize: 12, textAlign: 'right' } }>
+            style={{ fontFamily: fonts.RBold, fontSize: 12, textAlign: 'right' }}>
             {getGameConvertMinsToTime(recordData?.minutes ?? 0)}
           </Text>
           <Text
-            style={ {
+            style={{
               fontFamily: fonts.RLight,
               fontSize: 12,
               color: colors.darkGrayColor,
-            } }>
+            }}>
             {getGameDateTimeInHMSformat(recordData?.timestamp)}
           </Text>
         </View>
-        <View style={ styles.centerView }>
+        <View style={styles.centerView}>
           <Dash
-            style={ {
+            style={{
               width: 1,
               height: 70,
               flexDirection: 'column',
-            } }
-            dashColor={ colors.lightgrayColor }
+            }}
+            dashColor={colors.lightgrayColor}
           />
         </View>
-        <View style={ styles.rightView }>
-          <View style={{
-            width: '20%',
-            alignItems: 'flex-start',
-            left: 10,
-          }}>
+        <View style={styles.rightView}>
+          <View
+            style={{
+              width: '20%',
+              alignItems: 'flex-start',
+              left: 10,
+            }}>
             <View style={styles.gameRecordButton}>
               <FastImage
-              source={ soccerGamePlayStatsImage[recordData?.verb] }
-              style={ [styles.gameRecordImg, { height: 16, width: 16 }] }
-            />
+                source={soccerGamePlayStatsImage[recordData?.verb]}
+                style={[styles.gameRecordImg, { height: 16, width: 16 }]}
+              />
             </View>
           </View>
-          <Text style={ styles.rightPlayerText } numberOfLines={ 3 }>
+          <Text style={styles.rightPlayerText} numberOfLines={3}>
             {gameData?.away_team?.group_name ?? ''}
             <Text style={{ fontFamily: fonts.RMedium }}>
-              {' '}{soccerGamePlayStats[recordData?.verb]}
+              {' '}
+              {soccerGamePlayStats[recordData?.verb]}
             </Text>
           </Text>
           <View style={{ width: '22%' }}>
             <FastImage
-                resizeMode={'cover'}
-              source={gameData?.away_team?.thumbnail ? { uri: gameData?.away_team?.thumbnail } : images.profilePlaceHolder }
-              style={ styles.rightProfileImg }
+              resizeMode={'cover'}
+              source={
+                gameData?.away_team?.thumbnail
+                  ? { uri: gameData?.away_team?.thumbnail }
+                  : images.profilePlaceHolder
+              }
+              style={styles.rightProfileImg}
             />
           </View>
         </View>
       </View>
       {!(recordData?.verb in soccerGamePlayerStatusStats) && getScoreText()}
       {editor && (
-        <View style={ styles.editorView }>
+        <View style={styles.editorView}>
           <Dash
-            style={ {
+            style={{
               width: 1,
               height: 30,
               flexDirection: 'column',
-            } }
-            dashColor={ colors.lightgrayColor }
+            }}
+            dashColor={colors.lightgrayColor}
           />
           <View
-            style={ {
+            style={{
               width: '100%',
               justifyContent: 'space-around',
               alignItems: 'space-around',
               position: 'absolute',
-            } }>
-            <Text style={ styles.recordedBy }>
-              Recorded by {recordData?.recorded_by_team_name ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
+            }}>
+            <Text style={styles.recordedBy}>
+              Recorded by {`${recordData?.recorded_by?.first_name } ${ recordData?.recorded_by?.last_name}` ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
             </Text>
           </View>
         </View>
@@ -139,7 +150,6 @@ export default function TCGameScoreRight({
 }
 
 const styles = StyleSheet.create({
-
   centerView: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -212,5 +222,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     width: wp('49%'),
+  },
+  scoreText: {
+    color: colors.lightBlackColor,
   },
 });

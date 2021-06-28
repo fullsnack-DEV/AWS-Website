@@ -69,6 +69,7 @@ export default function SoccerRecordList({ route }) {
         }
       })
       getGameMatchRecords(gameId, authContext).then((res) => {
+        console.table(res.payload)
         setMatchRecords(res.payload);
       }).finally(() => setLoading(false));
     }
@@ -154,7 +155,7 @@ export default function SoccerRecordList({ route }) {
   const onSelectEditDate = (date) => {
     setShowEditDateTimeModal(false);
     setTimeout(() => {
-      const timestamp = (date.getTime()) / 1000;
+      const timestamp = Number((date.getTime()) / 1000).toFixed(0);
       setFullScreenLoading(true);
       patchGameRecord(gameData?.game_id, selectedRecord?.record_id, { timestamp, verb: selectedRecord?.verb }, authContext).then(() => {
         refreshGameAndRecords(gameData?.game_id);
