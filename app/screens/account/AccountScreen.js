@@ -202,6 +202,7 @@ export default function AccountScreen({ navigation, route }) {
 
           console.log('get data Promise resolved Called..');
         })
+
         // eslint-disable-next-line prefer-promise-reject-errors
         .catch(() => reject('error'));
     });

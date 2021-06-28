@@ -380,6 +380,9 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
 
   backgroundGrayPlceholder: require('../assets/images/background_placeholder.png'),
 
+  challengerBadge: require('../assets/images/challenger_badge.png'),
+  challengeeBadge: require('../assets/images/challengee_badge.png'),
+
 };
 
 export default images;

@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 import React, {
   useState, useEffect, useLayoutEffect, useRef, useContext,
 } from 'react';
@@ -14,6 +15,9 @@ import {
 
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
+import {
+  check, PERMISSIONS, RESULTS, request,
+ } from 'react-native-permissions';
 
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
@@ -121,15 +125,59 @@ export default function CreateMemberProfileForm1({ navigation }) {
       actionSheet.current.show();
     }, 0)
   }
+  // const openCamera = (width = 400, height = 400) => {
+  //   ImagePicker.openCamera({
+  //     width,
+  //     height,
+  //     cropping: true,
+  //   }).then((data) => {
+  //     setMemberInfo({ ...memberInfo, full_image: data.path })
+  //   });
+  // }
+
   const openCamera = (width = 400, height = 400) => {
-    ImagePicker.openCamera({
-      width,
-      height,
-      cropping: true,
-    }).then((data) => {
-      setMemberInfo({ ...memberInfo, full_image: data.path })
-    });
-  }
+    check(PERMISSIONS.IOS.CAMERA)
+  .then((result) => {
+    switch (result) {
+      case RESULTS.UNAVAILABLE:
+        Alert.alert('This feature is not available (on this device / in this context)')
+        break;
+      case RESULTS.DENIED:
+        request(PERMISSIONS.IOS.CAMERA).then(() => {
+          ImagePicker.openCamera({
+            width,
+            height,
+            cropping: true,
+          }).then((data) => {
+            setMemberInfo({ ...memberInfo, full_image: data.path })
+          }).catch((e) => {
+            Alert.alert(e)
+          });
+        })
+        break;
+      case RESULTS.LIMITED:
+        console.log('The permission is limited: some actions are possible');
+        break;
+      case RESULTS.GRANTED:
+        ImagePicker.openCamera({
+          width,
+          height,
+          cropping: true,
+        }).then((data) => {
+          setMemberInfo({ ...memberInfo, full_image: data.path })
+        }).catch((e) => {
+          Alert.alert(e)
+        });
+        break;
+      case RESULTS.BLOCKED:
+        console.log('The permission is denied and not requestable anymore');
+        break;
+    }
+  })
+  .catch((error) => {
+    Alert.alert(error)
+  });
+  };
   const openImagePicker = (width = 400, height = 400) => {
     ImagePicker.openPicker({
       width,

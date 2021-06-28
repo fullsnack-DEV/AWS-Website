@@ -264,7 +264,7 @@ export default function LocalHomeScreen({ navigation, route }) {
           let upcomingArr = [];
 
           setloading(false);
-          if (res.responses) {
+          if (res?.responses) {
             const arr = [];
             res.responses[0].hits.hits.map((e) => {
               arr.push(e._source.away_team);
