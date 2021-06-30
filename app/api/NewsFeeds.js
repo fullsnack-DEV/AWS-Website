@@ -20,9 +20,29 @@ export const getReactions = async (params, authContext) => makeAPIRequest({
   authContext,
 });
 
+export const deleteReactions = async (reaction_id, authContext) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}/reactions/${reaction_id}`,
+  authContext,
+});
+
 export const createReaction = async (data, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}/reactions`,
+  data,
+  authContext,
+});
+
+export const EditReaction = async (reaction_id, data, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}/reactions/${reaction_id}`,
+  data,
+  authContext,
+});
+
+export const reportActivity = async (data, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/report`,
   data,
   authContext,
 });

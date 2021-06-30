@@ -2,8 +2,8 @@
 /* eslint-disable array-callback-return */
 import React, { useEffect } from 'react';
 import {
-  FlatList, Image, StyleSheet, Text, View,
-} from 'react-native';
+ FlatList, Image, StyleSheet, Text, View,
+ } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../../Constants/Fonts';
@@ -24,7 +24,9 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
     if (scoreDataSource?.scoreboard) {
       if (Object.keys(scoreDataSource?.scoreboard).length > 0) {
         const reversSets = scoreDataSource?.scoreboard?.sets?.reverse();
-        for (let i = 0; i < scoreDataSource?.score_rules?.total_sets; i++) {
+
+        // scoreDataSource?.score_rules?.total_sets
+        for (let i = 0; i < 3; i++) {
           if (reversSets[i]) {
             setsData.push(reversSets[i]);
           } else {
@@ -44,24 +46,25 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
   }, [scoreDataSource]);
 
   const renderScores = ({ item, index }) => {
+    console.log('Render score item:=>', item);
     if (item?.s_id) {
       if (item?.s_id === scoreDataSource?.scoreboard?.game_inprogress?.s_id) {
         return (
           <View style={{ alignItems: 'center' }}>
             <Text style={styles.scoreTitle}>{index + 1}</Text>
             <LinearGradient
-                  colors={[colors.yellowColor, colors.themeColor]}
-                  style={styles.scoreView}>
+              colors={[colors.yellowColor, colors.themeColor]}
+              style={styles.scoreView}>
               <Text style={[styles.player1Score, { color: colors.whiteColor }]}>
                 {item?.s_id ? item?.home_team_win_count : '-'}
               </Text>
-              <TCThinDivider/>
+              <TCThinDivider />
               <Text style={[styles.player2Score, { color: colors.whiteColor }]}>
                 {item?.s_id ? item?.away_team_win_count : '-'}
               </Text>
             </LinearGradient>
           </View>
-        )
+        );
       }
     }
     return (
@@ -71,30 +74,33 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
           <Text style={styles.player1Score}>
             {item?.s_id ? item?.home_team_win_count : '-'}
           </Text>
-          <TCThinDivider/>
+          <TCThinDivider />
           <Text style={styles.player2Score}>
             {item?.s_id ? item?.away_team_win_count : '-'}
           </Text>
         </View>
       </View>
-    )
-  }
+    );
+  };
 
   const getHomeGameScore = () => {
     console.log('end_datetime::', scoreDataSource?.scoreboard?.sets);
     if (scoreDataSource?.scoreboard?.sets?.[0].end_datetime) {
-      return '0'
+      return '0';
     }
-    return scoreDataSource?.scoreboard?.sets?.[0].home_team_win_count || '0'
-  }
+    return scoreDataSource?.scoreboard?.sets?.[0].home_team_win_count || '0';
+  };
 
   const getAwayGameScore = () => {
-    console.log('end_datetime::', scoreDataSource?.scoreboard?.sets?.[0].end_datetime);
+    console.log(
+      'end_datetime::',
+      scoreDataSource?.scoreboard?.sets?.[0].end_datetime,
+    );
     if (scoreDataSource?.scoreboard?.sets?.[0].end_datetime) {
-      return '0'
+      return '0';
     }
-    return scoreDataSource?.scoreboard?.sets?.[0].away_team_win_count || '0'
-  }
+    return scoreDataSource?.scoreboard?.sets?.[0].away_team_win_count || '0';
+  };
 
   const renderCurruentScores = ({ index }) => (
     <View style={{ alignItems: 'center' }}>
@@ -108,15 +114,18 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
           style={
             (index === 0 && homeTeamMatchPoint > awayTeamMatchPoint)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count : 0)
-                > (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count : 0))
+              && (scoreDataSource?.scoreboard?.sets?.length
+                ? scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count
+                : 0)
+                > (scoreDataSource?.scoreboard?.sets?.length
+                  ? scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count
+                  : 0))
             || (index === 2 && homeTeamGamePoint > awayTeamGamePoint)
               ? [styles.player1Score, { color: colors.themeColor }]
               : styles.player1Score
           }>
           {(index === 0 && `${homeTeamMatchPoint}`)
-            || (index === 1
-              && getHomeGameScore())
+            || (index === 1 && getHomeGameScore())
             || (index === 2 && `${homeTeamGamePoint}`)}
         </Text>
         <TCThinDivider />
@@ -139,15 +148,18 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
           style={
             (index === 0 && homeTeamMatchPoint < awayTeamMatchPoint)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count : 0)
-                < (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count : 0))
+              && (scoreDataSource?.scoreboard?.sets?.length
+                ? scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count
+                : 0)
+                < (scoreDataSource?.scoreboard?.sets?.length
+                  ? scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count
+                  : 0))
             || (index === 2 && homeTeamGamePoint < awayTeamGamePoint)
               ? [styles.player2Score, { color: colors.themeColor }]
               : styles.player2Score
           }>
           {(index === 0 && `${awayTeamMatchPoint}`)
-            || (index === 1
-              && getAwayGameScore())
+            || (index === 1 && getAwayGameScore())
             || (index === 2 && `${awayTeamGamePoint}`)}
         </Text>
       </View>
@@ -155,21 +167,21 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
   );
 
   const calculateMatchScore = () => {
-    homeTeamMatchPoint = 0
-    awayTeamMatchPoint = 0
+    homeTeamMatchPoint = 0;
+    awayTeamMatchPoint = 0;
     let homePoint = 0;
     let awayPoint = 0;
     // eslint-disable-next-line no-unused-expressions
     scoreDataSource?.scoreboard?.sets.map((e) => {
       if (e.winner) {
-        if (e.winner === scoreDataSource.home_team.user_id) {
+        if (e.winner === (scoreDataSource.home_team.user_id || scoreDataSource.home_team.group_id)) {
           homePoint += 1;
         } else {
           awayPoint += 1;
         }
       }
-      homeTeamMatchPoint = homePoint
-      awayTeamMatchPoint = awayPoint
+      homeTeamMatchPoint = homePoint;
+      awayTeamMatchPoint = awayPoint;
     });
   };
   const calculateGameScore = () => {
@@ -214,11 +226,19 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
         <Text style={styles.centerTitle}>Player</Text>
         <View style={styles.centerScoreView}>
           <Image
-            source={scoreDataSource?.home_team?.thumbnail ? { uri: scoreDataSource?.home_team?.thumbnail } : images.profilePlaceHolder}
+            source={
+              scoreDataSource?.home_team?.thumbnail
+                ? { uri: scoreDataSource?.home_team?.thumbnail }
+                : images.profilePlaceHolder
+            }
             style={styles.player1Image}
           />
           <Image
-            source={scoreDataSource?.away_team?.thumbnail ? { uri: scoreDataSource?.away_team?.thumbnail } : images.profilePlaceHolder}
+            source={
+              scoreDataSource?.away_team?.thumbnail
+                ? { uri: scoreDataSource?.away_team?.thumbnail }
+                : images.profilePlaceHolder
+            }
             style={styles.player2Image}
           />
         </View>
@@ -234,7 +254,7 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
           )}
           keyExtractor={(item, index) => index.toString()}
           style={{ alignSelf: 'center' }}
-         />
+        />
       </View>
     </View>
   );

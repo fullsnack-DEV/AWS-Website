@@ -129,7 +129,7 @@ export default function EditEventScreen({ navigation, route }) {
   const [aboutDesc, setAboutDesc] = useState(
     `${aboutDescription} ${aboutDescription2}`,
   );
-  const [singleSelectEventColor, setSingleSelectEventColor] = useState();
+  const [singleSelectEventColor, setSingleSelectEventColor] = useState(route.params.data.color ?? '');
   const [toggle, setToggle] = useState(route.params.data.allDay);
   const [eventStartDateTime, setEventStartdateTime] = useState(
     fromDate || getNearDateTime(new Date()),
@@ -393,9 +393,11 @@ export default function EditEventScreen({ navigation, route }) {
                 allDay: toggle,
               };
               let rules = '';
+              console.log('selectWeekMonth:=>', selectWeekMonth);
               if (
                 selectWeekMonth === 'Daily'
                 || selectWeekMonth === 'Weekly'
+                || selectWeekMonth === 'Monthly'
                 || selectWeekMonth === 'Yearly'
               ) {
                 rules = selectWeekMonth.toUpperCase();
@@ -408,11 +410,11 @@ export default function EditEventScreen({ navigation, route }) {
                   .toUpperCase()};BYSETPOS=${countNumberOfWeeks()}`;
               } else if (
                 selectWeekMonth
-                === `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`
+                === `Monthly on ${ordinal_suffix_of(new Date().getDate())}`
               ) {
                 rules = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`;
               }
-              if (selectWeekMonth !== 'Does not repeat') {
+              if (selectWeekMonth !== '') {
                 params.untilDate = parseInt(
                   new Date(eventUntilDateTime).getTime() / 1000,
                 ).toFixed(0);
@@ -562,27 +564,28 @@ export default function EditEventScreen({ navigation, route }) {
           <EventMonthlySelection
             title={strings.repeat}
             dataSource={[
-              { label: 'Does not repeat', value: 'Does not repeat' },
+
               { label: 'Daily', value: 'Daily' },
               { label: 'Weekly', value: 'Weekly' },
               { label: 'Monthly', value: 'Monthly' },
               {
-                label: `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
-                value: `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
               },
               {
-                label: `Monthly on day ${new Date().getDate()}`,
-                value: `Monthly on day ${new Date().getDate()}`,
+                label: `Monthly on ${new Date().getDate()}`,
+                value: `Monthly on ${new Date().getDate()}`,
               },
               { label: 'Yearly', value: 'Yearly' },
             ]}
             // placeholder={strings.selectTimePlaceholder}
+            placeholder={'Does not repeat'}
             value={selectWeekMonth}
             onValueChange={(value) => {
               setSelectWeekMonth(value);
             }}
           />
-          {selectWeekMonth !== 'Does not repeat' && (
+          {selectWeekMonth !== '' && (
             <EventTimeSelectItem
               title={strings.until}
               toggle={!toggle}

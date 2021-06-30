@@ -1184,11 +1184,12 @@ export default function ScheduleScreen({ navigation }) {
                       }
                     }}
                     onItemPress={async (item) => {
+                      console.log('Clicked ITEM:=>', item);
                       if (activeScreen) {
                         const entity = authContext.entity;
                         if (item?.game_id) {
                           if (item?.game?.sport) {
-                            const gameHome = getGameHomeScreen(item.game.sport);
+                            const gameHome = getGameHomeScreen(item.game.sport.replace(' ', '_'));
                             navigation.navigate(gameHome, {
                               gameId: item?.game_id,
                             });
