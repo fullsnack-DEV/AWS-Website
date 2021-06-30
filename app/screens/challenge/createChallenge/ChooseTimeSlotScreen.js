@@ -337,6 +337,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
   };
 
   const onFromDone = (date) => {
+    setFromPickerVisible(false);
     setFrom(date.getTime());
 
     const dt = date;
@@ -344,10 +345,10 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
 
     setTo(dt.getTime());
-    setFromPickerVisible(false);
   };
 
   const onToDone = (date) => {
+    setToPickerVisible(false);
     console.log('To Date:=>', date);
     setTo(date.getTime());
 
@@ -356,7 +357,6 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     dt.setMinutes(dt.getMinutes() - settingObject?.game_duration?.totalMinutes);
 
     setFrom(dt.getTime());
-    setToPickerVisible(false);
   };
 
   const maxFromDate = () => {

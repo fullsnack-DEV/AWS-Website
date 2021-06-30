@@ -46,6 +46,7 @@ import GameFeed from '../../../common/summary/GameFeed';
 
 import images from '../../../../../Constants/ImagePath';
 import { ImageUploadContext } from '../../../../../context/ImageUploadContext';
+import GameStatus from '../../../../../Constants/GameStatus';
 
 const Summary = ({
   gameData,
@@ -407,7 +408,7 @@ const Summary = ({
   );
 
   const renderScoreRecordingButton = useMemo(
-    () => (isAdmin || isRefereeAdmin || isScorekeeperAdmin) && (
+    () => ((isAdmin || isRefereeAdmin || isScorekeeperAdmin) && gameData.status !== GameStatus.ended) && (
       <TCGradientButton
           onPress={() => navigation.navigate('SoccerRecording', { gameId: gameData?.game_id })
           }
@@ -424,13 +425,7 @@ const Summary = ({
           }}
         />
       ),
-    [
-      gameData?.game_id,
-      isAdmin,
-      isRefereeAdmin,
-      isScorekeeperAdmin,
-      navigation,
-    ],
+    [gameData?.game_id, gameData.status, isAdmin, isRefereeAdmin, isScorekeeperAdmin, navigation],
   );
 
   const renderLeaveAReviewButton = useMemo(

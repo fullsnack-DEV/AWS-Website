@@ -6,6 +6,7 @@ const REVIEW_EXPIRY_DAYS = 5;
 const GAME_HOME = {
   soccer: 'SoccerHome',
   tennis: 'TennisHome',
+  tennis_double: 'TennisHome',
 }
 
 const getGameHomeScreen = (sportName) => GAME_HOME[sportName?.toLowerCase()];

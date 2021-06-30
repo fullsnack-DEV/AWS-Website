@@ -22,6 +22,7 @@ export const getChallengeDetail = (challengeID, authContext) => {
         || ReservationStatus.accepted === response.payload[0].status
         || ReservationStatus.restored === response.payload[0].status
         || ReservationStatus.cancelled === response.payload[0].status
+        || ReservationStatus.completed === response.payload[0].status
         || ReservationStatus.offered === response.payload[0].status) {
         Obj.challengeObj = response.payload
         Obj.screenName = 'ChallengePreviewScreen'

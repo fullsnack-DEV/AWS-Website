@@ -9,6 +9,7 @@ const ReservationStatus = {
   pendingpayment: 'pendingpayment',
   pendingrequestpayment: 'pendingrequestpayment',
   requestcancelled: 'requestcancelled',
+  completed: 'completed',
 };
 
 export default ReservationStatus

@@ -179,16 +179,16 @@ export default function TennisRecording({ navigation, route }) {
       if (data?.scoreboard?.game_inprogress && data?.scoreboard?.game_inprogress?.serving_team_id) {
         const tempServingID = data?.scoreboard?.game_inprogress?.serving_team_id
         if (data?.scoreboard?.game_inprogress?.winner || data?.scoreboard?.game_inprogress?.end_datetime) {
-          if (tempServingID === data?.home_team?.user_id) {
-            setServingTeamID(data?.away_team?.user_id);
+          if (tempServingID === (data?.home_team?.user_id || data?.home_team?.group_id)) {
+            setServingTeamID(data?.away_team?.user_id ?? data?.away_team?.group_id);
           } else {
-            setServingTeamID(data?.home_team?.user_id);
+            setServingTeamID(data?.home_team?.user_id ?? data?.home_team?.group_id);
           }
         } else {
           setServingTeamID(tempServingID);
         }
       } else {
-        setServingTeamID(data?.home_team?.user_id);
+        setServingTeamID(data?.home_team?.user_id ?? data?.home_team?.group_id);
       }
     }
   };
@@ -200,7 +200,7 @@ export default function TennisRecording({ navigation, route }) {
     console.log('SETS::->', gameObj?.scoreboard?.sets);
     (gameObj?.scoreboard?.sets || []).map((e) => {
       if (e?.winner) {
-        if (e.winner === gameObj?.home_team?.user_id) {
+        if (e.winner === (gameObj?.home_team?.user_id || gameObj.home_team.group_id)) {
           homePoint += 1;
           console.log('SETS NO::->', homePoint);
           // setHomeMatchPoint(homeTeamMatchPoint + 1)
@@ -371,10 +371,10 @@ export default function TennisRecording({ navigation, route }) {
   const getMessageText = () => {
     let name;
     let verbString;
-    if (gameObj?.home_team?.user_id === selectedTeam) {
-      name = `${gameObj?.home_team?.first_name} ${gameObj?.home_team?.last_name}`
+    if ((gameObj?.home_team?.user_id || gameObj.home_team.group_id) === selectedTeam) {
+      name = gameObj.home_team.first_name ? `${gameObj.home_team.first_name} ${gameObj.home_team.last_name}` : `${gameObj.home_team.group_name}`
     } else {
-      name = `${gameObj?.away_team?.first_name} ${gameObj?.away_team?.last_name}`
+      name = gameObj.away_team.first_name ? `${gameObj.away_team.first_name} ${gameObj.away_team.last_name}` : `${gameObj.away_team.group_name}`
     }
     if (lastVerb === GameVerb.Score) {
       verbString = 'score a point'
@@ -625,7 +625,7 @@ export default function TennisRecording({ navigation, route }) {
     }
   }
   const canDecreaseRecentGoal = () => {
-    if (selectedTeam === gameObj.home_team.user_id) {
+    if (selectedTeam === (gameObj?.home_team?.user_id || gameObj?.home_team?.group_id)) {
       if (homeTeamGamePoint <= 0) {
         if (gameObj?.scoreboard?.sets?.reverse()?.[0].home_team_win_count <= 0) {
           return false
@@ -663,14 +663,14 @@ export default function TennisRecording({ navigation, route }) {
                         : images.profilePlaceHolder
                     }
                     style={
-                      servingTeamID === gameObj.home_team.user_id
+                      servingTeamID === (gameObj?.home_team?.user_id || gameObj?.home_team?.group_id)
                         ? styles.profileImg
                         : [styles.profileImg, { borderColor: colors.themeColor }]
                     }
                   />
                 </View>
                 <Text style={styles.leftText} numberOfLines={2}>
-                  {gameObj.home_team.first_name} {gameObj.home_team.last_name}
+                  {gameObj.home_team.first_name ? `${gameObj.home_team.first_name} ${gameObj.home_team.last_name}` : `${gameObj.home_team.group_name}`}
                 </Text>
               </View>
 
@@ -704,11 +704,11 @@ export default function TennisRecording({ navigation, route }) {
                                 'You can not change serving player during game.',
                               );
                             } else if (
-                              gameObj?.home_team?.user_id === servingTeamID
+                              (gameObj?.home_team?.user_id || gameObj?.home_team?.group_id) === servingTeamID
                             ) {
-                              setServingTeamID(gameObj?.away_team?.user_id);
+                              setServingTeamID(gameObj?.away_team?.user_id ?? gameObj?.away_team?.group_id);
                             } else {
-                              setServingTeamID(gameObj?.home_team?.user_id);
+                              setServingTeamID(gameObj?.home_team?.user_id ?? gameObj?.home_team?.group_id);
                             }
                             setIsServingPressed(true)
                             console.log('OK Pressed');
@@ -725,7 +725,7 @@ export default function TennisRecording({ navigation, route }) {
                     <Text style={styles.centerText}>{homeTeamMatchPoint}</Text>
                     <Image
                       source={
-                        servingTeamID === gameObj.home_team.user_id
+                        servingTeamID === (gameObj?.home_team?.user_id || gameObj?.home_team?.group_id)
                           ? images.tennisArrowLeft
                           : images.tennisArrowRight
                       }
@@ -738,7 +738,7 @@ export default function TennisRecording({ navigation, route }) {
 
               <View style={styles.rightView}>
                 <Text style={styles.rightText} numberOfLines={2}>
-                  {gameObj.away_team.first_name} {gameObj.away_team.last_name}
+                  {gameObj.away_team.first_name ? `${gameObj.away_team.first_name} ${gameObj.away_team.last_name}` : `${gameObj.away_team.group_name}`}
                 </Text>
                 <View style={styles.profileShadow}>
                   <Image
@@ -748,7 +748,7 @@ export default function TennisRecording({ navigation, route }) {
                         : images.profilePlaceHolder
                     }
                     style={
-                      servingTeamID === gameObj.away_team.user_id
+                      servingTeamID === (gameObj?.away_team?.user_id || gameObj?.away_team?.group_id)
                         ? styles.profileImg
                         : [styles.profileImg, { borderColor: colors.themeColor }]
                     }
@@ -936,8 +936,8 @@ export default function TennisRecording({ navigation, route }) {
                   onPress={() => {
                     setPlayer2Selected(false);
                     setPlayer1Selected(true);
-                    setSelectedTeam(gameObj.home_team.user_id);
-                    setActionByTeamID(gameObj.home_team.user_id);
+                    setSelectedTeam(gameObj?.home_team?.user_id ?? gameObj?.home_team?.group_id);
+                    setActionByTeamID(gameObj?.home_team?.user_id ?? gameObj?.home_team?.group_id);
                   }}>
                       {player1Selected ? (
                         <LinearGradient
@@ -952,8 +952,7 @@ export default function TennisRecording({ navigation, route }) {
                         style={styles.playerProfile}
                       />
                           <Text style={styles.selectedPlayerNameText}>
-                            {gameObj?.home_team?.first_name}{' '}
-                            {gameObj?.home_team?.last_name}
+                            {gameObj?.home_team?.first_name ? `${gameObj?.home_team?.first_name} ${gameObj?.home_team?.last_name}` : `${gameObj?.home_team?.group_name}`}
                           </Text>
                         </LinearGradient>
                       ) : (
@@ -967,8 +966,8 @@ export default function TennisRecording({ navigation, route }) {
                         style={styles.playerProfile}
                       />
                           <Text style={styles.playerNameText}>
-                            {gameObj?.home_team?.first_name}{' '}
-                            {gameObj?.home_team?.last_name}
+                            {gameObj?.home_team?.first_name ? `${gameObj?.home_team?.first_name} ${gameObj?.home_team?.last_name}` : `${gameObj?.home_team?.group_name}`}
+
                           </Text>
                         </View>
                       )}
@@ -979,8 +978,8 @@ export default function TennisRecording({ navigation, route }) {
                   onPress={() => {
                     setPlayer1Selected(false);
                     setPlayer2Selected(true);
-                    setSelectedTeam(gameObj.away_team.user_id);
-                    setActionByTeamID(gameObj.away_team.user_id);
+                    setSelectedTeam(gameObj?.away_team?.user_id ?? gameObj?.away_team?.group_id);
+                    setActionByTeamID(gameObj?.away_team?.user_id ?? gameObj?.away_team?.group_id);
                   }}>
                       {player2Selected ? (
                         <LinearGradient
@@ -995,8 +994,8 @@ export default function TennisRecording({ navigation, route }) {
                         style={styles.playerProfile}
                       />
                           <Text style={styles.selectedPlayerNameText}>
-                            {gameObj.away_team.first_name}{' '}
-                            {gameObj.away_team.last_name}
+                            {gameObj?.away_team?.first_name ? `${gameObj?.away_team?.first_name} ${gameObj?.away_team?.last_name}` : `${gameObj?.away_team?.group_name}`}
+
                           </Text>
                         </LinearGradient>
                       ) : (
@@ -1010,8 +1009,8 @@ export default function TennisRecording({ navigation, route }) {
                         style={styles.playerProfile}
                       />
                           <Text numberOfLines={2} style={styles.playerNameText}>
-                            {gameObj.away_team.first_name}{' '}
-                            {gameObj.away_team.last_name}
+                            {gameObj?.away_team?.first_name ? `${gameObj?.away_team?.first_name} ${gameObj?.away_team?.last_name}` : `${gameObj?.away_team?.group_name}`}
+
                           </Text>
                         </View>
                       )}

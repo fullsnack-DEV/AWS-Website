@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-escape */
-import React from 'react';
+import React, { useContext } from 'react';
 import {
-    StyleSheet, Text, View,
+    StyleSheet, Text, View, Alert,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
@@ -12,21 +12,46 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import { widthPercentageToDP as wp } from '../../utils';
 import useRenderCount from '../../hooks/useRenderCount';
+import AuthContext from '../../auth/context';
+
+import {
+  reportActivity,
+} from '../../api/NewsFeeds';
+import strings from '../../Constants/String';
 
 const optionSelectionColor = colors.optionSelectionColor
 const ReportCommentModal = ({
     commentData,
     reportCommentModalRef,
   }) => {
+    const authContext = useContext(AuthContext);
+
     useRenderCount('Report Comment Modal')
     const menuList = [
-        { key: 'report', title: 'Report This Comment' },
-        { key: 'block', title: 'Block' },
-        { key: 'cancelFollowing', title: ' Cancel Following' },
+        { key: 'report', title: 'Report this comment' },
+        // { key: 'block', title: 'Block' },
+        // { key: 'cancelFollowing', title: ' Cancel Following' },
     ]
 
     const onOptionPress = (optionKey) => {
         console.log(optionKey)
+        if (optionKey === 'report') {
+          const bodyParams = {
+            report_type: 'comment',
+            activity_id: commentData?.activity_id,
+            reaction_id: commentData?.id,
+          };
+          reportActivity(bodyParams, authContext)
+            .then((response) => {
+              // eslint-disable-next-line no-unused-expressions
+              reportCommentModalRef?.current?.close()
+              Alert.alert(strings.alertmessagetitle, 'Your report request received succesfully.');
+              console.log('Report api response:=>', response);
+            })
+            .catch((e) => {
+              Alert.alert('', e.messages);
+            });
+        }
     }
     let userName = '';
     let userProfile = '';

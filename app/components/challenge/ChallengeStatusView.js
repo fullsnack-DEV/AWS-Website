@@ -220,6 +220,17 @@ return (
       </View>
       )}
 
+    {status === ReservationStatus.completed && (
+      <View>
+        <Text style={[styles.statusTitleText, { color: colors.blueColorCard }]}>
+          {'COMPLETED'}
+        </Text>
+        <Text style={styles.statusDescription}>
+          {'The match has been completed.'}
+        </Text>
+      </View>
+      )}
+
     {isSender && status === ReservationStatus.cancelled && (
       <View>
         <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>

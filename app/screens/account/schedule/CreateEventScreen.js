@@ -400,6 +400,7 @@ export default function CreateEventScreen({ navigation, route }) {
                 if (
                   selectWeekMonth === 'Daily'
                   || selectWeekMonth === 'Weekly'
+                  || selectWeekMonth === 'Monthly'
                   || selectWeekMonth === 'Yearly'
                 ) {
                   rule = selectWeekMonth.toUpperCase();
