@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable array-callback-return */
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
  FlatList, Image, StyleSheet, Text, View,
  } from 'react-native';
@@ -44,6 +44,48 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
       }
     }
   }, [scoreDataSource]);
+
+  const calculateMatchScore = useCallback(() => {
+    homeTeamMatchPoint = 0;
+    awayTeamMatchPoint = 0;
+    let homePoint = 0;
+    let awayPoint = 0;
+    // eslint-disable-next-line no-unused-expressions
+    scoreDataSource?.scoreboard?.sets.map((e) => {
+      if (e.winner) {
+        if (e.winner === (scoreDataSource.home_team.user_id || scoreDataSource.home_team.group_id)) {
+          homePoint += 1;
+        } else {
+          awayPoint += 1;
+        }
+      }
+      homeTeamMatchPoint = homePoint;
+      awayTeamMatchPoint = awayPoint;
+    });
+  }, [scoreDataSource.home_team.group_id, scoreDataSource.home_team.user_id, scoreDataSource?.scoreboard?.sets])
+
+  const calculateGameScore = useCallback(() => {
+    // eslint-disable-next-line array-callback-return
+    if (
+      scoreDataSource?.scoreboard?.game_inprogress?.winner
+      || scoreDataSource?.scoreboard?.game_inprogress?.end_datetime
+    ) {
+      homeTeamGamePoint = 0;
+      awayTeamGamePoint = 0;
+
+      console.log(
+        'GAME SCORE:',
+        `HOME:${homeTeamGamePoint}AWAY:${awayTeamGamePoint}`,
+      );
+    } else {
+      homeTeamGamePoint = scoreDataSource?.scoreboard?.game_inprogress?.home_team_point;
+      awayTeamGamePoint = scoreDataSource?.scoreboard?.game_inprogress?.away_team_point;
+      console.log(
+        'GAME SCORE:',
+        `HOME:${homeTeamGamePoint}AWAY:${awayTeamGamePoint}`,
+      );
+    }
+  }, [scoreDataSource?.scoreboard?.game_inprogress?.away_team_point, scoreDataSource?.scoreboard?.game_inprogress?.end_datetime, scoreDataSource?.scoreboard?.game_inprogress?.home_team_point, scoreDataSource?.scoreboard?.game_inprogress?.winner])
 
   const renderScores = ({ item, index }) => {
     console.log('Render score item:=>', item);
@@ -165,47 +207,6 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
       </View>
     </View>
   );
-
-  const calculateMatchScore = () => {
-    homeTeamMatchPoint = 0;
-    awayTeamMatchPoint = 0;
-    let homePoint = 0;
-    let awayPoint = 0;
-    // eslint-disable-next-line no-unused-expressions
-    scoreDataSource?.scoreboard?.sets.map((e) => {
-      if (e.winner) {
-        if (e.winner === (scoreDataSource.home_team.user_id || scoreDataSource.home_team.group_id)) {
-          homePoint += 1;
-        } else {
-          awayPoint += 1;
-        }
-      }
-      homeTeamMatchPoint = homePoint;
-      awayTeamMatchPoint = awayPoint;
-    });
-  };
-  const calculateGameScore = () => {
-    // eslint-disable-next-line array-callback-return
-    if (
-      scoreDataSource?.scoreboard?.game_inprogress?.winner
-      || scoreDataSource?.scoreboard?.game_inprogress?.end_datetime
-    ) {
-      homeTeamGamePoint = 0;
-      awayTeamGamePoint = 0;
-
-      console.log(
-        'GAME SCORE:',
-        `HOME:${homeTeamGamePoint}AWAY:${awayTeamGamePoint}`,
-      );
-    } else {
-      homeTeamGamePoint = scoreDataSource?.scoreboard?.game_inprogress?.home_team_point;
-      awayTeamGamePoint = scoreDataSource?.scoreboard?.game_inprogress?.away_team_point;
-      console.log(
-        'GAME SCORE:',
-        `HOME:${homeTeamGamePoint}AWAY:${awayTeamGamePoint}`,
-      );
-    }
-  };
 
   return (
     <View style={[styles.scoreContainer, { marginTop }]}>

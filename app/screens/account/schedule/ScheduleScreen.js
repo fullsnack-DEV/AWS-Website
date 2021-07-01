@@ -345,7 +345,7 @@ export default function ScheduleScreen({ navigation }) {
         });
       return null;
     },
-    [authContext],
+    [authContext, eventData],
   );
 
   // useEffect(() => {

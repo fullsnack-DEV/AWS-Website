@@ -477,8 +477,6 @@ export const parseInviteRequest = async (data) => {
     finalString.notificationTime = toShortTimeFromString(`${data.created_at}+0000`)
   }
 
-  console.log('notificationObject:=>', notificationObject);
-  console.log('final string:=>', finalString);
   return finalString
 }
 

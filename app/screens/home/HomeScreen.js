@@ -4292,14 +4292,26 @@ const HomeScreen = ({ navigation, route }) => {
                 <Text style={[styles.foundText, { fontFamily: fonts.RBold }]}>
                   {`${route?.params?.groupName}`}
                 </Text>
-                <Image
-                  source={
-                    route?.params?.role === 'team'
-                      ? images.teamPatch
-                      : images.clubPatch
-                  }
-                  style={styles.entityPatchImage}
-                />
+                <View
+                  style={{
+                    height: 22,
+                    width: 22,
+                    borderRadius: 44,
+                    borderColor: colors.whiteColor,
+                    borderWidth: 2,
+                    marginLeft: 10,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Image
+                    source={
+                      route?.params?.role === 'team'
+                        ? images.teamPatch
+                        : images.clubPatch
+                    }
+                    style={styles.entityPatchImage}
+                  />
+                </View>
               </View>
               <Text style={[styles.foundText, { fontFamily: fonts.RRegular }]}>
                 {'has been created.'}
@@ -4322,7 +4334,7 @@ const HomeScreen = ({ navigation, route }) => {
                   sportName: route?.params?.entityObj?.sport,
                 });
               }}>
-              <Text style={styles.goTPorofileTitle}>
+              <Text style={styles.goToProfileTitle}>
                 {route?.params?.role === 'club'
                   ? 'OK'
                   : strings.manageChallengeText}
@@ -4754,8 +4766,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 15,
   },
   headerMainContainerStyle: {
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 14,
     paddingVertical: 15,
   },
   cancelImageStyle: {
@@ -4873,8 +4885,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     resizeMode: 'stretch',
     width: '100%',
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   foundText: {
     color: colors.whiteColor,
@@ -4931,11 +4943,7 @@ const styles = StyleSheet.create({
   entityPatchImage: {
     height: 20,
     width: 20,
-    marginLeft: 10,
     resizeMode: 'contain',
-    borderRadius: 40,
-    borderColor: colors.whiteColor,
-    borderWidth: 2,
   },
   doubleTeamImage: {
     height: 150,
