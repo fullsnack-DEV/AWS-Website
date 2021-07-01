@@ -235,7 +235,7 @@ const PlayInModule = ({
       && authContext?.entity?.uid !== currentUserData?.user_id
       && (authContext?.entity?.role === 'user' && 'player')
         === currentUserData?.entity_type
-      && playInObject?.sport_type !== 'multiplayer' && (
+      && !['soccer', 'tennis double'].includes(playInObject?.sport_name?.toLowerCase()) && (
         <TouchableOpacity
           onPress={() => {
             console.log('auth123:=>', authContext);

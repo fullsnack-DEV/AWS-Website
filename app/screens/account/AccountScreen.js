@@ -1650,8 +1650,9 @@ export default function AccountScreen({ navigation, route }) {
               style={styles.goToProfileButton}
               onPress={() => {
                 // Alert.alert('Manage challenge');
+                setIsSportCreateModalVisible(false)
                 navigation.navigate('ManageChallengeScreen', {
-                  sportName: route?.params?.entityObj?.sport,
+                  sportName: route?.params?.createdSportName,
                 });
               }}>
               <Text style={styles.goToProfileTitle}>
