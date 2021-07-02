@@ -69,7 +69,7 @@ import { widthPercentageToDP } from '../utils';
           </Text>
         </View>
         <View style={styles.gameVSView}>
-          {data.userChallenge || data.singlePlayerGame ? (
+          {data.userChallenge || data.user_challenge ? (
             <View style={styles.leftGameView}>
               {data?.home_team?.thumbnail ? (
                 <Image
@@ -107,7 +107,7 @@ import { widthPercentageToDP } from '../utils';
 
           <Text style={styles.vsView}>VS</Text>
 
-          {data?.userChallenge || data?.singlePlayerGame ? (
+          {data?.userChallenge || data?.user_challenge ? (
             <View style={styles.rightGameView}>
               <Text style={styles.rightEntityText} numberOfLines={2}>
                 {data.away_team.full_name}

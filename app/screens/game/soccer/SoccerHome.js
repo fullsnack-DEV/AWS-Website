@@ -65,10 +65,10 @@ const SoccerHome = ({ navigation, route }) => {
           const entity = authContext.entity;
           setUserRole(entity?.role);
           setUserId(entity?.uid);
-          const homeTeamId = res?.payload?.singlePlayerGame
+          const homeTeamId = res?.payload?.user_challenge
             ? res?.payload?.home_team?.user_id
             : res?.payload?.home_team?.group_id;
-          const awayTeamId = res?.payload?.singlePlayerGame
+          const awayTeamId = res?.payload?.user_challenge
             ? res?.payload?.away_team?.user_id
             : res?.payload?.away_team?.group_id;
           const teamIds = [homeTeamId, awayTeamId];

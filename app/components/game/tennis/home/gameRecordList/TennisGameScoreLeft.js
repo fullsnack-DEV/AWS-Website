@@ -20,6 +20,7 @@ import {
   tennisGamePlayStatsImage,
   getGameConvertMinsToTime,
   getGameDateTimeInHMSformat,
+  getGameTimeAgo,
 } from '../../../../../utils/gameUtils';
 
 export default function TennisGameScoreLeft(
@@ -82,7 +83,7 @@ export default function TennisGameScoreLeft(
                     alignItems: 'space-around',
                   } }>
             <Text style={ styles.recordedBy }>
-              Recorded by {`${recordData?.recorded_by?.first_name} ${recordData?.recorded_by?.last_name}` ?? ''}
+              Recorded by {`${recordData?.recorded_by?.first_name } ${ recordData?.recorded_by?.last_name}` ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
             </Text>
           </View>
         </View>

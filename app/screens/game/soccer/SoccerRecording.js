@@ -117,7 +117,28 @@ export default function SoccerRecording({ navigation, route }) {
       }, 1000);
     }
   };
-
+  const validate = () => {
+    if (
+      gameObj.status === GameStatus.accepted
+      || gameObj.status === GameStatus.reset
+    ) {
+      Alert.alert('Please, start the game first.');
+      return false;
+    }
+    if (gameObj.status === GameStatus.paused) {
+      Alert.alert('Game is paused.');
+      return false;
+    }
+    if (gameObj.status === GameStatus.ended) {
+      Alert.alert('Game is ended.');
+      return false;
+    }
+    if (!selectedTeam) {
+      Alert.alert('Please, select a team first');
+      return false;
+    }
+    return true;
+  };
   // const startStopTimerTimeline = () => {
   //   clearInterval(timer);
   //   clearInterval(timerForTimeline);
@@ -349,7 +370,8 @@ export default function SoccerRecording({ navigation, route }) {
   };
   const addGameRecordDetail = (gameId, params) => {
     setloading(true);
-    addGameRecord(gameId, params, authContext)
+
+      addGameRecord(gameId, params, authContext)
       .then((response) => {
         setloading(false);
         // setDate();
@@ -677,35 +699,37 @@ export default function SoccerRecording({ navigation, route }) {
                 <View style={styles.plusMinusView}>
                   <TouchableOpacity
                     onPress={() => {
-                      if (
-                        gameObj.status === GameStatus.accepted
-                        || gameObj.status === GameStatus.reset
-                      ) {
-                        Alert.alert('Game not started yet.');
-                      } else if (gameObj.status === GameStatus.ended) {
-                        Alert.alert('Game is ended.');
-                      } else if (!selectedTeam) {
-                        Alert.alert('Select Team');
-                      } else {
-                        console.log(
-                          `${parseFloat(new Date().getTime() / 1000).toFixed(
-                            0,
-                          )}`,
-                        );
-                        lastTimeStamp = date
-                          ? parseFloat(
-                              date.setMilliseconds(0, 0) / 1000,
-                            ).toFixed(0)
-                          : parseFloat(new Date().getTime() / 1000).toFixed(0);
-                        lastVerb = GameVerb.Goal;
-                        const body = [
-                          {
-                            verb: lastVerb,
-                            timestamp: lastTimeStamp,
-                            team_id: selectedTeam,
-                          },
-                        ];
-                        addGameRecordDetail(gameObj.game_id, body);
+                      if (validate()) {
+                        if (
+                          gameObj.status === GameStatus.accepted
+                          || gameObj.status === GameStatus.reset
+                        ) {
+                          Alert.alert('Game not started yet.');
+                        } else if (gameObj.status === GameStatus.ended) {
+                          Alert.alert('Game is ended.');
+                        } else if (!selectedTeam) {
+                          Alert.alert('Select Team');
+                        } else {
+                          console.log(
+                            `${parseFloat(new Date().getTime() / 1000).toFixed(
+                              0,
+                            )}`,
+                          );
+                          lastTimeStamp = date
+                            ? parseFloat(
+                                date.setMilliseconds(0, 0) / 1000,
+                              ).toFixed(0)
+                            : parseFloat(new Date().getTime() / 1000).toFixed(0);
+                          lastVerb = GameVerb.Goal;
+                          const body = [
+                            {
+                              verb: lastVerb,
+                              timestamp: lastTimeStamp,
+                              team_id: selectedTeam,
+                            },
+                          ];
+                          addGameRecordDetail(gameObj.game_id, body);
+                        }
                       }
                     }}>
                     <LinearGradient
@@ -716,47 +740,40 @@ export default function SoccerRecording({ navigation, route }) {
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
-                      if (
-                        gameObj.status === GameStatus.accepted
-                        || gameObj.status === GameStatus.reset
-                      ) {
-                        Alert.alert('Game not started yet.');
-                      } else if (gameObj.status === GameStatus.ended) {
-                        Alert.alert('Game is ended.');
-                      } else if (!selectedTeam) {
-                        Alert.alert('Select Team');
-                      } else if (
-                        selectedTeam === gameObj?.home_team?.group_id
-                        && gameObj.home_team_goal <= 0
-                      ) {
-                        Alert.alert('Goal not added yet.');
-                      } else if (
-                        selectedTeam === gameObj?.away_team?.group_id
-                        && gameObj?.away_team_goal <= 0
-                      ) {
-                        Alert.alert('Goal not added yet.');
-                      } else {
-                        Alert.alert(
-                          'The recent goal will be cancelled.',
-                          '',
-                          [
-                            {
-                              text: 'Cancel',
-                              style: 'cancel',
-                            },
-                            {
-                              text: 'Ok',
-                              style: 'default',
-                              onPress: () => {
-                                decreaseGameScoreRecord(
-                                  selectedTeam,
-                                  gameObj.game_id,
-                                );
+                      if (validate()) {
+                        if (
+                          selectedTeam === gameObj?.home_team?.group_id
+                          && gameObj.home_team_goal <= 0
+                        ) {
+                          Alert.alert('Goal not added yet.');
+                        } else if (
+                          selectedTeam === gameObj?.away_team?.group_id
+                          && gameObj?.away_team_goal <= 0
+                        ) {
+                          Alert.alert('Goal not added yet.');
+                        } else {
+                          Alert.alert(
+                            'The recent goal will be cancelled.',
+                            '',
+                            [
+                              {
+                                text: 'Cancel',
+                                style: 'cancel',
                               },
-                            },
-                          ],
-                          { cancelable: false },
-                        );
+                              {
+                                text: 'Ok',
+                                style: 'default',
+                                onPress: () => {
+                                  decreaseGameScoreRecord(
+                                    selectedTeam,
+                                    gameObj.game_id,
+                                  );
+                                },
+                              },
+                            ],
+                            { cancelable: false },
+                          );
+                        }
                       }
                     }}>
                     <Image

@@ -320,7 +320,7 @@ export default function SoccerRecordList({ route }) {
                   </Text>}
                 </View>
               )}/>
-        <View style={ styles.updatedByView }>
+        {/* <View style={ styles.updatedByView }>
           {matchRecords.length > 0 && <Text
                       style={ {
                         color: colors.grayColor,
@@ -338,7 +338,19 @@ export default function SoccerRecordList({ route }) {
                       } }>
 
           </Text>
-        </View>
+        </View> */}
+
+        {matchRecords.length > 0 && <Text
+                      style={ {
+                        color: colors.grayColor,
+                        // fontFamily: fonts.RLight,
+                        padding: 5,
+                        fontSize: 14,
+                        marginLeft: 10,
+                      } }>
+          Last updated by{'\n'}({getTeamName(matchRecords[matchRecords.length - 1]?.updated_by?.group_id)})
+        </Text>}
+
       </Fragment>
       {/* )} */}
 
@@ -427,10 +439,10 @@ const styles = StyleSheet.create({
 
     width: wp('40%'),
   },
-  updatedByView: {
-    height: hp('10%'),
-    marginTop: 10,
-  },
+  // updatedByView: {
+  //   height: hp('10%'),
+  //   marginTop: 10,
+  // },
   notAvailableTextStyle: {
     marginTop: hp(5),
     textAlign: 'center',

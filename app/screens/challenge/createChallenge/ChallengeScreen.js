@@ -625,9 +625,9 @@ export default function ChallengeScreen({ navigation, route }) {
             challenger: teams?.[0]?.group_id || teams?.[0]?.user_id,
             challengee: teams?.[1]?.group_id || teams?.[1]?.user_id,
             home_team:
-              settingObject?.home_away === 'Home' ? entity?.obj : groupObj,
-            away_team:
               settingObject?.home_away === 'Home' ? groupObj : entity?.obj,
+            away_team:
+              settingObject?.home_away === 'Home' ? entity?.obj : groupObj,
             user_challenge: !groupObj?.group_id,
           };
 

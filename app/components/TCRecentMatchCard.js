@@ -104,7 +104,7 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
             </Text>
           </View>
           <View style={styles.gameVSView}>
-            {data?.userChallenge || data?.singlePlayerGame ? (
+            {data?.userChallenge || data?.user_challenge ? (
               <View style={styles.leftGameView}>
                 {data?.home_team?._source?.thumbnail ? (
                   <Image
@@ -144,7 +144,7 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
             <Text style={styles.vsView}>:</Text>
             <Text style={styles.scoreView}>{data?.away_team_goal}</Text>
 
-            {data?.userChallenge || data?.singlePlayerGame ? (
+            {data?.userChallenge || data?.user_challenge ? (
               <View style={styles.rightGameView}>
                 <Text style={styles.rightEntityText} numberOfLines={2}>
                   {data?.away_team?._source?.full_name}

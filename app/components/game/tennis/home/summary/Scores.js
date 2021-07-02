@@ -25,7 +25,7 @@ const Scores = ({ gameId, getTennisGameData }) => {
     setLoading(true);
     getTennisGameData(gameId).then((res) => {
       setGameData(res?.payload);
-      if (res?.payload?.singlePlayerGame) {
+      if (res?.payload?.user_challenge) {
         setTeamIds({
           home_team: { group_id: res?.payload?.home_team?.user_id },
           away_team: { group_id: res?.payload?.away_team?.user_id },

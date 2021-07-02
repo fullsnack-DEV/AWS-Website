@@ -11,7 +11,7 @@ import images from '../../../Constants/ImagePath';
 import TCThinDivider from '../../TCThinDivider';
 import colors from '../../../Constants/Colors';
 
-let setsData = [];
+let setsData = [{}, {}, {}];
 const scoreData = [{}, {}, {}];
 let homeTeamGamePoint = 0;
 let awayTeamGamePoint = 0;

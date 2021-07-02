@@ -45,6 +45,8 @@ import { getHitSlop } from '../../../utils';
 let timer, timerForTimeline;
 let lastTimeStamp;
 let lastVerb;
+let date;
+
 const recordButtonList = ['Goal', 'Own Goal', 'YC', 'RC', 'In', 'Out'];
 const assistButtonList = ['Assist'];
 export default function GameDetailRecord({ navigation, route }) {
@@ -53,7 +55,7 @@ export default function GameDetailRecord({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [pickerShow, setPickerShow] = useState(false);
   const [selectedMemberID, setSelectedMemberID] = useState();
-  const [date, setDate] = useState();
+  // const [date, setDate] = useState();
   const [isAssist, setIsAssist] = useState(false);
   const [selectedAssistMemberID, setSelectedAssistMemberID] = useState();
   const [gameObj, setGameObj] = useState();
@@ -93,7 +95,7 @@ export default function GameDetailRecord({ navigation, route }) {
   ]);
 
   useFocusEffect(() => {
-    startStopTimerTimeline();
+    startStopTimerTimeline(gameObj);
     timer = setInterval(() => {
       if (gameObj && gameObj.status !== GameStatus.ended) {
         getGameRosterDetail(gameObj.game_id, false);
@@ -105,58 +107,57 @@ export default function GameDetailRecord({ navigation, route }) {
     };
   }, []);
 
-  const startStopTimerTimeline = () => {
+  const startStopTimerTimeline = (obj) => {
     clearInterval(timer);
     clearInterval(timerForTimeline);
-    if (gameObj && gameObj.status === GameStatus.ended) {
+    if (obj?.status === GameStatus.ended) {
       setTimelineTimer(
         getTimeDifferent(
-          gameObj && gameObj.actual_enddatetime && gameObj.actual_enddatetime * 1000,
-          gameObj
-            && gameObj.actual_startdatetime
-            && gameObj.actual_startdatetime * 1000,
+          obj?.actual_enddatetime * 1000,
+          obj?.actual_startdatetime * 1000,
         ),
       );
     } else if (
-      (gameObj && gameObj.status === GameStatus.accepted)
-      || (gameObj && gameObj.status === GameStatus.reset)
+      obj?.status === GameStatus.accepted
+      || obj?.status === GameStatus.reset
     ) {
-      setTimelineTimer(
-        getTimeDifferent(new Date().getTime(), new Date().getTime()),
-      );
-    } else if (gameObj && gameObj.status === GameStatus.paused) {
+      // getTimeDifferent(new Date().getTime(), new Date().getTime()),
+      setTimelineTimer('00 : 00 : 00');
+    } else if (obj?.status === GameStatus.paused) {
+      console.log('last status::=', obj?.status);
       setTimelineTimer(
         getTimeDifferent(
-          gameObj && gameObj.pause_datetime && gameObj.pause_datetime * 1000,
-          gameObj
-            && gameObj.actual_startdatetime
-            && gameObj.actual_startdatetime * 1000,
+          obj?.pause_datetime * 1000,
+          obj?.actual_startdatetime * 1000,
         ),
       );
     } else if (date) {
-      setTimelineTimer(
-        getTimeDifferent(
-          gameObj
-            && gameObj.actual_startdatetime
-            && gameObj.actual_startdatetime * 1000,
-          new Date(date).getTime(),
-        ),
-      );
+      if (GameStatus.playing === obj?.status) {
+        console.log('playing');
+        setTimelineTimer(
+          getTimeDifferent(
+            obj?.actual_startdatetime * 1000,
+            new Date(date).getTime(),
+          ),
+        );
+      } else {
+        console.log('Come here');
+        setTimelineTimer(
+          getTimeDifferent(new Date().getTime(), new Date(date).getTime()),
+        );
+      }
     } else {
       timerForTimeline = setInterval(() => {
-        if (gameObj) {
-          setTimelineTimer(
-            getTimeDifferent(
-              new Date().getTime(),
-              gameObj
-                && gameObj.actual_startdatetime
-                && gameObj.actual_startdatetime * 1000,
-            ),
-          );
-        }
+        setTimelineTimer(
+          getTimeDifferent(
+            new Date().getTime(),
+            obj?.actual_startdatetime * 1000,
+          ),
+        );
       }, 1000);
     }
   };
+
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
     let breakTime = 0;
@@ -289,9 +290,10 @@ export default function GameDetailRecord({ navigation, route }) {
           home_team_goal: 0,
           status: GameStatus.accepted,
         });
-        startStopTimerTimeline();
+        startStopTimerTimeline(gameObj);
         setloading(false);
-        setDate();
+        // setDate();
+        date = null;
         console.log('RESET GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
@@ -389,7 +391,8 @@ export default function GameDetailRecord({ navigation, route }) {
     addGameRecord(gameId, params, authContext)
       .then((response) => {
         console.log(lastVerb);
-        setDate();
+        // setDate();
+        date = null;
         if (lastVerb === GameVerb.Start) {
           setGameObj({
             ...gameObj,
@@ -887,8 +890,8 @@ export default function GameDetailRecord({ navigation, route }) {
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     setPickerShow(Platform.OS === 'ios');
-    startStopTimerTimeline();
-    setDate(currentDate);
+    startStopTimerTimeline(gameObj);
+    date = currentDate;
   };
 
   return (
@@ -1079,20 +1082,21 @@ export default function GameDetailRecord({ navigation, route }) {
               sections={[
                 {
                   title: 'ON FIELD',
-                  data: [
-                    {
-                      member_id: '0',
-                      team_id:
-                        gameObj.home_team
-                        && gameObj.home_team.group_id
-                        && gameObj.home_team.group_id,
-                      profile: {
-                        first_name: 'No Specific',
-                        last_name: 'Player',
-                      },
-                    },
-                    ...homeField,
-                  ],
+                  data: homeField,
+                  // data: [
+                  //   {
+                  //     member_id: '0',
+                  //     team_id:
+                  //       gameObj.home_team
+                  //       && gameObj.home_team.group_id
+                  //       && gameObj.home_team.group_id,
+                  //     profile: {
+                  //       first_name: 'No Specific',
+                  //       last_name: 'Player',
+                  //     },
+                  //   },
+                  //   ...homeField,
+                  // ],
                 },
                 {
                   title: 'ON BENCH',
@@ -1128,20 +1132,21 @@ export default function GameDetailRecord({ navigation, route }) {
               sections={[
                 {
                   title: 'ON FIELD',
-                  data: [
-                    {
-                      member_id: '1',
-                      team_id:
-                        gameObj.away_team
-                        && gameObj.away_team.group_id
-                        && gameObj.away_team.group_id,
-                      profile: {
-                        first_name: 'No Specific',
-                        last_name: 'Player',
-                      },
-                    },
-                    ...awayField,
-                  ],
+                  data: awayField,
+                  // data: [
+                  //   {
+                  //     member_id: '1',
+                  //     team_id:
+                  //       gameObj.away_team
+                  //       && gameObj.away_team.group_id
+                  //       && gameObj.away_team.group_id,
+                  //     profile: {
+                  //       first_name: 'No Specific',
+                  //       last_name: 'Player',
+                  //     },
+                  //   },
+                  //   ...awayField,
+                  // ],
                 },
                 {
                   title: 'ON BENCH',
@@ -1162,7 +1167,8 @@ export default function GameDetailRecord({ navigation, route }) {
                 <View style={styles.curruentTimeView}>
                   <TouchableOpacity
                     onPress={() => {
-                      setDate();
+                      // setDate();
+                      date = null;
                     }}>
                     <Image
                       source={images.curruentTime}
