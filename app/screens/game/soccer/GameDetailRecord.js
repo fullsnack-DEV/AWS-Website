@@ -95,12 +95,14 @@ export default function GameDetailRecord({ navigation, route }) {
   ]);
 
   useFocusEffect(() => {
-    startStopTimerTimeline(gameObj);
-    timer = setInterval(() => {
-      if (gameObj && gameObj.status !== GameStatus.ended) {
-        getGameRosterDetail(gameObj.game_id, false);
-      }
-    }, 3000);
+     if (gameObj) {
+      startStopTimerTimeline(gameObj);
+      timer = setInterval(() => {
+        if (gameObj.status !== GameStatus.ended) {
+          getGameRosterDetail(gameObj.game_id, false);
+        }
+      }, 3000);
+     }
     return () => {
       clearInterval(timer);
       clearInterval(timerForTimeline);
@@ -108,6 +110,7 @@ export default function GameDetailRecord({ navigation, route }) {
   }, []);
 
   const startStopTimerTimeline = (obj) => {
+    console.log('Timeline object:=>', obj);
     clearInterval(timer);
     clearInterval(timerForTimeline);
     if (obj?.status === GameStatus.ended) {
@@ -282,14 +285,15 @@ export default function GameDetailRecord({ navigation, route }) {
       .then((response) => {
         setGameObj({
           ...gameObj,
-          actual_startdatetime: undefined,
-          actual_enddatetime: undefined,
-          pause_datetime: undefined,
-          resume_datetime: undefined,
+          actual_startdatetime: 0,
+          actual_enddatetime: 0,
+          pause_datetime: 0,
+          resume_datetime: 0,
           away_team_goal: 0,
           home_team_goal: 0,
           status: GameStatus.accepted,
         });
+        setTimelineTimer('00 : 00 : 00');
         startStopTimerTimeline(gameObj);
         setloading(false);
         // setDate();
@@ -396,7 +400,7 @@ export default function GameDetailRecord({ navigation, route }) {
         if (lastVerb === GameVerb.Start) {
           setGameObj({
             ...gameObj,
-            actual_startdatetime: lastTimeStamp,
+            actual_startdatetime: Number(lastTimeStamp),
             status: GameStatus.playing,
           });
           setloading(false);
@@ -407,7 +411,7 @@ export default function GameDetailRecord({ navigation, route }) {
         } else if (lastVerb === GameVerb.Pause) {
           setGameObj({
             ...gameObj,
-            pause_datetime: lastTimeStamp,
+            pause_datetime: Number(lastTimeStamp),
             status: GameStatus.paused,
           });
           setloading(false);
@@ -425,7 +429,7 @@ export default function GameDetailRecord({ navigation, route }) {
         } else if (lastVerb === GameVerb.End) {
           setGameObj({
             ...gameObj,
-            actual_enddatetime: lastTimeStamp,
+            actual_enddatetime: Number(lastTimeStamp),
             status: GameStatus.ended,
           });
           setloading(false);
@@ -502,7 +506,7 @@ export default function GameDetailRecord({ navigation, route }) {
                           body = [
                             {
                               verb: lastVerb,
-                              timestamp: lastTimeStamp,
+                              timestamp: Number(lastTimeStamp),
                               team_id: actionByTeamID,
                             },
                           ];
@@ -510,7 +514,7 @@ export default function GameDetailRecord({ navigation, route }) {
                           body = [
                             {
                               verb: lastVerb,
-                              timestamp: lastTimeStamp,
+                              timestamp: Number(lastTimeStamp),
                               team_id: actionByTeamID,
                               doneBy: selectedMemberID,
                             },
@@ -551,7 +555,7 @@ export default function GameDetailRecord({ navigation, route }) {
                   body = [
                     {
                       verb: lastVerb,
-                      timestamp: lastTimeStamp,
+                      timestamp: Number(lastTimeStamp),
                       team_id: actionByTeamID,
                     },
                   ];
@@ -559,7 +563,7 @@ export default function GameDetailRecord({ navigation, route }) {
                   body = [
                     {
                       verb: lastVerb,
-                      timestamp: lastTimeStamp,
+                      timestamp: Number(lastTimeStamp),
                       team_id: actionByTeamID,
                       assistedBy: selectedAssistMemberID,
                     },
@@ -572,7 +576,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 body = [
                   {
                     verb: lastVerb,
-                    timestamp: lastTimeStamp,
+                    timestamp: Number(lastTimeStamp),
                     team_id: actionByTeamID,
                     doneBy: selectedMemberID,
                   },
@@ -581,7 +585,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 body = [
                   {
                     verb: lastVerb,
-                    timestamp: lastTimeStamp,
+                    timestamp: Number(lastTimeStamp),
                     team_id: actionByTeamID,
                     doneBy: selectedMemberID,
                     assistedBy: selectedAssistMemberID,
@@ -606,7 +610,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 body = [
                   {
                     verb: lastVerb,
-                    timestamp: lastTimeStamp,
+                    timestamp: Number(lastTimeStamp),
                     team_id: tempActionTeamID,
                     own_goal: true,
                   },
@@ -615,7 +619,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 body = [
                   {
                     verb: lastVerb,
-                    timestamp: lastTimeStamp,
+                    timestamp: Number(lastTimeStamp),
                     team_id: tempActionTeamID,
                     doneBy: selectedMemberID,
                     own_goal: true,
@@ -635,7 +639,7 @@ export default function GameDetailRecord({ navigation, route }) {
               const body = [
                 {
                   verb: lastVerb,
-                  timestamp: lastTimeStamp,
+                  timestamp: Number(lastTimeStamp),
                   team_id: actionByTeamID,
                   to: selectedMemberID,
                 },
@@ -653,7 +657,7 @@ export default function GameDetailRecord({ navigation, route }) {
               const body = [
                 {
                   verb: lastVerb,
-                  timestamp: lastTimeStamp,
+                  timestamp: Number(lastTimeStamp),
                   team_id: actionByTeamID,
                   to: selectedMemberID,
                 },
@@ -675,7 +679,7 @@ export default function GameDetailRecord({ navigation, route }) {
               const body = [
                 {
                   verb: lastVerb,
-                  timestamp: lastTimeStamp,
+                  timestamp: Number(lastTimeStamp),
                   team_id: actionByTeamID,
                   to: selectedMemberID,
                 },
@@ -695,7 +699,7 @@ export default function GameDetailRecord({ navigation, route }) {
               const body = [
                 {
                   verb: lastVerb,
-                  timestamp: lastTimeStamp,
+                  timestamp: Number(lastTimeStamp),
                   team_id: actionByTeamID,
                   to: selectedMemberID,
                 },
@@ -1247,11 +1251,12 @@ export default function GameDetailRecord({ navigation, route }) {
                       lastTimeStamp = date
                         ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                         : parseFloat(new Date().getTime() / 1000).toFixed(0);
+                        console.log('lastTimeStamp:=>', lastTimeStamp);
                       lastVerb = GameVerb.Start;
                       const body = [
                         {
                           verb: lastVerb,
-                          timestamp: lastTimeStamp,
+                          timestamp: Number(lastTimeStamp),
                           team_id: actionByTeamID,
                         },
                       ];
@@ -1275,7 +1280,7 @@ export default function GameDetailRecord({ navigation, route }) {
                     const body = [
                       {
                         verb: lastVerb,
-                        timestamp: lastTimeStamp,
+                        timestamp: Number(lastTimeStamp),
                         team_id: actionByTeamID,
                       },
                     ];
@@ -1299,7 +1304,7 @@ export default function GameDetailRecord({ navigation, route }) {
                     const body = [
                       {
                         verb: lastVerb,
-                        timestamp: lastTimeStamp,
+                        timestamp: Number(lastTimeStamp),
                         team_id: actionByTeamID,
                       },
                     ];
@@ -1324,7 +1329,7 @@ export default function GameDetailRecord({ navigation, route }) {
                     const body = [
                       {
                         verb: lastVerb,
-                        timestamp: lastTimeStamp,
+                        timestamp: Number(lastTimeStamp),
                         team_id: actionByTeamID,
                       },
                     ];
