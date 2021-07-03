@@ -30,7 +30,7 @@ const MatchRecordsList = ({
   const loadAtOnce = async () => {
     if (gameId) {
       setLoading(true);
-      if (gameData?.singlePlayerGame) {
+      if (gameData?.user_challenge) {
         setTeamIds({
           home_team: { group_id: gameData?.home_team?.user_id },
           away_team: { group_id: gameData?.away_team?.user_id },

@@ -80,7 +80,7 @@ export default function TennisGameScoreRight({
               alignItems: 'space-around',
             } }>
             <Text style={ styles.recordedBy }>
-              Recorded by {recordData?.recorded_by_team_name ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
+              Recorded by {`${recordData?.recorded_by?.first_name } ${ recordData?.recorded_by?.last_name}` ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
             </Text>
           </View>
         </View>

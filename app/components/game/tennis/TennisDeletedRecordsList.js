@@ -55,7 +55,7 @@ export default function TennisDeletedRecordsList({
     const gameId = matchData?.game_id;
     if (gameId) {
       setLoading(true);
-      if (matchData?.singlePlayerGame) {
+      if (matchData?.user_challenge) {
         setTeamIds({
           home_team: { group_id: matchData?.home_team?.user_id },
           away_team: { group_id: matchData?.away_team?.user_id },

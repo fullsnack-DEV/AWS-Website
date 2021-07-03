@@ -105,7 +105,7 @@ function TCUpcomingMatch({
             </Text>
           </View>
           <View style={styles.gameVSView}>
-            {data?.userChallenge || data?.singlePlayerGame ? (
+            {data?.userChallenge || data?.user_challenge ? (
               <View style={styles.leftGameView}>
                 {data?.home_team?._source?.thumbnail ? (
                   <Image
@@ -143,7 +143,7 @@ function TCUpcomingMatch({
 
             <Text style={styles.vsView}>VS</Text>
 
-            {data?.userChallenge || data?.singlePlayerGame ? (
+            {data?.userChallenge || data?.user_challenge ? (
               <View style={styles.rightGameView}>
                 <Text style={styles.rightEntityText} numberOfLines={2}>
                   {data?.away_team?._source?.full_name}
