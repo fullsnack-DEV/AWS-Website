@@ -117,6 +117,8 @@ export default function SoccerRecording({ navigation, route }) {
       }, 1000);
     }
   };
+
+  console.log('TIMER :=> ', timelineTimer);
   const validate = () => {
     if (
       gameObj.status === GameStatus.accepted
@@ -206,15 +208,17 @@ export default function SoccerRecording({ navigation, route }) {
   // }, []);
 
   useFocusEffect(() => {
-    if (![GameStatus.accepted, GameStatus.reset].includes(gameObj?.status)) {
-      startStopTimerTimeline(gameObj);
-    }
-    console.log('route?.params?.gameDetail', route?.params?.gameDetail);
-    timer = setInterval(() => {
-      if (gameObj && gameObj.status !== GameStatus.ended) {
-        getGameDetail(route?.params?.gameId, false);
+    if (gameObj) {
+      if (![GameStatus.accepted, GameStatus.reset].includes(gameObj?.status)) {
+        startStopTimerTimeline(gameObj);
       }
-    }, 10000);
+      console.log('route?.params?.gameDetail', route?.params?.gameDetail);
+      timer = setInterval(() => {
+        if (gameObj && gameObj.status !== GameStatus.ended) {
+          getGameDetail(route?.params?.gameId, false);
+        }
+      }, 10000);
+    }
 
     // timerForTimeline = setInterval(() => {
     //   startStopTimerTimeline()
@@ -295,14 +299,15 @@ export default function SoccerRecording({ navigation, route }) {
         if (response.payload.status === GameStatus.reset) {
           setGameObj({
             ...response.payload,
-            actual_startdatetime: undefined,
-            actual_enddatetime: undefined,
-            pause_datetime: undefined,
-            resume_datetime: undefined,
+            actual_startdatetime: 0,
+            actual_enddatetime: 0,
+            pause_datetime: 0,
+            resume_datetime: 0,
             away_team_goal: 0,
             home_team_goal: 0,
             status: GameStatus.accepted,
           });
+          setTimelineTimer('00 : 00 : 00');
         } else {
           setGameObj(response.payload);
         }
@@ -327,12 +332,10 @@ export default function SoccerRecording({ navigation, route }) {
     resetGame(gameId, authContext)
       .then((response) => {
         date = null;
-
         console.log('RESET GAME OBJECT::', gameObj);
-
         getGameDetail(gameId, true);
-
         setloading(false);
+        setTimelineTimer('00 : 00 : 00');
         startStopTimerTimeline(gameObj);
         console.log('RESET GAME RESPONSE::', response);
       })
@@ -371,7 +374,7 @@ export default function SoccerRecording({ navigation, route }) {
   const addGameRecordDetail = (gameId, params) => {
     setloading(true);
 
-      addGameRecord(gameId, params, authContext)
+    addGameRecord(gameId, params, authContext)
       .then((response) => {
         setloading(false);
         // setDate();
@@ -391,14 +394,14 @@ export default function SoccerRecording({ navigation, route }) {
         } else if (lastVerb === GameVerb.Start) {
           setGameObj({
             ...gameObj,
-            actual_startdatetime: lastTimeStamp,
+            actual_startdatetime: Number(lastTimeStamp),
             status: GameStatus.playing,
           });
           startStopTimerTimeline(gameObj);
         } else if (lastVerb === GameVerb.Pause) {
           setGameObj({
             ...gameObj,
-            pause_datetime: lastTimeStamp,
+            pause_datetime: Number(lastTimeStamp),
             status: GameStatus.paused,
           });
           startStopTimerTimeline(gameObj);
@@ -408,7 +411,7 @@ export default function SoccerRecording({ navigation, route }) {
         } else if (lastVerb === GameVerb.End) {
           setGameObj({
             ...gameObj,
-            actual_enddatetime: lastTimeStamp,
+            actual_enddatetime: Number(lastTimeStamp),
             status: GameStatus.ended,
           });
           startStopTimerTimeline(gameObj);
@@ -446,25 +449,24 @@ export default function SoccerRecording({ navigation, route }) {
                 console.log('Clicked..');
                 setPickerShow(false);
               }}>
-
               <View style={styles.leftView}>
                 <View style={styles.profileShadow}>
                   <Image
-                      source={
-                        gameObj?.home_team?.thumbnail
-                          ? { uri: gameObj?.home_team?.thumbnail }
-                          : images.teamPlaceholder
-                      }
-                      style={styles.profileImg}
-                    />
+                    source={
+                      gameObj?.home_team?.thumbnail
+                        ? { uri: gameObj?.home_team?.thumbnail }
+                        : images.teamPlaceholder
+                    }
+                    style={styles.profileImg}
+                  />
                 </View>
                 <Text
-                    style={
-                      gameObj?.home_team_goal <= gameObj?.away_team_goal
-                        ? styles.leftText
-                        : [styles.leftText, { color: colors.themeColor }]
-                    }
-                    numberOfLines={2}>
+                  style={
+                    gameObj?.home_team_goal <= gameObj?.away_team_goal
+                      ? styles.leftText
+                      : [styles.leftText, { color: colors.themeColor }]
+                  }
+                  numberOfLines={2}>
                   {gameObj?.home_team?.group_name}
                 </Text>
               </View>
@@ -475,12 +477,12 @@ export default function SoccerRecording({ navigation, route }) {
                     style={
                       gameObj?.home_team_goal <= gameObj?.away_team_goal
                         ? {
-                          fontFamily: fonts.RLight,
-                          color: colors.lightBlackColor,
-                  }
+                            fontFamily: fonts.RLight,
+                            color: colors.lightBlackColor,
+                          }
                         : {
-                      fontFamily: fonts.RBold,
-                      color: colors.themeColor,
+                            fontFamily: fonts.RBold,
+                            color: colors.themeColor,
                     }
                     }>
                     {gameObj?.home_team_goal} :{' '}
@@ -490,12 +492,12 @@ export default function SoccerRecording({ navigation, route }) {
                     style={
                       gameObj?.away_team_goal <= gameObj?.home_team_goal
                         ? {
-                          fontFamily: fonts.RLight,
-                          color: colors.lightBlackColor,
-                  }
+                            fontFamily: fonts.RLight,
+                            color: colors.lightBlackColor,
+                          }
                         : {
-                          fontFamily: fonts.RBold,
-                          color: colors.themeColor,
+                            fontFamily: fonts.RBold,
+                            color: colors.themeColor,
                     }
                     }>
                     {gameObj.away_team_goal}
@@ -719,7 +721,9 @@ export default function SoccerRecording({ navigation, route }) {
                             ? parseFloat(
                                 date.setMilliseconds(0, 0) / 1000,
                               ).toFixed(0)
-                            : parseFloat(new Date().getTime() / 1000).toFixed(0);
+                            : parseFloat(new Date().getTime() / 1000).toFixed(
+                                0,
+                              );
                           lastVerb = GameVerb.Goal;
                           const body = [
                             {
