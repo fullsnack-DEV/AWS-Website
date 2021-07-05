@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
-import { parseInt } from 'lodash';
 import AuthContext from '../../../../auth/context';
 
 import { patchChallengeSetting } from '../../../../api/Challenge';
@@ -56,8 +55,8 @@ export default function GameDuration({ navigation, route }) {
       : [
           {
             id: 0,
-            interval: '',
-            period: '',
+            interval: 0,
+            period: 0,
           },
         ],
   );
@@ -67,8 +66,8 @@ export default function GameDuration({ navigation, route }) {
       : [
           {
             id: 0,
-            interval: '',
-            overTime: '',
+            interval: 0,
+            overTime: 0,
           },
         ],
   );
@@ -80,10 +79,10 @@ export default function GameDuration({ navigation, route }) {
           style={styles.saveButtonStyle}
           onPress={() => {
             const resultPeriod = period.filter(
-              (obj) => obj.interval === '' || obj.period === '',
+              (obj) => obj.interval === 0 || obj.period === 0,
             );
             const resultOvertime = overTime.filter(
-              (obj) => obj.interval === '' || obj.overTime === '',
+              (obj) => obj.interval === 0 || obj.overTime === 0,
             );
             if (resultPeriod.length > 0 || firstPeriod === 0) {
               Alert.alert('Please fill all fields.');
@@ -103,8 +102,8 @@ export default function GameDuration({ navigation, route }) {
     if (period.length < 10) {
       const obj = {
         id: period.length === 0 ? 0 : period.length,
-        interval: '',
-        period: '',
+        interval: 0,
+        period: 0,
       };
       setPeriod([...period, obj]);
     } else {
@@ -115,8 +114,8 @@ export default function GameDuration({ navigation, route }) {
     if (overTime.length < 10) {
       const obj = {
         id: overTime.length === 0 ? 0 : overTime.length,
-        interval: '',
-        overTime: '',
+        interval: 0,
+        overTime: 0,
       };
       setOverTime([...overTime, obj]);
     } else {
@@ -248,23 +247,23 @@ export default function GameDuration({ navigation, route }) {
   );
 
   const calculateDuration = () => {
-    let sum = parseInt(firstPeriod);
+    let sum = Number(firstPeriod);
 
     period.map((e) => {
-      if (e.interval !== '') {
-        sum += parseInt(e?.interval);
+      if (e.interval !== 0) {
+        sum += Number(e?.interval);
       }
-      if (e.period !== '') {
-        sum += parseInt(e?.period);
+      if (e.period !== 0) {
+        sum += Number(e?.period);
       }
     });
     if (withOverTime) {
       overTime.map((e) => {
-        if (e.interval !== '') {
-          sum += parseInt(e?.interval);
+        if (e.interval !== 0) {
+          sum += Number(e?.interval);
         }
-        if (e.overTime !== '') {
-          sum += parseInt(e?.overTime);
+        if (e.overTime !== 0) {
+          sum += Number(e?.overTime);
         }
       });
     }

@@ -625,7 +625,8 @@ export default function AccountScreen({ navigation, route }) {
           },
         });
       } else if (options === 'Payout Method') {
-        navigation.navigate('PayoutMethodScreen');
+       // navigation.navigate('PayoutMethodScreen');
+       navigation.navigate('PayoutMethodList', { comeFrom: 'AccountScreen' });
       } else if (options === 'Invoicing') {
         navigation.navigate('InvoiceScreen');
       }

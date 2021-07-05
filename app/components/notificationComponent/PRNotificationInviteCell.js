@@ -46,6 +46,7 @@ function PRNotificationInviteCell({
                 title={strings.accept}
                 disabled= {disabled}
                 onPress={onAccept}/>
+
               <TouchableOpacity style={styles.declineBtnStyle} onPress={onDecline} disabled={disabled}>
                 <Text style={[styles.btnTextStyle, { color: colors.lightBlackColor }]}>{strings.decline}</Text>
               </TouchableOpacity>
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
 
   acceptBtnStyle: {
     margin: 0,
-    width: '92%',
+    width: '48%',
     height: 25,
   },
   acceptButtonInnerStyle: {
