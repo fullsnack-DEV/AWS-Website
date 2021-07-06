@@ -36,7 +36,7 @@ const NewsFeedList = ({
   onStartShouldSetResponderCapture = () => {},
   updateCommentCount,
   noDataFoundText = 'No Post Found',
-  showEnptyDataText = true,
+  feedAPI,
 }) => {
   const [userID, setUserID] = useState('');
 
@@ -162,7 +162,7 @@ const NewsFeedList = ({
   ]);
 
   const listEmpty = useCallback(() => {
-    if (showEnptyDataText) {
+    if (feedAPI) {
       return (
         <Text
           style={{
@@ -175,7 +175,8 @@ const NewsFeedList = ({
         </Text>
       );
     }
-  }, [noDataFoundText, showEnptyDataText]);
+      return (<View></View>)
+  }, [feedAPI, noDataFoundText]);
 
   return (
     <View
@@ -192,7 +193,7 @@ const NewsFeedList = ({
         legacyImplementation={true}
         maxToRenderPerBatch={10}
         initialNumToRender={5}
-        ListEmptyComponent={listEmpty}
+         ListEmptyComponent={listEmpty}
         bounces={true}
         data={postData}
         ItemSeparatorComponent={newsFeedListItemSeperator}

@@ -30,6 +30,7 @@ import TCMessageButton from '../../../components/TCMessageButton';
 import TCThinDivider from '../../../components/TCThinDivider';
 import GroupMembership from '../../../components/groupConnections/GroupMembership';
 import TCInnerLoader from '../../../components/TCInnerLoader';
+import TCMemberProfile from '../../../components/TCMemberProfile';
 
 let entity = {};
 export default function MembersProfileScreen({ navigation, route }) {
@@ -57,7 +58,7 @@ export default function MembersProfileScreen({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        route.params.whoSeeID === entity.uid && <TouchableWithoutFeedback
+        route?.params?.whoSeeID === entity.uid && <TouchableWithoutFeedback
           onPress={ () => actionSheet.current.show() }>
           <Image source={ images.horizontal3Dot } style={ styles.navigationRightItem } />
         </TouchableWithoutFeedback>
@@ -90,9 +91,9 @@ export default function MembersProfileScreen({ navigation, route }) {
       setEditBasicInfo(true)
     }
 
-    getGroupMembersInfo(route.params.groupID, route.params.memberID, authContext).then((response) => {
+    getGroupMembersInfo(route?.params?.groupID, route?.params?.memberID, authContext).then((response) => {
       console.log('PROFILE RESPONSE::', response.payload);
-      setMemberDetail(response.payload);
+      setMemberDetail(response?.payload);
       setloading(false)
       if (firstTimeLoad) setFirstTimeLoad(false);
     })
@@ -121,9 +122,9 @@ export default function MembersProfileScreen({ navigation, route }) {
 
   function MemberPhoneNumber() {
     let numbersString
-    if (memberDetail.phone_numbers) {
-      console.log('PHONE NUMBER ARRAY::', memberDetail.phone_numbers);
-      const numbers = memberDetail.phone_numbers.map((e) => `${e.country_code} ${e.phone_number}`)
+    if (memberDetail?.phone_numbers) {
+      console.log('PHONE NUMBER ARRAY::', memberDetail?.phone_numbers);
+      const numbers = memberDetail?.phone_numbers.map((e) => `${e.country_code} ${e.phone_number}`)
       numbersString = numbers.join('\n')
     } else {
       numbersString = 'N/A'
@@ -138,7 +139,7 @@ export default function MembersProfileScreen({ navigation, route }) {
       {memberDetail && !firstTimeLoad && <ScrollView>
         <View style={styles.roleViewContainer}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-            <TCProfileView image={memberDetail.thumbnail ? { uri: memberDetail.thumbnail } : images.profilePlaceHolder} name={`${memberDetail.first_name} ${memberDetail.last_name}`} location={memberDetail.city && memberDetail.state_abbr && memberDetail.country && `${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}`}/>
+            <TCMemberProfile image={memberDetail?.thumbnail ? { uri: memberDetail?.thumbnail } : images.profilePlaceHolder} name={`${memberDetail?.first_name} ${memberDetail?.last_name}`} location={memberDetail?.city && memberDetail?.state_abbr && memberDetail?.country && `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`}/>
             {editProfile && <TouchableWithoutFeedback onPress={() => {
               navigation.navigate('EditMemberInfoScreen', { memberInfo: memberDetail })
             }}>
@@ -149,7 +150,7 @@ export default function MembersProfileScreen({ navigation, route }) {
             Joined club on {monthNames[new Date(memberDetail.group.joined_date).getMonth()]} {new Date(memberDetail.group.joined_date).getDate()} ,{new Date(memberDetail.group.joined_date).getFullYear()}
             {'\n'}Last updated by {memberDetail.group.updatedBy.first_name} {memberDetail.group.updatedBy.last_name}  on {monthNames[new Date(memberDetail.group.updated_date).getMonth()]} {new Date(memberDetail.group.updated_date).getDate()} ,{new Date(memberDetail.group.updated_date).getFullYear()}</Text>}
           {!memberDetail.connected && <TCBorderButton title={strings.connectAccountText} marginTop={20} onPress={() => {
-            navigation.navigate('UserNotFoundScreen', { memberObj: memberDetail, groupID: route.params.groupID })
+            navigation.navigate('UserNotFoundScreen', { memberObj: memberDetail, groupID: route?.params?.groupID })
           }}/>}
 
         </View>

@@ -30,7 +30,9 @@ const HomeFeed = ({
     const authContext = useContext(AuthContext)
     const imageUploadContext = useContext(ImageUploadContext)
     const [fullScreenLoading, setFullScreenLoading] = useState(false);
-    const [postData, setPostData] = useState([]);
+    const [feedCalled, setFeedCalled] = useState(false);
+
+    const [postData, setPostData] = useState();
     const [totalUserPostCount, setTotalUserPostCount] = useState(0);
     const [isNextDataLoading, setIsNextDataLoading] = useState(true);
     const [footerLoading, setFooterLoading] = useState(false);
@@ -38,6 +40,7 @@ const HomeFeed = ({
     useEffect(() => {
         const params = { uid: userID };
         getUserPosts(params, authContext).then((res) => {
+            setFeedCalled(true)
             setTotalUserPostCount(res?.payload?.total_count)
             setPostData([...res?.payload?.results])
         }).catch((e) => {
@@ -256,6 +259,7 @@ const HomeFeed = ({
             showEnptyDataText={currentTab === 0}
             updateCommentCount={updateCommentCount}
             onFeedScroll={onFeedScroll}
+            feedAPI={feedCalled}
               refs={refs}
               ListHeaderComponent={ListHeaderComponent}
               scrollEnabled={true}

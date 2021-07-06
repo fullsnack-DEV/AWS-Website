@@ -879,10 +879,13 @@ const HomeScreen = ({ navigation, route }) => {
 
   const onMessageButtonPress = (user) => {
     setloading(true);
+
     const accountType = getQBAccountType(user?.entity_type);
     const uid = user?.entity_type === 'player' ? user?.user_id : user?.group_id;
+
     QBcreateUser(uid, user, accountType)
-      .then(() => {
+      .then((response) => {
+        console.log('QB Res:=>', response);
         navigation.navigate('MessageChat', {
           screen: 'MessageChatRoom',
           params: { userId: uid },
@@ -2964,6 +2967,7 @@ const HomeScreen = ({ navigation, route }) => {
           accountType,
         )
           .then(async (res) => {
+            console.log('QB LOGIN:=>', res);
             currentEntity = {
               ...currentEntity,
               QB: { ...res.user, connected: true, token: res?.session?.token },
