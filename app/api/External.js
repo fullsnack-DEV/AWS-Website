@@ -34,3 +34,10 @@ export const getLocationNameWithLatLong = async (latValue, longValue, authContex
   authContext,
   url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latValue},${longValue}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
 })
+
+export const getLatLongFromPlaceID = async (placeID, authContext) => makeAPIRequest({
+  method: 'get',
+  authContext,
+  url: `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeID}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
+
+})

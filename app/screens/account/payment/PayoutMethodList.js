@@ -1,0 +1,318 @@
+import React, {
+    useState, useEffect, useContext, useLayoutEffect,
+  } from 'react';
+  import {
+    View, StyleSheet, Alert, Text, Image,
+    FlatList,
+  } from 'react-native';
+
+  import { useIsFocused } from '@react-navigation/native';
+  import { TouchableOpacity } from 'react-native-gesture-handler';
+  import stripe from 'tipsi-stripe'
+  import LinearGradient from 'react-native-linear-gradient';
+  import AuthContext from '../../../auth/context'
+  import ActivityLoader from '../../../components/loader/ActivityLoader';
+  import AppleStyleSwipeableRow from '../../../components/notificationComponent/AppleStyleSwipeableRow';
+  import { payoutMethods, attachPaymentMethod, deletePaymentMethod } from '../../../api/Users';
+  import strings from '../../../Constants/String'
+  import colors from '../../../Constants/Colors'
+  import fonts from '../../../Constants/Fonts';
+  import images from '../../../Constants/ImagePath';
+  import { publishableKey } from '../../../utils/constant';
+  import TCTouchableLabel from '../../../components/TCTouchableLabel';
+  import TCInnerLoader from '../../../components/TCInnerLoader';
+
+  export default function PayoutMethodList({ navigation, route }) {
+    const [loading, setloading] = useState(false);
+    const [firstTimeLoad, setFirstTimeLoad] = useState(true);
+    const authContext = useContext(AuthContext)
+    const isFocused = useIsFocused();
+    const [selectedCard, setSelectedCard] = useState()
+    const [cards, setCards] = useState([])
+
+    useEffect(() => {
+      if (isFocused) {
+          setFirstTimeLoad(true);
+          getPaymentMethods().then(() => {
+              setFirstTimeLoad(false)
+          }).catch((error) => {
+              setFirstTimeLoad(false);
+              console.log(error);
+          })
+      }
+    }, [isFocused])
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        headerRight: () => (
+          <Text style={styles.nextButtonStyle} onPress={() => {
+              if (selectedCard) {
+                onCardSelected(selectedCard)
+              } else {
+                Alert.alert(strings.selectAnyCard)
+              }
+          } }>Done</Text>
+        ),
+      });
+    }, [navigation, loading, selectedCard])
+    const getPaymentMethods = () => new Promise((resolve, reject) => {
+      payoutMethods(authContext)
+          .then((response) => {
+            console.log('payout method:=>', response);
+            setCards([...response.payload])
+            // setloading(false)
+            if (response.payload.length === 0) {
+              openNewCardScreen();
+            }
+            resolve(true)
+          })
+          .catch((e) => {
+              reject(new Error(e.message))
+            // setloading(false)
+            // setTimeout(() => {
+            //   Alert.alert(strings.alertmessagetitle, e.message);
+            // }, 0.3)
+          })
+    })
+
+    const onCardSelected = async (item) => {
+      navigation.navigate(route?.params?.comeFrom, {
+        paymentMethod: item,
+      });
+    }
+
+    const onDeleteCard = (item) => {
+      Alert.alert(strings.alertmessagetitle, `Do you want remove account ending with ${item.last4} from your account to ?`, [
+            {
+              text: strings.cancel,
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {
+              text: strings.yes,
+              onPress: () => {
+                setloading(true)
+                deletePaymentMethod(item.id, authContext)
+                    .then(() => {
+                      const newCards = cards.filter((card) => card.id !== item.id)
+                      setCards(newCards)
+                      setloading(false)
+                    })
+                    .catch((e) => {
+                      console.log('error in payment method onDeleteCard', e)
+                      setloading(false)
+                      setTimeout(() => {
+                        Alert.alert(strings.alertmessagetitle, e.message);
+                      }, 0.3)
+                    })
+              },
+            },
+          ],
+          { cancelable: true })
+    };
+
+    const renderCard = ({ item }) => (
+      <AppleStyleSwipeableRow onPress={() => onDeleteCard(item)} color={colors.redDelColor} image={images.deleteIcon}>
+
+        {selectedCard && selectedCard?.id === item.id ? <LinearGradient
+              colors={ [colors.orangeEventColor, colors.assistTextColor] }
+              style={ styles.paymentCardRow }>
+          <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { setSelectedCard(item) }}>
+            <View style={{ flexDirection: 'column', width: '60%' }}>
+              <View style={{ flexDirection: 'row' }}>
+
+                <Text style={{
+                    marginLeft: 0,
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    color: colors.whiteColor,
+                }}>{item.bank_name.toUpperCase() }</Text>
+
+                <Text style={{
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    color: colors.whiteColor,
+                }}>{strings.endingin}</Text>
+                <Text style={{
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    color: colors.whiteColor,
+                }}>{item.last4}</Text>
+                <Text style={{
+                  marginLeft: 0,
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.whiteColor,
+                }}>  {` ${item.currency.toUpperCase()}` }</Text>
+              </View>
+              <View>
+                <Text style={{
+                    color: colors.whiteColor,
+                    fontFamily: fonts.RRegular,
+                    fontSize: 14,
+                    marginTop: 5,
+                }}>Account : {item.account}</Text>
+
+              </View>
+
+            </View>
+            <View style={{ width: '40%', flexDirection: 'row-reverse', alignSelf: 'center' }}>
+              <Image
+                    source={ images.whiteTick }
+                    style={{ height: 15, width: 15, resizeMode: 'contain' }}
+                />
+            </View>
+
+          </TouchableOpacity>
+        </LinearGradient> : <View style={styles.paymentCardRow}>
+          <TouchableOpacity style={{
+
+          }} onPress={() => { setSelectedCard(item) }}>
+            <View style={{ flexDirection: 'row' }}>
+
+              <Text style={{
+                  marginLeft: 0,
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.lightBlackColor,
+              }}>{item.bank_name.toUpperCase() }</Text>
+
+              <Text style={{
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.lightBlackColor,
+              }}>{strings.endingin}</Text>
+              <Text style={{
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.lightBlackColor,
+              }}>{item.last4}</Text>
+              <Text style={{
+                  marginLeft: 0,
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.themeColor,
+              }}>  {` ${item.currency.toUpperCase()}` }</Text>
+            </View>
+            <View style={{ flexDirection: 'column' }}>
+              <Text style={{
+                  color: colors.lightBlackColor,
+                  fontFamily: fonts.RRegular,
+                  fontSize: 14,
+                  marginTop: 5,
+              }}>Account : {item.account}</Text>
+            </View>
+          </TouchableOpacity>
+
+        </View>}
+
+      </AppleStyleSwipeableRow>
+    )
+
+    const onSaveCard = async (paymentMethod) => {
+      setloading(true)
+      const params = {
+        payment_method: paymentMethod.id,
+      }
+      attachPaymentMethod(params, authContext)
+          .then(() => {
+            getPaymentMethods().then(() => {
+                setloading(false)
+            }).catch(() => {
+                setloading(false);
+            });
+          })
+          .catch((e) => {
+            console.log('error in onSaveCard', e)
+            setloading(false)
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 0.3)
+          })
+    }
+
+    const openNewCardScreen = () => {
+      stripe.setOptions({
+        publishableKey,
+      })
+      stripe.paymentRequestWithCardForm({
+        requiredBillingAddressFields: 'zip',
+        theme: {
+          accentColor: colors.orangeColor,
+        },
+      }).then((token) => {
+        console.log('card', token)
+        onSaveCard(token);
+      }).catch((e) => {
+        console.log('error in openNewCardScreen', e)
+        setloading(false)
+        if (e.message !== 'Cancelled by user') {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 0.3)
+        }
+      })
+    }
+
+    const renderFooter = () => (
+      <View style={{ marginBottom: 5 }}>
+        <TCTouchableLabel
+              title={
+                  strings.addPayoutMessage
+              }
+              showNextArrow={true}
+              onPress={() => {
+                // openNewCardScreen()
+                navigation.navigate('PayoutMethodScreen');
+              }}
+            />
+      </View>
+    )
+
+    return (
+      <View style={styles.mainContainer}>
+        <ActivityLoader visible={loading} />
+        <Text style={{
+          marginLeft: 15, marginTop: 15, color: colors.lightBlackColor, fontFamily: fonts.RRegular, fontSize: 20,
+        }}>{strings.selectPayoutMethod}</Text>
+        <TCInnerLoader visible={firstTimeLoad} size={50}/>
+        {!firstTimeLoad && (
+          <FlatList
+                  style={{ marginTop: 15 }}
+                  data={cards}
+                  renderItem={renderCard}
+                  keyExtractor={(item) => item.id}
+                  ListFooterComponent={renderFooter}
+                  showsVerticalScrollIndicator={false}
+                  showsHorizontalScrollIndicator={false}
+              />
+          )}
+      </View>
+    );
+  }
+  const styles = StyleSheet.create({
+    mainContainer: {
+      flex: 1,
+      backgroundColor: colors.grayBackgroundColor,
+    },
+    nextButtonStyle: {
+      fontFamily: fonts.RRegular,
+      fontSize: 16,
+      marginRight: 10,
+    },
+    paymentCardRow: {
+      marginBottom: 10,
+      marginLeft: 15,
+      marginRight: 15,
+      shadowColor: colors.grayColor,
+      shadowOffset: { width: 0, height: -2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 3,
+      borderRadius: 10,
+      elevation: 2,
+      height: 70,
+      backgroundColor: colors.whiteColor,
+      justifyContent: 'center',
+      paddingHorizontal: 15,
+
+    },
+  })

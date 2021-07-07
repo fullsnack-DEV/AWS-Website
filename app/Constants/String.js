@@ -511,8 +511,11 @@ const strings = {
   lastnamevalidation: 'Last name cannot be blank',
   locationvalidation: 'Location cannot be blank',
   addOptionMessage: '+ Add a payment method',
+  addPayoutMessage: '+ Add a payout method',
+
   selectPaymentText: 'Please select payment method.',
   selectPaymentMethod: 'Select a payment method',
+  selectPayoutMethod: 'Select a payout method',
   cannotAcceptText:
     'Reservation can not be change after game has been started.',
   refereeOfferExpiryText: 'Offer expired or game start time already passed.',

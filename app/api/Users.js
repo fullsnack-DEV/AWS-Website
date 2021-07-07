@@ -115,6 +115,11 @@ export const paymentMethods = (authContext) => makeAPIRequest({
   authContext,
 });
 
+export const payoutMethods = (authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/payments/accounts`,
+  authContext,
+});
 export const merchantAuthDetail = (authID, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/payments/teams/${authID}/authdetail`,

@@ -157,6 +157,19 @@ export const clearStorage = async () => {
   }
 };
 
+export function logCurrentStorage() {
+  AsyncStorage.getAllKeys().then((keyArray) => {
+    AsyncStorage.multiGet(keyArray).then((keyValArray) => {
+      const myStorage = {};
+      for (const keyVal of keyValArray) {
+        myStorage[keyVal[0]] = keyVal[1]
+      }
+
+      console.log('CURRENT STORAGE: ', myStorage);
+    })
+  });
+}
+
 export const widthPercentageToDP = (widthPercent) => {
   const screenWidth = Dimensions.get('window').width;
   const elemWidth = parseFloat(widthPercent);

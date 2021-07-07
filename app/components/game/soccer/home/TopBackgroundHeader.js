@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import {
-  Image, Platform, StyleSheet, Text, TouchableOpacity, View, Alert,
+  Image, StyleSheet, Text, TouchableOpacity, View, Alert,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
@@ -232,27 +232,36 @@ const TopBackgroundHeader = ({
   const onScroll = useCallback((e) => (onEndReached ? onReachedEnd(e) : null), [onEndReached, onReachedEnd])
 
   const renderTopHeader = useMemo(() => (
-    <Header
-          barStyle={'light-content'}
-          safeAreaStyle={{ position: 'absolute' }}
-          leftComponent={
-            <TouchableOpacity onPress={handleGoBack}>
-              <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <View style={styles.headerCenterStyle}>
-              {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
-            </View>
-          }
-      />
+    <View style={{
+  height: 90, top: 0, flexDirection: 'row',
+    }}>
+      <TouchableOpacity onPress={handleGoBack} style={{ marginTop: 55, marginLeft: 15 }}>
+        <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.lightBlackColor }} />
+      </TouchableOpacity>
 
-  ), [handleGoBack, headerTitleShown])
+    </View>
+    // <Header
+    //       barStyle={'light-content'}
+    //       safeAreaStyle={{ position: 'absolute' }}
+    //       leftComponent={
+    //         <TouchableOpacity onPress={handleGoBack} style>
+    //           <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.lightBlackColor }} />
+    //         </TouchableOpacity>
+    //       }
+    //       centerComponent={
+    //         <View style={styles.headerCenterStyle}>
+    //           {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
+    //         </View>
+    //       }
+    //   />
+
+  ), [handleGoBack])
 
   return (
     <View style={{ flex: 1 }}>
       <ActivityLoader visible={loading}/>
       {renderTopHeader}
+
       <ParallaxScrollView
           onScroll={onScroll}
           bounces={false}
@@ -260,7 +269,7 @@ const TopBackgroundHeader = ({
             backgroundColor="transparent"
              contentBackgroundColor="white"
             parallaxHeaderHeight={200}
-             stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
+              // stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
             fadeOutForeground={false}
             onChangeHeaderVisibility={(isShown) => isShown !== headerTitleShown && setHeaderTitleShown(isShown)}
             renderFixedHeader={renderFixedHeader}
@@ -345,6 +354,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RBold,
     alignSelf: 'center',
+    color: colors.lightBlackColor,
   },
   closeHeaderCenterStyle: {
     alignItems: 'center',

@@ -36,6 +36,7 @@ const FeedsScreen = ({ navigation }) => {
   const [footerLoading, setFooterLoading] = useState(false);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
   const [pullRefresh, setPullRefresh] = useState(false);
+  const [feedCalled, setFeedCalled] = useState(false);
 
   useEffect(() => {
       setFirstTimeLoading(true);
@@ -43,6 +44,7 @@ const FeedsScreen = ({ navigation }) => {
       setCurrentUserDetail(entity.obj || entity.auth.user);
       getNewsFeed(authContext)
           .then((response) => {
+            setFeedCalled(true)
             setFirstTimeLoading(false);
             setPostData([...response.payload.results])
           })
@@ -279,8 +281,9 @@ const FeedsScreen = ({ navigation }) => {
           footerLoading={footerLoading && isNextDataLoading}
           onLikePress={onLikePress}
           onEndReached={onEndReached}
+          feedAPI={feedCalled}
       />
-  ), [editPostDoneCall, footerLoading, isNextDataLoading, navigation, onDeletePost, onEndReached, onLikePress, onRefreshPress, postData, pullRefresh, updateCommentCount])
+  ), [editPostDoneCall, feedCalled, footerLoading, isNextDataLoading, navigation, onDeletePost, onEndReached, onLikePress, onRefreshPress, postData, pullRefresh, updateCommentCount])
 
   const renderTopHeader = useMemo(() => (
     <>
