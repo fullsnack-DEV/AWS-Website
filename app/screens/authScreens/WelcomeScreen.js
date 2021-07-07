@@ -465,89 +465,166 @@ export default function WelcomeScreen({ navigation }) {
       });
   };
 
+  // const handleIOSAppleLogin = async () => {
+  //   console.log('Apple login clicked..');
+  //   if (!appleAuth.isSupported) {
+  //     alert('Apple Login not supported');
+  //   } else {
+  //     setloading(true);
+  //     let email, firstName, lastName;
+
+  //     const appleAuthRequestResponse = await appleAuth
+  //       .performRequest({
+  //         requestedOperation: appleAuth.Operation.LOGIN,
+  //         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+  //       })
+
+  //         console.log('appleAuthRequestResponse', appleAuthRequestResponse);
+  //         if (appleAuthRequestResponse.email) {
+  //           email = appleAuthRequestResponse.email;
+  //           firstName = appleAuthRequestResponse.fullName.givenName;
+  //           lastName = appleAuthRequestResponse.fullName.familyName;
+
+  //           AsyncStorage.setItem('appleemail', appleAuthRequestResponse.email);
+  //           AsyncStorage.setItem('applefirstname', appleAuthRequestResponse.fullName.givenName);
+  //           AsyncStorage.setItem('applelastname', appleAuthRequestResponse.fullName.familyName);
+
+  //           console.log('email found in apple');
+  //         } else {
+  //          const e = await AsyncStorage.getItem('appleemail');
+  //          const f = await AsyncStorage.getItem('applefirstname');
+  //          const l = await AsyncStorage.getItem('applelastname');
+
+  //           alert(email);
+  //           console.log('appleDetail storage', e, f, l);
+  //         }
+
+  //         // if (!appleAuthRequestResponse?.identityToken) {
+  //         //   setloading(false);
+  //         //   setTimeout(() => {
+  //         //     Alert.alert('Apple Sign-In failed - no identify token returned');
+  //         //   }, 200);
+  //         // } else {
+  //         //   // Create a Firebase credential from the response
+
+  //         //   const { identityToken, nonce } = appleAuthRequestResponse;
+  //         //   console.log(
+  //         //     'appleAuthRequestResponse',
+  //         //     JSON.stringify(appleAuthRequestResponse),
+  //         //   );
+
+  //           // commonCheckEmailVerification({
+  //           //   email,
+  //           //   provider: 'apple',
+  //           //   successCallback: async () => {
+  //           //     const appleCredential = await auth.AppleAuthProvider.credential(
+  //           //       identityToken,
+  //           //       nonce,
+  //           //     );
+  //           //     await signInSignUpWithSocialCredential(
+  //           //       appleCredential,
+  //           //       'APPLE iOS| ',
+  //           //       {
+  //           //         first_name: firstName,
+  //           //         last_name: lastName,
+  //           //       },
+  //           //     );
+  //           //   },
+  //           // });
+  //         }
+  // };
+
   const handleIOSAppleLogin = async () => {
-    console.log('Apple login clicked..');
     if (!appleAuth.isSupported) {
       alert('Apple Login not supported');
     } else {
-      console.log('Apple login supported..');
-
       setloading(true);
-
-      //  appleAuth.performRequest({
-      //   requestedOperation: appleAuth.Operation.LOGOUT,
-      // }).then(() => {
-
-      // })
-      Utility.logCurrentStorage();
-
       let email, firstName, lastName;
+      // let appleAuthRequestResponse;
+      //  try {
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      });
+      console.log(' appleAuthRequestResponse', appleAuthRequestResponse);
 
-      appleAuth
-        .performRequest({
-          requestedOperation: appleAuth.Operation.LOGIN,
-          requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-        })
-        .then(async (appleAuthRequestResponse) => {
-          console.log('appleAuthRequestResponse', appleAuthRequestResponse);
+      //  } catch (e) {
+      //    setloading(false)
+      //   console.log('Error')
+      //   }
 
-          if (appleAuthRequestResponse.email) {
-            email = appleAuthRequestResponse.email;
-            firstName = appleAuthRequestResponse.fullName.givenName;
-            lastName = appleAuthRequestResponse.fullName.familyName;
+      if (appleAuthRequestResponse?.email !== null) {
+        email = appleAuthRequestResponse.email;
+        firstName = appleAuthRequestResponse.fullName.givenName;
+        lastName = appleAuthRequestResponse.fullName.familyName;
 
-            AsyncStorage.setItem('appleemail', email);
-            AsyncStorage.setItem('applefirstname', firstName);
-            AsyncStorage.setItem('applelastname', lastName);
-          } else {
-            email = await AsyncStorage.getItem('appleemail');
-            firstName = await AsyncStorage.getItem('applefirstname');
-            lastName = await AsyncStorage.getItem('applelastname');
+        AsyncStorage.setItem('appleemail', appleAuthRequestResponse?.email);
+        AsyncStorage.setItem(
+          'applefirstname',
+          appleAuthRequestResponse?.fullName?.givenName,
+        );
+        AsyncStorage.setItem(
+          'applelastname',
+          appleAuthRequestResponse?.fullName?.familyName,
+        );
 
-            console.log('appleDetail storage', email, firstName, lastName);
-          }
-
-          //  Utility.setStorage('appleDetail', {
-          //   email: appleAuthRequestResponse.email,
-          //   firstName: appleAuthRequestResponse.fullName.givenName,
-          //   lastName: appleAuthRequestResponse.fullName.familyName,
-          // });
-
-          if (!appleAuthRequestResponse?.identityToken) {
-            setloading(false);
-            setTimeout(() => {
-              Alert.alert('Apple Sign-In failed - no identify token returned');
-            }, 200);
-          } else {
-            // Create a Firebase credential from the response
-
-            const { identityToken, nonce } = appleAuthRequestResponse;
-            console.log(
-              'appleAuthRequestResponse',
-              JSON.stringify(appleAuthRequestResponse),
+        console.log('email found in apple');
+      } else {
+        const e = await AsyncStorage.getItem('appleemail');
+        if (appleAuthRequestResponse?.email === null && e === null) {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(
+              'Please go to setting -> Click on Apple ID -> Password & Security -> Apps using Apple ID -> Click on your app -> Stop using Apple ID and then start login with apple.',
             );
+          }, 10);
+          return;
+        }
+        const f = await AsyncStorage.getItem('applefirstname');
+        const l = await AsyncStorage.getItem('applelastname');
+        console.log('appleDetail storage', e, f, l);
 
-            commonCheckEmailVerification({
-              email,
-              provider: 'apple',
-              successCallback: async () => {
-                const appleCredential = await auth.AppleAuthProvider.credential(
-                  identityToken,
-                  nonce,
-                );
-                await signInSignUpWithSocialCredential(
-                  appleCredential,
-                  'APPLE iOS| ',
-                  {
-                    first_name: firstName,
-                    last_name: lastName,
-                  },
-                );
+        email = e;
+        firstName = f;
+        lastName = l;
+
+        console.log('appleDetail storage', email, firstName, lastName);
+      }
+
+      const e = await AsyncStorage.getItem('appleemail');
+      const f = await AsyncStorage.getItem('applefirstname');
+      const l = await AsyncStorage.getItem('applelastname');
+
+      console.log('storage', e, f, l);
+
+      if (!appleAuthRequestResponse?.identityToken) {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert('Apple Sign-In failed - no identify token returned');
+        }, 10);
+      } else {
+        const { identityToken, nonce } = appleAuthRequestResponse;
+        commonCheckEmailVerification({
+          email,
+          provider: 'apple',
+          successCallback: async () => {
+            const appleCredential = await auth.AppleAuthProvider.credential(
+              identityToken,
+              nonce,
+            );
+            await signInSignUpWithSocialCredential(
+              appleCredential,
+              'APPLE iOS| ',
+              {
+                first_name: firstName,
+                last_name: lastName,
               },
-            });
-          }
-        })
-        .catch(() => setloading(false));
+            );
+          },
+        });
+      }
+
+      // setloading(false);
     }
   };
 

@@ -435,6 +435,7 @@ const EditPostScreen = ({
             onChangeText={setSearchText}
             style={styles.textInputField}
             multiline={ true }
+            autoCapitalize='none'
             textAlignVertical={'top'}
         >
           <ParsedText

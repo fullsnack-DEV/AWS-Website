@@ -27,6 +27,8 @@ import Modal from 'react-native-modal';
 // import ActionSheet from 'react-native-actionsheet';
 // import { useIsDrawerOpen } from '@react-navigation/drawer';
 import MarqueeText from 'react-native-marquee';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
@@ -530,9 +532,16 @@ export default function AccountScreen({ navigation, route }) {
   const onLogout = useCallback(async () => {
     QBLogout();
     firebase.auth().signOut();
+    const email = await AsyncStorage.getItem('appleemail');
+    const firstName = await AsyncStorage.getItem('applefirstname');
+    const lastName = await AsyncStorage.getItem('applelastname');
     await Utility.clearStorage();
     await authContext.setUser(null);
     await authContext.setEntity(null);
+
+    AsyncStorage.setItem('appleemail', email);
+    AsyncStorage.setItem('applefirstname', firstName);
+    AsyncStorage.setItem('applelastname', lastName);
   }, [authContext]);
 
   const handleLogOut = useCallback(async () => {
