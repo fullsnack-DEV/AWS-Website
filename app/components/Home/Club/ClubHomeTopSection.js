@@ -116,10 +116,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   userButtonOuterStyle: {
+    flex: 1,
     margin: 0,
     marginTop: 0,
     height: 28,
-    width: '90%',
+    marginHorizontal: 5,
     shadowColor: colors.grayColor,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,

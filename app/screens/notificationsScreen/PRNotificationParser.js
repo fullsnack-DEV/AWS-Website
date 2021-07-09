@@ -481,7 +481,10 @@ export const parseInviteRequest = async (data) => {
 }
 
 const parseNormalNotification = async (data) => {
+  console.log('ALL DATA:=>', data);
   const activity = data.activities[0]
+  let activity2;
+
   let notificationObject
 
   const finalString = {}
@@ -494,6 +497,13 @@ const parseNormalNotification = async (data) => {
   finalString.entityType = activity.actor.data.entity_type === 'player' ? 'user' : activity.actor.data.entity_type
   finalString.entityId = activity.actor.id
   finalString.firstTitle = activity.actor.data.full_name
+
+  if (data.activities.length > 1) {
+    activity2 = data.activities[1]
+    finalString.entityType1 = activity2?.actor?.data?.entity_type === 'player' ? 'user' : activity2?.actor?.data?.entity_type
+    finalString.entityId1 = activity2?.actor?.id
+    finalString.firstTitle1 = activity2?.actor?.data?.full_name
+ }
 
   if (data.actor_count > 2) {
     finalString.firstTitle = `${finalString.firstTitle}, ${data.activities[1].actor.data.full_name}`

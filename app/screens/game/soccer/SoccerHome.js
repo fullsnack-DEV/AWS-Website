@@ -4,6 +4,7 @@ import React, {
 import {
   View,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import TopBackgroundHeader from '../../../components/game/soccer/home/TopBackgroundHeader';
@@ -24,6 +25,7 @@ import {
   getGameStats,
   getSportsList,
   getAllLineUp, getGameNextFeed,
+  resetGame,
 } from '../../../api/Games';
 import AuthContext from '../../../auth/context';
 import { followUser, unfollowUser } from '../../../api/Users';
@@ -31,11 +33,14 @@ import { followUser, unfollowUser } from '../../../api/Users';
 import LineUp from '../../../components/game/soccer/home/lineUp/LineUp';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
 import GameHomeShimer from '../../../components/shimmer/game/GameHomeShimer';
+import strings from '../../../Constants/String';
+import GameStatus from '../../../Constants/GameStatus';
 
 const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Gallery']
 const SoccerHome = ({ navigation, route }) => {
   const gameFeedFlatListRef = useRef(null);
   const isFocused = useIsFocused();
+
   const authContext = useContext(AuthContext)
   const [soccerGameId] = useState(route?.params?.gameId);
   const [currentTab, setCurrentTab] = useState(0);
@@ -180,7 +185,20 @@ const SoccerHome = ({ navigation, route }) => {
           onBackPress={route?.params?.onBackPress}
           isAdmin={isAdmin}
           navigation={navigation}
-          gameData={gameData}>
+          gameData={gameData}
+          onResetGame={() => {
+            if (
+              gameData?.status === GameStatus.accepted
+              || gameData?.status === GameStatus.reset
+            ) {
+              Alert.alert(strings.gameNotStarted);
+            } else if (gameData?.status === GameStatus.ended) {
+              Alert.alert(strings.gameEnded);
+            } else {
+               resetGameDetail(gameData?.game_id);
+            }
+          }}
+          >
       <TCScrollableProfileTabs
             tabItem={TAB_ITEMS}
             onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
@@ -189,6 +207,21 @@ const SoccerHome = ({ navigation, route }) => {
         />
     </TopBackgroundHeader>
   ), [currentTab, gameData, isAdmin, navigation, onEndReached, renderTabContain, route?.params?.onBackPress])
+
+  const resetGameDetail = useCallback((gameId) => {
+    setLoading(true);
+    resetGame(gameId, authContext)
+      .then((response) => {
+        setLoading(false);
+        console.log('RESET GAME RESPONSE::', response.payload);
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext])
 
   return (
     <View style={styles.mainContainer}>

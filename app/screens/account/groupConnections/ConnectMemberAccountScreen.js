@@ -51,7 +51,7 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
     });
   }, [navigation, switchUser, members, searchMember, loading])
 
-  const getMembers = async () => {
+  const getMembers = () => {
     setloading(true)
     getGroupMembers(route.params.groupID, authContext)
       .then((response) => {
@@ -59,8 +59,9 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
         response.payload.map((e) => {
           e.isSelect = false;
         });
-        setMembers(response.payload.filter((obj) => obj.group_member_detail.connected === false && obj.group_member_detail.canConnect === true))
-        setSearchMember(response.payload.filter((obj) => obj.group_member_detail.connected === false && obj.group_member_detail.canConnect === true))
+        const data = response.payload.filter((obj) => obj.group_member_detail.connected === false && obj.group_member_detail.canConnect === true)
+        setMembers(data)
+        setSearchMember(data)
         setloading(false);
       })
       .catch((e) => {
@@ -93,6 +94,7 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
     const result = searchMember.filter(
       (x) => x.first_name.includes(text) || x.last_name.includes(text),
     );
+    console.log(result);
     setMembers(result);
   };
   const renderMembers = ({ item }) => (
