@@ -108,9 +108,9 @@ export default function LocalHomeScreen({ navigation, route }) {
   useEffect(() => {
     if (isFocused) {
       getAppSettings(authContext)
-      .then((response) => {
+      .then(async (response) => {
         console.log('Settings:=>', response);
-        setSettings(response.payload.app);
+        await Utility.setStorage('appSetting', response.payload.app);
       })
       .catch((e) => {
         setTimeout(() => {
@@ -120,10 +120,6 @@ export default function LocalHomeScreen({ navigation, route }) {
       });
     }
   }, [authContext]);
-
-  const setSettings = useCallback(async (appSettingObj) => {
-    await Utility.setStorage('appSetting', appSettingObj);
-  }, []);
 
   useEffect(() => {
     if (isFocused) {

@@ -15,6 +15,7 @@ import images from '../../Constants/ImagePath'
 function SelectedImageList({
   data, onItemPress, itemNumber, totalItemNumber, isClose = true, isCounter = true,
 }) {
+  console.table(data);
   const [showExtraButtons, setShowExtraButtons] = useState(false);
   const videoPlayerRef = useRef();
   return (
@@ -51,7 +52,7 @@ function SelectedImageList({
             ref={videoPlayerRef}
             paused={true}
             muted={true}
-            source={{ uri: data.path || data.thumbnail }}
+             source={{ uri: data.path || data.thumbnail }}
             style={styles.uploadedImage}
             resizeMode={'cover'}
             onLoad={() => {

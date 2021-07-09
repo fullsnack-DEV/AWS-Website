@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+ useState, useEffect, useContext,
+} from 'react';
 import {
   View,
   Text,
@@ -6,6 +8,7 @@ import {
   FlatList,
   TouchableWithoutFeedback,
   StyleSheet,
+
 } from 'react-native';
 import {
   widthPercentageToDP as wp,

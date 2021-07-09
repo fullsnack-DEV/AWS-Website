@@ -1,7 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, {
- useEffect, useState, useContext,
- } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -20,11 +18,7 @@ import {
 } from 'react-native-responsive-screen';
 import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
-import {
-
-  getFeesEstimation,
-  createChallenge,
-} from '../../../api/Challenge';
+import { getFeesEstimation, createChallenge } from '../../../api/Challenge';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
@@ -62,6 +56,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
 
   const [settingObject, setSettingObject] = useState(setting);
 
+  console.log('setting:=>', setting);
   const [teams, setteams] = useState([]);
 
   // useEffect(() => {
@@ -410,7 +405,9 @@ export default function InviteChallengeScreen({ navigation, route }) {
         <TCChallengeTitle
           title={'Game Fee'}
           value={settingObject?.game_fee?.fee}
-          staticValueText={`${settingObject?.game_fee?.currency_type || ''} /Game`}
+          staticValueText={`${
+            settingObject?.game_fee?.currency_type || ''
+          } /Game`}
           valueStyle={{
             fontFamily: fonts.RBold,
             fontSize: 16,
@@ -704,8 +701,8 @@ export default function InviteChallengeScreen({ navigation, route }) {
 
         <TCChallengeTitle
           title={'Referees'}
-          value={settingObject?.responsible_for_referee?.who_secure?.length}
-          staticValueText={'Referees'}
+          value={settingObject?.responsible_for_referee?.who_secure !== 'None' ? settingObject?.responsible_for_referee?.who_secure?.length : ''}
+          staticValueText={settingObject?.responsible_for_referee?.who_secure !== 'None' ? 'Referees' : ''}
           valueStyle={{
             fontFamily: fonts.RBold,
             fontSize: 16,
@@ -722,20 +719,32 @@ export default function InviteChallengeScreen({ navigation, route }) {
           }}
         />
 
-        <FlatList
-          data={settingObject?.responsible_for_referee?.who_secure}
-          renderItem={renderReferees}
-          keyExtractor={(item, index) => index.toString()}
-          ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
-          style={{ marginBottom: 15 }}
-        />
+        {settingObject?.responsible_for_referee?.who_secure !== 'None' ? (
+          <FlatList
+            data={settingObject?.responsible_for_referee?.who_secure}
+            renderItem={renderReferees}
+            keyExtractor={(item, index) => index.toString()}
+            ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
+            style={{ marginBottom: 15 }}
+          />
+        ) : (
+          <Text
+            style={{
+              color: colors.grayColor,
+              fontFamily: fonts.RMedium,
+              fontSize: 16,
+              marginLeft: 15,
+            }}>
+            No Referees
+          </Text>
+        )}
 
         <TCThickDivider marginTop={20} />
 
         <TCChallengeTitle
           title={'Scorekeepers'}
-          value={settingObject?.responsible_for_scorekeeper?.who_secure?.length}
-          staticValueText={'Scorekeepers'}
+          value={settingObject?.responsible_for_scorekeeper?.who_secure !== 'None' ? settingObject?.responsible_for_scorekeeper?.who_secure?.length : ''}
+          staticValueText={settingObject?.responsible_for_scorekeeper?.who_secure !== 'None' ? 'Scorekeepers' : ''}
           valueStyle={{
             fontFamily: fonts.RBold,
             fontSize: 16,
@@ -751,13 +760,24 @@ export default function InviteChallengeScreen({ navigation, route }) {
             });
           }}
         />
-        <FlatList
+        {settingObject?.responsible_for_scorekeeper?.who_secure !== 'None'
+          ? <FlatList
           data={settingObject?.responsible_for_scorekeeper?.who_secure}
           renderItem={renderScorekeepers}
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
           style={{ marginBottom: 15 }}
         />
+          : <Text
+            style={{
+              color: colors.grayColor,
+              fontFamily: fonts.RMedium,
+              fontSize: 16,
+              marginLeft: 15,
+            }}>
+            No Scorekeepers
+          </Text>
+        }
         <TCThickDivider marginTop={20} />
 
         {!totalZero && (
@@ -775,22 +795,22 @@ export default function InviteChallengeScreen({ navigation, route }) {
 
       <TCGradientButton
         isDisabled={
-          !route?.params?.startTime
-          || !route?.params?.endTime
-          || !venue
+          !route?.params?.startTime || !route?.params?.endTime || !venue
         }
         title={strings.sendInviteTitle}
         onPress={() => {
           // navigation.push('ChallengePaymentScreen');
           // navigation.push('InviteToChallengeSentScreen');
-          if (new Date(route?.params?.startTime).getTime() < new Date().getTime()) {
+          if (
+            new Date(route?.params?.startTime).getTime() < new Date().getTime()
+          ) {
             Alert.alert(
               strings.alertmessagetitle,
               'Please choose future time for challenge.',
             );
-        } else {
-          sendChallengeInvitation();
-        }
+          } else {
+            sendChallengeInvitation();
+          }
         }}
         outerContainerStyle={{
           marginBottom: 45,
@@ -799,7 +819,6 @@ export default function InviteChallengeScreen({ navigation, route }) {
           marginTop: 15,
         }}
       />
-
     </TCKeyboardView>
   );
 }

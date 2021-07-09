@@ -32,9 +32,9 @@ import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 export default function SignupScreen({ navigation }) {
   const authContext = useContext(AuthContext)
   const dummyAuthContext = { ...authContext }
-  const [fName, setFName] = useState('Raj ');
-  const [lName, setLName] = useState('Kapoor ');
-  const [email, setEmail] = useState('rajkapoordev+10@gmail.com');
+  const [fName, setFName] = useState('Kishan');
+  const [lName, setLName] = useState('Makani');
+  const [email, setEmail] = useState('makani20@gmail.com');
   const [password, setPassword] = useState('123456');
   const [cPassword, setCPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(false);
