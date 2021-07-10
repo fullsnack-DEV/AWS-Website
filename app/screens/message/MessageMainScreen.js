@@ -44,7 +44,7 @@ const MessageMainScreen = ({ navigation }) => {
     total: 0,
   });
   const isFocused = useIsFocused();
-
+console.log('Auth context:', authContext?.entity?.QB);
   useEffect(() => {
     if (!authContext?.entity?.QB) navigation.dispatch(StackActions.popToTop());
   }, [authContext?.entity?.QB, navigation])
@@ -94,6 +94,7 @@ const MessageMainScreen = ({ navigation }) => {
   }
 
   const connectAndSubscribe = async () => {
+    console.log('authContext?.entity', authContext?.entity);
     await QBconnectAndSubscribe(authContext?.entity);
     await QBsetupSettings();
     await getDialogs();

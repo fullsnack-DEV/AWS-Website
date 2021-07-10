@@ -2954,7 +2954,7 @@ const HomeScreen = ({ navigation, route }) => {
       .then(() => {
         const {
  USER, CLUB, LEAGUE, TEAM,
- } = QB_ACCOUNT_TYPE;
+} = QB_ACCOUNT_TYPE;
         let accountType = USER;
         if (entityType === 'club') accountType = CLUB;
         else if (entityType === 'team') accountType = TEAM;
@@ -4425,7 +4425,10 @@ const HomeScreen = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.goToProfileButton}
             onPress={() => {
-              setIsDoubleSportTeamCreatedVisible(false);
+              navigation.popToTop();
+              setTimeout(() => {
+                setIsDoubleSportTeamCreatedVisible(false);
+              }, 10);
             }}>
             <Text style={styles.goToProfileTitle}>OK</Text>
           </TouchableOpacity>

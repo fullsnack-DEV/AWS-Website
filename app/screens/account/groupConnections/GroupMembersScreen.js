@@ -2,13 +2,12 @@ import React, {
   useState, useLayoutEffect, useRef, useEffect, useContext, useCallback,
 } from 'react';
 import {
-  Dimensions,
-  Text,
+
   View,
   StyleSheet,
   Image,
   TouchableWithoutFeedback,
-  SectionList,
+
   Alert,
   FlatList,
 
@@ -16,8 +15,8 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 
 import ActionSheet from 'react-native-actionsheet';
-import Modal from 'react-native-modal';
-import LinearGradient from 'react-native-linear-gradient';
+// import Modal from 'react-native-modal';
+// import LinearGradient from 'react-native-linear-gradient';
 import QB from 'quickblox-react-native-sdk';
 import AuthContext from '../../../auth/context'
 import UserRoleView from '../../../components/groupConnections/UserRoleView';
@@ -31,64 +30,14 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 import images from '../../../Constants/ImagePath'
 import colors from '../../../Constants/Colors'
-import fonts from '../../../Constants/Fonts'
-import TCThinDivider from '../../../components/TCThinDivider';
+// import fonts from '../../../Constants/Fonts'
+// import TCThinDivider from '../../../components/TCThinDivider';
 import strings from '../../../Constants/String';
 import {
   getQBAccountType, QB_DIALOG_TYPE, QBcreateDialog, QBcreateUser, QBgetUserDetail,
 } from '../../../utils/QuickBlox';
 import UserListShimmer from '../../../components/shimmer/commonComponents/UserListShimmer';
 
-// FIXME -this is static source for now we will inject with api call
-const filterArray = [
-  {
-    id: 1,
-    optionName: 'Teams',
-    data: [
-      {
-        id: 1,
-        innerOptionName: 'All Clubs',
-        isSelected: false,
-      },
-      {
-        id: 2,
-        innerOptionName: 'Tiger Youths',
-        isSelected: false,
-      },
-      {
-        id: 3,
-        innerOptionName: 'Tiger Cups',
-        isSelected: false,
-      },
-    ],
-  },
-  {
-    id: 2,
-    optionName: 'Roles',
-    data: [
-      {
-        id: 1,
-        innerOptionName: 'All',
-        isSelected: false,
-      },
-      {
-        id: 2,
-        innerOptionName: 'Admin',
-        isSelected: false,
-      },
-      {
-        id: 3,
-        innerOptionName: 'Coach',
-        isSelected: false,
-      },
-      {
-        id: 4,
-        innerOptionName: 'Player',
-        isSelected: false,
-      },
-    ],
-  },
-]
 let entity = {};
 export default function GroupMembersScreen({ navigation, route }) {
   const actionSheet = useRef();
@@ -99,9 +48,9 @@ export default function GroupMembersScreen({ navigation, route }) {
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
   const actionSheetInvite = useRef();
   const [searchMember, setSearchMember] = useState();
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [allSelected, setAllSelected] = useState(false);
-  const [filter, setFilter] = useState([filterArray]);
+  // const [isModalVisible, setModalVisible] = useState(false);
+  // const [allSelected, setAllSelected] = useState(false);
+  // const [filter, setFilter] = useState([]);
   const [members, setMembers] = useState();
   const [switchUser, setSwitchUser] = useState({})
 
@@ -143,58 +92,58 @@ export default function GroupMembersScreen({ navigation, route }) {
     });
   }, [navigation, switchUser]);
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-  const isIconCheckedOrNot = ({ item, index }) => {
-    console.log('SELECTED:::', index);
-    // eslint-disable-next-line no-param-reassign
-    item.isSelected = !item.isSelected;
+  // const toggleModal = () => {
+  //   setModalVisible(!isModalVisible);
+  // };
+  // const isIconCheckedOrNot = ({ item, index }) => {
+  //   console.log('SELECTED:::', index);
+  //   // eslint-disable-next-line no-param-reassign
+  //   item.isSelected = !item.isSelected;
 
-    setFilter([...filter]);
+  //   setFilter([...filter]);
 
-    for (const temp of filter) {
-      if (temp.isSelected) {
-        setFilter.push(temp.data);
-      }
-    }
-  };
-  const makAllSelected = () => {
-    setAllSelected(!allSelected)
-    const arr = filterArray.map((el) => (
-      // eslint-disable-next-line no-return-assign
-      el.data.map((d) => (
-      // eslint-disable-next-line no-param-reassign
-        d.isSelected = !allSelected
-      ))
-    ))
-    setFilter(arr);
-  }
+  //   for (const temp of filter) {
+  //     if (temp.isSelected) {
+  //       setFilter.push(temp.data);
+  //     }
+  //   }
+  // };
+  // const makAllSelected = () => {
+  //   setAllSelected(!allSelected)
+  //   const arr = filterArray.map((el) => (
+  //     // eslint-disable-next-line no-return-assign
+  //     el.data.map((d) => (
+  //     // eslint-disable-next-line no-param-reassign
+  //       d.isSelected = !allSelected
+  //     ))
+  //   ))
+  //   setFilter(arr);
+  // }
   const searchFilterFunction = (text) => {
     const result = searchMember.filter(
       (x) => x.first_name.includes(text) || x.last_name.includes(text),
     );
     setMembers(result);
   };
-  const renderFilterItem = ({ item, index }) => (
-    <TouchableWithoutFeedback onPress={() => {
-      isIconCheckedOrNot({ item, index });
-    }}>
+  // const renderFilterItem = ({ item, index }) => (
+  //   <TouchableWithoutFeedback onPress={() => {
+  //     isIconCheckedOrNot({ item, index });
+  //   }}>
 
-      {item.isSelected ? <LinearGradient
-       colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-       style={styles.rowStyleSelected}>
-        <Text style={styles.rowTitle}>{item.innerOptionName}</Text>
-        <Image source={images.checkGreen} style={styles.checkGreenImage}/>
-      </LinearGradient>
-        : <View
-        style={styles.rowStyleUnSelected}>
-          <Text style={styles.rowTitleBlack}>{item.innerOptionName}</Text>
-          <Image source={images.uncheckWhite} style={styles.rowCheckImage}/>
-        </View>
-      }
-    </TouchableWithoutFeedback>
-  );
+  //     {item.isSelected ? <LinearGradient
+  //      colors={[colors.greenGradientStart, colors.greenGradientEnd]}
+  //      style={styles.rowStyleSelected}>
+  //       <Text style={styles.rowTitle}>{item.innerOptionName}</Text>
+  //       <Image source={images.checkGreen} style={styles.checkGreenImage}/>
+  //     </LinearGradient>
+  //       : <View
+  //       style={styles.rowStyleUnSelected}>
+  //         <Text style={styles.rowTitleBlack}>{item.innerOptionName}</Text>
+  //         <Image source={images.uncheckWhite} style={styles.rowCheckImage}/>
+  //       </View>
+  //     }
+  //   </TouchableWithoutFeedback>
+  // );
 
   const navigateToGroupMessage = () => {
     setloading(true);
@@ -320,7 +269,7 @@ export default function GroupMembersScreen({ navigation, route }) {
                   }
                 }}
               />
-      {isModalVisible && <Modal
+      {/* {isModalVisible && <Modal
         isVisible={isModalVisible}
         backdropColor="black"
         backdropOpacity={0}
@@ -353,7 +302,7 @@ export default function GroupMembersScreen({ navigation, route }) {
                   showsVerticalScrollIndicator={false}
                 />
         </View>
-      </Modal>}
+      </Modal>} */}
     </View>
   );
 }
@@ -384,134 +333,134 @@ const styles = StyleSheet.create({
     width: 15,
   },
   // Model styles start from here
-  modelHeaderContainer: {
-    width: '100%',
-    height: Dimensions.get('window').height / 1.5,
-    backgroundColor: colors.whiteColor,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-  },
-  headerView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 70,
-    alignItems: 'center',
-    marginLeft: 20,
-    marginRight: 20,
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
-  },
-  closeButtonView: {
-    width: 30,
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    left: 0,
-  },
-  closeButton: {
-    width: 15,
-    height: 30,
-    resizeMode: 'contain',
-  },
+  // modelHeaderContainer: {
+  //   width: '100%',
+  //   height: Dimensions.get('window').height / 1.5,
+  //   backgroundColor: colors.whiteColor,
+  //   position: 'absolute',
+  //   bottom: 0,
+  //   left: 0,
+  //   borderTopLeftRadius: 30,
+  //   borderTopRightRadius: 30,
+  //   shadowColor: colors.googleColor,
+  //   shadowOffset: { width: 0, height: 1 },
+  //   shadowOpacity: 0.5,
+  //   shadowRadius: 5,
+  // },
+  // headerView: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   height: 70,
+  //   alignItems: 'center',
+  //   marginLeft: 20,
+  //   marginRight: 20,
+  // },
+  // headerTitle: {
+  //   fontSize: 16,
+  //   fontWeight: 'bold',
+  //   fontFamily: fonts.RBold,
+  //   color: colors.lightBlackColor,
+  // },
+  // closeButtonView: {
+  //   width: 30,
+  //   height: 30,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   left: 0,
+  // },
+  // closeButton: {
+  //   width: 15,
+  //   height: 30,
+  //   resizeMode: 'contain',
+  // },
 
-  doneButton: {
-    fontFamily: fonts.RRegular,
-    fontSize: 14,
-    color: colors.lightBlackColor,
-  },
+  // doneButton: {
+  //   fontFamily: fonts.RRegular,
+  //   fontSize: 14,
+  //   color: colors.lightBlackColor,
+  // },
 
-  allTextButton: {
-    fontSize: 14,
-    fontFamily: fonts.RMedium,
-    marginRight: 10,
-    alignSelf: 'flex-end',
-    color: colors.lightBlackColor,
-  },
-  checkImage: {
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
-  },
-  sectionListStyle: {
-    marginLeft: 25,
-    marginRight: 25,
-  },
-  SectionHeaderStyle: {
-    fontWeight: '600',
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    fontSize: 14,
-    marginBottom: 8,
-    backgroundColor: colors.whiteColor,
-  },
-  rowStyleSelected: {
-    height: 45,
-    borderRadius: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: 15,
-    paddingRight: 15,
-    marginBottom: 10,
-    resizeMode: 'contain',
-    justifyContent: 'space-between',
+  // allTextButton: {
+  //   fontSize: 14,
+  //   fontFamily: fonts.RMedium,
+  //   marginRight: 10,
+  //   alignSelf: 'flex-end',
+  //   color: colors.lightBlackColor,
+  // },
+  // checkImage: {
+  //   height: 22,
+  //   width: 22,
+  //   resizeMode: 'contain',
+  // },
+  // sectionListStyle: {
+  //   marginLeft: 25,
+  //   marginRight: 25,
+  // },
+  // SectionHeaderStyle: {
+  //   fontWeight: '600',
+  //   fontFamily: fonts.RMedium,
+  //   color: colors.lightBlackColor,
+  //   fontSize: 14,
+  //   marginBottom: 8,
+  //   backgroundColor: colors.whiteColor,
+  // },
+  // rowStyleSelected: {
+  //   height: 45,
+  //   borderRadius: 6,
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   paddingLeft: 15,
+  //   paddingRight: 15,
+  //   marginBottom: 10,
+  //   resizeMode: 'contain',
+  //   justifyContent: 'space-between',
 
-  },
-  rowStyleUnSelected: {
-    height: 45,
-    backgroundColor: colors.offwhite,
-    borderRadius: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: 15,
-    paddingRight: 15,
-    marginBottom: 10,
-    resizeMode: 'contain',
-    shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    justifyContent: 'space-between',
-  },
-  rowTitle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.whiteColor,
-  },
-  rowTitleBlack: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
-  rowCheckImage: {
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
-    tintColor: colors.whiteColor,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-  },
-  checkGreenImage: {
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
-  },
-  allButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginRight: 30,
-    marginTop: 20,
-  },
+  // },
+  // rowStyleUnSelected: {
+  //   height: 45,
+  //   backgroundColor: colors.offwhite,
+  //   borderRadius: 6,
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   paddingLeft: 15,
+  //   paddingRight: 15,
+  //   marginBottom: 10,
+  //   resizeMode: 'contain',
+  //   shadowColor: colors.blackColor,
+  //   shadowOffset: { width: 0, height: 1 },
+  //   shadowOpacity: 0.1,
+  //   shadowRadius: 1,
+  //   justifyContent: 'space-between',
+  // },
+  // rowTitle: {
+  //   fontSize: 16,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.whiteColor,
+  // },
+  // rowTitleBlack: {
+  //   fontSize: 16,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.lightBlackColor,
+  // },
+  // rowCheckImage: {
+  //   height: 22,
+  //   width: 22,
+  //   resizeMode: 'contain',
+  //   tintColor: colors.whiteColor,
+  //   shadowColor: colors.googleColor,
+  //   shadowOffset: { width: 0, height: 1 },
+  //   shadowOpacity: 0.5,
+  //   shadowRadius: 1,
+  // },
+  // checkGreenImage: {
+  //   height: 22,
+  //   width: 22,
+  //   resizeMode: 'contain',
+  // },
+  // allButtonContainer: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'flex-end',
+  //   marginRight: 30,
+  //   marginTop: 20,
+  // },
 });

@@ -6305,6 +6305,11 @@
   dependencies:
     "yallist" "^4.0.0"
 
+"luxon@^1.21.3":
+  "integrity" "sha512-TfTiyvZhwBYM/7QdAVDh+7dBTBA29v4ik0Ce9zda3Mnf8on1S5KJI8P2jKFZ8+5C0jhmr0KwJEO/Wdpm0VeWJQ=="
+  "resolved" "https://registry.npmjs.org/luxon/-/luxon-1.28.0.tgz"
+  "version" "1.28.0"
+
 "make-dir@^2.0.0":
   "integrity" "sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA=="
   "resolved" "https://registry.npmjs.org/make-dir/-/make-dir-2.1.0.tgz"
@@ -8651,6 +8656,15 @@
   "resolved" "https://registry.npmjs.org/rn-range-slider/-/rn-range-slider-2.0.3.tgz"
   "version" "2.0.3"
 
+"rrule@^2.6.4":
+  "integrity" "sha512-sLdnh4lmjUqq8liFiOUXD5kWp/FcnbDLPwq5YAc/RrN6120XOPb86Ae5zxF7ttBVq8O3LxjjORMEit1baluahA=="
+  "resolved" "https://registry.npmjs.org/rrule/-/rrule-2.6.4.tgz"
+  "version" "2.6.4"
+  dependencies:
+    "tslib" "^1.10.0"
+  optionalDependencies:
+    "luxon" "^1.21.3"
+
 "rsvp@^4.8.4":
   "integrity" "sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA=="
   "resolved" "https://registry.npmjs.org/rsvp/-/rsvp-4.8.5.tgz"
@@ -9600,7 +9614,7 @@
     "minimist" "^1.2.0"
     "strip-bom" "^3.0.0"
 
-"tslib@^1.8.1", "tslib@^1.9.0":
+"tslib@^1.10.0", "tslib@^1.8.1", "tslib@^1.9.0":
   "integrity" "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="
   "resolved" "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
   "version" "1.14.1"

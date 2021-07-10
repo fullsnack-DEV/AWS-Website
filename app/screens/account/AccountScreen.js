@@ -209,11 +209,11 @@ export default function AccountScreen({ navigation, route }) {
         .catch(() => reject('error'));
     });
 
-    useEffect(() => {
-      if (isFocused) {
-        onSwitchProfile(authContext?.entity)
-      }
-    }, [isFocused]);
+    // useEffect(() => {
+    //   if (isFocused) {
+    //     onSwitchProfile(authContext?.entity)
+    //   }
+    // }, [isFocused]);
 
   useEffect(() => {
     if (isFocused) {
@@ -277,7 +277,7 @@ export default function AccountScreen({ navigation, route }) {
             );
             setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
           }
-           // setloading(false);
+            setloading(false);
 
           // if (authContext?.entity?.QB) {
           //   setloading(false);

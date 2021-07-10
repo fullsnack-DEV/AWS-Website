@@ -35,10 +35,16 @@ export const QB_DIALOG_TYPE = {
 }
 const appSettings = {
   // Kishan Account - TC-New
-  appId: '88176',
-  authKey: 'bV7yDSst4mujpdV',
-  authSecret: 'C2ngELuNtr5uesg',
-  accountKey: 'idPrZuxa3UseWLaRFRQU',
+  // appId: '88176',
+  // authKey: 'bV7yDSst4mujpdV',
+  // authSecret: 'C2ngELuNtr5uesg',
+  // accountKey: 'idPrZuxa3UseWLaRFRQU',
+
+  // Vineet Account - TC-New
+  appId: '92185',
+  authKey: 'NGpyPS265yy4QBS',
+  authSecret: 'bdxqa7sDzbODJew',
+  accountKey: 'S3jzJdhgvNjrHTT8VRMi',
 };
 
 export const QBChatConnected = async () => QB.chat.isConnected()
