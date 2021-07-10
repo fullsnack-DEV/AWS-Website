@@ -16,6 +16,7 @@ function NotificationItem({
   useEffect(() => {
     parseNotification(data).then((response) => {
       setDataDictionary(response)
+      console.log('RESPONSE:=>', response);
     })
   }, []);
 
@@ -44,7 +45,7 @@ function NotificationItem({
               </TouchableWithoutFeedback>
               {dataDictionary.secondTitle && <Text>{`${strings.and} `}</Text>}
               {dataDictionary.secondTitle && <TouchableWithoutFeedback onPress={() => {
-                onPressSecondEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
+                onPressSecondEntity({ entityType: dataDictionary.entityType1, entityId: dataDictionary.entityId1 })
               }}>
                 <Text style={styles.boldTextStyle}>{`${dataDictionary.secondTitle} `}</Text>
               </TouchableWithoutFeedback>}

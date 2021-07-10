@@ -19,9 +19,7 @@ import GameStatus from '../../../../Constants/GameStatus';
 import { getChallengeDetail } from '../../../../screens/challenge/ChallengeUtility';
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../loader/ActivityLoader';
-import {
-  resetGame,
-} from '../../../../api/Games';
+
 import strings from '../../../../Constants/String';
 
 const bgImage = images.soccerBackground;
@@ -30,7 +28,7 @@ const updating = false;
 let lastDistance = null;
 
 const TopBackgroundHeader = ({
-  gameData, navigation, children, isAdmin, onBackPress, onEndReached,
+  gameData, navigation, children, isAdmin, onBackPress, onEndReached, onResetGame,
 }) => {
   const threeDotActionSheet = useRef();
   const [headerTitleShown, setHeaderTitleShown] = useState(true);
@@ -122,21 +120,21 @@ const TopBackgroundHeader = ({
   const onThreeDorPress = () => {
     threeDotActionSheet.current.show();
   }
-  const resetGameDetail = (gameId) => {
-    setloading(true);
-    resetGame(gameId, authContext)
-      .then((response) => {
-        setloading(false);
-        console.log('RESET GAME RESPONSE::', response.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-  const goToChallengeDetail = (data) => {
+  // const resetGameDetail = useCallback((gameId) => {
+  //   setloading(true);
+  //   resetGame(gameId, authContext)
+  //     .then((response) => {
+  //       setloading(false);
+  //       console.log('RESET GAME RESPONSE::', response.payload);
+  //     })
+  //     .catch((e) => {
+  //       setloading(false);
+  //       setTimeout(() => {
+  //         Alert.alert(strings.alertmessagetitle, e.message);
+  //       }, 10);
+  //     });
+  // }, [authContext])
+  const goToChallengeDetail = useCallback((data) => {
     if (data?.responsible_to_secure_venue) {
       setloading(true);
       getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
@@ -148,12 +146,13 @@ const TopBackgroundHeader = ({
         });
       }).catch(() => setloading(false));
     }
-  }
+  }, [authContext, navigation])
 
-  const handleGoBack = () => {
-    navigation.goBack();
+  const handleGoBack = useCallback(() => {
+    // navigation.goBack();
+    navigation.popToTop();
     if (onBackPress) onBackPress();
-  }
+  }, [navigation, onBackPress])
 
   const renderBackground = useCallback(() => (
     <FastImage
@@ -222,7 +221,7 @@ const TopBackgroundHeader = ({
           rightComponent={isAdmin
           && <TouchableOpacity onPress={onThreeDorPress}>
             <Image source={images.threeDotIcon} style={{
-              height: 22, width: 16, tintColor: colors.whiteColor, resizeMode: 'contain',
+              height: 22, width: 16, tintColor: colors.lightBlackColor, resizeMode: 'contain',
             }} />
           </TouchableOpacity>
           }
@@ -233,12 +232,17 @@ const TopBackgroundHeader = ({
 
   const renderTopHeader = useMemo(() => (
     <View style={{
-  height: 90, top: 0, flexDirection: 'row',
+  height: 90, top: 0, flexDirection: 'row', justifyContent: 'space-between',
     }}>
       <TouchableOpacity onPress={handleGoBack} style={{ marginTop: 55, marginLeft: 15 }}>
         <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.lightBlackColor }} />
       </TouchableOpacity>
-
+      {isAdmin
+          && <TouchableOpacity onPress={onThreeDorPress} style={{ marginTop: 55, marginRight: 15 }}>
+            <Image source={images.threeDotIcon} style={{
+              height: 22, width: 16, tintColor: colors.lightBlackColor, resizeMode: 'contain',
+            }} />
+          </TouchableOpacity>}
     </View>
     // <Header
     //       barStyle={'light-content'}
@@ -309,18 +313,7 @@ const TopBackgroundHeader = ({
                   {
                     text: 'Reset',
                     style: 'destructive',
-                    onPress: () => {
-                      if (
-                        gameData?.status === GameStatus.accepted
-                        || gameData?.status === GameStatus.reset
-                      ) {
-                        Alert.alert(strings.gameNotStarted);
-                      } else if (gameData?.status === GameStatus.ended) {
-                        Alert.alert(strings.gameEnded);
-                      } else {
-                        resetGameDetail(gameData?.game_id);
-                      }
-                    },
+                    onPress: () => { onResetGame() },
                   },
                 ],
                 { cancelable: false },
@@ -336,7 +329,7 @@ const TopBackgroundHeader = ({
                   onPress={onItemPress}
               />
           )
-        }, [gameData])}
+        }, [gameData, goToChallengeDetail])}
         {children}
       </ParallaxScrollView>
     </View>

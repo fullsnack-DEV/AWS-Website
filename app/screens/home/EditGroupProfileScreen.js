@@ -123,7 +123,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
 
   const nextOnPress = () => {
     setloading(true)
-    getGroupSearch(groupProfile?.group_name, groupProfile?.city, authContext).then((response) => {
+    getGroupSearch(groupProfile?.group_name, groupProfile?.city, groupProfile?.group_id, authContext).then((response) => {
       setloading(false);
       if (!response.payload) {
         onSaveButtonClicked()

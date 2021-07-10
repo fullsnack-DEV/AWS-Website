@@ -2891,6 +2891,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   console.log('authContext.entity.role ', authContext.entity.role === 'team');
   console.log('isTeamHome', isTeamHome);
+  console.log('currentUserData', currentUserData);
 
   const renderChallengeButton = useMemo(
     () => !loading
@@ -2908,8 +2909,8 @@ const HomeScreen = ({ navigation, route }) => {
                   ]}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={styles.buttonLeftText}>{`$${
-                      currentUserData.game_fee ?? '0'
-                    } ${currentUserData.currency_type}`}</Text>
+                      currentUserData?.game_fee ?? '0'
+                    } ${currentUserData?.currency_type ?? 'CAD'}`}</Text>
                     <Text style={styles.buttonTextSmall}>
                       {' '}
                       {strings.perHourText}
@@ -2953,7 +2954,7 @@ const HomeScreen = ({ navigation, route }) => {
       .then(() => {
         const {
  USER, CLUB, LEAGUE, TEAM,
- } = QB_ACCOUNT_TYPE;
+} = QB_ACCOUNT_TYPE;
         let accountType = USER;
         if (entityType === 'club') accountType = CLUB;
         else if (entityType === 'team') accountType = TEAM;
@@ -4424,7 +4425,10 @@ const HomeScreen = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.goToProfileButton}
             onPress={() => {
-              setIsDoubleSportTeamCreatedVisible(false);
+              navigation.popToTop();
+              setTimeout(() => {
+                setIsDoubleSportTeamCreatedVisible(false);
+              }, 10);
             }}>
             <Text style={styles.goToProfileTitle}>OK</Text>
           </TouchableOpacity>

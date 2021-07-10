@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
 /* eslint-disable react-native/split-platform-components */
 /* eslint-disable no-nested-ternary */
@@ -23,25 +24,27 @@ import Geolocation from '@react-native-community/geolocation';
 
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
-// import bodybuilder from 'bodybuilder';
-import { searchLocations, getLocationNameWithLatLong } from '../../api/External';// getLatLongFromPlaceID
+import bodybuilder from 'bodybuilder';
+import {
+  searchLocations,
+  getLocationNameWithLatLong,
+  getLatLongFromPlaceID,
+} from '../../api/External'; // getLatLongFromPlaceID
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import Separator from '../../components/Separator';
-import AuthContext from '../../auth/context'
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import AuthContext from '../../auth/context';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
-// import {
-//   postElasticSearch,
-// } from '../../api/elasticSearch';
+import { postElasticSearch } from '../../api/elasticSearch';
 import { searchGroups } from '../../api/Groups';
-import { updateUserProfile } from '../../api/Users';
+import { updateUserProfile, getAppSettingsWithoutAuth } from '../../api/Users';
 import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
 export default function ChooseLocationScreen({ navigation }) {
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
   const [currentLocation, setCurrentLocation] = useState();
   const [noData, setNoData] = useState(false);
@@ -59,42 +62,67 @@ export default function ChooseLocationScreen({ navigation }) {
     }
   }, []);
 
+  useEffect(() => {
+    console.log('Settings useEffect clled:=>');
+
+    getAppSettingsWithoutAuth()
+      .then(async (response) => {
+        console.log('Settings:=>', response);
+        await Utility.setStorage('appSetting', response.payload.app);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          console.log('catch -> location screen setting api');
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, []);
+
   const requestPermission = async () => {
     await PermissionsAndroid.requestMultiple([
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-    ]).then((result) => {
-      console.log('Data :::::', JSON.stringify(result));
-      if (
-        result['android.permission.ACCESS_COARSE_LOCATION']
-      && result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
-      ) {
-        getLocation();
-      }
-    }).catch((error) => {
-      console.warn(error);
-    })
-  }
+    ])
+      .then((result) => {
+        console.log('Data :::::', JSON.stringify(result));
+        if (
+          result['android.permission.ACCESS_COARSE_LOCATION']
+          && result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
+        ) {
+          getLocation();
+        }
+      })
+      .catch((error) => {
+        console.warn(error);
+      });
+  };
 
   const getLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
         console.log('Lat/long to position::=>', position);
-    // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
-        getLocationNameWithLatLong(position.coords.latitude, position.coords.longitude, authContext).then((res) => {
-          console.log('Lat/long to address::=>', res.results[0].address_components);
-          let stateAbbr, city, country
+        // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
+        getLocationNameWithLatLong(
+          position.coords.latitude,
+          position.coords.longitude,
+          authContext,
+        ).then((res) => {
+          console.log(
+            'Lat/long to address::=>',
+            res.results[0].address_components,
+          );
+          let stateAbbr, city, country;
           res.results[0].address_components.map((e) => {
             if (e.types.includes('administrative_area_level_1')) {
-              stateAbbr = e.short_name
+              stateAbbr = e.short_name;
             } else if (e.types.includes('locality')) {
-              city = e.short_name
+              city = e.short_name;
             } else if (e.types.includes('country')) {
-              country = e.long_name
+              country = e.long_name;
             }
-          })
+          });
           setCurrentLocation({ stateAbbr, city, country });
-        })
+        });
         console.log(position.coords.latitude);
       },
       (error) => {
@@ -103,18 +131,20 @@ export default function ChooseLocationScreen({ navigation }) {
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
-  }
+  };
 
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
-      searchLocations(searchLocationText, 'cities').then((response) => {
-        setNoData(false);
-        setCityData(response.predictions);
-      }).catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+      searchLocations(searchLocationText, 'cities')
+        .then((response) => {
+          setNoData(false);
+          setCityData(response.predictions);
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     } else {
       setNoData(true);
       setCityData([]);
@@ -129,197 +159,214 @@ export default function ChooseLocationScreen({ navigation }) {
       city: currentLocation.city,
     };
 
-    searchGroups(queryParams, authContext).then((response) => {
-      const userData = {
-        city: currentLocation.city,
-        state_abbr: currentLocation.stateAbbr,
-        country: currentLocation.country,
-      }
-      updateProfile(userData, () => {
-        if (response.payload.length > 0) {
-          navigation.navigate('TotalTeamsScreen', {
-            city: currentLocation?.city,
-            state: currentLocation?.stateAbbr,
-            country: currentLocation?.country,
-            totalTeams: response?.payload?.length,
-            teamData: response?.payload,
-          });
-        } else {
-          navigation.navigate('ChooseSportsScreen', {
-            city: currentLocation?.city,
-            state: currentLocation?.stateAbbr,
-            country: currentLocation?.country,
-          });
-        }
+    searchGroups(queryParams, authContext)
+      .then((response) => {
+        const userData = {
+          city: currentLocation.city,
+          state_abbr: currentLocation.stateAbbr,
+          country: currentLocation.country,
+        };
+        updateProfile(userData, () => {
+          if (response.payload.length > 0) {
+            navigation.navigate('TotalTeamsScreen', {
+              city: currentLocation?.city,
+              state: currentLocation?.stateAbbr,
+              country: currentLocation?.country,
+              totalTeams: response?.payload?.length,
+              teamData: response?.payload,
+            });
+          } else {
+            navigation.navigate('ChooseSportsScreen', {
+              city: currentLocation?.city,
+              state: currentLocation?.stateAbbr,
+              country: currentLocation?.country,
+            });
+          }
+        });
       })
-    }).catch((e) => {
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
 
   const updateProfile = async (params, callback) => {
     setLoading(true);
-    updateUserProfile(params, authContext).then(async (userResoponse) => {
-      const userData = userResoponse?.payload;
-      const entity = { ...authContext?.entity };
-      entity.auth.user = userData;
-      entity.obj = userData;
-      await Utility.setStorage('loggedInEntity', { ...entity })
-      await Utility.setStorage('authContextEntity', { ...entity })
-      await Utility.setStorage('authContextUser', { ...userData });
-      await authContext.setUser({ ...userData });
-      await authContext.setEntity({ ...entity });
-      setLoading(false);
-      callback();
-    }).catch(() => setLoading(false))
-  }
+    updateUserProfile(params, authContext)
+      .then(async (userResoponse) => {
+        const userData = userResoponse?.payload;
+        const entity = { ...authContext?.entity };
+        entity.auth.user = userData;
+        entity.obj = userData;
+        await Utility.setStorage('loggedInEntity', { ...entity });
+        await Utility.setStorage('authContextEntity', { ...entity });
+        await Utility.setStorage('authContextUser', { ...userData });
+        await authContext.setUser({ ...userData });
+        await authContext.setEntity({ ...entity });
+        setLoading(false);
+        callback();
+      })
+      .catch(() => setLoading(false));
+  };
 
   const getTeamsData = async (item) => {
-//     console.log('item location data:=>', item);
-//     // const queryParams = {
-//     //   state: currentLocation.stateAbbr,
-//     //   city: currentLocation.city,
-//     // };
+    console.log('item location data:=>', item);
+    // const queryParams = {
+    //   state: currentLocation.stateAbbr,
+    //   city: currentLocation.city,
+    // };
 
-//     getLatLongFromPlaceID(item?.place_id, authContext).then((response) => {
-//       console.log('placeID location data:=>', response.result.geometry.location);
+    // getLatLongFromPlaceID(item?.place_id, authContext)
+    //   .then((response) => {
+    //     console.log(
+    //       'placeID location data:=>',
+    //       response.result.geometry.location,
+    //     );
 
-// const body1 = bodybuilder()
-//     .query('match', 'entity_type', 'team')
-//     .query(
-//       'match',
-//       'registered_sports.sport_name',
-//       'Tennis',
-//     )
-//     .query('multi_match', {
-//       query: 'india',
-//       fields: ['city', 'country', 'state'],
-//     })
-//     .build();
+    //     const body1 = bodybuilder()
+    //       .query('match', 'entity_type', 'team')
+    //       .query('match', 'registered_sports.sport_name', 'Tennis')
+    //       .query('multi_match', {
+    //         query: 'india',
+    //         fields: ['city', 'country', 'state'],
+    //       })
+    //       .build();
 
-//     console.log('Query:=>', JSON.stringify(body1));
-//     console.log('Auth:=>', authContext);
+    //     console.log('Query:=>', JSON.stringify(body1));
+    //     console.log('Auth:=>', authContext);
 
-//       const body = {
-//         query: {
-//             bool: {
-//                 must: { match: { entity_type: 'team' } },
-//                 filter: {
-//                     geo_distance: {
-//                         distance: '200km',
-//                         'pin.location': {
-//                             lat: response.result.geometry.location.lat,
-//                             lon: response.result.geometry.location.lng,
-//                         },
-//                     },
-//                 },
-//             },
-//         },
-//     }
+    //     const body = {
+    //       query: {
+    //         bool: {
+    //           must: { match: { entity_type: 'team' } },
+    //           filter: {
+    //             geo_distance: {
+    //               distance: '200km',
+    //               'pin.location': {
+    //                 lat: response.result.geometry.location.lat,
+    //                 lon: response.result.geometry.location.lng,
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     };
 
-//     console.log('Query:=>', JSON.stringify(body));
-//     postElasticSearch(body, 'entityindex')
-//     .then((res) => {
-//       console.log('Then s response', res);
-//     })
-//     .catch((err) => {
-//       console.log(err.message);
-//     });
-//     }).catch((e) => {
-//       setTimeout(() => {
-//         Alert.alert(strings.alertmessagetitle, e.message);
-//       }, 10);
-//     });
+    //     console.log('Query:=>', JSON.stringify(body));
+    //     postElasticSearch(body, 'entityindex')
+    //       .then((res) => {
+    //         console.log('Then s response', res);
+    //       })
+    //       .catch((err) => {
+    //         console.log(err.message);
+    //       });
+    //   })
+    //   .catch((e) => {
+    //     setTimeout(() => {
+    //       Alert.alert(strings.alertmessagetitle, e.message);
+    //     }, 10);
+    //   });
 
     setLoading(true);
     const queryParams = {
       state: item?.terms?.[1]?.value,
       city: item?.terms?.[0]?.value,
     };
-    searchGroups(queryParams, authContext).then((response) => {
-      const userData = {
-        city: item?.terms?.[0]?.value,
-        state_abbr: item?.terms?.[1]?.value,
-        country: item?.terms?.[2]?.value,
-      }
-      updateProfile(userData, () => {
-        if (response.payload.length > 0) {
-          navigation.navigate('TotalTeamsScreen', {
-            city: item?.terms?.[0]?.value,
-            state: item?.terms?.[1]?.value,
-            country: item?.terms?.[2]?.value,
-            totalTeams: response?.payload?.length,
-            teamData: response?.payload,
-          });
-        } else {
-          navigation.navigate('ChooseSportsScreen', {
-            city: item?.terms?.[0]?.value,
-            state: item?.terms?.[1]?.value,
-            country: item?.terms?.[2]?.value,
-          });
-        }
+    searchGroups(queryParams, authContext)
+      .then((response) => {
+        const userData = {
+          city: item?.terms?.[0]?.value,
+          state_abbr: item?.terms?.[1]?.value,
+          country: item?.terms?.[2]?.value,
+        };
+        updateProfile(userData, () => {
+          if (response.payload.length > 0) {
+            navigation.navigate('TotalTeamsScreen', {
+              city: item?.terms?.[0]?.value,
+              state: item?.terms?.[1]?.value,
+              country: item?.terms?.[2]?.value,
+              totalTeams: response?.payload?.length,
+              teamData: response?.payload,
+            });
+          } else {
+            navigation.navigate('ChooseSportsScreen', {
+              city: item?.terms?.[0]?.value,
+              state: item?.terms?.[1]?.value,
+              country: item?.terms?.[2]?.value,
+            });
+          }
+        });
       })
-    }).catch((e) => {
-      console.log(e);
-      setTimeout(() => {
-        Alert.alert(`${strings.alertmessagetitle} - 1`, e.message);
-      }, 10);
-    });
+      .catch((e) => {
+        console.log(e);
+        setTimeout(() => {
+          Alert.alert(`${strings.alertmessagetitle} - 1`, e.message);
+        }, 10);
+      });
   };
 
   const renderItem = ({ item, index }) => (
     <TouchableWithoutFeedback
-        style={ styles.listItem }
-        onPress={ () => getTeamsData(item) }>
-      <Text style={ styles.cityList }>{cityData[index].description}</Text>
+      style={styles.listItem}
+      onPress={() => getTeamsData(item)}>
+      <Text style={styles.cityList}>{cityData[index].description}</Text>
 
       <Separator />
     </TouchableWithoutFeedback>
   );
 
-  const removeExtendedSpecialCharacters = (str) => str.replace(/[^\x20-\x7E]/g, '')
+  const removeExtendedSpecialCharacters = (str) => str.replace(/[^\x20-\x7E]/g, '');
   return (
     <LinearGradient
-          colors={[colors.themeColor1, colors.themeColor3]}
-          style={styles.mainContainer}>
-      <ActivityLoader visible={loading}/>
-      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
-      <Text style={ styles.LocationText }>{strings.locationText}</Text>
+      colors={[colors.themeColor1, colors.themeColor3]}
+      style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
+      <FastImage
+        resizeMode={'stretch'}
+        style={styles.background}
+        source={images.loginBg}
+      />
+      <Text style={styles.LocationText}>{strings.locationText}</Text>
 
-      <View style={ styles.sectionStyle }>
-        <Image source={ images.searchLocation } style={ styles.searchImg } />
+      <View style={styles.sectionStyle}>
+        <Image source={images.searchLocation} style={styles.searchImg} />
         <TextInput
-            // Indiër - For Test
+          // Indiër - For Test
           value={searchText}
           autoCorrect={false}
           spellCheck={false}
-          style={ styles.textInput }
-          placeholder={ strings.locationPlaceholderText }
+          style={styles.textInput}
+          placeholder={strings.locationPlaceholderText}
           clearButtonMode="always"
-          placeholderTextColor={ colors.themeColor }
-          onChangeText={(text) => setSearchText(removeExtendedSpecialCharacters(text))}
+          placeholderTextColor={colors.themeColor}
+          onChangeText={(text) => setSearchText(removeExtendedSpecialCharacters(text))
+          }
         />
       </View>
       {noData && (
-        <Text style={ styles.noDataText }>
+        <Text style={styles.noDataText}>
           Please, enter at least 3 characters to see cities.
         </Text>
       )}
-      {currentLocation && <TouchableWithoutFeedback
-        style={ styles.listItem }
-        onPress={ () => getTeamsDataByCurrentLocation() }>
-        <View>
-          <Text style={ [styles.cityList, { marginBottom: 3 }] }>{currentLocation.city}, {currentLocation.stateAbbr}, {currentLocation.country}</Text>
-          <Text style={ styles.curruentLocationText }>Current Location</Text>
-        </View>
+      {currentLocation && (
+        <TouchableWithoutFeedback
+          style={styles.listItem}
+          onPress={() => getTeamsDataByCurrentLocation()}>
+          <View>
+            <Text style={[styles.cityList, { marginBottom: 3 }]}>
+              {currentLocation.city}, {currentLocation.stateAbbr},{' '}
+              {currentLocation.country}
+            </Text>
+            <Text style={styles.curruentLocationText}>Current Location</Text>
+          </View>
 
-        <Separator />
-      </TouchableWithoutFeedback>}
+          <Separator />
+        </TouchableWithoutFeedback>
+      )}
       <FlatList
-        data={ cityData}
-        renderItem={ renderItem }
+        data={cityData}
+        renderItem={renderItem}
         keyExtractor={(index) => index.toString()}
       />
     </LinearGradient>

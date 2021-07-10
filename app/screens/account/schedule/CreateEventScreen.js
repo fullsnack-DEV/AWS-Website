@@ -59,11 +59,12 @@ export default function CreateEventScreen({ navigation, route }) {
   const [singleSelectEventColor, setSingleSelectEventColor] = useState();
   const [toggle, setToggle] = useState(true);
   const [eventStartDateTime, setEventStartdateTime] = useState(
-    getNearDateTime(new Date()),
+    toggle ? new Date().setHours(0, 0, 0, 0) : getNearDateTime(new Date()),
   );
+
   const [eventEndDateTime, setEventEnddateTime] = useState(
-    moment(eventStartDateTime).add(5, 'm').toDate(),
-  );
+    toggle ? new Date().setHours(23, 59, 59, 0) : moment(eventStartDateTime).add(5, 'm').toDate(),
+);
   const [eventUntilDateTime, setEventUntildateTime] = useState(
     eventEndDateTime,
   );
@@ -138,9 +139,10 @@ export default function CreateEventScreen({ navigation, route }) {
   };
   const handleStartDatePress = (date) => {
     console.log('Date::=>', new Date(new Date(date).getTime()));
-    setEventStartdateTime(new Date(new Date(date).getTime()));
-    setEventEnddateTime(moment(date).add(5, 'm').toDate());
-    setEventUntildateTime(moment(date).add(5, 'm').toDate());
+
+    setEventStartdateTime(toggle ? new Date(date).setHours(0, 0, 0, 0) : new Date(new Date(date).getTime()));
+    setEventEnddateTime(toggle ? new Date(date).setHours(23, 59, 59, 0) : moment(date).add(5, 'm').toDate());
+    setEventUntildateTime(toggle ? new Date(date).setHours(23, 59, 59, 0) : moment(date).add(5, 'm').toDate());
     setStartDateVisible(!startDateVisible);
   };
   const handleCancelPress = () => {
@@ -300,7 +302,7 @@ export default function CreateEventScreen({ navigation, route }) {
   };
 
   return (
-    <TCKeyboardView>
+    <>
       <ActivityLoader visible={loading} />
       <Header
         leftComponent={
@@ -444,10 +446,12 @@ export default function CreateEventScreen({ navigation, route }) {
           </TouchableOpacity>
         }
       />
+
       <View style={styles.sperateLine} />
-      <ScrollView bounces={false}>
-        <SafeAreaView>
-          <EventTextInputItem
+      <TCKeyboardView>
+        <ScrollView bounces={false}>
+          <SafeAreaView>
+            <EventTextInputItem
             title={strings.title}
             placeholder={strings.titlePlaceholder}
             onChangeText={(text) => {
@@ -455,31 +459,31 @@ export default function CreateEventScreen({ navigation, route }) {
             }}
             value={eventTitle}
           />
-          <EventTextInputItem
+            <EventTextInputItem
             title={strings.about}
             placeholder={strings.aboutPlaceholder}
             onChangeText={(text) => {
               setEventDescription(text);
             }}
-            multiline={true}
+            // multiline={true}
             value={eventDescription}
           />
 
-          <EventItemRender title={strings.timeTitle}>
-            <View style={styles.toggleViewStyle}>
-              <Text style={styles.allDayText}>{strings.allDay}</Text>
-              <TouchableOpacity
+            <EventItemRender title={strings.timeTitle}>
+              <View style={styles.toggleViewStyle}>
+                <Text style={styles.allDayText}>{strings.allDay}</Text>
+                <TouchableOpacity
                 style={styles.checkbox}
                 onPress={() => setToggle(!toggle)}>
-                <Image
+                  <Image
                   source={
                     toggle ? images.checkWhiteLanguage : images.uncheckWhite
                   }
                   style={styles.checkboxImg}
                 />
-              </TouchableOpacity>
-            </View>
-            <EventTimeSelectItem
+                </TouchableOpacity>
+              </View>
+              <EventTimeSelectItem
               title={strings.starts}
               toggle={!toggle}
               date={
@@ -494,7 +498,7 @@ export default function CreateEventScreen({ navigation, route }) {
               }
               onDatePress={() => setStartDateVisible(!startDateVisible)}
             />
-            <EventTimeSelectItem
+              <EventTimeSelectItem
               title={strings.ends}
               toggle={!toggle}
               date={
@@ -510,7 +514,7 @@ export default function CreateEventScreen({ navigation, route }) {
               containerStyle={{ marginBottom: 8 }}
               onDatePress={() => setEndDateVisible(!endDateVisible)}
             />
-            <EventMonthlySelection
+              <EventMonthlySelection
               title={strings.repeat}
               dataSource={[
 
@@ -536,8 +540,8 @@ export default function CreateEventScreen({ navigation, route }) {
                 setSelectWeekMonth(value);
               }}
             />
-            {selectWeekMonth !== '' && (
-              <EventTimeSelectItem
+              {selectWeekMonth !== '' && (
+                <EventTimeSelectItem
                 title={strings.until}
                 toggle={!toggle}
                 date={
@@ -554,10 +558,10 @@ export default function CreateEventScreen({ navigation, route }) {
                 onDatePress={() => setUntilDateVisible(!untilDateVisible)}
               />
             )}
-          </EventItemRender>
+            </EventItemRender>
 
-          <EventItemRender title={strings.place}>
-            <TCTouchableLabel
+            <EventItemRender title={strings.place}>
+              <TCTouchableLabel
               placeholder={strings.searchHereText}
               title={searchLocation}
               showNextArrow={true}
@@ -569,7 +573,7 @@ export default function CreateEventScreen({ navigation, route }) {
               }}
               style={{ width: '98%', alignSelf: 'center' }}
             />
-            <EventMapView
+              <EventMapView
               region={{
                 latitude: locationDetail ? locationDetail.lat : 0.0,
                 longitude: locationDetail ? locationDetail.lng : 0.0,
@@ -581,24 +585,24 @@ export default function CreateEventScreen({ navigation, route }) {
                 longitude: locationDetail ? locationDetail.lng : 0.0,
               }}
             />
-          </EventItemRender>
+            </EventItemRender>
 
-          <EventItemRender
+            <EventItemRender
             title={strings.availableTitle}
             containerStyle={{ marginTop: 10 }}>
-            <Text style={styles.availableSubHeader}>
-              {strings.availableSubTitle}
-            </Text>
-            <BlockAvailableTabView
+              <Text style={styles.availableSubHeader}>
+                {strings.availableSubTitle}
+              </Text>
+              <BlockAvailableTabView
               blocked={is_Blocked}
               firstTabTitle={'Block'}
               secondTabTitle={'Set available'}
               onFirstTabPress={() => setIsBlocked(true)}
               onSecondTabPress={() => setIsBlocked(false)}
             />
-          </EventItemRender>
-          <EventItemRender title={strings.eventColorTitle}>
-            <FlatList
+            </EventItemRender>
+            <EventItemRender title={strings.eventColorTitle}>
+              <FlatList
               numColumns={Dimensions.get('window').width > 360 ? 9 : 8}
               scrollEnabled={false}
               data={eventColors}
@@ -606,8 +610,8 @@ export default function CreateEventScreen({ navigation, route }) {
               renderItem={renderColorItem}
               keyExtractor={(item, index) => index.toString()}
             />
-          </EventItemRender>
-          <DateTimePickerView
+            </EventItemRender>
+            <DateTimePickerView
             date={eventStartDateTime}
             visible={startDateVisible}
             onDone={handleStartDatePress}
@@ -617,7 +621,7 @@ export default function CreateEventScreen({ navigation, route }) {
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
           />
-          <DateTimePickerView
+            <DateTimePickerView
             date={eventEndDateTime}
             visible={endDateVisible}
             onDone={handleEndDatePress}
@@ -629,7 +633,7 @@ export default function CreateEventScreen({ navigation, route }) {
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
           />
-          <DateTimePickerView
+            <DateTimePickerView
             date={eventUntilDateTime}
             visible={untilDateVisible}
             onDone={handleUntilDatePress}
@@ -641,7 +645,7 @@ export default function CreateEventScreen({ navigation, route }) {
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
           />
-          <DefaultColorModal
+            <DefaultColorModal
             isModalVisible={isColorPickerModal}
             onBackdropPress={() => setIsColorPickerModal(false)}
             cancelImageSource={images.cancelImage}
@@ -666,9 +670,11 @@ export default function CreateEventScreen({ navigation, route }) {
             }}
 
           />
-        </SafeAreaView>
-      </ScrollView>
-    </TCKeyboardView>
+          </SafeAreaView>
+
+        </ScrollView>
+      </TCKeyboardView>
+    </>
   );
 }
 

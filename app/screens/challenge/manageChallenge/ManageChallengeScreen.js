@@ -250,13 +250,13 @@ export default function ManageChallengeScreen({ navigation, route }) {
 
     if (item.key === 'Referees') {
       if (settingObject?.responsible_for_referee) {
-        return `${settingObject?.responsible_for_referee?.who_secure?.length} Referees`;
+        return `${settingObject?.responsible_for_referee?.who_secure === 'None' ? 'No' : settingObject?.responsible_for_referee?.who_secure?.length} Referees`;
       }
     }
 
     if (item.key === 'Scorekeepers') {
       if (settingObject?.responsible_for_scorekeeper) {
-        return `${settingObject?.responsible_for_scorekeeper?.who_secure?.length} Scorekeepers`;
+        return `${settingObject?.responsible_for_scorekeeper?.who_secure === 'None' ? 'No' : settingObject?.responsible_for_scorekeeper?.who_secure?.length} Scorekeepers`;
       }
     }
 

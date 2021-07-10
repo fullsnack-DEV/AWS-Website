@@ -36,17 +36,17 @@ export default function RefereesSetting({ navigation, route }) {
 
   const [selection, setSelection] = useState(
     route?.params?.settingObj?.responsible_for_referee
-      && route?.params?.settingObj?.responsible_for_referee?.who_secure?.length,
+      && route?.params?.settingObj?.responsible_for_referee?.who_secure === 'None' ? 'None' : route?.params?.settingObj?.responsible_for_referee?.who_secure?.length,
   );
 
   const [detail, setDetail] = useState(
-    route?.params?.settingObj?.responsible_for_referee
+    route?.params?.settingObj?.responsible_for_referee?.details
       ? route?.params?.settingObj?.responsible_for_referee?.details
       : '',
   );
 
   const [referee, setReferee] = useState(
-    route?.params?.settingObj?.responsible_for_referee
+    route?.params?.settingObj?.responsible_for_referee && route?.params?.settingObj?.responsible_for_referee?.who_secure !== 'None'
       ? route?.params?.settingObj?.responsible_for_referee?.who_secure
       : [],
   );
@@ -69,6 +69,7 @@ export default function RefereesSetting({ navigation, route }) {
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
+       if (item !== 'None') {
         setSelection(item);
         const arr = [];
 
@@ -83,6 +84,22 @@ export default function RefereesSetting({ navigation, route }) {
         setTimeout(() => {
           setVisibleModal(false);
         }, 300);
+       } else {
+        setSelection(item);
+        const arr = [];
+
+        for (let i = 0; i < item; i++) {
+          const obj = {
+            id: i,
+            responsible_to_secure_referee: 'None',
+          };
+          arr.push(obj);
+        }
+        setReferee(arr);
+        setTimeout(() => {
+          setVisibleModal(false);
+        }, 300);
+       }
       }}>
       <View
         style={{
@@ -107,166 +124,176 @@ export default function RefereesSetting({ navigation, route }) {
   );
 
   const renderReferee = ({ index, item }) => (
-    <View>
-      <View style={styles.viewTitleContainer}>
-        <Text style={styles.venueCountTitle}>
-          Referee {index + 1} {index === 0 && '(Chief)'}
-        </Text>
-      </View>
-      <Text
-        style={{
-          fontSize: 16,
-          marginLeft: 15,
-          marginRight: 15,
-          marginBottom: 10,
-          fontFamily: fonts.RRegular,
-          color: colors.lightBlackColor,
-        }}>
-        {strings.refereeSettingNote}
-      </Text>
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          margin: 15,
-          marginBottom: 5,
-        }}
-        onPress={() => {
-          const ref = [...referee];
-          referee[index].responsible_to_secure_referee = 'challengee';
+   item !== 'None' ? <View>
+     <View style={styles.viewTitleContainer}>
+       <Text style={styles.venueCountTitle}>
+         Referee {index + 1} {index === 0 && '(Chief)'}
+       </Text>
+     </View>
+     <Text
+     style={{
+       fontSize: 16,
+       marginLeft: 15,
+       marginRight: 15,
+       marginBottom: 10,
+       fontFamily: fonts.RRegular,
+       color: colors.lightBlackColor,
+     }}>
+       {strings.refereeSettingNote}
+     </Text>
+     <TouchableOpacity
+     style={{
+       flexDirection: 'row',
+       justifyContent: 'space-between',
+       alignItems: 'center',
+       margin: 15,
+       marginBottom: 5,
+     }}
+     onPress={() => {
+       const ref = [...referee];
+       referee[index].responsible_to_secure_referee = 'challengee';
 
-          setReferee(ref);
-        }}>
-        <View style={styles.teamContainer}>
-          <View style={styles.teamViewStyle}>
-            <View style={styles.imageShadowView}>
-              <Image
-                source={
-                  authContext?.entity?.role === 'user'
-                  || authContext?.entity?.role === 'player'
-                    ? authContext?.entity?.obj?.thumbnail
-                      ? { uri: authContext?.entity?.obj?.thumbnail }
-                      : images.profilePlaceHolder
-                    : authContext?.entity?.obj?.thumbnail
-                    ? { uri: authContext?.entity?.obj?.thumbnail }
-                    : images.teamPlaceholder
-                }
-                style={styles.imageView}
-              />
-            </View>
-            <View style={styles.teamTextContainer}>
-              <Text style={styles.teamNameLable}>
-                {authContext?.entity?.role === 'user'
-                || authContext?.entity?.role === 'player'
-                  ? authContext?.entity?.obj?.full_name
-                  : authContext?.entity?.obj?.group_name}
-              </Text>
-              <Text style={styles.locationLable}>
-                {authContext?.entity?.obj?.city},{' '}
-                {authContext?.entity?.obj?.state_abbr}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.checkbox}>
-          {item?.responsible_to_secure_referee === 'challengee' ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          margin: 15,
-          marginBottom: 5,
-        }}
-        onPress={() => {
-          const ref = [...referee];
-          referee[index].responsible_to_secure_referee = 'challenger';
-          setReferee(ref);
-        }}>
-        <View style={styles.teamContainer}>
-          <View style={styles.teamViewStyle}>
-            <View style={styles.imageShadowView}>
-              <Image
-                source={
-                  // teams[0].thumbnail
-                  //   ? { uri: teams[0].thumbnail }
-                  //   : images.teamPlaceholder
-                  images.teamPlaceholder
-                }
-                style={styles.imageView}
-              />
-            </View>
-            <View style={styles.teamTextContainer}>
-              <Text style={styles.teamNameLable}>Challenger</Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.checkbox}>
-          {item?.responsible_to_secure_referee === 'challenger' ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </TouchableOpacity>
+       setReferee(ref);
+     }}>
+       <View style={styles.teamContainer}>
+         <View style={styles.teamViewStyle}>
+           <View style={styles.imageShadowView}>
+             <Image
+             source={
+               authContext?.entity?.role === 'user'
+               || authContext?.entity?.role === 'player'
+                 ? authContext?.entity?.obj?.thumbnail
+                   ? { uri: authContext?.entity?.obj?.thumbnail }
+                   : images.profilePlaceHolder
+                 : authContext?.entity?.obj?.thumbnail
+                 ? { uri: authContext?.entity?.obj?.thumbnail }
+                 : images.teamPlaceholder
+             }
+             style={styles.imageView}
+           />
+           </View>
+           <View style={styles.teamTextContainer}>
+             <Text style={styles.teamNameLable}>
+               {authContext?.entity?.role === 'user'
+             || authContext?.entity?.role === 'player'
+               ? authContext?.entity?.obj?.full_name
+               : authContext?.entity?.obj?.group_name}
+             </Text>
+             <Text style={styles.locationLable}>
+               {authContext?.entity?.obj?.city},{' '}
+               {authContext?.entity?.obj?.state_abbr}
+             </Text>
+           </View>
+         </View>
+       </View>
+       <View style={styles.checkbox}>
+         {item?.responsible_to_secure_referee === 'challengee' ? (
+           <Image
+           source={images.radioCheckYellow}
+           style={styles.checkboxImg}
+         />
+       ) : (
+         <Image source={images.radioUnselect} style={styles.checkboxImg} />
+       )}
+       </View>
+     </TouchableOpacity>
+     <TouchableOpacity
+     style={{
+       flexDirection: 'row',
+       justifyContent: 'space-between',
+       alignItems: 'center',
+       margin: 15,
+       marginBottom: 5,
+     }}
+     onPress={() => {
+       const ref = [...referee];
+       referee[index].responsible_to_secure_referee = 'challenger';
+       setReferee(ref);
+     }}>
+       <View style={styles.teamContainer}>
+         <View style={styles.teamViewStyle}>
+           <View style={styles.imageShadowView}>
+             <Image
+             source={
+               // teams[0].thumbnail
+               //   ? { uri: teams[0].thumbnail }
+               //   : images.teamPlaceholder
+               images.teamPlaceholder
+             }
+             style={styles.imageView}
+           />
+           </View>
+           <View style={styles.teamTextContainer}>
+             <Text style={styles.teamNameLable}>Challenger</Text>
+           </View>
+         </View>
+       </View>
+       <View style={styles.checkbox}>
+         {item?.responsible_to_secure_referee === 'challenger' ? (
+           <Image
+           source={images.radioCheckYellow}
+           style={styles.checkboxImg}
+         />
+       ) : (
+         <Image source={images.radioUnselect} style={styles.checkboxImg} />
+       )}
+       </View>
+     </TouchableOpacity>
 
-      {/* <TCTextInputClear
-        placeholder={strings.venueDetailsPlaceholder}
-          onChangeText={(text) => {
-            const ven = [...venue];
-            venue[index].details = text;
-            setVenue(ven);
-          }}
-          value={venue[index].details}
-          onPressClear={() => {
-            const ven = [...venue];
-            venue[index].details = '';
-            setVenue(ven);
-          }}
-          multiline={true}
-        /> */}
-    </View>
+     {/* <TCTextInputClear
+     placeholder={strings.venueDetailsPlaceholder}
+       onChangeText={(text) => {
+         const ven = [...venue];
+         venue[index].details = text;
+         setVenue(ven);
+       }}
+       value={venue[index].details}
+       onPressClear={() => {
+         const ven = [...venue];
+         venue[index].details = '';
+         setVenue(ven);
+       }}
+       multiline={true}
+     /> */}
+   </View> : <View></View>
   );
 
   const onSavePressed = () => {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
-      if (referee.length > 0) {
         navigation.navigate(comeFrom, {
-          refereeSetting: {
+
+          refereeSetting: selection !== 'None' ? {
             who_secure: referee.map((e) => {
               delete e.id;
               return e;
             }),
             details: detail,
+          } : {
+            who_secure: 'None',
           },
         });
-      } else {
-        Alert.alert('Please choose number of referees.');
-      }
-    } else if (referee.length > 0) {
-        const bodyParams = {
-          sport: sportName,
-          responsible_for_referee: {
-            who_secure: referee.map((e) => {
-              delete e.id;
-              return e;
-            }),
-            details: detail,
-          },
-        };
+    } else {
+        let bodyParams;
+        if (selection === 'None') {
+          bodyParams = {
+            sport: sportName,
+            responsible_for_referee: {
+              who_secure: 'None',
+            },
+          };
+        } else {
+          bodyParams = {
+            sport: sportName,
+            responsible_for_referee: {
+              who_secure: referee.map((e) => {
+                delete e.id;
+                return e;
+              }),
+              details: detail,
+            },
+          };
+        }
+
         console.log('Referee secure:=>', bodyParams);
         setloading(true);
         patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
@@ -281,8 +308,6 @@ export default function RefereesSetting({ navigation, route }) {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
           });
-      } else {
-        Alert.alert('Please choose number of referees.');
       }
   };
 
@@ -329,7 +354,7 @@ export default function RefereesSetting({ navigation, route }) {
           keyExtractor={(item, index) => index.toString()}
           style={{ marginBottom: 15 }}
         />
-        {selection && (
+        {selection !== 'None' && (
           <TCTextInputClear
             placeholder={strings.venueDetailsPlaceholder}
             onChangeText={(text) => setDetail(text)}
@@ -361,7 +386,7 @@ export default function RefereesSetting({ navigation, route }) {
             <View style={styles.separatorLine} />
             <FlatList
               ItemSeparatorComponent={() => <TCThinDivider />}
-              data={[1, 2, 3, 4, 5]}
+              data={['None', 1, 2, 3, 4, 5]}
               keyExtractor={(item, index) => index.toString()}
               renderItem={renderNumbersOf}
             />

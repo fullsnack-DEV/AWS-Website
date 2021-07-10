@@ -23,7 +23,7 @@ import Modal from 'react-native-modal';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import { getSportsList } from '../../../../api/Games';
 import { getUserFollowerFollowing } from '../../../../api/Users';
-import { getGroupSearch } from '../../../../api/Groups';
+import { getGroupName } from '../../../../api/Groups';
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
@@ -162,7 +162,7 @@ export default function CreateTeamForm1({ navigation, route }) {
   };
 
   const nextOnPress = () => {
-    getGroupSearch(teamName, city, authContext).then((response) => {
+    getGroupName(teamName, city, authContext).then((response) => {
       setloading(false);
 
       if (!response.payload) {

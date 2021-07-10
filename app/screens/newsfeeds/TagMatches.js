@@ -52,6 +52,7 @@ const TagMatches = ({ gamesData, selectedMatch, onSelectMatch }) => {
         return (
           <View style={{ marginVertical: 10 }}>
             <TCGameCard
+            cardWidth={'92%'}
                     isSelected={isSelected}
                     data={item}
                     showSelectionCheckBox={true}

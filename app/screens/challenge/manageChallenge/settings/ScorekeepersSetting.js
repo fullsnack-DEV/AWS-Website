@@ -482,17 +482,17 @@ export default function ScorekeepersSetting({ navigation, route }) {
 
   const [selection, setSelection] = useState(
     route?.params?.settingObj?.responsible_for_scorekeeper
-      && route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure?.length,
+      && route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure === 'None' ? 'None' : route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure?.length,
   );
 
   const [detail, setDetail] = useState(
-    route?.params?.settingObj?.responsible_for_scorekeeper
+    route?.params?.settingObj?.responsible_for_scorekeeper?.details
       ? route?.params?.settingObj?.responsible_for_scorekeeper?.details
       : '',
   );
 
   const [scorekeeper, setScorekeeper] = useState(
-    route?.params?.settingObj?.responsible_for_scorekeeper
+    route?.params?.settingObj?.responsible_for_scorekeeper && route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure !== 'None'
       ? route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
       : [],
   );
@@ -515,20 +515,37 @@ export default function ScorekeepersSetting({ navigation, route }) {
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-        setSelection(item);
-        const arr = [];
+        if (item !== 'None') {
+          setSelection(item);
+          const arr = [];
 
-        for (let i = 0; i < item; i++) {
-          const obj = {
-            id: i,
-            responsible_to_secure_scorekeeper: 'challengee',
-          };
-          arr.push(obj);
+          for (let i = 0; i < item; i++) {
+            const obj = {
+              id: i,
+              responsible_to_secure_scorekeeper: 'challengee',
+            };
+            arr.push(obj);
+          }
+          setScorekeeper(arr);
+          setTimeout(() => {
+            setVisibleModal(false);
+          }, 300);
+        } else {
+          setSelection(item);
+          const arr = [];
+
+          for (let i = 0; i < item; i++) {
+            const obj = {
+              id: i,
+              responsible_to_secure_scorekeeper: 'None',
+            };
+            arr.push(obj);
+          }
+          setScorekeeper(arr);
+          setTimeout(() => {
+            setVisibleModal(false);
+          }, 300);
         }
-        setScorekeeper(arr);
-        setTimeout(() => {
-          setVisibleModal(false);
-        }, 300);
       }}>
       <View
         style={{
@@ -554,12 +571,13 @@ export default function ScorekeepersSetting({ navigation, route }) {
 
   const renderScorekeeper = ({ index, item }) => (
     <View>
-      <View style={styles.viewTitleContainer}>
-        <Text style={styles.venueCountTitle}>
-          Scorekeeper {index + 1} {index === 0 && '(Chief)'}
-        </Text>
-      </View>
-      <Text
+      {item !== 'None' ? <View>
+        <View style={styles.viewTitleContainer}>
+          <Text style={styles.venueCountTitle}>
+            Scorekeeper {index + 1} {index === 0 && '(Chief)'}
+          </Text>
+        </View>
+        <Text
         style={{
           fontSize: 16,
           marginLeft: 15,
@@ -568,9 +586,9 @@ export default function ScorekeepersSetting({ navigation, route }) {
           fontFamily: fonts.RRegular,
           color: colors.lightBlackColor,
         }}>
-        {strings.scorekeeperSettingNote}
-      </Text>
-      <TouchableOpacity
+          {strings.scorekeeperSettingNote}
+        </Text>
+        <TouchableOpacity
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -579,15 +597,15 @@ export default function ScorekeepersSetting({ navigation, route }) {
           marginBottom: 5,
         }}
         onPress={() => {
-          const ref = [...scorekeeper];
-          scorekeeper[index].responsible_to_secure_scorekeeper = 'challengee';
+            const ref = [...scorekeeper];
+            scorekeeper[index].responsible_to_secure_scorekeeper = 'challengee';
 
-          setScorekeeper(ref);
+            setScorekeeper(ref);
         }}>
-        <View style={styles.teamContainer}>
-          <View style={styles.teamViewStyle}>
-            <View style={styles.imageShadowView}>
-              <Image
+          <View style={styles.teamContainer}>
+            <View style={styles.teamViewStyle}>
+              <View style={styles.imageShadowView}>
+                <Image
                 source={
                   authContext?.entity?.role === 'user'
                   || authContext?.entity?.role === 'player'
@@ -600,33 +618,33 @@ export default function ScorekeepersSetting({ navigation, route }) {
                 }
                 style={styles.imageView}
               />
-            </View>
-            <View style={styles.teamTextContainer}>
-              <Text style={styles.teamNameLable}>
-                {authContext?.entity?.role === 'user'
+              </View>
+              <View style={styles.teamTextContainer}>
+                <Text style={styles.teamNameLable}>
+                  {authContext?.entity?.role === 'user'
                 || authContext?.entity?.role === 'player'
                   ? authContext?.entity?.obj?.full_name
                   : authContext?.entity?.obj?.group_name}
-              </Text>
-              <Text style={styles.locationLable}>
-                {authContext?.entity?.obj?.city},{' '}
-                {authContext?.entity?.obj?.state_abbr}
-              </Text>
+                </Text>
+                <Text style={styles.locationLable}>
+                  {authContext?.entity?.obj?.city},{' '}
+                  {authContext?.entity?.obj?.state_abbr}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-        <View style={styles.checkbox}>
-          {item?.responsible_to_secure_scorekeeper === 'challengee' ? (
-            <Image
+          <View style={styles.checkbox}>
+            {item?.responsible_to_secure_scorekeeper === 'challengee' ? (
+              <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
             />
           ) : (
             <Image source={images.radioUnselect} style={styles.checkboxImg} />
           )}
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -639,10 +657,10 @@ export default function ScorekeepersSetting({ navigation, route }) {
           scorekeeper[index].responsible_to_secure_scorekeeper = 'challenger';
           setScorekeeper(ref);
         }}>
-        <View style={styles.teamContainer}>
-          <View style={styles.teamViewStyle}>
-            <View style={styles.imageShadowView}>
-              <Image
+          <View style={styles.teamContainer}>
+            <View style={styles.teamViewStyle}>
+              <View style={styles.imageShadowView}>
+                <Image
                 source={
                   // teams[0].thumbnail
                   //   ? { uri: teams[0].thumbnail }
@@ -651,25 +669,25 @@ export default function ScorekeepersSetting({ navigation, route }) {
                 }
                 style={styles.imageView}
               />
-            </View>
-            <View style={styles.teamTextContainer}>
-              <Text style={styles.teamNameLable}>Challenger</Text>
+              </View>
+              <View style={styles.teamTextContainer}>
+                <Text style={styles.teamNameLable}>Challenger</Text>
+              </View>
             </View>
           </View>
-        </View>
-        <View style={styles.checkbox}>
-          {item?.responsible_to_secure_scorekeeper === 'challenger' ? (
-            <Image
+          <View style={styles.checkbox}>
+            {item?.responsible_to_secure_scorekeeper === 'challenger' ? (
+              <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
             />
           ) : (
             <Image source={images.radioUnselect} style={styles.checkboxImg} />
           )}
-        </View>
-      </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
 
-      {/* <TCTextInputClear
+        {/* <TCTextInputClear
         placeholder={strings.venueDetailsPlaceholder}
           onChangeText={(text) => {
             const ven = [...venue];
@@ -684,26 +702,34 @@ export default function ScorekeepersSetting({ navigation, route }) {
           }}
           multiline={true}
         /> */}
+      </View> : <View/>}
     </View>
   );
 
   const onSavePressed = () => {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
-      if (scorekeeper.length > 0) {
         navigation.navigate(comeFrom, {
-          scorekeeperSetting: {
+          scorekeeperSetting: selection !== 'None' ? {
             who_secure: scorekeeper.map((e) => {
               delete e.id;
               return e;
             }),
             details: detail,
+          } : {
+            who_secure: 'None',
           },
         });
+    } else {
+      let bodyParams;
+      if (selection === 'None') {
+        bodyParams = {
+          sport: sportName,
+          responsible_for_scorekeeper: {
+            who_secure: 'None',
+          },
+        };
       } else {
-        Alert.alert('Please choose number of scorekeepers.');
-      }
-    } else if (scorekeeper.length > 0) {
-        const bodyParams = {
+         bodyParams = {
           sport: sportName,
           responsible_for_scorekeeper: {
             who_secure: scorekeeper.map((e) => {
@@ -713,7 +739,10 @@ export default function ScorekeepersSetting({ navigation, route }) {
             details: detail,
           },
         };
+      }
+
         console.log('Referee secure:=>', bodyParams);
+
         setloading(true);
         patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
           .then((response) => {
@@ -727,8 +756,6 @@ export default function ScorekeepersSetting({ navigation, route }) {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
           });
-      } else {
-        Alert.alert('Please choose number of scorekeepers.');
       }
   };
 
@@ -775,7 +802,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
           keyExtractor={(item, index) => index.toString()}
           style={{ marginBottom: 15 }}
         />
-        {selection && (
+        {selection !== 'None' && (
           <TCTextInputClear
             placeholder={strings.venueDetailsPlaceholder}
             onChangeText={(text) => setDetail(text)}
@@ -807,7 +834,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
             <View style={styles.separatorLine} />
             <FlatList
               ItemSeparatorComponent={() => <TCThinDivider />}
-              data={[1, 2, 3, 4, 5]}
+              data={['None', 1, 2, 3, 4, 5]}
               keyExtractor={(item, index) => index.toString()}
               renderItem={renderNumbersOf}
             />

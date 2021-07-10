@@ -350,7 +350,7 @@ const [groupData, setGroupData] = useState();
 
   const onDelete = ({ item }) => {
     if (activeScreen) {
-      // setloading(true);
+       setloading(true);
       const ids = item.activities.map((activity) => activity.id);
       // setMainNotificationsList(mainNotificationsList.filter((obj) => obj.id !== ids))
       deleteNotification(ids, item.type, authContext)
@@ -360,7 +360,7 @@ const [groupData, setGroupData] = useState();
             .catch(() => setloading(false));
         })
         .catch(() => {
-          // setloading(false);
+           setloading(false);
           Alert.alert('Failed to move to trash. Try again later');
         });
     } else {
@@ -500,19 +500,23 @@ const [groupData, setGroupData] = useState();
     </AppleStyleSwipeableRow>
   );
 
-  const renderNotificationComponent = ({ item }) => (
-    <AppleStyleSwipeableRow
+  const renderNotificationComponent = ({ item }) => {
+    console.log('Item notification:=>', item)
+    return (
+
+      <AppleStyleSwipeableRow
       onPress={() => onDelete({ item })}
       color={colors.redDelColor}
       image={images.deleteIcon}>
-      <NotificationItem
+        <NotificationItem
         data={item}
         onPressFirstEntity={openHomePage}
         onPressSecondEntity={openHomePage}
         onPressCard={() => onNotificationClick(item)}
       />
-    </AppleStyleSwipeableRow>
-  );
+      </AppleStyleSwipeableRow>
+  )
+ };
 
   const RenderSections = ({ item, section }) => {
     if (section.section === strings.pendingrequests) {

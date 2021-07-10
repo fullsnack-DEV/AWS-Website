@@ -340,31 +340,31 @@ export default function WritePostScreen({ navigation, route }) {
       />
   ), [ItemSeparatorComponent, renderSelectedImage, selectImage])
 
-  const onImagePress = useCallback(() => {
-      ImagePicker.openPicker({
-        multiple: true,
-        maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
-      }).then((data) => {
-        const pickedData = getPickedData(data, selectImage?.length);
-        let allSelectData = [];
-        const secondData = [];
-        if (selectImage?.length > 0) {
-          pickedData.map((dataItem) => {
-            // const filter_data = selectImage.filter((imageItem) => imageItem?.path === dataItem?.path);
-            // if (filter_data?.length === 0) {
-              secondData.push(dataItem)
-            // }
-            return null;
-          })
-          allSelectData = [...selectImage, ...secondData];
-          setSelectImage(allSelectData);
-        } else {
-          setSelectImage(pickedData);
-        }
-      }).catch((error) => {
-        console.log(error);
-      });
-  }, [selectImage])
+  const onImagePress = () => {
+        ImagePicker.openPicker({
+          multiple: true,
+          maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
+        }).then((data) => {
+          const pickedData = getPickedData(data, selectImage?.length);
+          let allSelectData = [];
+          const secondData = [];
+          if (selectImage?.length > 0) {
+            pickedData.map((dataItem) => {
+              // const filter_data = selectImage.filter((imageItem) => imageItem?.path === dataItem?.path);
+              // if (filter_data?.length === 0) {
+                secondData.push(dataItem)
+              // }
+              return null;
+            })
+            allSelectData = [...selectImage, ...secondData];
+            setSelectImage(allSelectData);
+          } else {
+            setSelectImage(pickedData);
+          }
+        }).catch((error) => {
+          console.log(error);
+        });
+  }
 
   const onSelectMatch = useCallback((selectedMatch) => {
     const tagsArray = []

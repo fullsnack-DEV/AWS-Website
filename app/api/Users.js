@@ -1,11 +1,21 @@
 import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
+import makeAPIWithoutAuthRequest from '../utils/GlobleWithoutAuth';
+
 import apiCall from '../utils/apiCall';
 
 export const getAppSettings = (authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/app/settings`,
   authContext,
+  headers: {
+    setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
+  },
+});
+
+export const getAppSettingsWithoutAuth = () => makeAPIWithoutAuthRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/app/settings`,
   headers: {
     setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
   },

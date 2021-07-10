@@ -11,6 +11,7 @@ import {
   Image,
   Text,
   FlatList,
+ SafeAreaView,
 } from 'react-native';
 import _ from 'lodash';
 import {
@@ -70,7 +71,7 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
         Alert.alert('', e.messages)
       });
 
-      getAllGames('0798518e-eb6b-4add-878a-5f52765610c8', authContext).then((res) => {
+      getAllGames(authContext.entity.uid, authContext).then((res) => {
         setGamesData([...res?.payload])
         console.log(res);
       }).catch((error) => {
@@ -228,9 +229,11 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
   const renderTabContain = useMemo(() => {
     const dataTabList = [userData, groupData]
     return (
-      <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
-        {renderSingleTab(searchText === '' ? dataTabList[currentTab] : searchData)}
-      </View>
+      <SafeAreaView>
+        <View style={{ flex: Platform.OS === 'ios' ? 0 : 10, marginBottom: 150 }}>
+          {renderSingleTab(searchText === '' ? dataTabList[currentTab] : searchData)}
+        </View>
+      </SafeAreaView>
     )
   }, [currentTab, groupData, renderSingleTab, searchData, searchText, userData])
 
@@ -256,16 +259,16 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
           }
       />
   ), [navigation, route.params, selectedMatch, selectedUsers])
-
   const renderSearchBox = useMemo(() => (
-    <TCSearchBox
+
+    currentTab !== 2 ? <TCSearchBox
           style={{ alignSelf: 'center', marginVertical: 5 }}
           value={searchText}
           onChangeText={(text) => {
             setSearchText(text)
           }}
-      />
-  ), [searchText])
+      /> : <View></View>
+  ), [currentTab, searchText])
 
   const renderSelectedEntity = useMemo(() => selectedUsers.length > 0 && (
     <SelectedTagList
@@ -283,9 +286,11 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
   }, []);
 
   return (
+
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: 'white' }}
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
+
       {renderHeader}
       <View style={styles.sperateLine} />
       {renderSearchBox}
@@ -296,7 +301,9 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
           currentTab={currentTab}
       />
       {renderTabContain}
+
     </KeyboardAvoidingView>
+
   );
 }
 

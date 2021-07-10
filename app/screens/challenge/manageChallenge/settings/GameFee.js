@@ -42,9 +42,9 @@ export default function GameFee({ navigation, route }) {
   }, [authContext.entity.obj.currency_type, basicFee, comeFrom, currencyType, navigation]);
 
   const onSavePressed = () => {
-    // if (basicFee < 1) {
-    //   Alert.alert('User should not allow less than $1 game fee.');
-    // } else
+    if (basicFee < 1 && basicFee > 0) {
+      Alert.alert('User should not allow less than $1 game fee.');
+    } else
      if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
         navigation.navigate(comeFrom, {
           gameFee: {
