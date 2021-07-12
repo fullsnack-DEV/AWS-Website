@@ -14,6 +14,7 @@ const images = {
   entityCreatedBG: require('../assets/images/entity_created_bg.png'),
   searchUser: require('../assets/images/searchUser.png'),
   profilePlaceHolder: require('../assets/images/profileplaceholder.png'),
+  dummyPhoto: require('../assets/images/dummy_photo.png'),
   searchLocation: require('../assets/images/ic_search_orange.png'),
   archerySport: require('../assets/images/ic_archery.png'),
   bandySport: require('../assets/images/ic_Bandy.png'),
@@ -109,6 +110,7 @@ const images = {
 
   radioSelect: require('../assets/images/ic_radio_select.png'),
   plus: require('../assets/images/plus.png'),
+  plusInvoice: require('../assets/images/plus_invoice.png'),
   multipleImagesIcon: require('../assets/images/multiple_images.png'),
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
 

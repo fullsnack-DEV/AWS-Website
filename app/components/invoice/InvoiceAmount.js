@@ -5,6 +5,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 export default function InvoiceAmount({
+  status,
   currencyType,
   totalAmount,
   paidAmount,
@@ -13,6 +14,18 @@ export default function InvoiceAmount({
 }) {
   return (
     <View style={[styles.containerStyle, style]}>
+      {status && <View style={styles.containerView}>
+        <Text style={styles.titleText}>Status</Text>
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: fonts.RMedium,
+            color: colors.darkThemeColor,
+          }}>{'Open'}
+        </Text>
+      </View>
+
+      }
       <View style={styles.containerView}>
         <Text style={styles.titleText}>Total Invoiced</Text>
         <Text

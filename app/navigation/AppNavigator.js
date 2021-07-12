@@ -164,6 +164,8 @@ const getTabBarVisibility = (route) => {
     || routeName === 'EditChallenge'
     || routeName === 'RespondToInviteScreen'
     || routeName === 'InvoiceScreen'
+    || routeName === 'TransactionScreen'
+    || routeName === 'MemberInvoiceScreen'
 
   ) {
     return false;

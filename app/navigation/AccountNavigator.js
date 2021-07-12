@@ -195,6 +195,9 @@ import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteCh
 import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 import InvoiceScreen from '../screens/account/payment/InvoiceScreen';
+import TransactionScreen from '../screens/account/payment/TransactionScreen';
+import MemberInvoiceScreen from '../screens/account/payment/MemberInvoiceScreen';
+
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2495,6 +2498,39 @@ const AccountNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+      name="TransactionScreen"
+      component={TransactionScreen}
+      options={{
+        title: 'Invoicing',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="MemberInvoiceScreen"
+      component={MemberInvoiceScreen}
+      options={{
+        title: 'Invoicing',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
   </Stack.Navigator>
 );
 
