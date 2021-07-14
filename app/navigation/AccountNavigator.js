@@ -195,8 +195,14 @@ import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteCh
 import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 import InvoiceScreen from '../screens/account/payment/InvoiceScreen';
-import TransactionScreen from '../screens/account/payment/TransactionScreen';
-import MemberInvoiceScreen from '../screens/account/payment/MemberInvoiceScreen';
+import MembersDetailScreen from '../screens/account/payment/MembersDetailScreen';
+import InviteToMemberScreen from '../screens/account/groupConnections/createMemberProfile/InviteToMemberScreen';
+import UserInvoiceScreen from '../screens/account/payment/UserInvoiceScreen';
+import InvoiceDetailScreen from '../screens/account/payment/InvoiceDetailScreen';
+import LogDetailScreen from '../screens/account/payment/LogDetailScreen';
+import BatchDetailScreen from '../screens/account/payment/BatchDetailScreen';
+import TeamInvoiceDetailScreen from '../screens/account/payment/TeamInvoiceDetailScreen';
+import AddLogScreen from '../screens/account/payment/AddLogScreen';
 
 // Scorekeeper Review Screen
 
@@ -2499,24 +2505,8 @@ const AccountNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="TransactionScreen"
-      component={TransactionScreen}
-      options={{
-        title: 'Invoicing',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-    <Stack.Screen
-      name="MemberInvoiceScreen"
-      component={MemberInvoiceScreen}
+      name="MembersDetailScreen"
+      component={MembersDetailScreen}
       options={{
         title: 'Invoicing',
         headerTintColor: colors.blackColor,
@@ -2531,6 +2521,119 @@ const AccountNavigator = () => (
       }}
     />
 
+    <Stack.Screen
+      name="BatchDetailScreen"
+      component={BatchDetailScreen}
+      options={{
+        title: 'Membership Fee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="TeamInvoiceDetailScreen"
+      component={TeamInvoiceDetailScreen}
+      options={{
+        title: 'Membership Fee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="AddLogScreen"
+      component={AddLogScreen}
+      options={{
+        title: 'Log Manually',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="UserInvoiceScreen"
+      component={UserInvoiceScreen}
+      options={{
+        title: 'Invoices',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="InvoiceDetailScreen"
+      component={InvoiceDetailScreen}
+      options={{
+        title: 'Membership Fee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="LogDetailScreen"
+      component={LogDetailScreen}
+      options={{
+        title: 'Log',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+         name="InviteToMemberScreen"
+         component={InviteToMemberScreen}
+        //  options={{
+        //    headerShown: false,
+        //  }}
+        options={{
+          headerTransparent: true,
+          title: ' ',
+          headerTintColor: colors.whiteColor,
+        }}
+        />
   </Stack.Navigator>
 );
 

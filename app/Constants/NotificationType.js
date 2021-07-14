@@ -41,6 +41,8 @@ const NotificationType = {
   clap: 'clap',
   tagged: 'tagged',
   comment: 'comment',
+
+  inviteToConnectMember: 'inviteToConnectMember',
 };
 
 export default NotificationType

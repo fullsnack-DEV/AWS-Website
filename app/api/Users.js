@@ -85,6 +85,12 @@ export const getUsers = (authContext) => makeAPIRequest({
   authContext,
 });
 
+export const getUsersByEmail = (email, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/users?email=${email}`,
+  authContext,
+});
+
 export const getGallery = (userID, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/players/${userID}/gallery/`,
@@ -153,6 +159,11 @@ export const attachPaymentMethod = (params, authContext) => makeAPIRequest({
 export const deletePaymentMethod = (paymentMehtodId, authContext) => makeAPIRequest({
   method: 'delete',
   url: `${Config.BASE_URL}/payments/cards/${paymentMehtodId}`,
+  authContext,
+});
+export const deletePayoutMethod = (authContext) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}/payments/merchant`,
   authContext,
 });
 

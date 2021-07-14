@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,7 +14,7 @@ import {
 // import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 import LinearGradient from 'react-native-linear-gradient';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import ActionSheet from 'react-native-actionsheet';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCThinDivider from '../../../components/TCThinDivider';
@@ -22,21 +22,21 @@ import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
 import images from '../../../Constants/ImagePath';
 import PaymentLogs from '../../../components/invoice/PaymentLogs';
 
-export default function MemberInvoiceScreen({ navigation }) {
+export default function TeamInvoiceDetailScreen({ navigation }) {
   // const [loading, setloading] = useState(false);
+  const actionSheet = useRef();
 
   // const isFocused = useIsFocused();
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.navTitle}>May 19 Membership Fee</Text>
-      ),
       headerRight: () => (
         <View style={styles.rightHeaderView}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            actionSheet.current.show()
+          }}>
             <Image
-              source={images.home_setting}
+              source={images.threeDotIcon}
               style={styles.townsCupSettingIcon}
             />
           </TouchableOpacity>
@@ -50,7 +50,9 @@ export default function MemberInvoiceScreen({ navigation }) {
     return (
       <PaymentLogs
         data={item}
-        onPressCard={() => navigation.navigate('TransactionScreen')}
+        onPressCard={() => {
+          navigation.navigate('LogDetailScreen')
+        }}
       />
     );
   };
@@ -60,13 +62,27 @@ export default function MemberInvoiceScreen({ navigation }) {
       {/* <ActivityLoader visible={loading} /> */}
 
       <View style={{ margin: 15 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image
+            source={images.dummyPhoto}
+            style={styles.invoiceProfileStyle}
+          />
+          <Text
+            style={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.lightBlackColor,
+            }}>
+            {'Michael Jordan'}
+          </Text>
+        </View>
         <Text
           style={{
-            fontFamily: fonts.RBold,
+            fontFamily: fonts.RRegular,
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-          {'Michael Jordan'}
+          Invoice no.: TR-7077071
         </Text>
         <Text
           style={{
@@ -74,20 +90,12 @@ export default function MemberInvoiceScreen({ navigation }) {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-          Invoice no. TR 7077071
-        </Text>
-        <Text
-          style={{
-            fontFamily: fonts.RRegular,
-            fontSize: 16,
-            color: colors.lightBlackColor,
-          }}>
-          Due : SAT, May 11, 2020
+          Due at: May 11, 2020
         </Text>
       </View>
 
       <LinearGradient
-        colors={[colors.kHexColorFF8A01, colors.darkThemeColor]}
+        colors={[colors.grayBackgroundColor, colors.grayBackgroundColor]}
         style={styles.paymentProgressView}>
         <LinearGradient
           colors={[colors.greenGradientEnd, colors.greenGradientStart]}
@@ -135,21 +143,29 @@ export default function MemberInvoiceScreen({ navigation }) {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-          Recorded by Michael Jordan
+          Membership fee for May
         </Text>
       </View>
+      <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            fontSize: 12,
+            color: colors.userPostTimeColor,
+            marginLeft: 15,
+          }}>
+        {'Logged by Michael Jordan at May 1, 2020 11:25am'}
+      </Text>
+      <TouchableOpacity style={styles.paymentContainer} onPress={() => {
+          Alert.alert('ADD PAYMENT OR REFUND')
+      }}>
+        <Text style={styles.cardDetailText}>+Add Payment or Refund</Text>
+      </TouchableOpacity>
 
-      <LinearGradient
-        colors={[colors.yellowColor, colors.darkThemeColor]}
-        style={styles.activeEventPricacy}>
-        <TouchableOpacity
-          onPress={() => Alert.alert('Add payment')}
-          style={styles.activeEventPricacy}>
-          <Text style={styles.activeEventPrivacyText}>
-            {'+Add Payment or Refund'}
-          </Text>
-        </TouchableOpacity>
-      </LinearGradient>
+      <TouchableOpacity style={styles.paymentContainer} onPress={() => {
+          navigation.navigate('AddLogScreen')
+      }}>
+        <Text style={styles.cardDetailText}>Log Manually</Text>
+      </TouchableOpacity>
 
       <Text
         style={{
@@ -165,6 +181,17 @@ export default function MemberInvoiceScreen({ navigation }) {
         renderItem={renderLogView}
         keyExtractor={(item, index) => index.toString()}
       />
+
+      <ActionSheet
+        ref={actionSheet}
+        options={['Delete This Invoice', 'Cancel']}
+        cancelButtonIndex={1}
+        onPress={(index) => {
+          if (index === 0) {
+            Alert.alert('Delete');
+          }
+        }}
+      />
     </View>
   );
 }
@@ -173,16 +200,19 @@ const styles = StyleSheet.create({
     flex: 1,
     // backgroundColor: colors.grayBackgroundColor,
   },
-  navTitle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
+
   townsCupSettingIcon: {
     resizeMode: 'contain',
-    height: 25,
-    width: 25,
-    marginLeft: 10,
+    height: 19,
+    width: 9,
+    marginRight: 10,
+    tintColor: colors.lightBlackColor,
+  },
+  invoiceProfileStyle: {
+    resizeMode: 'contain',
+    height: 17,
+    width: 17,
+    marginRight: 10,
   },
 
   rightHeaderView: {
@@ -191,27 +221,33 @@ const styles = StyleSheet.create({
     marginLeft: 25,
   },
 
-  activeEventPricacy: {
-    height: 31,
-    width: 200,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: wp('2%'),
-    alignSelf: 'center',
-  },
-
-  activeEventPrivacyText: {
-    color: 'white',
-    fontFamily: fonts.RBold,
-    letterSpacing: 0.5,
-    fontSize: 14,
-  },
-
   paymentProgressView: {
     height: 20,
     backgroundColor: colors.thinDividerColor,
     marginLeft: 15,
     marginRight: 15,
     borderRadius: 4,
+  },
+
+  paymentContainer: {
+    height: 35,
+    width: 200,
+    borderRadius: 5,
+    backgroundColor: colors.offwhite,
+    flexDirection: 'row',
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 15,
+  },
+  cardDetailText: {
+    fontFamily: fonts.RBold,
+    fontSize: 14,
+    color: colors.lightBlackColor,
   },
 });

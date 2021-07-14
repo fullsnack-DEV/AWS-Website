@@ -45,6 +45,10 @@ const styles = StyleSheet.create({
 
   topViewContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 200,
+
   },
   profileView: {
     backgroundColor: colors.whiteColor,
@@ -62,10 +66,12 @@ const styles = StyleSheet.create({
   topTextContainer: {
     marginLeft: 10,
     alignSelf: 'center',
+
   },
   nameText: {
     fontSize: 20,
     fontFamily: fonts.RMedium,
+   // width: 200,
   },
   mediumNameText: {
     fontSize: 16,

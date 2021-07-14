@@ -7,23 +7,24 @@ import {
 
 // import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import TCSelectionView from '../../../components/TCSelectionView';
 import { invoiceMonthsSelectionData } from '../../../utils/constant';
 import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
 import TCTabView from '../../../components/TCTabView';
-import MembershipFeeView from '../../../components/invoice/MembershipFeeView';
 import images from '../../../Constants/ImagePath';
 import MemberInvoiceView from '../../../components/invoice/MemberInvoiceView';
+import TopFilterBar from '../../../components/invoice/TopFilterBar';
+import BatchFeeView from '../../../components/invoice/BatchFeeView';
+import strings from '../../../Constants/String';
+import SmallFilterSelectionView from '../../../components/invoice/SmallFilterSelectionView';
 
 export default function InvoiceScreen({ navigation }) {
   // const [loading, setloading] = useState(false);
 
   // const isFocused = useIsFocused();
-
   const [selectedDuration, setSelectedDuration] = useState();
+  const [maintabNumber, setMaintabNumber] = useState(0);
   const [tabNumber, setTabNumber] = useState(0);
 
   useLayoutEffect(() => {
@@ -33,14 +34,15 @@ export default function InvoiceScreen({ navigation }) {
         <View style={styles.rightHeaderView}>
           <TouchableOpacity>
             <Image
-              source={images.home_setting}
-              style={styles.townsCupSettingIcon}
+              source={images.plusInvoice}
+              style={styles.townsCupPlusIcon}
             />
+
           </TouchableOpacity>
           <TouchableOpacity onPress={() => console.log('Ok')}>
             <Image
-              source={images.plusInvoice}
-              style={styles.townsCupPlusIcon}
+              source={images.threeDotIcon}
+              style={styles.townsCupthreeDotIcon}
             />
           </TouchableOpacity>
         </View>
@@ -51,57 +53,98 @@ export default function InvoiceScreen({ navigation }) {
 const renderMemberView = ({ item }) => {
   console.log('item', item);
   return (
-    <MemberInvoiceView data={item} onPressCard={() => navigation.navigate('TransactionScreen')}/>
+    <MemberInvoiceView data={item} onPressCard={() => navigation.navigate('MembersDetailScreen')}/>
   )
 }
 
-const renderInvoiceView = ({ item }) => {
+const renderBatchView = ({ item }) => {
   console.log('item', item);
   return (
-    <MembershipFeeView data={item} onPressCard={() => navigation.navigate('TransactionScreen')}/>
+    <BatchFeeView data={item} onPressCard={() => navigation.navigate('BatchDetailScreen')}/>
   )
 }
 
   return (
     <View style={styles.mainContainer}>
       {/* <ActivityLoader visible={loading} /> */}
-      <TCSelectionView
+      <TopFilterBar/>
+
+      <TCTabView
+        totalTabs={2}
+        firstTabTitle={'MEMBERS (1)'}
+        secondTabTitle={'BATCHES (3)'}
+        indexCounter={maintabNumber}
+        eventPrivacyContianer={{ width: 100 }}
+        onFirstTabPress={() => setMaintabNumber(0)}
+        onSecondTabPress={() => setMaintabNumber(1)}
+        activeHeight={36}
+        inactiveHeight={40}
+      />
+
+      <SmallFilterSelectionView
         dataSource={invoiceMonthsSelectionData}
         placeholder={strings.selectInvoiceDuration}
         value={selectedDuration}
         onValueChange={(index) => setSelectedDuration(index)}
-        containerStyle={{ height: 45, width: '92%', marginTop: 15 }}
+        containerStyle={{ height: 45, width: '92%' }}
       />
 
       <InvoiceAmount
         currencyType={'CAD'}
-        totalAmount={'99.00'}
+        totalAmount={'100.00'}
         paidAmount={'85.00'}
         openAmount={'55.00'}
       />
 
       <TCTabView
-        totalTabs={2}
-        firstTabTitle={'Members (1)'}
-        secondTabTitle={'Batches (3)'}
+        totalTabs={3}
+        firstTabTitle={'Open (1)'}
+        secondTabTitle={'Paid (3)'}
+        thirdTabTitle={'All (4)'}
         indexCounter={tabNumber}
         eventPrivacyContianer={{ width: 100 }}
         onFirstTabPress={() => setTabNumber(0)}
         onSecondTabPress={() => setTabNumber(1)}
+        onThirdTabPress={() => setTabNumber(2)}
+        activeHeight={30}
+        inactiveHeight={30}
       />
 
-      {tabNumber === 0 && <FlatList
-        data={ ['1', '2', '3', '4', '5'] }
+      {maintabNumber === 0 && tabNumber === 0 && <FlatList
+        data={ ['1'] }
         renderItem={ renderMemberView }
         keyExtractor={(item, index) => index.toString()}
       />}
 
-      {tabNumber === 1 && <FlatList
-        data={ ['1', '2', '3', '4', '5'] }
-        renderItem={ renderInvoiceView }
+      {maintabNumber === 0 && tabNumber === 1 && <FlatList
+        data={ ['1', '2', '3'] }
+        renderItem={ renderMemberView }
         keyExtractor={(item, index) => index.toString()}
       />}
 
+      {maintabNumber === 0 && tabNumber === 2 && <FlatList
+        data={ ['1', '2', '3', '4'] }
+        renderItem={ renderMemberView }// renderInvoiceView
+        keyExtractor={(item, index) => index.toString()}
+      />}
+
+      {maintabNumber === 1 && tabNumber === 0 && <FlatList
+        data={ ['1'] }
+        renderItem={ renderBatchView }// renderInvoiceView
+        keyExtractor={(item, index) => index.toString()}
+      />}
+
+      {maintabNumber === 1 && tabNumber === 1 && <FlatList
+        data={ ['1', '2', '3'] }
+        renderItem={ renderBatchView }// renderInvoiceView
+        keyExtractor={(item, index) => index.toString()}
+      />}
+
+      {maintabNumber === 1 && tabNumber === 2 && <FlatList
+        data={ ['1', '2', '3', '4'] }
+        renderItem={ renderBatchView }// renderInvoiceView
+        keyExtractor={(item, index) => index.toString()}
+      />}
     </View>
   );
 }
@@ -115,21 +158,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
   },
-  townsCupSettingIcon: {
+  townsCupthreeDotIcon: {
     resizeMode: 'contain',
-    height: 25,
-    width: 25,
+    height: 19,
+    width: 8,
     marginLeft: 10,
+    tintColor: colors.lightBlackColor,
   },
   townsCupPlusIcon: {
     resizeMode: 'contain',
     height: 25,
     width: 25,
     marginLeft: 10,
+    marginRight: 10,
   },
   rightHeaderView: {
     flexDirection: 'row',
-    marginRight: 5,
-    marginLeft: 25,
+    marginRight: 15,
+    alignItems: 'center',
   },
 });

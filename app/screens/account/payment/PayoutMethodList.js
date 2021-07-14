@@ -1,5 +1,5 @@
 import React, {
-    useState, useEffect, useContext, useLayoutEffect,
+    useState, useEffect, useContext, useLayoutEffect, useMemo,
   } from 'react';
   import {
     View, StyleSheet, Alert, Text, Image,
@@ -8,17 +8,15 @@ import React, {
 
   import { useIsFocused } from '@react-navigation/native';
   import { TouchableOpacity } from 'react-native-gesture-handler';
-  import stripe from 'tipsi-stripe'
   import LinearGradient from 'react-native-linear-gradient';
   import AuthContext from '../../../auth/context'
   import ActivityLoader from '../../../components/loader/ActivityLoader';
   import AppleStyleSwipeableRow from '../../../components/notificationComponent/AppleStyleSwipeableRow';
-  import { payoutMethods, attachPaymentMethod, deletePaymentMethod } from '../../../api/Users';
+  import { payoutMethods, deletePayoutMethod } from '../../../api/Users';
   import strings from '../../../Constants/String'
   import colors from '../../../Constants/Colors'
   import fonts from '../../../Constants/Fonts';
   import images from '../../../Constants/ImagePath';
-  import { publishableKey } from '../../../utils/constant';
   import TCTouchableLabel from '../../../components/TCTouchableLabel';
   import TCInnerLoader from '../../../components/TCInnerLoader';
 
@@ -48,7 +46,7 @@ import React, {
               if (selectedCard) {
                 onCardSelected(selectedCard)
               } else {
-                Alert.alert(strings.selectAnyCard)
+                Alert.alert(strings.selectAnyPayoutmethod)
               }
           } }>Done</Text>
         ),
@@ -59,18 +57,16 @@ import React, {
           .then((response) => {
             console.log('payout method:=>', response);
             setCards([...response.payload])
-            // setloading(false)
-            if (response.payload.length === 0) {
-              openNewCardScreen();
-            }
+             setloading(false)
+
             resolve(true)
           })
           .catch((e) => {
               reject(new Error(e.message))
-            // setloading(false)
-            // setTimeout(() => {
-            //   Alert.alert(strings.alertmessagetitle, e.message);
-            // }, 0.3)
+            setloading(false)
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 0.3)
           })
     })
 
@@ -91,7 +87,7 @@ import React, {
               text: strings.yes,
               onPress: () => {
                 setloading(true)
-                deletePaymentMethod(item.id, authContext)
+                deletePayoutMethod(authContext)
                     .then(() => {
                       const newCards = cards.filter((card) => card.id !== item.id)
                       setCards(newCards)
@@ -208,54 +204,18 @@ import React, {
       </AppleStyleSwipeableRow>
     )
 
-    const onSaveCard = async (paymentMethod) => {
-      setloading(true)
-      const params = {
-        payment_method: paymentMethod.id,
-      }
-      attachPaymentMethod(params, authContext)
-          .then(() => {
-            getPaymentMethods().then(() => {
-                setloading(false)
-            }).catch(() => {
-                setloading(false);
-            });
-          })
-          .catch((e) => {
-            console.log('error in onSaveCard', e)
-            setloading(false)
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 0.3)
-          })
-    }
-
-    const openNewCardScreen = () => {
-      stripe.setOptions({
-        publishableKey,
-      })
-      stripe.paymentRequestWithCardForm({
-        requiredBillingAddressFields: 'zip',
-        theme: {
-          accentColor: colors.orangeColor,
-        },
-      }).then((token) => {
-        console.log('card', token)
-        onSaveCard(token);
-      }).catch((e) => {
-        console.log('error in openNewCardScreen', e)
-        setloading(false)
-        if (e.message !== 'Cancelled by user') {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.3)
-        }
-      })
-    }
+    const ListEmptyComponent = useMemo(
+      () => (
+        <View>
+          <Text style={styles.notAvailableTextStyle}>No Payout Method Yet</Text>
+        </View>
+      ),
+      [],
+    );
 
     const renderFooter = () => (
       <View style={{ marginBottom: 5 }}>
-        <TCTouchableLabel
+        {cards.length < 1 ? <TCTouchableLabel
               title={
                   strings.addPayoutMessage
               }
@@ -264,7 +224,7 @@ import React, {
                 // openNewCardScreen()
                 navigation.navigate('PayoutMethodScreen');
               }}
-            />
+            /> : <View/>}
       </View>
     )
 
@@ -284,6 +244,8 @@ import React, {
                   ListFooterComponent={renderFooter}
                   showsVerticalScrollIndicator={false}
                   showsHorizontalScrollIndicator={false}
+                  ListEmptyComponent={ListEmptyComponent}
+
               />
           )}
       </View>
@@ -314,5 +276,12 @@ import React, {
       justifyContent: 'center',
       paddingHorizontal: 15,
 
+    },
+    notAvailableTextStyle: {
+      margin: 15,
+      marginTop: 0,
+      fontFamily: fonts.RMedium,
+      fontSize: 16,
+      color: colors.grayColor,
     },
   })

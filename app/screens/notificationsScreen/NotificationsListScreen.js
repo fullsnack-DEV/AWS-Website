@@ -62,6 +62,7 @@ import NotificationListShimmer from '../../components/shimmer/account/Notificati
 import NotificationListTopHeaderShimmer from '../../components/shimmer/account/NotificationListTopHeaderShimmer';
 import TCGradientButton from '../../components/TCGradientButton';
 import PRNotificationTeamInvite from '../../components/notificationComponent/PRNotificationTeamInvite';
+import PRNotificationDetailItem from '../../components/notificationComponent/PRNotificationDetailItem';
 
 function NotificationsListScreen({ navigation }) {
   const actionSheet = useRef();
@@ -76,7 +77,7 @@ function NotificationsListScreen({ navigation }) {
   const [activeScreen, setActiveScreen] = useState(false);
 
   const [isRulesModalVisible, setIsRulesModalVisible] = useState(false);
-const [groupData, setGroupData] = useState();
+  const [groupData, setGroupData] = useState();
   const isFocused = useIsFocused();
 
   const [loading, setloading] = useState(false);
@@ -186,6 +187,12 @@ const [groupData, setGroupData] = useState();
             setloading(false);
           })
           .catch(() => setloading(false));
+      } else if (verb.includes(
+        NotificationType.inviteToConnectMember,
+      )) {
+        navigation.navigate('InviteToMemberScreen', {
+          data: item,
+        });
       }
       // else if (verb.includes(NotificationType.scorekeeperRequest)) {
       //   Alert.alert('Remain Functionality')
@@ -350,7 +357,7 @@ const [groupData, setGroupData] = useState();
 
   const onDelete = ({ item }) => {
     if (activeScreen) {
-       setloading(true);
+      setloading(true);
       const ids = item.activities.map((activity) => activity.id);
       // setMainNotificationsList(mainNotificationsList.filter((obj) => obj.id !== ids))
       deleteNotification(ids, item.type, authContext)
@@ -360,7 +367,7 @@ const [groupData, setGroupData] = useState();
             .catch(() => setloading(false));
         })
         .catch(() => {
-           setloading(false);
+          setloading(false);
           Alert.alert('Failed to move to trash. Try again later');
         });
     } else {
@@ -415,8 +422,8 @@ const [groupData, setGroupData] = useState();
         .then((response) => {
           setloading(false);
           console.log('details: =>', response.payload);
-          setGroupData(response.payload)
-          setIsRulesModalVisible(true)
+          setGroupData(response.payload);
+          setIsRulesModalVisible(true);
         })
         .catch((error) => {
           setloading(false);
@@ -468,22 +475,37 @@ const [groupData, setGroupData] = useState();
       onPress={() => onDelete({ item })}
       color={colors.redDelColor}
       image={images.deleteIcon}>
-      {isInvite(item.activities[0].verb)
-
-        ? item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ? (
+      {isInvite(item.activities[0].verb) ? (
+        item.activities[0].verb.includes(
+          NotificationType.inviteToDoubleTeam,
+        ) ? (
           <PRNotificationTeamInvite
+            item={item}
+            selectedEntity={selectedEntity}
+            // onAccept={() => onAccept(item.activities[0].id)}
+            onRespond={() => onRespond(
+                JSON.parse(item.activities[0].object)?.groupData?.group_id,
+            )
+            } // JSON.parse(item.activities[0].object))
+            onPress={() => onNotificationClick(item)}
+            onPressFirstEntity={openHomePage}
+          />
+        ) : (
+          <PRNotificationInviteCell
+            item={item}
+            selectedEntity={selectedEntity}
+            onAccept={() => onAccept(item.activities[0].id)}
+            onDecline={() => onDecline(item.activities[0].id)}
+            onPress={() => onNotificationClick(item)}
+            onPressFirstEntity={openHomePage}
+          />
+        )
+      ) : item.activities[0].verb.includes(NotificationType.inviteToConnectMember) ? (
+        <PRNotificationDetailItem
           item={item}
           selectedEntity={selectedEntity}
-          // onAccept={() => onAccept(item.activities[0].id)}
-          onRespond={() => onRespond(JSON.parse(item.activities[0].object)?.groupData?.group_id)} // JSON.parse(item.activities[0].object))
-          onPress={() => onNotificationClick(item)}
-          onPressFirstEntity={openHomePage}
-        />
-        ) : (<PRNotificationInviteCell
-          item={item}
-          selectedEntity={selectedEntity}
-          onAccept={() => onAccept(item.activities[0].id)}
-          onDecline={() => onDecline(item.activities[0].id)}
+          onDetailPress={() => onDetailPress(item)}
+
           onPress={() => onNotificationClick(item)}
           onPressFirstEntity={openHomePage}
         />
@@ -501,22 +523,21 @@ const [groupData, setGroupData] = useState();
   );
 
   const renderNotificationComponent = ({ item }) => {
-    console.log('Item notification:=>', item)
+    console.log('Item notification:=>', item);
     return (
-
       <AppleStyleSwipeableRow
-      onPress={() => onDelete({ item })}
-      color={colors.redDelColor}
-      image={images.deleteIcon}>
+        onPress={() => onDelete({ item })}
+        color={colors.redDelColor}
+        image={images.deleteIcon}>
         <NotificationItem
-        data={item}
-        onPressFirstEntity={openHomePage}
-        onPressSecondEntity={openHomePage}
-        onPressCard={() => onNotificationClick(item)}
-      />
+          data={item}
+          onPressFirstEntity={openHomePage}
+          onPressSecondEntity={openHomePage}
+          onPressCard={() => onNotificationClick(item)}
+        />
       </AppleStyleSwipeableRow>
-  )
- };
+    );
+  };
 
   const RenderSections = ({ item, section }) => {
     if (section.section === strings.pendingrequests) {
@@ -859,7 +880,6 @@ const [groupData, setGroupData] = useState();
       </Modal>
 
       {/* Rules notes modal */}
-
     </View>
   );
 }
@@ -887,7 +907,6 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.linesepratorColor,
   },
-
 });
 
 export default NotificationsListScreen;

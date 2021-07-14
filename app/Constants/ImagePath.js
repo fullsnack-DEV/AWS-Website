@@ -1,7 +1,6 @@
 /* eslint-disable global-require */
 const images = {
   orangeLayer: require('../assets/images/orange_layer.png'),
-  signUpBg1: require('../assets/images/ic_signup_bg_1.png'),
   townsCupLogo: require('../assets/images/ic_townscup_logo.png'),
 
   hidePassword: require('../assets/images/ic_hidepassword.png'),
@@ -293,6 +292,8 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   orangeStar: require('../assets/images/ic_star.png'),
 
   homeSetting: require('../assets/images/ic_home_setting.png'),
+settingInvoice: require('../assets/images/setting_invoice.png'),
+
   arrowDown: require('../assets/images/arrow_down.png'),
   moveIcon: require('../assets/images/ic_move.png'),
   checkRoundOrange: require('../assets/images/check_round_orange.png'),

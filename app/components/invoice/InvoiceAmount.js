@@ -13,7 +13,7 @@ export default function InvoiceAmount({
   style,
 }) {
   return (
-    <View style={[styles.containerStyle, style]}>
+    <View style={ style}>
       {status && <View style={styles.containerView}>
         <Text style={styles.titleText}>Status</Text>
         <Text
@@ -21,13 +21,13 @@ export default function InvoiceAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.darkThemeColor,
-          }}>{'Open'}
+          }}>{status}
         </Text>
       </View>
 
       }
       <View style={styles.containerView}>
-        <Text style={styles.titleText}>Total Invoiced</Text>
+        <Text style={styles.titleText}>{status ? 'Invoiced Amount' : 'Total Invoiced'}</Text>
         <Text
           style={{
             fontSize: 16,
@@ -38,7 +38,7 @@ export default function InvoiceAmount({
       </View>
 
       <View style={styles.containerView}>
-        <Text style={styles.titleText}>Paid</Text>
+        <Text style={styles.titleText}>{status ? 'Paid Amount' : 'Paid'}</Text>
         <Text
           style={{
             fontSize: 16,
@@ -49,7 +49,7 @@ export default function InvoiceAmount({
       </View>
 
       <View style={styles.containerView}>
-        <Text style={styles.titleText}>Open</Text>
+        <Text style={styles.titleText}>{status ? 'Balance' : 'Open'}</Text>
         <Text
           style={{
             fontSize: 16,
@@ -63,11 +63,11 @@ export default function InvoiceAmount({
 }
 
 const styles = StyleSheet.create({
-  containerStyle: {},
   containerView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     margin: 15,
+    marginTop: 10,
     marginBottom: 0,
   },
   titleText: {
