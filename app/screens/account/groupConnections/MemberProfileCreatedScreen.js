@@ -22,7 +22,7 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => (navigation.navigate('HomeScreen'))}>
+        <TouchableOpacity onPress={() => navigation.popToTop()}>
           <Image source={images.backArrow} style={{
             height: 20, width: 15, marginLeft: 15, tintColor: colors.whiteColor,
           }} />
@@ -43,9 +43,8 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
   }, [])
   const connectMemberProfile = () => {
     setloading(true)
-    connectProfile(switchUser.uid, route.params.memberObj.user_id, authContext).then((response) => {
+    connectProfile(switchUser.uid, route.params.memberObj.user_id, authContext).then(() => {
       setloading(false)
-      Alert.alert('Towns Cup', response.messages)
       navigation.navigate('ConnectionReqSentScreen', { memberObj: route.params.memberObj });
     })
       .catch((e) => {
@@ -60,7 +59,7 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
     <View style={styles.mainContainer}>
 
       <Image style={styles.background} source={images.orangeLayer} />
-      <Image style={styles.background} source={images.signUpBg1} />
+      <Image style={styles.background} source={images.entityCreatedBG} />
       <ActivityLoader visible={loading} />
 
       {route.params.memberObj && <View style={styles.topContainer}>
@@ -69,7 +68,7 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
         <Text style={styles.emailText}>{route.params.memberObj.email}</Text>
 
         <TCBorderButton title={route.params.buttonTitle} borderColor={colors.whiteColor} marginTop={20} onPress={() => {
-          if (route.params.buttonTitle === 'Connect this member profile') {
+          if (route.params.buttonTitle === strings.connectMemberProfile) {
             connectMemberProfile()
           } else {
             Linking.canOpenURL('mailto:')

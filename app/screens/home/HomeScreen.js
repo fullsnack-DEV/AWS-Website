@@ -4373,13 +4373,23 @@ const HomeScreen = ({ navigation, route }) => {
           flex: 1,
         }}
         hasBackdrop
-        onBackdropPress={() => setIsDoubleSportTeamCreatedVisible(false)}
+        onBackdropPress={() => {
+          navigation.popToTop();
+          setTimeout(() => {
+            setIsDoubleSportTeamCreatedVisible(false);
+          }, 10);
+        }}
         backdropOpacity={0}>
         <View style={styles.modalContainerViewStyle}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
           <TouchableOpacity
-            onPress={() => setIsDoubleSportTeamCreatedVisible(false)}
+            onPress={() => {
+              navigation.popToTop();
+              setTimeout(() => {
+                setIsDoubleSportTeamCreatedVisible(false);
+              }, 10);
+            }}
             style={{ alignSelf: 'flex-end' }}>
             <Image
               source={images.cancelWhite}

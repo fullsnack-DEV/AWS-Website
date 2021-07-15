@@ -18,12 +18,17 @@ import TCBorderButton from '../../../components/TCBorderButton';
 import { connectProfile } from '../../../api/Groups';
 
 export default function UserFoundScreen({ navigation, route }) {
+  const {
+ signUpObj,
+    memberObj,
+    groupID,
+ } = route?.params
   const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(false);
 
   const connectMemberProfile = () => {
     setloading(true)
-    connectProfile(route.params.groupID, route.params.memberObj.user_id, authContext).then((response) => {
+    connectProfile(groupID, memberObj?.user_id, authContext).then((response) => {
       setloading(false)
       Alert.alert('Towns Cup', response.messages)
       navigation.goBack();
@@ -38,29 +43,33 @@ export default function UserFoundScreen({ navigation, route }) {
   return (
     <View style={styles.mainContainer}>
       <Image style={styles.background} source={images.orangeLayer} />
-      <Image style={styles.background} source={images.signUpBg1} />
+      <Image style={styles.background} source={images.entityCreatedBG} />
       <ActivityLoader visible={loading} />
-      <SafeAreaView>
-        <ScrollView >
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }}>
           <View style={{
             marginTop: 100,
           }}>
             <View style={styles.topContainer}>
               <Text style={styles.foundUserText}>We found a user whose e-mail account is</Text>
 
-              <Image source={ route.params.memberObj.thumbnail ? { uri: route.params.memberObj.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage } />
-
-              <Text style={styles.emailText}>{route.params.memberObj.email}</Text>
+              {/* <Image source={ memberObj.thumbnail ? { uri: memberObj.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage } /> */}
+              <TCProfileView image={signUpObj?.thumbnail ? { uri: signUpObj?.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage} name={`${signUpObj?.full_name}`} location={`${signUpObj?.city}, ${signUpObj?.state_abbr}, ${signUpObj?.country}`} color={colors.whiteColor}/>
+              <Text style={styles.emailText}>{memberObj.email}</Text>
             </View>
             <View style={styles.deviderView}></View>
             <View style={styles.topContainer}>
-              <Text style={styles.connectProfileText}>Would you like to connect {`${route.params.memberObj.first_name}'s`} profile to the user’s account?</Text>
-              <TCProfileView image={route.params.memberObj.thumbnail ? { uri: route.params.memberObj.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage} name={`${route.params.memberObj.first_name} ${route.params.memberObj.last_name}`} location={`${route.params.memberObj.city}, ${route.params.memberObj.state_abbr}, ${route.params.memberObj.country}`} color={colors.whiteColor}/>
+              <Text style={styles.connectProfileText}>Would you like to connect this user’s account to {`${signUpObj.first_name}'s`} profile in your team?</Text>
+              <TCProfileView image={signUpObj?.thumbnail ? { uri: signUpObj?.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage} name={`${signUpObj?.full_name}`} location={`${signUpObj?.city}, ${signUpObj?.state_abbr}, ${signUpObj?.country}`} color={colors.whiteColor}/>
 
               <Image source={images.chain} style={styles.fileButton}></Image>
-              <Text style={styles.userEmail}>{route.params.memberObj.email}</Text>
+
+              <TCProfileView image={memberObj?.thumbnail ? { uri: memberObj.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage} name={`${memberObj?.first_name} ${memberObj?.last_name}`} location={`${memberObj?.city ?? ''}, ${memberObj?.state_abbr ?? ''}, ${memberObj?.country ?? ''}`} color={colors.whiteColor}/>
+
+              {/* <Text style={styles.userEmail}>{memberObj.email}</Text> */}
 
             </View>
+            <View style={{ marginBottom: 100 }}/>
             <TCBorderButton title={strings.connectProfile} borderColor={colors.whiteColor} marginTop={20} onPress={() => connectMemberProfile()} fontSize={16}/>
           </View>
         </ScrollView>
@@ -147,13 +156,6 @@ const styles = StyleSheet.create({
     width: 27,
     marginBottom: 15,
     alignSelf: 'center',
-  },
-  userEmail: {
-    color: colors.whiteColor,
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 41,
   },
 
 })

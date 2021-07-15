@@ -69,6 +69,7 @@ import ScorekeeperSelectMatch from '../screens/game/bookScorekeeper/selectMatch/
 import ScorekeeperAcceptDeclineScreen from '../screens/scorekeeper/ScorekeeperAcceptDeclineScreen';
 import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
+import InviteToMemberScreen from '../screens/account/groupConnections/createMemberProfile/InviteToMemberScreen';
 
 const Stack = createStackNavigator();
 
@@ -827,6 +828,14 @@ function NotificationNavigator() {
           },
         } }
       />
+
+      <Stack.Screen
+         name="InviteToMemberScreen"
+         component={InviteToMemberScreen}
+         options={{
+           headerShown: false,
+         }}
+        />
     </Stack.Navigator>
   );
 }

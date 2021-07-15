@@ -285,23 +285,23 @@ function ChallengerInOutView({ data }) {
       if (data.challenger === entity.uid) {
         if (data?.challengee === data?.home_team?.user_id || data?.challengee === data?.home_team?.group_id) {
           return {
-            name: data?.home_team?.first_name ? `${data.home_team.first_name} ${data.home_team.last_name}` : `${data.home_team.group_name}`,
+            name: data?.home_team?.first_name ? `${data.home_team.first_name} ${data.home_team.last_name}` : `${data?.home_team?.group_name}`,
             thumbnail: data?.home_team?.thumbnail,
           }
         }
           return {
-            name: data?.away_team?.first_name ? `${data.away_team.first_name} ${data.away_team.last_name}` : `${data.away_team.group_name}`,
+            name: data?.away_team?.first_name ? `${data.away_team.first_name} ${data.away_team.last_name}` : `${data?.away_team?.group_name}`,
             thumbnail: data?.away_team?.thumbnail,
           }
       }
       if (data?.challenger === data?.home_team?.user_id || data?.challenger === data?.home_team?.group_id) {
         return {
-          name: data?.home_team?.first_name ? `${data.home_team.first_name} ${data.home_team.last_name}` : `${data.home_team.group_name}`,
+          name: data?.home_team?.first_name ? `${data.home_team.first_name} ${data.home_team.last_name}` : `${data?.home_team?.group_name}`,
           thumbnail: data?.home_team?.thumbnail,
         }
       }
         return {
-          name: data?.away_team?.first_name ? `${data.away_team.first_name} ${data.away_team.last_name}` : `${data.away_team.group_name}`,
+          name: data?.away_team?.first_name ? `${data.away_team.first_name} ${data.away_team.last_name}` : `${data?.away_team?.group_name}`,
           thumbnail: data?.away_team?.thumbnail,
         }
 

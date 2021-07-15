@@ -17,7 +17,7 @@ export default function UserNotFoundScreen({ route }) {
   return (
     <View style={styles.mainContainer}>
       <Image style={styles.background} source={images.orangeLayer} />
-      <Image style={styles.background} source={images.signUpBg1} />
+      <Image style={styles.background} source={images.entityCreatedBG} />
 
       <View style={styles.topContainer}>
         <Text style={styles.notFoundUserText}>{strings.userNotFoundByEmail}</Text>

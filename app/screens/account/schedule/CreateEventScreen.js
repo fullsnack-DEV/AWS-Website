@@ -12,7 +12,7 @@ import {
   FlatList,
   ScrollView,
   Alert,
- Dimensions,
+  Dimensions,
 } from 'react-native';
 import moment from 'moment';
 import {
@@ -63,8 +63,10 @@ export default function CreateEventScreen({ navigation, route }) {
   );
 
   const [eventEndDateTime, setEventEnddateTime] = useState(
-    toggle ? new Date().setHours(23, 59, 59, 0) : moment(eventStartDateTime).add(5, 'm').toDate(),
-);
+    toggle
+      ? new Date().setHours(23, 59, 59, 0)
+      : moment(eventStartDateTime).add(5, 'm').toDate(),
+  );
   const [eventUntilDateTime, setEventUntildateTime] = useState(
     eventEndDateTime,
   );
@@ -84,7 +86,7 @@ export default function CreateEventScreen({ navigation, route }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-    const eventColorData = await Utility.getStorage('eventColors');
+      const eventColorData = await Utility.getStorage('eventColors');
 
       if (eventColorData) {
         setEventColors(eventColorData);
@@ -140,9 +142,21 @@ export default function CreateEventScreen({ navigation, route }) {
   const handleStartDatePress = (date) => {
     console.log('Date::=>', new Date(new Date(date).getTime()));
 
-    setEventStartdateTime(toggle ? new Date(date).setHours(0, 0, 0, 0) : new Date(new Date(date).getTime()));
-    setEventEnddateTime(toggle ? new Date(date).setHours(23, 59, 59, 0) : moment(date).add(5, 'm').toDate());
-    setEventUntildateTime(toggle ? new Date(date).setHours(23, 59, 59, 0) : moment(date).add(5, 'm').toDate());
+    setEventStartdateTime(
+      toggle
+        ? new Date(date).setHours(0, 0, 0, 0)
+        : new Date(new Date(date).getTime()),
+    );
+    setEventEnddateTime(
+      toggle
+        ? new Date(date).setHours(23, 59, 59, 0)
+        : moment(date).add(5, 'm').toDate(),
+    );
+    setEventUntildateTime(
+      toggle
+        ? new Date(date).setHours(23, 59, 59, 0)
+        : moment(date).add(5, 'm').toDate(),
+    );
     setStartDateVisible(!startDateVisible);
   };
   const handleCancelPress = () => {
@@ -241,7 +255,10 @@ export default function CreateEventScreen({ navigation, route }) {
         <EventColorItem
           isNew={item.color !== '0'}
           onChangeColorPressed={onChangeColorPressed}
-          imageStyle={{ tintColor: item.color !== '0' ? colors.whiteColor : colors.lightBlackColor }}
+          imageStyle={{
+            tintColor:
+              item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
+          }}
           onItemPress={() => {
             if (item.color === '0') {
               setAddColorDoneButton(false);
@@ -262,7 +279,13 @@ export default function CreateEventScreen({ navigation, route }) {
               setEventColors([...eventColors]);
             }
           }}
-          source={item.isNew && item.color === '0' ? images.plus : item.isSelected ? images.check : null}
+          source={
+            item.isNew && item.color === '0'
+              ? images.plus
+              : item.isSelected
+              ? images.check
+              : null
+          }
           eventColorViewStyle={{
             backgroundColor:
               item.color === '0' ? colors.whiteColor : item.color,
@@ -299,6 +322,11 @@ export default function CreateEventScreen({ navigation, route }) {
         }}
       />
     );
+  };
+
+  const convertDateToUTC = (date) => {
+    const dt = new Date(date);
+    return new Date(dt.getTime() + dt.getTimezoneOffset() * 60000);
   };
 
   return (
@@ -343,6 +371,7 @@ export default function CreateEventScreen({ navigation, route }) {
               } else {
                 setloading(true);
                 let data;
+
                 if (searchLocation) {
                   data = [
                     {
@@ -352,15 +381,16 @@ export default function CreateEventScreen({ navigation, route }) {
                       allDay: toggle,
                       start_datetime: Number(
                         parseFloat(
-                          new Date(eventStartDateTime).getTime() / 1000,
+                          new Date(eventStartDateTime).getTime()
+                            / 1000,
                         ).toFixed(0),
                       ),
                       end_datetime: Number(
                         parseFloat(
-                          new Date(eventEndDateTime).getTime() / 1000,
+                          new Date(eventEndDateTime).getTime()
+                            / 1000,
                         ).toFixed(0),
                       ),
-
                       is_recurring: selectWeekMonth !== '',
                       location: searchLocation,
                       latitude: locationDetail.lat,
@@ -380,15 +410,16 @@ export default function CreateEventScreen({ navigation, route }) {
                       allDay: toggle,
                       start_datetime: Number(
                         parseFloat(
-                          new Date(eventStartDateTime).getTime() / 1000,
+                          new Date(convertDateToUTC(eventStartDateTime)).getTime()
+                            / 1000,
                         ).toFixed(0),
                       ),
                       end_datetime: Number(
                         parseFloat(
-                          new Date(eventEndDateTime).getTime() / 1000,
+                          new Date(convertDateToUTC(eventEndDateTime)).getTime()
+                            / 1000,
                         ).toFixed(0),
                       ),
-
                       is_recurring: selectWeekMonth !== '',
                       blocked: is_Blocked,
                       owner_id:
@@ -452,226 +483,223 @@ export default function CreateEventScreen({ navigation, route }) {
         <ScrollView bounces={false}>
           <SafeAreaView>
             <EventTextInputItem
-            title={strings.title}
-            placeholder={strings.titlePlaceholder}
-            onChangeText={(text) => {
-              setEventTitle(text);
-            }}
-            value={eventTitle}
-          />
+              title={strings.title}
+              placeholder={strings.titlePlaceholder}
+              onChangeText={(text) => {
+                setEventTitle(text);
+              }}
+              value={eventTitle}
+            />
             <EventTextInputItem
-            title={strings.about}
-            placeholder={strings.aboutPlaceholder}
-            onChangeText={(text) => {
-              setEventDescription(text);
-            }}
-            // multiline={true}
-            value={eventDescription}
-          />
+              title={strings.about}
+              placeholder={strings.aboutPlaceholder}
+              onChangeText={(text) => {
+                setEventDescription(text);
+              }}
+              // multiline={true}
+              value={eventDescription}
+            />
 
             <EventItemRender title={strings.timeTitle}>
               <View style={styles.toggleViewStyle}>
                 <Text style={styles.allDayText}>{strings.allDay}</Text>
                 <TouchableOpacity
-                style={styles.checkbox}
-                onPress={() => setToggle(!toggle)}>
+                  style={styles.checkbox}
+                  onPress={() => setToggle(!toggle)}>
                   <Image
-                  source={
-                    toggle ? images.checkWhiteLanguage : images.uncheckWhite
-                  }
-                  style={styles.checkboxImg}
-                />
+                    source={
+                      toggle ? images.checkWhiteLanguage : images.uncheckWhite
+                    }
+                    style={styles.checkboxImg}
+                  />
                 </TouchableOpacity>
               </View>
               <EventTimeSelectItem
-              title={strings.starts}
-              toggle={!toggle}
-              date={
-                eventStartDateTime
-                  ? moment(eventStartDateTime).format('ll')
-                  : moment(new Date()).format('ll')
-              }
-              time={
-                eventStartDateTime
-                  ? moment(eventStartDateTime).format('h:mm a')
-                  : moment(new Date()).format('h:mm a')
-              }
-              onDatePress={() => setStartDateVisible(!startDateVisible)}
-            />
-              <EventTimeSelectItem
-              title={strings.ends}
-              toggle={!toggle}
-              date={
-                eventEndDateTime
-                  ? moment(eventEndDateTime).format('ll')
-                  : moment(new Date()).format('ll')
-              }
-              time={
-                eventEndDateTime
-                  ? moment(eventEndDateTime).format('h:mm a')
-                  : moment(new Date()).format('h:mm a')
-              }
-              containerStyle={{ marginBottom: 8 }}
-              onDatePress={() => setEndDateVisible(!endDateVisible)}
-            />
-              <EventMonthlySelection
-              title={strings.repeat}
-              dataSource={[
-
-                { label: 'Daily', value: 'Daily' },
-                { label: 'Weekly', value: 'Weekly' },
-                {
-                  label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
-                  value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
-                },
-                {
-                  label: `Monthly on ${ordinal_suffix_of(
-                    new Date().getDate(),
-                  )} day`,
-                  value: `Monthly on ${ordinal_suffix_of(
-                    new Date().getDate(),
-                  )} day`,
-                },
-                { label: 'Yearly', value: 'Yearly' },
-              ]}
-              placeholder={'Does not repeat'}
-              value={selectWeekMonth}
-              onValueChange={(value) => {
-                setSelectWeekMonth(value);
-              }}
-            />
-              {selectWeekMonth !== '' && (
-                <EventTimeSelectItem
-                title={strings.until}
+                title={strings.starts}
                 toggle={!toggle}
                 date={
-                  eventUntilDateTime
-                    ? moment(eventUntilDateTime).format('ll')
+                  eventStartDateTime
+                    ? moment(eventStartDateTime).format('ll')
                     : moment(new Date()).format('ll')
                 }
                 time={
-                  eventUntilDateTime
-                    ? moment(eventUntilDateTime).format('h:mm a')
+                  eventStartDateTime
+                    ? moment(eventStartDateTime).format('h:mm a')
                     : moment(new Date()).format('h:mm a')
                 }
-                containerStyle={{ marginBottom: 12 }}
-                onDatePress={() => setUntilDateVisible(!untilDateVisible)}
+                onDatePress={() => setStartDateVisible(!startDateVisible)}
               />
-            )}
+              <EventTimeSelectItem
+                title={strings.ends}
+                toggle={!toggle}
+                date={
+                  eventEndDateTime
+                    ? moment(eventEndDateTime).format('ll')
+                    : moment(new Date()).format('ll')
+                }
+                time={
+                  eventEndDateTime
+                    ? moment(eventEndDateTime).format('h:mm a')
+                    : moment(new Date()).format('h:mm a')
+                }
+                containerStyle={{ marginBottom: 8 }}
+                onDatePress={() => setEndDateVisible(!endDateVisible)}
+              />
+              <EventMonthlySelection
+                title={strings.repeat}
+                dataSource={[
+                  { label: 'Daily', value: 'Daily' },
+                  { label: 'Weekly', value: 'Weekly' },
+                  {
+                    label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                    value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                  },
+                  {
+                    label: `Monthly on ${ordinal_suffix_of(
+                      new Date().getDate(),
+                    )} day`,
+                    value: `Monthly on ${ordinal_suffix_of(
+                      new Date().getDate(),
+                    )} day`,
+                  },
+                  { label: 'Yearly', value: 'Yearly' },
+                ]}
+                placeholder={'Does not repeat'}
+                value={selectWeekMonth}
+                onValueChange={(value) => {
+                  setSelectWeekMonth(value);
+                }}
+              />
+              {selectWeekMonth !== '' && (
+                <EventTimeSelectItem
+                  title={strings.until}
+                  toggle={!toggle}
+                  date={
+                    eventUntilDateTime
+                      ? moment(eventUntilDateTime).format('ll')
+                      : moment(new Date()).format('ll')
+                  }
+                  time={
+                    eventUntilDateTime
+                      ? moment(eventUntilDateTime).format('h:mm a')
+                      : moment(new Date()).format('h:mm a')
+                  }
+                  containerStyle={{ marginBottom: 12 }}
+                  onDatePress={() => setUntilDateVisible(!untilDateVisible)}
+                />
+              )}
             </EventItemRender>
 
             <EventItemRender title={strings.place}>
               <TCTouchableLabel
-              placeholder={strings.searchHereText}
-              title={searchLocation}
-              showNextArrow={true}
-              onPress={() => {
-                navigation.navigate('SearchLocationScreen', {
-                  comeFrom: 'CreateEventScreen',
-                });
-                navigation.setParams({ comeName: null });
-              }}
-              style={{ width: '98%', alignSelf: 'center' }}
-            />
+                placeholder={strings.searchHereText}
+                title={searchLocation}
+                showNextArrow={true}
+                onPress={() => {
+                  navigation.navigate('SearchLocationScreen', {
+                    comeFrom: 'CreateEventScreen',
+                  });
+                  navigation.setParams({ comeName: null });
+                }}
+                style={{ width: '98%', alignSelf: 'center' }}
+              />
               <EventMapView
-              region={{
-                latitude: locationDetail ? locationDetail.lat : 0.0,
-                longitude: locationDetail ? locationDetail.lng : 0.0,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-              coordinate={{
-                latitude: locationDetail ? locationDetail.lat : 0.0,
-                longitude: locationDetail ? locationDetail.lng : 0.0,
-              }}
-            />
+                region={{
+                  latitude: locationDetail ? locationDetail.lat : 0.0,
+                  longitude: locationDetail ? locationDetail.lng : 0.0,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                coordinate={{
+                  latitude: locationDetail ? locationDetail.lat : 0.0,
+                  longitude: locationDetail ? locationDetail.lng : 0.0,
+                }}
+              />
             </EventItemRender>
 
             <EventItemRender
-            title={strings.availableTitle}
-            containerStyle={{ marginTop: 10 }}>
+              title={strings.availableTitle}
+              containerStyle={{ marginTop: 10 }}>
               <Text style={styles.availableSubHeader}>
                 {strings.availableSubTitle}
               </Text>
               <BlockAvailableTabView
-              blocked={is_Blocked}
-              firstTabTitle={'Block'}
-              secondTabTitle={'Set available'}
-              onFirstTabPress={() => setIsBlocked(true)}
-              onSecondTabPress={() => setIsBlocked(false)}
-            />
+                blocked={is_Blocked}
+                firstTabTitle={'Block'}
+                secondTabTitle={'Set available'}
+                onFirstTabPress={() => setIsBlocked(true)}
+                onSecondTabPress={() => setIsBlocked(false)}
+              />
             </EventItemRender>
             <EventItemRender title={strings.eventColorTitle}>
               <FlatList
-              numColumns={Dimensions.get('window').width > 360 ? 9 : 8}
-              scrollEnabled={false}
-              data={eventColors}
-              ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
-              renderItem={renderColorItem}
-              keyExtractor={(item, index) => index.toString()}
-            />
+                numColumns={Dimensions.get('window').width > 360 ? 9 : 8}
+                scrollEnabled={false}
+                data={eventColors}
+                ItemSeparatorComponent={() => (
+                  <View style={{ width: wp('1%') }} />
+                )}
+                renderItem={renderColorItem}
+                keyExtractor={(item, index) => index.toString()}
+              />
             </EventItemRender>
             <DateTimePickerView
-            date={eventStartDateTime}
-            visible={startDateVisible}
-            onDone={handleStartDatePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            minimumDate={getNearDateTime(new Date())}
-            minutesGap={5}
-            mode={toggle ? 'date' : 'datetime'}
-          />
+              date={eventStartDateTime}
+              visible={startDateVisible}
+              onDone={handleStartDatePress}
+              onCancel={handleCancelPress}
+              onHide={handleCancelPress}
+              minimumDate={getNearDateTime(new Date())}
+              minutesGap={5}
+              mode={toggle ? 'date' : 'datetime'}
+            />
             <DateTimePickerView
-            date={eventEndDateTime}
-            visible={endDateVisible}
-            onDone={handleEndDatePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            minimumDate={moment(getNearDateTime(new Date(eventStartDateTime)))
-              .add(5, 'm')
-              .toDate()}
-            minutesGap={5}
-            mode={toggle ? 'date' : 'datetime'}
-          />
+              date={eventEndDateTime}
+              visible={endDateVisible}
+              onDone={handleEndDatePress}
+              onCancel={handleCancelPress}
+              onHide={handleCancelPress}
+              minimumDate={moment(getNearDateTime(new Date(eventStartDateTime)))
+                .add(5, 'm')
+                .toDate()}
+              minutesGap={5}
+              mode={toggle ? 'date' : 'datetime'}
+            />
             <DateTimePickerView
-            date={eventUntilDateTime}
-            visible={untilDateVisible}
-            onDone={handleUntilDatePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            minimumDate={
-             moment(eventEndDateTime).add(5, 'm').toDate()
-            }
-            minutesGap={5}
-            mode={toggle ? 'date' : 'datetime'}
-          />
+              date={eventUntilDateTime}
+              visible={untilDateVisible}
+              onDone={handleUntilDatePress}
+              onCancel={handleCancelPress}
+              onHide={handleCancelPress}
+              minimumDate={moment(eventEndDateTime).add(5, 'm').toDate()}
+              minutesGap={5}
+              mode={toggle ? 'date' : 'datetime'}
+            />
             <DefaultColorModal
-            isModalVisible={isColorPickerModal}
-            onBackdropPress={() => setIsColorPickerModal(false)}
-            cancelImageSource={images.cancelImage}
-            containerStyle={{ height: hp('55%') }}
-            onCancelImagePress={() => setIsColorPickerModal(false)}
-            headerCenterText={'Add color'}
-            onColorSelected={(selectColor) => {
-              setAddColorDoneButton(true)
-              setSelectedEventColors(selectColor)
-            }}
-            doneButtonDisplay={addColorDoneButton}
-            onDonePress={() => {
-              eventColors[10] = {
-                id: 10,
-                color: selectedEventColors,
-                isSelected: false,
-                isNew: true,
-              };
-              setEventColors([...eventColors]);
-              setEventColors([...eventColors]);
-              setIsColorPickerModal(false);
-            }}
-
-          />
+              isModalVisible={isColorPickerModal}
+              onBackdropPress={() => setIsColorPickerModal(false)}
+              cancelImageSource={images.cancelImage}
+              containerStyle={{ height: hp('55%') }}
+              onCancelImagePress={() => setIsColorPickerModal(false)}
+              headerCenterText={'Add color'}
+              onColorSelected={(selectColor) => {
+                setAddColorDoneButton(true);
+                setSelectedEventColors(selectColor);
+              }}
+              doneButtonDisplay={addColorDoneButton}
+              onDonePress={() => {
+                eventColors[10] = {
+                  id: 10,
+                  color: selectedEventColors,
+                  isSelected: false,
+                  isNew: true,
+                };
+                setEventColors([...eventColors]);
+                setEventColors([...eventColors]);
+                setIsColorPickerModal(false);
+              }}
+            />
           </SafeAreaView>
-
         </ScrollView>
       </TCKeyboardView>
     </>

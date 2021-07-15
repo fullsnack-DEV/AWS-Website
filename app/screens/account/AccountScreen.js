@@ -115,7 +115,7 @@ export default function AccountScreen({ navigation, route }) {
       member: [
         { opetions: 'Payment Method' },
         { opetions: 'Payout Method' },
-        { opetions: 'Invoicing' },
+        { opetions: 'Invoices' },
         { opetions: 'Transactions' },
       ],
     },
@@ -637,7 +637,13 @@ export default function AccountScreen({ navigation, route }) {
        // navigation.navigate('PayoutMethodScreen');
        navigation.navigate('PayoutMethodList', { comeFrom: 'AccountScreen' });
       } else if (options === 'Invoicing') {
-        navigation.navigate('InvoiceScreen');
+         navigation.navigate('InvoiceScreen');
+        // navigation.navigate('MembersDetailScreen');
+      } else if (options === 'Invoices') {
+        navigation.navigate('UserInvoiceScreen');
+     } else if (options === 'Transactions') {
+        // navigation.navigate('InvoiceScreen');
+        Alert.alert('Transaction section')
       }
     },
     [authContext.entity, navigation],
@@ -1029,6 +1035,12 @@ export default function AccountScreen({ navigation, route }) {
               />
             )}
             {rowItem.opetions === 'Invoicing' && (
+              <Image
+                source={images.Invoicing}
+                style={{ ...styles.subMenuItem }}
+              />
+            )}
+            {rowItem.opetions === 'Invoices' && (
               <Image
                 source={images.Invoicing}
                 style={{ ...styles.subMenuItem }}

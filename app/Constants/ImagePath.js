@@ -1,7 +1,6 @@
 /* eslint-disable global-require */
 const images = {
   orangeLayer: require('../assets/images/orange_layer.png'),
-  signUpBg1: require('../assets/images/ic_signup_bg_1.png'),
   townsCupLogo: require('../assets/images/ic_townscup_logo.png'),
 
   hidePassword: require('../assets/images/ic_hidepassword.png'),
@@ -14,6 +13,7 @@ const images = {
   entityCreatedBG: require('../assets/images/entity_created_bg.png'),
   searchUser: require('../assets/images/searchUser.png'),
   profilePlaceHolder: require('../assets/images/profileplaceholder.png'),
+  dummyPhoto: require('../assets/images/dummy_photo.png'),
   searchLocation: require('../assets/images/ic_search_orange.png'),
   archerySport: require('../assets/images/ic_archery.png'),
   bandySport: require('../assets/images/ic_Bandy.png'),
@@ -109,6 +109,7 @@ const images = {
 
   radioSelect: require('../assets/images/ic_radio_select.png'),
   plus: require('../assets/images/plus.png'),
+  plusInvoice: require('../assets/images/plus_invoice.png'),
   multipleImagesIcon: require('../assets/images/multiple_images.png'),
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
 
@@ -291,6 +292,8 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   orangeStar: require('../assets/images/ic_star.png'),
 
   homeSetting: require('../assets/images/ic_home_setting.png'),
+settingInvoice: require('../assets/images/setting_invoice.png'),
+
   arrowDown: require('../assets/images/arrow_down.png'),
   moveIcon: require('../assets/images/ic_move.png'),
   checkRoundOrange: require('../assets/images/check_round_orange.png'),
