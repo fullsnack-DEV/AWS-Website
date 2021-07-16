@@ -203,6 +203,7 @@ import LogDetailScreen from '../screens/account/payment/LogDetailScreen';
 import BatchDetailScreen from '../screens/account/payment/BatchDetailScreen';
 import TeamInvoiceDetailScreen from '../screens/account/payment/TeamInvoiceDetailScreen';
 import AddLogScreen from '../screens/account/payment/AddLogScreen';
+import CanceledInvoicesScreen from '../screens/account/payment/CanceledInvoicesScreen';
 
 // Scorekeeper Review Screen
 
@@ -2622,6 +2623,22 @@ const AccountNavigator = () => (
       }}
     />
 
+    <Stack.Screen
+      name="CanceledInvoicesScreen"
+      component={CanceledInvoicesScreen}
+      options={{
+        title: 'Canceled invoices',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
          name="InviteToMemberScreen"
          component={InviteToMemberScreen}

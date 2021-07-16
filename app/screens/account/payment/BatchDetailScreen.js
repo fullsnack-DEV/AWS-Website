@@ -17,7 +17,8 @@ import images from '../../../Constants/ImagePath';
 import BatchDetailView from '../../../components/invoice/BatchDetailView';
 
 let entity = {};
-export default function BatchDetailScreen({ navigation }) {
+export default function BatchDetailScreen({ navigation, route }) {
+  const { from } = route?.params
   // const [loading, setloading] = useState(false);
 
   const authContext = useContext(AuthContext);
@@ -53,7 +54,7 @@ export default function BatchDetailScreen({ navigation }) {
     return (
       <BatchDetailView
         data={item}
-        onPressCard={() => navigation.navigate('TeamInvoiceDetailScreen')}
+        onPressCard={() => navigation.navigate('TeamInvoiceDetailScreen', { from })}
       />
     );
   };

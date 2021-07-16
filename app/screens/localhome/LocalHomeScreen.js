@@ -817,6 +817,8 @@ export default function LocalHomeScreen({ navigation, route }) {
                     selectedSport,
                     sports,
                   });
+
+                  // navigation.navigate('AddLogScreen')
                 }}
               />
               <Carousel

@@ -82,6 +82,12 @@ const strings = {
   declined: 'declined',
   Decline: 'Declined',
 
+  amountTitle: 'Amount',
+  noteTitle: 'Note',
+  invoiceTitle: 'Invoice Title',
+  amountDueTitle: 'Amount Due',
+  invoiceDescTitle: 'Invoice Description (optional)',
+
   infoTitle: 'Info',
   recentMatchTitle: 'Recentest Match',
   aboutRatingTitle: 'Detail info about ratings',
@@ -137,6 +143,10 @@ const strings = {
   selectSportPlaceholder: 'Choose a Sport',
   teamNameTitle: 'What is the team name?',
   teamNamePlaceholder: 'Enter Team Name',
+
+  enterNotePlaceholder: 'Enter notes',
+  amountPlaceholder: 'Enter amount',
+
   playerTitle: 'Players',
   player1Title: 'Player 1',
   player2Title: 'Player 2',
