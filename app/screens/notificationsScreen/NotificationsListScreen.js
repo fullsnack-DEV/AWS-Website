@@ -470,57 +470,60 @@ function NotificationsListScreen({ navigation }) {
       navigation.navigate('SingleNotificationScreen', { notificationItem });
     }
   };
-  const renderPendingRequestComponent = ({ item }) => (
-    <AppleStyleSwipeableRow
-      onPress={() => onDelete({ item })}
-      color={colors.redDelColor}
-      image={images.deleteIcon}>
-      {isInvite(item.activities[0].verb) ? (
-        item.activities[0].verb.includes(
-          NotificationType.inviteToDoubleTeam,
-        ) ? (
-          <PRNotificationTeamInvite
+  const renderPendingRequestComponent = ({ item }) => {
+    console.log('ITEm:,', item);
+    return (
+      <AppleStyleSwipeableRow
+        onPress={() => onDelete({ item })}
+        color={colors.redDelColor}
+        image={images.deleteIcon}>
+        {isInvite(item.activities[0].verb) ? (
+          item.activities[0].verb.includes(
+            NotificationType.inviteToDoubleTeam,
+          ) ? (
+            <PRNotificationTeamInvite
+              item={item}
+              selectedEntity={selectedEntity}
+              // onAccept={() => onAccept(item.activities[0].id)}
+              onRespond={() => onRespond(
+                  JSON.parse(item.activities[0].object)?.groupData?.group_id,
+              )
+              } // JSON.parse(item.activities[0].object))
+              onPress={() => onNotificationClick(item)}
+              onPressFirstEntity={openHomePage}
+            />
+          ) : (
+            <PRNotificationInviteCell
+              item={item}
+              selectedEntity={selectedEntity}
+              onAccept={() => onAccept(item.activities[0].id)}
+              onDecline={() => onDecline(item.activities[0].id)}
+              onPress={() => onNotificationClick(item)}
+              onPressFirstEntity={openHomePage}
+            />
+          )
+        ) : item.activities[0].verb.includes(NotificationType.inviteToConnectMember) ? (
+          <PRNotificationDetailItem
             item={item}
             selectedEntity={selectedEntity}
-            // onAccept={() => onAccept(item.activities[0].id)}
-            onRespond={() => onRespond(
-                JSON.parse(item.activities[0].object)?.groupData?.group_id,
-            )
-            } // JSON.parse(item.activities[0].object))
+            onDetailPress={() => onDetailPress(item)}
+
             onPress={() => onNotificationClick(item)}
             onPressFirstEntity={openHomePage}
           />
         ) : (
-          <PRNotificationInviteCell
+          <PRNotificationDetailMessageItem
             item={item}
             selectedEntity={selectedEntity}
-            onAccept={() => onAccept(item.activities[0].id)}
-            onDecline={() => onDecline(item.activities[0].id)}
+            onDetailPress={() => onDetailPress(item)}
+            onMessagePress={onMessagePress}
             onPress={() => onNotificationClick(item)}
             onPressFirstEntity={openHomePage}
           />
-        )
-      ) : item.activities[0].verb.includes(NotificationType.inviteToConnectMember) ? (
-        <PRNotificationDetailItem
-          item={item}
-          selectedEntity={selectedEntity}
-          onDetailPress={() => onDetailPress(item)}
-
-          onPress={() => onNotificationClick(item)}
-          onPressFirstEntity={openHomePage}
-        />
-      ) : (
-        <PRNotificationDetailMessageItem
-          item={item}
-          selectedEntity={selectedEntity}
-          onDetailPress={() => onDetailPress(item)}
-          onMessagePress={onMessagePress}
-          onPress={() => onNotificationClick(item)}
-          onPressFirstEntity={openHomePage}
-        />
-      )}
-    </AppleStyleSwipeableRow>
-  );
+        )}
+      </AppleStyleSwipeableRow>
+    )
+  };
 
   const renderNotificationComponent = ({ item }) => {
     console.log('Item notification:=>', item);

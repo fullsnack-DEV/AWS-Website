@@ -19,10 +19,10 @@ import {
 } from '../api/Users';
 
 import AuthContext from '../auth/context'
-import TCProfileView from '../components/TCProfileView';
 import TCThinDivider from '../components/TCThinDivider';
 import UserListShimmer from '../components/shimmer/commonComponents/UserListShimmer';
 import { getSearchData } from '../utils';
+import TCSearchProfileView from '../components/TCSearchProfileView';
 
 export default function EntitySearchScreen({ navigation }) {
   const authContext = useContext(AuthContext)
@@ -65,7 +65,9 @@ export default function EntitySearchScreen({ navigation }) {
     if (!(authContext?.entity?.uid === (item?.group_id || item?.user_id))) {
       return (
         <TouchableOpacity onPress={() => { onProfilePress(item) }}>
-          <TCProfileView name={item.group_name || `${item.first_name} ${item.last_name}`} location={item.entity_type} margin={20} onPressProfile/>
+
+          <TCSearchProfileView name={item.group_name || `${item.first_name} ${item.last_name}`} location={item.entity_type} margin={20} onPressProfile/>
+
           <TCThinDivider/>
         </TouchableOpacity>
       )

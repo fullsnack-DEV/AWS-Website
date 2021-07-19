@@ -83,7 +83,7 @@ const parseChallengeRequestNotification = async (data, selectedEntity, loggedInE
       }
     }
     finalString.doneByText = strings.doneByText
-    finalString.doneByTitle = activity.actor.data.full_name || ''
+    finalString.doneByTitle = activity?.actor?.data?.full_name || ''
   } else {
     finalString.entityType = 'user'
     if (team.user_id === loggedInEntity.auth.user_id) {
@@ -465,7 +465,7 @@ export const parseInviteRequest = async (data) => {
     notificationObject = JSON.parse(activity.object);
   }
 
-  finalString.firstTitle = activity.actor.data.full_name
+  finalString.firstTitle = activity?.actor?.data?.full_name
 
   finalString.text = notificationObject.text
   finalString.entityType = activity.actor.data.entity_type === 'player' ? 'user' : activity.actor.data.entity_type
@@ -496,7 +496,7 @@ const parseNormalNotification = async (data) => {
   finalString.text = notificationObject.text
   finalString.entityType = activity.actor.data.entity_type === 'player' ? 'user' : activity.actor.data.entity_type
   finalString.entityId = activity.actor.id
-  finalString.firstTitle = activity.actor.data.full_name
+  finalString.firstTitle = activity?.actor?.data?.full_name
 
   if (data.activities.length > 1) {
     activity2 = data.activities[1]
@@ -506,11 +506,11 @@ const parseNormalNotification = async (data) => {
  }
 
   if (data.actor_count > 2) {
-    finalString.firstTitle = `${finalString.firstTitle}, ${data.activities[1].actor.data.full_name}`
+    finalString.firstTitle = `${finalString.firstTitle}, ${data?.activities?.[1]?.actor?.data?.full_name}`
     const count = data.actor_count - 2
     finalString.secondTitle = count > 1 ? `${count} ${strings.others}` : `${count} ${strings.other}`
   } else if (data.actor_count > 1) {
-    finalString.secondTitle = data.activities[1].actor.data.full_name
+    finalString.secondTitle = data?.activities?.[1]?.actor?.data?.full_name
   }
 
   if (activity.actor.data.thumbnail) {

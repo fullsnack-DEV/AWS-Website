@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
- StyleSheet, Image, View, TextInput,
- } from 'react-native';
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  View,
+  TextInput,
+} from 'react-native';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -9,40 +13,46 @@ import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 
 export default function TopFilterBar({
-  data,
+ data, onFilterPress, onChangeText, searchValue,
 }) {
-  const [searchText, setSearchText] = useState();
   console.log(data);
   return (
-    <View style={{
- backgroundColor: colors.grayBackgroundColor, height: 55, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',
-    }}>
-
+    <View
+      style={{
+        backgroundColor: colors.grayBackgroundColor,
+        height: 55,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+      }}>
       <TextInput
-          style={styles.searchTxt}
-          onChangeText={(text) => setSearchText(text)}
-          value={searchText}
-          textAlignVertical={'top'}
-          placeholder={strings.searchText}
-          placeholderTextColor={colors.userPostTimeColor}
-        />
-      <Image source={images.settingInvoice} style={styles.settingIcon} />
-
+        style={styles.searchTxt}
+        onChangeText={onChangeText}
+        value={searchValue}
+        textAlignVertical={'top'}
+        placeholder={strings.searchText}
+        placeholderTextColor={colors.userPostTimeColor}
+      />
+      <TouchableOpacity
+        onPress={onFilterPress}
+        style={{
+          marginRight: 30,
+          marginTop: 8,
+          position: 'absolute',
+          right: 0,
+        }}>
+        <Image source={images.settingInvoice} style={styles.settingIcon} />
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-
   settingIcon: {
     height: 20,
     resizeMode: 'contain',
     tintColor: colors.grayColor,
     width: 20,
-    marginRight: 30,
-    marginTop: 8,
-    position: 'absolute',
-    right: 0,
   },
   searchTxt: {
     height: 40,

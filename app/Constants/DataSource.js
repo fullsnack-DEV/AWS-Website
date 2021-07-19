@@ -42,6 +42,17 @@ const DataSource = {
     { label: 'Monthly', value: 'Monthly' },
     { label: 'Yearly', value: 'Yearly' },
   ],
+  filterByPayment: [
+    'All invoices',
+    'Open',
+    'Paid',
+  ],
+  filterByBatch: [
+    'Single Invoice',
+    'Member',
+    'Batch',
+  ],
+
 };
 
 export default DataSource

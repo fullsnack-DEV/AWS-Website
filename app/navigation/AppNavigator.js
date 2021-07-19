@@ -172,6 +172,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'BatchDetailScreen'
     || routeName === 'TeamInvoiceDetailScreen'
     || routeName === 'AddLogScreen'
+    || routeName === 'CanceledInvoicesScreen'
   ) {
     return false;
   }

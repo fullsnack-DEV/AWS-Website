@@ -14,6 +14,7 @@ function PRNotificationDetailMessageItem({
 }) {
   const authContext = useContext(AuthContext)
   const [dataDictionary, setDataDictionary] = useState()
+console.log('Detail item cell');
 
   useEffect(() => {
     parseRequest(item, selectedEntity, authContext.entity).then((data) => {
