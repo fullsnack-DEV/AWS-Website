@@ -33,6 +33,8 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 // import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { RRule } from 'rrule';
+
 import { SpringScrollView } from 'react-native-spring-scrollview';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
@@ -183,6 +185,45 @@ export default function ScheduleScreen({ navigation }) {
     return moment(new Date(dateValue)).format('yy/MM/DD');
   };
 
+  const getEventOccuranceFromRule = (event) => {
+    console.log('OFFSET:=>', Intl.DateTimeFormat().resolvedOptions().timeZone);
+    const ruleObj = RRule.parseString(event.rrule);
+
+    ruleObj.dtstart = new Date(
+      new Date((event.start_datetime + (6 * 3600)) * 1000).toLocaleString('en-US', {
+        timeZone: 'Asia/Calcutta',
+      }),
+    );
+
+    ruleObj.until = new Date(
+      new Date(event.untilDate * 1000).toLocaleString('en-US', {
+        timeZone: 'Asia/Calcutta',
+      }),
+    );
+
+     ruleObj.tzid = 'Asia/Calcutta';
+
+    console.log('ruleObj::=>', ruleObj);
+    const rule = new RRule(ruleObj);
+    const duration = event.end_datetime - event.start_datetime;
+    let occr = rule.all();
+    console.log('occr::=>', occr);
+    occr = occr.map((item) => {
+      // console.log(
+      //   'item::=>',
+      //   item.toLocaleDateString(),
+      //   item.toLocaleTimeString(),
+      // );
+      const newEvent = { ...event };
+      const date = new Date(item);
+      newEvent.start_datetime = Math.round(date.getTime() / 1000);
+      newEvent.end_datetime = newEvent.start_datetime + duration;
+      item = newEvent;
+      return item;
+    });
+    return occr;
+  };
+
   const getBlockedSlots = () => {
     setloading(true);
     console.log('Other team Object:', authContext?.entity?.obj);
@@ -193,7 +234,20 @@ export default function ScheduleScreen({ navigation }) {
     )
       .then((response) => {
         setloading(false);
-        const bookSlots = response.payload;
+
+        console.log('Events List:=>', response);
+
+        const bookSlots = [];
+        response.payload.forEach((item) => {
+          if (item.rrule) {
+            const rEvents = getEventOccuranceFromRule(item);
+            bookSlots.push(...rEvents);
+          } else {
+            bookSlots.push(item);
+          }
+        });
+        console.log('Book slot', bookSlots);
+        // const bookSlots = response.payload;
         setSlots(bookSlots);
 
         const markedDates = {};
@@ -280,7 +334,8 @@ export default function ScheduleScreen({ navigation }) {
       console.log('selectedObj:=>', selectedObj);
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = selectedObj; // authContext.entity;
-      const entityRole = entity?.obj?.entity_type === 'user' || entity?.obj?.entity_type === 'player'
+      const entityRole = entity?.obj?.entity_type === 'user'
+        || entity?.obj?.entity_type === 'player'
           ? 'users'
           : 'groups';
       const uid = entity?.group_id || entity?.user_id;
@@ -288,7 +343,7 @@ export default function ScheduleScreen({ navigation }) {
       const timetabledata = [];
       let eventTimeTableData = [];
       blockedSlots(entityRole, uid, authContext)
-      // blockedSlots(entityRole, uid, authContext)
+        // blockedSlots(entityRole, uid, authContext)
         .then((response) => {
           getSlots(entityRole, uid, authContext)
             .then((res) => {
@@ -389,16 +444,16 @@ export default function ScheduleScreen({ navigation }) {
   const goToChallengeDetail = (data) => {
     console.log('Go To Challenge', data);
     // if (data?.responsible_to_secure_venue) { //Write condition for soccer
-      setloading(true);
-      Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
-        setloading(false);
-        console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
-        console.log('Screen name of challenge:', obj.screenName);
-        navigation.navigate(obj.screenName, {
-          challengeObj: obj.challengeObj || obj.challengeObj[0],
-        });
-        setloading(false);
+    setloading(true);
+    Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
+      setloading(false);
+      console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
+      console.log('Screen name of challenge:', obj.screenName);
+      navigation.navigate(obj.screenName, {
+        challengeObj: obj.challengeObj || obj.challengeObj[0],
       });
+      setloading(false);
+    });
     // }
   };
   const actionSheetOpetions = () => {
@@ -1189,7 +1244,9 @@ export default function ScheduleScreen({ navigation }) {
                         const entity = authContext.entity;
                         if (item?.game_id) {
                           if (item?.game?.sport) {
-                            const gameHome = getGameHomeScreen(item.game.sport.replace(' ', '_'));
+                            const gameHome = getGameHomeScreen(
+                              item.game.sport.replace(' ', '_'),
+                            );
                             navigation.navigate(gameHome, {
                               gameId: item?.game_id,
                             });

@@ -1,7 +1,14 @@
 /* eslint-disable no-unused-vars */
+/* eslint-disable consistent-return */
+/* eslint-disable array-callback-return */
 import React, {
- useState, useLayoutEffect, useRef, useCallback,
- } from 'react';
+  useState,
+  useLayoutEffect,
+  useRef,
+  useCallback,
+  useEffect,
+  useContext,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -10,7 +17,7 @@ import {
   Image,
   FlatList,
   TextInput,
- KeyboardAvoidingView,
+  Alert,
 } from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
@@ -23,6 +30,10 @@ import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import { getGroupMembers } from '../../../api/Groups';
+import { createInvoice } from '../../../api/Invoice';
+
+import AuthContext from '../../../auth/context';
 
 import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
 import TCTabView from '../../../components/TCTabView';
@@ -35,6 +46,7 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import { heightPercentageToDP as hp } from '../../../utils';
 import DataSource from '../../../Constants/DataSource';
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
+import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 
 export default function InvoiceScreen({ navigation }) {
   const filterByDate = [
@@ -45,7 +57,9 @@ export default function InvoiceScreen({ navigation }) {
     moment().format('YYYY') - 1,
     'Choose a date range',
   ];
-  // const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(false);
+  const authContext = useContext(AuthContext);
+
   const createInvoiceModalRef = useRef();
   const recipientModalRef = useRef();
   const filterModalRef = useRef();
@@ -58,6 +72,13 @@ export default function InvoiceScreen({ navigation }) {
   const [showCalender, setShowCalender] = useState(false);
   const [selectedDueDate, setSelectedDueDate] = useState();
   const [markingDays, setMarkingDays] = useState({});
+
+  const [filterFromDate, setFilterFromDate] = useState(new Date());
+  const [filterToDate, setFilterToDate] = useState(new Date());
+  const [fromdateVisisble, setFromdateVisisble] = useState(false);
+  const [todateVisisble, setTodateVisisble] = useState(false);
+  const [toggle, setToggle] = useState(true);
+
   const [filterPayment, setFilterPayment] = useState(
     DataSource.filterByPayment[0],
   );
@@ -80,6 +101,7 @@ export default function InvoiceScreen({ navigation }) {
     { name: 'Vineet Patidar' },
     { name: 'Arvind Patidar' },
   ]);
+  const [selectedRecipient, setSelectedRecipient] = useState([]);
 
   const [recipientAllData, setRecipientAllData] = useState(false);
 
@@ -105,6 +127,22 @@ export default function InvoiceScreen({ navigation }) {
       ),
     });
   }, [navigation]);
+
+  useEffect(() => {
+    setloading(true);
+    getGroupMembers(authContext.entity.uid, authContext)
+      .then((response) => {
+        setloading(false);
+
+        setRecipientData(response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, []);
 
   const renderMemberView = ({ item }) => {
     console.log('item', item);
@@ -138,7 +176,38 @@ export default function InvoiceScreen({ navigation }) {
         </Text>
 
         <Text style={styles.titleText}>New Invoice</Text>
-        <Text style={styles.sendText}>Send</Text>
+        <Text
+          style={styles.sendText}
+          onPress={() => {
+            if (createInvoiceValidation()) {
+              setloading(true);
+
+              const body = {};
+              body.member_ids = selectedRecipient;
+              body.due_date = parseFloat(
+                (new Date(selectedDueDate).getTime() / 1000).toFixed(0),
+              );
+              body.invoice_title = invoiceTitle;
+              body.amount_due = amount;
+              body.currency_type = authContext.entity.obj.currency_type
+              body.invoice_description = note;
+
+              console.log(body);
+              createInvoice(body, authContext)
+                .then((response) => {
+                  console.log('Create invoice res:=>', response.payload);
+                  setloading(false);
+                })
+                .catch((e) => {
+                  setloading(false);
+                  setTimeout(() => {
+                    Alert.alert(strings.alertmessagetitle, e.message);
+                  }, 10);
+                });
+            }
+          }}>
+          Send
+        </Text>
       </View>
 
       <View style={styles.headerSeparator} />
@@ -158,6 +227,14 @@ export default function InvoiceScreen({ navigation }) {
         <Text
           style={styles.sendText}
           onPress={() => {
+            const selectedMember = recipientData.filter((e) => e.selected);
+            const result = selectedMember.map((obj) => {
+              if (obj.selected) {
+                return obj.user_id;
+              }
+            });
+            console.log(result);
+            setSelectedRecipient(result);
             recipientModalRef.current.close();
           }}>
           Done
@@ -196,9 +273,18 @@ export default function InvoiceScreen({ navigation }) {
       <View style={styles.recipientContainer}>
         <View style={styles.profileContainer}>
           <View style={styles.profileImageContainer}>
-            <Image source={images.dummyPhoto} style={styles.profileImgStyle} />
+            <Image
+              source={
+                item?.thumbnail && item?.thumbnail !== ''
+                  ? { uri: item?.thumbnail }
+                  : images.profilePlaceHolder
+              }
+              style={styles.profileImgStyle}
+            />
           </View>
-          <Text style={styles.profilenameStyle}>{item?.name}</Text>
+          <Text style={styles.profilenameStyle}>
+            {item?.first_name} {item?.last_name}
+          </Text>
         </View>
         <TouchableOpacity
           onPress={() => {
@@ -229,7 +315,6 @@ export default function InvoiceScreen({ navigation }) {
   }, []);
 
   const renderTags = ({ item }) => (
-
     <View style={styles.textContainer}>
       <Text style={styles.tagTitleText}>{item}</Text>
       <Image source={images.tagDivider} style={styles.dividerImage} />
@@ -242,30 +327,86 @@ export default function InvoiceScreen({ navigation }) {
         <Image source={images.cancelImage} style={styles.closeButton} />
       </TouchableOpacity>
     </View>
-
   );
+
+  const handleStartDatePress = (date) => {
+    console.log('Date::=>', new Date(new Date(date).getTime()));
+
+    setFilterFromDate(
+      toggle
+        ? new Date(date).setHours(0, 0, 0, 0)
+        : new Date(new Date(date).getTime()),
+    );
+    setFilterToDate(
+      toggle
+        ? new Date(date).setHours(23, 59, 59, 0)
+        : moment(date).add(5, 'm').toDate(),
+    );
+
+    setFromdateVisisble(!fromdateVisisble);
+  };
+  const handleCancelPress = () => {
+    setFromdateVisisble(false);
+    setTodateVisisble(false);
+  };
+
+  const handleEndDatePress = (date) => {
+    let dateValue = new Date();
+    if (toggle) {
+      dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`;
+      console.log('Date Value :-', dateValue);
+      setFilterToDate(dateValue);
+    } else {
+      setFilterToDate(date);
+    }
+    setTodateVisisble(!todateVisisble);
+  };
+
+  const createInvoiceValidation = () => {
+    console.log(selectedDueDate);
+    if (selectedRecipient.length <= 0) {
+      Alert.alert('Please select recipients.');
+      return false;
+    }
+    if (!selectedDueDate) {
+      Alert.alert('Please select due date.');
+      return false;
+    }
+    if (new Date(selectedDueDate) < new Date()) {
+      Alert.alert('Please select valid due date.');
+      return false;
+    }
+    if (!invoiceTitle) {
+      Alert.alert('Please select invoice title.');
+      return false;
+    }
+    if (!amount) {
+      Alert.alert('Please select due amount.');
+      return false;
+    }
+    return true;
+  };
 
   return (
     <View style={styles.mainContainer}>
       {/* <ActivityLoader visible={loading} /> */}
-      <KeyboardAvoidingView>
-        <TopFilterBar
+
+      <TopFilterBar
         onFilterPress={() => filterModalRef?.current?.open()}
         onChangeText={(text) => setSearchText(text)}
         value={searchText}
       />
-      </KeyboardAvoidingView>
 
       {searchText?.length > 0 && (
         <View>
           <FlatList
-          data={filterSetting}
-          renderItem={renderTags}
-          keyExtractor={(item, index) => index.toString()}
-          style={styles.tagListStyle}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-        />
+            data={filterSetting}
+            renderItem={renderTags}
+            keyExtractor={(item, index) => index.toString()}
+            style={styles.tagListStyle}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          />
         </View>
       )}
       {searchText?.length > 0 ? (
@@ -411,12 +552,14 @@ export default function InvoiceScreen({ navigation }) {
                   flexDirection: 'row',
                 }}>
                 <Text
-                  style={{
-                    fontFamily: fonts.RRegular,
-                    fontSize: 16,
-                    color: colors.lightBlackColor,
-                  }}>
-                  Recipients
+                  style={
+                    selectedRecipient.length > 0
+                      ? styles.totalRecipient
+                      : styles.recipientText
+                  }>
+                  {selectedRecipient.length > 0
+                    ? `${selectedRecipient.length} Recipients`
+                    : 'Recipients'}
                 </Text>
                 <Image style={styles.nextIconStyle} source={images.nextArrow} />
               </TouchableOpacity>
@@ -465,6 +608,7 @@ export default function InvoiceScreen({ navigation }) {
                   isMenu={true}
                   horizontal={false}
                   onDayPress={(date) => {
+                    console.log(date);
                     setSelectedDueDate(new Date(date.timestamp));
                     getSelectedDayEvents(date.dateString);
                   }}
@@ -839,15 +983,17 @@ export default function InvoiceScreen({ navigation }) {
                       alignItems: 'center',
                     }}>
                     <Text style={styles.fromToTitle}>From</Text>
-                    <View style={styles.dateView}>
+                    <TouchableOpacity
+                      style={styles.dateView}
+                      onPress={() => setFromdateVisisble(!fromdateVisisble)}>
                       <Text
                         style={[
                           styles.radioTitle,
                           { paddingLeft: 15, paddingRight: 15 },
                         ]}>
-                        Jul 12, 2018
+                        {moment(filterFromDate).format('MMM DD, YYYY')}
                       </Text>
-                    </View>
+                    </TouchableOpacity>
                   </View>
                   <View
                     style={{
@@ -856,15 +1002,17 @@ export default function InvoiceScreen({ navigation }) {
                       alignItems: 'center',
                     }}>
                     <Text style={styles.fromToTitle}>To</Text>
-                    <View style={styles.dateView}>
+                    <TouchableOpacity
+                      style={styles.dateView}
+                      onPress={() => setTodateVisisble(!todateVisisble)}>
                       <Text
                         style={[
                           styles.radioTitle,
                           { paddingLeft: 15, paddingRight: 15 },
                         ]}>
-                        Jul 12, 2018
+                        {moment(filterToDate).format('MMM DD, YYYY')}
                       </Text>
-                    </View>
+                    </TouchableOpacity>
                   </View>
                 </View>
               )}
@@ -872,6 +1020,26 @@ export default function InvoiceScreen({ navigation }) {
           </View>
         </Modalize>
       </Portal>
+      <DateTimePickerView
+        date={filterFromDate}
+        visible={fromdateVisisble}
+        onDone={handleStartDatePress}
+        onCancel={handleCancelPress}
+        onHide={handleCancelPress}
+        minimumDate={new Date()}
+        minutesGap={5}
+        mode={'date'}
+      />
+      <DateTimePickerView
+        date={filterToDate}
+        visible={todateVisisble}
+        onDone={handleEndDatePress}
+        onCancel={handleCancelPress}
+        onHide={handleCancelPress}
+        minimumDate={filterFromDate}
+        minutesGap={5}
+        mode={'date'}
+      />
     </View>
   );
 }
@@ -1008,6 +1176,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     resizeMode: 'contain',
+    borderRadius: 60,
   },
   profilenameStyle: {
     fontSize: 16,
@@ -1083,7 +1252,7 @@ const styles = StyleSheet.create({
   // Tags view
   textContainer: {
     flexDirection: 'row',
-     height: 25,
+    height: 25,
     marginRight: 5,
     marginLeft: 5,
     marginBottom: 2,
@@ -1123,5 +1292,15 @@ const styles = StyleSheet.create({
     marginRight: 5,
     fontFamily: fonts.RRegular,
     fontSize: 12,
+  },
+  recipientText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+  },
+  totalRecipient: {
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    color: colors.themeColor,
   },
 });
