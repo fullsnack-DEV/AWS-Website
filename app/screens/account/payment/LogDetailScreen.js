@@ -8,12 +8,14 @@ import {
 // import { useIsFocused } from '@react-navigation/native';
 
 // import ActivityLoader from '../../../components/loader/ActivityLoader';
+import moment from 'moment';
 
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCThinDivider from '../../../components/TCThinDivider';
 
-export default function LogDetailScreen() {
+export default function LogDetailScreen({ route }) {
+  const { data } = route?.params ?? {}
   // const [loading, setloading] = useState(false);
 
   // const isFocused = useIsFocused();
@@ -30,7 +32,7 @@ export default function LogDetailScreen() {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-            Transaction no.: TR-7077071
+            Transaction no.: TR-7077071- Fixed
           </Text>
 
         </View>
@@ -43,7 +45,7 @@ export default function LogDetailScreen() {
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.lightBlackColor,
-          }}>{'-$20.00'}
+          }}>{`$${data?.amount}`}
             </Text>
           </View>
 
@@ -54,7 +56,7 @@ export default function LogDetailScreen() {
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.lightBlackColor,
-          }}>{'Refund'}
+          }}>{data?.transaction_type.charAt(0).toUpperCase() + data?.transaction_type.slice(1)}
             </Text>
           </View>
 
@@ -65,7 +67,7 @@ export default function LogDetailScreen() {
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.lightBlackColor,
-          }}>{'By check'}
+          }}>{`By ${data?.payment_mode}`}
             </Text>
           </View>
         </View>
@@ -88,7 +90,7 @@ export default function LogDetailScreen() {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-            Membership canceled.
+            {data?.notes}
           </Text>
         </View>
 
@@ -99,7 +101,9 @@ export default function LogDetailScreen() {
             color: colors.userPostTimeColor,
             marginLeft: 15,
           }}>
-          {'Logged by Michael Jordan at May 1, 2020 11:25am'}
+          {`Logged by ${data?.done_by?.first_name} ${data?.done_by?.last_name} at ${moment(
+                new Date(data?.transaction_date * 1000),
+              ).format('MMM DD, YYYY hh:mma')}`}
         </Text>
       </View>
   );

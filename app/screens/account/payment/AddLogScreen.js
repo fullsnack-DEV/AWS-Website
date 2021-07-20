@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,11 +7,12 @@ import {
   Image,
   TextInput,
   ScrollView,
+  Alert,
 } from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
 
-// import ActivityLoader from '../../../components/loader/ActivityLoader';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 import TCTabView from '../../../components/TCTabView';
 import TCThinDivider from '../../../components/TCThinDivider';
@@ -19,10 +20,13 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
+import { addLog } from '../../../api/Invoice';
+import AuthContext from '../../../auth/context';
 
-export default function AddLogScreen({ navigation }) {
-  // const [loading, setloading] = useState(false);
-
+export default function AddLogScreen({ navigation, route }) {
+  const [loading, setloading] = useState(false);
+  const authContext = useContext(AuthContext);
+const { invoiceDetail } = route?.params ?? {}
   // const isFocused = useIsFocused();
   const [paymentSwitchSelection, setPaymentSwitchSelection] = useState(0);
   const [paymentType, setPaymentType] = useState(0);
@@ -32,17 +36,62 @@ export default function AddLogScreen({ navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity style={styles.rightHeaderView}>
+        <TouchableOpacity
+          style={styles.rightHeaderView}
+          onPress={() => {
+            if (addLogValidation()) {
+              setloading(true);
+              const body = {}
+              body.payment_mode = paymentType === 0 ? 'Cash' : 'Cheque';
+              body.amount = Number(parseFloat(amount).toFixed(2));
+              body.payment_date = Number((new Date().getTime() / 1000).toFixed(0));
+              body.transaction_type = paymentSwitchSelection === 0 ? 'payment' : 'refund';
+              body.notes = note;
+
+              addLog(invoiceDetail?.invoice_id, body, authContext)
+                .then(() => {
+                  setloading(false);
+                  navigation.pop(3);
+                })
+                .catch((e) => {
+                  setloading(false);
+                  setTimeout(() => {
+                    Alert.alert(strings.alertmessagetitle, e.message);
+                  }, 10);
+                });
+            }
+          }}>
           <Text>Done</Text>
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
+  }, [authContext, navigation, amount, note]);
+
+  const IsNumeric = (num) => num >= 0 || num < 0;
+
+  const addLogValidation = () => {
+    console.log(amount);
+    console.log(note);
+
+    if (!amount) {
+      Alert.alert('Please select due amount.');
+      return false;
+    }
+    if (amount < 1 && amount > 0) {
+      Alert.alert('User should not allow less than $1 amount.');
+      return false;
+    }
+    if (!note) {
+      Alert.alert('Please select invoice note.');
+      return false;
+    }
+    return true;
+  };
 
   return (
     <ScrollView bounces={false}>
       <View style={styles.mainContainer}>
-        {/* <ActivityLoader visible={loading} /> */}
+        <ActivityLoader visible={loading} />
 
         <TCTabView
           totalTabs={2}
@@ -118,7 +167,11 @@ export default function AddLogScreen({ navigation }) {
           <TextInput
             placeholder={strings.amountPlaceholder}
             style={styles.amountTxt}
-            onChangeText={(text) => setAmount(text)}
+            onChangeText={(text) => {
+              if (IsNumeric(text)) {
+                setAmount(text)
+              }
+            }}
             keyboardType="numeric"
             value={amount}></TextInput>
         </View>

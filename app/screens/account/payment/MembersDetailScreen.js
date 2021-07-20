@@ -1,4 +1,7 @@
-import React, { useState, useContext, useLayoutEffect } from 'react';
+/* eslint-disable consistent-return */
+import React, {
+ useState, useContext, useLayoutEffect, useCallback,
+} from 'react';
 import {
  View, StyleSheet, Text, FlatList, TouchableOpacity, Image,
  } from 'react-native';
@@ -19,7 +22,7 @@ import images from '../../../Constants/ImagePath';
 let entity = {};
 export default function MembersDetailScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
-  const { from } = route?.params
+  const { from, memberData } = route?.params ?? {}
 
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
@@ -32,7 +35,7 @@ export default function MembersDetailScreen({ navigation, route }) {
     navigation.setOptions({
       headerTitle: () => (
         <Text style={styles.navTitle}>
-          {'Michael Jordan'}
+          {`${memberData?.first_name} ${memberData?.last_name}`}
         </Text>
       ),
       headerRight: () => (
@@ -47,17 +50,35 @@ export default function MembersDetailScreen({ navigation, route }) {
         </View>
       ),
     });
-  }, [navigation]);
+  }, [memberData?.first_name, memberData?.last_name, navigation]);
 
   const renderInvoiceView = ({ item }) => {
     console.log('item', item);
     return (
       <MembershipFeeView
         data={item}
-        onPressCard={() => navigation.navigate('TeamInvoiceDetailScreen', { from })}
+        onPressCard={() => navigation.navigate('TeamInvoiceDetailScreen', { from, invoiceObj: item })}
       />
     );
   };
+
+  const memberListByFilter = useCallback(
+    (status) => {
+      console.log('Status', status);
+
+      if (status === 'All') {
+        return memberData?.invoices;
+      }
+      if (status === 'Paid') {
+        return memberData?.invoices.filter((obj) => obj.invoice_status === 'Paid');
+      }
+      if (status === 'Open') {
+        return memberData?.invoices.filter((obj) => obj.invoice_status === 'Unpaid'
+              || obj.invoice_status === 'Partially Paid');
+      }
+    },
+    [memberData?.invoices],
+  );
 
   return (
     <View style={styles.mainContainer}>
@@ -66,17 +87,17 @@ export default function MembersDetailScreen({ navigation, route }) {
       <TopFilterBar/>
 
       <InvoiceAmount
-        currencyType={'CAD'}
-        totalAmount={'99.00'}
-        paidAmount={'85.00'}
-        openAmount={'55.00'}
-      />
+          currencyType={'CAD'}
+          totalAmount={memberData?.invoice_total ?? '00.00'}
+          paidAmount={memberData?.invoice_paid_total ?? '00.00'}
+          openAmount={memberData?.invoice_open_total ?? '00.00'}
+        />
 
       <TCTabView
         totalTabs={3}
-        firstTabTitle={'Open (1)'}
-        secondTabTitle={'Paid (3)'}
-        thirdTabTitle={'All (4)'}
+        firstTabTitle={`Open (${memberListByFilter('Open').length})`}
+        secondTabTitle={`Paid (${memberListByFilter('Paid').length})`}
+        thirdTabTitle={`All (${memberListByFilter('All').length})`}
         indexCounter={tabNumber}
         eventPrivacyContianer={{ width: 100 }}
         onFirstTabPress={() => setTabNumber(0)}
@@ -86,9 +107,9 @@ export default function MembersDetailScreen({ navigation, route }) {
 
       <FlatList
         data={
-          (tabNumber === 0 && ['1'])
-          || (tabNumber === 1 && ['1', '2', '3'])
-          || (tabNumber === 2 && ['1', '2', '3', '4'])
+          (tabNumber === 0 && memberListByFilter('Open'))
+          || (tabNumber === 1 && memberListByFilter('Paid'))
+          || (tabNumber === 2 && memberListByFilter('All'))
         }
         renderItem={renderInvoiceView}
         keyExtractor={(item, index) => index.toString()}

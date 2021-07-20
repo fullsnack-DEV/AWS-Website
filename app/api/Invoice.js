@@ -7,20 +7,42 @@ export const createInvoice = (params, authContext) => makeAPIRequest({
   data: params,
   authContext,
 })
-
-// Temp call
-export const createGroupRequest = (params, caller_id, caller, authContext) => makeAPIRequest({
-  method: 'post',
-  url: `${Config.BASE_URL}groups/request`,
-  caller_id,
-  caller,
-  data: params,
+export const getTeamInvoice = (authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/invoices`,
+  authContext,
+})
+export const getTeamMemberInvoice = (memberID, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/invoices/member/${memberID}`,
+  authContext,
+})
+export const getMemberInvoice = (authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/invoices`,
   authContext,
 })
 
-export const patchGroup = (groupID, params, authContext) => makeAPIRequest({
+export const getInvoiceDetail = (invoiceID, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/invoices/${invoiceID}`,
+  authContext,
+})
+export const deleteInvoice = (invoiceID, authContext) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}/invoices/${invoiceID}`,
+  authContext,
+})
+
+export const cancelInvoice = (invoiceID, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/invoices/${invoiceID}/cancel`,
+  authContext,
+})
+
+export const addLog = (invoiceID, params, authContext) => makeAPIRequest({
   method: 'patch',
-  url: `${Config.BASE_URL}groups/${groupID}`,
+  url: `${Config.BASE_URL}/invoices/${invoiceID}`,
   data: params,
   authContext,
 })

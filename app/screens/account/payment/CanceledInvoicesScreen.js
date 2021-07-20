@@ -29,7 +29,7 @@ export default function CanceledInvoicesScreen({ navigation }) {
     return (
       <BatchDetailView
         data={item}
-        onPressCard={() => navigation.navigate('TeamInvoiceDetailScreen', { from: 'member' })}
+        onPressCard={() => navigation.navigate('TeamInvoiceDetailScreen', { from: 'member', invoiceObj: item })}
       />
     );
   };

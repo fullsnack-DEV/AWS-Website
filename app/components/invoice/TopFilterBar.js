@@ -13,7 +13,7 @@ import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 
 export default function TopFilterBar({
- data, onFilterPress, onChangeText, searchValue,
+ data, onFilterPress, onChangeText, searchValue, searchSubmit,
 }) {
   console.log(data);
   return (
@@ -27,9 +27,12 @@ export default function TopFilterBar({
       }}>
       <TextInput
         style={styles.searchTxt}
+        returnKeyType='search'
         onChangeText={onChangeText}
         value={searchValue}
         textAlignVertical={'top'}
+        onSubmitEditing={searchSubmit}
+
         placeholder={strings.searchText}
         placeholderTextColor={colors.userPostTimeColor}
       />
