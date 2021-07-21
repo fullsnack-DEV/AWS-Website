@@ -106,12 +106,7 @@ export default function InvoiceScreen({ navigation }) {
   const [memberList, setMemberList] = useState([]);
   const [batchList, setBatchList] = useState([]);
 
-  const [recipientData, setRecipientData] = useState([
-    { name: 'Kishan Makani' },
-    { name: 'Karan Makani' },
-    { name: 'Vineet Patidar' },
-    { name: 'Arvind Patidar' },
-  ]);
+  const [recipientData, setRecipientData] = useState([]);
   const [selectedRecipient, setSelectedRecipient] = useState([]);
 
   const [recipientAllData, setRecipientAllData] = useState(false);
@@ -572,7 +567,7 @@ export default function InvoiceScreen({ navigation }) {
         // destructiveButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
-            navigation.navigate('CanceledInvoicesScreen');
+            navigation.navigate('CanceledInvoicesScreen', { from: maintabNumber === 0 ? 'member' : 'batch' });
           }
         }}
       />

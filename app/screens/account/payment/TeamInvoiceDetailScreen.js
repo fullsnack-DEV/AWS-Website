@@ -19,6 +19,7 @@ import {
   Image,
   FlatList,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
@@ -36,14 +37,17 @@ import fonts from '../../../Constants/Fonts';
 import TCThinDivider from '../../../components/TCThinDivider';
 import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
 import images from '../../../Constants/ImagePath';
+import * as Utility from '../../../utils';
 import PaymentLogs from '../../../components/invoice/PaymentLogs';
 import {
   getInvoiceDetail,
   deleteInvoice,
   cancelInvoice,
+  payStripeInvoice,
 } from '../../../api/Invoice';
 import strings from '../../../Constants/String';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import TCTouchableLabel from '../../../components/TCTouchableLabel';
 
 export default function TeamInvoiceDetailScreen({ navigation, route }) {
   const { from, invoiceObj } = route?.params ?? {};
@@ -57,14 +61,7 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
   const resendModalRef = useRef();
   const recipientModalRef = useRef();
   // const isFocused = useIsFocused();
-  const [recipientData, setRecipientData] = useState([
-    { name: 'Kishan Makani' },
-    { name: 'Karan Makani' },
-    { name: 'Vineet Patidar' },
-    { name: 'Arvind Patidar' },
-  ]);
-  const userCancelOpetion = ['Cancel Invoice', 'Cancel'];
-  const userDeleteOpetion = ['Delete Invoice', 'Cancel'];
+  const [recipientData, setRecipientData] = useState([]);
   const [recipientAllData, setRecipientAllData] = useState(false);
 
   useLayoutEffect(() => {
@@ -252,11 +249,38 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
   );
 
   const actionSheetOpetions = () => {
+    console.log('invoiceDetail', invoiceDetail);
     if (from === 'user') {
-      if (invoiceDetail?.amount_paid <= 0) {
+      if (!invoiceDetail?.logs) {
         return ['Delete Invoice', 'Cancel'];
       }
       return ['Cancel Invoice', 'Cancel'];
+    }
+  };
+
+  const payNowClicked = () => {
+    if (route?.params?.paymentMethod) {
+      console.log(route?.params?.paymentMethod);
+
+      setloading(true);
+      const body = {}
+      body.source = route?.params?.paymentMethod?.id;
+      body.payment_method_type = 'card';
+      body.currency_type = authContext.entity.obj.currency_type;
+
+      payStripeInvoice(invoiceObj?.invoice_id, body, authContext)
+        .then(() => {
+          setloading(false);
+          navigation.goBack()
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    } else {
+      Alert.alert('Please choose payment method.');
     }
   };
 
@@ -264,7 +288,7 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       {invoiceDetail && (
-        <View>
+        <View style={{ flex: 1 }}>
           <View style={{ margin: 15 }}>
             <View
               style={{
@@ -403,42 +427,63 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
           )}
 
           {from === 'user' && invoiceDetail?.amount_remaining > 0 && (
-            <View style={{ marginTop: 15 }}>
-              <View style={styles.paymentViewContainer}>
-                <Text style={styles.cardDetailViewText}>
-                  Visa Visa **** 4242
-                </Text>
-                <Image
-                  style={styles.nextIconViewStyle}
-                  source={images.nextArrow}
-                />
-              </View>
+            <TouchableOpacity
+              style={styles.paymentViewContainer}
+              onPress={() => {
+                navigation.navigate('PaymentMethodsScreen', {
+                  comeFrom: 'TeamInvoiceDetailScreen',
+                });
+              }}>
+              <Text style={styles.cardDetailViewText}>
+                {route?.params?.paymentMethod?.card?.brand
+                  ? Utility.capitalize(
+                      route?.params?.paymentMethod?.card?.brand,
+                    )
+                  : strings.addOptionMessage}{' '}
+                {route?.params?.paymentMethod && `**** ${route?.params?.paymentMethod?.card?.last4}`}
+              </Text>
+              <Image
+                style={styles.nextIconViewStyle}
+                source={images.nextArrow}
+              />
+            </TouchableOpacity>
+          )}
 
-              <LinearGradient
-                colors={[colors.yellowColor, colors.darkThemeColor]}
-                style={styles.activeEventPricacy}>
-                <TouchableOpacity onPress={() => Alert.alert('Add payment')}>
-                  <Text style={styles.activeEventPrivacyText}>{'PAY NOW'}</Text>
-                </TouchableOpacity>
-              </LinearGradient>
+          {invoiceDetail?.amount_paid > 0 && (
+            <View>
+              <Text
+                style={{
+                  fontFamily: fonts.RMedium,
+                  fontSize: 20,
+                  color: colors.lightBlackColor,
+                  margin: 15,
+                }}>
+                Log
+              </Text>
+              <FlatList
+                data={invoiceDetail?.logs}
+                renderItem={renderLogView}
+                ListEmptyComponent={emptyLog}
+                keyExtractor={(item, index) => index.toString()}
+              />
             </View>
           )}
 
-          <Text
-            style={{
-              fontFamily: fonts.RMedium,
-              fontSize: 20,
-              color: colors.lightBlackColor,
-              margin: 15,
-            }}>
-            Log
-          </Text>
-          <FlatList
-            data={invoiceDetail?.logs}
-            renderItem={renderLogView}
-            ListEmptyComponent={emptyLog}
-            keyExtractor={(item, index) => index.toString()}
-          />
+          <View style={{ flex: 1 }} />
+          {from === 'user' && invoiceDetail?.amount_remaining > 0 && (
+            <SafeAreaView>
+              <TouchableOpacity
+                onPress={() => {
+                  payNowClicked();
+                }}>
+                <LinearGradient
+                  colors={[colors.yellowColor, colors.darkThemeColor]}
+                  style={styles.activeEventPricacy}>
+                  <Text style={styles.activeEventPrivacyText}>{'PAY NOW'}</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </SafeAreaView>
+          )}
 
           <ActionSheet
             ref={actionSheet}
@@ -489,9 +534,10 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
               if (actionSheetOpetions()[index] === 'Delete Invoice') {
                 deleteInvoiceByID();
               }
-               if (actionSheetOpetions()[index] === 'Cancel Invoice') {
+              if (actionSheetOpetions()[index] === 'Cancel Invoice') {
                 cancelInvoiceByID();
-              } if (actionSheetOpetions()[index] === 'Cancel') {
+              }
+              if (actionSheetOpetions()[index] === 'Cancel') {
                 console.log('cancel');
               }
             }}
@@ -908,6 +954,7 @@ const styles = StyleSheet.create({
     elevation: 13,
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: 15,
   },
   cardDetailViewText: {
     marginLeft: 15,

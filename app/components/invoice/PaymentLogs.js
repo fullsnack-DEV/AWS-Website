@@ -9,17 +9,23 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 export default function PaymentLogs({ data, onPressCard }) {
-  console.log(data);
+  console.log('payment log:=>', data);
 
 const getPaymentModeText = () => {
 if (data?.transaction_type === 'payment') {
   if (data?.payment_mode === 'Cash') {
     return 'Paid in cash'
   }
+  if (data?.payment_mode === 'card') {
+    return 'Paid with Card'
+  }
     return 'Paid by Cheque'
  }
   if (data?.payment_mode === 'Cash') {
     return 'Refund in cash'
+  }
+  if (data?.payment_mode === 'card') {
+    return 'Refund by Card'
   }
     return 'Refund by Cheque'
 }

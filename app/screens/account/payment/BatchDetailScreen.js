@@ -1,16 +1,27 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 import React, {
- useState, useContext, useLayoutEffect, useCallback,
+  useState,
+  useContext,
+  useLayoutEffect,
+  useCallback,
+  useRef,
 } from 'react';
 import {
- View, StyleSheet, Text, FlatList, TouchableOpacity, Image,
- } from 'react-native';
+  View,
+  StyleSheet,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
 
 import moment from 'moment';
+import ActionSheet from 'react-native-actionsheet';
+
 import AuthContext from '../../../auth/context';
-// import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -19,12 +30,14 @@ import TCTabView from '../../../components/TCTabView';
 import TopFilterBar from '../../../components/invoice/TopFilterBar';
 import images from '../../../Constants/ImagePath';
 import BatchDetailView from '../../../components/invoice/BatchDetailView';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 let entity = {};
 export default function BatchDetailScreen({ navigation, route }) {
-  const { from, batchData } = route?.params
-  // const [loading, setloading] = useState(false);
+  const { from, batchData } = route?.params;
+   const [loading, setloading] = useState(false);
 
+  const batchActionsheet = useRef();
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
   console.log(entity);
@@ -35,14 +48,14 @@ export default function BatchDetailScreen({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.navTitle}>
-          {'Membership Fee'}
-        </Text>
+        <Text style={styles.navTitle}>{'Membership Fee'}</Text>
       ),
       headerRight: () => (
         <View style={styles.rightHeaderView}>
-
-          <TouchableOpacity onPress={() => console.log('Ok')}>
+          <TouchableOpacity
+            onPress={() => {
+              batchActionsheet.current.show();
+            }}>
             <Image
               source={images.threeDotIcon}
               style={styles.townsCupthreeDotIcon}
@@ -58,7 +71,11 @@ export default function BatchDetailScreen({ navigation, route }) {
     return (
       <BatchDetailView
         data={item}
-        onPressCard={() => navigation.navigate('TeamInvoiceDetailScreen', { from, invoiceObj: item })}
+        onPressCard={() => navigation.navigate('TeamInvoiceDetailScreen', {
+            from,
+            invoiceObj: item,
+          })
+        }
       />
     );
   };
@@ -71,11 +88,15 @@ export default function BatchDetailScreen({ navigation, route }) {
         return batchData?.invoices;
       }
       if (status === 'Paid') {
-        return batchData?.invoices.filter((obj) => obj.invoice_status === 'Paid');
+        return batchData?.invoices.filter(
+          (obj) => obj.invoice_status === 'Paid',
+        );
       }
       if (status === 'Open') {
-        return batchData?.invoices.filter((obj) => obj.invoice_status === 'Unpaid'
-              || obj?.invoice_status === 'Partially Paid');
+        return batchData?.invoices.filter(
+          (obj) => obj.invoice_status === 'Unpaid'
+            || obj?.invoice_status === 'Partially Paid',
+        );
       }
     },
     [batchData?.invoices],
@@ -83,52 +104,70 @@ export default function BatchDetailScreen({ navigation, route }) {
 
   return (
     <View style={styles.mainContainer}>
-      {/* <ActivityLoader visible={loading} /> */}
+      <ActivityLoader visible={loading} />
+      <View>
+        <TopFilterBar />
 
-      <TopFilterBar/>
+        <View
+          style={{
+            margin: 15,
+          }}>
+          <Text style={styles.dateView}>
+            {`Due : ${moment(batchData?.due_date * 1000).format(
+              'ddd, MMM DD, YYYY',
+            )}`}
+          </Text>
+          <Text style={styles.dateView}>
+            {`${batchData?.invoices?.length} Recepients`}
+          </Text>
+        </View>
 
-      <View
-        style={{
+        <InvoiceAmount
+          currencyType={'CAD'}
+          totalAmount={batchData?.invoice_total ?? '00.00'}
+          paidAmount={batchData?.invoice_paid_total ?? '00.00'}
+          openAmount={batchData?.invoice_open_total ?? '00.00'}
+        />
 
-         margin: 15,
-        }}>
-        <Text
-          style={styles.dateView}>
-          {`Due : ${moment(batchData?.due_date * 1000).format('ddd, MMM DD, YYYY')}`}
-        </Text>
-        <Text
-          style={styles.dateView}>
-          {`${batchData?.invoices?.length} Recepients`}
-        </Text>
+        <TCTabView
+          totalTabs={3}
+          firstTabTitle={`Open (${batchListByFilter('Open').length})`}
+          secondTabTitle={`Paid (${batchListByFilter('Paid').length})`}
+          thirdTabTitle={`All (${batchListByFilter('All').length})`}
+          indexCounter={tabNumber}
+          eventPrivacyContianer={{ width: 100 }}
+          onFirstTabPress={() => setTabNumber(0)}
+          onSecondTabPress={() => setTabNumber(1)}
+          onThirdTabPress={() => setTabNumber(2)}
+        />
+
+        <FlatList
+          data={
+            (tabNumber === 0 && batchListByFilter('Open'))
+            || (tabNumber === 1 && batchListByFilter('Paid'))
+            || (tabNumber === 2 && batchListByFilter('All'))
+          }
+          renderItem={renderBatchDetailView}
+          keyExtractor={(item, index) => index.toString()}
+        />
       </View>
 
-      <InvoiceAmount
-        currencyType={'CAD'}
-        totalAmount={batchData?.invoice_total ?? '00.00'}
-        paidAmount={ batchData?.invoice_paid_total ?? '00.00'}
-        openAmount={ batchData?.invoice_open_total ?? '00.00'}
-      />
-
-      <TCTabView
-        totalTabs={3}
-        firstTabTitle={`Open (${batchListByFilter('Open').length})`}
-        secondTabTitle={`Paid (${batchListByFilter('Paid').length})`}
-        thirdTabTitle={`All (${batchListByFilter('All').length})`}
-        indexCounter={tabNumber}
-        eventPrivacyContianer={{ width: 100 }}
-        onFirstTabPress={() => setTabNumber(0)}
-        onSecondTabPress={() => setTabNumber(1)}
-        onThirdTabPress={() => setTabNumber(2)}
-      />
-
-      <FlatList
-        data={
-          (tabNumber === 0 && batchListByFilter('Open'))
-          || (tabNumber === 1 && batchListByFilter('Paid'))
-          || (tabNumber === 2 && batchListByFilter('All'))
-        }
-        renderItem={renderBatchDetailView}
-        keyExtractor={(item, index) => index.toString()}
+      <ActionSheet
+        ref={batchActionsheet}
+        options={['Resend Invoice', 'Add recipients', 'Cancel Invoices', 'Cancel']}
+        cancelButtonIndex={3}
+         destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            alert('0')
+          }
+          if (index === 1) {
+            alert('1')
+          }
+          if (index === 2) {
+            alert('2')
+          }
+        }}
       />
     </View>
   );
