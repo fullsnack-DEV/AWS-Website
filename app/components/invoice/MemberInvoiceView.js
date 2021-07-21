@@ -18,7 +18,7 @@ export default function MemberInvoiceView({ data, onPressCard }) {
           justifyContent: 'center',
         }}>
         <View style={styles.profileContainer}>
-          <Image source={images.dummyPhoto} style={styles.townsCupPlusIcon} />
+          <Image source={data?.thumbnail && data?.thumbnail !== '' ? { uri: data?.thumbnail } : images.profilePlaceHolder} style={styles.townsCupPlusIcon} />
         </View>
       </View>
       <View
@@ -32,23 +32,20 @@ export default function MemberInvoiceView({ data, onPressCard }) {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-          {'Michael Jordan'}
+          {`${data?.first_name} ${data?.last_name}`}
         </Text>
         <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}>
-          $25.00
+          }}>${data?.invoice_paid_total}
           <Text
             style={{
               fontFamily: fonts.RLight,
               fontSize: 14,
               color: colors.lightBlackColor,
-            }}>
-            {' '}
-            of $25.00
+            }}>{` of $${data?.invoice_total}`}
           </Text>
         </Text>
         <Text
@@ -56,14 +53,13 @@ export default function MemberInvoiceView({ data, onPressCard }) {
             fontFamily: fonts.RLight,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}>
-          29 invoices
+          }}>{`${data?.invoices?.length} invoices`}
         </Text>
         <View style={styles.percentageView}>
           <View
             style={{
               height: 3,
-              width: '10%',
+              width: `${((100 * data?.invoice_paid_total) / data?.invoice_total)}%`,
               backgroundColor: colors.greeColor,
             }}
           />

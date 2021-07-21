@@ -204,6 +204,7 @@ import BatchDetailScreen from '../screens/account/payment/BatchDetailScreen';
 import TeamInvoiceDetailScreen from '../screens/account/payment/TeamInvoiceDetailScreen';
 import AddLogScreen from '../screens/account/payment/AddLogScreen';
 import CanceledInvoicesScreen from '../screens/account/payment/CanceledInvoicesScreen';
+import InvoiceFilterScreen from '../screens/account/payment/InvoiceFilterScreen';
 
 // Scorekeeper Review Screen
 
@@ -2650,6 +2651,23 @@ const AccountNavigator = () => (
           title: ' ',
           headerTintColor: colors.whiteColor,
         }}
+        />
+
+    <Stack.Screen
+         name="InvoiceFilterScreen"
+         component={InvoiceFilterScreen}
+         options={{
+          title: 'Invoicing',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+         }}
         />
   </Stack.Navigator>
 );

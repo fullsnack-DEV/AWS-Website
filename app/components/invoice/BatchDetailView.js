@@ -18,7 +18,7 @@ export default function BatchDetailView({ data, onPressCard }) {
           justifyContent: 'center',
         }}>
         <View style={styles.profileContainer}>
-          <Image source={images.dummyPhoto} style={styles.townsCupPlusIcon} />
+          <Image source={data?.user?.thumbnail && data?.user?.thumbnail !== '' ? { uri: data?.user?.thumbnail } : images.profilePlaceHolder} style={styles.townsCupPlusIcon} />
         </View>
       </View>
       <View
@@ -32,23 +32,20 @@ export default function BatchDetailView({ data, onPressCard }) {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-          {'Michael Jordan'}
+          {`${data?.user?.first_name} ${data?.user?.last_name}`}
         </Text>
         <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}>
-          $25.00
+          }}>{data?.amount_paid}
           <Text
             style={{
               fontFamily: fonts.RLight,
               fontSize: 14,
               color: colors.lightBlackColor,
-            }}>
-            {' '}
-            of $25.00
+            }}>{` of $${data?.amount_remaining}`}
           </Text>
         </Text>
 
@@ -56,7 +53,7 @@ export default function BatchDetailView({ data, onPressCard }) {
           <View
             style={{
               height: 3,
-              width: '10%',
+              width: `${((100 * data?.amount_paid) / data?.amount_remaining)}%`,
               backgroundColor: colors.greeColor,
             }}
           />

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
@@ -18,6 +19,7 @@ import {
   FlatList,
   TextInput,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
@@ -28,10 +30,11 @@ import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
+import { useIsFocused } from '@react-navigation/native';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import { getGroupMembers } from '../../../api/Groups';
-import { createInvoice } from '../../../api/Invoice';
+import { createInvoice, getTeamInvoice } from '../../../api/Invoice';
 
 import AuthContext from '../../../auth/context';
 
@@ -47,6 +50,9 @@ import { heightPercentageToDP as hp } from '../../../utils';
 import DataSource from '../../../Constants/DataSource';
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+
+let totalInvoiced, paidInvoice, openInvoice;
 
 export default function InvoiceScreen({ navigation }) {
   const filterByDate = [
@@ -58,6 +64,8 @@ export default function InvoiceScreen({ navigation }) {
     'Choose a date range',
   ];
   const [loading, setloading] = useState(false);
+  const isFocused = useIsFocused();
+
   const authContext = useContext(AuthContext);
 
   const createInvoiceModalRef = useRef();
@@ -95,6 +103,9 @@ export default function InvoiceScreen({ navigation }) {
     filterByDate[0],
   ]);
 
+  const [memberList, setMemberList] = useState([]);
+  const [batchList, setBatchList] = useState([]);
+
   const [recipientData, setRecipientData] = useState([
     { name: 'Kishan Makani' },
     { name: 'Karan Makani' },
@@ -126,30 +137,57 @@ export default function InvoiceScreen({ navigation }) {
         </View>
       ),
     });
-  }, [navigation]);
+  }, [navigation, memberList]);
 
   useEffect(() => {
-    setloading(true);
-    getGroupMembers(authContext.entity.uid, authContext)
-      .then((response) => {
-        setloading(false);
+      setloading(true);
+      getGroupMembers(authContext.entity.uid, authContext)
+        .then((response) => {
+          console.log('');
+          setloading(false);
 
-        setRecipientData(response.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, []);
+          setRecipientData(response.payload);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+  }, [authContext]);
+
+  useEffect(() => {
+    if (isFocused) {
+      setloading(true);
+      getTeamInvoice(authContext)
+        .then((response) => {
+          console.log('Invoice list updated....');
+          setloading(false);
+
+          setMemberList(response.payload.members);
+          setBatchList(response.payload.batches);
+          totalInvoiced = response.payload.invoice_total;
+          paidInvoice = response?.payload?.invoice_paid_total;
+          openInvoice = response.payload.invoice_open_total;
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  }, [authContext, isFocused]);
 
   const renderMemberView = ({ item }) => {
     console.log('item', item);
     return (
       <MemberInvoiceView
         data={item}
-        onPressCard={() => navigation.navigate('MembersDetailScreen', { from: 'member' })
+        onPressCard={() => navigation.navigate('MembersDetailScreen', {
+            from: 'member',
+            memberData: item,
+          })
         }
       />
     );
@@ -160,7 +198,10 @@ export default function InvoiceScreen({ navigation }) {
     return (
       <BatchFeeView
         data={item}
-        onPressCard={() => navigation.navigate('BatchDetailScreen', { from: 'batch' })
+        onPressCard={() => navigation.navigate('BatchDetailScreen', {
+            from: 'batch',
+            batchData: item,
+          })
         }
       />
     );
@@ -184,12 +225,12 @@ export default function InvoiceScreen({ navigation }) {
 
               const body = {};
               body.member_ids = selectedRecipient;
-              body.due_date = parseFloat(
+              body.due_date = Number(
                 (new Date(selectedDueDate).getTime() / 1000).toFixed(0),
               );
               body.invoice_title = invoiceTitle;
-              body.amount_due = amount;
-              body.currency_type = authContext.entity.obj.currency_type
+              body.amount_due = Number(parseFloat(amount).toFixed(2));
+              body.currency_type = authContext.entity.obj.currency_type;
               body.invoice_description = note;
 
               console.log(body);
@@ -197,6 +238,23 @@ export default function InvoiceScreen({ navigation }) {
                 .then((response) => {
                   console.log('Create invoice res:=>', response.payload);
                   setloading(false);
+                  createInvoiceModalRef?.current?.close();
+                  getTeamInvoice(authContext)
+                    .then((data) => {
+                      setloading(false);
+
+                      setMemberList(data.payload.members);
+                      setBatchList(data.payload.batches);
+                      totalInvoiced = data.payload.invoice_total;
+                      paidInvoice = data?.payload?.invoice_paid_total;
+                      openInvoice = data.payload.invoice_open_total;
+                    })
+                    .catch((e) => {
+                      setloading(false);
+                      setTimeout(() => {
+                        Alert.alert(strings.alertmessagetitle, e.message);
+                      }, 10);
+                    });
                 })
                 .catch((e) => {
                   setloading(false);
@@ -314,21 +372,6 @@ export default function InvoiceScreen({ navigation }) {
     console.log('MARKED DATES::', JSON.stringify(markedDates));
   }, []);
 
-  const renderTags = ({ item }) => (
-    <View style={styles.textContainer}>
-      <Text style={styles.tagTitleText}>{item}</Text>
-      <Image source={images.tagDivider} style={styles.dividerImage} />
-      <TouchableOpacity
-        style={styles.closeButton}
-        onPress={() => {
-          // onTagCancelPress({ item, index })
-          alert('cancel');
-        }}>
-        <Image source={images.cancelImage} style={styles.closeButton} />
-      </TouchableOpacity>
-    </View>
-  );
-
   const handleStartDatePress = (date) => {
     console.log('Date::=>', new Date(new Date(date).getTime()));
 
@@ -384,129 +427,143 @@ export default function InvoiceScreen({ navigation }) {
       Alert.alert('Please select due amount.');
       return false;
     }
+    if (amount < 1 && amount > 0) {
+      Alert.alert('User should not allow less than $1 amount.');
+      return false;
+    }
     return true;
   };
 
+  const memberListByFilter = useCallback(
+    (status) => {
+      console.log('Status', status);
+
+      if (status === 'All') {
+        return memberList;
+      }
+      if (status === 'Paid') {
+        return memberList.filter((obj) => obj.invoices.some((innerObj) => innerObj.invoice_status === 'Paid'));
+      }
+      if (status === 'Open') {
+        return memberList.filter((obj) => obj.invoices.some(
+            (innerObj) => innerObj.invoice_status === 'Unpaid'
+              || innerObj.invoice_status === 'Partially Paid',
+          ));
+      }
+    },
+    [memberList],
+  );
+  const IsNumeric = (num) => num >= 0 || num < 0;
+
+  const batchListByFilter = useCallback(
+    (status) => {
+      console.log('Status', status);
+
+      if (status === 'All') {
+        return batchList;
+      }
+      if (status === 'Paid') {
+        return batchList.filter((obj) => obj.invoices.some((innerObj) => innerObj.invoice_status === 'Paid'));
+      }
+      if (status === 'Open') {
+        return batchList.filter((obj) => obj.invoices.some(
+            (innerObj) => innerObj.invoice_status === 'Unpaid'
+              || innerObj.invoice_status === 'Partially Paid',
+          ));
+      }
+    },
+    [batchList],
+  );
+
   return (
     <View style={styles.mainContainer}>
-      {/* <ActivityLoader visible={loading} /> */}
+      <ActivityLoader visible={loading} />
 
       <TopFilterBar
         onFilterPress={() => filterModalRef?.current?.open()}
         onChangeText={(text) => setSearchText(text)}
         value={searchText}
+        searchSubmit={() => {
+          navigation.navigate('InvoiceFilterScreen');
+        }}
       />
 
-      {searchText?.length > 0 && (
-        <View>
-          <FlatList
-            data={filterSetting}
-            renderItem={renderTags}
-            keyExtractor={(item, index) => index.toString()}
-            style={styles.tagListStyle}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-      )}
-      {searchText?.length > 0 ? (
-        <FlatList
-          data={['1', '2', '3', '4']}
-          renderItem={renderMemberView} // renderInvoiceView
-          keyExtractor={(item, index) => index.toString()}
+      <View style={{ flex: 1 }}>
+        <TCTabView
+          totalTabs={2}
+          firstTabTitle={`MEMBERS (${memberList.length})`}
+          secondTabTitle={`BATCHES (${batchList.length})`}
+          indexCounter={maintabNumber}
+          eventPrivacyContianer={{ width: 100 }}
+          onFirstTabPress={() => setMaintabNumber(0)}
+          onSecondTabPress={() => setMaintabNumber(1)}
+          activeHeight={36}
+          inactiveHeight={40}
         />
-      ) : (
-        <View>
-          <TCTabView
-            totalTabs={2}
-            firstTabTitle={'MEMBERS (1)'}
-            secondTabTitle={'BATCHES (3)'}
-            indexCounter={maintabNumber}
-            eventPrivacyContianer={{ width: 100 }}
-            onFirstTabPress={() => setMaintabNumber(0)}
-            onSecondTabPress={() => setMaintabNumber(1)}
-            activeHeight={36}
-            inactiveHeight={40}
-          />
 
-          {/* <SmallFilterSelectionView
-        dataSource={invoiceMonthsSelectionData}
-        placeholder={strings.selectInvoiceDuration}
-        value={selectedDuration}
-        onValueChange={(index) => setSelectedDuration(index)}
-        containerStyle={{ height: 45, width: '92%' }}
-      /> */}
+        <InvoiceAmount
+          currencyType={'CAD'}
+          totalAmount={totalInvoiced ?? '00.00'}
+          paidAmount={paidInvoice ?? '00.00'}
+          openAmount={openInvoice ?? '00.00'}
+        />
 
-          <InvoiceAmount
-            currencyType={'CAD'}
-            totalAmount={'100.00'}
-            paidAmount={'85.00'}
-            openAmount={'55.00'}
-          />
+        <TCTabView
+          totalTabs={3}
+          firstTabTitle={`Open (${
+            maintabNumber === 0
+              ? memberListByFilter('Open').length
+              : batchListByFilter('Open').length
+          })`}
+          secondTabTitle={`Paid (${
+            maintabNumber === 0
+              ? memberListByFilter('Paid').length
+              : batchListByFilter('Paid').length
+          })`}
+          thirdTabTitle={`All (${
+            maintabNumber === 0
+              ? memberListByFilter('All').length
+              : batchListByFilter('All').length
+          })`}
+          indexCounter={tabNumber}
+          eventPrivacyContianer={{ width: 100 }}
+          onFirstTabPress={() => {
+            setTabNumber(0);
+          }}
+          onSecondTabPress={() => {
+            setTabNumber(1);
+          }}
+          onThirdTabPress={() => {
+            setTabNumber(2);
+          }}
+          activeHeight={30}
+          inactiveHeight={30}
+        />
 
-          <TCTabView
-            totalTabs={3}
-            firstTabTitle={'Open (1)'}
-            secondTabTitle={'Paid (3)'}
-            thirdTabTitle={'All (4)'}
-            indexCounter={tabNumber}
-            eventPrivacyContianer={{ width: 100 }}
-            onFirstTabPress={() => setTabNumber(0)}
-            onSecondTabPress={() => setTabNumber(1)}
-            onThirdTabPress={() => setTabNumber(2)}
-            activeHeight={30}
-            inactiveHeight={30}
-          />
-
-          {maintabNumber === 0 && tabNumber === 0 && (
+        <SafeAreaView style={{ flex: 1 }}>
+          {maintabNumber === 0 ? (
             <FlatList
-              data={['1']}
+              data={
+                (tabNumber === 0 && memberListByFilter('Open'))
+                || (tabNumber === 1 && memberListByFilter('Paid'))
+                || (tabNumber === 2 && memberListByFilter('All'))
+              }
               renderItem={renderMemberView}
               keyExtractor={(item, index) => index.toString()}
             />
-          )}
-
-          {maintabNumber === 0 && tabNumber === 1 && (
+          ) : (
             <FlatList
-              data={['1', '2', '3']}
-              renderItem={renderMemberView}
-              keyExtractor={(item, index) => index.toString()}
-            />
-          )}
-
-          {maintabNumber === 0 && tabNumber === 2 && (
-            <FlatList
-              data={['1', '2', '3', '4']}
-              renderItem={renderMemberView} // renderInvoiceView
-              keyExtractor={(item, index) => index.toString()}
-            />
-          )}
-
-          {maintabNumber === 1 && tabNumber === 0 && (
-            <FlatList
-              data={['1']}
+              data={
+                (tabNumber === 0 && batchListByFilter('Open'))
+                || (tabNumber === 1 && batchListByFilter('Paid'))
+                || (tabNumber === 2 && batchListByFilter('All'))
+              }
               renderItem={renderBatchView} // renderInvoiceView
               keyExtractor={(item, index) => index.toString()}
             />
           )}
-
-          {maintabNumber === 1 && tabNumber === 1 && (
-            <FlatList
-              data={['1', '2', '3']}
-              renderItem={renderBatchView} // renderInvoiceView
-              keyExtractor={(item, index) => index.toString()}
-            />
-          )}
-
-          {maintabNumber === 1 && tabNumber === 2 && (
-            <FlatList
-              data={['1', '2', '3', '4']}
-              renderItem={renderBatchView} // renderInvoiceView
-              keyExtractor={(item, index) => index.toString()}
-            />
-          )}
-        </View>
-      )}
+        </SafeAreaView>
+      </View>
 
       <ActionSheet
         ref={actionSheet}
@@ -647,7 +704,11 @@ export default function InvoiceScreen({ navigation }) {
               </Text>
               <TextInput
                 style={styles.amountTxt}
-                onChangeText={(text) => setAmount(text)}
+                onChangeText={(text) => {
+                  if (IsNumeric(text)) {
+                    setAmount(text)
+                  }
+                }}
                 keyboardType="numeric"
                 value={amount}></TextInput>
             </View>
@@ -1249,50 +1310,6 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
   },
 
-  // Tags view
-  textContainer: {
-    flexDirection: 'row',
-    height: 25,
-    marginRight: 5,
-    marginLeft: 5,
-    marginBottom: 2,
-    backgroundColor: colors.offwhite,
-    borderRadius: 13,
-    shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.16,
-    shadowRadius: 1,
-    elevation: 3,
-  },
-
-  closeButton: {
-    alignSelf: 'center',
-    width: 8,
-    height: 8,
-    resizeMode: 'contain',
-    marginLeft: 5,
-    marginRight: 10,
-  },
-  dividerImage: {
-    alignSelf: 'center',
-    width: 1,
-    height: 25,
-    resizeMode: 'contain',
-    marginLeft: 5,
-    marginRight: 5,
-  },
-  tagListStyle: {
-    marginLeft: 20,
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  tagTitleText: {
-    alignSelf: 'center',
-    marginLeft: 10,
-    marginRight: 5,
-    fontFamily: fonts.RRegular,
-    fontSize: 12,
-  },
   recipientText: {
     fontFamily: fonts.RRegular,
     fontSize: 16,

@@ -3,7 +3,7 @@ import {
  Image,
  View, StyleSheet, Text, TouchableOpacity,
  } from 'react-native';
-
+ import moment from 'moment';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -21,7 +21,7 @@ export default function UserInvoiceView({ data, onPressCard }) {
         }}>
         <Text
           style={styles.dateView}>
-          {'May\n19'}
+          {`${ moment(new Date(data.due_date * 1000)).format('MMM')}\n${moment(new Date(data.due_date * 1000)).format('DD')}`}
         </Text>
       </View>
       <View
@@ -35,28 +35,25 @@ export default function UserInvoiceView({ data, onPressCard }) {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-          {'Membership Fee'}
+          {data?.invoice_title}
         </Text>
         <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}>
-          $25.00
+          }}>${data?.amount_paid}
           <Text
             style={{
               fontFamily: fonts.RLight,
               fontSize: 14,
               color: colors.lightBlackColor,
-            }}>
-            {' '}
-            of $25.00
+            }}>{` of $${data?.amount_due}`}
           </Text>
         </Text>
         <View style={{ flexDirection: 'row', marginTop: 2 }}>
-          <Image source={images.dummyPhoto} style={ styles.teamProfileImage } />
-          <Text style={styles.nameText } numberOfLines={5}>{'Vancuver Whitecaps FC'}</Text>
+          <Image source={data?.group?.thumbnail && data?.group?.thumbnail !== '' ? { uri: data?.group?.thumbnail } : images.profilePlaceHolder} style={ styles.teamProfileImage } />
+          <Text style={styles.nameText } numberOfLines={5}>{data?.group?.group_name}</Text>
           <Image source={images.teamT} style={ styles.teamTImage } />
         </View>
 
@@ -65,7 +62,7 @@ export default function UserInvoiceView({ data, onPressCard }) {
           <View
             style={{
               height: 3,
-              width: '10%',
+              width: `${((100 * data?.amount_paid) / data?.amount_due)}%`,
               backgroundColor: colors.greeColor,
             }}
           />

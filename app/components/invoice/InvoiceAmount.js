@@ -15,12 +15,12 @@ export default function InvoiceAmount({
   return (
     <View style={ style}>
       {status && <View style={styles.containerView}>
-        <Text style={styles.titleText}>Status</Text>
+        <Text style={ styles.titleText}>Status</Text>
         <Text
           style={{
             fontSize: 16,
             fontFamily: fonts.RMedium,
-            color: colors.darkThemeColor,
+            color: status === 'Paid' ? colors.greenColorCard : colors.darkThemeColor,
           }}>{status}
         </Text>
       </View>
