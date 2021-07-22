@@ -12,7 +12,7 @@ function NotificationItem({
   data, onPressFirstEntity, onPressSecondEntity, onPressCard,
 }) {
   const [dataDictionary, setDataDictionary] = useState()
-
+console.log('Normal Notification data:=>', data);
   useEffect(() => {
     parseNotification(data).then((response) => {
       setDataDictionary(response)
@@ -31,7 +31,7 @@ function NotificationItem({
               entityType={dataDictionary.entityType}
               source={ { uri: dataDictionary.imgName }}
               containerStyle={styles.imageContainer}
-              intialChar={dataDictionary.firstTitle.charAt(0).toUpperCase()}
+              intialChar={dataDictionary?.firstTitle?.charAt(0)?.toUpperCase()}
               />
           </TouchableOpacity>
           <View style={styles.textContentStyle}>

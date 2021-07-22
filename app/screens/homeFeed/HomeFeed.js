@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, {
     memo, useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
@@ -37,16 +38,16 @@ const HomeFeed = ({
     const [isNextDataLoading, setIsNextDataLoading] = useState(true);
     const [footerLoading, setFooterLoading] = useState(false);
 
-    useEffect(() => {
-        const params = { uid: userID };
-        getUserPosts(params, authContext).then((res) => {
-            setFeedCalled(true)
-            setTotalUserPostCount(res?.payload?.total_count)
-            setPostData([...res?.payload?.results])
-        }).catch((e) => {
-            console.log(e)
-        })
-    }, [authContext, userID])
+    // useEffect(() => {
+    //     const params = { uid: userID };
+    //     getUserPosts(params, authContext).then((res) => {
+    //         setFeedCalled(true)
+    //         setTotalUserPostCount(res?.payload?.total_count)
+    //         setPostData([...res?.payload?.results])
+    //     }).catch((e) => {
+    //         console.log(e)
+    //     })
+    // }, [])
 
     useEffect(() => {
         if (postData?.length > 0 && totalUserPostCount > 0) {
@@ -204,7 +205,7 @@ const HomeFeed = ({
         }
     }, [authContext, createPostAfterUpload, imageUploadContext])
 
-    const onEndReached = useCallback(() => {
+    const onEndReached = () => {
         setFooterLoading(true);
         const id_lt = postData?.[postData.length - 1]?.id;
         if (id_lt && isNextDataLoading) {
@@ -219,7 +220,7 @@ const HomeFeed = ({
                 setFooterLoading(false)
             })
         }
-    }, [authContext, isNextDataLoading, postData])
+    }
 
     const StickyHeaderComponent = useMemo(() => (
       <View>
@@ -258,7 +259,7 @@ const HomeFeed = ({
         <NewsFeedList
             showEnptyDataText={currentTab === 0}
             updateCommentCount={updateCommentCount}
-            onFeedScroll={onFeedScroll}
+             onFeedScroll={onFeedScroll}
             feedAPI={feedCalled}
               refs={refs}
               ListHeaderComponent={ListHeaderComponent}

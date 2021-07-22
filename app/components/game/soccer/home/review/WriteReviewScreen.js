@@ -219,6 +219,7 @@ export default function WriteReviewScreen({ navigation, route }) {
               style={styles.doneViewStyle}
               onPress={async () => {
                 const uploadTimeout = selectImage?.length * 300;
+
                 if (searchText.trim()?.length === 0 && selectImage?.length === 0) {
                   Alert.alert('Please write some text or select any image.');
                 } else {

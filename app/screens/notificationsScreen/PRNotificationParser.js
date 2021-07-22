@@ -468,9 +468,9 @@ export const parseInviteRequest = async (data) => {
   finalString.firstTitle = activity?.actor?.data?.full_name
 
   finalString.text = notificationObject.text
-  finalString.entityType = activity.actor.data.entity_type === 'player' ? 'user' : activity.actor.data.entity_type
-  if (activity.actor.data.thumbnail) {
-    finalString.imgName = activity.actor.data.thumbnail
+  finalString.entityType = activity?.actor?.data?.entity_type === 'player' ? 'user' : activity?.actor?.data?.entity_type
+  if (activity?.actor?.data?.thumbnail) {
+    finalString.imgName = activity?.actor?.data?.thumbnail
   }
 
   if (data && data.created_at) {
@@ -492,10 +492,10 @@ const parseNormalNotification = async (data) => {
   if (activity.object) {
     notificationObject = JSON.parse(activity.object);
   }
-
+console.log('Activity data:=>', activity);
   finalString.text = notificationObject.text
-  finalString.entityType = activity.actor.data.entity_type === 'player' ? 'user' : activity.actor.data.entity_type
-  finalString.entityId = activity.actor.id
+  finalString.entityType = activity?.actor?.data?.entity_type === 'player' ? 'user' : activity?.actor?.data?.entity_type
+  finalString.entityId = activity?.actor?.id
   finalString.firstTitle = activity?.actor?.data?.full_name
 
   if (data.activities.length > 1) {
@@ -513,8 +513,8 @@ const parseNormalNotification = async (data) => {
     finalString.secondTitle = data?.activities?.[1]?.actor?.data?.full_name
   }
 
-  if (activity.actor.data.thumbnail) {
-    finalString.imgName = activity.actor.data.thumbnail
+  if (activity?.actor?.data?.thumbnail) {
+    finalString.imgName = activity?.actor?.data?.thumbnail
   }
 
   if (data && data.created_at) {

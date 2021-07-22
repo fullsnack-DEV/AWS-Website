@@ -17,7 +17,6 @@ export default function ScoreboardSportsScreen({
   sportsData,
   showEventNumbers,
   navigation,
-  onItemPress,
   onBackPress = () => {},
 }) {
   const authContext = useContext(AuthContext)
@@ -68,7 +67,6 @@ export default function ScoreboardSportsScreen({
   }
 
   const onGameCardClick = (item) => {
-    onItemPress();
     setTimeout(() => {
       const entity = authContext.entity
       if (item?.game_id) {
