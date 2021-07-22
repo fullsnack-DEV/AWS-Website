@@ -142,7 +142,7 @@ const LeaveReview = ({ navigation, route }) => {
   };
 
   const isValidReview = (teamNo) => {
-    const exceptKey = ['team_id', 'comment', 'attachments', 'tagged'];
+    const exceptKey = ['team_id', 'comment', 'attachments', 'tagged', 'format_tagged_data', 'created_at', 'member', 'review_id', 'reviewer_id'];
     let isValid = true;
     const reviews = _.cloneDeep(reviewsData);
     const review = reviews
@@ -156,6 +156,7 @@ const LeaveReview = ({ navigation, route }) => {
   };
   const createReview = () => {
     console.log('Review Data::=>', JSON.stringify(reviewsData));
+    console.log('currentForm', currentForm);
     if (currentForm === 1) {
       if (isValidReview(currentForm)) {
         uploadMediaForTeamA()

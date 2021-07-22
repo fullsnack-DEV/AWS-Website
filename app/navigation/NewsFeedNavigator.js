@@ -71,6 +71,7 @@ import Availibility from '../screens/challenge/manageChallenge/settings/Availibi
 import RefereesSetting from '../screens/challenge/manageChallenge/settings/RefereesSetting';
 import ScorekeepersSetting from '../screens/challenge/manageChallenge/settings/ScorekeepersSetting';
 import GameDuration from '../screens/challenge/manageChallenge/settings/GameDuration';
+import WriteReviewScreen from '../components/game/soccer/home/review/WriteReviewScreen';
 
 const Stack = createStackNavigator();
 
@@ -971,6 +972,14 @@ const NewsFeedNavigator = () => (
           borderBottomColor: colors.grayColor,
           borderBottomWidth: 0.3,
         },
+      }}
+    />
+
+    <Stack.Screen
+      name="WriteReviewScreen"
+      component={WriteReviewScreen}
+      options={{
+        headerShown: false,
       }}
     />
   </Stack.Navigator>

@@ -861,14 +861,6 @@ const styles = StyleSheet.create({
     height: 2,
     marginBottom: 15,
   },
-  nextIconStyle: {
-    alignSelf: 'center',
-    resizeMode: 'contain',
-    height: 14,
-    width: 8,
-    marginEnd: 10,
-    tintColor: colors.userPostTimeColor,
-  },
 
   checkButton: {
     width: 20,

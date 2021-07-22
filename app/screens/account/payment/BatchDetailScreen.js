@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable array-callback-return */
 /* eslint-disable consistent-return */
 import React, {
   useState,
@@ -6,6 +6,7 @@ import React, {
   useLayoutEffect,
   useCallback,
   useRef,
+  useEffect,
 } from 'react';
 import {
   View,
@@ -14,15 +15,22 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
 
 import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
-
+import { Modalize } from 'react-native-modalize';
+import { Portal } from 'react-native-portalize';
 import AuthContext from '../../../auth/context';
-
+import { getGroupMembers } from '../../../api/Groups';
+import {
+  createBatchInvoice,
+  cancelBatchInvoice,
+  resendBatchInvoice,
+} from '../../../api/Invoice';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
@@ -31,19 +39,35 @@ import TopFilterBar from '../../../components/invoice/TopFilterBar';
 import images from '../../../Constants/ImagePath';
 import BatchDetailView from '../../../components/invoice/BatchDetailView';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import TCThinDivider from '../../../components/TCThinDivider';
+import { heightPercentageToDP } from '../../../utils';
+import strings from '../../../Constants/String';
+import InvoiceTypeSelection from '../../../components/invoice/InvoiceTypeSelection';
 
 let entity = {};
 export default function BatchDetailScreen({ navigation, route }) {
   const { from, batchData } = route?.params;
-   const [loading, setloading] = useState(false);
+  console.log('Batch data:=>', batchData);
+  const [loading, setloading] = useState(false);
 
   const batchActionsheet = useRef();
+  const resendModalRef = useRef();
+  const recipientModalRef = useRef();
+
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
   console.log(entity);
   // const isFocused = useIsFocused();
 
   const [tabNumber, setTabNumber] = useState(0);
+  const [recipientData, setRecipientData] = useState([]);
+  const [recipientAllData, setRecipientAllData] = useState(false);
+  const [selectedRecipient, setSelectedRecipient] = useState([]);
+  const [selectInvoiceType, setSelectInvoiceType] = useState('Open Invoices');
+
+  const [selectedActionSheetOpetion, setSelectedActionSheetOpetion] = useState(
+    0,
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -65,6 +89,23 @@ export default function BatchDetailScreen({ navigation, route }) {
       ),
     });
   }, [navigation]);
+
+  useEffect(() => {
+    setloading(true);
+    getGroupMembers(authContext.entity.uid, authContext)
+      .then((response) => {
+        console.log('');
+        setloading(false);
+
+        setRecipientData(response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext]);
 
   const renderBatchDetailView = ({ item }) => {
     console.log('item', item);
@@ -101,6 +142,216 @@ export default function BatchDetailScreen({ navigation, route }) {
     },
     [batchData?.invoices],
   );
+
+  const sendInvoiceValidation = () => {
+    if (selectedRecipient.length <= 0) {
+      Alert.alert('Please select recipients.');
+      return false;
+    }
+
+    return true;
+  };
+
+  const reSendInvoiceValidation = () => {
+    if (!selectInvoiceType) {
+      Alert.alert('Please select invoice type.');
+      return false;
+    }
+
+    return true;
+  };
+
+  const ModalHeader = () => (
+    <View style={styles.headerStyle}>
+      <View style={styles.headerButtonStyle}>
+        <Text
+          style={styles.cancelText}
+          onPress={() => resendModalRef.current.close()}>
+          Cancel
+        </Text>
+
+        <Text style={styles.titleText}>
+          {selectedActionSheetOpetion === 1
+            ? 'Add Recipients'
+            : 'Resend Invoice'}
+        </Text>
+        <Text
+          style={styles.sendText}
+          onPress={() => {
+            if (from === 'batch') {
+              if (selectedActionSheetOpetion === 0) {
+                if (reSendInvoiceValidation()) {
+                  resendModalRef.current.close();
+                  setloading(true);
+
+                  const body = {};
+                  body.type = (selectInvoiceType === 'Open Invoices' && 'open')
+                    || (selectInvoiceType === 'Paid Invoices' && 'paid')
+                    || (selectInvoiceType === 'All Invoices' && 'All');
+                  body.email_sent = false;
+
+                  resendBatchInvoice(batchData.invoice_group, body, authContext)
+                    .then(() => {
+                      console.log('');
+                      setloading(false);
+
+                      resendModalRef.current.close();
+                    })
+                    .catch((e) => {
+                      setloading(false);
+                      setTimeout(() => {
+                        Alert.alert(strings.alertmessagetitle, e.message);
+                      }, 10);
+                    });
+                }
+              } else if (selectedActionSheetOpetion === 1) {
+                if (sendInvoiceValidation()) {
+                  resendModalRef.current.close();
+                  setloading(true);
+
+                  const body = {};
+                  body.member_ids = selectedRecipient;
+                  body.email_sent = true;
+
+                  createBatchInvoice(batchData.invoice_group, body, authContext)
+                    .then(() => {
+                      console.log('');
+                      setloading(false);
+
+                      resendModalRef.current.close();
+                    })
+                    .catch((e) => {
+                      setloading(false);
+                      setTimeout(() => {
+                        Alert.alert(strings.alertmessagetitle, e.message);
+                      }, 10);
+                    });
+                }
+              }
+            }
+          }}>
+          Send
+        </Text>
+      </View>
+
+      <View style={styles.headerSeparator} />
+    </View>
+  );
+
+  const RecipientsModalHeader = () => (
+    <View style={styles.headerStyle}>
+      <View style={styles.headerButtonStyle}>
+        <Text
+          style={styles.cancelText}
+          onPress={() => recipientModalRef.current.close()}>
+          Cancel
+        </Text>
+
+        <Text style={styles.titleText}>Recipients</Text>
+        <Text
+          style={styles.sendText}
+          onPress={() => {
+            if (selectedActionSheetOpetion === 2) {
+              Alert.alert(
+                `Are you sure that you want to cancel ${
+                  recipientData.filter((e) => e.selected).length
+                } invoice?`,
+                '',
+                [
+                  {
+                    text: 'Back',
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Yes',
+
+                    // style: 'destructive',
+                    onPress: () => {
+                      // deleteInvoiceByID();
+                      cancelBatchInvoiceByID();
+                    },
+                  },
+                ],
+                { cancelable: false },
+              );
+            } else {
+              const selectedMember = recipientData.filter((e) => e.selected);
+              const result = selectedMember.map((obj) => {
+                if (obj.selected) {
+                  return obj.user_id;
+                }
+              });
+              console.log(result);
+              setSelectedRecipient(result);
+              recipientModalRef.current.close();
+            }
+          }}>
+          Done
+        </Text>
+      </View>
+
+      <View style={styles.headerSeparator} />
+    </View>
+  );
+
+  const renderRecipients = ({ item, index }) => (
+    <>
+      <View style={styles.recipientContainer}>
+        <View style={styles.profileContainer}>
+          <View style={styles.profileImageContainer}>
+            <Image
+              source={
+                item?.thumbnail && item?.thumbnail !== ''
+                  ? { uri: item?.thumbnail }
+                  : images.profilePlaceHolder
+              }
+              style={styles.profileImgStyle}
+            />
+          </View>
+          <Text style={styles.profilenameStyle}>
+            {item?.first_name} {item?.last_name}
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            // onTagCancelPress({ item, index }
+            setRecipientAllData(false);
+            const tempObj = item;
+            tempObj.selected = !tempObj?.selected;
+            recipientData[index] = tempObj;
+            setRecipientData([...recipientData]);
+          }}>
+          <Image
+            source={
+              item?.selected ? images.orangeCheckBox : images.uncheckEditor
+            }
+            style={styles.checkButton}
+          />
+        </TouchableOpacity>
+      </View>
+    </>
+  );
+
+  const cancelBatchInvoiceByID = () => {
+    if (sendInvoiceValidation()) {
+      setloading(true);
+
+      const body = {};
+      body.member_ids = selectedRecipient;
+      body.email_sent = true;
+      cancelBatchInvoice(batchData?.invoice_group, body, authContext)
+        .then(() => {
+          setloading(false);
+          resendModalRef.current.close();
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -154,21 +405,286 @@ export default function BatchDetailScreen({ navigation, route }) {
 
       <ActionSheet
         ref={batchActionsheet}
-        options={['Resend Invoice', 'Add recipients', 'Cancel Invoices', 'Cancel']}
+        options={[
+          'Resend Invoice',
+          'Add recipients',
+          'Cancel Invoices',
+          'Cancel',
+        ]}
         cancelButtonIndex={3}
-         destructiveButtonIndex={2}
+        destructiveButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
-            alert('0')
+            setSelectedActionSheetOpetion(0);
+            resendModalRef.current.open();
           }
           if (index === 1) {
-            alert('1')
+            setSelectedActionSheetOpetion(1);
+            resendModalRef.current.open();
           }
           if (index === 2) {
-            alert('2')
+            setSelectedActionSheetOpetion(2);
+            recipientModalRef.current.open();
           }
         }}
       />
+
+      <Portal>
+        <Modalize
+          withHandle={false}
+          adjustToContentHeight={true}
+          overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          snapPoint={heightPercentageToDP(50)}
+          modalStyle={{
+            flex: 1,
+            height: '86%',
+            borderTopRightRadius: 25,
+            borderTopLeftRadius: 25,
+            shadowColor: colors.blackColor,
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 10,
+            elevation: 10,
+          }}
+          HeaderComponent={ModalHeader}
+          ref={resendModalRef}>
+          <View>
+            {selectedActionSheetOpetion === 0 && (
+              <View>
+                <View
+                  style={{
+                    marginBottom: 15,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginLeft: 15,
+                    marginRight: 15,
+                    flexDirection: 'row',
+                  }}>
+                  <Text>Send to</Text>
+                  <InvoiceTypeSelection
+                    dataSource={[
+                      { label: 'Open Invoices', value: 'Open Invoices' },
+                      { label: 'Paid Invoices', value: 'Paid Invoices' },
+                      { label: 'All Invoices', value: 'All Invoices' },
+                    ]}
+                    value={selectInvoiceType}
+                    onValueChange={(value) => {
+                      setSelectInvoiceType(value);
+                    }}
+                  />
+                </View>
+                <TCThinDivider width={'92%'} />
+              </View>
+            )}
+            {selectedActionSheetOpetion === 1 && (
+              <View>
+                <TouchableOpacity
+                  onPress={() => recipientModalRef.current.open()}
+                  style={{
+                    marginBottom: 15,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginLeft: 15,
+                    marginRight: 15,
+                    flexDirection: 'row',
+                  }}>
+                  <Text
+                    style={
+                      selectedRecipient.length > 0
+                        ? styles.totalRecipient
+                        : styles.recipientText
+                    }>
+                    {selectedRecipient.length > 0
+                      ? `${selectedRecipient.length} Recipients`
+                      : 'Add Recipients'}
+                  </Text>
+                  <Image
+                    style={styles.nextIconStyle}
+                    source={images.nextArrow}
+                  />
+                </TouchableOpacity>
+                <TCThinDivider width={'92%'} />
+              </View>
+            )}
+            <View
+              style={{
+                margin: 15,
+                backgroundColor: colors.lightGrayBackground,
+              }}>
+              <View style={{ margin: 15 }}>
+                <Text
+                  style={{
+                    fontFamily: fonts.RLight,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                  }}>
+                  Invoice Title
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: fonts.RMedium,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                  }}>
+                  {batchData?.invoice_title}
+                </Text>
+              </View>
+              <View style={{ margin: 15 }}>
+                <Text
+                  style={{
+                    fontFamily: fonts.RLight,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                  }}>
+                  Invoice Description
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                  }}>
+                  {batchData?.invoice_description}
+                </Text>
+              </View>
+              <View style={{ margin: 15 }}>
+                <Text
+                  style={{
+                    fontFamily: fonts.RLight,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                  }}>
+                  Invoice Amount
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: fonts.RMedium,
+                    fontSize: 20,
+                    color: colors.lightBlackColor,
+                  }}>
+                  ${batchData?.invoice_total}
+                </Text>
+              </View>
+              <View style={{ margin: 15 }}>
+                <Text
+                  style={{
+                    fontFamily: fonts.RLight,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                  }}>
+                  Due at
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: fonts.RMedium,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                  }}>
+                  {moment(batchData?.due_date * 1000).format(
+                    'ddd, MMM DD, YYYY',
+                  )}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </Modalize>
+      </Portal>
+
+      <Portal>
+        <Modalize
+          withHandle={false}
+          adjustToContentHeight={true}
+          overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          snapPoint={heightPercentageToDP(50)}
+          modalStyle={{
+            flex: 1,
+            height: '86%',
+            borderTopRightRadius: 25,
+            borderTopLeftRadius: 25,
+            shadowColor: colors.blackColor,
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 10,
+            elevation: 10,
+          }}
+          HeaderComponent={RecipientsModalHeader}
+          ref={recipientModalRef}>
+          <View>
+            <View>
+              {selectedActionSheetOpetion === 2 && (
+                <Text
+                  style={{
+                    fontFamily: fonts.RRegular,
+                    fontSize: 20,
+                    color: colors.lightBlackColor,
+                    margin: 15,
+                    marginTop: 0,
+                  }}>
+                  Choose recipients of the invoices that you want to cancel.
+                </Text>
+              )}
+
+              <View
+                style={{
+                  marginBottom: 15,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginLeft: 15,
+                  marginRight: 15,
+                  flexDirection: 'row',
+                }}>
+                <Text
+                  style={{
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                  }}>
+                  All
+                </Text>
+                {/* <Image source={images.orangeCheckBox} style={styles.checkButton} /> */}
+                <TouchableOpacity
+                  onPress={() => {
+                    // onTagCancelPress({ item, index }
+                    setRecipientAllData(!recipientAllData);
+                    const result = recipientData.map((el) => {
+                      const o = { ...el };
+                      o.selected = !recipientAllData;
+                      return o;
+                    });
+
+                    setRecipientData([...result]);
+                  }}>
+                  <Image
+                    source={
+                      recipientAllData
+                        ? images.orangeCheckBox
+                        : images.uncheckEditor
+                    }
+                    style={styles.checkButton}
+                  />
+                </TouchableOpacity>
+              </View>
+              <TCThinDivider width={'92%'} />
+            </View>
+
+            <View style={{ margin: 15 }}>
+              <Text
+                style={{
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.lightBlackColor,
+                }}>
+                Members
+              </Text>
+              <FlatList
+                data={recipientData}
+                renderItem={renderRecipients}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+          </View>
+        </Modalize>
+      </Portal>
     </View>
   );
 }
@@ -201,4 +717,107 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
   },
+
+  headerStyle: {
+    borderTopRightRadius: 25,
+    borderTopLeftRadius: 25,
+    backgroundColor: colors.whiteColor,
+  },
+  headerButtonStyle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  titleText: {
+    color: colors.extraLightBlackColor,
+    fontFamily: fonts.RBold,
+    textAlign: 'center',
+    marginVertical: 15,
+    fontSize: 16,
+  },
+  cancelText: {
+    color: colors.extraLightBlackColor,
+    fontFamily: fonts.RLight,
+    textAlign: 'center',
+    marginVertical: 15,
+    fontSize: 16,
+    marginLeft: 15,
+  },
+  sendText: {
+    color: colors.extraLightBlackColor,
+    fontFamily: fonts.RBold,
+    textAlign: 'center',
+    marginVertical: 15,
+    fontSize: 16,
+    marginRight: 15,
+  },
+  headerSeparator: {
+    width: '100%',
+    backgroundColor: colors.grayBackgroundColor,
+    height: 2,
+    marginBottom: 15,
+  },
+  nextIconStyle: {
+    alignSelf: 'center',
+    resizeMode: 'contain',
+    height: 14,
+    width: 8,
+    marginEnd: 10,
+    tintColor: colors.userPostTimeColor,
+  },
+
+  checkButton: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
+  recipientContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    marginBottom: 10,
+    marginLeft: 10,
+  },
+  profileImgStyle: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+    borderRadius: 60,
+  },
+  profilenameStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    marginLeft: 10,
+  },
+  profileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  profileImageContainer: {
+    height: 34,
+    width: 34,
+    backgroundColor: colors.offwhite,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 64,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    elevation: 3,
+  },
+  recipientText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+  },
+  totalRecipient: {
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    color: colors.themeColor,
+  },
+
 });

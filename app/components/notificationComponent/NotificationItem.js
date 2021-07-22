@@ -12,7 +12,7 @@ function NotificationItem({
   data, onPressFirstEntity, onPressSecondEntity, onPressCard,
 }) {
   const [dataDictionary, setDataDictionary] = useState()
-
+console.log('Normal Notification data:=>', data);
   useEffect(() => {
     parseNotification(data).then((response) => {
       setDataDictionary(response)

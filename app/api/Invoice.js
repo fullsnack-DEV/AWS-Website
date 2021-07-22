@@ -7,6 +7,34 @@ export const createInvoice = (params, authContext) => makeAPIRequest({
   data: params,
   authContext,
 })
+
+export const resendInvoice = (invoiceID, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/invoices/${invoiceID}`,
+  authContext,
+})
+
+export const createBatchInvoice = (batchID, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/invoices/batch/${batchID}`,
+  data: params,
+  authContext,
+})
+
+export const cancelBatchInvoice = (batchID, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/invoices/batch/${batchID}/cancel`,
+  data: params,
+  authContext,
+})
+
+export const resendBatchInvoice = (batchID, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/invoices/batch/${batchID}/resend`,
+  data: params,
+  authContext,
+})
+
 export const getTeamInvoice = (authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/invoices`,

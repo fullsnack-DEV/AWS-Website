@@ -340,7 +340,7 @@ const Summary = ({
           navigation.navigate('LeaveReview', {
             gameData,
             gameReviewData: response.payload,
-            selectedTeam: selectedTeamForReview,
+            selectedTeam: selectedTeamForReview ?? playerFrom === 'home' ? 'away' : 'home',
             sliderAttributes,
             starAttributes,
             onPressReviewDone,
