@@ -23,11 +23,25 @@ export const getMemberInvoice = (authContext) => makeAPIRequest({
   authContext,
 })
 
+export const getCancelledInvoice = (authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/invoices?cancel_invoice=true`,
+  authContext,
+})
+
 export const getInvoiceDetail = (invoiceID, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/invoices/${invoiceID}`,
   authContext,
 })
+
+export const payStripeInvoice = (invoiceID, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/invoices/${invoiceID}/payment`,
+  data: params,
+  authContext,
+})
+
 export const deleteInvoice = (invoiceID, authContext) => makeAPIRequest({
   method: 'delete',
   url: `${Config.BASE_URL}/invoices/${invoiceID}`,

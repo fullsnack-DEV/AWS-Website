@@ -44,7 +44,7 @@ export const patchRegisterScorekeeperDetails = (params, authContext) => makeAPIR
 
 export const updateUserProfile = (params, authContext) => makeAPIRequest({
   method: 'patch',
-  url: `${Config.BASE_URL}/users/`,
+  url: `${Config.BASE_URL}/users`,
   data: params,
   authContext,
 })
