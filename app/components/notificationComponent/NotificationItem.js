@@ -31,7 +31,7 @@ console.log('Normal Notification data:=>', data);
               entityType={dataDictionary.entityType}
               source={ { uri: dataDictionary.imgName }}
               containerStyle={styles.imageContainer}
-              intialChar={dataDictionary.firstTitle.charAt(0).toUpperCase()}
+              intialChar={dataDictionary?.firstTitle?.charAt(0)?.toUpperCase()}
               />
           </TouchableOpacity>
           <View style={styles.textContentStyle}>
