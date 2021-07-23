@@ -18,6 +18,7 @@ import {
   Image,
   Alert,
   TextInput,
+  SafeAreaView,
 } from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
@@ -312,7 +313,7 @@ export default function MembersDetailScreen({ navigation, route }) {
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
 
-      <View>
+      <View style={{ flex: 1 }}>
         <TopFilterBar />
 
         <InvoiceAmount
@@ -333,8 +334,8 @@ export default function MembersDetailScreen({ navigation, route }) {
           onSecondTabPress={() => setTabNumber(1)}
           onThirdTabPress={() => setTabNumber(2)}
         />
-
-        <FlatList
+        <SafeAreaView style={{ flex: 1 }}>
+          <FlatList
           data={
             (tabNumber === 0 && memberListByFilter('Open'))
             || (tabNumber === 1 && memberListByFilter('Paid'))
@@ -343,6 +344,7 @@ export default function MembersDetailScreen({ navigation, route }) {
           renderItem={renderInvoiceView}
           keyExtractor={(item, index) => index.toString()}
         />
+        </SafeAreaView>
       </View>
 
       <Portal>

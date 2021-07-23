@@ -422,7 +422,7 @@ export default function InvoiceScreen({ navigation }) {
       Alert.alert('Please select due amount.');
       return false;
     }
-    if (amount < 1 && amount > 0) {
+    if (amount < 1 && amount >= 0) {
       Alert.alert('User should not allow less than $1 amount.');
       return false;
     }

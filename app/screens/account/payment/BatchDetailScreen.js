@@ -24,12 +24,14 @@ import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
+
 import AuthContext from '../../../auth/context';
 import { getGroupMembers } from '../../../api/Groups';
 import {
   createBatchInvoice,
   cancelBatchInvoice,
   resendBatchInvoice,
+  addRecipientList,
 } from '../../../api/Invoice';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -61,6 +63,10 @@ export default function BatchDetailScreen({ navigation, route }) {
 
   const [tabNumber, setTabNumber] = useState(0);
   const [recipientData, setRecipientData] = useState([]);
+  const [newRecipientData, setNewRecipientData] = useState([]);
+
+  const [addNewList, setAddNewList] = useState([]);
+
   const [recipientAllData, setRecipientAllData] = useState(false);
   const [selectedRecipient, setSelectedRecipient] = useState([]);
   const [selectInvoiceType, setSelectInvoiceType] = useState('Open Invoices');
@@ -94,9 +100,7 @@ export default function BatchDetailScreen({ navigation, route }) {
     setloading(true);
     getGroupMembers(authContext.entity.uid, authContext)
       .then((response) => {
-        console.log('');
         setloading(false);
-
         setRecipientData(response.payload);
       })
       .catch((e) => {
@@ -106,6 +110,36 @@ export default function BatchDetailScreen({ navigation, route }) {
         }, 10);
       });
   }, [authContext]);
+
+  useEffect(() => {
+    setloading(true);
+    addRecipientList(batchData?.invoice_group, authContext)
+      .then((response) => {
+        setloading(false);
+        console.log('setNewRecipientData res', response);
+        setNewRecipientData(response.payload);
+
+        const result = [];
+        for (let i = 0; i < recipientData.length; i++) {
+          if (
+            response.payload.filter(
+              (obj) => obj.user_id === recipientData[i].user_id,
+            ).length > 0
+          ) {
+            console.log('found');
+          } else {
+            result.push(recipientData[i]);
+          }
+        }
+        setAddNewList(result);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext, batchData?.invoice_group, recipientData]);
 
   const renderBatchDetailView = ({ item }) => {
     console.log('item', item);
@@ -144,7 +178,17 @@ export default function BatchDetailScreen({ navigation, route }) {
   );
 
   const sendInvoiceValidation = () => {
+    console.log('selectedRecipient.length', selectedRecipient.length);
     if (selectedRecipient.length <= 0) {
+      Alert.alert('Please select recipients.');
+      return false;
+    }
+
+    return true;
+  };
+
+  const cancelInvoiceValidation = () => {
+    if (newRecipientData.filter((e) => e.selected).length <= 0) {
       Alert.alert('Please select recipients.');
       return false;
     }
@@ -194,6 +238,7 @@ export default function BatchDetailScreen({ navigation, route }) {
                     .then(() => {
                       console.log('');
                       setloading(false);
+                      setSelectedRecipient([]);
 
                       resendModalRef.current.close();
                     })
@@ -217,6 +262,7 @@ export default function BatchDetailScreen({ navigation, route }) {
                     .then(() => {
                       console.log('');
                       setloading(false);
+                      setSelectedRecipient([]);
 
                       resendModalRef.current.close();
                     })
@@ -243,7 +289,10 @@ export default function BatchDetailScreen({ navigation, route }) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => recipientModalRef.current.close()}>
+          onPress={() => {
+            setSelectedRecipient([]);
+            recipientModalRef.current.close();
+          }}>
           Cancel
         </Text>
 
@@ -251,10 +300,31 @@ export default function BatchDetailScreen({ navigation, route }) {
         <Text
           style={styles.sendText}
           onPress={() => {
+            if (selectedActionSheetOpetion === 1) {
+              const selectedMember = addNewList.filter((e) => e.selected);
+              const result = selectedMember.map((obj) => {
+                if (obj.selected) {
+                  return obj.user_id;
+                }
+              });
+              console.log(result);
+              setSelectedRecipient(result);
+              recipientModalRef.current.close();
+            }
+
             if (selectedActionSheetOpetion === 2) {
+              const selectedMember = newRecipientData.filter((e) => e.selected);
+              const result = selectedMember.map((obj) => {
+                if (obj.selected) {
+                  return obj.user_id;
+                }
+              });
+              console.log(result);
+              setSelectedRecipient(result);
+
               Alert.alert(
                 `Are you sure that you want to cancel ${
-                  recipientData.filter((e) => e.selected).length
+                  newRecipientData.filter((e) => e.selected).length
                 } invoice?`,
                 '',
                 [
@@ -268,22 +338,14 @@ export default function BatchDetailScreen({ navigation, route }) {
                     // style: 'destructive',
                     onPress: () => {
                       // deleteInvoiceByID();
-                      cancelBatchInvoiceByID();
+                      if (cancelInvoiceValidation()) {
+                        cancelBatchInvoiceByID();
+                      }
                     },
                   },
                 ],
                 { cancelable: false },
               );
-            } else {
-              const selectedMember = recipientData.filter((e) => e.selected);
-              const result = selectedMember.map((obj) => {
-                if (obj.selected) {
-                  return obj.user_id;
-                }
-              });
-              console.log(result);
-              setSelectedRecipient(result);
-              recipientModalRef.current.close();
             }
           }}>
           Done
@@ -318,8 +380,14 @@ export default function BatchDetailScreen({ navigation, route }) {
             setRecipientAllData(false);
             const tempObj = item;
             tempObj.selected = !tempObj?.selected;
-            recipientData[index] = tempObj;
-            setRecipientData([...recipientData]);
+            if (selectedActionSheetOpetion === 1) {
+              addNewList[index] = tempObj;
+              setAddNewList([...addNewList]);
+            }
+            if (selectedActionSheetOpetion === 2) {
+              newRecipientData[index] = tempObj;
+              setNewRecipientData([...newRecipientData]);
+            }
           }}>
           <Image
             source={
@@ -333,24 +401,27 @@ export default function BatchDetailScreen({ navigation, route }) {
   );
 
   const cancelBatchInvoiceByID = () => {
-    if (sendInvoiceValidation()) {
-      setloading(true);
+    setloading(true);
 
-      const body = {};
-      body.member_ids = selectedRecipient;
-      body.email_sent = true;
-      cancelBatchInvoice(batchData?.invoice_group, body, authContext)
-        .then(() => {
-          setloading(false);
-          resendModalRef.current.close();
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    }
+    const body = {};
+    body.member_ids = newRecipientData.map((obj) => {
+      if (obj.selected) {
+        return obj.user_id;
+      }
+    });
+    body.email_sent = true;
+    cancelBatchInvoice(batchData?.invoice_group, body, authContext)
+      .then(() => {
+        setloading(false);
+        setSelectedRecipient([]);
+        recipientModalRef.current.close();
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
 
   return (
@@ -644,15 +715,23 @@ export default function BatchDetailScreen({ navigation, route }) {
                 {/* <Image source={images.orangeCheckBox} style={styles.checkButton} /> */}
                 <TouchableOpacity
                   onPress={() => {
-                    // onTagCancelPress({ item, index }
                     setRecipientAllData(!recipientAllData);
-                    const result = recipientData.map((el) => {
-                      const o = { ...el };
-                      o.selected = !recipientAllData;
-                      return o;
-                    });
-
-                    setRecipientData([...result]);
+                    if (selectedActionSheetOpetion === 1) {
+                      const result = addNewList.map((el) => {
+                        const o = { ...el };
+                        o.selected = !recipientAllData;
+                        return o;
+                      });
+                      setAddNewList(result);
+                    }
+                    if (selectedActionSheetOpetion === 2) {
+                      const result = newRecipientData.map((el) => {
+                        const o = { ...el };
+                        o.selected = !recipientAllData;
+                        return o;
+                      });
+                      setNewRecipientData([...result]);
+                    }
                   }}>
                   <Image
                     source={
@@ -677,7 +756,10 @@ export default function BatchDetailScreen({ navigation, route }) {
                 Members
               </Text>
               <FlatList
-                data={recipientData}
+                data={
+                  (selectedActionSheetOpetion === 2 && newRecipientData)
+                  || (selectedActionSheetOpetion === 1 && addNewList)
+                }
                 renderItem={renderRecipients}
                 keyExtractor={(item, index) => index.toString()}
               />
@@ -819,5 +901,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.themeColor,
   },
-
 });

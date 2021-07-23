@@ -45,7 +45,7 @@ export default function BatchDetailView({ data, onPressCard }) {
               fontFamily: fonts.RLight,
               fontSize: 14,
               color: colors.lightBlackColor,
-            }}>{` of $${data?.amount_remaining}`}
+            }}>{` of $${data?.amount_due}`}
           </Text>
         </Text>
 
@@ -53,7 +53,7 @@ export default function BatchDetailView({ data, onPressCard }) {
           <View
             style={{
               height: 3,
-              width: `${((100 * data?.amount_paid) / data?.amount_remaining)}%`,
+              width: `${((100 * data?.amount_paid) / data?.amount_due)}%`,
               backgroundColor: colors.greeColor,
             }}
           />

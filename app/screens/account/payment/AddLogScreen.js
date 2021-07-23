@@ -27,6 +27,7 @@ export default function AddLogScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
 const { invoiceDetail } = route?.params ?? {}
+console.log('IDetail:=>', invoiceDetail);
   // const isFocused = useIsFocused();
   const [paymentSwitchSelection, setPaymentSwitchSelection] = useState(0);
   const [paymentType, setPaymentType] = useState(0);
@@ -65,20 +66,25 @@ const { invoiceDetail } = route?.params ?? {}
         </TouchableOpacity>
       ),
     });
-  }, [authContext, navigation, amount, note]);
+  }, [authContext, navigation, amount, note, paymentSwitchSelection]);
 
   const IsNumeric = (num) => num >= 0 || num < 0;
 
   const addLogValidation = () => {
-    console.log(amount);
-    console.log(note);
-
     if (!amount) {
       Alert.alert('Please select due amount.');
       return false;
     }
-    if (amount < 1 && amount > 0) {
+    if (amount < 1 && amount >= 0) {
       Alert.alert('User should not allow less than $1 amount.');
+      return false;
+    }
+    if (amount > invoiceDetail?.amount_due) {
+      Alert.alert('User should not allow more than invoice amount.');
+      return false;
+    }
+    if (paymentSwitchSelection === 1 && amount > invoiceDetail?.amount_paid) {
+      Alert.alert('User should not refund more than invoice paid amount.');
       return false;
     }
     if (!note) {
