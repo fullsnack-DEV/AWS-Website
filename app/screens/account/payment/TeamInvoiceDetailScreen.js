@@ -1,6 +1,5 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
-/* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-expressions */
 import React, {
@@ -44,10 +43,11 @@ import {
   deleteInvoice,
   cancelInvoice,
   payStripeInvoice,
+  resendInvoice,
+  addLog,
 } from '../../../api/Invoice';
 import strings from '../../../Constants/String';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import TCTouchableLabel from '../../../components/TCTouchableLabel';
 
 export default function TeamInvoiceDetailScreen({ navigation, route }) {
   const { from, invoiceObj } = route?.params ?? {};
@@ -60,9 +60,6 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
   const userActionSheet = useRef();
   const resendModalRef = useRef();
   const recipientModalRef = useRef();
-  // const isFocused = useIsFocused();
-  const [recipientData, setRecipientData] = useState([]);
-  const [recipientAllData, setRecipientAllData] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -121,85 +118,17 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
         </Text>
 
         <Text style={styles.titleText}>Resend Invoice</Text>
-        <Text style={styles.sendText}>Send</Text>
-      </View>
-
-      <View style={styles.headerSeparator} />
-    </View>
-  );
-
-  const RecipientsModalHeader = () => (
-    <View style={styles.headerStyle}>
-      <View style={styles.headerButtonStyle}>
-        <Text
-          style={styles.cancelText}
-          onPress={() => recipientModalRef.current.close()}>
-          Cancel
-        </Text>
-
-        <Text style={styles.titleText}>Recipients</Text>
         <Text
           style={styles.sendText}
           onPress={() => {
-            if (from === 'member') {
-              Alert.alert(
-                'Are you sure that you want to cancel 5 invoices?',
-                '',
-                [
-                  {
-                    text: 'Back',
-                    style: 'cancel',
-                  },
-                  {
-                    text: 'Yes',
-
-                    // style: 'destructive',
-                    onPress: () => {
-                      Alert.alert('Cancel');
-                    },
-                  },
-                ],
-                { cancelable: false },
-              );
-            } else {
-              recipientModalRef.current.close();
-            }
+            resendInvoiceByID();
           }}>
-          Done
+          Send
         </Text>
       </View>
 
       <View style={styles.headerSeparator} />
     </View>
-  );
-
-  const renderRecipients = ({ item, index }) => (
-    <>
-      <View style={styles.recipientContainer}>
-        <View style={styles.profileContainer}>
-          <View style={styles.profileImageContainer}>
-            <Image source={images.dummyPhoto} style={styles.profileImgStyle} />
-          </View>
-          <Text style={styles.profilenameStyle}>{item?.name}</Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => {
-            // onTagCancelPress({ item, index }
-            setRecipientAllData(false);
-            const tempObj = item;
-            tempObj.selected = !tempObj?.selected;
-            recipientData[index] = tempObj;
-            setRecipientData([...recipientData]);
-          }}>
-          <Image
-            source={
-              item?.selected ? images.orangeCheckBox : images.uncheckEditor
-            }
-            style={styles.checkButton}
-          />
-        </TouchableOpacity>
-      </View>
-    </>
   );
 
   const deleteInvoiceByID = () => {
@@ -232,6 +161,23 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
       });
   };
 
+  const resendInvoiceByID = () => {
+    setloading(true);
+    const body = {};
+    body.email_sent = false;
+    resendInvoice(invoiceObj?.invoice_id, body, authContext)
+      .then(() => {
+        setloading(false);
+        resendModalRef.current.close();
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   const emptyLog = useMemo(
     () => (
       <Text
@@ -251,10 +197,10 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
   const actionSheetOpetions = () => {
     console.log('invoiceDetail', invoiceDetail);
     if (from === 'user') {
-      if (!invoiceDetail?.logs) {
-        return ['Delete Invoice', 'Cancel'];
-      }
-      return ['Cancel Invoice', 'Cancel'];
+      // if (!invoiceDetail?.logs) {
+      //   return ['Delete Invoice', 'Cancel'];
+      // }
+      return ['Delete Invoice', 'Cancel'];
     }
   };
 
@@ -263,7 +209,7 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
       console.log(route?.params?.paymentMethod);
 
       setloading(true);
-      const body = {}
+      const body = {};
       body.source = route?.params?.paymentMethod?.id;
       body.payment_method_type = 'card';
       body.currency_type = authContext.entity.obj.currency_type;
@@ -271,7 +217,7 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
       payStripeInvoice(invoiceObj?.invoice_id, body, authContext)
         .then(() => {
           setloading(false);
-          navigation.goBack()
+          navigation.goBack();
         })
         .catch((e) => {
           setloading(false);
@@ -282,6 +228,19 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
     } else {
       Alert.alert('Please choose payment method.');
     }
+  };
+
+  const stripeRefundValidation = () => {
+    if (invoiceDetail?.logs?.length <= 0) {
+      Alert.alert('Please pay this invoice with stripe payment first.');
+      return false;
+    }
+    if (invoiceDetail?.logs?.[0]?.payment_mode !== 'card') {
+      Alert.alert('You did not paid this invoice with stripe.');
+      return false;
+    }
+
+    return true;
   };
 
   return (
@@ -416,7 +375,7 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
   <Text style={styles.cardDetailText}>+Add Payment or Refund</Text>
 </TouchableOpacity> */}
 
-          {from !== 'user' && invoiceDetail?.amount_remaining > 0 && (
+          {from !== 'user' && (
             <TouchableOpacity
               style={styles.paymentContainer}
               onPress={() => {
@@ -440,7 +399,8 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
                       route?.params?.paymentMethod?.card?.brand,
                     )
                   : strings.addOptionMessage}{' '}
-                {route?.params?.paymentMethod && `**** ${route?.params?.paymentMethod?.card?.last4}`}
+                {route?.params?.paymentMethod
+                  && `**** ${route?.params?.paymentMethod?.card?.last4}`}
               </Text>
               <Image
                 style={styles.nextIconViewStyle}
@@ -449,50 +409,70 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {invoiceDetail?.amount_paid > 0 && (
-            <View>
-              <Text
+          {invoiceDetail?.logs && invoiceDetail?.logs?.length > 0 && (
+            <SafeAreaView style={{ flex: 1 }}>
+              <View style={{ flex: 1 }}>
+                <Text
                 style={{
                   fontFamily: fonts.RMedium,
                   fontSize: 20,
                   color: colors.lightBlackColor,
                   margin: 15,
                 }}>
-                Log
-              </Text>
-              <FlatList
+                  Log
+                </Text>
+                <FlatList
                 data={invoiceDetail?.logs}
                 renderItem={renderLogView}
                 ListEmptyComponent={emptyLog}
                 keyExtractor={(item, index) => index.toString()}
               />
-            </View>
+              </View>
+            </SafeAreaView>
           )}
 
-          <View style={{ flex: 1 }} />
           {from === 'user' && invoiceDetail?.amount_remaining > 0 && (
-            <SafeAreaView>
-              <TouchableOpacity
+            <>
+              <View style={{ flex: 1 }} />
+              <SafeAreaView>
+                <TouchableOpacity
                 onPress={() => {
                   payNowClicked();
                 }}>
-                <LinearGradient
+                  <LinearGradient
                   colors={[colors.yellowColor, colors.darkThemeColor]}
                   style={styles.activeEventPricacy}>
-                  <Text style={styles.activeEventPrivacyText}>{'PAY NOW'}</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </SafeAreaView>
+                    <Text style={styles.activeEventPrivacyText}>{'PAY NOW'}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </SafeAreaView>
+            </>
           )}
 
           <ActionSheet
             ref={actionSheet}
-            options={['Refund', 'Resend Invoice', 'Cancel Invoice', 'Cancel']}
-            cancelButtonIndex={3}
-            destructiveButtonIndex={2}
+            options={['Refund', 'Resend Invoice', 'Cancel Invoice', 'Delete Invoice', 'Cancel']}
+            cancelButtonIndex={4}
+            destructiveButtonIndex={3}
             onPress={(index) => {
               if (index === 0) {
-                Alert.alert('Refund');
+                console.log('Invoice obj:=>', invoiceDetail);
+                if (stripeRefundValidation()) {
+                  setloading(true);
+                  const body = {};
+                  body.transaction_type = 'refund';
+
+                  addLog(invoiceDetail?.invoice_id, body, authContext)
+                    .then(() => {
+                      setloading(false);
+                    })
+                    .catch((e) => {
+                      setloading(false);
+                      setTimeout(() => {
+                        Alert.alert(strings.alertmessagetitle, e.message);
+                      }, 10);
+                    });
+                }
               } else if (index === 1) {
                 // Alert.alert('Resend');
                 resendModalRef?.current?.open();
@@ -521,7 +501,34 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
                 } else {
                   recipientModalRef.current.open();
                 }
-              }
+              } else if (index === 3) {
+                if (invoiceDetail?.amount_paid !== 0) {
+                  if (from === 'member' || from === 'batch') {
+                    Alert.alert(
+                      'Are you sure that you want to delete this invoice?',
+                      '',
+                      [
+                        {
+                          text: 'Back',
+                          style: 'cancel',
+                        },
+                        {
+                          text: 'Yes',
+
+                          // style: 'destructive',
+                          onPress: () => {
+                             deleteInvoiceByID();
+                          },
+                        },
+                      ],
+                      { cancelable: false },
+                    );
+                  } else {
+                  recipientModalRef.current.open();
+                }
+                }
+                  Alert.alert('You can\'t delete this invoice because you did not paid anything.')
+            }
             }}
           />
 
@@ -563,34 +570,6 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
               HeaderComponent={ModalHeader}
               ref={resendModalRef}>
               <View>
-                {from === 'batch' && (
-                  <View>
-                    <TouchableOpacity
-                      onPress={() => recipientModalRef.current.open()}
-                      style={{
-                        marginBottom: 15,
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginLeft: 15,
-                        marginRight: 15,
-                        flexDirection: 'row',
-                      }}>
-                      <Text
-                        style={{
-                          fontFamily: fonts.RMedium,
-                          fontSize: 16,
-                          color: colors.themeColor,
-                        }}>
-                        New 11 recipients
-                      </Text>
-                      <Image
-                        style={styles.nextIconStyle}
-                        source={images.nextArrow}
-                      />
-                    </TouchableOpacity>
-                    <TCThinDivider width={'92%'} />
-                  </View>
-                )}
                 <View
                   style={{
                     margin: 15,
@@ -611,7 +590,7 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
                         fontSize: 16,
                         color: colors.lightBlackColor,
                       }}>
-                      Registration Fee
+                      {invoiceDetail?.invoice_title}
                     </Text>
                   </View>
                   <View style={{ margin: 15 }}>
@@ -629,12 +608,7 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
                         fontSize: 16,
                         color: colors.lightBlackColor,
                       }}>
-                      Different fees must be paid during the trademark
-                      registration process, including for the purposes of
-                      opposition and expungement proceedings, or to sit on the
-                      trademark agents qualifying examination, or for the entry,
-                      maintenance or reinstatement on the list of trademark
-                      agents.
+                      {invoiceDetail?.invoice_description}
                     </Text>
                   </View>
                   <View style={{ margin: 15 }}>
@@ -652,7 +626,7 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
                         fontSize: 20,
                         color: colors.lightBlackColor,
                       }}>
-                      $4.00
+                      ${invoiceDetail?.amount_due}
                     </Text>
                   </View>
                   <View style={{ margin: 15 }}>
@@ -670,7 +644,9 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
                         fontSize: 16,
                         color: colors.lightBlackColor,
                       }}>
-                      May 19, 2020
+                      {moment(invoiceDetail?.due_date * 1000).format(
+                        'ddd, MMM DD, YYYY',
+                      )}
                     </Text>
                   </View>
                 </View>
@@ -678,88 +654,6 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
             </Modalize>
           </Portal>
 
-          <Portal>
-            <Modalize
-              withHandle={false}
-              adjustToContentHeight={true}
-              overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-              snapPoint={hp(50)}
-              modalStyle={{
-                flex: 1,
-                height: '86%',
-                borderTopRightRadius: 25,
-                borderTopLeftRadius: 25,
-                shadowColor: colors.blackColor,
-                shadowOffset: { width: 0, height: -2 },
-                shadowOpacity: 0.3,
-                shadowRadius: 10,
-                elevation: 10,
-              }}
-              HeaderComponent={RecipientsModalHeader}
-              ref={recipientModalRef}>
-              <View>
-                <View>
-                  <View
-                    style={{
-                      marginBottom: 15,
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginLeft: 15,
-                      marginRight: 15,
-                      flexDirection: 'row',
-                    }}>
-                    <Text
-                      style={{
-                        fontFamily: fonts.RRegular,
-                        fontSize: 16,
-                        color: colors.lightBlackColor,
-                      }}>
-                      All
-                    </Text>
-                    {/* <Image source={images.orangeCheckBox} style={styles.checkButton} /> */}
-                    <TouchableOpacity
-                      onPress={() => {
-                        // onTagCancelPress({ item, index }
-                        setRecipientAllData(!recipientAllData);
-                        const result = recipientData.map((el) => {
-                          const o = { ...el };
-                          o.selected = !recipientAllData;
-                          return o;
-                        });
-
-                        setRecipientData([...result]);
-                      }}>
-                      <Image
-                        source={
-                          recipientAllData
-                            ? images.orangeCheckBox
-                            : images.uncheckEditor
-                        }
-                        style={styles.checkButton}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <TCThinDivider width={'92%'} />
-                </View>
-
-                <View style={{ margin: 15 }}>
-                  <Text
-                    style={{
-                      fontFamily: fonts.RRegular,
-                      fontSize: 16,
-                      color: colors.lightBlackColor,
-                    }}>
-                    Members
-                  </Text>
-                  <FlatList
-                    data={recipientData}
-                    renderItem={renderRecipients}
-                    keyExtractor={(item, index) => index.toString()}
-                  />
-                </View>
-              </View>
-            </Modalize>
-          </Portal>
         </View>
       )}
     </View>
@@ -860,49 +754,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
     height: 2,
     marginBottom: 15,
-  },
-
-  checkButton: {
-    width: 20,
-    height: 20,
-    resizeMode: 'contain',
-  },
-  recipientContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 10,
-  },
-  profileImgStyle: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
-  },
-  profilenameStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginLeft: 10,
-  },
-  profileContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileImageContainer: {
-    height: 34,
-    width: 34,
-    backgroundColor: colors.offwhite,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 64,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
   },
 
   // Payment button style

@@ -8,9 +8,10 @@ export const createInvoice = (params, authContext) => makeAPIRequest({
   authContext,
 })
 
-export const resendInvoice = (invoiceID, authContext) => makeAPIRequest({
+export const resendInvoice = (invoiceID, params, authContext) => makeAPIRequest({
   method: 'post',
-  url: `${Config.BASE_URL}/invoices/${invoiceID}`,
+  url: `${Config.BASE_URL}/invoices/${invoiceID}/resend`,
+  data: params,
   authContext,
 })
 
@@ -86,5 +87,11 @@ export const addLog = (invoiceID, params, authContext) => makeAPIRequest({
   method: 'patch',
   url: `${Config.BASE_URL}/invoices/${invoiceID}`,
   data: params,
+  authContext,
+})
+
+export const addRecipientList = (batchID, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/invoices/batch/${batchID}/list`,
   authContext,
 })

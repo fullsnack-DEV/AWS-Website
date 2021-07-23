@@ -17,7 +17,7 @@ if (data?.transaction_type === 'payment') {
     return 'Paid in cash'
   }
   if (data?.payment_mode === 'card') {
-    return 'Paid with Card'
+    return 'Paid through Stripe'
   }
     return 'Paid by Cheque'
  }
@@ -25,7 +25,7 @@ if (data?.transaction_type === 'payment') {
     return 'Refund in cash'
   }
   if (data?.payment_mode === 'card') {
-    return 'Refund by Card'
+    return 'Refund through Stripe'
   }
     return 'Refund by Cheque'
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -20,7 +21,7 @@ export default function InvoiceAmount({
           style={{
             fontSize: 16,
             fontFamily: fonts.RMedium,
-            color: status === 'Paid' ? colors.greenColorCard : colors.darkThemeColor,
+            color: status === 'Paid' ? colors.greenColorCard : status === 'Cancelled' ? colors.userPostTimeColor : colors.darkThemeColor,
           }}>{status}
         </Text>
       </View>
