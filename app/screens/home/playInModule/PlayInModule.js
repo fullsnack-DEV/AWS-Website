@@ -235,7 +235,9 @@ const PlayInModule = ({
       && authContext?.entity?.uid !== currentUserData?.user_id
       && (authContext?.entity?.role === 'user' && 'player')
         === currentUserData?.entity_type
-      && !['soccer', 'tennis double'].includes(playInObject?.sport_name?.toLowerCase()) && (
+      && !['soccer', 'tennis double'].includes(
+        playInObject?.sport_name?.toLowerCase(),
+      ) && (
         <TouchableOpacity
           onPress={() => {
             console.log('auth123:=>', authContext);
@@ -343,7 +345,9 @@ const PlayInModule = ({
                 <PlayInProfileViewSection
                   onSettingPress={() => {
                     onClose();
-                    navigation.navigate('ManageChallengeScreen');
+                    navigation.navigate('ManageChallengeScreen', {
+                      sportName: playInObject?.sport_name,
+                    });
                   }}
                   onMessageButtonPress={onMessageButtonPress}
                   isAdmin={isAdmin}
@@ -364,6 +368,7 @@ const PlayInModule = ({
                 navigation,
                 onClose,
                 onMessageButtonPress,
+                playInObject?.sport_name,
               ],
             )}
 

@@ -1026,22 +1026,30 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         <TCArrowView
           title={'Match Home '}
           onPress={() => {
-            if (
-              challengeData?.sport?.toLocaleLowerCase()
-              === 'soccer'.toLocaleLowerCase()
-            ) {
-              navigation.navigate('SoccerHome', {
+            console.log('teamObject?.sport', challengeData);
+            const gameHome = getGameHomeScreen(challengeData?.sport);
+            console.log('gameHome', gameHome);
+
+              navigation.navigate(gameHome, {
                 gameId: challengeData?.game_id,
               });
-            }
-            if (
-              challengeData?.sport?.toLocaleLowerCase()
-              === 'tennis'.toLocaleLowerCase()
-            ) {
-              navigation.navigate('TennisHome', {
-                gameId: challengeData?.game_id,
-              });
-            }
+
+            // if (
+            //   challengeData?.sport?.toLocaleLowerCase()
+            //   === 'soccer'.toLocaleLowerCase()
+            // ) {
+            //   navigation.navigate('SoccerHome', {
+            //     gameId: challengeData?.game_id,
+            //   });
+            // }
+            // if (
+            //   challengeData?.sport?.toLocaleLowerCase()
+            //   === 'tennis'.toLocaleLowerCase()
+            // ) {
+            //   navigation.navigate('TennisHome', {
+            //     gameId: challengeData?.game_id,
+            //   });
+            // }
           }}
           containerStyle={{ marginBottom: 15 }}
         />
@@ -1439,10 +1447,10 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                     // marginBottom={55}
                     onPress={() => {
                       setModalVisible(false);
-                      const gameHome = getGameHomeScreen(teamObject?.sport);
-                      if (teamObject?.game_id) {
+                      const gameHome = getGameHomeScreen(challengeData?.sport);
+                      if (challengeData?.game_id) {
                         navigation.navigate(gameHome, {
-                          gameId: teamObject?.game_id,
+                          gameId: challengeData?.game_id,
                         });
                       } else {
                         Alert.alert('Game ID does not exist.');

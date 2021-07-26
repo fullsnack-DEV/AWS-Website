@@ -12,11 +12,11 @@ import TCMessageButton from '../../../../TCMessageButton';
 export default function LineUpPlayerView({
   userData,
   onButtonPress,
-  OnRowPress,
+//  OnRowPress,
   buttonType = 'nobutton',
 }) {
   return (
-    <TouchableOpacity onPress={() => OnRowPress(userData)}>
+    <TouchableOpacity >
       {userData && (
         <View style={styles.topViewContainer}>
           <View style={{ flexDirection: 'row' }}>

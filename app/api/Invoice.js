@@ -95,3 +95,8 @@ export const addRecipientList = (batchID, authContext) => makeAPIRequest({
   url: `${Config.BASE_URL}/invoices/batch/${batchID}/list`,
   authContext,
 })
+export const deleteInvoiceLog = (invoiceID, logID, authContext) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}/invoices/${invoiceID}/logs/${logID}`,
+  authContext,
+})
