@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
 import React, {
- useEffect, useState, useContext, useCallback,
+ useEffect, useState, useContext,
  } from 'react';
 import {
   StyleSheet,
@@ -731,6 +731,7 @@ export default function EditChallenge({ navigation, route }) {
           });
         }}
       />
+
       <TCThickDivider />
       <SafeAreaView>
         <View style={styles.bottomButtonView}>

@@ -32,7 +32,7 @@ export default function LogDetailScreen({ route }) {
             fontSize: 16,
             color: colors.lightBlackColor,
           }}>
-            Transaction no.: TR-7077071- Fixed
+            Transaction no.: {data?.transaction_id}
           </Text>
 
         </View>

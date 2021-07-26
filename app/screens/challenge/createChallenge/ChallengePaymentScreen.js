@@ -91,6 +91,9 @@ export default function ChallengePaymentScreen({ route, navigation }) {
           ...challengeData,
           payment_method_type: 'card',
         };
+
+        console.log('body:=>', body);
+
         const homeID = body.home_team.group_id ?? body.home_team.user_id;
         const awayID = body.away_team.group_id ?? body.away_team.user_id;
         delete body.home_team;
@@ -123,6 +126,8 @@ export default function ChallengePaymentScreen({ route, navigation }) {
       };
 
       const challengeOperation = (teamID, ChallengeId, versionNo, status, payment) => {
+        console.log('payment:=>', payment);
+
         setloading(true);
         acceptDeclineChallenge(
           teamID,
@@ -275,10 +280,11 @@ export default function ChallengePaymentScreen({ route, navigation }) {
       />
       <TCThickDivider marginTop={20} />
 
-      <View >
-        <TCLabel title={'Payment Method'} />
-        <View style={styles.viewMarginStyle}>
-          <TCTouchableLabel
+      {challengeData?.total_game_fee !== 0 && <View>
+        <View >
+          <TCLabel title={'Payment Method'} />
+          <View style={styles.viewMarginStyle}>
+            <TCTouchableLabel
             title={
               defaultCard && defaultCard?.card?.brand && defaultCard?.card?.last4
                 ? `${Utility.capitalize(defaultCard?.card?.brand)} ****${defaultCard?.card?.last4}`
@@ -291,9 +297,10 @@ export default function ChallengePaymentScreen({ route, navigation }) {
               })
             }}
           />
+          </View>
         </View>
-      </View>
-      <TCThickDivider marginTop={20} />
+        <TCThickDivider marginTop={20} />
+      </View>}
 
       <TCChallengeTitle
             title={'Refund Policy'}
@@ -314,7 +321,7 @@ export default function ChallengePaymentScreen({ route, navigation }) {
         the total amount shown above.</Text>
 
       <TCGradientButton
-      isDisabled={!defaultCard}
+      isDisabled={challengeData?.total_game_fee !== 0 ? !defaultCard : false}
         title={strings.confirmAndPayTitle}
         onPress={() => {
             // navigation.push('ChallengeSentScreen');
@@ -322,7 +329,10 @@ export default function ChallengePaymentScreen({ route, navigation }) {
             if (route?.params?.type === 'challenge') {
               sendChallenge()
             } else {
-              const paymentObj = { source: defaultCard.id, payment_method_type: 'card' }
+              let paymentObj = {}
+              if (challengeData?.total_game_fee !== 0) {
+                 paymentObj = { source: defaultCard?.id, payment_method_type: 'card' }
+              }
               challengeOperation(
                 entity.uid,
                 challengeData?.challenge_id,

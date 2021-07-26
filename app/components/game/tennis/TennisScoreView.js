@@ -53,7 +53,7 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
     // eslint-disable-next-line no-unused-expressions
     scoreDataSource?.scoreboard?.sets.map((e) => {
       if (e.winner) {
-        if (e.winner === (scoreDataSource.home_team.user_id || scoreDataSource.home_team.group_id)) {
+        if (e.winner === (scoreDataSource?.home_team?.user_id || scoreDataSource?.home_team?.group_id)) {
           homePoint += 1;
         } else {
           awayPoint += 1;
@@ -62,7 +62,7 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
       homeTeamMatchPoint = homePoint;
       awayTeamMatchPoint = awayPoint;
     });
-  }, [scoreDataSource.home_team.group_id, scoreDataSource.home_team.user_id, scoreDataSource?.scoreboard?.sets])
+  }, [scoreDataSource?.home_team?.group_id, scoreDataSource?.home_team?.user_id, scoreDataSource?.scoreboard?.sets])
 
   const calculateGameScore = useCallback(() => {
     // eslint-disable-next-line array-callback-return

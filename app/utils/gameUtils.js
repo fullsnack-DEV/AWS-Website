@@ -9,7 +9,7 @@ const GAME_HOME = {
   tennis_double: 'TennisHome',
 }
 
-const getGameHomeScreen = (sportName) => GAME_HOME[sportName?.toLowerCase()];
+const getGameHomeScreen = (sportName) => GAME_HOME[sportName?.split(' ').join('_').toLowerCase()];
 
 // Soccer
 const soccerGameStats = {

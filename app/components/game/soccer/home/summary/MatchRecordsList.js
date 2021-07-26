@@ -28,6 +28,7 @@ const MatchRecordsList = ({
         setLoading(true);
         getGameMatchRecords(gameId).then((res) => {
           setMatchRecords(res.payload);
+          console.log('Records:=>', res.payload);
         }).finally(() => setLoading(false));
       }
     }

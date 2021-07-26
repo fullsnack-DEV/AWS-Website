@@ -129,9 +129,13 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
             // marginBottom={55}
             onPress={() => {
               if (route?.params?.teamObj) {
+                console.log('route?.params?.teamObj?.sport', route?.params?.teamObj);
+
                 const gameHome = getGameHomeScreen(route?.params?.teamObj?.sport);
+                console.log('gameHome', gameHome);
+
                 if (route?.params?.teamObj?.game_id) {
-                  navigation.navigate(gameHome, {
+                  navigation.push(gameHome, {
                     gameId: route?.params?.teamObj?.game_id,
                   })
                 } else {

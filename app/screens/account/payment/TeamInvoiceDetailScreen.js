@@ -9,6 +9,7 @@ import React, {
   useEffect,
   useContext,
   useMemo,
+  useCallback,
 } from 'react';
 import {
   View,
@@ -31,6 +32,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
 import AuthContext from '../../../auth/context';
 import { heightPercentageToDP as hp } from '../../../utils';
+import AppleStyleSwipeableRow from '../../../components/notificationComponent/AppleStyleSwipeableRow';
+
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCThinDivider from '../../../components/TCThinDivider';
@@ -45,6 +48,7 @@ import {
   payStripeInvoice,
   resendInvoice,
   addLog,
+  deleteInvoiceLog,
 } from '../../../api/Invoice';
 import strings from '../../../Constants/String';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -54,6 +58,7 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
 
   const [loading, setloading] = useState(false);
   const [invoiceDetail, setInvoiceDetail] = useState();
+const [logsList, setLogsList] = useState([]);
 
   const authContext = useContext(AuthContext);
   const actionSheet = useRef();
@@ -82,12 +87,13 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
       ),
     });
   }, [from, navigation]);
-  useEffect(() => {
-    setloading(true);
-    getInvoiceDetail(invoiceObj?.invoice_id, authContext)
+
+const getInvoiceDetailApi = useCallback(() => {
+  getInvoiceDetail(invoiceObj?.invoice_id, authContext)
       .then((response) => {
         setloading(false);
         setInvoiceDetail(response.payload[0]);
+        setLogsList(response?.payload?.[0]?.logs ?? [])
       })
       .catch((e) => {
         setloading(false);
@@ -95,12 +101,62 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext, invoiceObj?.invoice_id]);
+}, [authContext, invoiceObj?.invoice_id])
 
-  const renderLogView = ({ item }) => {
+useEffect(() => {
+  setloading(true);
+  getInvoiceDetailApi()
+}, [authContext, getInvoiceDetailApi, invoiceObj.invoice_id]);
+
+  const onDeleteLog = (item) => {
+    Alert.alert(
+      strings.alertmessagetitle,
+      'Do you want remove this log for this invoice',
+      [
+        {
+          text: strings.cancel,
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: strings.yes,
+          onPress: () => {
+            setloading(true);
+            deleteInvoiceLog(invoiceDetail?.invoice_id, item?.transaction_id, authContext)
+              .then(() => {
+                // const newLogList = logsList.filter((card) => card.transaction_id !== item.transaction_id);
+                // setLogsList(newLogList);
+                getInvoiceDetailApi()
+                setloading(false);
+              })
+              .catch((e) => {
+                console.log('error in payment method onDeleteCard', e);
+                setloading(false);
+                setTimeout(() => {
+                  Alert.alert(strings.alertmessagetitle, e.message);
+                }, 0.3);
+              });
+          },
+        },
+      ],
+      { cancelable: true },
+    );
+  };
+
+  const renderLogView = ({ item, index }) => {
     console.log('item', item);
     return (
-      <PaymentLogs
+      logsList.length > 0 && logsList?.length - 1 === index && authContext?.entity?.role === 'team' && item?.payment_mode !== 'card' ? <AppleStyleSwipeableRow
+      onPress={() => onDeleteLog(item)}
+      color={colors.redDelColor}
+      image={images.deleteIcon}>
+        <PaymentLogs
+        data={item}
+        onPressCard={() => {
+          navigation.navigate('LogDetailScreen', { data: item });
+        }}
+      />
+      </AppleStyleSwipeableRow> : <PaymentLogs
         data={item}
         onPressCard={() => {
           navigation.navigate('LogDetailScreen', { data: item });
@@ -231,11 +287,11 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
   };
 
   const stripeRefundValidation = () => {
-    if (invoiceDetail?.logs?.length <= 0) {
+    if (logsList.length <= 0) {
       Alert.alert('Please pay this invoice with stripe payment first.');
       return false;
     }
-    if (invoiceDetail?.logs?.[0]?.payment_mode !== 'card') {
+    if (logsList?.[0]?.payment_mode !== 'card') {
       Alert.alert('You did not paid this invoice with stripe.');
       return false;
     }
@@ -409,7 +465,7 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {invoiceDetail?.logs && invoiceDetail?.logs?.length > 0 && (
+          {logsList?.length > 0 && (
             <SafeAreaView style={{ flex: 1 }}>
               <View style={{ flex: 1 }}>
                 <Text
@@ -422,7 +478,7 @@ export default function TeamInvoiceDetailScreen({ navigation, route }) {
                   Log
                 </Text>
                 <FlatList
-                data={invoiceDetail?.logs}
+                data={logsList}
                 renderItem={renderLogView}
                 ListEmptyComponent={emptyLog}
                 keyExtractor={(item, index) => index.toString()}

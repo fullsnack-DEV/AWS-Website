@@ -47,6 +47,7 @@ const TennisMatchRecordsList = ({
   visibleAddSetGameButton = false,
   matchRecords3DotRef,
 }, matchRef) => {
+  console.log('Match data:=>', matchData);
   const authContext = useContext(AuthContext)
   const [visibleAddSetAndGameButton, setVisibleAddSetAndGameButton] = useState(false);
   const [editorChecked, setEditorChecked] = useState(false);
@@ -113,6 +114,7 @@ const TennisMatchRecordsList = ({
           setCurrentScore({ ...currentScore, home_team_score, away_team_score })
         }
         getGameMatchRecords(gameId, authContext, 'grouped=true').then((matchRes) => {
+          console.log('matchRes:=>', matchRes);
           setMatchRecords([...matchRes.payload]);
           setLoading(false);
         })
