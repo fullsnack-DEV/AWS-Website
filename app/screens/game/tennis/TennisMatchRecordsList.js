@@ -38,6 +38,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
 import * as Utils from '../../challenge/ChallengeUtility';
 import AddSetGameModal from './AddSetGameModal';
+import { getHitSlop } from '../../../utils';
 
 const TennisMatchRecordsList = ({
   navigation,
@@ -213,7 +214,7 @@ const TennisMatchRecordsList = ({
       <View style={{ ...styles.setContainer, backgroundColor: 'rgba(255,138,1,0.1)' }}>
         <RenderDash/>
         {/* Down Arrow */}
-        <TouchableOpacity style={styles.downArrowContainer} onPress={() => toggleMatchSets(index)}>
+        <TouchableOpacity style={styles.downArrowContainer} onPress={() => toggleMatchSets(index)} hitSlop={getHitSlop(15)}>
           <FastImage
                     resizeMode={'contain'}
                     source={images.yellowDownArrow}
@@ -385,7 +386,7 @@ const TennisMatchRecordsList = ({
         }}>
           <RenderDash/>
           {/* Down Arrow */}
-          <TouchableOpacity style={styles.downArrowContainer} onPress={() => toggleGameRecords(parentIndex, index)}>
+          <TouchableOpacity style={styles.downArrowContainer} onPress={() => toggleGameRecords(parentIndex, index)} hitSlop={getHitSlop(15)}>
             <FastImage
                             resizeMode={'contain'}
                             source={images.dropDownArrow}

@@ -90,6 +90,8 @@ export default function ChallengePaymentScreen({ route, navigation }) {
         const body = {
           ...challengeData,
           payment_method_type: 'card',
+          start_datetime: Number(parseFloat(challengeData?.start_datetime).toFixed(0)),
+          end_datetime: Number(parseFloat(challengeData?.end_datetime).toFixed(0)),
         };
 
         console.log('body:=>', body);

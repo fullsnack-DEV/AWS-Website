@@ -20,6 +20,7 @@ const Stats = ({
   getGameStatsData,
 
 }) => {
+  console.log('stats gamedata:=>', gameData);
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
   const [gameStatsData, setGameStatsData] = useState(null);
@@ -29,6 +30,7 @@ const Stats = ({
       if (gameData?.game_id) {
         setLoading(true);
         getGameStatsData(gameData?.game_id).then((res) => {
+          console.log('Tennis Game Stats:=> ', res);
           setGameStatsData(res?.payload);
         })
           .catch((error) => console.log(error))
@@ -36,6 +38,20 @@ const Stats = ({
       }
     }
   }, [isFocused])
+
+  const getHomeName = () => {
+    if (gameData?.home_team?.group_name) {
+      return `${gameData?.home_team?.group_name}`
+    }
+      return `${gameData?.home_team?.first_name} ${gameData?.home_team?.last_name}`
+  }
+
+  const getAwayName = () => {
+    if (gameData?.away_team?.group_name) {
+      return `${gameData?.away_team?.group_name}`
+    }
+      return `${gameData?.away_team?.first_name} ${gameData?.away_team?.last_name}`
+  }
 
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
@@ -92,9 +108,9 @@ const Stats = ({
     <View style={{
       marginVertical: 5, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 15, marginRight: 15,
     }}>
-      <Text style={styles.statsCounter} >{item.home_team === 0 ? '-' : item.home_team}</Text>
+      <Text style={styles.statsCounter} >{item.home_team === 0 ? '-' : Number(item.home_team).toFixed(2)}</Text>
       <Text style={styles.statsLable}>{item.label}</Text>
-      <Text style={styles.statsCounter}>{item.away_team === 0 ? '-' : item.away_team}</Text>
+      <Text style={styles.statsCounter}>{item.away_team === 0 ? '-' : Number(item.away_team).toFixed(2)}</Text>
     </View>
   )
   return (
@@ -109,9 +125,9 @@ const Stats = ({
       <TCLabel title={'Stats'}/>
       <View style={{ marginLeft: 10, marginRight: 10 }}>
         <TCTeamVS
-        firstTeamName={`${gameData?.home_team?.first_name} ${gameData?.home_team?.last_name}`}
-        secondTeamName={`${gameData?.away_team?.first_name} ${gameData?.away_team?.last_name}`}
-        firstTeamProfilePic={gameData?.home_team?.thumbnail}
+        firstTeamName={getHomeName()}
+        secondTeamName={getAwayName()}
+        firstTeamProfilePic={gameData?.home_team?.thumbnail }
         secondTeamProfilePic={gameData?.away_team?.thumbnail}
       />
       </View>

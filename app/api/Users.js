@@ -6,7 +6,7 @@ import apiCall from '../utils/apiCall';
 
 export const getAppSettings = (authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/app/settings`,
+  url: `${Config.BASE_URL}/users/settings`,
   authContext,
   headers: {
     setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',

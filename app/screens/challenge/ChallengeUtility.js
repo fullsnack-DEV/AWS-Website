@@ -41,7 +41,9 @@ export const getChallengeDetail = (challengeID, authContext) => {
         return Obj
       }
       if (ReservationStatus.declined === response.payload[0].status) {
-        if (response.payload[0].requested_by) {
+        console.log('ReservationStatus.declined === response.payload[0].status', response);
+        // if (response.payload[0].requested_by) {
+          if (response.payload[1].status !== ReservationStatus.offered) {
           Obj.challengeObj = response.payload
           Obj.screenName = 'ChallengePreviewScreen'// AlterAcceptDeclineScreen
           return Obj

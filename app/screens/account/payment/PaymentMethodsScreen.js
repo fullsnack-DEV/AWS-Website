@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React, {
   useState, useEffect, useContext, useLayoutEffect,
 } from 'react';
@@ -58,7 +59,9 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   const getPaymentMethods = () => new Promise((resolve, reject) => {
     paymentMethods(authContext)
         .then((response) => {
-          setCards([...response.payload])
+          const newCards = response.payload.filter((v, i, a) => a.findIndex((t) => (t.card.fingerprint === v.card.fingerprint)) === i)
+
+          setCards([...newCards])
           // setloading(false)
           if (response.payload.length === 0) {
             openNewCardScreen();
@@ -235,7 +238,13 @@ export default function PaymentMethodsScreen({ navigation, route }) {
       },
     }).then((token) => {
       console.log('card', token)
-      onSaveCard(token);
+      cards.map((obj) => {
+        if (obj?.card?.fingerprint === token?.card?.fingerprint) {
+          Alert.alert('You already have added this card.')
+        } else {
+          onSaveCard(token);
+        }
+      })
     }).catch((e) => {
       console.log('error in openNewCardScreen', e)
       setloading(false)

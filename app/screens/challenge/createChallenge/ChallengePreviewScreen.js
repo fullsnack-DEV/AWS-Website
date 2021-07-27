@@ -50,6 +50,8 @@ import TCBorderButton from '../../../components/TCBorderButton';
 
 let entity = {};
 export default function ChallengePreviewScreen({ navigation, route }) {
+  console.log('route?.params?.challengeObj[0]', route?.params?.challengeObj[0]);
+  console.log('route?.params?.challengeObj', route?.params?.challengeObj);
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
@@ -66,7 +68,9 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   const [groupObject, setGroupObject] = useState();
 
   const [challengeData, setChallengeData] = useState(
-    route?.params?.challengeObj[0],
+    route?.params?.challengeObj?.length > 1
+      ? route?.params?.challengeObj[0]
+      : route?.params?.challengeObj,
   );
   const [oldVersion, setOldVersion] = useState();
 
@@ -102,8 +106,13 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           ?? route?.params?.challengeObj?.status,
       )
     ) {
-      console.log('Old Version:=>', oldVersion);
-      setChallengeData(oldVersion);
+      if (route?.params?.challengeObj?.length > 1) {
+        setChallengeData(oldVersion);
+      } else {
+        setChallengeData(
+          route?.params?.challengeObj?.[0] ?? route?.params?.challengeObj,
+        );
+      }
     } else {
       console.log(
         'new Version:=>',
@@ -117,6 +126,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
   useEffect(() => {
     setloading(true);
+    console.log('challenge data11:=>', challengeData);
     getChallengeSetting(
       challengeData?.challengee,
       challengeData?.sport,
@@ -133,7 +143,12 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext, challengeData?.challengee, challengeData?.sport]);
+  }, [
+    authContext,
+    challengeData,
+    challengeData?.challengee,
+    challengeData?.sport,
+  ]);
 
   // const checkSenderOrReceiver = (challengeObj) => {
   //   console.log('sender & receiver Obj', challengeObj);
@@ -236,7 +251,10 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       }
       return 'receiver';
     }
-    if (challengeObj?.updated_by?.group_id === entity.uid) {
+    if (
+      (challengeObj?.updated_by?.group_id ?? challengeObj?.updated_by?.uid)
+      === entity.uid
+    ) {
       return 'sender';
     }
     return 'receiver';
@@ -670,41 +688,45 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       return (
         <View style={styles.bottomButtonView}>
           {(challengeData?.game_status === GameStatus.accepted
-                || challengeData?.game_status === GameStatus.reset) && <TCSmallButton
-            isBorderButton={true}
-            borderstyle={{
-              borderColor: colors.userPostTimeColor,
-              borderWidth: 1,
-              borderRadious: 80,
-            }}
-            textStyle={{ color: colors.userPostTimeColor }}
-            title={strings.alterReservation}
-            onPress={() => {
-              if (
-                challengeData?.game_status === GameStatus.accepted
-                || challengeData?.game_status === GameStatus.reset
-              ) {
+            || challengeData?.game_status === GameStatus.reset
+            || !challengeData?.game_status) && (
+              <TCSmallButton
+              isBorderButton={true}
+              borderstyle={{
+                borderColor: colors.userPostTimeColor,
+                borderWidth: 1,
+                borderRadious: 80,
+              }}
+              textStyle={{ color: colors.userPostTimeColor }}
+              title={strings.alterReservation}
+              onPress={() => {
                 if (
-                  challengeData?.start_datetime * 1000
-                  < new Date().getTime()
+                  challengeData?.game_status === GameStatus.accepted
+                  || challengeData?.game_status === GameStatus.reset
+                  || !challengeData?.game_status
                 ) {
-                  Alert.alert(strings.cannotChangeReservationGameStartedText);
+                  if (
+                    challengeData?.start_datetime * 1000
+                    < new Date().getTime()
+                  ) {
+                    Alert.alert(strings.cannotChangeReservationGameStartedText);
+                  } else {
+                    navigation.navigate('ChangeReservationInfoScreen', {
+                      screen: 'change',
+                      challengeObj: challengeData,
+                      settingObj: settingObject,
+                    });
+                  }
                 } else {
-                  navigation.navigate('ChangeReservationInfoScreen', {
-                    screen: 'change',
-                    challengeObj: challengeData,
-                    settingObj: settingObject,
-                  });
+                  Alert.alert(strings.cannotChangeReservationText);
                 }
-              } else {
-                Alert.alert(strings.cannotChangeReservationText);
-              }
-            }}
-            style={{
-              width: widthPercentageToDP('92%'),
-              alignSelf: 'center',
-            }}
-          />}
+              }}
+              style={{
+                width: widthPercentageToDP('92%'),
+                alignSelf: 'center',
+              }}
+            />
+          )}
           <TCSmallButton
             isBorderButton={false}
             startGradientColor={colors.endGrayGradient}
@@ -1030,9 +1052,9 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             const gameHome = getGameHomeScreen(challengeData?.sport);
             console.log('gameHome', gameHome);
 
-              navigation.navigate(gameHome, {
-                gameId: challengeData?.game_id,
-              });
+            navigation.navigate(gameHome, {
+              gameId: challengeData?.game_id,
+            });
 
             // if (
             //   challengeData?.sport?.toLocaleLowerCase()

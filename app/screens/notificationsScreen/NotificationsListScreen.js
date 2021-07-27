@@ -107,6 +107,7 @@ function NotificationsListScreen({ navigation }) {
         setloading(true);
         Utils.getChallengeDetail(a, authContext)
           .then((obj) => {
+            console.log('challenge utils res:=>', obj);
             navigation.navigate(obj.screenName, {
               challengeObj: obj.challengeObj,
             });
