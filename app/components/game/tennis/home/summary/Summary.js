@@ -1,3 +1,4 @@
+/* eslint-disable no-lonely-if */
 /* eslint-disable no-unused-vars */
 import React, {
   useContext,
@@ -24,6 +25,7 @@ import SpecialRules from './SpecialRules';
 import Referees from '../../../common/summary/Referees';
 import Scorekeepers from '../../../common/summary/Scorekeepers';
 import TCGradientButton from '../../../../TCGradientButton';
+import TCThickDivider from '../../../../TCThickDivider';
 import colors from '../../../../../Constants/Colors';
 // import FeedsScreen from '../../../../../screens/newsfeeds/FeedsScreen';
 
@@ -116,6 +118,7 @@ const Summary = ({
           )[0];
 
         console.log('soccerSportData', sports);
+
         const teamReviewProp = soccerSportData?.team_review_properties ?? [];
         const playerReviewProp = soccerSportData?.player_review_properties ?? [];
         const refereeReviewProp = soccerSportData?.referee_review_properties ?? [];
@@ -192,34 +195,64 @@ const Summary = ({
       .finally(() => setLoading(false));
   };
 
+  const getHomeID = () => {
+    if (gameData?.home_team?.user_id) {
+      return gameData?.home_team?.user_id;
+    }
+    return gameData?.home_team?.group_id;
+  };
+
+  const getAwayID = () => {
+    if (gameData?.away_team?.user_id) {
+      return gameData?.away_team?.user_id;
+    }
+    return gameData?.away_team?.group_id;
+  };
+
   const leaveReviewButtonConfig = () => {
     let found = false;
     let teamName = '';
 
-    if (gameData?.home_team?.user_id === authContext.entity.uid) {
+    if (getHomeID() === authContext.entity.uid) {
       found = true;
-      teamName = gameData?.away_team?.full_name;
+      teamName = gameData?.away_team?.full_name ?? gameData?.away_team?.group_name;
       console.log('Team name Data:=>', teamName);
       if (gameData?.home_review_id || gameData?.away_review_id) {
         // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
-        setLeaveReviewText(strings.editReviewPlayerText);
+        if (gameData?.home_team?.group_name) {
+          setLeaveReviewText(strings.editReviewText);
+        } else {
+          setLeaveReviewText(strings.editReviewPlayerText);
+        }
       } else {
         // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
-        setLeaveReviewText(strings.leaveReviewplayerText);
+        if (gameData?.home_team?.group_name) {
+          setLeaveReviewText(strings.leaveReviewText);
+        } else {
+          setLeaveReviewText(strings.leaveReviewplayerText);
+        }
       }
       setplayerFrom('home');
     }
 
     if (!found) {
-      if (gameData?.away_team?.user_id === authContext.entity.uid) {
+      if (getAwayID() === authContext.entity.uid) {
         found = true;
-        teamName = gameData?.home_team?.full_name;
+        teamName = gameData?.home_team?.full_name ?? gameData?.home_team?.group_name;
         if (gameData?.away_review_id || gameData?.home_review_id) {
           // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
-          setLeaveReviewText(strings.editReviewPlayerText);
+          if (gameData?.home_team?.group_name) {
+            setLeaveReviewText(strings.editReviewText);
+          } else {
+            setLeaveReviewText(strings.editReviewPlayerText);
+          }
         } else {
           // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
-          setLeaveReviewText(strings.leaveReviewplayerText);
+          if (gameData?.home_team?.group_name) {
+            setLeaveReviewText(strings.leaveReviewText);
+          } else {
+            setLeaveReviewText(strings.leaveReviewplayerText);
+          }
         }
         setplayerFrom('away');
       }
@@ -262,8 +295,8 @@ const Summary = ({
         console.log('Edited Review Object::=>', reviewObj);
         patchPlayerReview(
           currentForm === 1
-            ? gameData?.home_team?.user_id
-            : gameData?.away_team?.user_id,
+            ? getHomeID()
+            : getAwayID(),
           gameData?.game_id,
           reviewID,
           reviewObj,
@@ -287,8 +320,8 @@ const Summary = ({
         setLoading(true);
         addPlayerReview(
           currentForm === 1
-            ? gameData?.home_team?.user_id
-            : gameData?.away_team?.user_id,
+            ? getHomeID()
+            : getAwayID(),
           gameData?.game_id,
           reviewsData,
           authContext,
@@ -308,13 +341,7 @@ const Summary = ({
           });
       }
     },
-    [
-      authContext,
-      gameData?.away_team?.user_id,
-      gameData?.game_id,
-      gameData?.home_team?.user_id,
-      getGameData,
-    ],
+    [authContext, gameData?.game_id, getAwayID, getGameData, getHomeID],
   );
 
   const onPressReviewDone = useCallback(
@@ -370,8 +397,9 @@ const Summary = ({
           navigation.navigate('LeaveReviewTennis', {
             gameData,
             gameReviewData: response.payload,
-            selectedTeam: selectedTeamForReview
-              ?? gameData?.home_team?.user_id === authContext?.entity?.uid
+            selectedTeam:
+              selectedTeamForReview
+              ?? getHomeID() === authContext?.entity?.uid
                 ? 'away'
                 : 'home',
             starAttributesForPlayer,
@@ -495,10 +523,11 @@ const Summary = ({
                       } else if (gameData?.away_review_id) {
                         getGameReviewsData(gameData?.away_review_id);
                       } else {
+                        console.log('starAttributesForPlayer', starAttributesForPlayer);
                         navigation.navigate('LeaveReviewTennis', {
                           gameData,
                           selectedTeam: playerFrom === 'home' ? 'away' : 'home',
-                          starAttributesForPlayer,
+                          starAttributesForPlayer: gameData?.sport?.toLowerCase() === 'tennis' ? starAttributesForPlayer : starAttributes,
                           isRefereeAvailable: gameData?.referees?.length > 0,
                           onPressReviewDone,
                         });
@@ -589,11 +618,10 @@ const Summary = ({
       <View
         style={{
           backgroundColor: colors.whiteColor,
-          padding: 10,
-          marginBottom: hp(1),
         }}>
-        <Text style={styles.title}>Scores</Text>
+        <Text style={[styles.title, { marginLeft: 15, marginBottom: 0 }]}>Scores</Text>
         <TennisScoreView scoreDataSource={gameData} />
+        <TCThickDivider marginTop={15}/>
       </View>
     ),
     [gameData],
@@ -976,7 +1004,7 @@ const Summary = ({
               <Text
                 style={styles.doneText}
                 onPress={() => {
-                   setIsPopupVisible(false);
+                  setIsPopupVisible(false);
                   console.log(
                     'gameData?.review_id:=>',
                     gameData?.referees?.length > 0,
@@ -984,7 +1012,7 @@ const Summary = ({
                   if (playerFrom === '' && selectedTeamForReview) {
                     if (selectedTeamForReview === 'home') {
                       if (gameData?.home_review_id) {
-                         getGameReviewsData(gameData?.home_review_id);
+                        getGameReviewsData(gameData?.home_review_id);
                       } else {
                         navigation.navigate('LeaveReviewTennis', {
                           gameData,

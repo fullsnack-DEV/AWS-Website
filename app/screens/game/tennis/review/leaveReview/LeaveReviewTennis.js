@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
 import React, {
-  useState, useEffect, useLayoutEffect, useContext,
-} from 'react';
+ useState, useEffect, useLayoutEffect, useContext,
+ } from 'react';
 import {
   Alert,
   Image,
@@ -29,9 +29,11 @@ import ActivityLoader from '../../../../../components/loader/ActivityLoader';
 import { ImageUploadContext } from '../../../../../context/ImageUploadContext';
 
 const LeaveReviewTennis = ({ navigation, route }) => {
-  const imageUploadContext = useContext(ImageUploadContext)
+  const imageUploadContext = useContext(ImageUploadContext);
   const authContext = useContext(AuthContext);
-  const [currentForm, setCurrentForm] = useState(route?.params?.selectedTeam === 'home' ? 1 : 2);
+  const [currentForm, setCurrentForm] = useState(
+    route?.params?.selectedTeam === 'home' ? 1 : 2,
+  );
   const [loading, setLoading] = useState(false);
   const [starAttributes, setStarAttributes] = useState([]);
 
@@ -41,52 +43,66 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
 
-  console.log('route?.params?.isRefereeAvailable', route?.params?.isRefereeAvailable);
+  console.log(
+    'route?.params?.starAttributesForPlayer',
+    route?.params?.starAttributesForPlayer,
+  );
+  console.log(
+    'route?.params?.isRefereeAvailable',
+    route?.params?.isRefereeAvailable,
+  );
   const { selectedTeam } = route?.params;
   console.log('selectedTeam:=>', selectedTeam);
-  const [reviewsData, setReviewsData] = useState(currentForm === 1 ? {
-
-    player_id: route?.params?.gameData?.home_team?.user_id,
-    comment: '',
-    attachments: [],
-    tagged: [],
-
-  } : {
-
-    player_id: route?.params?.gameData?.away_team?.user_id,
-    comment: '',
-    attachments: [],
-    tagged: [],
-
-  });
+  const [reviewsData, setReviewsData] = useState(
+    currentForm === 1
+      ? {
+          player_id: route?.params?.gameData?.home_team?.user_id,
+          comment: '',
+          attachments: [],
+          tagged: [],
+        }
+      : {
+          player_id: route?.params?.gameData?.away_team?.user_id,
+          comment: '',
+          attachments: [],
+          tagged: [],
+        },
+  );
   useEffect(() => {
     if (route?.params?.gameReviewData?.results[0]?.object) {
-      const reviewObj = JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)?.playerReview;
+      const reviewObj = JSON.parse(
+        route?.params?.gameReviewData?.results?.[0]?.object,
+      )?.playerReview;
       setReviewsData({ ...reviewObj });
     }
   }, [route?.params?.gameReviewData?.results[0]?.object]);
 
   useEffect(() => {
-    const obj = { ...reviewsData }
+    const obj = { ...reviewsData };
     if (route?.params?.selectedImageList) {
-      obj.attachments = route?.params?.selectedImageList
-      setReviewsData(obj)
+      obj.attachments = route?.params?.selectedImageList;
+      setReviewsData(obj);
     }
     if (route?.params?.searchText?.length >= 0) {
-      obj.comment = route?.params?.searchText ?? ''
-      setReviewsData(obj)
+      obj.comment = route?.params?.searchText ?? '';
+      setReviewsData(obj);
     }
     if (route?.params?.entityTags) {
-      console.table(route?.params?.entityTags)
+      console.table(route?.params?.entityTags);
 
-      obj.tagged = route?.params?.entityTags
-      setReviewsData(obj)
+      obj.tagged = route?.params?.entityTags;
+      setReviewsData(obj);
     }
     if (route?.params?.format_tagged_data) {
-      obj.format_tagged_data = route?.params?.format_tagged_data
-      setReviewsData(obj)
+      obj.format_tagged_data = route?.params?.format_tagged_data;
+      setReviewsData(obj);
     }
-  }, [route?.params?.selectedImageList, route?.params?.searchText, route?.params?.entityTags, route?.params?.format_tagged_data]);
+  }, [
+    route?.params?.selectedImageList,
+    route?.params?.searchText,
+    route?.params?.entityTags,
+    route?.params?.format_tagged_data,
+  ]);
 
   useEffect(() => {
     setStarAttributes([...route?.params?.starAttributesForPlayer]);
@@ -149,7 +165,21 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   };
 
   const isValidReview = () => {
-    const exceptKey = ['player_id', 'comment', 'attachments', 'tagged', 'format_tagged_data', 'created_at', 'member', 'review_id', 'reviewer_id'];
+    const exceptKey = [
+      'player_id',
+      'comment',
+      'attachments',
+      'tagged',
+      'format_tagged_data',
+      'created_at',
+      'member',
+      'review_id',
+      'reviewer_id',
+    ];
+    if (!route?.params?.isRefereeAvailable) {
+      exceptKey.push('respectforreferre');
+    }
+
     let isValid = true;
     const review = _.cloneDeep(reviewsData);
     Object.keys(review).map((key) => {
@@ -165,13 +195,13 @@ const LeaveReviewTennis = ({ navigation, route }) => {
 
     if (currentForm === 1) {
       if (isValidReview()) {
-        uploadMediaForTeamA()
+        uploadMediaForTeamA();
       } else {
         Alert.alert('Please, complete all ratings before moving to the next.');
       }
     } else if (currentForm === 2) {
       if (isValidReview()) {
-        uploadMediaForTeamB()
+        uploadMediaForTeamB();
       } else {
         Alert.alert('Please, complete all ratings before moving to the next.');
       }
@@ -184,24 +214,24 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     setProgressBar(false);
     setDoneUploadCount(0);
     setTotalUploadCount(0);
-  }
+  };
   const progressStatus = (completed, total) => {
-    setDoneUploadCount(completed < total ? (completed + 1) : total)
-  }
+    setDoneUploadCount(completed < total ? completed + 1 : total);
+  };
 
   const cancelRequest = (axiosTokenSource) => {
     setCancelApiRequest({ ...axiosTokenSource });
-  }
+  };
 
   const patchOrAddReview = () => {
     if (route?.params?.gameReviewData) {
       setLoading(true);
-      const teamReview = reviewsData
+      const teamReview = reviewsData;
       delete teamReview.created_at;
       delete teamReview.entity_type;
-      const team1ID = teamReview.entity_id
+      const team1ID = teamReview.entity_id;
       delete teamReview.entity_id;
-      teamReview.player_id = team1ID
+      teamReview.player_id = team1ID;
       delete teamReview.game_id;
       const reviewID = teamReview.review_id;
       delete teamReview.review_id;
@@ -209,64 +239,101 @@ const LeaveReviewTennis = ({ navigation, route }) => {
       delete teamReview.sport;
 
       const reviewObj = {
-
         ...teamReview,
-
       };
 
       console.log('Edited Review Object::=>', reviewObj);
-      console.log(`Home userID:=> ${route?.params?.gameData?.home_team?.user_id} home username:=> ${route?.params?.gameData?.home_team?.full_name}`);
-      console.log(`away userID:=> ${route?.params?.gameData?.away_team?.user_id} away username:=> ${route?.params?.gameData?.away_team?.full_name}`);
-      patchPlayerReview(currentForm === 1 ? route?.params?.gameData?.home_team?.user_id : route?.params?.gameData?.away_team?.user_id, route?.params?.gameData?.game_id, reviewID, reviewObj, authContext)
+      console.log(
+        `Home userID or teamID:=> ${route?.params?.gameData?.home_team?.user_id ?? route?.params?.gameData?.home_team?.group_id} home username:=> ${route?.params?.gameData?.home_team?.full_name}`,
+      );
+      console.log(
+        `away userID or TeamID:=> ${route?.params?.gameData?.away_team?.user_id ?? route?.params?.gameData?.away_team?.group_id} away username:=> ${route?.params?.gameData?.away_team?.full_name}`,
+      );
+      patchPlayerReview(
+        currentForm === 1
+          ? route?.params?.gameData?.home_team?.user_id
+              ?? route?.params?.gameData?.home_team?.group_id
+          : route?.params?.gameData?.away_team?.user_id
+              ?? route?.params?.gameData?.away_team?.group_id,
+        route?.params?.gameData?.game_id,
+        reviewID,
+        reviewObj,
+        authContext,
+      )
         .then(() => {
           setLoading(false);
           navigation.goBack();
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          setTimeout(
+            () => Alert.alert(strings.alertmessagetitle, error?.message),
+            100,
+          );
           navigation.goBack();
         });
     } else {
       console.log('New Review Object::=>', reviewsData);
-      console.log(`Home userID:=> ${route?.params?.gameData?.home_team?.user_id} home username:=> ${route?.params?.gameData?.home_team?.full_name}`);
-      console.log(`away userID:=> ${route?.params?.gameData?.away_team?.user_id} away username:=> ${route?.params?.gameData?.away_team?.full_name}`);
+      console.log(
+        `Home userID:=> ${route?.params?.gameData?.home_team?.user_id} home username:=> ${route?.params?.gameData?.home_team?.full_name}`,
+      );
+      console.log(
+        `away userID:=> ${route?.params?.gameData?.away_team?.user_id} away username:=> ${route?.params?.gameData?.away_team?.full_name}`,
+      );
       setLoading(true);
-      addPlayerReview(currentForm === 1 ? route?.params?.gameData?.home_team?.user_id : route?.params?.gameData?.away_team?.user_id, route?.params?.gameData?.game_id, reviewsData, authContext)
+      addPlayerReview(
+        currentForm === 1
+          ? route?.params?.gameData?.home_team?.user_id
+          : route?.params?.gameData?.away_team?.user_id,
+        route?.params?.gameData?.game_id,
+        reviewsData,
+        authContext,
+      )
         .then(() => {
           setLoading(false);
           navigation.goBack();
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          setTimeout(
+            () => Alert.alert(strings.alertmessagetitle, error?.message),
+            100,
+          );
           navigation.goBack();
         });
     }
-  }
+  };
 
   const uploadMediaForTeamA = () => {
     console.log('A called');
-    setLoading(false) // CHANGED
+    setLoading(false); // CHANGED
     const { onPressReviewDone } = route?.params;
     if (reviewsData?.attachments?.length) {
-      onPressReviewDone(currentForm, !!route?.params?.gameReviewData, reviewsData);
+      onPressReviewDone(
+        currentForm,
+        !!route?.params?.gameReviewData,
+        reviewsData,
+      );
       navigation.goBack();
     } else {
-      patchOrAddReview()
+      patchOrAddReview();
     }
-  }
+  };
   const uploadMediaForTeamB = () => {
     console.log('B called');
-    setLoading(false) // CHANGED
+    setLoading(false); // CHANGED
     const { onPressReviewDone } = route?.params;
     if (reviewsData?.attachments?.length) {
-      onPressReviewDone(currentForm, !!route?.params?.gameReviewData, reviewsData);
+      onPressReviewDone(
+        currentForm,
+        !!route?.params?.gameReviewData,
+        reviewsData,
+      );
       navigation.goBack();
     } else {
-      patchOrAddReview()
+      patchOrAddReview();
     }
-  }
+  };
   const setTeamReview = (teamNo = 0, key = '', value = '') => {
     console.log(`key::${key}value::${value}`);
     if (reviewsData[key] !== value) {
@@ -307,7 +374,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
               starColor={STAR_COLOR.YELLOW}
               teamData={route?.params?.gameData?.home_team}
               setTeamReview={setTeamReview}
-              navigation = {navigation}
+              navigation={navigation}
               route={route}
               isRefereeAvailable={route?.params?.isRefereeAvailable}
               tags={reviewsData?.tagged || route?.params?.entityTags}
@@ -320,10 +387,13 @@ const LeaveReviewTennis = ({ navigation, route }) => {
               teamData={route?.params?.gameData?.away_team}
               reviewAttributes={starAttributes}
               setTeamReview={setTeamReview}
-              navigation = {navigation}
+              navigation={navigation}
               route={route}
               isRefereeAvailable={route?.params?.isRefereeAvailable}
-              tags={route?.params?.format_tagged_data || reviewsData?.format_tagged_data}
+              tags={
+                route?.params?.format_tagged_data
+                || reviewsData?.format_tagged_data
+              }
             />
           )}
         </ScrollView>

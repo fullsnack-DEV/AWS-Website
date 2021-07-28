@@ -139,12 +139,14 @@ export default function UserScoreboardScreen({ route, navigation }) {
             <ScoreboardSportsScreen
               sportsData={recentMatchData}
               navigation={navigation}
+              comeFrom={'UserScoreboardScreen'}
             />
           )}
           {scoreboardTabNumber === 1 && (
             <UpcomingMatchScreen
               sportsData={upcomingMatchData}
               navigation={navigation}
+              comeFrom={'UserScoreboardScreen'}
             />
           )}
         </View>

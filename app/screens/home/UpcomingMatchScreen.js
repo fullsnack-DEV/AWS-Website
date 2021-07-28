@@ -17,6 +17,8 @@ export default function UpcomingMatchScreen({
   sportsData,
   showEventNumbers,
   navigation,
+  comeFrom = '',
+  onItemPress,
 }) {
   const authContext = useContext(AuthContext)
   let filterData = [];
@@ -55,7 +57,10 @@ export default function UpcomingMatchScreen({
   }
 
   const onGameCardClick = (item) => {
-    setTimeout(() => {
+    if (comeFrom !== 'UserScoreboardScreen') {
+      onItemPress()
+    }
+        setTimeout(() => {
       const entity = authContext.entity
       if (item?.game_id) {
         if (item?.sport) {

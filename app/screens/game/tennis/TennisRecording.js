@@ -126,7 +126,7 @@ export default function TennisRecording({ navigation, route }) {
         </TouchableWithoutFeedback>
       ),
     });
-  }, [navigation, date, gameObj]);
+  }, [navigation, gameObj, homeTeamMatchPoint, awayTeamMatchPoint]);
 
   useFocusEffect(() => {
     if (![GameStatus.accepted, GameStatus.reset].includes(gameObj?.status || gameData?.status)) {
@@ -192,15 +192,15 @@ export default function TennisRecording({ navigation, route }) {
       }
     }
   };
-  const calculateMatchScore = () => {
-    setHomeMatchPoint(0);
-    setAwayMatchPoint(0);
+  const calculateMatchScore = (data) => {
+    // setHomeMatchPoint(0);
+    // setAwayMatchPoint(0);
     let homePoint = 0;
     let awayPoint = 0;
-    console.log('SETS::->', gameObj?.scoreboard?.sets);
-    (gameObj?.scoreboard?.sets || []).map((e) => {
+    console.log('SETS::->', data?.scoreboard?.sets);
+    (data?.scoreboard?.sets || []).map((e) => {
       if (e?.winner) {
-        if (e.winner === (gameObj?.home_team?.user_id || gameObj.home_team.group_id)) {
+        if (e.winner === (data?.home_team?.user_id || data.home_team.group_id)) {
           homePoint += 1;
           console.log('SETS NO::->', homePoint);
           // setHomeMatchPoint(homeTeamMatchPoint + 1)
@@ -448,11 +448,14 @@ export default function TennisRecording({ navigation, route }) {
     setloading(true);
     resetGame(gameId, authContext)
       .then((response) => {
-        getGameDetail(gameId, true);
         setTimelineTimer('00 : 00 : 00');
         date = null;
         startStopTimerTimeline();
+        setHomeMatchPoint(0)
+        setAwayMatchPoint(0)
+        getGameDetail(gameId, true);
         setloading(false);
+
         // setDate();
 
         console.log('RESET GAME RESPONSE::', response.payload);
@@ -485,7 +488,7 @@ export default function TennisRecording({ navigation, route }) {
             gameObj?.away_team?.group_id || gameObj?.away_team?.user_id,
           );
         }
-        calculateMatchScore();
+        calculateMatchScore(response.payload);
         calculateGameScore(response.payload);
 
         defineServingTeamID(response.payload);

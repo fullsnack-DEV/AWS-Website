@@ -399,7 +399,10 @@ const NewsFeedPostItems = memo(
               }}>
               <TouchableOpacity
                 style={{ marginRight: 5 }}
-                onPress={() => likersModalRef.current.open()}>
+                onPress={() => {
+                  console.log('Like obj:=>', item);
+                  likersModalRef.current.open()
+                }}>
                 <Text
                   style={[
                     styles.commentlengthStyle,
@@ -439,7 +442,7 @@ const NewsFeedPostItems = memo(
             onPress={onShareActionSheetItemPress}
           />
         </View>
-        <LikersModal likersModalRef={likersModalRef} navigation={navigation} />
+        <LikersModal likersModalRef={likersModalRef} navigation={navigation} data={item}/>
         <CommentModal
           navigation={navigation}
           commentModalRef={commentModalRef}
