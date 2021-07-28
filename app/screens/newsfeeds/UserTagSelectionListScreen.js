@@ -229,11 +229,13 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
   const renderTabContain = useMemo(() => {
     const dataTabList = [userData, groupData]
     return (
-      <SafeAreaView>
-        <View style={{ flex: Platform.OS === 'ios' ? 0 : 10, marginBottom: 150 }}>
+
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
           {renderSingleTab(searchText === '' ? dataTabList[currentTab] : searchData)}
         </View>
       </SafeAreaView>
+
     )
   }, [currentTab, groupData, renderSingleTab, searchData, searchText, userData])
 

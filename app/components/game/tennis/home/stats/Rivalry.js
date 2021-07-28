@@ -8,59 +8,137 @@ import TCTeamVS from '../../../../TCTeamVS';
 import TCThinDivider from '../../../../TCThinDivider';
 
 const Rivalry = ({ gameData, rivalryData }) => {
-  const GradiantIndicator = ({ gradiantColor, style }) => (<LinearGradient
-        colors={gradiantColor}
-        style={{ ...styles.gradiantIndicator, ...style }}/>)
-  return (<View>
-    <View style={styles.mainContainer}>
-      <TCTeamVS
-        firstTeamName={`${gameData?.home_team?.first_name} ${gameData?.home_team?.last_name}`}
-        secondTeamName={`${gameData?.away_team?.first_name} ${gameData?.away_team?.last_name}`}
-        firstTeamProfilePic={gameData?.home_team?.thumbnail}
-        secondTeamProfilePic={gameData?.away_team?.thumbnail}
-      />
-      <TCThinDivider width={'96%'} marginTop={8}/>
-      <View style={styles.teamIndicatorContainer}>
-        <View style={styles.teamIndicatorContentContainer}>
-          <GradiantIndicator gradiantColor={[colors.themeColor, colors.yellowColor]}/>
-          <Text>{`${gameData?.home_team?.first_name} ${gameData?.home_team?.last_name}`} Win</Text>
+const getHomeName = () => {
+  if (gameData?.home_team?.group_name) {
+    return `${gameData?.home_team?.group_name}`
+  }
+    return `${gameData?.home_team?.first_name} ${gameData?.home_team?.last_name}`
+}
+
+const getAwayName = () => {
+  if (gameData?.away_team?.group_name) {
+    return `${gameData?.away_team?.group_name}`
+  }
+    return `${gameData?.away_team?.first_name} ${gameData?.away_team?.last_name}`
+}
+
+const getHomeID = () => {
+  if (gameData?.home_team?.group_id) {
+    return gameData?.home_team?.group_id
+  }
+    return gameData?.home_team?.user_id
+}
+
+const getAwayID = () => {
+  if (gameData?.away_team?.group_id) {
+    return gameData?.away_team?.group_id
+  }
+    return gameData?.away_team?.user_id
+}
+
+  const GradiantIndicator = ({ gradiantColor, style }) => (
+    <LinearGradient
+      colors={gradiantColor}
+      style={{ ...styles.gradiantIndicator, ...style }}
+    />
+  );
+  return (
+    <View>
+      <View style={styles.mainContainer}>
+        <TCTeamVS
+          firstTeamName={
+            getHomeName()
+          }
+          secondTeamName={
+            getAwayName()
+          }
+          firstTeamProfilePic={gameData?.home_team?.thumbnail}
+          secondTeamProfilePic={gameData?.away_team?.thumbnail}
+        />
+        <TCThinDivider width={'96%'} marginTop={8} />
+        <View style={styles.teamIndicatorContainer}>
+          <View style={styles.teamIndicatorContentContainer}>
+            <GradiantIndicator
+              gradiantColor={[colors.themeColor, colors.yellowColor]}
+            />
+            <Text>
+              {getHomeName()}{' '}
+              Win
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <GradiantIndicator
+              gradiantColor={[
+                colors.greenGradientStart,
+                colors.greenGradientEnd,
+              ]}
+            />
+            <Text>{'Draw'}</Text>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <GradiantIndicator
+              gradiantColor={[colors.blueGradiantStart, colors.blueGradiantEnd]}
+            />
+            <Text>
+              {getAwayName()}{' '}
+              Win
+            </Text>
+          </View>
         </View>
-        <View style={{ flexDirection: 'row' }}>
-          <GradiantIndicator gradiantColor={[colors.greenGradientStart, colors.greenGradientEnd]}/>
-          <Text>{'Draw'}</Text>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <GradiantIndicator gradiantColor={[colors.blueGradiantStart, colors.blueGradiantEnd]}/>
-          <Text>{`${gameData?.away_team?.first_name} ${gameData?.away_team?.last_name}`} Win</Text>
-        </View>
-      </View>
-      {/* Total */}
-      <TCWinningRangeChart
+        {/* Total */}
+        <TCWinningRangeChart
           heading={'Total'}
           totalCount={rivalryData?.all?.total ?? 0}
-          teamOneCount={rivalryData?.all?.team_id === gameData?.home_team?.user_id ? rivalryData?.all?.result?.win : 0}
-          teamTwoCount={rivalryData?.all?.opp_team_id === gameData?.away_team?.user_id ? rivalryData?.all?.result?.loose : 0}
+          teamOneCount={
+            rivalryData?.all?.team_id === getHomeID()
+              ? rivalryData?.all?.result?.win
+              : 0
+          }
+          teamTwoCount={
+            rivalryData?.all?.opp_team_id === getAwayID()
+              ? rivalryData?.all?.result?.loose
+              : 0
+          }
           drawCount={rivalryData?.all?.result?.draw ?? 0}
-      />
-      {/* First Team */}
-      <TCWinningRangeChart
-          heading={`${gameData?.home_team?.first_name} ${gameData?.home_team?.last_name}'s homes`}
+        />
+        {/* First Team */}
+        <TCWinningRangeChart
+          heading={`${getHomeName()}'s homes`}
           totalCount={rivalryData?.homeGames[0]?.total ?? 0}
-          teamOneCount={rivalryData?.homeGames[0]?.team_id === gameData?.home_team?.user_id ? rivalryData?.homeGames[0]?.result?.win : 0}
-          teamTwoCount={rivalryData?.homeGames[0]?.opp_team_id === gameData?.away_team?.user_id ? rivalryData?.homeGames[0]?.result?.loose : 0}
+          teamOneCount={
+            rivalryData?.homeGames[0]?.team_id === getHomeID()
+              ? rivalryData?.homeGames[0]?.result?.win
+              : 0
+          }
+          teamTwoCount={
+            rivalryData?.homeGames[0]?.opp_team_id
+            === getAwayID()
+              ? rivalryData?.homeGames[0]?.result?.loose
+              : 0
+          }
           drawCount={rivalryData?.homeGames[0]?.result?.draw ?? 0}
-      />
-      {/* Second Team */}
-      <TCWinningRangeChart
-          heading={`${gameData?.away_team?.first_name} ${gameData?.away_team?.last_name}'s homes`}
+        />
+        {/* Second Team */}
+        <TCWinningRangeChart
+          heading={`${getAwayName()}'s homes`}
           totalCount={rivalryData?.homeGames[1]?.total ?? 0}
-          teamOneCount={rivalryData?.homeGames[1]?.opp_team_id === gameData?.home_team?.user_id ? rivalryData?.homeGames[1]?.result?.loose : 0}
-          teamTwoCount={rivalryData?.homeGames[1]?.team_id === gameData?.away_team?.user_id ? rivalryData?.homeGames[1]?.result?.win : 0}
+          teamOneCount={
+            rivalryData?.homeGames[1]?.opp_team_id
+            === getHomeID()
+              ? rivalryData?.homeGames[1]?.result?.loose
+              : 0
+          }
+          teamTwoCount={
+            rivalryData?.homeGames[1]?.team_id === getAwayID()
+              ? rivalryData?.homeGames[1]?.result?.win
+              : 0
+          }
           drawCount={rivalryData?.homeGames[1]?.result?.draw ?? 0}
-      />
+        />
+      </View>
     </View>
-  </View>)
-}
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -85,6 +163,6 @@ const styles = StyleSheet.create({
     marginRight: 5,
     alignSelf: 'center',
   },
-})
+});
 
 export default Rivalry;

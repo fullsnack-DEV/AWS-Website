@@ -12,7 +12,7 @@ import TCUserList from '../../screens/account/connections/TCUserList';
 import AuthContext from '../../auth/context';
 import { heightPercentageToDP as hp } from '../../utils';
 
-const LikersModal = ({ likersModalRef }) => {
+const LikersModal = ({ likersModalRef, data }) => {
     const authContext = useContext(AuthContext)
     const userRole = authContext?.entity?.role;
     const handleCloseModal = useCallback(() => likersModalRef.current.close(), [likersModalRef])
@@ -29,13 +29,18 @@ const LikersModal = ({ likersModalRef }) => {
         <View style={styles.headerSeparator}/>
       </View>
     )
-
-    const renderLikers = () => (
+    const listEmptyComponent = () => (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>No Likes Yet</Text>
+      </View>
+      );
+    const renderLikers = ({ item }) => (
       <TCUserList
           onProfilePress={handleCloseModal}
-            title={'Raj Kapoor'}
+            title={item?.user?.data?.full_name}
             subTitle={'Vancouver'}
-            entityType={'player'}
+            entityType={item?.user?.data?.entity_type}
+            profileImage={item?.user?.data?.thumbnail}
             followUnfollowPress={() => {}}
             showFollowUnfollowButton={userRole === 'user'}
         />
@@ -44,7 +49,7 @@ const LikersModal = ({ likersModalRef }) => {
     const likersListHeaderComponent = () => (
       <View style={styles.likersHeaderContainer}>
         <Text style={styles.likedByText}>Liked by</Text>
-        <Text style={styles.likesCountText}>232,323 likes</Text>
+        <Text style={styles.likesCountText}>{data?.reaction_counts?.clap} likes</Text>
       </View>
     )
 
@@ -52,8 +57,9 @@ const LikersModal = ({ likersModalRef }) => {
         bounces: false,
         stickyHeaderIndices: [0],
         ListHeaderComponent: likersListHeaderComponent,
-        data: new Array(2).fill(''),
+        data: data?.own_reactions?.clap ?? [],
         renderItem: renderLikers,
+        ListEmptyComponent: listEmptyComponent,
     }
 
     return (
@@ -129,6 +135,18 @@ const styles = StyleSheet.create({
         fontFamily: fonts.RRegular,
         fontSize: 16,
     },
+    emptyText: {
+        fontSize: 18,
+        fontFamily: fonts.RMedium,
+        color: colors.grayColor,
+      },
+      emptyContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+
+      },
 });
 
 export default LikersModal;

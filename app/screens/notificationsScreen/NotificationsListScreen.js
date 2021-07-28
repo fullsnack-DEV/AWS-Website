@@ -107,6 +107,7 @@ function NotificationsListScreen({ navigation }) {
         setloading(true);
         Utils.getChallengeDetail(a, authContext)
           .then((obj) => {
+            console.log('challenge utils res:=>', obj);
             navigation.navigate(obj.screenName, {
               challengeObj: obj.challengeObj,
             });
@@ -759,7 +760,7 @@ function NotificationsListScreen({ navigation }) {
                 backgroundColor: colors.grayBackgroundColor,
               }}
               onScrollToIndexFailed={(info) => {
-                const wait = new Promise((resolve) => setTimeout(resolve, 500));
+                const wait = new Promise((resolve) => setTimeout(resolve, 100));
                 wait.then(() => {
                   refContainer.current.scrollToIndex({
                     animated: true,

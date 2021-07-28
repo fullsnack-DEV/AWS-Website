@@ -20,9 +20,9 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { parseInt } from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
+import * as Utility from '../../../utils';
 import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import {
@@ -49,6 +49,7 @@ import { getNumberSuffix } from '../../../utils/gameUtils';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import TCSmallButton from '../../../components/TCSmallButton';
 import { widthPercentageToDP } from '../../../utils';
+import TCTouchableLabel from '../../../components/TCTouchableLabel';
 
 let entity = {};
 export default function EditChallenge({ navigation, route }) {
@@ -62,6 +63,7 @@ export default function EditChallenge({ navigation, route }) {
   const [venueList, setVenueList] = useState();
   const [venue, setVenue] = useState();
   const [alterModalVisible, setAlterModalVisible] = useState(false);
+  const [defaultCard, setDefaultCard] = useState();
 
   const [startDate, setStartDate] = useState(
     new Date().setHours(new Date().getHours() + 1),
@@ -71,8 +73,15 @@ export default function EditChallenge({ navigation, route }) {
   );
 
   const [challengeObj, setChallengeObj] = useState(route?.params?.challengeObj);
-
   const [teams, setteams] = useState([]);
+
+  useEffect(() => {
+    if (isFocused) {
+      if (route?.params?.paymentMethod) {
+        setDefaultCard(route?.params?.paymentMethod);
+      }
+    }
+  }, [isFocused, route?.params?.paymentMethod]);
 
   useEffect(() => {
     if (route?.params?.selectedVenueObj) {
@@ -338,9 +347,9 @@ export default function EditChallenge({ navigation, route }) {
     body.home_team = home_id;
     body.away_team = away_id;
 
-    // if (defaultCard) {
-    //   body.source = defaultCard.id;
-    // }
+    if (defaultCard) {
+      body.source = defaultCard.id;
+    }
 
     console.log('FINAL BODY PARAMS::', body);
     updateChallenge(challengeID, body, authContext)
@@ -356,6 +365,8 @@ export default function EditChallenge({ navigation, route }) {
         }, 10);
       });
   };
+
+  console.log('challengeObj', challengeObj);
 
   return (
     <TCKeyboardView>
@@ -608,6 +619,28 @@ export default function EditChallenge({ navigation, route }) {
           }}
         />
         <TCThickDivider />
+
+        {Number(challengeObj?.game_fee?.fee) !== 0 && challengeObj?.challenger === authContext.entity.uid && <View>
+          <View >
+            <TCLabel title={'Payment Method'} style={{ marginBottom: 10 }}/>
+            <View style={styles.viewMarginStyle}>
+              <TCTouchableLabel
+            title={
+              defaultCard && defaultCard?.card?.brand && defaultCard?.card?.last4
+                ? `${Utility.capitalize(defaultCard?.card?.brand)} ****${defaultCard?.card?.last4}`
+                : strings.addOptionMessage
+            }
+            showNextArrow={true}
+            onPress={() => {
+              navigation.navigate('PaymentMethodsScreen', {
+                comeFrom: 'EditChallenge',
+              })
+            }}
+          />
+            </View>
+          </View>
+          <TCThickDivider marginTop={20} />
+        </View>}
 
         <TCChallengeTitle
           title={'Game Rules'}
