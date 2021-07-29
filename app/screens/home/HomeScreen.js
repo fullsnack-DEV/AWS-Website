@@ -418,6 +418,7 @@ const HomeScreen = ({ navigation, route }) => {
             );
             array = array.filter((e) => e !== 'total_avg');
             const teamProperty = [];
+            console.log('array Review Data Res ::--', array);
 
             for (let i = 0; i < array.length; i++) {
               const obj = {

@@ -17,7 +17,9 @@ import fonts from '../../../../../Constants/Fonts';
 import TCStep from '../../../../../components/TCStep';
 import UserReview from '../../../../../components/game/tennis/review/leaveReview/UserReview';
 import { STAR_COLOR } from '../../../../../utils';
-import { addPlayerReview, patchPlayerReview } from '../../../../../api/Games';
+import {
+ addPlayerReview, patchPlayerReview, addGameReview, patchGameReview,
+} from '../../../../../api/Games';
 import TCInnerLoader from '../../../../../components/TCInnerLoader';
 import images from '../../../../../Constants/ImagePath';
 import colors from '../../../../../Constants/Colors';
@@ -53,21 +55,41 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   );
   const { selectedTeam } = route?.params;
   console.log('selectedTeam:=>', selectedTeam);
-  const [reviewsData, setReviewsData] = useState(
-    currentForm === 1
-      ? {
-          player_id: route?.params?.gameData?.home_team?.user_id,
-          comment: '',
-          attachments: [],
-          tagged: [],
-        }
-      : {
-          player_id: route?.params?.gameData?.away_team?.user_id,
-          comment: '',
-          attachments: [],
-          tagged: [],
-        },
-  );
+
+const getReviewDataObject = () => {
+  if (currentForm === 1) {
+    if (route?.params?.gameData?.home_team?.user_id) {
+      return {
+        player_id: route?.params?.gameData?.home_team?.user_id,
+        comment: '',
+        attachments: [],
+        tagged: [],
+      }
+    }
+      return {
+        team_id: route?.params?.gameData?.home_team?.group_id,
+        comment: '',
+        attachments: [],
+        tagged: [],
+      }
+  }
+    if (route?.params?.gameData?.away_team?.user_id) {
+      return {
+        player_id: route?.params?.gameData?.away_team?.user_id,
+        comment: '',
+        attachments: [],
+        tagged: [],
+      }
+    }
+      return {
+        team_id: route?.params?.gameData?.away_team?.group_id,
+        comment: '',
+        attachments: [],
+        tagged: [],
+      }
+}
+
+  const [reviewsData, setReviewsData] = useState(getReviewDataObject());
   useEffect(() => {
     if (route?.params?.gameReviewData?.results[0]?.object) {
       const reviewObj = JSON.parse(
@@ -176,9 +198,12 @@ const LeaveReviewTennis = ({ navigation, route }) => {
       'review_id',
       'reviewer_id',
     ];
+
     if (!route?.params?.isRefereeAvailable) {
       exceptKey.push('respectforreferre');
     }
+    console.log(route?.params?.isRefereeAvailable);
+    console.log(exceptKey);
 
     let isValid = true;
     const review = _.cloneDeep(reviewsData);
@@ -304,6 +329,55 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     }
   };
 
+  const patchOrAddReviewTeam = () => {
+    if (route?.params?.gameReviewData) {
+      setLoading(true);
+      const teamReview = reviewsData
+      delete teamReview.created_at;
+      delete teamReview.entity_type;
+      const team1ID = teamReview.entity_id
+      delete teamReview.entity_id;
+      teamReview.team_id = team1ID
+      delete teamReview.game_id;
+      const reviewID = teamReview.review_id;
+      delete teamReview.review_id;
+      delete teamReview.reviewer_id;
+      delete teamReview.sport;
+
+      const reviewObj = {
+
+        ...teamReview,
+
+      };
+
+      console.log('Edited Review Object::=>', reviewObj);
+      patchGameReview(route?.params?.gameData?.game_id, reviewID, reviewObj, authContext)
+        .then(() => {
+          setLoading(false);
+          navigation.goBack();
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          navigation.goBack();
+        });
+    } else {
+      console.log('New Review Object::=>', reviewsData);
+
+      setLoading(true);
+      addGameReview(route?.params?.gameData?.game_id, reviewsData, authContext)
+        .then(() => {
+          setLoading(false);
+          navigation.goBack();
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          navigation.goBack();
+        });
+    }
+  }
+
   const uploadMediaForTeamA = () => {
     console.log('A called');
     setLoading(false); // CHANGED
@@ -315,9 +389,11 @@ const LeaveReviewTennis = ({ navigation, route }) => {
         reviewsData,
       );
       navigation.goBack();
-    } else {
-      patchOrAddReview();
-    }
+    } else if (reviewsData?.sport === 'Tennis') {
+        patchOrAddReview();
+      } else {
+        patchOrAddReviewTeam();
+      }
   };
   const uploadMediaForTeamB = () => {
     console.log('B called');
@@ -330,8 +406,10 @@ const LeaveReviewTennis = ({ navigation, route }) => {
         reviewsData,
       );
       navigation.goBack();
-    } else {
+    } else if (reviewsData?.sport === 'Tennis') {
       patchOrAddReview();
+    } else {
+      patchOrAddReviewTeam();
     }
   };
   const setTeamReview = (teamNo = 0, key = '', value = '') => {

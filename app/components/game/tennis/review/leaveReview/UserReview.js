@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  Text, View, StyleSheet, Pressable, FlatList,
-} from 'react-native';
+ Text, View, StyleSheet, Pressable, FlatList,
+ } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import fonts from '../../../../../Constants/Fonts';
 import images from '../../../../../Constants/ImagePath';
@@ -31,8 +31,8 @@ const UserReview = ({
     <View style={styles.mainContainer}>
       {/* Title */}
       <Text style={styles.titleText}>
-        Please, rate the performance of {teamData?.full_name} and leave a
-        review for the team.
+        Please, rate the performance of {teamData?.full_name} and leave a review
+        for the team.
       </Text>
 
       {/*  Logo Container */}
@@ -80,8 +80,8 @@ const UserReview = ({
             // height: 120,
             marginVertical: 10,
             alignItems: 'flex-start',
-           padding: 10,
-           paddingVertical: 20,
+            padding: 10,
+            paddingVertical: 20,
             backgroundColor: colors.offwhite,
             shadowColor: colors.googleColor,
             shadowOffset: { width: 0, height: 2 },
@@ -96,29 +96,31 @@ const UserReview = ({
               postData: null,
               searchText: reviewsData?.comment ?? '',
               // onPressDone: callthis,
-              selectedImageList:
-                reviewsData?.attachments || [],
+              selectedImageList: reviewsData?.attachments || [],
               taggedData: tags || [],
             });
           }}>
           <View>
             {reviewsData?.comment !== '' ? (
               <NewsFeedDescription
-                          disableTouch={true}
-                          descriptions={reviewsData.comment}
-                          containerStyle={{ marginHorizontal: 5, marginVertical: 2 }}
-                          tagData={tags || []}
-                          // tags={tags}
-                        />
+                disableTouch={true}
+                descriptions={reviewsData.comment}
+                containerStyle={{ marginHorizontal: 5, marginVertical: 2 }}
+                tagData={tags || []}
+                // tags={tags}
+              />
             ) : (
               <Text
-                      style={{
-                        fontFamily: fonts.RRegular,
-                        fontSize: 16,
-                        color: colors.grayColor,
-                      }}>
-                {`Describe what you thought and felt about ${teamData?.full_name} while watching or playing the game.`}
-              </Text>)}
+                style={{
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.grayColor,
+                }}>
+                {`Describe what you thought and felt about ${
+                  teamData?.full_name ?? teamData?.group_name
+                } while watching or playing the game.`}
+              </Text>
+            )}
           </View>
         </Pressable>
       </View>
@@ -133,9 +135,7 @@ const UserReview = ({
             isClose={false}
             isCounter={false}
             itemNumber={index + 1}
-            totalItemNumber={
-              reviewsData?.attachments?.length
-            }
+            totalItemNumber={reviewsData?.attachments?.length}
             onItemPress={() => {
               const imgs = reviewsData?.attachments;
               const idx = imgs.indexOf(item);
