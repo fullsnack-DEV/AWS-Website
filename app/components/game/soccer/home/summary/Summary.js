@@ -340,7 +340,8 @@ const Summary = ({
           navigation.navigate('LeaveReview', {
             gameData,
             gameReviewData: response.payload,
-            selectedTeam: selectedTeamForReview ?? playerFrom === 'home' ? 'away' : 'home',
+            selectedTeam:
+              selectedTeamForReview ?? playerFrom === 'home' ? 'away' : 'home',
             sliderAttributes,
             starAttributes,
             onPressReviewDone,
@@ -408,8 +409,9 @@ const Summary = ({
   );
 
   const renderScoreRecordingButton = useMemo(
-    () => ((isAdmin || isRefereeAdmin || isScorekeeperAdmin) && gameData.status !== GameStatus.ended) && (
-      <TCGradientButton
+    () => (isAdmin || isRefereeAdmin || isScorekeeperAdmin)
+      && gameData.status !== GameStatus.ended && (
+        <TCGradientButton
           onPress={() => navigation.navigate('SoccerRecording', { gameId: gameData?.game_id })
           }
           startGradientColor={colors.yellowColor}
@@ -425,7 +427,14 @@ const Summary = ({
           }}
         />
       ),
-    [gameData?.game_id, gameData.status, isAdmin, isRefereeAdmin, isScorekeeperAdmin, navigation],
+    [
+      gameData?.game_id,
+      gameData.status,
+      isAdmin,
+      isRefereeAdmin,
+      isScorekeeperAdmin,
+      navigation,
+    ],
   );
 
   const renderLeaveAReviewButton = useMemo(
@@ -433,6 +442,8 @@ const Summary = ({
       && gameData?.status === 'ended'
       && !checkReviewExpired(gameData?.actual_enddatetime)
       && !isAdmin
+      && gameData?.approval?.home_team?.approved
+      && gameData?.approval?.away_team?.approved
       && showLeaveReviewButton() && (
         <View style={{ backgroundColor: colors.whiteColor, marginTop: 5 }}>
           <View>
@@ -487,8 +498,11 @@ const Summary = ({
 
   const renderApproveDisapproveSection = useMemo(
     () => gameData?.status === 'ended'
-      && isAdmin && (
-        <ApproveDisapprove
+      && isAdmin
+      // && !gameData?.approval?.home_team?.approved
+      // && !gameData?.approval?.away_team?.approved
+       && (
+         <ApproveDisapprove
           getGameData={getGameData}
           navigation={navigation}
           gameId={gameData?.game_id}

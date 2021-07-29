@@ -77,8 +77,8 @@ export default function GameDetailRecord({ navigation, route }) {
     navigation.setOptions({
       headerRight: () => (
         <TouchableWithoutFeedback
-        onPress={() => actionSheet.current.show()}
-        hitSlop={getHitSlop(15)}>
+          onPress={() => actionSheet.current.show()}
+          hitSlop={getHitSlop(15)}>
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),
@@ -95,22 +95,73 @@ export default function GameDetailRecord({ navigation, route }) {
   ]);
 
   useFocusEffect(() => {
-     if (gameObj) {
+    if (gameObj) {
       startStopTimerTimeline(gameObj);
       timer = setInterval(() => {
         if (gameObj.status !== GameStatus.ended) {
           getGameRosterDetail(gameObj.game_id, false);
         }
       }, 3000);
-     }
+    }
     return () => {
       clearInterval(timer);
       clearInterval(timerForTimeline);
     };
   }, []);
 
+  // const startStopTimerTimeline = (obj) => {
+  //   console.log('Timeline object:=>', obj);
+  //   clearInterval(timer);
+  //   clearInterval(timerForTimeline);
+  //   if (obj?.status === GameStatus.ended) {
+  //     setTimelineTimer(
+  //       getTimeDifferent(
+  //         obj?.actual_enddatetime * 1000,
+  //         obj?.actual_startdatetime * 1000,
+  //       ),
+  //     );
+  //   } else if (
+  //     obj?.status === GameStatus.accepted
+  //     || obj?.status === GameStatus.reset
+  //   ) {
+  //     // getTimeDifferent(new Date().getTime(), new Date().getTime()),
+  //     setTimelineTimer('00 : 00 : 00');
+  //   } else if (obj?.status === GameStatus.paused) {
+  //     console.log('last status::=', obj?.status);
+  //     setTimelineTimer(
+  //       getTimeDifferent(
+  //         obj?.pause_datetime * 1000,
+  //         obj?.actual_startdatetime * 1000,
+  //       ),
+  //     );
+  //   } else if (date) {
+  //     if (GameStatus.playing === obj?.status) {
+  //       console.log('playing');
+  //       setTimelineTimer(
+  //         getTimeDifferent(
+  //           obj?.actual_startdatetime * 1000,
+  //           new Date(date).getTime(),
+  //         ),
+  //       );
+  //     } else {
+  //       console.log('Come here');
+  //       setTimelineTimer(
+  //         getTimeDifferent(new Date().getTime(), new Date(date).getTime()),
+  //       );
+  //     }
+  //   } else {
+  //     timerForTimeline = setInterval(() => {
+  //       setTimelineTimer(
+  //         getTimeDifferent(
+  //           new Date().getTime(),
+  //           obj?.actual_startdatetime * 1000,
+  //         ),
+  //       );
+  //     }, 1000);
+  //   }
+  // };
+
   const startStopTimerTimeline = (obj) => {
-    console.log('Timeline object:=>', obj);
     clearInterval(timer);
     clearInterval(timerForTimeline);
     if (obj?.status === GameStatus.ended) {
@@ -278,7 +329,7 @@ export default function GameDetailRecord({ navigation, route }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }
+  };
   const resetGameDetail = (gameId) => {
     setloading(true);
     resetGame(gameId, authContext)
@@ -487,53 +538,163 @@ export default function GameDetailRecord({ navigation, route }) {
           if (item === 'Goal') {
             if (selectedMemberID) {
               if (!checkMemberOnBench(selectedMemberID)) {
-                Alert.alert(
-                  'Do you want to add an assist?',
-                  'If yes, choose a player and click the assist button.',
-                  [
-                    {
-                      text: 'No',
-                      onPress: () => {
-                        lastTimeStamp = date
-                          ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
-                          : parseFloat(new Date().getTime() / 1000).toFixed(0);
-                        lastVerb = GameVerb.Goal;
-                        let body = [{}];
-                        if (
-                          selectedMemberID === '0'
-                          || selectedMemberID === '1'
-                        ) {
-                          body = [
-                            {
-                              verb: lastVerb,
-                              timestamp: Number(lastTimeStamp),
-                              team_id: actionByTeamID,
-                            },
-                          ];
-                        } else {
-                          body = [
-                            {
-                              verb: lastVerb,
-                              timestamp: Number(lastTimeStamp),
-                              team_id: actionByTeamID,
-                              doneBy: selectedMemberID,
-                            },
-                          ];
-                        }
-                        addGameRecordDetail(gameObj.game_id, body);
-                      },
-                      style: 'no',
-                    },
+                if (actionByTeamID === gameObj?.home_team?.group_id) {
+                  if (homeField.length > 1) {
+                    Alert.alert(
+                      'Do you want to add an assist?',
+                      'If yes, choose a player and click the assist button.',
+                      [
+                        {
+                          text: 'No',
+                          onPress: () => {
+                            lastTimeStamp = date
+                              ? parseFloat(
+                                  date.setMilliseconds(0, 0) / 1000,
+                                ).toFixed(0)
+                              : parseFloat(new Date().getTime() / 1000).toFixed(
+                                  0,
+                                );
+                            lastVerb = GameVerb.Goal;
+                            let body = [{}];
+                            if (
+                              selectedMemberID === '0'
+                              || selectedMemberID === '1'
+                            ) {
+                              body = [
+                                {
+                                  verb: lastVerb,
+                                  timestamp: Number(lastTimeStamp),
+                                  team_id: actionByTeamID,
+                                },
+                              ];
+                            } else {
+                              body = [
+                                {
+                                  verb: lastVerb,
+                                  timestamp: Number(lastTimeStamp),
+                                  team_id: actionByTeamID,
+                                  doneBy: selectedMemberID,
+                                },
+                              ];
+                            }
+                            addGameRecordDetail(gameObj.game_id, body);
+                          },
+                          style: 'no',
+                        },
 
-                    {
-                      text: 'Yes',
-                      onPress: () => {
-                        setIsAssist(true);
-                      },
-                    },
-                  ],
-                  { cancelable: false },
-                );
+                        {
+                          text: 'Yes',
+                          onPress: () => {
+                            setIsAssist(true);
+                          },
+                        },
+                      ],
+                      { cancelable: false },
+                    );
+                  } else {
+                    lastTimeStamp = date
+                      ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+                      : parseFloat(new Date().getTime() / 1000).toFixed(0);
+                    lastVerb = GameVerb.Goal;
+                    let body = [{}];
+                    if (selectedMemberID === '0' || selectedMemberID === '1') {
+                      body = [
+                        {
+                          verb: lastVerb,
+                          timestamp: Number(lastTimeStamp),
+                          team_id: actionByTeamID,
+                        },
+                      ];
+                    } else {
+                      body = [
+                        {
+                          verb: lastVerb,
+                          timestamp: Number(lastTimeStamp),
+                          team_id: actionByTeamID,
+                          doneBy: selectedMemberID,
+                        },
+                      ];
+                    }
+                    addGameRecordDetail(gameObj.game_id, body);
+                  }
+                } else if (awayField.length > 1) {
+                    Alert.alert(
+                      'Do you want to add an assist?',
+                      'If yes, choose a player and click the assist button.',
+                      [
+                        {
+                          text: 'No',
+                          onPress: () => {
+                            lastTimeStamp = date
+                              ? parseFloat(
+                                  date.setMilliseconds(0, 0) / 1000,
+                                ).toFixed(0)
+                              : parseFloat(new Date().getTime() / 1000).toFixed(
+                                  0,
+                                );
+                            lastVerb = GameVerb.Goal;
+                            let body = [{}];
+                            if (
+                              selectedMemberID === '0'
+                              || selectedMemberID === '1'
+                            ) {
+                              body = [
+                                {
+                                  verb: lastVerb,
+                                  timestamp: Number(lastTimeStamp),
+                                  team_id: actionByTeamID,
+                                },
+                              ];
+                            } else {
+                              body = [
+                                {
+                                  verb: lastVerb,
+                                  timestamp: Number(lastTimeStamp),
+                                  team_id: actionByTeamID,
+                                  doneBy: selectedMemberID,
+                                },
+                              ];
+                            }
+                            addGameRecordDetail(gameObj.game_id, body);
+                          },
+                          style: 'no',
+                        },
+
+                        {
+                          text: 'Yes',
+                          onPress: () => {
+                            setIsAssist(true);
+                          },
+                        },
+                      ],
+                      { cancelable: false },
+                    );
+                  } else {
+                    lastTimeStamp = date
+                      ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+                      : parseFloat(new Date().getTime() / 1000).toFixed(0);
+                    lastVerb = GameVerb.Goal;
+                    let body = [{}];
+                    if (selectedMemberID === '0' || selectedMemberID === '1') {
+                      body = [
+                        {
+                          verb: lastVerb,
+                          timestamp: Number(lastTimeStamp),
+                          team_id: actionByTeamID,
+                        },
+                      ];
+                    } else {
+                      body = [
+                        {
+                          verb: lastVerb,
+                          timestamp: Number(lastTimeStamp),
+                          team_id: actionByTeamID,
+                          doneBy: selectedMemberID,
+                        },
+                      ];
+                    }
+                    addGameRecordDetail(gameObj.game_id, body);
+                  }
               } else {
                 Alert.alert('Goal can\'t be done by on bench player');
               }
@@ -774,9 +935,9 @@ export default function GameDetailRecord({ navigation, route }) {
                 </Text>
               </View>
             </LinearGradient>
-            ) : (
-              <View style={styles.normalFieldView}>
-                <Image
+          ) : (
+            <View style={styles.normalFieldView}>
+              <Image
                 source={
                   item.profile.thumbnail
                     ? { uri: item.profile.thumbnail }
@@ -786,23 +947,23 @@ export default function GameDetailRecord({ navigation, route }) {
                 }
                 style={styles.playerImage}
               />
-                <View
+              <View
                 style={[
                   styles.dividerView,
                   { backgroundColor: colors.smallDividerColor },
                 ]}></View>
 
-                <View
+              <View
                 style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={styles.blackPlayerName}>
-                    {item.profile.first_name} {item.profile.last_name}
-                  </Text>
-                  <Text style={styles.blackPlayerName}>
-                    {item.profile.jersey_number}
-                  </Text>
-                </View>
+                <Text style={styles.blackPlayerName}>
+                  {item.profile.first_name} {item.profile.last_name}
+                </Text>
+                <Text style={styles.blackPlayerName}>
+                  {item.profile.jersey_number}
+                </Text>
               </View>
-            )}
+            </View>
+          )}
         </TouchableOpacity>
       )}
     </>
@@ -858,9 +1019,9 @@ export default function GameDetailRecord({ navigation, route }) {
                 </Text>
               </View>
             </LinearGradient>
-            ) : (
-              <View style={styles.normalFieldView}>
-                <Image
+          ) : (
+            <View style={styles.normalFieldView}>
+              <Image
                 source={
                   item.profile.thumbnail
                     ? { uri: item.profile.thumbnail }
@@ -870,22 +1031,22 @@ export default function GameDetailRecord({ navigation, route }) {
                 }
                 style={styles.playerImage}
               />
-                <View
+              <View
                 style={[
                   styles.dividerView,
                   { backgroundColor: colors.smallDividerColor },
                 ]}></View>
-                <View
+              <View
                 style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={styles.blackPlayerName} numberOfLines={1}>
-                    {item.profile.first_name} {item.profile.last_name}
-                  </Text>
-                  <Text style={styles.blackPlayerName}>
-                    {item.profile.jersey_number}
-                  </Text>
-                </View>
+                <Text style={styles.blackPlayerName} numberOfLines={1}>
+                  {item.profile.first_name} {item.profile.last_name}
+                </Text>
+                <Text style={styles.blackPlayerName}>
+                  {item.profile.jersey_number}
+                </Text>
               </View>
-            )}
+            </View>
+          )}
         </TouchableOpacity>
       )}
     </>
@@ -907,21 +1068,21 @@ export default function GameDetailRecord({ navigation, route }) {
             <View style={styles.leftView}>
               <View style={styles.profileShadow}>
                 <Image
-                      source={
-                        gameObj?.home_team?.thumbnail
-                          ? { uri: gameObj?.home_team?.thumbnail }
-                          : images.teamPlaceholder
-                      }
-                      style={styles.profileImg}
-                    />
+                  source={
+                    gameObj?.home_team?.thumbnail
+                      ? { uri: gameObj?.home_team?.thumbnail }
+                      : images.teamPlaceholder
+                  }
+                  style={styles.profileImg}
+                />
               </View>
               <Text
-                    style={
-                      gameObj?.home_team_goal <= gameObj?.away_team_goal
-                        ? styles.leftText
-                        : [styles.leftText, { color: colors.themeColor }]
-                    }
-                    numberOfLines={2}>
+                style={
+                  gameObj?.home_team_goal <= gameObj?.away_team_goal
+                    ? styles.leftText
+                    : [styles.leftText, { color: colors.themeColor }]
+                }
+                numberOfLines={2}>
                 {gameObj?.home_team?.group_name}
               </Text>
             </View>
@@ -929,32 +1090,32 @@ export default function GameDetailRecord({ navigation, route }) {
             <View style={styles.centerView}>
               <Text style={styles.centerText}>
                 <Text
-                    style={
-                      gameObj?.home_team_goal <= gameObj?.away_team_goal
-                        ? {
+                  style={
+                    gameObj?.home_team_goal <= gameObj?.away_team_goal
+                      ? {
                           fontFamily: fonts.RLight,
                           color: colors.lightBlackColor,
+                        }
+                      : {
+                          fontFamily: fonts.RBold,
+                          color: colors.themeColor,
                   }
-                        : {
-                      fontFamily: fonts.RBold,
-                      color: colors.themeColor,
-                    }
-                    }>
+                  }>
                   {gameObj?.home_team_goal} :{' '}
                 </Text>
 
                 <Text
-                    style={
-                      gameObj?.away_team_goal <= gameObj?.home_team_goal
-                        ? {
+                  style={
+                    gameObj?.away_team_goal <= gameObj?.home_team_goal
+                      ? {
                           fontFamily: fonts.RLight,
                           color: colors.lightBlackColor,
-                  }
-                        : {
+                        }
+                      : {
                           fontFamily: fonts.RBold,
                           color: colors.themeColor,
-                    }
-                    }>
+                  }
+                  }>
                   {gameObj.away_team_goal}
                 </Text>
               </Text>
@@ -962,24 +1123,24 @@ export default function GameDetailRecord({ navigation, route }) {
 
             <View style={styles.rightView}>
               <Text
-                  style={
-                    gameObj?.away_team_goal <= gameObj?.home_team_goal
-                      ? styles.rightText
-                      : [styles.rightText, { color: colors.themeColor }]
-                  }
-                  numberOfLines={2}>
+                style={
+                  gameObj?.away_team_goal <= gameObj?.home_team_goal
+                    ? styles.rightText
+                    : [styles.rightText, { color: colors.themeColor }]
+                }
+                numberOfLines={2}>
                 {gameObj?.away_team?.group_name}
               </Text>
 
               <View style={styles.profileShadow}>
                 <Image
-                    source={
-                      gameObj?.away_team?.thumbnail
-                        ? { uri: gameObj?.away_team?.thumbnail }
-                        : images.teamPlaceholder
-                    }
-                    style={styles.profileImg}
-                  />
+                  source={
+                    gameObj?.away_team?.thumbnail
+                      ? { uri: gameObj?.away_team?.thumbnail }
+                      : images.teamPlaceholder
+                  }
+                  style={styles.profileImg}
+                />
               </View>
             </View>
           </View>
@@ -1249,9 +1410,11 @@ export default function GameDetailRecord({ navigation, route }) {
                       );
                     } else {
                       lastTimeStamp = date
-                        ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+                        ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(
+                            0,
+                          )
                         : parseFloat(new Date().getTime() / 1000).toFixed(0);
-                        console.log('lastTimeStamp:=>', lastTimeStamp);
+                      console.log('lastTimeStamp:=>', lastTimeStamp);
                       lastVerb = GameVerb.Start;
                       const body = [
                         {
