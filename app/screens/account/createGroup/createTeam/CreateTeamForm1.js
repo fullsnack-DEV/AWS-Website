@@ -12,7 +12,7 @@ import {
   FlatList,
   Text,
   Dimensions,
- SafeAreaView,
+  SafeAreaView,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -22,7 +22,7 @@ import Modal from 'react-native-modal';
 
 import TCGradientButton from '../../../../components/TCGradientButton';
 import { getSportsList } from '../../../../api/Games';
-import { getUserFollowerFollowing } from '../../../../api/Users';
+import { getUserDoubleTeamFollower } from '../../../../api/Users';
 import { getGroupName } from '../../../../api/Groups';
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -92,14 +92,9 @@ export default function CreateTeamForm1({ navigation, route }) {
             item?.value?.toLowerCase() === 'Tennis Double'.toLowerCase()
             && authContext?.entity?.role === ('user' || 'player')
           ) {
-            getUserFollowerFollowing(
-              authContext?.entity?.uid,
-              'players',
-              'followers',
-              authContext,
-            )
+            getUserDoubleTeamFollower(item?.value, authContext)
               .then((res) => {
-                setFollowersData([...res?.payload]);
+                setFollowersData(res?.payload);
               })
               .catch((e) => {
                 Alert.alert(strings.alertmessagetitle, e.message);
@@ -143,12 +138,12 @@ export default function CreateTeamForm1({ navigation, route }) {
               arr.push(obj);
             }
           } else if (tempData.sport_type === 'double') {
-              const obj = {};
+            const obj = {};
             obj.label = tempData.sport_name;
             obj.value = tempData.sport_name;
             obj.type = tempData.sport_type;
             arr.push(obj);
-            }
+          }
         }
         setSportsData(arr);
         setTimeout(() => setloading(false), 1000);
@@ -162,55 +157,55 @@ export default function CreateTeamForm1({ navigation, route }) {
   };
 
   const nextOnPress = () => {
-    getGroupName(teamName, city, authContext).then((response) => {
-      setloading(false);
+    getGroupName(teamName, city, authContext)
+      .then((response) => {
+        setloading(false);
 
-      if (!response.payload) {
-        const obj = {
-          sport: sports,
-          group_name: teamName,
-          city,
-          state_abbr: state,
-          country,
-          currency_type: authContext?.entity?.obj?.currency_type,
+        if (!response.payload) {
+          const obj = {
+            sport: sports,
+            group_name: teamName,
+            city,
+            state_abbr: state,
+            country,
+            currency_type: authContext?.entity?.obj?.currency_type,
+          };
+          if (parentGroupID) {
+            obj.parent_group_id = parentGroupID;
+          }
+          console.log('Form1 Object:=>', obj);
 
-        };
-        if (parentGroupID) {
-          obj.parent_group_id = parentGroupID;
-        }
-        console.log('Form1 Object:=>', obj);
-
-        if (
-          sports.toLowerCase() === 'Tennis Double'.toLowerCase()
-          && authContext?.entity?.role === ('user' || 'player')
-        ) {
-          if (followersData?.length > 0) {
+          if (
+            sports.toLowerCase() === 'Tennis Double'.toLowerCase()
+            && authContext?.entity?.role === ('user' || 'player')
+          ) {
+            if (followersData?.length > 0) {
+              navigation.navigate('CreateTeamForm2', {
+                followersList: followersData,
+                createTeamForm1: {
+                  ...obj,
+                },
+              });
+            } else {
+              Alert.alert(strings.noFollowersTocreateTeam);
+            }
+          } else {
             navigation.navigate('CreateTeamForm2', {
-              followersList: followersData,
               createTeamForm1: {
                 ...obj,
               },
             });
-          } else {
-            Alert.alert(strings.noFollowersTocreateTeam);
           }
         } else {
-          navigation.navigate('CreateTeamForm2', {
-            createTeamForm1: {
-              ...obj,
-            },
-          });
+          Alert.alert(strings.teamExist);
         }
-      } else {
-        Alert.alert(strings.teamExist);
-      }
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
 
     // if (sports.toLowerCase() === 'tennis') {
     //   navigation.navigate('CreateTeamForm2', {
@@ -279,11 +274,11 @@ export default function CreateTeamForm1({ navigation, route }) {
       </ScrollView>
       <SafeAreaView>
         <TCGradientButton
-        isDisabled={sports === '' || teamName === '' || location === ''}
-        title={strings.nextTitle}
-        style={{ marginBottom: 5 }}
-        onPress={nextOnPress}
-      />
+          isDisabled={sports === '' || teamName === '' || location === ''}
+          title={strings.nextTitle}
+          style={{ marginBottom: 5 }}
+          onPress={nextOnPress}
+        />
       </SafeAreaView>
       <Modal
         isVisible={visibleSportsModal}

@@ -294,9 +294,7 @@ const Summary = ({
 
         console.log('Edited Review Object::=>', reviewObj);
         patchPlayerReview(
-          currentForm === 1
-            ? getHomeID()
-            : getAwayID(),
+          currentForm === 1 ? getHomeID() : getAwayID(),
           gameData?.game_id,
           reviewID,
           reviewObj,
@@ -319,9 +317,7 @@ const Summary = ({
         console.log('New Review Object::=>', reviewsData);
         setLoading(true);
         addPlayerReview(
-          currentForm === 1
-            ? getHomeID()
-            : getAwayID(),
+          currentForm === 1 ? getHomeID() : getAwayID(),
           gameData?.game_id,
           reviewsData,
           authContext,
@@ -398,8 +394,7 @@ const Summary = ({
             gameData,
             gameReviewData: response.payload,
             selectedTeam:
-              selectedTeamForReview
-              ?? getHomeID() === authContext?.entity?.uid
+              selectedTeamForReview ?? getHomeID() === authContext?.entity?.uid
                 ? 'away'
                 : 'home',
             starAttributesForPlayer,
@@ -507,6 +502,62 @@ const Summary = ({
     ],
   );
 
+  const renderLeaveAReviewButtonForDouble = useMemo(
+    () => gameData?.status === 'ended'
+      && !checkReviewExpired(gameData?.actual_enddatetime)
+      && !isAdmin
+      && showLeaveReviewButton() && (
+        <View style={{ backgroundColor: colors.whiteColor, marginTop: 5 }}>
+          <View>
+            <TCGradientButton
+              onPress={() => {
+                if (playerFrom !== '') {
+                  if (gameData?.home_review_id) {
+                    getGameReviewsData(gameData?.home_review_id);
+                  } else if (gameData?.away_review_id) {
+                    getGameReviewsData(gameData?.away_review_id);
+                  } else {
+                    navigation.navigate('LeaveReview', {
+                      gameData,
+                      selectedTeam: playerFrom === 'home' ? 'away' : 'home',
+                      sliderAttributes,
+                      starAttributes,
+                      onPressReviewDone,
+                    });
+                  }
+                } else {
+                  setIsPopupVisible(true);
+                }
+              }}
+              startGradientColor={colors.yellowColor}
+              endGradientColor={colors.themeColor}
+              title={leaveReviewText?.toUpperCase()}
+              style={{
+                borderRadius: 5,
+              }}
+              outerContainerStyle={{
+                marginHorizontal: 5,
+                marginTop: 5,
+                marginBottom: 0,
+              }}
+            />
+          </View>
+        </View>
+      ),
+    [
+      gameData,
+      getGameReviewsData,
+      isAdmin,
+      leaveReviewText,
+      navigation,
+      onPressReviewDone,
+      playerFrom,
+      showLeaveReviewButton,
+      sliderAttributes,
+      starAttributes,
+    ],
+  );
+
   const renderLeaveAReviewButton = useMemo(
     () => (
       <>
@@ -523,11 +574,17 @@ const Summary = ({
                       } else if (gameData?.away_review_id) {
                         getGameReviewsData(gameData?.away_review_id);
                       } else {
-                        console.log('starAttributesForPlayer', starAttributesForPlayer);
+                        console.log(
+                          'starAttributesForPlayer',
+                          starAttributesForPlayer,
+                        );
                         navigation.navigate('LeaveReviewTennis', {
                           gameData,
                           selectedTeam: playerFrom === 'home' ? 'away' : 'home',
-                          starAttributesForPlayer: gameData?.sport?.toLowerCase() === 'tennis' ? starAttributesForPlayer : starAttributes,
+                          starAttributesForPlayer:
+                            gameData?.sport?.toLowerCase() === 'tennis'
+                              ? starAttributesForPlayer
+                              : starAttributes,
                           isRefereeAvailable: gameData?.referees?.length > 0,
                           onPressReviewDone,
                         });
@@ -607,10 +664,19 @@ const Summary = ({
             padding: 10,
           }}>
         {renderRecordButton}
-        {renderLeaveAReviewButton}
+        {gameData?.sport?.toLowerCase() === 'tennis'
+            ? renderLeaveAReviewButton
+            : renderLeaveAReviewButtonForDouble}
       </View>
       ),
-    [isAdmin, isRefereeAdmin, renderLeaveAReviewButton, renderRecordButton],
+    [
+      gameData?.sport,
+      isAdmin,
+      isRefereeAdmin,
+      renderLeaveAReviewButton,
+      renderLeaveAReviewButtonForDouble,
+      renderRecordButton,
+    ],
   );
 
   const renderScoresSection = useMemo(
@@ -619,9 +685,11 @@ const Summary = ({
         style={{
           backgroundColor: colors.whiteColor,
         }}>
-        <Text style={[styles.title, { marginLeft: 15, marginBottom: 0 }]}>Scores</Text>
+        <Text style={[styles.title, { marginLeft: 15, marginBottom: 0 }]}>
+          Scores
+        </Text>
         <TennisScoreView scoreDataSource={gameData} />
-        <TCThickDivider marginTop={15}/>
+        <TCThickDivider marginTop={15} />
       </View>
     ),
     [gameData],
