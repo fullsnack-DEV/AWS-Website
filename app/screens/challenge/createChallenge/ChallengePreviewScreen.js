@@ -1392,7 +1392,19 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                         ? images.profilePlaceHolder
                         : images.teamPlaceholder
                     }
-                    style={styles.entityImage}
+                    style={[
+                      styles.entityImage,
+                      { opacity: challengeStatus === 'decline' ? 0.5 : 1.0 },
+                      teamObject?.thumbnail
+                        ? {
+                            height: 82,
+                            width: 82,
+                          }
+                        : {
+                            height: 75,
+                            width: 75,
+                          },
+                    ]}
                   />
                   <Text style={styles.vsText}>VS</Text>
                   <Image
@@ -1472,7 +1484,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                       const gameHome = getGameHomeScreen(challengeData?.sport);
                       if (challengeData?.game_id) {
                         navigation.navigate(gameHome, {
-                          gameId: challengeData?.game_id,
+                          gameId: teamObject?.game_id ?? challengeData?.game_id,
                         });
                       } else {
                         Alert.alert('Game ID does not exist.');

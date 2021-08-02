@@ -444,7 +444,7 @@ const HomeScreen = ({ navigation, route }) => {
     // setloading(true);
     const promises = [
       getUserDetails(uid, authContext),
-      getGroups(false, authContext),
+      getGroups(authContext),
     ];
     Promise.all(promises)
       .then(([res1, res2]) => {

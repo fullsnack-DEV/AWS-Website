@@ -45,6 +45,7 @@ import {
   getJoinedGroups,
   getTeamsOfClub,
   getGroupRequest,
+  getTeamPendingRequest,
 } from '../../api/Groups';
 
 import { getUnreadCount } from '../../api/Notificaitons';
@@ -209,11 +210,11 @@ export default function AccountScreen({ navigation, route }) {
         .catch(() => reject('error'));
     });
 
-    // useEffect(() => {
-    //   if (isFocused) {
-    //     onSwitchProfile(authContext?.entity)
-    //   }
-    // }, [isFocused]);
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     onSwitchProfile(authContext?.entity)
+  //   }
+  // }, [isFocused]);
 
   useEffect(() => {
     if (isFocused) {
@@ -256,6 +257,8 @@ export default function AccountScreen({ navigation, route }) {
 
       getUnreadCount(authContext)
         .then((response) => {
+          console.log('unread api  Called..', response.payload);
+
           const { teams } = response.payload;
           const { clubs } = response.payload;
           const switchEntityObject = [...clubs, ...teams].filter(
@@ -277,7 +280,7 @@ export default function AccountScreen({ navigation, route }) {
             );
             setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
           }
-            setloading(false);
+          setloading(false);
 
           // if (authContext?.entity?.QB) {
           //   setloading(false);
@@ -319,29 +322,46 @@ export default function AccountScreen({ navigation, route }) {
       } else {
         console.log('join group api Called..');
 
-        getJoinedGroups(true, 'team', authContext)
-          .then((response) => {
-            setTeamList(response.payload);
-
-            console.log('join group api done Called..');
-          })
-          .catch((e) => {
-            setloading(false);
-            console.log('1');
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
+        getTeamData();
+        // getJoinedGroups('team', authContext)
+        //   .then((response) => {
+        //     console.log('join group api done Called..');
+        //   })
+        //   .catch((e) => {
+        //     setloading(false);
+        //     console.log('1');
+        //     setTimeout(() => {
+        //       Alert.alert(strings.alertmessagetitle, e.message);
+        //     }, 10);
+        //   });
       }
     },
     [authContext],
   );
 
+  const getTeamData = () => new Promise((resolve, reject) => {
+      setloading(true);
+      console.log('get data Promise Called..');
+      const promises = [
+        getJoinedGroups('team', authContext),
+        getTeamPendingRequest(authContext),
+      ];
+
+      Promise.all(promises)
+        .then(([res1, res2]) => {
+          resolve(true);
+          setTeamList([...res1.payload, ...res2.payload]);
+        })
+
+        // eslint-disable-next-line prefer-promise-reject-errors
+        .catch(() => reject('error'));
+    });
+
   const getClubList = useCallback(async () => {
     // setloading(true);
     console.log('club list api Called..');
 
-    getJoinedGroups(false, 'club', authContext)
+    getJoinedGroups('club', authContext)
       .then((response) => {
         setClubList(response.payload);
         console.log('club list api done Called..');
@@ -634,16 +654,16 @@ export default function AccountScreen({ navigation, route }) {
           },
         });
       } else if (options === 'Payout Method') {
-       // navigation.navigate('PayoutMethodScreen');
-       navigation.navigate('PayoutMethodList', { comeFrom: 'AccountScreen' });
+        // navigation.navigate('PayoutMethodScreen');
+        navigation.navigate('PayoutMethodList', { comeFrom: 'AccountScreen' });
       } else if (options === 'Invoicing') {
-         navigation.navigate('InvoiceScreen');
+        navigation.navigate('InvoiceScreen');
         // navigation.navigate('MembersDetailScreen');
       } else if (options === 'Invoices') {
         navigation.navigate('UserInvoiceScreen');
-     } else if (options === 'Transactions') {
+      } else if (options === 'Transactions') {
         // navigation.navigate('InvoiceScreen');
-        Alert.alert('Transaction section')
+        Alert.alert('Transaction section');
       }
     },
     [authContext.entity, navigation],
@@ -846,17 +866,17 @@ export default function AccountScreen({ navigation, route }) {
           }}>
           <View style={styles.entityTextContainer}>
             <View style={styles.smallProfileContainer}>
-              {item.entity_type === 'team' && (
+              {item?.entity_type === 'team' && (
                 <Image
                   source={
-                    item.thumbnail
-                      ? { uri: item.thumbnail }
+                    item?.thumbnail
+                      ? { uri: item?.thumbnail }
                       : images.teamPlaceholder
                   }
                   style={styles.smallProfileImg}
                 />
               )}
-              {item.entity_type === 'club' && (
+              {item?.entity_type === 'club' && (
                 <Image
                   source={
                     item.thumbnail
@@ -870,12 +890,12 @@ export default function AccountScreen({ navigation, route }) {
 
             <Text
               style={
-                item.group_name.length > 26
+                item?.group_name?.length > 26
                   ? [styles.entityName, { width: wp('50%') }]
                   : styles.entityName
               }
               numberOfLines={1}>
-              {item.group_name}
+              {item?.group_name}
             </Text>
             <Text style={styles.teamSportView}> {item.sport}</Text>
           </View>
@@ -912,7 +932,7 @@ export default function AccountScreen({ navigation, route }) {
               style={styles.smallProfileImg}
             />
           </View>
-          <Text style={styles.entityName}>{item.group_name}</Text>
+          <Text style={styles.entityName}>{item?.group_name}</Text>
           <Text
             style={
               item.entity_type === 'team'
@@ -1672,7 +1692,7 @@ export default function AccountScreen({ navigation, route }) {
               style={styles.goToProfileButton}
               onPress={() => {
                 // Alert.alert('Manage challenge');
-                setIsSportCreateModalVisible(false)
+                setIsSportCreateModalVisible(false);
                 navigation.navigate('ManageChallengeScreen', {
                   sportName: route?.params?.createdSportName,
                 });

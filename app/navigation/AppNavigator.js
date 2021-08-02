@@ -10,14 +10,14 @@ import React, {
   useMemo,
 } from 'react';
 import {
-    Image,
-    StyleSheet,
-    NativeEventEmitter,
-    StatusBar,
-    View,
-    Alert,
-    // Dimensions,
-    // Platform,
+  Image,
+  StyleSheet,
+  NativeEventEmitter,
+  StatusBar,
+  View,
+  Alert,
+  // Dimensions,
+  // Platform,
 } from 'react-native';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -254,17 +254,15 @@ const AppNavigator = ({ navigation }) => {
     );
   }, [getUnReadMessageHandler]);
 
-  useEffect(() => {
-    getUnReadNotificationHandler();
-  }, [getUnReadNotificationHandler]);
-
   const onTabPress = useCallback(() => {
+    console.log('On tab press');
     count.current += 1;
     if (count.current === MAX_COUNT_FOR_BOTTOM_TAB) {
       count.current = 0;
+      getUnReadNotificationHandler();
       getUnReadMessageHandler();
     }
-  }, [getUnReadMessageHandler]);
+  }, [getUnReadMessageHandler, getUnReadNotificationHandler]);
 
   const renderTabIcon = useCallback(
     ({ focused }) => {
@@ -277,9 +275,9 @@ const AppNavigator = ({ navigation }) => {
                 style={styles.profileTabBorder}>
                 <View style={styles.profileImageCover}>
                   <Image
-                  source={{ uri: authContext?.entity?.obj?.thumbnail }}
-                  style={styles.profileTabImg}
-                />
+                    source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                    style={styles.profileTabImg}
+                  />
                 </View>
               </LinearGradient>
             );
@@ -313,9 +311,9 @@ const AppNavigator = ({ navigation }) => {
                 style={styles.profileTabBorder}>
                 <View style={styles.profileImageCover}>
                   <Image
-                  source={{ uri: authContext?.entity?.obj?.thumbnail }}
-                  style={styles.profileTabImg}
-                />
+                    source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                    style={styles.profileTabImg}
+                  />
                 </View>
               </LinearGradient>
             );
@@ -354,9 +352,9 @@ const AppNavigator = ({ navigation }) => {
                 style={styles.profileTabBorder}>
                 <View style={styles.profileImageCover}>
                   <Image
-                  source={{ uri: authContext?.entity?.obj?.thumbnail }}
-                  style={styles.profileTabImg}
-                 />
+                    source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                    style={styles.profileTabImg}
+                  />
                 </View>
               </LinearGradient>
             );
@@ -386,12 +384,14 @@ const AppNavigator = ({ navigation }) => {
           <Image source={images.tab_account_group} style={styles.tabImg} />
         );
       }
-    }, [authContext?.entity?.obj?.thumbnail, role],
-);
+    },
+    [authContext?.entity?.obj?.thumbnail, role],
+  );
 
-    return (
-      <Tab.Navigator
-        lazy={true}
+  return (
+    <Tab.Navigator
+      lazy={true}
+      backBehaviour="initialRoute"
       navigation={navigation}
       tabBarOptions={{
         showLabel: false,
@@ -417,7 +417,7 @@ const AppNavigator = ({ navigation }) => {
           // marginTop: 7,
         },
       }}>
-        <Tab.Screen
+      <Tab.Screen
         name="Local Home"
         component={LocalHomeNavigator}
         options={({ route }) => ({
@@ -433,7 +433,7 @@ const AppNavigator = ({ navigation }) => {
           },
         })}
       />
-        <Tab.Screen
+      <Tab.Screen
         name="News Feed"
         component={NewsFeedNavigator}
         options={({ route }) => ({
@@ -449,11 +449,11 @@ const AppNavigator = ({ navigation }) => {
           },
         })}
       />
-        <Tab.Screen
+      <Tab.Screen
         name="Message"
         component={MessageNavigator}
         options={({ route }) => ({
-            unmountOnBlur: true,
+          unmountOnBlur: true,
           ...(unreadCount > 0 && {
             tabBarBadge: unreadCount > 300 ? '300+' : unreadCount,
           }),
@@ -471,7 +471,7 @@ const AppNavigator = ({ navigation }) => {
           },
         })}
       />
-        <Tab.Screen
+      <Tab.Screen
         name="Schedule"
         component={ScheduleNavigator}
         options={({ route }) => ({
@@ -492,21 +492,21 @@ const AppNavigator = ({ navigation }) => {
         })}
       />
 
-        <Tab.Screen
+      <Tab.Screen
         name="Account"
         navigation={navigation}
         component={AccountNavigator}
         options={({ route }) => ({
           ...(unreadNotificationCount > 0 && {
-            tabBarBadge: unreadNotificationCount > 300 ? '300+' : unreadNotificationCount,
+            tabBarBadge:
+              unreadNotificationCount > 300 ? '300+' : unreadNotificationCount,
           }),
           tabBarBadgeStyle: { zIndex: 10, fontSize: 12 },
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: renderTabIcon,
-
         })}
       />
-      </Tab.Navigator>
+    </Tab.Navigator>
   );
 };
 
