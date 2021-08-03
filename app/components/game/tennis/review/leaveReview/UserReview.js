@@ -46,12 +46,12 @@ const UserReview = ({
                 : images.teamPlaceholder
             }
             resizeMode={'contain'}
-            style={{ height: 50, width: 50 }}
+            style={{ height: 50, width: 50, borderRadius: 100 }}
           />
         </View>
 
         {/*    Team name */}
-        <Text style={styles.teamName}>{teamData?.group_name}</Text>
+        <Text style={styles.teamName}>{teamData?.group_name ?? teamData?.full_name}</Text>
 
         {/*    Country Name */}
         <Text style={styles.countryName}>{teamData?.country}</Text>

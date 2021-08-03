@@ -286,6 +286,12 @@ const getRecentGameDetails = (sportName, status, location, authContext) => makeA
   authContext,
 });
 
+const getGameMemberDetails = (gameID, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}games/${gameID}/members`,
+  authContext,
+});
+
 const getShortsList = async (location, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}shorts?location=${location}`,
@@ -340,4 +346,5 @@ export {
   getShortsList,
   patchPlayerReview,
   getUserReviews,
+  getGameMemberDetails,
 }
