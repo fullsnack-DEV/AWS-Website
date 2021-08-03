@@ -28,6 +28,7 @@ import {
   patchRefereeReview,
   patchScorekeeperReview,
   addScorekeeperReview,
+  getGameMemberDetails,
 } from '../../../../../api/Games';
 import { heightPercentageToDP as hp } from '../../../../../utils';
 import MatchRecords from './MatchRecords';
@@ -191,15 +192,22 @@ const Summary = ({
     let found = false;
     let teamName = '';
 
-    getGameLineUp()
+    // getGameLineUp()
+    getGameMemberDetails(gameData?.game_id, authContext)
       .then((response) => {
-        const homeTeamPlayers = response.payload.home_team.roster.concat(
-          response.payload.home_team.non_roster,
-        );
+        // const homeTeamPlayers = response.payload.home_team.roster.concat(
+        //   response.payload.home_team.non_roster,
+        // );
 
-        const awayTeamPlayers = response.payload.away_team.roster.concat(
-          response.payload.away_team.non_roster,
-        );
+        // const awayTeamPlayers = response.payload.away_team.roster.concat(
+        //   response.payload.away_team.non_roster,
+        // );
+        const homeTeamPlayers = response.payload.home_team_members;
+
+        const awayTeamPlayers = response.payload.away_team_members;
+
+        console.log('member list:=>', response.payload);
+
         const homeTeamRoasters = [];
         const awayTeamRoasters = [];
         if (homeTeamPlayers.length > 0) {
@@ -216,7 +224,7 @@ const Summary = ({
           setLineUpUser(true);
         }
 
-        for (let i = 0; i < homeTeamPlayers.length; i++) {
+        for (let i = 0; i < homeTeamPlayers?.length; i++) {
           if (homeTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
             found = true;
             teamName = gameData?.away_team?.group_name;

@@ -18,7 +18,10 @@ import TCStep from '../../../../../components/TCStep';
 import UserReview from '../../../../../components/game/tennis/review/leaveReview/UserReview';
 import { STAR_COLOR } from '../../../../../utils';
 import {
- addPlayerReview, patchPlayerReview, addGameReview, patchGameReview,
+  addPlayerReview,
+  patchPlayerReview,
+  addGameReview,
+  patchGameReview,
 } from '../../../../../api/Games';
 import TCInnerLoader from '../../../../../components/TCInnerLoader';
 import images from '../../../../../Constants/ImagePath';
@@ -55,49 +58,51 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   );
   const { selectedTeam } = route?.params;
   console.log('selectedTeam:=>', selectedTeam);
+  console.log('route?.params?.gameReviewData', route?.params?.gameReviewData);
 
-const getReviewDataObject = () => {
-  if (currentForm === 1) {
-    if (route?.params?.gameData?.home_team?.user_id) {
-      return {
-        player_id: route?.params?.gameData?.home_team?.user_id,
-        comment: '',
-        attachments: [],
-        tagged: [],
+  const getReviewDataObject = () => {
+    if (currentForm === 1) {
+      if (route?.params?.gameData?.home_team?.user_id) {
+        return {
+          player_id: route?.params?.gameData?.home_team?.user_id,
+          comment: '',
+          attachments: [],
+          tagged: [],
+        };
       }
-    }
       return {
         team_id: route?.params?.gameData?.home_team?.group_id,
         comment: '',
         attachments: [],
         tagged: [],
-      }
-  }
+      };
+    }
     if (route?.params?.gameData?.away_team?.user_id) {
       return {
         player_id: route?.params?.gameData?.away_team?.user_id,
         comment: '',
         attachments: [],
         tagged: [],
-      }
+      };
     }
-      return {
-        team_id: route?.params?.gameData?.away_team?.group_id,
-        comment: '',
-        attachments: [],
-        tagged: [],
-      }
-}
+    return {
+      team_id: route?.params?.gameData?.away_team?.group_id,
+      comment: '',
+      attachments: [],
+      tagged: [],
+    };
+  };
 
   const [reviewsData, setReviewsData] = useState(getReviewDataObject());
   useEffect(() => {
     if (route?.params?.gameReviewData?.results[0]?.object) {
-      const reviewObj = JSON.parse(
-        route?.params?.gameReviewData?.results?.[0]?.object,
-      )?.playerReview;
+      const reviewObj = JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
+          ?.playerReview
+        ?? JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
+          ?.gameReview;
       setReviewsData({ ...reviewObj });
     }
-  }, [route?.params?.gameReviewData?.results[0]?.object]);
+  }, [route?.params?.gameReviewData?.results]);
 
   useEffect(() => {
     const obj = { ...reviewsData };
@@ -159,19 +164,6 @@ const getReviewDataObject = () => {
       ),
     });
   }, [navigation, currentForm]);
-
-  const loadSliderAttributes = (attributes) => {
-    setLoading(true);
-    const attr = {};
-    attributes.map((item) => {
-      attr[item] = 0;
-      return true;
-    });
-    let reviews = _.cloneDeep(reviewsData);
-    reviews = { ...reviews, ...attr };
-    setReviewsData({ ...reviews });
-    setLoading(false);
-  };
 
   const loadStarAttributes = (attributes) => {
     setLoading(true);
@@ -269,11 +261,18 @@ const getReviewDataObject = () => {
 
       console.log('Edited Review Object::=>', reviewObj);
       console.log(
-        `Home userID or teamID:=> ${route?.params?.gameData?.home_team?.user_id ?? route?.params?.gameData?.home_team?.group_id} home username:=> ${route?.params?.gameData?.home_team?.full_name}`,
+        `Home userID or teamID:=> ${
+          route?.params?.gameData?.home_team?.user_id
+          ?? route?.params?.gameData?.home_team?.group_id
+        } home username:=> ${route?.params?.gameData?.home_team?.full_name}`,
       );
       console.log(
-        `away userID or TeamID:=> ${route?.params?.gameData?.away_team?.user_id ?? route?.params?.gameData?.away_team?.group_id} away username:=> ${route?.params?.gameData?.away_team?.full_name}`,
+        `away userID or TeamID:=> ${
+          route?.params?.gameData?.away_team?.user_id
+          ?? route?.params?.gameData?.away_team?.group_id
+        } away username:=> ${route?.params?.gameData?.away_team?.full_name}`,
       );
+
       patchPlayerReview(
         currentForm === 1
           ? route?.params?.gameData?.home_team?.user_id
@@ -297,7 +296,7 @@ const getReviewDataObject = () => {
           );
           navigation.goBack();
         });
-    } else {
+    }
       console.log('New Review Object::=>', reviewsData);
       console.log(
         `Home userID:=> ${route?.params?.gameData?.home_team?.user_id} home username:=> ${route?.params?.gameData?.home_team?.full_name}`,
@@ -326,18 +325,17 @@ const getReviewDataObject = () => {
           );
           navigation.goBack();
         });
-    }
   };
 
   const patchOrAddReviewTeam = () => {
     if (route?.params?.gameReviewData) {
       setLoading(true);
-      const teamReview = reviewsData
+      const teamReview = reviewsData;
       delete teamReview.created_at;
       delete teamReview.entity_type;
-      const team1ID = teamReview.entity_id
+      const team1ID = teamReview.entity_id;
       delete teamReview.entity_id;
-      teamReview.team_id = team1ID
+      teamReview.team_id = team1ID;
       delete teamReview.game_id;
       const reviewID = teamReview.review_id;
       delete teamReview.review_id;
@@ -345,20 +343,27 @@ const getReviewDataObject = () => {
       delete teamReview.sport;
 
       const reviewObj = {
-
         ...teamReview,
-
       };
 
       console.log('Edited Review Object::=>', reviewObj);
-      patchGameReview(route?.params?.gameData?.game_id, reviewID, reviewObj, authContext)
+      patchGameReview(
+        route?.params?.gameData?.game_id,
+        reviewID,
+        reviewObj,
+        authContext,
+      )
         .then(() => {
           setLoading(false);
           navigation.goBack();
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          console.log('strings.alertmessagetitle, error?.message', strings.alertmessagetitle, error?.message);
+          setTimeout(
+            () => Alert.alert(strings.alertmessagetitle, error?.message),
+            100,
+          );
           navigation.goBack();
         });
     } else {
@@ -372,44 +377,55 @@ const getReviewDataObject = () => {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          setTimeout(
+            () => Alert.alert(strings.alertmessagetitle, error?.message),
+            100,
+          );
           navigation.goBack();
         });
     }
-  }
+  };
 
   const uploadMediaForTeamA = () => {
-    console.log('A called');
     setLoading(false); // CHANGED
-    const { onPressReviewDone } = route?.params;
-    if (reviewsData?.attachments?.length) {
+
+    if (reviewsData?.attachments?.length > 0) {
+      console.log('Player A-1');
+
+      const { onPressReviewDone } = route?.params;
       onPressReviewDone(
         currentForm,
         !!route?.params?.gameReviewData,
         reviewsData,
       );
-      navigation.goBack();
-    } else if (reviewsData?.sport === 'Tennis') {
-        patchOrAddReview();
-      } else {
+      navigation.goBack()
+    } else if (reviewsData?.team_id) {
+      console.log('Player A-2');
+
         patchOrAddReviewTeam();
-      }
+      } else {
+        console.log('Player A-3');
+
+        patchOrAddReview();
+       }
   };
   const uploadMediaForTeamB = () => {
-    console.log('B called');
     setLoading(false); // CHANGED
-    const { onPressReviewDone } = route?.params;
-    if (reviewsData?.attachments?.length) {
+    console.log('Player B');
+
+    if (reviewsData?.attachments?.length > 0) {
+      const { onPressReviewDone } = route?.params;
+
       onPressReviewDone(
         currentForm,
         !!route?.params?.gameReviewData,
         reviewsData,
       );
-      navigation.goBack();
-    } else if (reviewsData?.sport === 'Tennis') {
-      patchOrAddReview();
-    } else {
+      navigation.goBack()
+    } else if (reviewsData?.team_id) {
       patchOrAddReviewTeam();
+    } else {
+      patchOrAddReview();
     }
   };
   const setTeamReview = (teamNo = 0, key = '', value = '') => {

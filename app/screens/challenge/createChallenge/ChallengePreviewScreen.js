@@ -1482,8 +1482,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                     onPress={() => {
                       setModalVisible(false);
                       const gameHome = getGameHomeScreen(challengeData?.sport);
-                      if (challengeData?.game_id) {
-                        navigation.navigate(gameHome, {
+                      if (teamObject?.game_id || challengeData?.game_id) {
+                        navigation.push(gameHome, {
                           gameId: teamObject?.game_id ?? challengeData?.game_id,
                         });
                       } else {

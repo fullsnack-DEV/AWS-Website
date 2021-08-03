@@ -41,12 +41,15 @@ import TennisScoreView from '../../TennisScoreView';
 import GameFeed from '../../../common/summary/GameFeed';
 import {
   addPlayerReview,
+  addGameReview,
   getGameReview,
   patchPlayerReview,
+  patchGameReview,
   addRefereeReview,
   patchRefereeReview,
   patchScorekeeperReview,
   addScorekeeperReview,
+  getGameMemberDetails,
 } from '../../../../../api/Games';
 import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
@@ -77,6 +80,8 @@ const Summary = ({
   console.log('GAME DATA:=>', gameData);
   const imageUploadContext = useContext(ImageUploadContext);
   const authContext = useContext(AuthContext);
+
+  const [lineUpUser, setLineUpUser] = useState(false);
 
   const [playerFrom, setplayerFrom] = useState('');
   const [selectedTeamForReview, setSelectedTeamForReview] = useState();
@@ -279,85 +284,90 @@ const Summary = ({
   };
 
   const leaveReviewButtonConfigDoubleTennis = () => {
-    // let found = false;
-    // let teamName = '';
+    getGameMemberDetails(gameData?.game_id, authContext)
+      .then((response) => {
+        console.log('response of members detail api: ', response.payload);
+      })
+      .catch((error) => {
+        console.log('error L ', error);
+        Alert.alert(strings.alertmessagetitle, error);
+      });
 
-    // getGameLineUp()
-    //   .then((response) => {
-    //     const homeTeamPlayers = response.payload.home_team.roster.concat(
-    //       response.payload.home_team.non_roster,
-    //     );
+    let found = false;
+    let teamName = '';
 
-    //     const awayTeamPlayers = response.payload.away_team.roster.concat(
-    //       response.payload.away_team.non_roster,
-    //     );
-    //     const homeTeamRoasters = [];
-    //     const awayTeamRoasters = [];
-    //     if (homeTeamPlayers.length > 0) {
-    //       homeTeamPlayers.map((item) => homeTeamRoasters.push(item?.member_id));
-    //     }
-    //     if (awayTeamPlayers.length > 0) {
-    //       awayTeamPlayers.map((item) => awayTeamRoasters.push(item?.member_id));
-    //     }
-    //     if (
-    //       [...homeTeamRoasters, ...awayTeamRoasters].includes(
-    //         authContext.entity.uid,
-    //       )
-    //     ) {
-    //       setLineUpUser(true);
-    //     }
+    getGameMemberDetails(gameData?.game_id, authContext)
+      .then((response) => {
+        const homeTeamPlayers = response.payload.home_team_members;
 
-    //     for (let i = 0; i < homeTeamPlayers.length; i++) {
-    //       if (homeTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
-    //         found = true;
-    //         teamName = gameData?.away_team?.group_name;
-    //         console.log('Team name Data:=>', teamName);
-    //         if (gameData?.home_review_id || gameData?.away_review_id) {
-    //           // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
-    //           setLeaveReviewText(strings.editReviewText);
-    //         } else {
-    //           // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
-    //           setLeaveReviewText(strings.leaveReviewText);
-    //         }
-    //         setplayerFrom('home');
-    //         break;
-    //       }
-    //     }
-    //     if (!found) {
-    //       for (let i = 0; i < awayTeamPlayers.length; i++) {
-    //         if (awayTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
-    //           found = true;
-    //           teamName = gameData?.home_team?.group_name;
-    //           if (gameData?.away_review_id || gameData?.home_review_id) {
-    //             // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
-    //             setLeaveReviewText(strings.editReviewText);
-    //           } else {
-    //             // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
-    //             setLeaveReviewText(strings.leaveReviewText);
-    //           }
-    //           setplayerFrom('away');
-    //           break;
-    //         }
-    //       }
-    //       const data = [
-    //         ...(gameData?.referees ?? []),
-    //         ...(gameData?.scorekeepers ?? []),
-    //       ];
-    //       if (
-    //         data.some(
-    //           (obj) => obj?.referee_id === authContext.entity.uid
-    //             || obj?.scorekeeper_id === authContext.entity.uid,
-    //         )
-    //       ) {
-    //         setLeaveReviewText(strings.leaveOrEditReviewText);
-    //       }
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log('error L ', error);
-    //     Alert.alert(strings.alertmessagetitle, error);
-    //   });
-    setLeaveReviewText(strings.leaveReviewText);
+        const awayTeamPlayers = response.payload.away_team_members;
+
+        const homeTeamRoasters = [];
+        const awayTeamRoasters = [];
+        if (homeTeamPlayers.length > 0) {
+          homeTeamPlayers.map((item) => homeTeamRoasters.push(item?.member_id));
+        }
+        if (awayTeamPlayers.length > 0) {
+          awayTeamPlayers.map((item) => awayTeamRoasters.push(item?.member_id));
+        }
+        if (
+          [...homeTeamRoasters, ...awayTeamRoasters].includes(
+            authContext.entity.uid,
+          )
+        ) {
+          setLineUpUser(true);
+        }
+
+        for (let i = 0; i < homeTeamPlayers.length; i++) {
+          if (homeTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
+            found = true;
+            teamName = gameData?.away_team?.group_name;
+            console.log('Team name Data:=>', teamName);
+            if (gameData?.home_review_id || gameData?.away_review_id) {
+              // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+              setLeaveReviewText(strings.editReviewText);
+            } else {
+              // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+              setLeaveReviewText(strings.leaveReviewText);
+            }
+            setplayerFrom('home');
+            break;
+          }
+        }
+        if (!found) {
+          for (let i = 0; i < awayTeamPlayers.length; i++) {
+            if (awayTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
+              found = true;
+              teamName = gameData?.home_team?.group_name;
+              if (gameData?.away_review_id || gameData?.home_review_id) {
+                // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+                setLeaveReviewText(strings.editReviewText);
+              } else {
+                // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+                setLeaveReviewText(strings.leaveReviewText);
+              }
+              setplayerFrom('away');
+              break;
+            }
+          }
+          const data = [
+            ...(gameData?.referees ?? []),
+            ...(gameData?.scorekeepers ?? []),
+          ];
+          if (
+            data.some(
+              (obj) => obj?.referee_id === authContext.entity.uid
+                || obj?.scorekeeper_id === authContext.entity.uid,
+            )
+          ) {
+            setLeaveReviewText(strings.leaveOrEditReviewText);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log('error L ', error);
+        Alert.alert(strings.alertmessagetitle, error);
+      });
   };
 
   const patchOrAddReview = useCallback(
@@ -428,11 +438,60 @@ const Summary = ({
     [authContext, gameData?.game_id, getAwayID, getGameData, getHomeID],
   );
 
+  const patchOrAddReviewTeam = useCallback(({ isAlreadyReviewed, currentForm, reviewsData }) => {
+    if (isAlreadyReviewed) {
+      setLoading(true);
+      const teamReview = reviewsData
+      delete teamReview.created_at;
+      delete teamReview.entity_type;
+      const team1ID = teamReview.entity_id
+      delete teamReview.entity_id;
+      teamReview.team_id = team1ID
+      delete teamReview.game_id;
+      const reviewID = teamReview.review_id;
+      delete teamReview.review_id;
+      delete teamReview.reviewer_id;
+      delete teamReview.sport;
+
+      const reviewObj = {
+
+        ...teamReview,
+
+      };
+
+      console.log('Edited Review Object patchOrAddReviewTeam::=>', reviewObj);
+      patchGameReview(gameData?.game_id, reviewID, reviewObj, authContext)
+        .then(() => {
+          setLoading(false);
+          getGameData();
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+        });
+    } else {
+      console.log('New Review Object::=>', reviewsData);
+
+      setLoading(true);
+      addGameReview(gameData?.game_id, reviewsData, authContext)
+        .then(() => {
+          setLoading(false);
+          getGameData();
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+        });
+    }
+  }, [authContext, gameData?.game_id, getGameData])
+
   const onPressReviewDone = useCallback(
     (currentForm, isAlreadyReviewed, reviewsData) => {
       const reviewData = { ...reviewsData };
       const alreadyUrlDone = [];
       const createUrlData = [];
+
+      console.log('Main review data:', reviewData);
 
       if (reviewsData.attachments.length > 0) {
         reviewsData.attachments.map((dataItem) => {
@@ -452,17 +511,25 @@ const Summary = ({
           authContext,
           reviewData,
           imageArray,
-          (dataParams) => patchOrAddReview({
+          reviewsData?.team_id ? (dataParams) => patchOrAddReviewTeam({
+            isAlreadyReviewed,
               currentForm,
-              isAlreadyReviewed,
+              reviewsData: dataParams,
+            }) : (dataParams) => patchOrAddReview({
+            isAlreadyReviewed,
+              currentForm,
               reviewsData: dataParams,
             }),
         );
       } else {
-        patchOrAddReview({ currentForm, isAlreadyReviewed, reviewsData });
+        if (reviewsData?.team_id) {
+          patchOrAddReviewTeam({ isAlreadyReviewed, currentForm, reviewsData });
+        } else {
+          patchOrAddReview({ isAlreadyReviewed, currentForm, reviewsData });
+        }
       }
     },
-    [authContext, imageUploadContext, patchOrAddReview],
+    [authContext, imageUploadContext, patchOrAddReview, patchOrAddReviewTeam],
   );
 
   const getGameReviewsData = useCallback(
@@ -470,14 +537,9 @@ const Summary = ({
       setLoading(true);
       getGameReview(gameData?.game_id, reviewID, authContext)
         .then((response) => {
-          console.log(
-            'gameData?.referees?.length > 0',
-            gameData?.referees?.length > 0,
-          );
-          console.log(
-            'Edit Review By Review ID Response::=>',
-            response.payload,
-          );
+          console.log('starAttributesForPlayer', starAttributesForPlayer);
+          console.log('isRefereeAvailable', gameData?.referees?.length > 0);
+
           navigation.navigate('LeaveReviewTennis', {
             gameData,
             gameReviewData: response.payload,
@@ -499,15 +561,49 @@ const Summary = ({
     [
       authContext,
       gameData,
+      getHomeID,
       navigation,
       onPressReviewDone,
+      selectedTeamForReview,
       starAttributesForPlayer,
     ],
   );
 
+  const getGameReviewsDataDouble = useCallback(
+    (reviewID) => {
+      setLoading(true);
+      getGameReview(gameData?.game_id, reviewID, authContext)
+        .then((response) => {
+          navigation.navigate('LeaveReviewTennis', {
+            gameData,
+            gameReviewData: response.payload,
+            selectedTeam: playerFrom === 'home' ? 'away' : 'home',
+            starAttributesForPlayer: starAttributes,
+            isRefereeAvailable: gameData?.referees?.length > 0,
+            onPressReviewDone,
+          });
+
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
+        });
+    },
+    [
+      authContext,
+      gameData,
+      navigation,
+      onPressReviewDone,
+      playerFrom,
+      starAttributes,
+    ],
+  );
+
   const renderRecordButton = useMemo(
-    () => (gameData?.status !== 'ended' && (isAdmin || isScorekeeperAdmin || isRefereeAdmin) ? (
-      <TCGradientButton
+    () => (gameData?.status !== 'ended'
+      && (isAdmin || isScorekeeperAdmin || isRefereeAdmin) ? (
+        <TCGradientButton
           onPress={() => {
             navigation.navigate('TennisRecording', {
               gameDetail: gameData,
@@ -529,7 +625,12 @@ const Summary = ({
       ) : null),
     [gameData, isAdmin, isRefereeAdmin, isScorekeeperAdmin, navigation],
   );
-  const showLeaveReviewButton = () => isAdmin || isMember || isRefereeAdmin || isScorekeeperAdmin;
+  const showLeaveReviewButton = useCallback(() => {
+    if (gameData?.sport?.toLowerCase() === 'tennis') {
+      return isAdmin || isRefereeAdmin || isScorekeeperAdmin;
+    }
+    return lineUpUser || isRefereeAdmin || isScorekeeperAdmin;
+  }, [gameData?.sport, isAdmin, isRefereeAdmin, isScorekeeperAdmin, lineUpUser])
 
   const getRefereeReviewsData = useCallback(
     (item) => {
@@ -591,7 +692,8 @@ const Summary = ({
   );
 
   const renderLeaveAReviewButtonForDouble = useMemo(
-    () => gameData?.status === 'ended'
+    () => !loading
+    && gameData?.status === 'ended'
       && !checkReviewExpired(gameData?.actual_enddatetime)
       && showLeaveReviewButton() && (
         <View style={{ backgroundColor: colors.whiteColor, marginTop: 5 }}>
@@ -600,15 +702,15 @@ const Summary = ({
               onPress={() => {
                 if (playerFrom !== '') {
                   if (gameData?.home_review_id) {
-                    getGameReviewsData(gameData?.home_review_id);
+                    getGameReviewsDataDouble(gameData?.home_review_id);
                   } else if (gameData?.away_review_id) {
-                    getGameReviewsData(gameData?.away_review_id);
+                    getGameReviewsDataDouble(gameData?.away_review_id);
                   } else {
-                    navigation.navigate('LeaveReview', {
+                    navigation.navigate('LeaveReviewTennis', {
                       gameData,
                       selectedTeam: playerFrom === 'home' ? 'away' : 'home',
-                      sliderAttributes,
-                      starAttributes,
+                      starAttributesForPlayer: starAttributes,
+                      isRefereeAvailable: gameData?.referees?.length > 0,
                       onPressReviewDone,
                     });
                   }
@@ -634,7 +736,6 @@ const Summary = ({
     [
       gameData,
       getGameReviewsData,
-      isAdmin,
       leaveReviewText,
       navigation,
       onPressReviewDone,
@@ -648,7 +749,8 @@ const Summary = ({
   const renderLeaveAReviewButton = useMemo(
     () => (
       <>
-        {gameData?.status === 'ended'
+        {!loading
+          && gameData?.status === 'ended'
           && !checkReviewExpired(gameData?.actual_enddatetime)
           && showLeaveReviewButton() && (
             <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
@@ -731,14 +833,15 @@ const Summary = ({
     [
       gameData,
       getGameReviewsData,
-      isAdmin,
       isRefereeAdmin,
       leaveReviewText,
+      loading,
       navigation,
+      onPressReviewDone,
       playerFrom,
       showLeaveReviewButton,
-      sliderAttributes,
       starAttributes,
+      starAttributesForPlayer,
     ],
   );
 
@@ -756,7 +859,15 @@ const Summary = ({
             : renderLeaveAReviewButtonForDouble}
       </View>
       ),
-    [gameData?.sport, isAdmin, isMember, isRefereeAdmin, renderLeaveAReviewButton, renderLeaveAReviewButtonForDouble, renderRecordButton],
+    [
+      gameData?.sport,
+      isAdmin,
+      isMember,
+      isRefereeAdmin,
+      renderLeaveAReviewButton,
+      renderLeaveAReviewButtonForDouble,
+      renderRecordButton,
+    ],
   );
 
   const renderScoresSection = useMemo(
