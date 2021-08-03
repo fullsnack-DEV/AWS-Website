@@ -72,7 +72,9 @@ const Summary = ({
   gameFeedFlatListRef,
   getGameNextFeedData,
   getGameData,
+  isMember = true,
 }) => {
+  console.log('GAME DATA:=>', gameData);
   const imageUploadContext = useContext(ImageUploadContext);
   const authContext = useContext(AuthContext);
 
@@ -103,7 +105,11 @@ const Summary = ({
 
   useEffect(() => {
     if (gameData) {
-      leaveReviewButtonConfig();
+      if (gameData?.sport?.toLowerCase() === 'tennis') {
+        leaveReviewButtonConfigTennis();
+      } else {
+        leaveReviewButtonConfigDoubleTennis();
+      }
       recordGameConfiguration();
     }
   }, [gameData]);
@@ -209,7 +215,7 @@ const Summary = ({
     return gameData?.away_team?.group_id;
   };
 
-  const leaveReviewButtonConfig = () => {
+  const leaveReviewButtonConfigTennis = () => {
     let found = false;
     let teamName = '';
 
@@ -272,6 +278,88 @@ const Summary = ({
     }
   };
 
+  const leaveReviewButtonConfigDoubleTennis = () => {
+    // let found = false;
+    // let teamName = '';
+
+    // getGameLineUp()
+    //   .then((response) => {
+    //     const homeTeamPlayers = response.payload.home_team.roster.concat(
+    //       response.payload.home_team.non_roster,
+    //     );
+
+    //     const awayTeamPlayers = response.payload.away_team.roster.concat(
+    //       response.payload.away_team.non_roster,
+    //     );
+    //     const homeTeamRoasters = [];
+    //     const awayTeamRoasters = [];
+    //     if (homeTeamPlayers.length > 0) {
+    //       homeTeamPlayers.map((item) => homeTeamRoasters.push(item?.member_id));
+    //     }
+    //     if (awayTeamPlayers.length > 0) {
+    //       awayTeamPlayers.map((item) => awayTeamRoasters.push(item?.member_id));
+    //     }
+    //     if (
+    //       [...homeTeamRoasters, ...awayTeamRoasters].includes(
+    //         authContext.entity.uid,
+    //       )
+    //     ) {
+    //       setLineUpUser(true);
+    //     }
+
+    //     for (let i = 0; i < homeTeamPlayers.length; i++) {
+    //       if (homeTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
+    //         found = true;
+    //         teamName = gameData?.away_team?.group_name;
+    //         console.log('Team name Data:=>', teamName);
+    //         if (gameData?.home_review_id || gameData?.away_review_id) {
+    //           // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+    //           setLeaveReviewText(strings.editReviewText);
+    //         } else {
+    //           // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+    //           setLeaveReviewText(strings.leaveReviewText);
+    //         }
+    //         setplayerFrom('home');
+    //         break;
+    //       }
+    //     }
+    //     if (!found) {
+    //       for (let i = 0; i < awayTeamPlayers.length; i++) {
+    //         if (awayTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
+    //           found = true;
+    //           teamName = gameData?.home_team?.group_name;
+    //           if (gameData?.away_review_id || gameData?.home_review_id) {
+    //             // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+    //             setLeaveReviewText(strings.editReviewText);
+    //           } else {
+    //             // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+    //             setLeaveReviewText(strings.leaveReviewText);
+    //           }
+    //           setplayerFrom('away');
+    //           break;
+    //         }
+    //       }
+    //       const data = [
+    //         ...(gameData?.referees ?? []),
+    //         ...(gameData?.scorekeepers ?? []),
+    //       ];
+    //       if (
+    //         data.some(
+    //           (obj) => obj?.referee_id === authContext.entity.uid
+    //             || obj?.scorekeeper_id === authContext.entity.uid,
+    //         )
+    //       ) {
+    //         setLeaveReviewText(strings.leaveOrEditReviewText);
+    //       }
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log('error L ', error);
+    //     Alert.alert(strings.alertmessagetitle, error);
+    //   });
+    setLeaveReviewText(strings.leaveReviewText);
+  };
+
   const patchOrAddReview = useCallback(
     ({ isAlreadyReviewed, currentForm, reviewsData }) => {
       if (isAlreadyReviewed) {
@@ -294,9 +382,7 @@ const Summary = ({
 
         console.log('Edited Review Object::=>', reviewObj);
         patchPlayerReview(
-          currentForm === 1
-            ? getHomeID()
-            : getAwayID(),
+          currentForm === 1 ? getHomeID() : getAwayID(),
           gameData?.game_id,
           reviewID,
           reviewObj,
@@ -319,9 +405,7 @@ const Summary = ({
         console.log('New Review Object::=>', reviewsData);
         setLoading(true);
         addPlayerReview(
-          currentForm === 1
-            ? getHomeID()
-            : getAwayID(),
+          currentForm === 1 ? getHomeID() : getAwayID(),
           gameData?.game_id,
           reviewsData,
           authContext,
@@ -398,8 +482,7 @@ const Summary = ({
             gameData,
             gameReviewData: response.payload,
             selectedTeam:
-              selectedTeamForReview
-              ?? getHomeID() === authContext?.entity?.uid
+              selectedTeamForReview ?? getHomeID() === authContext?.entity?.uid
                 ? 'away'
                 : 'home',
             starAttributesForPlayer,
@@ -423,7 +506,7 @@ const Summary = ({
   );
 
   const renderRecordButton = useMemo(
-    () => (gameData?.status !== 'ended' ? (
+    () => (gameData?.status !== 'ended' && (isAdmin || isScorekeeperAdmin || isRefereeAdmin) ? (
       <TCGradientButton
           onPress={() => {
             navigation.navigate('TennisRecording', {
@@ -444,9 +527,9 @@ const Summary = ({
           }}
         />
       ) : null),
-    [gameData, isAdmin, navigation],
+    [gameData, isAdmin, isRefereeAdmin, isScorekeeperAdmin, navigation],
   );
-  const showLeaveReviewButton = () => isAdmin || isRefereeAdmin || isScorekeeperAdmin;
+  const showLeaveReviewButton = () => isAdmin || isMember || isRefereeAdmin || isScorekeeperAdmin;
 
   const getRefereeReviewsData = useCallback(
     (item) => {
@@ -507,6 +590,61 @@ const Summary = ({
     ],
   );
 
+  const renderLeaveAReviewButtonForDouble = useMemo(
+    () => gameData?.status === 'ended'
+      && !checkReviewExpired(gameData?.actual_enddatetime)
+      && showLeaveReviewButton() && (
+        <View style={{ backgroundColor: colors.whiteColor, marginTop: 5 }}>
+          <View>
+            <TCGradientButton
+              onPress={() => {
+                if (playerFrom !== '') {
+                  if (gameData?.home_review_id) {
+                    getGameReviewsData(gameData?.home_review_id);
+                  } else if (gameData?.away_review_id) {
+                    getGameReviewsData(gameData?.away_review_id);
+                  } else {
+                    navigation.navigate('LeaveReview', {
+                      gameData,
+                      selectedTeam: playerFrom === 'home' ? 'away' : 'home',
+                      sliderAttributes,
+                      starAttributes,
+                      onPressReviewDone,
+                    });
+                  }
+                } else {
+                  setIsPopupVisible(true);
+                }
+              }}
+              startGradientColor={colors.yellowColor}
+              endGradientColor={colors.themeColor}
+              title={leaveReviewText?.toUpperCase()}
+              style={{
+                borderRadius: 5,
+              }}
+              outerContainerStyle={{
+                marginHorizontal: 5,
+                marginTop: 5,
+                marginBottom: 0,
+              }}
+            />
+          </View>
+        </View>
+      ),
+    [
+      gameData,
+      getGameReviewsData,
+      isAdmin,
+      leaveReviewText,
+      navigation,
+      onPressReviewDone,
+      playerFrom,
+      showLeaveReviewButton,
+      sliderAttributes,
+      starAttributes,
+    ],
+  );
+
   const renderLeaveAReviewButton = useMemo(
     () => (
       <>
@@ -523,11 +661,17 @@ const Summary = ({
                       } else if (gameData?.away_review_id) {
                         getGameReviewsData(gameData?.away_review_id);
                       } else {
-                        console.log('starAttributesForPlayer', starAttributesForPlayer);
+                        console.log(
+                          'starAttributesForPlayer',
+                          starAttributesForPlayer,
+                        );
                         navigation.navigate('LeaveReviewTennis', {
                           gameData,
                           selectedTeam: playerFrom === 'home' ? 'away' : 'home',
-                          starAttributesForPlayer: gameData?.sport?.toLowerCase() === 'tennis' ? starAttributesForPlayer : starAttributes,
+                          starAttributesForPlayer:
+                            gameData?.sport?.toLowerCase() === 'tennis'
+                              ? starAttributesForPlayer
+                              : starAttributes,
                           isRefereeAvailable: gameData?.referees?.length > 0,
                           onPressReviewDone,
                         });
@@ -599,7 +743,7 @@ const Summary = ({
   );
 
   const renderTopButtons = useMemo(
-    () => (isAdmin || isRefereeAdmin) && (
+    () => (isAdmin || isMember || isRefereeAdmin) && (
       <View
           style={{
             marginBottom: hp(1),
@@ -607,10 +751,12 @@ const Summary = ({
             padding: 10,
           }}>
         {renderRecordButton}
-        {renderLeaveAReviewButton}
+        {gameData?.sport?.toLowerCase() === 'tennis'
+            ? renderLeaveAReviewButton
+            : renderLeaveAReviewButtonForDouble}
       </View>
       ),
-    [isAdmin, isRefereeAdmin, renderLeaveAReviewButton, renderRecordButton],
+    [gameData?.sport, isAdmin, isMember, isRefereeAdmin, renderLeaveAReviewButton, renderLeaveAReviewButtonForDouble, renderRecordButton],
   );
 
   const renderScoresSection = useMemo(
@@ -619,9 +765,11 @@ const Summary = ({
         style={{
           backgroundColor: colors.whiteColor,
         }}>
-        <Text style={[styles.title, { marginLeft: 15, marginBottom: 0 }]}>Scores</Text>
+        <Text style={[styles.title, { marginLeft: 15, marginBottom: 0 }]}>
+          Scores
+        </Text>
         <TennisScoreView scoreDataSource={gameData} />
-        <TCThickDivider marginTop={15}/>
+        <TCThickDivider marginTop={15} />
       </View>
     ),
     [gameData],

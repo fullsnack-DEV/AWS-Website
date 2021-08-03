@@ -6,13 +6,12 @@ import {
   View,
   StyleSheet,
   Image,
-
 } from 'react-native';
 
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
-export default function TCProfileView({
+export default function TCFollowerList({
   image,
   name,
   location,
@@ -37,7 +36,6 @@ export default function TCProfileView({
 const styles = StyleSheet.create({
 
   profileImage: {
-    alignSelf: 'center',
     height: 40,
     width: 40,
     borderRadius: 80,
@@ -47,6 +45,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+   // width: 200,
 
   },
   profileView: {

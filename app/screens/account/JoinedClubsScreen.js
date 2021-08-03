@@ -26,7 +26,7 @@ export default function JoinedClubsScreen() {
   const [clubList, setClubList] = useState([]);
 
   useEffect(() => {
-    getJoinedGroups(false, 'club', authContext).then((response) => {
+    getJoinedGroups('club', authContext).then((response) => {
       setClubList(response.payload);
     }).catch((e) => {
       setTimeout(() => {

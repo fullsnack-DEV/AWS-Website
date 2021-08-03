@@ -273,6 +273,7 @@ const strings = {
   descriptionPlaceholder: 'Describe yourself as a personal player',
   matchFeesTitle: 'Match Fee',
   perHourText: '(per hour)',
+  perGameText: '(per game)',
   configureEmailText:
     'Can not open mail composer, please setup mail account from seting',
 

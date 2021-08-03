@@ -8,6 +8,7 @@ import React, {
   useContext,
   useRef,
   useLayoutEffect,
+  useMemo,
 } from 'react';
 import {
   View,
@@ -22,7 +23,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import DatePicker from 'react-native-date-picker'
+import DatePicker from 'react-native-date-picker';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import moment from 'moment';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
@@ -30,7 +31,11 @@ import LinearGradient from 'react-native-linear-gradient';
 // import RNDateTimePicker from '@react-native-community/datetimepicker';
 import ActionSheet from 'react-native-actionsheet';
 import * as Utils from '../../challenge/ChallengeUtility';
-import { toggleView, heightPercentageToDP as hp, getHitSlop } from '../../../utils/index'
+import {
+  toggleView,
+  heightPercentageToDP as hp,
+  getHitSlop,
+} from '../../../utils/index';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
 import GameVerb from '../../../Constants/GameVerb';
@@ -79,7 +84,9 @@ export default function TennisRecording({ navigation, route }) {
   const matchRecordsRef = useRef();
   const headerActionSheet = useRef();
   const authContext = useContext(AuthContext);
-  const [visibleAddSetAndGameButton, setVisibleAddSetAndGameButton] = useState(false);
+  const [visibleAddSetAndGameButton, setVisibleAddSetAndGameButton] = useState(
+    false,
+  );
   const [pickerShow, setPickerShow] = useState(false);
   const [timelineTimer, setTimelineTimer] = useState('00 : 00 : 00');
   const [detailRecording, setDetailRecording] = useState(false);
@@ -104,7 +111,7 @@ export default function TennisRecording({ navigation, route }) {
     clearInterval(timer);
     clearInterval(timerForTimeline);
     setTimelineTimer('00 : 00 : 00');
-    date = null
+    date = null;
     // const { gameDetail } = route.params ?? {};
     entity = authContext.entity;
     console.log(entity);
@@ -129,8 +136,12 @@ export default function TennisRecording({ navigation, route }) {
   }, [navigation, gameObj, homeTeamMatchPoint, awayTeamMatchPoint]);
 
   useFocusEffect(() => {
-    if (![GameStatus.accepted, GameStatus.reset].includes(gameObj?.status || gameData?.status)) {
-      startStopTimerTimeline()
+    if (
+      ![GameStatus.accepted, GameStatus.reset].includes(
+        gameObj?.status || gameData?.status,
+      )
+    ) {
+      startStopTimerTimeline();
     }
     timer = setInterval(() => {
       if (gameObj && gameObj.status !== GameStatus.ended) {
@@ -147,12 +158,12 @@ export default function TennisRecording({ navigation, route }) {
     // }, 1000);
 
     return () => {
-      clearInterval(timer)
-      clearInterval(timerForTimeline)
-    }
-  }, [])
+      clearInterval(timer);
+      clearInterval(timerForTimeline);
+    };
+  }, []);
 
-  const refreshMatchRecords = () => matchRecordsRef?.current?.refreshMatchRecords()
+  const refreshMatchRecords = () => matchRecordsRef?.current?.refreshMatchRecords();
 
   const configurePeriodOpetions = (data) => {
     const opetions = ['End Match', 'Cancel'];
@@ -171,18 +182,31 @@ export default function TennisRecording({ navigation, route }) {
         opetions.unshift('End Set');
       }
     }
-    setPeriodOpetions(opetions)
+    setPeriodOpetions(opetions);
   };
   const defineServingTeamID = (data) => {
     console.log('serving:', isServingPressed);
     if (!isServingPressed) {
-      if (data?.scoreboard?.game_inprogress && data?.scoreboard?.game_inprogress?.serving_team_id) {
-        const tempServingID = data?.scoreboard?.game_inprogress?.serving_team_id
-        if (data?.scoreboard?.game_inprogress?.winner || data?.scoreboard?.game_inprogress?.end_datetime) {
-          if (tempServingID === (data?.home_team?.user_id || data?.home_team?.group_id)) {
-            setServingTeamID(data?.away_team?.user_id ?? data?.away_team?.group_id);
+      if (
+        data?.scoreboard?.game_inprogress
+        && data?.scoreboard?.game_inprogress?.serving_team_id
+      ) {
+        const tempServingID = data?.scoreboard?.game_inprogress?.serving_team_id;
+        if (
+          data?.scoreboard?.game_inprogress?.winner
+          || data?.scoreboard?.game_inprogress?.end_datetime
+        ) {
+          if (
+            tempServingID
+            === (data?.home_team?.user_id || data?.home_team?.group_id)
+          ) {
+            setServingTeamID(
+              data?.away_team?.user_id ?? data?.away_team?.group_id,
+            );
           } else {
-            setServingTeamID(data?.home_team?.user_id ?? data?.home_team?.group_id);
+            setServingTeamID(
+              data?.home_team?.user_id ?? data?.home_team?.group_id,
+            );
           }
         } else {
           setServingTeamID(tempServingID);
@@ -200,7 +224,9 @@ export default function TennisRecording({ navigation, route }) {
     console.log('SETS::->', data?.scoreboard?.sets);
     (data?.scoreboard?.sets || []).map((e) => {
       if (e?.winner) {
-        if (e.winner === (data?.home_team?.user_id || data.home_team.group_id)) {
+        if (
+          e.winner === (data?.home_team?.user_id || data.home_team.group_id)
+        ) {
           homePoint += 1;
           console.log('SETS NO::->', homePoint);
           // setHomeMatchPoint(homeTeamMatchPoint + 1)
@@ -253,35 +279,51 @@ export default function TennisRecording({ navigation, route }) {
     return moment(new Date(dateValue)).format('hh : mm a, MMM DD');
   };
   const openToast = () => {
-    toggleView(() => setShowToast(true), 500)
-    setTimeout(() => { toggleView(() => setShowToast(false), 500) }, 5000)
-  }
+    toggleView(() => setShowToast(true), 500);
+    setTimeout(() => {
+      toggleView(() => setShowToast(false), 500);
+    }, 5000);
+  };
   const renderGameButton = ({ item }) => (
     <TCGameButton
       title={item}
       onPress={() => {
         if (validate()) {
-          openToast()
+          openToast();
           if (item === 'General') {
-            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date
+              ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+              : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Score;
           } else if (item === 'Ace') {
-            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date
+              ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+              : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Ace;
           } else if (item === 'Winner') {
-            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date
+              ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+              : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Winner;
           } else if (item === 'Unforced') {
-            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date
+              ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+              : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Unforced;
           } else if (item === 'Fault') {
-            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date
+              ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+              : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Fault;
           } else if (item === 'Foot Fault') {
-            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date
+              ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+              : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.FeetFault;
           } else if (item === 'Let') {
-            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date
+              ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+              : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.LetScore;
           }
           let body = [{}];
@@ -294,7 +336,7 @@ export default function TennisRecording({ navigation, route }) {
               serving_team_id: servingTeamID,
             },
           ];
-          setUndoTeamID(selectedTeam)
+          setUndoTeamID(selectedTeam);
           addGameRecordDetail(gameObj.game_id, body);
         }
       }}
@@ -340,7 +382,7 @@ export default function TennisRecording({ navigation, route }) {
 
     let hours = Math.floor(delta / 3600) % 24;
     delta -= hours * 3600;
-    hours += (days * 24)
+    hours += days * 24;
 
     const minutes = Math.floor(delta / 60) % 60;
     delta -= minutes * 60;
@@ -371,42 +413,51 @@ export default function TennisRecording({ navigation, route }) {
   const getMessageText = () => {
     let name;
     let verbString;
-    if ((gameObj?.home_team?.user_id || gameObj.home_team.group_id) === selectedTeam) {
-      name = gameObj.home_team.first_name ? `${gameObj.home_team.first_name} ${gameObj.home_team.last_name}` : `${gameObj.home_team.group_name}`
+    if (
+      (gameObj?.home_team?.user_id || gameObj.home_team.group_id)
+      === selectedTeam
+    ) {
+      name = gameObj.home_team.first_name
+        ? `${gameObj.home_team.first_name} ${gameObj.home_team.last_name}`
+        : `${gameObj.home_team.group_name}`;
     } else {
-      name = gameObj.away_team.first_name ? `${gameObj.away_team.first_name} ${gameObj.away_team.last_name}` : `${gameObj.away_team.group_name}`
+      name = gameObj.away_team.first_name
+        ? `${gameObj.away_team.first_name} ${gameObj.away_team.last_name}`
+        : `${gameObj.away_team.group_name}`;
     }
     if (lastVerb === GameVerb.Score) {
-      verbString = 'score a point'
+      verbString = 'score a point';
     } else if (lastVerb === GameVerb.Ace) {
-      verbString = 'smacked an ace'
+      verbString = 'smacked an ace';
     } else if (lastVerb === GameVerb.Winner) {
-      verbString = 'marked as a winner'
+      verbString = 'marked as a winner';
     } else if (lastVerb === GameVerb.Unforced) {
-      verbString = 'done an unforced error'
+      verbString = 'done an unforced error';
     } else if (lastVerb === GameVerb.FeetFault) {
-      verbString = 'committed a feet fault'
+      verbString = 'committed a feet fault';
     } else if (lastVerb === GameVerb.Fault) {
-      verbString = 'committed a fault'
+      verbString = 'committed a fault';
     } else if (lastVerb === GameVerb.LetScore) {
-      verbString = 'committed a let'
+      verbString = 'committed a let';
     }
-    return `${name} ${verbString}`
-  }
+    return `${name} ${verbString}`;
+  };
   const startStopTimerTimeline = () => {
     clearInterval(timer);
     clearInterval(timerForTimeline);
     if (gameObj && gameObj.status === GameStatus.ended) {
       setTimelineTimer(
         getTimeDifferent(
-          gameObj && gameObj.actual_enddatetime && gameObj.actual_enddatetime * 1000,
+          gameObj
+            && gameObj.actual_enddatetime
+            && gameObj.actual_enddatetime * 1000,
           gameObj
             && gameObj.actual_startdatetime
             && gameObj.actual_startdatetime * 1000,
         ),
       );
     } else if (
-      ([GameStatus.accepted, GameStatus.reset].includes(gameObj?.status))
+      [GameStatus.accepted, GameStatus.reset].includes(gameObj?.status)
     ) {
       setTimelineTimer(
         getTimeDifferent(new Date().getTime(), new Date().getTime()),
@@ -428,17 +479,15 @@ export default function TennisRecording({ navigation, route }) {
         );
       } else {
         setTimelineTimer(
-          getTimeDifferent(
-            new Date().getTime(),
-            new Date(date).getTime(),
-          ),
+          getTimeDifferent(new Date().getTime(), new Date(date).getTime()),
         );
       }
     } else {
       timerForTimeline = setInterval(() => {
         setTimelineTimer(
           getTimeDifferent(
-            new Date().getTime(), gameObj?.actual_startdatetime * 1000,
+            new Date().getTime(),
+            gameObj?.actual_startdatetime * 1000,
           ),
         );
       }, 1000);
@@ -451,8 +500,8 @@ export default function TennisRecording({ navigation, route }) {
         setTimelineTimer('00 : 00 : 00');
         date = null;
         startStopTimerTimeline();
-        setHomeMatchPoint(0)
-        setAwayMatchPoint(0)
+        setHomeMatchPoint(0);
+        setAwayMatchPoint(0);
         getGameDetail(gameId, true);
         setloading(false);
 
@@ -522,7 +571,7 @@ export default function TennisRecording({ navigation, route }) {
           });
         }
         setloading(false);
-        setUndoTeamID(selectedTeam)
+        setUndoTeamID(selectedTeam);
         getGameDetail(route?.params?.gameDetail?.game_id, true);
         console.log('DECREASE GAME RESPONSE::', response.payload);
       })
@@ -537,7 +586,7 @@ export default function TennisRecording({ navigation, route }) {
     setloading(true);
     addGameRecord(gameId, params, authContext)
       .then((response) => {
-        setIsServingPressed(false)
+        setIsServingPressed(false);
         console.log('response of game record::', response);
         setloading(false);
         // setDate();
@@ -626,30 +675,47 @@ export default function TennisRecording({ navigation, route }) {
         toggleView(() => setFooterUp(false), 200);
       }
     }
-  }
+  };
   const canDecreaseRecentGoal = () => {
-    if (selectedTeam === (gameObj?.home_team?.user_id || gameObj?.home_team?.group_id)) {
+    if (
+      selectedTeam
+      === (gameObj?.home_team?.user_id || gameObj?.home_team?.group_id)
+    ) {
       if (homeTeamGamePoint <= 0) {
-        if (gameObj?.scoreboard?.sets?.reverse()?.[0].home_team_win_count <= 0) {
-          return false
+        if (
+          gameObj?.scoreboard?.sets?.reverse()?.[0].home_team_win_count <= 0
+        ) {
+          return false;
         }
 
-        return true
+        return true;
       }
 
-      return true
+      return true;
     }
 
     if (awayTeamGamePoint <= 0) {
       if (gameObj?.scoreboard?.sets?.reverse()?.[0].away_team_win_count <= 0) {
-        return false
+        return false;
       }
 
-      return true
+      return true;
     }
 
-    return true
-  }
+    return true;
+  };
+
+  const renderScoreRecordView = useMemo(() => (
+
+    <TennisMatchRecordsList
+        matchRef={matchRecordsRef}
+        isAdmin={route?.params?.isAdmin}
+        matchData={gameData}
+        visibleSetScore={false}
+        visibleAddSetGameButton={visibleAddSetAndGameButton}
+      />
+   ), [gameData, route?.params?.isAdmin, visibleAddSetAndGameButton])
+
   return (
     <>
       {gameObj && gameObj?.home_team && gameObj?.away_team && (
@@ -666,14 +732,18 @@ export default function TennisRecording({ navigation, route }) {
                         : images.profilePlaceHolder
                     }
                     style={
-                      servingTeamID === (gameObj?.home_team?.user_id || gameObj?.home_team?.group_id)
+                      servingTeamID
+                      === (gameObj?.home_team?.user_id
+                        || gameObj?.home_team?.group_id)
                         ? styles.profileImg
                         : [styles.profileImg, { borderColor: colors.themeColor }]
                     }
                   />
                 </View>
                 <Text style={styles.leftText} numberOfLines={2}>
-                  {gameObj.home_team.first_name ? `${gameObj.home_team.first_name} ${gameObj.home_team.last_name}` : `${gameObj.home_team.group_name}`}
+                  {gameObj.home_team.first_name
+                    ? `${gameObj.home_team.first_name} ${gameObj.home_team.last_name}`
+                    : `${gameObj.home_team.group_name}`}
                 </Text>
               </View>
 
@@ -688,7 +758,7 @@ export default function TennisRecording({ navigation, route }) {
                     canChange = true;
                   }
                   if (!canChange) {
-                    Alert.alert(strings.canNotChangeServing)
+                    Alert.alert(strings.canNotChangeServing);
                   } else {
                     Alert.alert(
                       'Do you want to change the serving player?',
@@ -707,13 +777,20 @@ export default function TennisRecording({ navigation, route }) {
                                 'You can not change serving player during game.',
                               );
                             } else if (
-                              (gameObj?.home_team?.user_id || gameObj?.home_team?.group_id) === servingTeamID
+                              (gameObj?.home_team?.user_id
+                                || gameObj?.home_team?.group_id) === servingTeamID
                             ) {
-                              setServingTeamID(gameObj?.away_team?.user_id ?? gameObj?.away_team?.group_id);
+                              setServingTeamID(
+                                gameObj?.away_team?.user_id
+                                  ?? gameObj?.away_team?.group_id,
+                              );
                             } else {
-                              setServingTeamID(gameObj?.home_team?.user_id ?? gameObj?.home_team?.group_id);
+                              setServingTeamID(
+                                gameObj?.home_team?.user_id
+                                  ?? gameObj?.home_team?.group_id,
+                              );
                             }
-                            setIsServingPressed(true)
+                            setIsServingPressed(true);
                             console.log('OK Pressed');
                           },
                         },
@@ -728,7 +805,9 @@ export default function TennisRecording({ navigation, route }) {
                     <Text style={styles.centerText}>{homeTeamMatchPoint}</Text>
                     <Image
                       source={
-                        servingTeamID === (gameObj?.home_team?.user_id || gameObj?.home_team?.group_id)
+                        servingTeamID
+                        === (gameObj?.home_team?.user_id
+                          || gameObj?.home_team?.group_id)
                           ? images.tennisArrowLeft
                           : images.tennisArrowRight
                       }
@@ -741,7 +820,9 @@ export default function TennisRecording({ navigation, route }) {
 
               <View style={styles.rightView}>
                 <Text style={styles.rightText} numberOfLines={2}>
-                  {gameObj.away_team.first_name ? `${gameObj.away_team.first_name} ${gameObj.away_team.last_name}` : `${gameObj.away_team.group_name}`}
+                  {gameObj.away_team.first_name
+                    ? `${gameObj.away_team.first_name} ${gameObj.away_team.last_name}`
+                    : `${gameObj.away_team.group_name}`}
                 </Text>
                 <View style={styles.profileShadow}>
                   <Image
@@ -751,7 +832,9 @@ export default function TennisRecording({ navigation, route }) {
                         : images.profilePlaceHolder
                     }
                     style={
-                      servingTeamID === (gameObj?.away_team?.user_id || gameObj?.away_team?.group_id)
+                      servingTeamID
+                      === (gameObj?.away_team?.user_id
+                        || gameObj?.away_team?.group_id)
                         ? styles.profileImg
                         : [styles.profileImg, { borderColor: colors.themeColor }]
                     }
@@ -772,73 +855,82 @@ export default function TennisRecording({ navigation, route }) {
               <TennisScoreView scoreDataSource={gameObj}/>
 
             </ScrollView> */}
-            {showToast && <LinearGradient
-                    colors={[colors.yellowColor, colors.themeColor]}
-                    style={styles.messageToast}>
-              <View style={{
-
-                flexDirection: 'row',
-                width: '100%',
-                marginLeft: 15,
-                marginRight: 15,
-                justifyContent: 'center',
-                alignItems: 'center',
-                flex: 1,
-              }}>
-                <View style={{
-                  flex: 1, flexDirection: 'row', alignItems: 'center', width: '100%',
-                }}>
-                  <View style={styles.gameRecordButton}>
-                    <View
-                          colors={colors.whiteColor}
-                          style={styles.gameRecordButton}>
-                    </View>
-                  </View>
-                  <Text numberOfLines={1} style={styles.messageText}>{getMessageText()}</Text>
-                  <TouchableOpacity onPress={() => {
-                    decreaseGameScoreRecord(
-                      undoTeamID,
-                      route?.params?.gameDetail?.game_id,
-                    );
-                    getGameDetail(route?.params?.gameDetail?.game_id, true);
-                  }}>
-                    <Image
-                  source={images.undoImage}
+            {showToast && (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.themeColor]}
+                style={styles.messageToast}>
+                <View
                   style={{
-                    width: 13,
-                    height: 13,
-                    tintColor: colors.whiteColor,
-                    marginRight: 1,
-                  }}
-                />
+                    flexDirection: 'row',
+                    width: '100%',
+                    marginLeft: 15,
+                    marginRight: 15,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flex: 1,
+                  }}>
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      width: '100%',
+                    }}>
+                    <View style={styles.gameRecordButton}>
+                      <View
+                        colors={colors.whiteColor}
+                        style={styles.gameRecordButton}></View>
+                    </View>
+                    <Text numberOfLines={1} style={styles.messageText}>
+                      {getMessageText()}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        decreaseGameScoreRecord(
+                          undoTeamID,
+                          route?.params?.gameDetail?.game_id,
+                        );
+                        getGameDetail(route?.params?.gameDetail?.game_id, true);
+                      }}>
+                      <Image
+                        source={images.undoImage}
+                        style={{
+                          width: 13,
+                          height: 13,
+                          tintColor: colors.whiteColor,
+                          marginRight: 1,
+                        }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowToast(false);
+                      // decreaseGameScoreRecord(
+                      //   selectedTeam,
+                      //   gameObj.game_id,
+                      // );
+                    }}>
+                    <Image
+                      source={images.cancelImage}
+                      style={{
+                        width: 13,
+                        height: 13,
+                        tintColor: colors.whiteColor,
+                        marginRight: 1,
+                      }}
+                    />
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={() => {
-                  setShowToast(false)
-                  // decreaseGameScoreRecord(
-                  //   selectedTeam,
-                  //   gameObj.game_id,
-                  // );
-                }}>
-                  <Image
-                  source={images.cancelImage}
-                  style={{
-                    width: 13,
-                    height: 13,
-                    tintColor: colors.whiteColor,
-                    marginRight: 1,
-                  }}
-                />
-                </TouchableOpacity>
-              </View>
-            </LinearGradient>}
+              </LinearGradient>
+            )}
 
             <ScrollView
-                onMomentumScrollEnd={handleHorizontalScroll}
+              onMomentumScrollEnd={handleHorizontalScroll}
               ref={scrollView}
               style={styles.container}
               pagingEnabled={true}
-              horizontal= {true}
+              horizontal={true}
               showsHorizontalScrollIndicator={false}
               decelerationRate={0}
               snapToInterval={width}
@@ -849,21 +941,22 @@ export default function TennisRecording({ navigation, route }) {
                 bottom: 0,
                 right: 0,
               }}>
-
               <View style={styles.view}>
-                <TennisScoreView scoreDataSource={gameObj}/>
+                <TennisScoreView scoreDataSource={gameObj} />
               </View>
               <View style={styles.view2}>
-                <TennisMatchRecordsList matchRef={matchRecordsRef} isAdmin={route?.params?.isAdmin} matchData={gameData} visibleSetScore={false} visibleAddSetGameButton={visibleAddSetAndGameButton}/>
+                {renderScoreRecordView}
               </View>
             </ScrollView>
+
           </View>
 
           {gameObj && (
-            <TouchableWithoutFeedback onPress={() => {
-              console.log('Arrow Pressed.');
-              toggleView(() => setFooterUp(!footerUp), 200)
-            }}>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                console.log('Arrow Pressed.');
+                toggleView(() => setFooterUp(!footerUp), 200);
+              }}>
               <View style={styles.bottomView}>
                 <View style={styles.timeView}>
                   <Text style={styles.timer}>{timelineTimer}</Text>
@@ -871,47 +964,60 @@ export default function TennisRecording({ navigation, route }) {
                   {pickerShow && (
                     <View style={styles.curruentTimeView}>
                       <TouchableOpacity
-                      disabled={!pickerShow}
-                      onPress={() => {
-                        // setDate();
-                        date = null;
-                        if ([GameStatus.accepted, GameStatus.reset].includes(gameObj.status)) {
-                          setTimelineTimer('00 : 00 : 00')
-                        }
-                        setPickerShow(false)
-                      }}>
+                        disabled={!pickerShow}
+                        onPress={() => {
+                          // setDate();
+                          date = null;
+                          if (
+                            [GameStatus.accepted, GameStatus.reset].includes(
+                              gameObj.status,
+                            )
+                          ) {
+                            setTimelineTimer('00 : 00 : 00');
+                          }
+                          setPickerShow(false);
+                        }}>
                         <Image
-                        source={images.curruentTime}
-                        style={styles.curruentTimeImg}
-                      />
+                          source={images.curruentTime}
+                          style={styles.curruentTimeImg}
+                        />
                       </TouchableOpacity>
                     </View>
                   )}
                   <Text
-                  style={styles.startTime}
-                  onPress={() => {
-                    setPickerShow(!pickerShow);
-                  }}>
-                    {[GameStatus.accepted, GameStatus.reset].includes(gameObj?.status)
-                      ? date ? getDateFormat(
-                        date ? new Date(date.getTime()) : new Date(),
-                      ) : 'Game start at now'
+                    style={styles.startTime}
+                    onPress={() => {
+                      setPickerShow(!pickerShow);
+                    }}>
+                    {[GameStatus.accepted, GameStatus.reset].includes(
+                      gameObj?.status,
+                    )
+                      ? date
+                        ? getDateFormat(
+                            date ? new Date(date.getTime()) : new Date(),
+                          )
+                        : 'Game start at now'
                       : getDateFormat(
-                        date ? new Date(date.getTime()) : new Date(),
-                      )}
+                          date ? new Date(date.getTime()) : new Date(),
+                        )}
                   </Text>
-                  <TouchableOpacity onPress={() => {
-                    console.log('Arrow Pressed.');
-                    toggleView(() => setFooterUp(!footerUp), 200)
-                  }}>
-                    <Image source={images.dropDownArrow} style={styles.downArrow} />
+                  <TouchableOpacity
+                    onPress={() => {
+                      console.log('Arrow Pressed.');
+                      toggleView(() => setFooterUp(!footerUp), 200);
+                    }}>
+                    <Image
+                      source={images.dropDownArrow}
+                      style={styles.downArrow}
+                    />
                   </TouchableOpacity>
                   {footerUp && <View style={styles.separatorLine}></View>}
                 </View>
-                {footerUp && <View>
-                  {pickerShow && (
-                    <View>
-                      {/* <RNDateTimePicker
+                {footerUp && (
+                  <View>
+                    {pickerShow && (
+                      <View>
+                        {/* <RNDateTimePicker
                     locale={'en'}
                     display="spinner"
                     value={date || new Date()}
@@ -921,390 +1027,454 @@ export default function TennisRecording({ navigation, route }) {
                     maximumDate={new Date()}
                     // gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date()
                   /> */}
-                      <DatePicker
-                testID={'startsDateDateTimePicker'}
-                style={styles.dateTimePickerStyle}
-                date={date || new Date()}
-                onDateChange={(dt) => {
-                  onChange(dt)
-                }}
-                minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date(gameObj.actual_startdatetime * 1000)}
-                    maximumDate={new Date()}
-              />
-                    </View>
-                  )}
-                  <View style={styles.middleViewContainer}>
-                    <TouchableWithoutFeedback
-                  style={styles.playerView}
-                  onPress={() => {
-                    setPlayer2Selected(false);
-                    setPlayer1Selected(true);
-                    setSelectedTeam(gameObj?.home_team?.user_id ?? gameObj?.home_team?.group_id);
-                    setActionByTeamID(gameObj?.home_team?.user_id ?? gameObj?.home_team?.group_id);
-                  }}>
-                      {player1Selected ? (
-                        <LinearGradient
-                      colors={[colors.yellowColor, colors.themeColor]}
-                      style={styles.playerView}>
-                          <Image
-                        source={
-                          gameObj?.home_team?.thumbnail
-                            ? { uri: gameObj?.home_team?.thumbnail }
-                            : images.profilePlaceHolder
-                        }
-                        style={styles.playerProfile}
-                      />
-                          <Text style={styles.selectedPlayerNameText}>
-                            {gameObj?.home_team?.first_name ? `${gameObj?.home_team?.first_name} ${gameObj?.home_team?.last_name}` : `${gameObj?.home_team?.group_name}`}
-                          </Text>
-                        </LinearGradient>
-                      ) : (
-                        <View style={styles.playerView}>
-                          <Image
-                        source={
-                          gameObj?.home_team?.thumbnail
-                            ? { uri: gameObj?.home_team?.thumbnail }
-                            : images.profilePlaceHolder
-                        }
-                        style={styles.playerProfile}
-                      />
-                          <Text style={styles.playerNameText}>
-                            {gameObj?.home_team?.first_name ? `${gameObj?.home_team?.first_name} ${gameObj?.home_team?.last_name}` : `${gameObj?.home_team?.group_name}`}
-
-                          </Text>
-                        </View>
-                      )}
-                    </TouchableWithoutFeedback>
-                    <Text style={{ marginLeft: 10, marginRight: 10 }}>:</Text>
-                    <TouchableWithoutFeedback
-                  style={styles.playerView}
-                  onPress={() => {
-                    setPlayer1Selected(false);
-                    setPlayer2Selected(true);
-                    setSelectedTeam(gameObj?.away_team?.user_id ?? gameObj?.away_team?.group_id);
-                    setActionByTeamID(gameObj?.away_team?.user_id ?? gameObj?.away_team?.group_id);
-                  }}>
-                      {player2Selected ? (
-                        <LinearGradient
-                      colors={[colors.yellowColor, colors.themeColor]}
-                      style={styles.playerView}>
-                          <Image
-                        source={
-                          gameObj?.away_team?.thumbnail
-                            ? { uri: gameObj?.away_team?.thumbnail }
-                            : images.profilePlaceHolder
-                        }
-                        style={styles.playerProfile}
-                      />
-                          <Text style={styles.selectedPlayerNameText}>
-                            {gameObj?.away_team?.first_name ? `${gameObj?.away_team?.first_name} ${gameObj?.away_team?.last_name}` : `${gameObj?.away_team?.group_name}`}
-
-                          </Text>
-                        </LinearGradient>
-                      ) : (
-                        <View style={styles.playerView}>
-                          <Image
-                        source={
-                          gameObj?.away_team?.thumbnail
-                            ? { uri: gameObj?.away_team?.thumbnail }
-                            : images.profilePlaceHolder
-                        }
-                        style={styles.playerProfile}
-                      />
-                          <Text numberOfLines={2} style={styles.playerNameText}>
-                            {gameObj?.away_team?.first_name ? `${gameObj?.away_team?.first_name} ${gameObj?.away_team?.last_name}` : `${gameObj?.away_team?.group_name}`}
-
-                          </Text>
-                        </View>
-                      )}
-                    </TouchableWithoutFeedback>
-                  </View>
-                  <View style={styles.scoreView}>
-                    <Text style={styles.playerScore}>{homeTeamGamePoint}</Text>
-                    <Text style={styles.playerScore}>{awayTeamGamePoint}</Text>
-                  </View>
-                  {!detailRecording && (
-                    <View style={styles.plusMinusContainer}>
+                        <DatePicker
+                          testID={'startsDateDateTimePicker'}
+                          style={styles.dateTimePickerStyle}
+                          date={date || new Date()}
+                          onDateChange={(dt) => {
+                            onChange(dt);
+                          }}
+                          minimumDate={
+                            gameObj.status === GameStatus.accepted
+                            || gameObj.status === GameStatus.reset
+                              ? new Date(1950, 0, 1)
+                              : new Date(gameObj.actual_startdatetime * 1000)
+                          }
+                          maximumDate={new Date()}
+                        />
+                      </View>
+                    )}
+                    <View style={styles.middleViewContainer}>
                       <TouchableWithoutFeedback
-                    onPress={() => {
-                      if (gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset) {
-                        Alert.alert('Game not started yet.');
-                      } else if (gameObj.status === GameStatus.paused) {
-                        Alert.alert('Game is paused.');
-                      } else if (gameObj.status === GameStatus.ended) {
-                        Alert.alert('Game is ended.');
-                      } else if (!selectedTeam) {
-                        Alert.alert('Select Team');
-                      } else {
-                        lastTimeStamp = date
-                          ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
-                          : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
-                        lastVerb = GameVerb.Score;
-                        const body = [
-                          {
-                            verb: lastVerb,
-                            timestamp: lastTimeStamp,
-                            team_id: selectedTeam,
-                            serving_team_id: servingTeamID,
-                          },
-                        ];
-                        setUndoTeamID(selectedTeam)
-                        openToast()
-                        addGameRecordDetail(gameObj.game_id, body);
-                      }
-                    }}>
-                        <Image
-                      source={images.gameOrangePlus}
-                      style={{
-                        height: 76,
-                        width: 76,
-                        resizeMode: 'cover',
-                        marginLeft: 50,
-                      }}
-                    />
+                        style={styles.playerView}
+                        onPress={() => {
+                          setPlayer2Selected(false);
+                          setPlayer1Selected(true);
+                          setSelectedTeam(
+                            gameObj?.home_team?.user_id
+                              ?? gameObj?.home_team?.group_id,
+                          );
+                          setActionByTeamID(
+                            gameObj?.home_team?.user_id
+                              ?? gameObj?.home_team?.group_id,
+                          );
+                        }}>
+                        {player1Selected ? (
+                          <LinearGradient
+                            colors={[colors.yellowColor, colors.themeColor]}
+                            style={styles.playerView}>
+                            <Image
+                              source={
+                                gameObj?.home_team?.thumbnail
+                                  ? { uri: gameObj?.home_team?.thumbnail }
+                                  : images.profilePlaceHolder
+                              }
+                              style={styles.playerProfile}
+                            />
+                            <Text style={styles.selectedPlayerNameText}>
+                              {gameObj?.home_team?.first_name
+                                ? `${gameObj?.home_team?.first_name} ${gameObj?.home_team?.last_name}`
+                                : `${gameObj?.home_team?.group_name}`}
+                            </Text>
+                          </LinearGradient>
+                        ) : (
+                          <View style={styles.playerView}>
+                            <Image
+                              source={
+                                gameObj?.home_team?.thumbnail
+                                  ? { uri: gameObj?.home_team?.thumbnail }
+                                  : images.profilePlaceHolder
+                              }
+                              style={styles.playerProfile}
+                            />
+                            <Text style={styles.playerNameText}>
+                              {gameObj?.home_team?.first_name
+                                ? `${gameObj?.home_team?.first_name} ${gameObj?.home_team?.last_name}`
+                                : `${gameObj?.home_team?.group_name}`}
+                            </Text>
+                          </View>
+                        )}
                       </TouchableWithoutFeedback>
+                      <Text style={{ marginLeft: 10, marginRight: 10 }}>:</Text>
                       <TouchableWithoutFeedback
-                    onPress={() => {
-                      if (
-                        gameObj.status === GameStatus.accepted
-                        || gameObj.status === GameStatus.reset
-                      ) {
-                        Alert.alert(strings.gameNotStarted);
-                      } else if (gameObj.status === GameStatus.paused) {
-                        Alert.alert(strings.gamePaused);
-                      } else if (gameObj.status === GameStatus.ended) {
-                        Alert.alert(strings.gameEnded);
-                      } else if (!selectedTeam) {
-                        Alert.alert(strings.selectTeam);
-                      } else if
-                      (!canDecreaseRecentGoal()) {
-                        Alert.alert(strings.noWonPoint);
-                      } else if (!canDecreaseRecentGoal()) {
-                        Alert.alert(strings.noWonPoint);
-                      } else {
-                        Alert.alert(
-                          strings.recentPointDelete,
-                          '',
-                          [
-                            {
-                              text: 'Cancel',
-                              style: 'cancel',
-                            },
-                            {
-                              text: 'Ok',
-                              style: 'default',
-                              onPress: () => {
-                                decreaseGameScoreRecord(
-                                  selectedTeam,
-                                  gameObj.game_id,
+                        style={styles.playerView}
+                        onPress={() => {
+                          setPlayer1Selected(false);
+                          setPlayer2Selected(true);
+                          setSelectedTeam(
+                            gameObj?.away_team?.user_id
+                              ?? gameObj?.away_team?.group_id,
+                          );
+                          setActionByTeamID(
+                            gameObj?.away_team?.user_id
+                              ?? gameObj?.away_team?.group_id,
+                          );
+                        }}>
+                        {player2Selected ? (
+                          <LinearGradient
+                            colors={[colors.yellowColor, colors.themeColor]}
+                            style={styles.playerView}>
+                            <Image
+                              source={
+                                gameObj?.away_team?.thumbnail
+                                  ? { uri: gameObj?.away_team?.thumbnail }
+                                  : images.profilePlaceHolder
+                              }
+                              style={styles.playerProfile}
+                            />
+                            <Text style={styles.selectedPlayerNameText}>
+                              {gameObj?.away_team?.first_name
+                                ? `${gameObj?.away_team?.first_name} ${gameObj?.away_team?.last_name}`
+                                : `${gameObj?.away_team?.group_name}`}
+                            </Text>
+                          </LinearGradient>
+                        ) : (
+                          <View style={styles.playerView}>
+                            <Image
+                              source={
+                                gameObj?.away_team?.thumbnail
+                                  ? { uri: gameObj?.away_team?.thumbnail }
+                                  : images.profilePlaceHolder
+                              }
+                              style={styles.playerProfile}
+                            />
+                            <Text
+                              numberOfLines={2}
+                              style={styles.playerNameText}>
+                              {gameObj?.away_team?.first_name
+                                ? `${gameObj?.away_team?.first_name} ${gameObj?.away_team?.last_name}`
+                                : `${gameObj?.away_team?.group_name}`}
+                            </Text>
+                          </View>
+                        )}
+                      </TouchableWithoutFeedback>
+                    </View>
+                    <View style={styles.scoreView}>
+                      <Text style={styles.playerScore}>
+                        {homeTeamGamePoint}
+                      </Text>
+                      <Text style={styles.playerScore}>
+                        {awayTeamGamePoint}
+                      </Text>
+                    </View>
+                    {!detailRecording && (
+                      <View style={styles.plusMinusContainer}>
+                        <TouchableWithoutFeedback
+                          onPress={() => {
+                            if (
+                              gameObj.status === GameStatus.accepted
+                              || gameObj.status === GameStatus.reset
+                            ) {
+                              Alert.alert('Game not started yet.');
+                            } else if (gameObj.status === GameStatus.paused) {
+                              Alert.alert('Game is paused.');
+                            } else if (gameObj.status === GameStatus.ended) {
+                              Alert.alert('Game is ended.');
+                            } else if (!selectedTeam) {
+                              Alert.alert('Select Team');
+                            } else {
+                              lastTimeStamp = date
+                                ? parseFloat(
+                                    date.setMilliseconds(0, 0) / 1000,
+                                  ).toFixed(0)
+                                : parseFloat(
+                                    new Date().setMilliseconds(0, 0) / 1000,
+                                  ).toFixed(0);
+                              lastVerb = GameVerb.Score;
+                              const body = [
+                                {
+                                  verb: lastVerb,
+                                  timestamp: lastTimeStamp,
+                                  team_id: selectedTeam,
+                                  serving_team_id: servingTeamID,
+                                },
+                              ];
+                              setUndoTeamID(selectedTeam);
+                              openToast();
+                              addGameRecordDetail(gameObj.game_id, body);
+                            }
+                          }}>
+                          <Image
+                            source={images.gameOrangePlus}
+                            style={{
+                              height: 76,
+                              width: 76,
+                              resizeMode: 'cover',
+                              marginLeft: 50,
+                            }}
+                          />
+                        </TouchableWithoutFeedback>
+                        <TouchableWithoutFeedback
+                          onPress={() => {
+                            if (
+                              gameObj.status === GameStatus.accepted
+                              || gameObj.status === GameStatus.reset
+                            ) {
+                              Alert.alert(strings.gameNotStarted);
+                            } else if (gameObj.status === GameStatus.paused) {
+                              Alert.alert(strings.gamePaused);
+                            } else if (gameObj.status === GameStatus.ended) {
+                              Alert.alert(strings.gameEnded);
+                            } else if (!selectedTeam) {
+                              Alert.alert(strings.selectTeam);
+                            } else if (!canDecreaseRecentGoal()) {
+                              Alert.alert(strings.noWonPoint);
+                            } else if (!canDecreaseRecentGoal()) {
+                              Alert.alert(strings.noWonPoint);
+                            } else {
+                              Alert.alert(
+                                strings.recentPointDelete,
+                                '',
+                                [
+                                  {
+                                    text: 'Cancel',
+                                    style: 'cancel',
+                                  },
+                                  {
+                                    text: 'Ok',
+                                    style: 'default',
+                                    onPress: () => {
+                                      decreaseGameScoreRecord(
+                                        selectedTeam,
+                                        gameObj.game_id,
+                                      );
+                                    },
+                                  },
+                                ],
+                                { cancelable: false },
+                              );
+                            }
+                          }}>
+                          <Image
+                            source={images.deleteRecentGoal}
+                            style={{
+                              height: 34,
+                              width: 34,
+                              resizeMode: 'cover',
+                              marginLeft: 15,
+                            }}
+                          />
+                        </TouchableWithoutFeedback>
+                      </View>
+                    )}
+                    <TCThinDivider width={'100%'} />
+                    {detailRecording && (
+                      <FlatList
+                        data={recordButtonList}
+                        renderItem={renderGameButton}
+                        keyExtractor={(item, index) => index.toString()}
+                        showsHorizontalScrollIndicator={false}
+                        horizontal={true}
+                        style={
+                          gameObj.status === GameStatus.accepted
+                          || gameObj.status === GameStatus.reset
+                          || gameObj.status === GameStatus.ended
+                            ? [styles.buttonListView, { opacity: 0.4 }]
+                            : styles.buttonListView
+                        }
+                      />
+                    )}
+                    <View />
+                    <TCThinDivider width={'100%'} />
+                    <ScrollView
+                      horizontal={true}
+                      style={{ alignSelf: 'center' }}
+                      showsHorizontalScrollIndicator={false}>
+                      <View style={styles.gameRecordButtonView}>
+                        {(gameObj.status === GameStatus.accepted
+                          || gameObj.status === GameStatus.reset) && (
+                            <TCGameButton
+                            title="Start"
+                            onPress={() => {
+                              if (
+                                gameObj?.challenge_status
+                                === (ReservationStatus.pendingrequestpayment
+                                  || ReservationStatus.pendingpayment)
+                              ) {
+                                Alert.alert(
+                                  'Game cannot be start unless the payment goes through',
                                 );
-                              },
-                            },
-                          ],
-                          { cancelable: false },
-                        );
-                      }
-                    }}>
-                        <Image
-                      source={images.deleteRecentGoal}
-                      style={{
-                        height: 34,
-                        width: 34,
-                        resizeMode: 'cover',
-                        marginLeft: 15,
-                      }}
-                    />
-                      </TouchableWithoutFeedback>
-                    </View>
-                  )}
-                  <TCThinDivider width={'100%'} />
-                  {detailRecording && (
-                    <FlatList
-                  data={recordButtonList}
-                  renderItem={renderGameButton}
-                  keyExtractor={(item, index) => index.toString()}
-                  showsHorizontalScrollIndicator={false}
-                  horizontal={true}
-                  style={
-                    gameObj.status === GameStatus.accepted
-                    || gameObj.status === GameStatus.reset
-                    || gameObj.status === GameStatus.ended
-                      ? [styles.buttonListView, { opacity: 0.4 }]
-                      : styles.buttonListView
-                  }
-                />
-                  )}
-                  <View/>
-                  <TCThinDivider width={'100%'} />
-                  <ScrollView
-                  horizontal={true} style={{ alignSelf: 'center' }}
-                  showsHorizontalScrollIndicator={false}>
-                    <View style={styles.gameRecordButtonView}>
-                      {(gameObj.status === GameStatus.accepted
-                  || gameObj.status === GameStatus.reset) && (
-                    <TCGameButton
-                    title="Start"
-                    onPress={() => {
-                      if (
-                        gameObj?.challenge_status
-                        === (ReservationStatus.pendingrequestpayment
-                          || ReservationStatus.pendingpayment)
-                      ) {
-                        Alert.alert(
-                          'Game cannot be start unless the payment goes through',
-                        );
-                      } else {
-                        lastTimeStamp = date
-                          ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
-                          : parseFloat(new Date().getTime() / 1000).toFixed(0);
-                        lastVerb = GameVerb.Start;
-                        const body = [
-                          {
-                            verb: lastVerb,
-                            timestamp: lastTimeStamp,
-                            team_id: actionByTeamID,
-                          },
-                        ];
-                        addGameRecordDetail(gameObj.game_id, body);
-                      }
-                    }}
-                    gradientColor={[colors.yellowColor, colors.themeColor]}
-                    imageName={images.gameStart}
-                    textColor={colors.themeColor}
-                    imageSize={16}
-                  />
-                      )}
-                      {gameObj.status === GameStatus.paused && (
-                        <TCGameButton
-                    title="Resume"
-                    onPress={() => {
-                      lastTimeStamp = parseFloat(new Date().getTime() / 1000).toFixed(0);
-                      lastVerb = GameVerb.Resume;
-                      const body = [
-                        {
-                          verb: lastVerb,
-                          timestamp: lastTimeStamp,
-                          team_id: actionByTeamID,
-                        },
-                      ];
-                      addGameRecordDetail(gameObj.game_id, body);
-                    }}
-                    gradientColor={[colors.yellowColor, colors.themeColor]}
-                    imageName={images.gameStart}
-                    textColor={colors.themeColor}
-                    imageSize={16}
-                  />
-                      )}
-                      {(gameObj.status === GameStatus.playing
-                  || gameObj.status === GameStatus.resume) && (
-                    <TCGameButton
-                    title="Pause"
-                    onPress={() => {
-                      lastTimeStamp = parseFloat(new Date().getTime() / 1000).toFixed(0);
-                      lastVerb = GameVerb.Pause;
-                      const body = [
-                        {
-                          verb: lastVerb,
-                          timestamp: lastTimeStamp,
-                          team_id: actionByTeamID,
-                        },
-                      ];
-                      addGameRecordDetail(gameObj.game_id, body);
-                    }}
-                    gradientColor={[colors.yellowColor, colors.themeColor]}
-                    imageName={images.gamePause}
-                    textColor={colors.themeColor}
-                    imageSize={15}
-                  />
-                      )}
-                      {(gameObj.status === GameStatus.playing
-                  || gameObj.status === GameStatus.paused
-                  || gameObj.status === GameStatus.resume) && (
-                    <TCGameButton
-                    title="Match End"
-                    onPress={() => {
-                      Alert.alert(
-                        'Do you want to end match?',
-                        '',
-                        [
-                          {
-                            text: 'Cancel',
-                            // style: 'cancel',
-                          },
-                          {
-                            text: 'Ok',
+                              } else {
+                                lastTimeStamp = date
+                                  ? parseFloat(
+                                      date.setMilliseconds(0, 0) / 1000,
+                                    ).toFixed(0)
+                                  : parseFloat(
+                                      new Date().getTime() / 1000,
+                                    ).toFixed(0);
+                                lastVerb = GameVerb.Start;
+                                const body = [
+                                  {
+                                    verb: lastVerb,
+                                    timestamp: lastTimeStamp,
+                                    team_id: actionByTeamID,
+                                  },
+                                ];
+                                addGameRecordDetail(gameObj.game_id, body);
+                              }
+                            }}
+                            gradientColor={[
+                              colors.yellowColor,
+                              colors.themeColor,
+                            ]}
+                            imageName={images.gameStart}
+                            textColor={colors.themeColor}
+                            imageSize={16}
+                          />
+                        )}
+                        {gameObj.status === GameStatus.paused && (
+                          <TCGameButton
+                            title="Resume"
+                            onPress={() => {
+                              lastTimeStamp = parseFloat(
+                                new Date().getTime() / 1000,
+                              ).toFixed(0);
+                              lastVerb = GameVerb.Resume;
+                              const body = [
+                                {
+                                  verb: lastVerb,
+                                  timestamp: lastTimeStamp,
+                                  team_id: actionByTeamID,
+                                },
+                              ];
+                              addGameRecordDetail(gameObj.game_id, body);
+                            }}
+                            gradientColor={[
+                              colors.yellowColor,
+                              colors.themeColor,
+                            ]}
+                            imageName={images.gameStart}
+                            textColor={colors.themeColor}
+                            imageSize={16}
+                          />
+                        )}
+                        {(gameObj.status === GameStatus.playing
+                          || gameObj.status === GameStatus.resume) && (
+                            <TCGameButton
+                            title="Pause"
+                            onPress={() => {
+                              lastTimeStamp = parseFloat(
+                                new Date().getTime() / 1000,
+                              ).toFixed(0);
+                              lastVerb = GameVerb.Pause;
+                              const body = [
+                                {
+                                  verb: lastVerb,
+                                  timestamp: lastTimeStamp,
+                                  team_id: actionByTeamID,
+                                },
+                              ];
+                              addGameRecordDetail(gameObj.game_id, body);
+                            }}
+                            gradientColor={[
+                              colors.yellowColor,
+                              colors.themeColor,
+                            ]}
+                            imageName={images.gamePause}
+                            textColor={colors.themeColor}
+                            imageSize={15}
+                          />
+                        )}
+                        {(gameObj.status === GameStatus.playing
+                          || gameObj.status === GameStatus.paused
+                          || gameObj.status === GameStatus.resume) && (
+                            <TCGameButton
+                            title="Match End"
+                            onPress={() => {
+                              Alert.alert(
+                                'Do you want to end match?',
+                                '',
+                                [
+                                  {
+                                    text: 'Cancel',
+                                    // style: 'cancel',
+                                  },
+                                  {
+                                    text: 'Ok',
 
-                            // style: 'destructive',
-                            onPress: () => {
-                              matchEnd();
-                            },
-                          },
-                        ],
-                        { cancelable: false },
-                      );
-                    }}
-                    gradientColor={[colors.yellowColor, colors.themeColor]}
-                    buttonTitle={'END'}
-                    buttonTextColor={colors.whiteColor}
-                    textColor={colors.themeColor}
-                    imageSize={15}
-                  />
-                      )}
-                      {(gameObj.status === GameStatus.playing
-                  || gameObj.status === GameStatus.resume
-                  || gameObj.status === GameStatus.paused) && (
-                    <TCGameButton
-                    title="End"
-                    onPress={() => {
-                      console.log('lenth of opetions::', periodOpetions.length);
-                      actionSheet.current.show();
-                    }}
-                    gradientColor={[colors.yellowColor, colors.themeColor]}
-                    buttonTitle={'PERIOD'}
-                    buttonTextColor={colors.whiteColor}
-                    textColor={colors.themeColor}
-                    imageSize={15}
-                  />
-                      )}
-                      <TCGameButton
-                    title="Records"
-                    onPress={() => {
-                      toggleView(() => setFooterUp(false), 200);
-                      scrollView.current?.scrollToEnd({ animated: true });
-                    }}
-                    gradientColor={[
-                      colors.veryLightBlack,
-                      colors.veryLightBlack,
-                    ]}
-                    imageName={images.gameRecord}
-                    textColor={colors.darkGrayColor}
-                    imageSize={25}
-                  />
-                      {(gameObj.status === GameStatus.accepted
-                  || gameObj.status === GameStatus.reset
-                  || gameObj.status === GameStatus.playing
-                  || gameObj.status === GameStatus.paused
-                  || gameObj.status !== GameStatus.ended
-                  || gameObj.status === GameStatus.resume) && (
-                    <TCGameButton
-                    title={detailRecording ? 'Simple' : 'Detail'}
-                    onPress={() => {
-                      setDetailRecording(!detailRecording);
-                    }}
-                    gradientColor={[
-                      colors.greenGradientStart,
-                      colors.greenGradientEnd,
-                    ]}
-                    imageName={
-                      detailRecording ? images.gameSimple : images.gameDetail
-                    }
-                    textColor={colors.gameDetailColor}
-                    imageSize={30}
-                  />
-                      )}
-                    </View>
-                  </ScrollView>
-                </View>}
+                                    // style: 'destructive',
+                                    onPress: () => {
+                                      matchEnd();
+                                    },
+                                  },
+                                ],
+                                { cancelable: false },
+                              );
+                            }}
+                            gradientColor={[
+                              colors.yellowColor,
+                              colors.themeColor,
+                            ]}
+                            buttonTitle={'END'}
+                            buttonTextColor={colors.whiteColor}
+                            textColor={colors.themeColor}
+                            imageSize={15}
+                          />
+                        )}
+                        {(gameObj.status === GameStatus.playing
+                          || gameObj.status === GameStatus.resume
+                          || gameObj.status === GameStatus.paused) && (
+                            <TCGameButton
+                            title="End"
+                            onPress={() => {
+                              console.log(
+                                'lenth of opetions::',
+                                periodOpetions.length,
+                              );
+                              actionSheet.current.show();
+                            }}
+                            gradientColor={[
+                              colors.yellowColor,
+                              colors.themeColor,
+                            ]}
+                            buttonTitle={'PERIOD'}
+                            buttonTextColor={colors.whiteColor}
+                            textColor={colors.themeColor}
+                            imageSize={15}
+                          />
+                        )}
+                        <TCGameButton
+                          title="Records"
+                          onPress={() => {
+                            toggleView(() => setFooterUp(false), 200);
+                            scrollView.current?.scrollToEnd({ animated: true });
+                          }}
+                          gradientColor={[
+                            colors.veryLightBlack,
+                            colors.veryLightBlack,
+                          ]}
+                          imageName={images.gameRecord}
+                          textColor={colors.darkGrayColor}
+                          imageSize={25}
+                        />
+                        {(gameObj.status === GameStatus.accepted
+                          || gameObj.status === GameStatus.reset
+                          || gameObj.status === GameStatus.playing
+                          || gameObj.status === GameStatus.paused
+                          || gameObj.status !== GameStatus.ended
+                          || gameObj.status === GameStatus.resume) && (
+                            <TCGameButton
+                            title={detailRecording ? 'Simple' : 'Detail'}
+                            onPress={() => {
+                              setDetailRecording(!detailRecording);
+                            }}
+                            gradientColor={[
+                              colors.greenGradientStart,
+                              colors.greenGradientEnd,
+                            ]}
+                            imageName={
+                              detailRecording
+                                ? images.gameSimple
+                                : images.gameDetail
+                            }
+                            textColor={colors.gameDetailColor}
+                            imageSize={30}
+                          />
+                        )}
+                      </View>
+                    </ScrollView>
+                  </View>
+                )}
               </View>
             </TouchableWithoutFeedback>
           )}
@@ -1318,7 +1488,9 @@ export default function TennisRecording({ navigation, route }) {
         // destructiveButtonIndex={1}
         onPress={(index) => {
           if (periodOpetions[index] === 'End Game') {
-            lastTimeStamp = parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = parseFloat(
+              new Date().setMilliseconds(0, 0) / 1000,
+            ).toFixed(0);
             lastVerb = GameVerb.GameEnd;
             const body = [
               {
@@ -1329,7 +1501,9 @@ export default function TennisRecording({ navigation, route }) {
             ];
             addGameRecordDetail(gameObj.game_id, body);
           } else if (periodOpetions[index] === 'End Set') {
-            lastTimeStamp = parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = parseFloat(
+              new Date().setMilliseconds(0, 0) / 1000,
+            ).toFixed(0);
             lastVerb = GameVerb.SetEnd;
             const body = [
               {
@@ -1347,39 +1521,68 @@ export default function TennisRecording({ navigation, route }) {
       <ActionSheet
         ref={headerActionSheet}
         // title={'News Feed Post'}
-        options={(gameObj?.status === GameStatus.playing || gameObj?.status === GameStatus.paused || gameObj?.status === GameStatus.resume) ? [
-          'Game Reservation Detail',
-          'Add Set or Game',
-          'Deleted Records',
-          'Reset Match',
-          'Cancel',
-        ] : [
-          'Game Reservation Detail',
-          'Add Set or Game',
-          'Deleted Records',
-          'Cancel',
-        ]}
-        cancelButtonIndex={(gameObj?.status === GameStatus.playing || gameObj?.status === GameStatus.paused || gameObj?.status === GameStatus.resume) ? 4 : 3}
-        destructiveButtonIndex={(gameObj?.status === GameStatus.playing || gameObj?.status === GameStatus?.paused || gameObj?.status === GameStatus.resume) && 3}
+        options={
+          gameObj?.status === GameStatus.playing
+          || gameObj?.status === GameStatus.paused
+          || gameObj?.status === GameStatus.resume
+            ? [
+                'Game Reservation Detail',
+                'Add Set or Game',
+                'Deleted Records',
+                'Reset Match',
+                'Cancel',
+              ]
+            : [
+                'Game Reservation Detail',
+                'Add Set or Game',
+                'Deleted Records',
+                'Cancel',
+        ]
+        }
+        cancelButtonIndex={
+          gameObj?.status === GameStatus.playing
+          || gameObj?.status === GameStatus.paused
+          || gameObj?.status === GameStatus.resume
+            ? 4
+            : 3
+        }
+        destructiveButtonIndex={
+          (gameObj?.status === GameStatus.playing
+            || gameObj?.status === GameStatus?.paused
+            || gameObj?.status === GameStatus.resume)
+          && 3
+        }
         onPress={(index) => {
           if (index === 0) {
             setloading(true);
-            Utils.getChallengeDetail(gameObj.challenge_id, authContext).then((obj) => {
-              console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
-              console.log('Screen name of challenge:', obj.screenName);
-              navigation.navigate(obj.screenName, {
-                challengeObj: obj.challengeObj || obj.challengeObj[0],
-              });
-              setloading(false);
-            }).catch(() => setloading(false));
+            Utils.getChallengeDetail(gameObj.challenge_id, authContext)
+              .then((obj) => {
+                console.log(
+                  'Challenge Object:',
+                  JSON.stringify(obj.challengeObj),
+                );
+                console.log('Screen name of challenge:', obj.screenName);
+                navigation.navigate(obj.screenName, {
+                  challengeObj: obj.challengeObj || obj.challengeObj[0],
+                });
+                setloading(false);
+              })
+              .catch(() => setloading(false));
           } else if (index === 1) {
             setVisibleAddSetAndGameButton(false);
             scrollView.current?.scrollToEnd({ animated: true });
             setVisibleAddSetAndGameButton(true);
           } else if (index === 2) {
-            navigation.navigate('TennisDeletedRecordScreen', { gameData, isAdmin: route?.params?.isAdmin });
+            navigation.navigate('TennisDeletedRecordScreen', {
+              gameData,
+              isAdmin: route?.params?.isAdmin,
+            });
           } else if (index === 3) {
-            if (gameObj?.status === GameStatus.playing || gameObj?.status === GameStatus.paused || gameObj?.status === GameStatus.resume) {
+            if (
+              gameObj?.status === GameStatus.playing
+              || gameObj?.status === GameStatus.paused
+              || gameObj?.status === GameStatus.resume
+            ) {
               Alert.alert(
                 'Do you want to reset all the match records?',
                 '',
@@ -1519,7 +1722,6 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
       },
       android: {
-
         elevation: 15,
       },
     }),
@@ -1559,7 +1761,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 5,
-
   },
 
   separatorLine: {

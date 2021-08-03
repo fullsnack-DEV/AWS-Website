@@ -20,7 +20,6 @@ import { useIsFocused } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import Modal from 'react-native-modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
-import TCProfileView from '../../../../components/TCProfileView';
 import AuthContext from '../../../../auth/context';
 
 import images from '../../../../Constants/ImagePath';
@@ -38,6 +37,7 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCSearchBox from '../../../../components/TCSearchBox';
+import TCFollowerList from '../../../../components/TCFollowerList';
 
 export default function CreateTeamForm2({ navigation, route }) {
   const { createTeamForm1, followersList } = route?.params;
@@ -161,15 +161,16 @@ export default function CreateTeamForm2({ navigation, route }) {
       <View
         style={{
           padding: 20,
-          alignItems: 'center',
+           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
+          // backgroundColor: 'red',
         }}>
-        <TCProfileView
+        <TCFollowerList
           type={'medium'}
           name={item.full_name}
           location={item.city}
-          image={item?.thumbnail}
+          image={item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder}
         />
         <View style={styles.checkbox}>
           {followersSelection === item.user_id ? (
@@ -293,7 +294,7 @@ export default function CreateTeamForm2({ navigation, route }) {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                   }}>
-                  <TCProfileView
+                  <TCFollowerList
                     type={'medium'}
                     name={follower?.full_name}
                     location={follower?.city}

@@ -288,7 +288,9 @@ export default function GroupInfo({
       </View>}
 
       {/* Game Fee section */}
-      {groupDetails.entity_type === 'team' && <View>
+      {/* Remove this section because fetch from manage challenge  */}
+
+      {/* groupDetails.entity_type === 'team' && <View>
         <View style={styles.sectionStyle}>
           <TCEditHeader title= {strings.gamefeetitle} subTitle={strings.perhoursinbracket}
           showEditButton={isAdmin}
@@ -304,8 +306,8 @@ export default function GroupInfo({
           marginLeft={10} marginTop={20}/>
         </View>
         {/* Gray divider */}
-        <View style={{ height: 7, backgroundColor: colors.grayBackgroundColor }}></View>
-      </View>}
+      {/* <View style={{ height: 7, backgroundColor: colors.grayBackgroundColor }}></View>
+      </View>} */}
 
       {/* ByLaw section */}
       <View style={styles.sectionStyle}>

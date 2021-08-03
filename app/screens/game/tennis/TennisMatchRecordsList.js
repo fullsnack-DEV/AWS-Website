@@ -502,12 +502,17 @@ const TennisMatchRecordsList = ({
     }
     const isHomeTeam = teamIds?.home_team?.group_id === item.team_id;
     const isGameState = item.verb in tennisGameStats;
-
+console.log('re-render swipe');
     return (
       <SwipeableRow
             enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
             onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
         >
+        {/* <AppleStyleSwipeableRow
+         onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
+         color={colors.redDelColor}
+         image={images.deleteIcon}> */}
+
         <View style={{ opacity: item?.deleted ? 0.5 : 1 }}>
           {!isGameState && isHomeTeam && (
             <View style={{ ...(!visibleAddSetAndGameButton && { backgroundColor: colors.whiteColor }) }}>
@@ -532,6 +537,7 @@ const TennisMatchRecordsList = ({
           {isGameState && <TennisGameState recordData={item}/>}
         </View>
       </SwipeableRow>
+
     )
   }
   const RenderDash = ({ zIndex = 0 }) => (

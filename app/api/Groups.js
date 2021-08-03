@@ -51,18 +51,24 @@ export const getGroupRequest = (requestType, groupID, authContext) => makeAPIReq
 //     authContext,
 //   })
 // }
-export const getJoinedGroups = (request = false, entityType = '', authContext) => {
+export const getJoinedGroups = (entityType = '', authContext) => {
   const q = entityType === '' ? '' : `&entity_type=${entityType}`
   return makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}groups/joined?get_request=${request}${q}`,
+    url: `${Config.BASE_URL}groups/joined?${q}`,
     authContext,
   })
   }
 
-  export const getGroups = (request = false, authContext) => makeAPIRequest({
+  export const getGroups = (authContext) => makeAPIRequest({
       method: 'get',
-      url: `${Config.BASE_URL}groups/joined?get_request=${request}`,
+      url: `${Config.BASE_URL}groups/joined`,
+      authContext,
+    })
+
+    export const getTeamPendingRequest = (authContext) => makeAPIRequest({
+      method: 'get',
+      url: `${Config.BASE_URL}groups/pending`,
       authContext,
     })
 

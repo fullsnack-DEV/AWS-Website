@@ -39,7 +39,7 @@ export default function JoinedTeamsScreen() {
         }, 10);
       });
     } else {
-      getJoinedGroups(false, 'team', authContext).then((response) => {
+      getJoinedGroups('team', authContext).then((response) => {
         setTeamList(response.payload);
       }).catch((e) => {
         setTimeout(() => {

@@ -134,7 +134,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
             new Date(e.start_datetime * 1000),
           ).format('yyyy-MM-DD');
           if (e.allDay === true) {
-            markedDates['2021-05-22'] = {
+            markedDates[original_date] = {
               disabled: true,
               startingDay: true,
               endingDay: true,
@@ -502,7 +502,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
           onCancel={handleCancelPress}
           onHide={handleCancelPress}
           minimumDate={new Date(selectedSlot?.starttime * 1000)}
-          maximumDate={maxFromDate()}
+          maximumDate={maxFromDate}
           // minutesGap={5}
           mode={'time'}
         />
@@ -513,7 +513,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
           onDone={onToDone}
           onCancel={handleCancelPress}
           onHide={handleCancelPress}
-          minimumDate={maxToDate()}
+          minimumDate={maxToDate}
           maximumDate={new Date(selectedSlot?.endtime * 1000)}
           // minutesGap={5}
           mode={'time'}

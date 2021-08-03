@@ -269,6 +269,8 @@ const HomeScreen = ({ navigation, route }) => {
   const [challengePopup, setChallengePopup] = useState(false);
   const [selectedChallengeOption, setSelectedChallengeOption] = useState();
 
+  const [settingObject, setSettingObject] = useState();
+
   const [
     isDoubleSportTeamCreatedVisible,
     setIsDoubleSportTeamCreatedVisible,
@@ -442,7 +444,7 @@ const HomeScreen = ({ navigation, route }) => {
     // setloading(true);
     const promises = [
       getUserDetails(uid, authContext),
-      getGroups(false, authContext),
+      getGroups(authContext),
     ];
     Promise.all(promises)
       .then(([res1, res2]) => {
@@ -550,6 +552,7 @@ const HomeScreen = ({ navigation, route }) => {
     currentUserData?.last_name,
     isUserHome,
     navigation,
+    settingObject,
   ]);
 
   const getData = async (uid, role, admin) => {
@@ -564,27 +567,44 @@ const HomeScreen = ({ navigation, route }) => {
       const promises = [
         getGroupDetails(uid, authContext),
         getGroupMembers(uid, authContext),
+
       ];
       if (clubHome) {
         promises.push(getTeamsOfClub(uid, authContext));
       }
       Promise.all(promises)
-        .then(([res1, res2, res3]) => {
+        .then(([res1, res2]) => {
           const groupDetails = res1.payload;
-          console.log('groupDetails', groupDetails);
+
+          console.log('res1:::=>', res1.payload);
+          console.log('res2:::=>', res2.payload);
 
           groupDetails.joined_leagues = league_Data;
           groupDetails.history = history_Data;
           groupDetails.joined_members = res2.payload;
-          if (res3) {
-            groupDetails.joined_teams = res3.payload;
-          }
+          // if (res3) {
+          //   groupDetails.joined_teams = res3.payload;
+          // }
           setCurrentUserData(groupDetails);
           setIsClubHome(clubHome);
           setIsTeamHome(teamHome);
           setIsUserHome(userHome);
           setUserID(uid);
           setFirstTimeLoading(false);
+          getChallengeSetting(
+            uid,
+            groupDetails.sport,
+            authContext,
+          ).then((res3) => {
+            setSettingObject(res3.payload[0]);
+            console.log('res3:::=>', res3.payload[0]);
+          }).catch(() => {
+            setFirstTimeLoading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, strings.defaultError);
+            }, 10);
+            // navigation.goBack();
+          });
         })
         .catch(() => {
           setFirstTimeLoading(false);
@@ -2897,7 +2917,8 @@ const HomeScreen = ({ navigation, route }) => {
   const renderChallengeButton = useMemo(
     () => !loading
       && isTeamHome
-      && authContext.entity.role === 'team' && (
+      && authContext.entity.role === 'team'
+      && settingObject && (
         <View style={styles.challengeButtonStyle}>
           {authContext.entity.obj.group_id !== currentUserData.group_id && (
             <View styles={[styles.outerContainerStyle, { height: 50 }]}>
@@ -2908,15 +2929,18 @@ const HomeScreen = ({ navigation, route }) => {
                     styles.containerStyle,
                     { justifyContent: 'space-between' },
                   ]}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  {settingObject?.game_fee?.fee ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={styles.buttonLeftText}>{`$${
-                      currentUserData?.game_fee ?? '0'
+                      settingObject?.game_fee?.fee
                     } ${currentUserData?.currency_type ?? 'CAD'}`}</Text>
                     <Text style={styles.buttonTextSmall}>
                       {' '}
-                      {strings.perHourText}
+                      {strings.perGameText}
                     </Text>
-                  </View>
+                  </View> : <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={styles.buttonLeftText}>{'Game fee not Configured'}</Text>
+
+                  </View>}
                   <Text style={styles.buttonText}>
                     {strings.challenge.toUpperCase()}
                   </Text>
@@ -2955,7 +2979,7 @@ const HomeScreen = ({ navigation, route }) => {
       .then(() => {
         const {
  USER, CLUB, LEAGUE, TEAM,
-} = QB_ACCOUNT_TYPE;
+ } = QB_ACCOUNT_TYPE;
         let accountType = USER;
         if (entityType === 'club') accountType = CLUB;
         else if (entityType === 'team') accountType = TEAM;
@@ -4493,47 +4517,32 @@ const HomeScreen = ({ navigation, route }) => {
           <TouchableWithoutFeedback
             onPress={() => {
               setSelectedChallengeOption(0);
-
-              setloading(true);
-              getChallengeSetting(
-                currentUserData?.user_id || currentUserData?.group_id,
-                currentUserData.sport,
-                authContext,
-              )
-                .then((response) => {
-                  setloading(false);
-                  const obj = response.payload[0];
-                  if (
-                    obj?.game_duration
-                    && obj?.availibility
-                    && obj?.special_rules !== undefined
-                    && obj?.general_rules !== undefined
-                    && obj?.responsible_for_referee
-                    && obj?.responsible_for_scorekeeper
-                    && obj?.game_fee
-                    && obj?.venue
-                    && obj?.refund_policy
-                    && obj?.home_away
-                    && obj?.game_type
-                  ) {
-                    setChallengePopup(false);
-                    navigation.navigate('ChallengeScreen', {
-                      setting: obj,
-                      sportName: currentUserData.sport,
-                      groupObj: currentUserData,
-                    });
-                  } else {
-                    Alert.alert(
-                      'Opponent team has no completed challenge setting.',
-                    );
-                  }
-                })
-                .catch((e) => {
-                  setloading(false);
-                  setTimeout(() => {
-                    Alert.alert(strings.alertmessagetitle, e.message);
-                  }, 10);
+              const obj = settingObject;
+              if (
+                obj?.game_duration
+                && obj?.availibility
+                && obj?.special_rules !== undefined
+                && obj?.general_rules !== undefined
+                && obj?.responsible_for_referee
+                && obj?.responsible_for_scorekeeper
+                && obj?.game_fee
+                && obj?.venue
+                && obj?.refund_policy
+                && obj?.home_away
+                && obj?.game_type
+              ) {
+                setChallengePopup(false);
+                navigation.navigate('ChallengeScreen', {
+                  setting: obj,
+                  sportName: currentUserData.sport,
+                  groupObj: currentUserData,
                 });
+              } else {
+                Alert.alert(
+                  'This team has no completed challenge setting.',
+                );
+              }
+
               // setTimeout(() => {
               //   setChallengePopup(false);
               //   navigation.navigate('ChallengeScreen', {
