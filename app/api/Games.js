@@ -110,9 +110,9 @@ const getGameReviews = (gameId, authContext) => makeAPIRequest({
   authContext,
 })
 
-const getTeamReviews = (teamId, authContext) => makeAPIRequest({
+const getTeamReviews = (teamId, groupBy, authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/teams/${teamId}/reviews`,
+  url: `${Config.BASE_URL}/teams/${teamId}/reviews?groupby_game=${groupBy}`,
   authContext,
 })
 

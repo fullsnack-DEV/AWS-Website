@@ -587,6 +587,7 @@ const Summary = ({
         })
         .catch((error) => {
           setLoading(false);
+          console.log('Error', error?.message);
           setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
         });
     },
