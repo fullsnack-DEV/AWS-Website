@@ -12,18 +12,23 @@ import {
 
 } from '../../../../api/Games';
 import UserReviewSection from '../../../../components/Home/UserReviewSection';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 const PlayInReviewsView = ({
   currentUserData,
 }) => {
   console.log('currentUserData:=>', currentUserData);
   const authContext = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+
   const [userReviewData, setUserReviewData] = useState()
   const [averageUserReview, setAverageUserReview] = useState()
 
   useEffect(() => {
+    setLoading(true)
       getUserReviews(currentUserData.user_id, authContext).then((res) => {
         console.log('Get user Review Data Res ::--', res?.payload);
+        setLoading(false)
 
         if (res?.payload?.averageReviews?.[0]) {
           let array = Object.keys(res?.payload?.averageReviews?.[0]?.avg_review);
@@ -43,7 +48,9 @@ const PlayInReviewsView = ({
           setUserReviewData()
         }
       })
-          .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
+          .catch((error) => {
+            Alert.alert(strings.alertmessagetitle, error.message)
+          })
   }, [authContext, currentUserData.user_id])
   return (
     // <View style={{ flex: 1 }}>
@@ -76,8 +83,11 @@ const PlayInReviewsView = ({
     //   <TCThickDivider marginVertical={15}/>
     // </View>
     <View>
+      <ActivityLoader visible={loading} />
+
       <UserReviewSection
           isTeamReviewSection={true}
+          loading={loading}
           reviewsData={averageUserReview}
           reviewsFeed={userReviewData}
           onFeedPress={() => Alert.alert(5)}

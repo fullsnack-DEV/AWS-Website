@@ -35,7 +35,7 @@ function ReviewerItemView({
   onReadMorePress,
   onFeedPress,
 }) {
-  console.log('ITEM::=>', item);
+  console.log('ITEM:------:=>', item);
   const authContext = useContext(AuthContext);
   const videoPlayerRef = useRef();
   const [reviewObj, setReviewObj] = useState();
@@ -96,28 +96,12 @@ function ReviewerItemView({
   }, [authContext, item?.id]);
 
   useEffect(() => {
+    console.log('review ooo::=>', JSON.parse(item?.object)?.playerReview);
     setReviewObj(
       JSON.parse(item?.object)?.refereeReview
-        || JSON.parse(item?.object)?.scorekeeperReview || JSON.parse(item?.object)?.playerReview,
+        || JSON.parse(item?.object)?.scorekeeperReview || JSON.parse(item?.object)?.playerReview || JSON.parse(item?.object)?.gameReview,
     );
   }, [item]);
-
-  useEffect(() => {
-    likeSettings(likeCount, item?.own_reactions);
-  }, []);
-
-  const onLikePress = useCallback(
-    (obj) => {
-      const bodyParams = {
-        reaction_type: 'clap',
-        activity_id: obj.id,
-      };
-      createReaction(bodyParams, authContext).catch((e) => {
-        Alert.alert('', e.messages);
-      });
-    },
-    [authContext],
-  );
 
   const likeSettings = useCallback(
     (claps, ownReactions) => {
@@ -139,6 +123,23 @@ function ReviewerItemView({
       }
     },
     [authContext?.entity?.uid],
+  );
+
+  useEffect(() => {
+    likeSettings(likeCount, item?.own_reactions);
+  }, [item?.own_reactions, likeCount, likeSettings]);
+
+  const onLikePress = useCallback(
+    (obj) => {
+      const bodyParams = {
+        reaction_type: 'clap',
+        activity_id: obj.id,
+      };
+      createReaction(bodyParams, authContext).catch((e) => {
+        Alert.alert('', e.messages);
+      });
+    },
+    [authContext],
   );
 
 const isAdmin = () => {
@@ -225,7 +226,7 @@ const isAdmin = () => {
                 alignItems: 'center',
                 marginTop: 3,
               }}>
-              <Text style={styles.activeTimeAgoTxt}>{moment(reviewObj?.created_at * 1000).format('MMM DD')}</Text>
+              <Text style={styles.activeTimeAgoTxt}>{moment(new Date(reviewObj?.created_at * 1000)).format('MMM DD')}</Text>
 
               {reviewObj?.member !== 'both' ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={styles.eventImageViewStyle}>

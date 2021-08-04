@@ -18,16 +18,13 @@ import ReviewRecentMatch from './ReviewRecentMatch';
 function UserReviewSection({
   isTeamReviewSection = false,
   reviewsData,
+  loading,
   onAboutRatingPress,
   onReadMorePress,
   reviewsFeed,
   onFeedPress = () => {},
 }) {
   // const [reviewAllData] = useState(review_all_data);
-
-  useEffect(() => {
-    console.log('ReviewAllData::=>', reviewsData);
-  }, [reviewsData, reviewsFeed?.reviews?.results]);
 
   useEffect(() => {
     if (isTeamReviewSection) {
@@ -50,7 +47,7 @@ function UserReviewSection({
               data={reviewsData}
               bounces={false}
               ListEmptyComponent={() => (
-                <View>
+                !loading && <View>
                   <Text
                     style={styles.noRating}>
                     No Ratings Yet
@@ -102,7 +99,7 @@ function UserReviewSection({
           data={reviewsFeed?.reviews?.results || []}
           bounces={false}
           ListEmptyComponent={() => (
-            <View>
+            !loading && <View>
               <Text
                 style={styles.noRating}>
                 No Reviews Yet
@@ -144,14 +141,14 @@ function UserReviewSection({
                 secondTeamPoint={item?.game?.data?.away_team_goal ?? 0}
               />
               <Carousel
-                data={item.reviews}
+                data={item?.reviews}
                 renderItem={({ item: reviewData, index: i }) => (
                   <ReviewerItemView
                     item={reviewData}
                     gameData={item?.game}
                     indexNumber={i}
                     feedIndex={index}
-                    totalData={item.reviews}
+                    totalData={item?.reviews}
                     onFeedPress={onFeedPress}
                     onReadMorePress={onReadMorePress}
                   />

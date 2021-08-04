@@ -72,6 +72,7 @@ const Summary = ({
   getGameNextFeedData,
 }) => {
   console.log('GameData Soccer:=>', gameData);
+
   const imageUploadContext = useContext(ImageUploadContext);
   const authContext = useContext(AuthContext);
   const reviewOpetions = useRef();
@@ -236,6 +237,7 @@ const Summary = ({
               // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
               setLeaveReviewText(strings.leaveReviewText);
             }
+            console.log('set home');
             setplayerFrom('home');
             break;
           }
@@ -252,6 +254,8 @@ const Summary = ({
                 // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
                 setLeaveReviewText(strings.leaveReviewText);
               }
+              console.log('set away');
+
               setplayerFrom('away');
               break;
             }
@@ -345,6 +349,8 @@ const Summary = ({
             'Edit Review By Review ID Response::=>',
             response.payload,
           );
+          console.log('playerFrom::=>', playerFrom);
+
           navigation.navigate('LeaveReview', {
             gameData,
             gameReviewData: response.payload,
@@ -368,6 +374,7 @@ const Summary = ({
       selectedTeamForReview,
       sliderAttributes,
       starAttributes,
+      playerFrom,
     ],
   );
 

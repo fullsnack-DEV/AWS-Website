@@ -410,7 +410,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     if (isTeamHome) {
-      getTeamReviews(route?.params?.uid || authContext.entity.uid, authContext)
+      getTeamReviews(route?.params?.uid || authContext.entity.uid, true, authContext)
         .then((res) => {
           console.log('Get team Review Data Res ::--', res?.payload);
 

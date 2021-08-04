@@ -52,6 +52,7 @@ const PlayInModule = ({
   navigation,
   openPlayInModal,
 }) => {
+  console.log('playInObject', playInObject);
   const actionSheetRef = useRef();
   const [sportName, setSportName] = useState('');
   const [singlePlayerGame, setSinglePlayerGame] = useState(true);
@@ -75,7 +76,7 @@ const PlayInModule = ({
 
   useEffect(() => {
     if (playInObject?.sport_name) setSportName(playInObject?.sport_name);
-    if (playInObject?.sport_type !== 'single') {
+    if (playInObject?.sport_name?.toLowerCase() !== 'tennis') {
       TAB_ITEMS = ['Info', 'Scoreboard', 'Stats'];
       setSinglePlayerGame(false);
     } else TAB_ITEMS = ['Info', 'Scoreboard', 'Stats', 'Reviews'];
