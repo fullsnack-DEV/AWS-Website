@@ -32,7 +32,7 @@ module.exports = {
     'react/prop-types': [0],
     'react/display-name': [0],
     quotes: ['error', 'single'],
-    'max-len': ['warn', { code: 700 }],
+    'max-len': ['warn', { code: 1000 }],
     'no-undef': [2],
     'react/jsx-curly-spacing': [0, 'always'],
     'no-restricted-syntax': [0],

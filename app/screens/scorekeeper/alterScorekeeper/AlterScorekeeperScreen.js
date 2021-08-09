@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, {
   useEffect, useState, useContext, useLayoutEffect,
 } from 'react';

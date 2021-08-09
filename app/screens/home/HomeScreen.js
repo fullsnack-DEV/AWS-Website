@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable react-native/no-raw-text */
 /* eslint-disable no-nested-ternary */
 import React, {
@@ -591,6 +592,7 @@ const HomeScreen = ({ navigation, route }) => {
           setIsUserHome(userHome);
           setUserID(uid);
           setFirstTimeLoading(false);
+          console.log('authContext.entity.role:::-->', authContext.entity.role);
           getChallengeSetting(
             uid,
             groupDetails.sport,

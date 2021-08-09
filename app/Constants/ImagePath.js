@@ -366,6 +366,7 @@ settingInvoice: require('../assets/images/setting_invoice.png'),
   selectMessageSearchButton: require('../assets/images/selectMessageSearchButton.png'),
   challengerInvitePlane: require('../assets/images/challenger_invite_plane.png'),
   savedIcon: require('../assets/images/savedIcon.png'),
+arrowGT: require('../assets/images/arrow_gt.png'),
 
   messageIcon: require('../assets/images/message_ic.png'),
   navigationBack: require('../assets/images/navigation_back.png'),
