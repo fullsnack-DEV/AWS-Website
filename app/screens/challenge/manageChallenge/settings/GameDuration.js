@@ -297,6 +297,7 @@ export default function GameDuration({ navigation, route }) {
     } else {
       const bodyParams = {
         sport: sportName,
+        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
         game_duration: {
           period: period.map((e) => {
             delete e.id;

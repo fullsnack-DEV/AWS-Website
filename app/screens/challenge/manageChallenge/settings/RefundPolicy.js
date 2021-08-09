@@ -85,6 +85,7 @@ export default function RefundPolicy({ navigation, route }) {
     } else {
       const bodyParams = {
         sport: sportName,
+        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
         refund_policy: typeSelection.key,
       };
       setloading(true);

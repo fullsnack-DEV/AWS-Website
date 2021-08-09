@@ -389,11 +389,10 @@ export default function EditEventScreen({ navigation, route }) {
                 latitude: locationDetail.lat,
                 longitude: locationDetail.lng,
                 isBlocked: is_Blocked,
-                is_recurring: selectWeekMonth !== 'Does not repeat',
+                is_recurring: selectWeekMonth !== '',
                 allDay: toggle,
               };
               let rules = '';
-              console.log('selectWeekMonth:=>', selectWeekMonth);
               if (
                 selectWeekMonth === 'Daily'
                 || selectWeekMonth === 'Weekly'
@@ -418,7 +417,9 @@ export default function EditEventScreen({ navigation, route }) {
                 params.untilDate = parseInt(
                   new Date(eventUntilDateTime).getTime() / 1000,
                 ).toFixed(0);
-                params.rrule = `FREQ=${rules}`;
+                if (rules !== '') {
+                  params.rrule = `FREQ=${rules}`;
+                }
               }
 
               console.log('Edit Event object:=>', params);

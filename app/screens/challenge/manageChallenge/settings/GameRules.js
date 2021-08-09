@@ -49,6 +49,7 @@ export default function GameRules({ navigation, route }) {
     } else {
       const bodyParams = {
         sport: sportName,
+        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
         general_rules: generalRules,
         special_rules: specialRules,
       }

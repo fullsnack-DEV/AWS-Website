@@ -45,6 +45,7 @@ export default function Availibility({ navigation, route }) {
   const onSavePressed = () => {
     const bodyParams = {
       sport: sportName,
+      entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
       availibility: acceptChallenge ? 'On' : 'Off',
     }
     setloading(true);

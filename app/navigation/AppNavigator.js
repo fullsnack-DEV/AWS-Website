@@ -173,6 +173,17 @@ const getTabBarVisibility = (route) => {
     || routeName === 'TeamInvoiceDetailScreen'
     || routeName === 'AddLogScreen'
     || routeName === 'CanceledInvoicesScreen'
+|| routeName === 'RefereeReservationSetting'
+|| routeName === 'ScorekeeperReservationSetting'
+|| routeName === 'AvailibilityReferee'
+|| routeName === 'RefereeFee'
+|| routeName === 'AvailableAreaReferee'
+|| routeName === 'AvailibilityScorekeeper'
+|| routeName === 'ScorekeeperFee'
+|| routeName === 'AvailableAreaScorekeeper'
+|| routeName === 'RefundPolicyScorekeeper'
+|| routeName === 'RefundPolicyReferee'
+
   ) {
     return false;
   }

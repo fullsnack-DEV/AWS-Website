@@ -116,8 +116,9 @@ export default function EditChallenge({ navigation, route }) {
   ]);
 
   useEffect(() => {
+    console.log('authContext.entitity', authContext.entity);
     setloading(true);
-    getChallengeSetting(challengeObj?.challengee, sportName, authContext)
+    getChallengeSetting(challengeObj?.challengee, sportName, authContext.entity.role === 'user' ? 'player' : 'team', authContext)
       .then((response) => {
         setloading(false);
         console.log('manage challenge response:=>', response.payload);

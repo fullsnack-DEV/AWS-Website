@@ -72,6 +72,11 @@ import RefereesSetting from '../screens/challenge/manageChallenge/settings/Refer
 import ScorekeepersSetting from '../screens/challenge/manageChallenge/settings/ScorekeepersSetting';
 import GameDuration from '../screens/challenge/manageChallenge/settings/GameDuration';
 import WriteReviewScreen from '../components/game/soccer/home/review/WriteReviewScreen';
+import AvailibilityReferee from '../screens/game/bookReferee/refereeSetting/AvailibilityReferee';
+import RefereeFee from '../screens/game/bookReferee/refereeSetting/RefereeFee';
+import AvailableAreaReferee from '../screens/game/bookReferee/refereeSetting/AvailableAreaReferee';
+import RefundPolicyReferee from '../screens/game/bookReferee/refereeSetting/RefundPolicyReferee';
+import RefundPolicyScorekeeper from '../screens/game/bookScorekeeper/scorekeeperSetting/RefundPolicyScorekeeper';
 
 const Stack = createStackNavigator();
 
@@ -926,6 +931,89 @@ const NewsFeedNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+      name="AvailibilityReferee"
+      component={AvailibilityReferee}
+      options={{
+        title: 'Availibility',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="AvailableAreaReferee"
+      component={AvailableAreaReferee}
+      options={{
+        title: 'Available Area',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="RefereeFee"
+      component={RefereeFee}
+      options={{
+        title: 'Referee Fee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="RefundPolicyReferee"
+      component={RefundPolicyReferee}
+      options={{
+        title: 'Refund Policy',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="RefundPolicyScorekeeper"
+      component={RefundPolicyScorekeeper}
+      options={{
+        title: 'Refund Policy',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
     <Stack.Screen
       name="RefereesSetting"
       component={RefereesSetting}

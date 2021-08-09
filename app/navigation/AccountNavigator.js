@@ -205,7 +205,17 @@ import TeamInvoiceDetailScreen from '../screens/account/payment/TeamInvoiceDetai
 import AddLogScreen from '../screens/account/payment/AddLogScreen';
 import CanceledInvoicesScreen from '../screens/account/payment/CanceledInvoicesScreen';
 import InvoiceFilterScreen from '../screens/account/payment/InvoiceFilterScreen';
+import RefereeReservationSetting from '../screens/game/bookReferee/RefereeReservationSetting';
+import AvailibilityReferee from '../screens/game/bookReferee/refereeSetting/AvailibilityReferee';
+import RefereeFee from '../screens/game/bookReferee/refereeSetting/RefereeFee';
+import AvailableAreaReferee from '../screens/game/bookReferee/refereeSetting/AvailableAreaReferee';
+import ScorekeeperReservationSetting from '../screens/game/bookScorekeeper/ScorekeeperReservationSetting';
 
+import AvailibilityScorekeeper from '../screens/game/bookScorekeeper/scorekeeperSetting/AvailibilityScorekeeper';
+import ScorekeeperFee from '../screens/game/bookScorekeeper/scorekeeperSetting/ScorekeeperFee';
+import AvailableAreaScorekeeper from '../screens/game/bookScorekeeper/scorekeeperSetting/AvailableAreaScorekeeper';
+import RefundPolicyReferee from '../screens/game/bookReferee/refereeSetting/RefundPolicyReferee';
+import RefundPolicyScorekeeper from '../screens/game/bookScorekeeper/scorekeeperSetting/RefundPolicyScorekeeper';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2166,6 +2176,40 @@ const AccountNavigator = () => (
         },
       }}
     />
+
+    <Stack.Screen
+      name="RefereeReservationSetting"
+      component={RefereeReservationSetting}
+      options={{
+        title: 'Referee Reservation Setting',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="ScorekeeperReservationSetting"
+      component={ScorekeeperReservationSetting}
+      options={{
+        title: 'Scorekeeper Reservation Setting',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="GameType"
       component={GameType}
@@ -2669,6 +2713,140 @@ const AccountNavigator = () => (
           },
          }}
         />
+
+    <Stack.Screen
+      name="AvailibilityReferee"
+      component={AvailibilityReferee}
+      options={{
+        title: 'Availibility',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="AvailableAreaReferee"
+      component={AvailableAreaReferee}
+      options={{
+        title: 'Available Area',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="RefundPolicyReferee"
+      component={RefundPolicyReferee}
+      options={{
+        title: 'Refund Policy',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="RefundPolicyScorekeeper"
+      component={RefundPolicyScorekeeper}
+      options={{
+        title: 'Refund Policy',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="RefereeFee"
+      component={RefereeFee}
+      options={{
+        title: 'Referee Fee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="AvailibilityScorekeeper"
+      component={AvailibilityScorekeeper}
+      options={{
+        title: 'Availibility',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="AvailableAreaScorekeeper"
+      component={AvailableAreaScorekeeper}
+      options={{
+        title: 'Available Area',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="ScorekeeperFee"
+      component={ScorekeeperFee}
+      options={{
+        title: 'Scorekeeper Fee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
   </Stack.Navigator>
 );
 

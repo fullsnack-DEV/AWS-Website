@@ -27,7 +27,6 @@ import fonts from '../../../../Constants/Fonts';
 import images from '../../../../Constants/ImagePath';
 import TCStep from '../../../../components/TCStep';
 import TCGradientButton from '../../../../components/TCGradientButton';
-import TCProfileView from '../../../../components/TCProfileView';
 import TCGameCard from '../../../../components/TCGameCard';
 import TCInfoField from '../../../../components/TCInfoField';
 import { getGameFromToDateDiff, getGameHomeScreen } from '../../../../utils/gameUtils';
@@ -168,11 +167,21 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
             <View style={styles.contentContainer}>
               <Title text={'Referee'} />
               <View style={{ marginVertical: 10 }}>
-                <TCProfileView
+                {/* <TCProfileView
                         name={userData?.full_name}
                         location={`${userData?.city} , ${userData?.country}`}
                         image={userData?.full_image ? { uri: userData?.full_image } : images.profilePlaceHolder}
-                    />
+                    /> */}
+                <View style={styles.topViewContainer}>
+                  <View style={styles.profileView}>
+                    <Image source={userData?.full_image ? { uri: userData?.full_image } : images.profilePlaceHolder} style={ styles.profileImage } />
+                  </View>
+                  <View style={styles.topTextContainer}>
+
+                    <Text style={styles.nameText} numberOfLines={1}>{userData?.full_name}</Text>
+                    <Text style={styles.locationText} numberOfLines={1}>{`${userData?.city} , ${userData?.country}`}</Text>
+                  </View>
+                </View>
               </View>
             </View>
             <Seperator/>
@@ -374,6 +383,47 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontSize: 20,
     fontFamily: fonts.RRegular,
+  },
+  profileImage: {
+    alignSelf: 'center',
+    height: 40,
+    width: 40,
+    borderRadius: 80,
+  },
+
+  topViewContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+
+  },
+  profileView: {
+    backgroundColor: colors.whiteColor,
+    height: 44,
+    width: 44,
+    borderRadius: 88,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  topTextContainer: {
+    marginLeft: 10,
+    alignSelf: 'center',
+
+  },
+  nameText: {
+    fontSize: 20,
+    fontFamily: fonts.RMedium,
+   // width: 200,
+  },
+
+  locationText: {
+    fontSize: 14,
+    fontFamily: fonts.RLight,
   },
 });
 

@@ -59,12 +59,12 @@ export default function CreateEventScreen({ navigation, route }) {
   const [singleSelectEventColor, setSingleSelectEventColor] = useState();
   const [toggle, setToggle] = useState(true);
   const [eventStartDateTime, setEventStartdateTime] = useState(
-    toggle ? new Date().setHours(0, 0, 0, 0) : getNearDateTime(new Date()),
+    toggle ? new Date().setDate(new Date().getDate() + 1) : getNearDateTime(new Date()),
   );
 
   const [eventEndDateTime, setEventEnddateTime] = useState(
     toggle
-      ? new Date().setHours(23, 59, 59, 0)
+      ? new Date().setDate(new Date().getDate() + 1)
       : moment(eventStartDateTime).add(5, 'm').toDate(),
   );
   const [eventUntilDateTime, setEventUntildateTime] = useState(
@@ -649,7 +649,7 @@ export default function CreateEventScreen({ navigation, route }) {
               onDone={handleStartDatePress}
               onCancel={handleCancelPress}
               onHide={handleCancelPress}
-              minimumDate={getNearDateTime(new Date())}
+              minimumDate={toggle ? new Date().setDate(new Date().getDate() + 1) : getNearDateTime(new Date())}
               minutesGap={5}
               mode={toggle ? 'date' : 'datetime'}
             />

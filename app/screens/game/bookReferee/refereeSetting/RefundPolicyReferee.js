@@ -11,36 +11,36 @@ import {
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import AuthContext from '../../../../auth/context';
+
 import images from '../../../../Constants/ImagePath';
 import { patchChallengeSetting } from '../../../../api/Challenge';
-import ActivityLoader from '../../../../components/loader/ActivityLoader';
-
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
 import strings from '../../../../Constants/String';
 
-const gameTypeList = [
-  { key: strings.officialOnly, id: 1 },
-  { key: strings.friendlyOnly, id: 2 },
-  { key: strings.allType, id: 3 },
-];
-export default function GameType({ navigation, route }) {
-  const { comeFrom } = route?.params;
+export default function RefundPolicyReferee({ navigation, route }) {
+  const policiesTypeList = [
+    { key: strings.strictText, id: 1 },
+    { key: strings.moderateText, id: 2 },
+    { key: strings.flexibleText, id: 3 },
+  ];
+  const { comeFrom, sportName } = route?.params;
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
+
   const [typeSelection, setTypeSelection] = useState(
-    (route?.params?.settingObj?.game_type === 'Official'
-          && gameTypeList[0])
-          || (route?.params?.settingObj?.game_type === 'Friendly'
-            && gameTypeList[1])
-          || (route?.params?.settingObj?.game_type === 'All' && gameTypeList[2]),
+    (route?.params?.settingObj?.refund_policy === strings.strictText
+          && policiesTypeList[0])
+          || (route?.params?.settingObj?.refund_policy === strings.moderateText
+            && policiesTypeList[1])
+          || (route?.params?.settingObj?.refund_policy === strings.flexibleText
+            && policiesTypeList[2]),
 
   );
-
-  const { sportName } = route?.params;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -56,40 +56,7 @@ export default function GameType({ navigation, route }) {
     });
   }, [comeFrom, navigation, typeSelection.key]);
 
-  const onSavePressed = () => {
-    if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
-      navigation.navigate(comeFrom, {
-        gameType:
-          (typeSelection.key === strings.officialOnly && 'Official')
-          || (typeSelection.key === strings.friendlyOnly && 'Friendly')
-          || (typeSelection.key === strings.allType && 'All'),
-      });
-    } else {
-      const bodyParams = {
-        sport: sportName,
-        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-        game_type:
-          (typeSelection.key === strings.officialOnly && 'Official')
-          || (typeSelection.key === strings.friendlyOnly && 'Friendly')
-          || (typeSelection.key === strings.allType && 'All'),
-      };
-      setloading(true);
-      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-        .then((response) => {
-          setloading(false);
-          navigation.navigate(comeFrom, { settingObj: response.payload });
-          console.log('patch challenge response:=>', response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    }
-  };
-
-  const renderGameTypes = ({ item }) => (
+  const renderPolicyTypes = ({ item }) => (
     <TouchableWithoutFeedback
       onPress={() => {
         setTypeSelection(item);
@@ -110,36 +77,112 @@ export default function GameType({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 
+  const onSavePressed = () => {
+    if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
+      navigation.navigate(comeFrom, {
+        refundPolicy: typeSelection.key,
+      });
+    } else {
+      const bodyParams = {
+        sport: sportName,
+        entity_type: 'referee',
+        refund_policy: typeSelection.key,
+      };
+      setloading(true);
+      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+        .then((response) => {
+          setloading(false);
+          navigation.navigate(comeFrom, { settingObj: response.payload });
+          console.log('patch challenge response:=>', response.payload);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  };
+
   return (
     <ScrollView
       style={styles.mainContainer}
       showsVerticalScrollIndicator={false}>
       <ActivityLoader visible={loading} />
+
       <TCLable title={strings.gameTyleTitle} required={false} />
       <FlatList
         // ItemSeparatorComponent={() => <TCThinDivider />}
-        data={gameTypeList}
+        data={policiesTypeList}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={renderGameTypes}
+        renderItem={renderPolicyTypes}
       />
-      {(typeSelection.key === strings.officialOnly
-        || typeSelection.key === strings.allType) && (
-          <View style={styles.gameTypeNotes}>
-            <Text style={styles.gameTypeTitle}>{strings.officialGameType}</Text>
-            <Text style={styles.gameTypeNotesDetail}>
-              {strings.challengeSettingTitle}
-            </Text>
-          </View>
+      {typeSelection.key === strings.strictText && (
+        <View style={styles.policyTypeNotes}>
+          <Text style={styles.policyTypeHeading}>{strings.strictText}</Text>
+          <Text style={styles.policyTypeTitle}>
+            {strings.strictPoint1Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.strictPoint1Desc}
+          </Text>
+          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+            {strings.strictPoint2Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.strictPoint2Desc}
+          </Text>
+          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+            {strings.strictPoint3Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.strictPoint3Desc}
+          </Text>
+        </View>
       )}
 
-      {(typeSelection.key === strings.friendlyOnly
-        || typeSelection.key === strings.allType) && (
-          <View style={styles.gameTypeNotes}>
-            <Text style={styles.gameTypeTitle}>{strings.friendlyGameType}</Text>
-            <Text style={styles.gameTypeNotesDetail}>
-              {strings.challengeSettingTitle}
-            </Text>
-          </View>
+      {typeSelection.key === strings.moderateText && (
+        <View style={styles.policyTypeNotes}>
+          <Text style={styles.policyTypeHeading}>{strings.moderateText}</Text>
+          <Text style={styles.policyTypeTitle}>
+            {strings.moderatePoint1Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.moderatePoint1Desc}
+          </Text>
+
+          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+            {strings.moderatePoint2Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.moderatePoint2Desc}
+          </Text>
+
+          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+            {strings.moderatePoint3Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.moderatePoint3Desc}
+          </Text>
+        </View>
+      )}
+
+      {typeSelection.key === strings.flexibleText && (
+        <View style={styles.policyTypeNotes}>
+          <Text style={styles.policyTypeHeading}>{strings.flexibleText}</Text>
+          <Text style={styles.policyTypeTitle}>
+            {strings.flexiblePoint1Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.flexiblePoint1Desc}
+          </Text>
+          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+            {strings.flexiblePoint2Title}
+          </Text>
+          <Text style={styles.policyTypeDetail}>
+            {strings.flexiblePoint2Desc}
+          </Text>
+        </View>
       )}
     </ScrollView>
   );
@@ -208,7 +251,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  gameTypeNotes: {
+  policyTypeNotes: {
     margin: 15,
     padding: 15,
     backgroundColor: colors.offwhite,
@@ -220,12 +263,17 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     elevation: 15,
   },
-  gameTypeTitle: {
+  policyTypeTitle: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.veryLightBlack,
+  },
+  policyTypeHeading: {
     fontSize: 16,
     fontFamily: fonts.RBold,
     color: colors.veryLightBlack,
   },
-  gameTypeNotesDetail: {
+  policyTypeDetail: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.veryLightBlack,

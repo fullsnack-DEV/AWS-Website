@@ -724,6 +724,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
       if (selection === 'None') {
         bodyParams = {
           sport: sportName,
+          entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
           responsible_for_scorekeeper: {
             who_secure: 'None',
           },
@@ -731,6 +732,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
       } else {
          bodyParams = {
           sport: sportName,
+          entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
           responsible_for_scorekeeper: {
             who_secure: scorekeeper.map((e) => {
               delete e.id;
