@@ -112,7 +112,7 @@ function MatchReservation({ data, onPressButon = () => {}, onPressGameCard = () 
       <ReservationStatusView data={data}/>
 
       <ChallengerInOutView data={data}/>
-      <TCGameCard data={data.game || data} onPress={onPressGameCard}/>
+      <TCGameCard data={data.game || data} onPress={onPressGameCard} cardWidth={'96%'}/>
       {isPendingButtonOrDetailButton() ? <ReservationPendingButton onPressButon={onPressButon}/> : <ReservationDetailButton onPressButon={onPressButon}/>}
       {isOfferExpired() && <Text style={styles.expiryText}>The reponse time will be expired within <Text style={styles.timeText}>{`${getDayTimeDifferent(
         (data.offer_expiry || data.expiry_datetime) * 1000,
