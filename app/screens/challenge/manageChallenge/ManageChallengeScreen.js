@@ -34,7 +34,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
 
   const getSettings = useCallback(() => {
     setloading(true)
-    getChallengeSetting(authContext?.entity?.uid, sportName, authContext)
+    getChallengeSetting(authContext?.entity?.uid, sportName, authContext.entity.role === 'user' ? 'player' : 'team', authContext)
       .then((response) => {
         setloading(false);
         console.log('manage challenge response:=>', response.payload);

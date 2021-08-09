@@ -51,7 +51,7 @@ function ReviewSection({
       )}
       <EventItemRender
         title={`Rating for teams (${
-          Object.keys(reviewsFeed?.reviews?.results).length || 0
+          Object.keys(reviewsFeed?.reviews?.results)?.length || 0
         })`}>
         {reviewsData && (
           <FlatList

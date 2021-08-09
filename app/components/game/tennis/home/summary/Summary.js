@@ -54,6 +54,7 @@ import {
 import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
 import { ImageUploadContext } from '../../../../../context/ImageUploadContext';
+import ApproveDisapprove from '../../../soccer/home/summary/approveDisapprove/ApproveDisapprove';
 
 // import GameStatus from '../../../../../Constants/GameStatus';
 
@@ -70,6 +71,7 @@ const Summary = ({
   getSportsList,
   getRefereeReservation,
   getScorekeeperReservation,
+  approveDisapproveGameScore,
   createGamePostData,
   getGameFeedData,
   gameFeedFlatListRef,
@@ -219,6 +221,23 @@ const Summary = ({
     }
     return gameData?.away_team?.group_id;
   };
+
+  const renderApproveDisapproveSection = useMemo(
+    () => gameData?.status === 'ended'
+      && isAdmin
+      // && !gameData?.approval?.home_team?.approved
+      // && !gameData?.approval?.away_team?.approved
+       && (
+         <ApproveDisapprove
+          getGameData={getGameData}
+          navigation={navigation}
+          gameId={gameData?.game_id}
+          gameData={gameData}
+          approveDisapproveGameScore={approveDisapproveGameScore}
+        />
+      ),
+    [approveDisapproveGameScore, gameData, getGameData, isAdmin, navigation],
+  );
 
   const leaveReviewButtonConfigTennis = () => {
     let found = false;
@@ -696,6 +715,9 @@ const Summary = ({
     () => !loading
     && gameData?.status === 'ended'
       && !checkReviewExpired(gameData?.actual_enddatetime)
+      && !isAdmin
+      && gameData?.approval?.home_team?.approved
+      && gameData?.approval?.away_team?.approved
       && showLeaveReviewButton() && (
         <View style={{ backgroundColor: colors.whiteColor, marginTop: 5 }}>
           <View>
@@ -753,6 +775,7 @@ const Summary = ({
         {!loading
           && gameData?.status === 'ended'
           && !checkReviewExpired(gameData?.actual_enddatetime)
+
           && showLeaveReviewButton() && (
             <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
               <View>
@@ -1229,6 +1252,7 @@ const Summary = ({
     <View style={styles.mainContainer}>
       <TCInnerLoader visible={loading} />
       {renderTopButtons}
+      {renderApproveDisapproveSection}
       {renderScoresSection}
       {renderMatchRecordsSection}
       {renderSpecialRulesSection}

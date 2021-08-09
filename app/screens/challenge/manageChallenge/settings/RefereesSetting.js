@@ -277,6 +277,7 @@ export default function RefereesSetting({ navigation, route }) {
         if (selection === 'None') {
           bodyParams = {
             sport: sportName,
+            entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
             responsible_for_referee: {
               who_secure: 'None',
             },
@@ -284,6 +285,7 @@ export default function RefereesSetting({ navigation, route }) {
         } else {
           bodyParams = {
             sport: sportName,
+            entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
             responsible_for_referee: {
               who_secure: referee.map((e) => {
                 delete e.id;

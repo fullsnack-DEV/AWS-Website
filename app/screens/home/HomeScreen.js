@@ -594,6 +594,7 @@ const HomeScreen = ({ navigation, route }) => {
           getChallengeSetting(
             uid,
             groupDetails.sport,
+            authContext.entity.role === 'user' ? 'player' : 'team',
             authContext,
           ).then((res3) => {
             setSettingObject(res3.payload[0]);
@@ -4579,6 +4580,7 @@ const HomeScreen = ({ navigation, route }) => {
               getChallengeSetting(
                 authContext?.entity?.uid,
                 currentUserData.sport,
+                authContext.entity.role === 'user' ? 'player' : 'team',
                 authContext,
               )
                 .then((response) => {

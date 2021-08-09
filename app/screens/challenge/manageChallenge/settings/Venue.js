@@ -251,6 +251,7 @@ pointerEvents="none"
   const onSavePressed = () => {
     const bodyParams = {
       sport: sportName,
+      entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
       venue: venue.map((e) => {
         delete e.id;
         return e;

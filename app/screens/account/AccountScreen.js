@@ -86,6 +86,8 @@ export default function AccountScreen({ navigation, route }) {
   const [sports, setSports] = useState('');
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
+  const [clickedUserType, setClickedUserType] = useState('user');
+
   console.log(sports);
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
@@ -101,6 +103,9 @@ export default function AccountScreen({ navigation, route }) {
   const userMenu = [
     { key: 'Reservations' },
     { key: 'Manage Challenge' },
+    { key: 'Referee Reservation Settings' },
+    { key: 'Scorekeeper Reservation Settings' },
+
     { key: 'Sports', member: [{ opetions: 'Add a sport' }] },
     { key: 'Refereeing', member: [{ opetions: 'Register as a referee' }] },
     { key: 'Scorekeeping', member: [{ opetions: 'Register as a scorekeeper' }] },
@@ -608,6 +613,7 @@ export default function AccountScreen({ navigation, route }) {
       const entity = authContext.entity;
       navigation.navigate('GroupMembersScreen', { groupID: entity.uid });
     } else if (section === 'Manage Challenge') {
+      setClickedUserType('user')
       const entity = authContext.entity;
 
       if (entity.role === 'user') {
@@ -618,6 +624,38 @@ export default function AccountScreen({ navigation, route }) {
         }
       } else {
         navigation.navigate('ManageChallengeScreen', {
+          sportName: entity?.obj?.sport,
+        });
+      }
+    } else if (section === 'Referee Reservation Settings') {
+      setClickedUserType('referee')
+
+      const entity = authContext.entity;
+
+      if (entity.role === 'user') {
+        if (entity?.obj?.referee_data?.length > 0) {
+          setVisibleSportsModal(true);
+        } else {
+          Alert.alert('There is no registerd sports as a referee.');
+        }
+      } else {
+        navigation.navigate('RefereeReservationSetting', {
+          sportName: entity?.obj?.sport,
+        });
+      }
+    } else if (section === 'Scorekeeper Reservation Settings') {
+      setClickedUserType('scorekeeper')
+
+      const entity = authContext.entity;
+
+      if (entity.role === 'user') {
+        if (entity?.obj?.scorekeeper_data?.length > 0) {
+          setVisibleSportsModal(true);
+        } else {
+          Alert.alert('There is no registerd sports as a scorekeeper.');
+        }
+      } else {
+        navigation.navigate('ScorekeeperReservationSetting', {
           sportName: entity?.obj?.sport,
         });
       }
@@ -1153,9 +1191,21 @@ export default function AccountScreen({ navigation, route }) {
         setSports(item?.sport_name);
         setTimeout(() => {
           console.log('Sport name:=>', item?.sport_name);
-          navigation.navigate('ManageChallengeScreen', {
-            sportName: item?.sport_name,
-          });
+          if (clickedUserType === 'user') {
+            navigation.navigate('ManageChallengeScreen', {
+              sportName: item?.sport_name,
+            });
+          }
+          if (clickedUserType === 'referee') {
+            navigation.navigate('RefereeReservationSetting', {
+              sportName: item?.sport_name,
+            });
+          }
+          if (clickedUserType === 'scorekeeper') {
+            navigation.navigate('ScorekeeperReservationSetting', {
+              sportName: item?.sport_name,
+            });
+          }
         }, 300);
       }}>
       <View
@@ -1544,6 +1594,18 @@ export default function AccountScreen({ navigation, route }) {
                         style={styles.menuItem}
                       />
                     )}
+                    {section === 'Referee Reservation Settings' && (
+                      <Image
+                        source={images.manageChallengeIcon}
+                        style={styles.menuItem}
+                      />
+                    )}
+                    {section === 'Scorekeeper Reservation Settings' && (
+                      <Image
+                        source={images.manageChallengeIcon}
+                        style={styles.menuItem}
+                      />
+                    )}
                     {section === 'Payment & Payout' && (
                       <Image
                         source={images.accountPaymentPayout}
@@ -1838,7 +1900,7 @@ export default function AccountScreen({ navigation, route }) {
             <View style={styles.separatorLine} />
             <FlatList
               ItemSeparatorComponent={() => <TCThinDivider />}
-              data={authContext?.entity?.obj?.registered_sports}
+              data={(clickedUserType === 'user' && authContext?.entity?.obj?.registered_sports) || (clickedUserType === 'referee' && authContext?.entity?.obj?.referee_data) || (clickedUserType === 'scorekeeper' && authContext?.entity?.obj?.scorekeeper_data)}
               keyExtractor={(item, index) => index.toString()}
               renderItem={renderSports}
             />

@@ -405,6 +405,7 @@ const PlayInModule = ({
             getChallengeSetting(
               currentUserData?.user_id || currentUserData?.group_id,
               playInObject?.sport_name,
+              authContext.entity.role === 'user' ? 'player' : 'team',
               authContext,
             )
               .then((response) => {
@@ -449,6 +450,7 @@ const PlayInModule = ({
             getChallengeSetting(
               authContext?.entity?.uid,
               playInObject?.sport_name,
+              authContext.entity.role === 'user' ? 'player' : 'team',
               authContext,
             )
               .then((response) => {

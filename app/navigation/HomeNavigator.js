@@ -175,6 +175,8 @@ import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotif
 import ManageChallengeScreen from '../screens/challenge/manageChallenge/ManageChallengeScreen';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
+import RefereeReservationSetting from '../screens/game/bookReferee/RefereeReservationSetting';
+import ScorekeeperReservationSetting from '../screens/game/bookScorekeeper/ScorekeeperReservationSetting';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2122,6 +2124,38 @@ const HomeNavigator = () => (
       }}
     />
 
+    <Stack.Screen
+      name="RefereeReservationSetting"
+      component={RefereeReservationSetting}
+      options={{
+        title: 'Referee Reservation Setting',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="ScorekeeperReservationSetting"
+      component={ScorekeeperReservationSetting}
+      options={{
+        title: 'Scorekeeper Reservation Setting',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="RespondToInviteScreen"
       component={RespondToInviteScreen}

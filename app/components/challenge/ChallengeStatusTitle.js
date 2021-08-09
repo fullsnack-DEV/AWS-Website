@@ -15,41 +15,41 @@ export default function ChallengeStatusTitle({
   offerExpiry,
   challengeObj,
 }) {
-//   const [countDown, setCountDown] = useState();
+  //   const [countDown, setCountDown] = useState();
 
-//   useEffect(() => {
-//     if (!isOfferExpired()) {
-//       const timeStamp = moment(new Date(challengeObj?.timestamp * 1000))
-//         .add(24, 'h')
-//         .toDate()
-//         .getTime();
-//       const startDateTime = challengeObj?.start_datetime * 1000;
-//       let finalDate;
-//       if (timeStamp < startDateTime) {
-//         finalDate = timeStamp;
-//       } else {
-//         finalDate = startDateTime;
-//       }
-//       if (finalDate > new Date().getTime()) {
-//         timer = setInterval(() => {
-//           if (
-//             status === ReservationStatus.offered
-//             || status === ReservationStatus.changeRequest
-//             || status === ReservationStatus.pendingpayment
-//             || status === ReservationStatus.pendingrequestpayment
-//           ) {
-//             getTwoDateDifference(finalDate, new Date().getTime());
-//           }
-//         }, 1000);
-//       } else {
-//         setCountDown();
-//       }
+  //   useEffect(() => {
+  //     if (!isOfferExpired()) {
+  //       const timeStamp = moment(new Date(challengeObj?.timestamp * 1000))
+  //         .add(24, 'h')
+  //         .toDate()
+  //         .getTime();
+  //       const startDateTime = challengeObj?.start_datetime * 1000;
+  //       let finalDate;
+  //       if (timeStamp < startDateTime) {
+  //         finalDate = timeStamp;
+  //       } else {
+  //         finalDate = startDateTime;
+  //       }
+  //       if (finalDate > new Date().getTime()) {
+  //         timer = setInterval(() => {
+  //           if (
+  //             status === ReservationStatus.offered
+  //             || status === ReservationStatus.changeRequest
+  //             || status === ReservationStatus.pendingpayment
+  //             || status === ReservationStatus.pendingrequestpayment
+  //           ) {
+  //             getTwoDateDifference(finalDate, new Date().getTime());
+  //           }
+  //         }, 1000);
+  //       } else {
+  //         setCountDown();
+  //       }
 
-//       return () => {
-//         clearInterval(timer);
-//       };
-//     }
-//   }, [challengeObj?.start_datetime, challengeObj?.timestamp, status]);
+  //       return () => {
+  //         clearInterval(timer);
+  //       };
+  //     }
+  //   }, [challengeObj?.start_datetime, challengeObj?.timestamp, status]);
 
   const isOfferExpired = () => {
     if (status === ReservationStatus.offered) {
@@ -66,36 +66,35 @@ export default function ChallengeStatusTitle({
     }
   };
 
-//   const getTwoDateDifference = (sDate, eDate) => {
-//     let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+  //   const getTwoDateDifference = (sDate, eDate) => {
+  //     let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
-//     const days = Math.floor(delta / 86400);
-//     delta -= days * 86400;
+  //     const days = Math.floor(delta / 86400);
+  //     delta -= days * 86400;
 
-//     const hours = Math.floor(delta / 3600) % 24;
-//     delta -= hours * 3600;
+  //     const hours = Math.floor(delta / 3600) % 24;
+  //     delta -= hours * 3600;
 
-//     const minutes = Math.floor(delta / 60) % 60;
-//     delta -= minutes * 60;
+  //     const minutes = Math.floor(delta / 60) % 60;
+  //     delta -= minutes * 60;
 
-//     const seconds = delta % 60;
+  //     const seconds = delta % 60;
 
-//     setCountDown(`${hours}h ${minutes}m ${seconds.toFixed(0)}s`);
-//   };
-return (
-  <View style={styles.viewContainer}>
-    {isSender && status === ReservationStatus.offered && (
-      <View>
-        {isOfferExpired() ? (
-          <View>
-            <Text
+  //     setCountDown(`${hours}h ${minutes}m ${seconds.toFixed(0)}s`);
+  //   };
+  return (
+    <View style={styles.viewContainer}>
+      {isSender && status === ReservationStatus.offered && (
+        <View>
+          {isOfferExpired() ? (
+            <View>
+              <Text
                 style={[styles.statusTitleText, { color: colors.googleColor }]}>
-              {challengeObj?.challenger === challengeObj?.invited_by
+                {challengeObj?.challenger === challengeObj?.invited_by
                   ? 'EXPIRED'
                   : 'INVITE TO CHALLENGE EXPIRED'}
-            </Text>
-
-          </View>
+              </Text>
+            </View>
           ) : (
             <View>
               <Text style={styles.statusTitleText}>
@@ -103,23 +102,21 @@ return (
                   ? 'SENT'
                   : 'INVITE TO CHALLENGE SENT'}
               </Text>
-
             </View>
           )}
-      </View>
+        </View>
       )}
-    {!isSender && status === ReservationStatus.offered && (
-      <View>
-        {isOfferExpired() ? (
-          <View>
-            <Text
+      {!isSender && status === ReservationStatus.offered && (
+        <View>
+          {isOfferExpired() ? (
+            <View>
+              <Text
                 style={[styles.statusTitleText, { color: colors.googleColor }]}>
-              {challengeObj?.challenger === challengeObj?.invited_by
+                {challengeObj?.challenger === challengeObj?.invited_by
                   ? 'EXPIRED'
                   : 'INVITE TO CHALLENGE EXPIRED'}
-            </Text>
-
-          </View>
+              </Text>
+            </View>
           ) : (
             <View>
               <Text style={styles.statusTitleText}>
@@ -127,13 +124,12 @@ return (
                   ? 'PENDING'
                   : 'INVITE TO CHALLENGE RECEIVED'}
               </Text>
-
             </View>
           )}
-      </View>
+        </View>
       )}
 
-    {isSender
+      {isSender
         && (status === ReservationStatus.accepted
           || status === ReservationStatus.restored
           || status === ReservationStatus.requestcancelled) && (
@@ -141,10 +137,9 @@ return (
               <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
                 CONFIRMED
               </Text>
-
             </View>
         )}
-    {!isSender
+      {!isSender
         && (status === ReservationStatus.accepted
           || status === ReservationStatus.restored
           || status === ReservationStatus.requestcancelled) && (
@@ -152,123 +147,116 @@ return (
               <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
                 CONFIRMED
               </Text>
-
             </View>
         )}
+      {status === ReservationStatus.completed && (
+        <View>
+          <Text style={[styles.statusTitleText, { color: colors.blueColorCard }]}>
+            COMPLETED
+          </Text>
+        </View>
+      )}
 
-    {isSender && status === ReservationStatus.declined && (
-      <View>
-        <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+      {isSender && status === ReservationStatus.declined && (
+        <View>
+          <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? 'DECLINED'
               : 'INVITE TO CHALLENGE DECLINED'}
-        </Text>
-
-      </View>
+          </Text>
+        </View>
       )}
-    {!isSender && status === ReservationStatus.declined && (
-      <View>
-        <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+      {!isSender && status === ReservationStatus.declined && (
+        <View>
+          <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? 'DECLINED'
               : 'INVITE TO CHALLENGE DECLINED'}
-        </Text>
-
-      </View>
+          </Text>
+        </View>
       )}
 
-    {isSender && status === ReservationStatus.cancelled && (
-      <View>
-        <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+      {isSender && status === ReservationStatus.cancelled && (
+        <View>
+          <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? 'CANCELLED'
               : 'INVITE TO CHALLENGE CANCELLED'}
-        </Text>
-
-      </View>
+          </Text>
+        </View>
       )}
-    {!isSender && status === ReservationStatus.cancelled && (
-      <View>
-        <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+      {!isSender && status === ReservationStatus.cancelled && (
+        <View>
+          <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? 'CANCELLED'
               : 'INVITE TO CHALLENGE CANCELLED'}
-        </Text>
-
-      </View>
+          </Text>
+        </View>
       )}
 
-    {isSender && status === ReservationStatus.pendingpayment && (
-      <View>
-        <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
-
-      </View>
+      {isSender && status === ReservationStatus.pendingpayment && (
+        <View>
+          <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
+        </View>
       )}
-    {!isSender && status === ReservationStatus.pendingpayment && (
-      <View>
-        <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
-
-      </View>
+      {!isSender && status === ReservationStatus.pendingpayment && (
+        <View>
+          <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
+        </View>
       )}
 
-    {isSender && status === ReservationStatus.pendingrequestpayment && (
-      <View>
-        <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
-
-      </View>
+      {isSender && status === ReservationStatus.pendingrequestpayment && (
+        <View>
+          <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
+        </View>
       )}
-    {!isSender && status === ReservationStatus.pendingrequestpayment && (
-      <View>
-        <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
-
-      </View>
+      {!isSender && status === ReservationStatus.pendingrequestpayment && (
+        <View>
+          <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
+        </View>
       )}
 
-    {isSender && status === ReservationStatus.changeRequest && (
-      <View>
-        {isOfferExpired() ? (
-          <View>
-            <Text
+      {isSender && status === ReservationStatus.changeRequest && (
+        <View>
+          {isOfferExpired() ? (
+            <View>
+              <Text
                 style={[styles.statusTitleText, { color: colors.googleColor }]}>
-              ALTERATION REQUEST EXPIRED
-            </Text>
-
-          </View>
+                ALTERATION REQUEST EXPIRED
+              </Text>
+            </View>
           ) : (
             <View>
               <Text style={styles.statusTitleText}>
                 ALTERATION REQUEST SENT
               </Text>
-
             </View>
           )}
-      </View>
+        </View>
       )}
-    {!isSender && status === ReservationStatus.changeRequest && (
-      <View>
-        {isOfferExpired() ? (
-          <View>
-            <Text
+      {!isSender && status === ReservationStatus.changeRequest && (
+        <View>
+          {isOfferExpired() ? (
+            <View>
+              <Text
                 style={[styles.statusTitleText, { color: colors.googleColor }]}>
-              ALTERATION REQUEST EXPIRED
-            </Text>
-
-          </View>
+                ALTERATION REQUEST EXPIRED
+              </Text>
+            </View>
           ) : (
             <View>
               <Text style={styles.statusTitleText}>
                 ALTERATION REQUEST PENDING
               </Text>
-
             </View>
           )}
-      </View>
+        </View>
       )}
-  </View>
+    </View>
   );
 }
 const styles = StyleSheet.create({
-
   statusTitleText: {
     fontSize: 16,
     color: colors.darkThemeColor,
@@ -277,7 +265,5 @@ const styles = StyleSheet.create({
   viewContainer: {
     marginTop: 15,
     marginBottom: 15,
-
   },
-
 });

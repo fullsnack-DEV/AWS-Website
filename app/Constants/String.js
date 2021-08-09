@@ -167,6 +167,8 @@ const strings = {
   currentCity: 'Home City',
   birthdateText: 'Choose Date of birth',
   searchCityPlaceholder: 'Search by city or postal code',
+  searchCityStatePlaceholder: 'City, state or country',
+  searchByCityStateText: 'Search by city, state or country',
   cityText: 'City',
   stateText: 'State',
   countryText: 'Country',
@@ -567,8 +569,8 @@ const strings = {
   chooseCorrectDate: 'Please choose correct date and time.',
   max5Referee: 'Maximum 5 referees can be added.',
   maxVenue: 'Maximum 10 venue can be added.',
-maxPeriod: 'Maximum 10 period can be added.',
-maxOverTime: 'Maximum 10 overtime can be added.',
+  maxPeriod: 'Maximum 10 period can be added.',
+  maxOverTime: 'Maximum 10 overtime can be added.',
 
   max5Scorekeeper: 'Maximum 5 scorekeeper can be added.',
   serchByLocation: 'Search by address',
@@ -682,9 +684,9 @@ maxOverTime: 'Maximum 10 overtime can be added.',
   photoUploadTitle:
     'Review the team, and add the profile photo and cover photo.',
 
-    invitetocreateteam: 'Invite to create team',
+  invitetocreateteam: 'Invite to create team',
 
-    whouldYouLikeToAccept: 'Would you like to accept this invite create a team?',
+  whouldYouLikeToAccept: 'Would you like to accept this invite create a team?',
   photoUploadClubTitle:
     'Review the club, and add the profile photo and cover photo.',
 
@@ -697,9 +699,15 @@ maxOverTime: 'Maximum 10 overtime can be added.',
   challengeSettingNotes:
     'In order to activate the “challenge” button and receive a challenge (game Reservation request), please fill in and save all the lists below.',
 
+  refereeSettingHeading:
+    'These referee reservation settings will be applied when you receive a referee reservation request.',
+  refereeSettingNotes:
+    'In order to activate the "book referee" button and receive a referee reservation request, please fill in and save all the lists above.',
   gameTyleTitle: 'Choose a game type.',
-  officialTypeText: 'The game result has an effect on TC points and TC level of the challenger and you.',
-  friendlyTypeText: 'The game result has no effect on TC points and TC level of the challenger and you.',
+  officialTypeText:
+    'The game result has an effect on TC points and TC level of the challenger and you.',
+  friendlyTypeText:
+    'The game result has no effect on TC points and TC level of the challenger and you.',
 
   officialGameType: 'Official',
   friendlyGameType: 'Friendly',
@@ -707,47 +715,68 @@ maxOverTime: 'Maximum 10 overtime can be added.',
   refuncPolicyTitle: 'Choose one of refund policies',
 
   gameFeeTitle: 'Set the game fee that you want to charge to your challenger.',
-  gameRulesTitle: 'Write down the rules of the game you will play against the challenger.',
+refereeFeeTitle: 'Set the referee fee that you want to charge.',
+scorekeeperFeeTitle: 'Set the scorekeeper fee that you want to charge.',
+
+  gameRulesTitle:
+    'Write down the rules of the game you will play against the challenger.',
 
   gameRulesSubTitle1: 'General rules',
   gameRulesSubTitle2: 'Special rules',
 
-  generalRulesPlaceholder: 'Add the rules that are generally used in this sport.',
-  specialRulesPlaceholder: 'Add any rules that are unique or that you want to emphasize.',
+  generalRulesPlaceholder:
+    'Add the rules that are generally used in this sport.',
+  specialRulesPlaceholder:
+    'Add any rules that are unique or that you want to emphasize.',
 
-  venueTitle: 'Add at lease one venue that you will be able to secure for a game against a challenger at your expense.',
+  venueTitle:
+    'Add at lease one venue that you will be able to secure for a game against a challenger at your expense.',
 
   homeAwayTitle: 'Choose which team will be the home team and the away team.',
   availibilityTitle: 'Are you ready to accept new challenges?',
+  availibilityRefereeTitle: 'Are you ready to receive new referee Reservation requests?',
+  availibilityScorekeeperTitle: 'Are you ready to receive new scorekeeper Reservation requests?',
 
   AvailibilitySubTitle: 'Accept new challenges',
+
+  AvailibilityRefereeSubTitle: 'Yes, I am ready.',
+
   officialOnly: 'Official only',
   friendlyOnly: 'Friendly only',
   allType: 'All',
 
-refereeSettingTitle: 'How many referees do you want to hire for the match?',
-refereeSettingNote: 'Which team will secure the referee at its own expense?',
+  refereeSettingTitle: 'How many referees do you want to hire for the match?',
+  refereeSettingNote: 'Which team will secure the referee at its own expense?',
 
-scorekeeperSettingTitle: 'How many scorekeepers do you want to hire for the match?',
-scorekeeperSettingNote: 'Which team will secure the scorekeeper at its own expense?',
+  scorekeeperSettingTitle:
+    'How many scorekeepers do you want to hire for the match?',
+  scorekeeperSettingNote:
+    'Which team will secure the scorekeeper at its own expense?',
 
-gameDurationTitle1: 'Set the Game duration.',
-gameDurationTitle2: 'If the scores are tied at the end of the periods above,',
-detailsTitleText: 'Please add more details if needed.',
+  gameDurationTitle1: 'Set the Game duration.',
+  gameDurationTitle2: 'If the scores are tied at the end of the periods above,',
+  detailsTitleText: 'Please add more details if needed.',
 
-firstPeriodText: '1st Period',
-intervalText: 'Interval',
-secondPeriodText: '2nd Period',
+  firstPeriodText: '1st Period',
+  intervalText: 'Interval',
+  secondPeriodText: '2nd Period',
 
-withoutOverTimeText: 'the game ends without over time.',
-withOverTimeText: 'the game goes into over time.',
-firstOverTimeText: '1st overtime',
-minuteText: 'min.',
-totalTimeTitle: 'Total time :',
+  withoutOverTimeText: 'the game ends without over time.',
+  withOverTimeText: 'the game goes into over time.',
 
-inviteToChallengeText: 'Through "Invite to challenge", you can set the custom price for the challenger. Once you invite a team to challenge you, the invitation will be valid for 48 hours. In the mean time, your calendar will remain open.',
+  addAreaText: 'Add areas where you can referee a game.',
+  setRangeText: 'Set the range where you can referee a game',
 
-teamExist: 'The team name in the sports already exists in the city.',
+  addAreaScorekeeperText: 'Add areas where you can scorekeeper a game.',
+  setRangeScorekeeperText: 'Set the range where you can scorekeeper a game',
 
+  firstOverTimeText: '1st overtime',
+  minuteText: 'min.',
+  totalTimeTitle: 'Total time :',
+
+  inviteToChallengeText:
+    'Through "Invite to challenge", you can set the custom price for the challenger. Once you invite a team to challenge you, the invitation will be valid for 48 hours. In the mean time, your calendar will remain open.',
+
+  teamExist: 'The team name in the sports already exists in the city.',
 };
 export default strings;

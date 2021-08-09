@@ -130,6 +130,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     getChallengeSetting(
       challengeData?.challengee,
       challengeData?.sport,
+      authContext.entity.role === 'user' ? 'player' : 'team',
       authContext,
     )
       .then((response) => {

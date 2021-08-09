@@ -58,6 +58,7 @@ import images from '../../../../Constants/ImagePath';
         } else {
           const bodyParams = {
             sport: sportName,
+            entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
             home_away: authContext?.entity?.uid === teams?.[0]?.user_id || authContext?.entity?.uid === teams?.[0]?.group_id ? 'Home' : 'Away',
           }
           setloading(true);

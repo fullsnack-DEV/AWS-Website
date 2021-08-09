@@ -11,7 +11,7 @@ import fonts from '../../../../Constants/Fonts';
 import AuthContext from '../../../../auth/context';
 import { patchChallengeSetting } from '../../../../api/Challenge';
 
-export default function GameFee({ navigation, route }) {
+export default function RefereeFee({ navigation, route }) {
   const { comeFrom, sportName } = route?.params;
   const authContext = useContext(AuthContext);
 
@@ -55,7 +55,7 @@ export default function GameFee({ navigation, route }) {
       } else {
         const bodyParams = {
           sport: sportName,
-          entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+          entity_type: 'referee',
           game_fee: {
             fee: Number(basicFee).toFixed(2),
             currency_type: currencyType,
@@ -81,7 +81,7 @@ export default function GameFee({ navigation, route }) {
   return (
     <View>
       <ActivityLoader visible={loading} />
-      <TCLabel title={strings.gameFeeTitle} />
+      <TCLabel title={strings.refereeFeeTitle} />
       <View style={styles.matchFeeView}>
         <TextInput
           placeholder={strings.enterFeePlaceholder}
@@ -92,8 +92,10 @@ export default function GameFee({ navigation, route }) {
             }
           }}
           value={basicFee}
-          keyboardType={'decimal-pad'}></TextInput>
-        <Text style={styles.curruency}>{currencyType}</Text>
+          keyboardType={'decimal-pad'}>
+        </TextInput>
+        <Text style={styles.curruency}>{currencyType}/hour</Text>
+
       </View>
     </View>
   );
@@ -125,7 +127,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: wp('3.8%'),
     height: 40,
-    width: '96%',
+    width: '86%',
+
   },
   curruency: {
     alignSelf: 'center',
