@@ -707,6 +707,7 @@ export default function AccountScreen({ navigation, route }) {
     [authContext.entity, navigation],
   );
 
+  console.log('authContext?.entity?.auth?.user', authContext?.entity?.auth?.user);
   const renderSportsList = useCallback(
     ({ item }) => (
       <View style={styles.listContainer}>
@@ -990,7 +991,7 @@ export default function AccountScreen({ navigation, route }) {
   const renderMenuItems = useCallback(
     (rowItem, rowId, sectionId) => (
       <View>
-        {authContext.entity.role === 'user' && sectionId === 2 && (
+        {authContext.entity.role === 'user' && sectionId === 4 && (
           <FlatList
             style={{ marginVertical: 10 }}
             data={authContext?.entity?.auth?.user?.registered_sports}
@@ -1002,7 +1003,7 @@ export default function AccountScreen({ navigation, route }) {
             scrollEnabled={false}
           />
         )}
-        {authContext.entity.role === 'user' && sectionId === 3 && (
+        {authContext.entity.role === 'user' && sectionId === 5 && (
           <FlatList
             style={{ marginVertical: 10 }}
             data={authContext?.entity?.auth?.user?.referee_data}
@@ -1014,7 +1015,7 @@ export default function AccountScreen({ navigation, route }) {
             scrollEnabled={false}
           />
         )}
-        {authContext.entity.role === 'user' && sectionId === 4 && (
+        {authContext.entity.role === 'user' && sectionId === 6 && (
           <FlatList
             style={{ marginVertical: 10 }}
             data={authContext?.entity?.auth?.user?.scorekeeper_data}
@@ -1027,10 +1028,10 @@ export default function AccountScreen({ navigation, route }) {
           />
         )}
         {authContext.entity.role === 'user'
-          && (sectionId === 5 || sectionId === 6) && (
+          && (sectionId === 7 || sectionId === 8) && (
             <FlatList
               style={{ marginVertical: 10 }}
-              data={sectionId === 5 ? teamList : clubList}
+              data={sectionId === 7 ? teamList : clubList}
               keyExtractor={keyExtractorID}
               renderItem={renderEntityList}
               ItemSeparatorComponent={() => (

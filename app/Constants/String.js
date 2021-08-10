@@ -142,6 +142,8 @@ const strings = {
     'Choose sports that members or teams in the club will play.',
   selectSportPlaceholder: 'Choose a Sport',
   teamNameTitle: 'What is the team name?',
+  whichSport: 'Which sport do you want to referee?',
+  whichLanguage: 'Which languages can you\ncommunicate in.',
   teamNamePlaceholder: 'Enter Team Name',
 
   enterNotePlaceholder: 'Enter notes',
@@ -271,6 +273,7 @@ const strings = {
   // Register Player Screen
   sportsEventsTitle: 'Sport',
   descriptionText: 'Description',
+  describeSelf: 'Describe yourself in the sport.',
   opetionalText: '(Optional)',
   descriptionPlaceholder: 'Describe yourself as a personal player',
   matchFeesTitle: 'Match Fee',
@@ -281,6 +284,7 @@ const strings = {
 
   // Register Referee Screen
   certificateTitle: 'Certificates',
+  certiTitle: 'Please add the certificates or documents showing your professional experience.',
   addCertiTitle: 'Add a Certificate',
   addCertiMainTitle:
     'Please add the certificates or documents showing your professional experience.',

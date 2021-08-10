@@ -108,7 +108,7 @@ const BookReferee = ({ navigation, route }) => {
             <Text style={styles.totalRefereeText}>
               Total {refereesData?.length ?? 0} Referees
             </Text>
-            <Text style={styles.filtersText}>Filters</Text>
+            <Text style={styles.filtersText}></Text>
           </View>
 
           {/*  Referee List Container */}
@@ -129,7 +129,7 @@ const BookReferee = ({ navigation, route }) => {
           )}
           {/*  Next Button */}
           {selectedReferee && (
-            <View style={{ justifyContent: 'flex-end' }}>
+            <View style={{ justifyContent: 'flex-end', marginBottom: 50 }}>
               <TCGradientButton
                 title={'NEXT'}
                 onPress={() => {
