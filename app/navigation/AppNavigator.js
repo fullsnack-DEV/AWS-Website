@@ -184,6 +184,7 @@ const getTabBarVisibility = (route) => {
 || routeName === 'RefundPolicyScorekeeper'
 || routeName === 'RefundPolicyReferee'
 || routeName === 'RefereeBookingDateAndTime'
+|| routeName === 'BookReferee'
 
   ) {
     return false;

@@ -271,6 +271,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [selectedChallengeOption, setSelectedChallengeOption] = useState();
 
   const [settingObject, setSettingObject] = useState();
+  const [refereeSettingObject, setRefereeSettingObject] = useState();
 
   const [
     isDoubleSportTeamCreatedVisible,
@@ -411,7 +412,11 @@ const HomeScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     if (isTeamHome) {
-      getTeamReviews(route?.params?.uid || authContext.entity.uid, true, authContext)
+      getTeamReviews(
+        route?.params?.uid || authContext.entity.uid,
+        true,
+        authContext,
+      )
         .then((res) => {
           console.log('Get team Review Data Res ::--', res?.payload);
 
@@ -443,10 +448,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const getUserData = async (uid, admin) => {
     // setloading(true);
-    const promises = [
-      getUserDetails(uid, authContext),
-      getGroups(authContext),
-    ];
+    const promises = [getUserDetails(uid, authContext), getGroups(authContext)];
     Promise.all(promises)
       .then(([res1, res2]) => {
         const userDetails = res1.payload;
@@ -568,7 +570,6 @@ const HomeScreen = ({ navigation, route }) => {
       const promises = [
         getGroupDetails(uid, authContext),
         getGroupMembers(uid, authContext),
-
       ];
       if (clubHome) {
         promises.push(getTeamsOfClub(uid, authContext));
@@ -598,16 +599,18 @@ const HomeScreen = ({ navigation, route }) => {
             groupDetails.sport,
             authContext.entity.role === 'user' ? 'player' : 'team',
             authContext,
-          ).then((res3) => {
-            setSettingObject(res3.payload[0]);
-            console.log('res3:::=>', res3.payload[0]);
-          }).catch(() => {
-            setFirstTimeLoading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, strings.defaultError);
-            }, 10);
-            // navigation.goBack();
-          });
+          )
+            .then((res3) => {
+              setSettingObject(res3.payload[0]);
+              console.log('res3:::=>', res3.payload[0]);
+            })
+            .catch(() => {
+              setFirstTimeLoading(false);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, strings.defaultError);
+              }, 10);
+              // navigation.goBack();
+            });
         })
         .catch(() => {
           setFirstTimeLoading(false);
@@ -1319,6 +1322,24 @@ const HomeScreen = ({ navigation, route }) => {
             }
           })
           .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+
+          getChallengeSetting(
+            route?.params?.uid || entity.uid,
+            refereeInObject.sport_name,
+            'referee',
+            authContext,
+          )
+            .then((response) => {
+              setRefereeSettingObject(response.payload[0]);
+              console.log('res3:::=>', response);
+            })
+            .catch(() => {
+              setFirstTimeLoading(false);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, strings.defaultError);
+              }, 10);
+              // navigation.goBack();
+            });
       } else {
         navigation.navigate('RegisterReferee');
       }
@@ -1449,6 +1470,7 @@ const HomeScreen = ({ navigation, route }) => {
       {tabKey === 0 && (
         <RefereeInfoSection
           data={currentUserData}
+          refereeSetting={refereeSettingObject}
           selectRefereeData={selectRefereeData}
           searchLocation={searchLocation}
           languagesName={languagesName}
@@ -2390,7 +2412,8 @@ const HomeScreen = ({ navigation, route }) => {
       navigation.popToTop();
     } else {
       if (route.params?.onBackPress) route.params.onBackPress();
-      navigation.navigate('AccountScreen');
+      // navigation.navigate('AccountScreen');
+      navigation.goBack();
     }
   }, [navigation, route.params]);
 
@@ -2920,8 +2943,7 @@ const HomeScreen = ({ navigation, route }) => {
   const renderChallengeButton = useMemo(
     () => !loading
       && isTeamHome
-      && authContext.entity.role === 'team'
-      && settingObject && (
+      && authContext.entity.role === 'team' && (
         <View style={styles.challengeButtonStyle}>
           {authContext.entity.obj.group_id !== currentUserData.group_id && (
             <View styles={[styles.outerContainerStyle, { height: 50 }]}>
@@ -2930,21 +2952,42 @@ const HomeScreen = ({ navigation, route }) => {
                   colors={[colors.darkThemeColor, colors.themeColor]}
                   style={[
                     styles.containerStyle,
-                    { justifyContent: 'space-between' },
+                    {
+                      justifyContent: settingObject?.game_fee?.fee
+                        ? 'space-between'
+                        : 'center',
+                    },
                   ]}>
-                  {settingObject?.game_fee?.fee ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={styles.buttonLeftText}>{`$${
+                  {settingObject?.game_fee?.fee ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Text style={styles.buttonLeftText}>{`$${
+                        settingObject?.game_fee?.fee
+                      } ${currentUserData?.currency_type ?? 'CAD'}`}</Text>
+                      <Text style={styles.buttonTextSmall}>
+                        {' '}
+                        {strings.perGameText}
+                      </Text>
+                    </View>
+                  ) : (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      {/* <Text style={styles.buttonLeftText}>{'Game fee not Configured'}</Text> */}
+                    </View>
+                  )}
+                  <Text
+                    style={
                       settingObject?.game_fee?.fee
-                    } ${currentUserData?.currency_type ?? 'CAD'}`}</Text>
-                    <Text style={styles.buttonTextSmall}>
-                      {' '}
-                      {strings.perGameText}
-                    </Text>
-                  </View> : <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={styles.buttonLeftText}>{'Game fee not Configured'}</Text>
-
-                  </View>}
-                  <Text style={styles.buttonText}>
+                        ? {
+                            color: colors.whiteColor,
+                            fontSize: 16,
+                            marginRight: 26,
+                            fontFamily: fonts.RBold,
+                          }
+                        : {
+                            color: colors.whiteColor,
+                            fontSize: 16,
+                            fontFamily: fonts.RBold,
+                    }
+                    }>
                     {strings.challenge.toUpperCase()}
                   </Text>
                 </LinearGradient>
@@ -3436,6 +3479,7 @@ const HomeScreen = ({ navigation, route }) => {
                 />
                 <RefereeInfoSection
                   data={currentUserData}
+                  refereeSetting={refereeSettingObject}
                   selectRefereeData={selectRefereeData}
                   searchLocation={searchLocation}
                   languagesName={languagesName}
@@ -4541,9 +4585,7 @@ const HomeScreen = ({ navigation, route }) => {
                   groupObj: currentUserData,
                 });
               } else {
-                Alert.alert(
-                  'This team has no completed challenge setting.',
-                );
+                Alert.alert('This team has no completed challenge setting.');
               }
 
               // setTimeout(() => {
@@ -4785,12 +4827,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.RRegular,
   },
-  buttonText: {
-    color: colors.whiteColor,
-    fontSize: 16,
-    marginRight: 26,
-    fontFamily: fonts.RBold,
-  },
+  // buttonText: {
+  //   color: colors.whiteColor,
+  //   fontSize: 16,
+  //   marginRight: 26,
+  //   fontFamily: fonts.RBold,
+  // },
   modalContainerViewStyle: {
     height: hp('94%'),
     backgroundColor: colors.whiteColor,

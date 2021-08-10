@@ -57,12 +57,12 @@ const RenderReferee = ({
       flex: 0.25,
       paddingHorizontal: 5,
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'flex-start',
     }}>
       <Text style={{ fontSize: 18, color: colors.lightBlackColor, fontFamily: fonts.RRegular }}>
-        ${fees}
+        ${Number(fees).toFixed(2)}
         <Text style={{ fontSize: 11 }}> CAD </Text>
-        <Text style={{ fontSize: 10 }}>(/h)</Text>
+        <Text style={{ fontSize: 10 }}>/ h</Text>
       </Text>
     </View>
 

@@ -36,23 +36,39 @@ import { patchChallengeSetting } from '../../../../api/Challenge';
 
 // const entity = {};
 export default function AvailableAreaReferee({ navigation, route }) {
-   const { comeFrom, sportName } = route?.params;
+  const { comeFrom, sportName } = route?.params;
 
   // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   // const [selectedAddressIndex, setSelectedAddressIndex] = useState();
 
+  console.log(
+    'route?.params?.settingObj?.available_area?.address',
+    route?.params?.settingObj?.available_area?.address,
+  );
   const [loading, setloading] = useState(false);
-  const [areaRadio, setAreaRadio] = useState(route?.params?.settingObj?.available_area?.is_specific_address ? 0 : 1);
+  const [areaRadio, setAreaRadio] = useState(
+    route?.params?.settingObj?.available_area?.is_specific_address ? 0 : 1,
+  );
   const [addressType, setAddressType] = useState();
-  const [searchAddress, setSearchAddress] = useState(route?.params?.settingObj?.available_area?.address);
+  const [searchAddress, setSearchAddress] = useState(
+    route?.params?.settingObj?.available_area,
+  );
   const [addressModalVisible, setAddressModalVisible] = useState(false);
   const [addressListIndex, setAddressListIndex] = useState();
 
   const [distancePopup, setDistancePopup] = useState(false);
-  const [selectedDistanceOption, setSelectedDistanceOption] = useState(route?.params?.settingObj?.available_area?.distance_type && route?.params?.settingObj?.available_area?.distance_type === 'Mi' ? 0 : 1);
+  const [selectedDistanceOption, setSelectedDistanceOption] = useState(
+    route?.params?.settingObj?.available_area?.distance_type
+      && route?.params?.settingObj?.available_area?.distance_type === 'Mi'
+      ? 0
+      : 1,
+  );
 
-  const [radious, setRadious] = useState(route?.params?.settingObj?.available_area?.radious && route?.params?.settingObj?.available_area?.radious);
+  const [radious, setRadious] = useState(
+    route?.params?.settingObj?.available_area?.radious
+      && `${route?.params?.settingObj?.available_area?.radious}`,
+  );
   const [addressList, setAddressList] = useState(
     route?.params?.settingObj?.available_area?.address_list
       ? route?.params?.settingObj?.available_area?.address_list
@@ -70,6 +86,11 @@ export default function AvailableAreaReferee({ navigation, route }) {
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
+            console.log('searchAddress::', searchAddress.address);
+            console.log('searchAddress?.description::', searchAddress?.description);
+
+            console.log('!route?.params?.settingObj?.available_area?.address::', !route?.params?.settingObj?.available_area?.address);
+
             if (areaRadio === 0) {
               const addresses = addressList.filter((obj) => obj.address === '');
 
@@ -79,27 +100,69 @@ export default function AvailableAreaReferee({ navigation, route }) {
                 onSavePressed();
               }
             } else if (selectedDistanceOption === undefined) {
-                Alert.alert('Please selected type of distance.');
-              } else if (!searchAddress) {
-                Alert.alert('Please selected address for calculate range.');
-              } else if (!radious) {
-                Alert.alert('Please selected radious for calculate range.');
-              } else {
-                onSavePressed();
-              }
+              Alert.alert('Please selected type of distance.');
+            } else if (searchAddress?.address === '' || searchAddress?.description === '') {
+              Alert.alert('Please selected address for calculate range.');
+            } else if (!radious) {
+              Alert.alert('Please selected radious for calculate range.');
+            } else {
+              onSavePressed();
+            }
           }}>
           Save
         </Text>
       ),
     });
-  }, [
-    navigation,
-    areaRadio,
-    selectedDistanceOption,
-    searchAddress,
-    radious,
-    addressList,
-  ]);
+  }, [navigation, areaRadio, selectedDistanceOption, searchAddress, radious, addressList, route?.params?.settingObj?.available_area?.address]);
+
+  const onSavePressed = () => {
+    let availableArea = {};
+    if (areaRadio === 0) {
+      const list = addressList.map((v) => {
+        const o = v;
+        delete o.id;
+        return o;
+      });
+
+      console.log('list', list);
+
+      availableArea = {
+        is_specific_address: areaRadio === 0,
+        address_list: list,
+      };
+    }
+    if (areaRadio === 1) {
+      availableArea = {
+        is_specific_address: areaRadio === 0,
+        radious: Number(radious),
+        distance_type: selectedDistanceOption === 0 ? 'Mi' : 'Km',
+        address: searchAddress?.description ?? searchAddress?.address ?? route?.params?.settingObj?.available_area?.address,
+        latlong: {
+          latitude: searchAddress.latitude ?? searchAddress?.latlong?.latitude ?? route?.params?.settingObj?.available_area?.latlong?.latitude,
+          longitude: searchAddress.longitude ?? searchAddress?.latlong?.longitude ?? route?.params?.settingObj?.available_area?.latlong?.longitude,
+        },
+      };
+    }
+
+    console.log('availableArea', availableArea);
+    const bodyParams = {};
+    bodyParams.available_area = availableArea;
+    bodyParams.sport = sportName;
+    bodyParams.entity_type = 'referee';
+    setloading(true);
+    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
+      .then((response) => {
+        setloading(false);
+        navigation.navigate(comeFrom, { settingObj: response.payload });
+        console.log('patch challenge response:=>', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   const addAddress = () => {
     if (addressList.length < 10) {
@@ -151,51 +214,6 @@ export default function AvailableAreaReferee({ navigation, route }) {
 
   const onCloseLocationModal = () => {
     setAddressModalVisible(false);
-  };
-
-  const onSavePressed = () => {
-    let availableArea = {};
-    if (areaRadio === 0) {
-     const list = addressList.map((v) => {
-       const o = v
-       delete o.id;
-       return o
-      });
-
-     console.log('list', list);
-
-      availableArea = {
-        is_specific_address: areaRadio === 0,
-        address_list: list,
-      };
-    }
-    if (areaRadio === 1) {
-      availableArea = {
-        is_specific_address: areaRadio === 0,
-        radious: Number(radious),
-        distance_type: selectedDistanceOption === 0 ? 'Mi' : 'Km',
-        address: searchAddress,
-      };
-    }
-
-    console.log('availableArea', availableArea);
-    const bodyParams = {};
-    bodyParams.available_area = availableArea;
-    bodyParams.sport = sportName
-    bodyParams.entity_type = 'referee';
-    setloading(true);
-    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-      .then((response) => {
-        setloading(false);
-        navigation.navigate(comeFrom, { settingObj: response.payload });
-        console.log('patch challenge response:=>', response.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
   };
 
   return (
@@ -339,7 +357,7 @@ export default function AvailableAreaReferee({ navigation, route }) {
                 pointerEvents="none"
                 style={styles.detailsSingleText}
                 placeholder={'Address'}
-                value={searchAddress}
+                value={searchAddress?.description ?? searchAddress?.address ?? route?.params?.settingObj?.available_area?.address}
               />
             </TouchableOpacity>
           </View>
@@ -421,7 +439,7 @@ export default function AvailableAreaReferee({ navigation, route }) {
           visible={addressModalVisible}
           addressType={addressType}
           onSelect={(data) => {
-            console.log('select:', data.description);
+            console.log('select:', data);
 
             if (addressType === 'short') {
               const obj = [...addressList];
@@ -430,7 +448,7 @@ export default function AvailableAreaReferee({ navigation, route }) {
 
               console.log('select:', data.description);
             } else {
-              setSearchAddress(data.description);
+              setSearchAddress(data);
             }
           }}
           onClose={onCloseLocationModal}
