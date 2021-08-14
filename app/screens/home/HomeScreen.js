@@ -3256,6 +3256,7 @@ const HomeScreen = ({ navigation, route }) => {
             margin: 0,
             justifyContent: 'flex-end',
             backgroundColor: colors.blackOpacityColor,
+
           }}
           hasBackdrop
           onBackdropPress={() => setRefereesInModalVisible(false)}
@@ -3341,6 +3342,7 @@ const HomeScreen = ({ navigation, route }) => {
                 margin: 0,
                 justifyContent: 'flex-end',
                 backgroundColor: colors.blackOpacityColor,
+
               }}
               hasBackdrop
               onBackdropPress={() => setRefereeInfoModalVisible(false)}

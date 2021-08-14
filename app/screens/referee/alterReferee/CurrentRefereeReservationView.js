@@ -10,7 +10,6 @@ import _ from 'lodash';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import AuthContext from '../../../auth/context';
-import TCGradientButton from '../../../components/TCGradientButton';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThickDivider from '../../../components/TCThickDivider';
 import images from '../../../Constants/ImagePath';
@@ -18,7 +17,6 @@ import TCLabel from '../../../components/TCLabel';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TCInfoField from '../../../components/TCInfoField';
 import EventMapView from '../../../components/Schedule/EventMapView';
-import ReservationStatus from '../../../Constants/ReservationStatus';
 
 import MatchFeesCard from '../../../components/challenge/MatchFeesCard';
 import ReservationNumber from '../../../components/reservations/ReservationNumber';
@@ -32,7 +30,7 @@ import TCChallengeTitle from '../../../components/TCChallengeTitle';
 
 let entity = {};
 
-export default function CurruentRefereeReservationScreen({ navigation, route }) {
+export default function CurruentRefereeReservationView({ reservationObj, navigation }) {
   const authContext = useContext(AuthContext);
 
   const isFocused = useIsFocused();
@@ -40,7 +38,6 @@ export default function CurruentRefereeReservationScreen({ navigation, route }) 
 
   useEffect(() => {
     entity = authContext.entity;
-    const { reservationObj } = route.params ?? {};
     setbodyParams(reservationObj);
     // requester = getRequester()
   }, [isFocused]);
@@ -59,8 +56,8 @@ export default function CurruentRefereeReservationScreen({ navigation, route }) 
 
     return `${days}d ${hours}h ${minutes}m`;
   };
-  const checkSenderOrReceiver = (reservationObj) => {
-    const teampObj = { ...reservationObj };
+  const checkSenderOrReceiver = (reservationObject) => {
+    const teampObj = { ...reservationObject };
     if (
       teampObj?.status === RefereeReservationStatus.pendingpayment
       || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
@@ -110,8 +107,8 @@ export default function CurruentRefereeReservationScreen({ navigation, route }) 
     return 'receiver';
   };
 
-  const checkRefereeOrTeam = (reservationObj) => {
-    const teampObj = { ...reservationObj };
+  const checkRefereeOrTeam = (reservationObject) => {
+    const teampObj = { ...reservationObject };
     if (
       teampObj?.status === RefereeReservationStatus.pendingpayment
       || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
@@ -167,26 +164,26 @@ export default function CurruentRefereeReservationScreen({ navigation, route }) 
     return 'referee';
   };
 
-  const getEntityName = (reservationObj) => {
-    if (reservationObj?.initiated_by === entity.uid) {
-      return `${reservationObj?.referee?.first_name} ${reservationObj?.referee?.last_name}`;
+  const getEntityName = (reservationObject) => {
+    if (reservationObject?.initiated_by === entity.uid) {
+      return `${reservationObject?.referee?.first_name} ${reservationObject?.referee?.last_name}`;
     }
-    if (!reservationObj?.game?.singlePlayerGame) {
+    if (!reservationObject?.game?.singlePlayerGame) {
       if (
-        reservationObj?.initiated_by
-        === reservationObj?.game?.home_team?.group_id
+        reservationObject?.initiated_by
+        === reservationObject?.game?.home_team?.group_id
       ) {
-        return `${reservationObj?.game?.home_team.group_name}`;
+        return `${reservationObject?.game?.home_team.group_name}`;
       }
-      return `${reservationObj?.game?.away_team.group_name}`;
+      return `${reservationObject?.game?.away_team.group_name}`;
     }
     console.log('user challenge');
     if (
-      reservationObj?.initiated_by === reservationObj?.game?.home_team?.user_id
+        reservationObject?.initiated_by === reservationObject?.game?.home_team?.user_id
     ) {
-      return `${reservationObj?.game?.home_team.first_name} ${reservationObj?.game?.home_team.last_name}`;
+      return `${reservationObject?.game?.home_team.first_name} ${reservationObject?.game?.home_team.last_name}`;
     }
-    return `${reservationObj?.game?.away_team.first_name} ${reservationObj?.game?.away_team.last_name}`;
+    return `${reservationObject?.game?.away_team.first_name} ${reservationObject?.game?.away_team.last_name}`;
   };
 
   const Title = ({ text, required }) => (
@@ -567,42 +564,6 @@ export default function CurruentRefereeReservationScreen({ navigation, route }) 
               </View>
             )}
 
-          {bodyParams?.referee?.user_id !== entity.uid
-            && bodyParams.status === ReservationStatus.pendingpayment && (
-              <TCGradientButton
-                title={'TRY TO PAY AGAIN'}
-                onPress={() => {
-                  navigation.navigate('PayAgainRefereeScreen', {
-                    body: bodyParams,
-                    comeFrom: 'RefereeReservationScreen',
-                  });
-                }}
-                marginBottom={15}
-              />
-            )}
-
-          {/* {!(
-              bodyParams.status === ReservationStatus.offered
-              || bodyParams.status === ReservationStatus.cancelled
-              || bodyParams.status === ReservationStatus.declined
-            ) && (
-              <TCBorderButton
-                title={'GAME HOME'}
-                onPress={() => {
-                  if (`${bodyParams.sport}`.toLowerCase() === 'soccer') {
-                    navigation.navigate('SoccerHome', {
-                      gameId: bodyParams.game_id,
-                    });
-                  } else {
-                    navigation.navigate('TennisHome', {
-                      gameId: bodyParams.game_id,
-                    });
-                  }
-                }}
-                marginBottom={15}
-              />
-            )} */}
-
           <TCThickDivider marginTop={15} />
 
           {bodyParams && (
@@ -775,13 +736,13 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontFamily: fonts.RRegular,
     fontSize: 14,
-    color: colors.themeColor,
+    color: colors.lightBlackColor,
   },
   challengerText: {
     marginLeft: 5,
     fontFamily: fonts.RRegular,
     fontSize: 14,
-    color: colors.greenGradientStart,
+    color: colors.lightBlackColor,
   },
 
   teamNameText: {

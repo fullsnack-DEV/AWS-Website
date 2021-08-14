@@ -523,6 +523,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
             const obj = {
               id: i,
               responsible_to_secure_scorekeeper: 'challengee',
+              is_chief: i === 0,
             };
             arr.push(obj);
           }
@@ -538,6 +539,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
             const obj = {
               id: i,
               responsible_to_secure_scorekeeper: 'None',
+              is_chief: i === 0,
             };
             arr.push(obj);
           }
@@ -599,7 +601,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
         onPress={() => {
             const ref = [...scorekeeper];
             scorekeeper[index].responsible_to_secure_scorekeeper = 'challengee';
-
+            scorekeeper[index].is_chief = index === 0;
             setScorekeeper(ref);
         }}>
           <View style={styles.teamContainer}>
@@ -655,6 +657,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
         onPress={() => {
           const ref = [...scorekeeper];
           scorekeeper[index].responsible_to_secure_scorekeeper = 'challenger';
+          scorekeeper[index].is_chief = index === 0;
           setScorekeeper(ref);
         }}>
           <View style={styles.teamContainer}>
@@ -743,7 +746,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
         };
       }
 
-        console.log('Referee secure:=>', bodyParams);
+        console.log('scorekeeper secure:=>', bodyParams);
 
         setloading(true);
         patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)

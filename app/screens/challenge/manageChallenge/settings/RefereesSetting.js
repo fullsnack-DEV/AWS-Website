@@ -77,6 +77,7 @@ export default function RefereesSetting({ navigation, route }) {
           const obj = {
             id: i,
             responsible_to_secure_referee: 'challengee',
+            is_chief: i === 0,
           };
           arr.push(obj);
         }
@@ -92,6 +93,7 @@ export default function RefereesSetting({ navigation, route }) {
           const obj = {
             id: i,
             responsible_to_secure_referee: 'None',
+            is_chief: i === 0,
           };
           arr.push(obj);
         }
@@ -152,6 +154,7 @@ export default function RefereesSetting({ navigation, route }) {
      onPress={() => {
        const ref = [...referee];
        referee[index].responsible_to_secure_referee = 'challengee';
+       referee[index].is_chief = index === 0;
 
        setReferee(ref);
      }}>
@@ -208,6 +211,7 @@ export default function RefereesSetting({ navigation, route }) {
      onPress={() => {
        const ref = [...referee];
        referee[index].responsible_to_secure_referee = 'challenger';
+       referee[index].is_chief = index === 0;
        setReferee(ref);
      }}>
        <View style={styles.teamContainer}>
@@ -297,6 +301,7 @@ export default function RefereesSetting({ navigation, route }) {
         }
 
         console.log('Referee secure:=>', bodyParams);
+
         setloading(true);
         patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
           .then((response) => {

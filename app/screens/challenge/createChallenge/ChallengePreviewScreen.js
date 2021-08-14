@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
 import React, { useContext, useState, useEffect } from 'react';
@@ -74,19 +75,34 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   );
   const [oldVersion, setOldVersion] = useState();
 
-  const [challenger] = useState(
-    challengeData?.challenger === challengeData?.home_team?.user_id
-      || challengeData?.challenger === challengeData?.home_team?.group_id
-      ? challengeData?.home_team
-      : challengeData?.away_team,
-  );
-  const [challengee] = useState(
-    challengeData?.challengee === challengeData?.home_team?.user_id
-      || challengeData?.challengee === challengeData?.home_team?.group_id
-      ? challengeData?.home_team
-      : challengeData?.away_team,
-  );
+  // const [challenger, setChallenger] = useState(
+  //   challengeData?.challenger === challengeData?.home_team?.user_id
+  //     || challengeData?.challenger === challengeData?.home_team?.group_id
+  //     ? challengeData?.home_team
+  //     : challengeData?.away_team,
+  // );
+  // const [challengee, setChallengee] = useState(
+  //   challengeData?.challengee === challengeData?.home_team?.user_id
+  //     || challengeData?.challengee === challengeData?.home_team?.group_id
+  //     ? challengeData?.home_team
+  //     : challengeData?.away_team,
+  // );
 
+const getChallenger = () => {
+  if (challengeData?.challenger === challengeData?.home_team?.user_id
+    || challengeData?.challenger === challengeData?.home_team?.group_id) {
+      return challengeData?.home_team
+    }
+      return challengeData?.away_team
+}
+
+const getChallengee = () => {
+  if (challengeData?.challengee === challengeData?.home_team?.user_id
+    || challengeData?.challengee === challengeData?.home_team?.group_id) {
+      return challengeData?.home_team
+    }
+      return challengeData?.away_team
+}
   useEffect(() => {
     if (route?.params?.challengeObj?.length > 1) {
       // setIsPendingRequestPayment(true);
@@ -523,47 +539,51 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     </>
   );
 
-  const renderReferees = ({ item, index }) => (
-    <SecureRefereeView
-      entityName={
-        item.responsible_to_secure_referee === 'challenger'
-          ? challenger?.full_name ?? challenger?.group_name
-          : challengee?.full_name ?? challengee?.group_name
-      }
-      image={
-        item.responsible_to_secure_referee === 'challenger'
-          ? challenger?.thumbnail
-            ? { uri: challenger?.thumbnail }
-            : challenger?.full_name
+  const renderReferees = ({ item, index }) => {
+    console.log('ITEm:', item);
+    console.log('challengee?.full_name ?? challengee?.group_name', getChallenger()?.full_name ?? getChallenger()?.group_name);
+    return (
+      <SecureRefereeView
+        entityName={
+          item.responsible_to_secure_referee === 'challenger'
+            ? getChallenger()?.full_name ?? getChallenger()?.group_name
+            : getChallengee()?.full_name ?? getChallengee()?.group_name
+        }
+        image={
+          item.responsible_to_secure_referee === 'challenger'
+            ? getChallenger()?.thumbnail
+              ? { uri: getChallenger()?.thumbnail }
+              : getChallenger()?.full_name
+              ? images.profilePlaceHolder
+              : images.teamPlaceholder
+            : getChallenger()?.thumbnail
+            ? { uri: getChallengee()?.thumbnail }
+            : getChallengee()?.full_name
             ? images.profilePlaceHolder
             : images.teamPlaceholder
-          : challengee?.thumbnail
-          ? { uri: challengee?.thumbnail }
-          : challengee?.full_name
-          ? images.profilePlaceHolder
-          : images.teamPlaceholder
-      }
-      entity={'Referee'}
-      entityNumber={index + 1}
-    />
-  );
+        }
+        entity={'Referee'}
+        entityNumber={index + 1}
+      />
+    )
+  };
   const renderScorekeepers = ({ item, index }) => (
     <SecureRefereeView
       entityName={
         item.responsible_to_secure_scorekeeper === 'challenger'
-          ? challenger?.full_name ?? challenger?.group_name
-          : challengee?.full_name ?? challengee?.group_name
+          ? getChallenger()?.full_name ?? getChallenger()?.group_name
+          : getChallengee()?.full_name ?? getChallengee()?.group_name
       }
       image={
         item.responsible_to_secure_scorekeeper === 'challenger'
-          ? challenger?.thumbnail
-            ? { uri: challenger?.thumbnail }
-            : challenger?.full_name
+          ? getChallenger()?.thumbnail
+            ? { uri: getChallenger()?.thumbnail }
+            : getChallenger()?.full_name
             ? images.profilePlaceHolder
             : images.teamPlaceholder
-          : challengee?.thumbnail
-          ? { uri: challengee?.thumbnail }
-          : challengee?.full_name
+          : getChallengee()?.thumbnail
+          ? { uri: getChallengee()?.thumbnail }
+          : getChallengee()?.full_name
           ? images.profilePlaceHolder
           : images.teamPlaceholder
       }

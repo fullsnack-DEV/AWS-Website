@@ -13,7 +13,8 @@ import { getGameSlots } from '../../../../api/Games';
 import AuthContext from '../../../../auth/context'
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 import { getSearchData } from '../../../../utils';
-import GameCard from '../../../../components/TCGameCard';
+import TCGameCard from '../../../../components/TCGameCard';
+import strings from '../../../../Constants/String';
 
 const TYPING_SPEED = 200;
 
@@ -37,17 +38,21 @@ const RefereeSelectMatch = ({ navigation, route }) => {
       `status=accepted&sport=${sport}&refereeDetail=true`,
       headers,
       authContext,
-    )
-      .then((res) => {
+    ).then((res) => {
+      setLoading(false);
         setMatchData([...res?.payload]);
-      }).finally(() => setLoading(false))
-  }, [])
+      }).catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.messages);
+        }, 10);
+      });
+  }, [authContext, sport, userData])
 
   const onSearchTextChange = (text) => {
     if (typingTimeout) clearTimeout(typingTimeout);
     setSearchText(text);
     const search = () => {
-      console.log(matchData);
       if (text !== '') {
         const data = getSearchData(matchData, ['sport'], text)
         if (data?.length > 0) setSearchData([...data]);
@@ -93,8 +98,9 @@ const RefereeSelectMatch = ({ navigation, route }) => {
               data={searchText === '' ? matchData : searchData}
               renderItem={({ item }) => (
                 <View style={{ marginVertical: 5 }}>
-                  <GameCard
+                  <TCGameCard
                     data={item}
+                    cardWidth={'88%'}
                     onPress={() => {
                       const game = item;
                       let isSameReferee = false;
@@ -128,7 +134,7 @@ const RefereeSelectMatch = ({ navigation, route }) => {
                 </View>
               )}
             ListEmptyComponent={<Text style={styles.emptySectionListItem}>
-              {searchText === '' ? 'No match found' : `No match found for '${searchText}'`}
+              {searchText === '' ? 'No game found' : `No game found for '${searchText}'`}
             </Text>}
           />
         </View>

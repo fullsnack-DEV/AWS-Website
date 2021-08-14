@@ -110,6 +110,7 @@ export default function ChallengePaymentScreen({ route, navigation }) {
         console.log('Challenge Object:=>', body);
 
         setloading(true);
+
         createChallenge(body, authContext)
           .then((response) => {
             console.log(' challenge response:=>', response.payload);

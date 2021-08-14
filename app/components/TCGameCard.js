@@ -49,7 +49,7 @@ function GameCard({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      style={styles.mainContainer}>
+      style={[styles.mainContainer, { width: wp(cardWidth) }]}>
       <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
         <LinearGradient
           colors={
@@ -187,8 +187,8 @@ function GameCard({
 const styles = StyleSheet.create({
   mainContainer: {
     backgroundColor: colors.whiteColor,
-    margin: 10,
     borderRadius: 8,
+    marginBottom: 15,
     elevation: 2,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1.5 },
@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
   },
   backgroundView: {
     alignSelf: 'center',
