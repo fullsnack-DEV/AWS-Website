@@ -258,12 +258,12 @@ export default function ChallengeStatusTitle({
 }
 const styles = StyleSheet.create({
   statusTitleText: {
-    fontSize: 16,
+    fontSize: 12,
     color: colors.darkThemeColor,
     fontFamily: fonts.RBold,
   },
   viewContainer: {
-    marginTop: 15,
-    marginBottom: 15,
+    marginTop: 0,
+    marginBottom: 0,
   },
 });

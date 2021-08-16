@@ -3313,13 +3313,17 @@ const HomeScreen = ({ navigation, route }) => {
                     : 0
                 }
                 onBookRefereePress={() => {
-                  setRefereesInModalVisible(false);
-                  navigation.navigate('RefereeBookingDateAndTime', {
-                    userData: currentUserData,
-                    showMatches: true,
-                    navigationName: 'HomeScreen',
-                    sportName,
-                  });
+                  if (refereeSettingObject?.refereeAvailibility && refereeSettingObject?.game_fee && refereeSettingObject?.refund_policy && refereeSettingObject?.available_area) {
+                    setRefereesInModalVisible(false);
+                    navigation.navigate('RefereeBookingDateAndTime', {
+                      userData: currentUserData,
+                      showMatches: true,
+                      navigationName: 'HomeScreen',
+                      sportName,
+                    });
+                  } else {
+                    Alert.alert('Referee setting not configured yet.')
+                  }
                 }}
               />
 

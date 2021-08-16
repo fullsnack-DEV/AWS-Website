@@ -177,6 +177,7 @@ import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 import RefereeReservationSetting from '../screens/game/bookReferee/RefereeReservationSetting';
 import ScorekeeperReservationSetting from '../screens/game/bookScorekeeper/ScorekeeperReservationSetting';
+import ReservationAcceptDeclineScreen from '../screens/referee/ReservationAcceptDeclineScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2181,7 +2182,13 @@ const HomeNavigator = () => (
         },
       }}
     />
-
+    <Stack.Screen
+         name="ReservationAcceptDeclineScreen"
+         component={ReservationAcceptDeclineScreen}
+         options={{
+           headerShown: false,
+         }}
+        />
   </Stack.Navigator>
 );
 

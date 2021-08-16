@@ -64,10 +64,10 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
           body.hourly_game_fee = response?.payload?.hourly_game_fee ?? 0;
           body.currency_type = 'CAD';
           body.total_payout = response?.payload?.total_payout ?? 0;
-          body.service_fee1_charges = response?.payload?.total_service_fee1 ?? 0;
-          body.service_fee2_charges = response?.payload?.total_service_fee2 ?? 0;
-          body.total_charges = response?.payload?.total_amount ?? 0;
-          body.total_game_charges = response?.payload?.total_game_fee ?? 0;
+          body.total_service_fee1 = response?.payload?.total_service_fee1 ?? 0;
+          body.total_service_fee2 = response?.payload?.total_service_fee2 ?? 0;
+          body.total_amount = response?.payload?.total_amount ?? 0;
+          body.total_game_fee = response?.payload?.total_game_fee ?? 0;
           body.payment_method_type = 'card';
           // body = { ...body, hourly_game_fee: hFee, currency_type: cType };
           setChallengeObject(body);
@@ -130,10 +130,10 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
       referee_id: userData?.user_id,
       game_id: gameData?.game_id,
       chief_referee: chiefOrAssistant === 'chief',
-      total_game_fee: challengeObject?.total_game_charges,
-      total_service_fee1: challengeObject?.service_fee1_charges,
-      total_service_fee2: challengeObject?.service_fee2_charges,
-      total_amount: challengeObject?.total_charges,
+      total_game_fee: challengeObject?.total_game_fee,
+      total_service_fee1: challengeObject?.total_service_fee1,
+      total_service_fee2: challengeObject?.total_service_fee2,
+      total_amount: challengeObject?.total_amount,
       // total_payout: challengeObject?.total_payout,
     };
     delete bodyParams.sport;
@@ -200,7 +200,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                   style={styles.locationText}
                   numberOfLines={
                   1
-                  }>{`${userData?.city} , ${userData?.country}`}</Text>
+                  }>{`${userData?.city}, ${userData?.country}`}</Text>
               </View>
             </View>
           </View>
@@ -224,7 +224,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               alignItems: 'center',
               justifyContent: 'space-between',
             }}>
-            <Title text={'Choose a game'} required={true} />
+            <Title text={'Choose a game'} required={true}/>
             {route?.params?.showMatches && (
               <View
                 onPress={() => {
