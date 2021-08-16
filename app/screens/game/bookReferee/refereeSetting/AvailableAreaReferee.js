@@ -86,13 +86,13 @@ export default function AvailableAreaReferee({ navigation, route }) {
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
-            console.log('searchAddress::', searchAddress.address);
+            console.log('searchAddress::', searchAddress?.address);
             console.log('searchAddress?.description::', searchAddress?.description);
 
             console.log('!route?.params?.settingObj?.available_area?.address::', !route?.params?.settingObj?.available_area?.address);
 
             if (areaRadio === 0) {
-              const addresses = addressList.filter((obj) => obj.address === '');
+              const addresses = addressList.filter((obj) => obj?.address === '');
 
               if (addresses.length > 0) {
                 Alert.alert('Please fill all address fields.');

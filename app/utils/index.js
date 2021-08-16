@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import {
 
 } from 'react';
@@ -433,9 +434,9 @@ export const getSearchData = (data = [], field = [], searchString) => {
   const searchData = [];
   const searchStr = escapeRegExp(searchString).replace(' ', '')
   if (searchStr !== '') {
-    data.map((item) => {
+    data?.map((item) => {
       let isSearch = false;
-      field.map((key) => {
+      field?.map((key) => {
         if (!isSearch
             && item?.[key]
               ?.toLowerCase()

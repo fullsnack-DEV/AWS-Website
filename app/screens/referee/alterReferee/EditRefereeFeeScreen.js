@@ -39,7 +39,7 @@ export default function EditRefereeFeeScreen({ navigation, route }) {
             onChangeText={ (text) => {
               bodyParams = {
                 ...route.params.body,
-                total_game_charges: text,
+                total_game_fee: text,
 
               }
               setBasicFee(text)
@@ -63,7 +63,7 @@ export default function EditRefereeFeeScreen({ navigation, route }) {
                   reservationObj: {
                     ...bodyParams,
                     manual_fee: true,
-                    total_game_charges: parseFloat(basicFee),
+                    total_game_fee: parseFloat(basicFee),
                   },
                   updatedFee: true,
                 })

@@ -228,6 +228,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   }
 
   const openNewCardScreen = () => {
+    console.log('openNewCardScreen:::=>');
     stripe.setOptions({
       publishableKey,
     })
@@ -237,14 +238,14 @@ export default function PaymentMethodsScreen({ navigation, route }) {
         accentColor: colors.orangeColor,
       },
     }).then((token) => {
-      console.log('card', token)
-      cards.map((obj) => {
-        if (obj?.card?.fingerprint === token?.card?.fingerprint) {
+      console.log('card/Token:=>', token)
+
+        const result = cards.filter((obj) => obj.card.fingerprint === token?.card?.fingerprint)
+        if (result.length > 0) {
           Alert.alert('You already have added this card.')
         } else {
           onSaveCard(token);
         }
-      })
     }).catch((e) => {
       console.log('error in openNewCardScreen', e)
       setloading(false)

@@ -387,6 +387,9 @@ arrowGT: require('../assets/images/arrow_gt.png'),
   challengerBadge: require('../assets/images/challenger_badge.png'),
   challengeeBadge: require('../assets/images/challengee_badge.png'),
 
+  reqIcon: require('../assets/images/req.png'),
+  refIcon: require('../assets/images/ref.png'),
+
 };
 
 export default images;
