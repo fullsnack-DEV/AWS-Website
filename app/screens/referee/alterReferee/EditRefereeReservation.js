@@ -8,6 +8,7 @@ import {
   Image,
   Alert,
   TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
 import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
@@ -787,38 +788,37 @@ export default function EditRefereeReservation({ navigation, route }) {
           {bodyParams && (
             <View>
               {/* Choose Match */}
-              <View style={styles.contentContainer}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}>
-                  <TCLabel
-                    title={'Game'}
-                    isNew={editMatch}
-                    style={{ marginLeft: 0, marginBottom: 0, marginTop: 15 }}
-                  />
 
-                  {bodyParams?.referee?.user_id !== entity.uid && (
-                    <TouchableOpacity
-                      style={styles.editTouchArea}
-                      hitSlop={Utility.getHitSlop(15)}
-                      onPress={() => {
-                        navigation.navigate('RefereeSelectMatch', {
-                          userData: bodyParams?.referee,
-                          sport: bodyParams?.sport,
-                          comeFrom: 'EditRefereeReservation',
-                        });
+              <View style={styles.editableView}>
+                <TCLabel
+                  title={'Game'}
+                  isNew={editMatch}
+                  style={{ marginLeft: 0, marginTop: 0 }}
+                />
+
+                {bodyParams?.referee?.user_id !== entity.uid && (
+                  <TouchableOpacity
+                    style={styles.editTouchArea}
+                    hitSlop={Utility.getHitSlop(15)}
+                    onPress={() => {
+                      navigation.navigate('RefereeSelectMatch', {
+                        userData: bodyParams?.referee,
+                        sport: bodyParams?.sport,
+                        comeFrom: 'EditRefereeReservation',
+                      });
+                    }}>
+                    <Text
+                      style={{
+                        color: colors.themeColor,
+                        fontFamily: fonts.RMedium,
+                        fontSize: 16,
                       }}>
-                      <Image
-                        source={images.editSection}
-                        style={styles.editButton}
-                      />
-                    </TouchableOpacity>
-                  )}
-                </View>
+                      Edit
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
+
               {bodyParams?.game && (
                 <TCGameCard
                   data={bodyParams?.game}
@@ -939,11 +939,10 @@ export default function EditRefereeReservation({ navigation, route }) {
 
           <View style={styles.editableView}>
             <TCLabel
-                title={'Chief or assistant'}
-                isNew={refereeUpdate}
-                style={{ marginTop: 0, marginLeft: 0, padding: 0 }}
-              />
-
+              title={'Chief or assistant'}
+              isNew={refereeUpdate}
+              style={{ marginTop: 0, marginLeft: 0, padding: 0 }}
+            />
           </View>
           <View style={styles.contentContainer}>
             {['chief', 'assistant'].map((item, index) => (
@@ -975,8 +974,14 @@ export default function EditRefereeReservation({ navigation, route }) {
                   }}
                   onPress={() => {
                     setChiefOrAssistant(item);
-                    setbodyParams({ ...bodyParams, chief_referee: item === 'chief' })
-                    setRefereeUpdate(item !== (oldVersion?.chief_referee ? 'chief' : 'assistant'));
+                    setbodyParams({
+                      ...bodyParams,
+                      chief_referee: item === 'chief',
+                    });
+                    setRefereeUpdate(
+                      item
+                        !== (oldVersion?.chief_referee ? 'chief' : 'assistant'),
+                    );
                   }}>
                   {item === chiefOrAssistant && (
                     <LinearGradient
@@ -1278,13 +1283,15 @@ export default function EditRefereeReservation({ navigation, route }) {
             )}
         </View>
       )}
+      <SafeAreaView>
 
-      {maintabNumber === 1 && (
-        <CurruentRefereeReservationView
+        {maintabNumber === 1 && (
+          <CurruentRefereeReservationView
           reservationObj={oldVersion}
           navigation={navigation}
         />
       )}
+      </SafeAreaView>
     </TCKeyboardView>
   );
 }
@@ -1344,12 +1351,12 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginBottom: 5,
   },
-  editButton: {
-    height: 16,
-    width: 16,
-    resizeMode: 'center',
-    alignSelf: 'center',
-  },
+  // editButton: {
+  //   height: 16,
+  //   width: 16,
+  //   resizeMode: 'center',
+  //   alignSelf: 'center',
+  // },
   editTouchArea: {
     alignSelf: 'center',
   },

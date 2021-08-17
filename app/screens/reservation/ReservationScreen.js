@@ -10,7 +10,6 @@ import {
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import { getReservationList } from '../../api/Reservations';
-import MatchReservation from '../../components/reservations/MatchReservation';
 import TCNoDataView from '../../components/TCNoDataView';
 import strings from '../../Constants/String';
 import TCScrollableTabs from '../../components/TCScrollableTabs';
@@ -20,6 +19,7 @@ import * as ScorekeeperUtils from '../scorekeeper/ScorekeeperUtility';
 import * as Utils from '../challenge/ChallengeUtility';
 import { getGameHomeScreen } from '../../utils/gameUtils';
 import ReservationMainScreenShimmer from '../../components/shimmer/schedule/ReservationMainScreenShimmer';
+import ReservationCard from '../../components/reservations/ReservationCard';
 
 export default function ReservationScreen({ navigation }) {
   const [loading, setloading] = useState(false);
@@ -34,7 +34,7 @@ export default function ReservationScreen({ navigation }) {
   }, []);
 
   const getReservationListByCaller = () => {
-    getReservationList(authContext.entity.uid, authContext).then((response) => {
+    getReservationList(authContext.entity.role === 'team' && authContext.entity.uid, authContext).then((response) => {
       console.log('reservation list :=>', response);
       const upcomingData = [];
       const pastData = [];
@@ -92,7 +92,7 @@ export default function ReservationScreen({ navigation }) {
 
   const matchReservationView = useCallback(
     ({ item }) => (
-      <MatchReservation
+      <ReservationCard
               data={item}
               onPressGameCard={() => {
                 const gameHome = getGameHomeScreen(item?.sport);
@@ -131,6 +131,7 @@ const keyExtractor = useCallback(
             data={upcoming}
             keyExtractor={keyExtractor}
             renderItem={matchReservationView}
+            style={{ paddingTop: 15 }}
             /> }
         </View>
         <View tabLabel='Past' style={{ flex: 1 }}>
@@ -145,6 +146,8 @@ const keyExtractor = useCallback(
                       data={past}
                       keyExtractor={keyExtractor}
                       renderItem={matchReservationView}
+                      style={{ paddingTop: 15 }}
+
                    />}
         </View>
       </TCScrollableTabs>

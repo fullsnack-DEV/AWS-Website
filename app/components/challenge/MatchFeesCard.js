@@ -49,8 +49,8 @@ export default function MatchFeesCard({
             <Text style={styles.matchServiceFeeText}>
               {senderOrReceiver === 'sender' ? '$' : '-$'}
               {senderOrReceiver === 'sender'
-                ? (challengeObj?.service_fee1_charges ?? challengeObj?.total_service_fee1).toFixed(2)
-                : (challengeObj?.service_fee2_charges ?? challengeObj?.total_service_fee2).toFixed(2)}{' '}
+                ? challengeObj?.total_service_fee1?.toFixed(2)
+                : challengeObj?.total_service_fee2?.toFixed(2)}{' '}
               {(challengeObj?.currency_type).toUpperCase() || 'CAD'}
             </Text>
           </View>
@@ -66,7 +66,7 @@ export default function MatchFeesCard({
             <Text style={styles.feeStructureText}>
               $
               {senderOrReceiver === 'sender'
-                ? challengeObj?.total_charges?.toFixed(2)
+                ? challengeObj?.total_amount?.toFixed(2)
                 : challengeObj?.total_payout?.toFixed(2)}{' '}
               {(challengeObj?.currency_type).toUpperCase() || 'CAD'}
             </Text>

@@ -24,6 +24,7 @@ import TCStep from '../../../../components/TCStep';
 const TYPING_SPEED = 200;
 const BookReferee = ({ navigation, route }) => {
   const gameData = route?.params?.gameData;
+  console.log('GAME DATA:=>', gameData);
   const authContext = useContext(AuthContext);
   const [refereesData, setRefereesData] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -136,7 +137,7 @@ const BookReferee = ({ navigation, route }) => {
                   if (gameData?.referees) {
                     if (
                       gameData?.referees?.length
-                      < gameData?.challenge_referee?.length
+                      < gameData?.challenge_referee?.who_secure?.length
                     ) {
                       navigation.navigate('RefereeBookingDateAndTime', {
                         userData: selectedReferee,
@@ -145,10 +146,10 @@ const BookReferee = ({ navigation, route }) => {
                     } else {
                       Alert.alert(
                         'Towns Cup',
-                        `You can't book more than ${gameData?.challenge_referee?.length} referee for this match. You can change the number of referees in the reservation details.`,
+                        `You can't book more than ${gameData?.challenge_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
                       );
                     }
-                  } else if (gameData?.challenge_referee?.length > 0) {
+                  } else if (gameData?.challenge_referee?.who_secure?.length > 0) {
                     navigation.navigate('RefereeBookingDateAndTime', {
                       userData: selectedReferee,
                       gameData,
@@ -156,7 +157,7 @@ const BookReferee = ({ navigation, route }) => {
                   } else {
                     Alert.alert(
                       'Towns Cup',
-                      `You can’t book more than ${gameData?.challenge_referee?.length} referee for this match. You can change the number of referees in the reservation details.`,
+                      `You can’t book more than ${gameData?.challenge_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
                     );
                   }
                 }}

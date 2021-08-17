@@ -6,7 +6,7 @@ export const getReservationList = async (callerId, authContext) => makeAPIReques
   method: 'get',
   url: `${Config.BASE_URL}/reservations?referenceObject=true`,
   authContext,
-  headers: { caller_id: callerId },
+  headers: callerId && { caller_id: callerId },
 })
 
 export const createUserReservation = (userType, params, authContext) => makeAPIRequest({

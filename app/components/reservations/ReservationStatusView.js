@@ -1,45 +1,31 @@
 /* eslint-disable consistent-return */
 import React, { memo, useContext, useEffect } from 'react';
 import {
-  StyleSheet, View, Text, TouchableOpacity,
+ StyleSheet, View, Text, Image,
+  TouchableOpacity,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import moment from 'moment'
+import moment from 'moment';
 import AuthContext from '../../auth/context';
 
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 import ReservationStatus from '../../Constants/ReservationStatus';
-import strings from '../../Constants/String';
 import ChallengeStatusTitle from '../challenge/ChallengeStatusTitle';
+import images from '../../Constants/ImagePath';
 
 let entity = {};
- function ReservationStatusView({ data }) {
+function ReservationStatusView({ data, onClick }) {
   const authContext = useContext(AuthContext);
   useEffect(() => {
     entity = authContext.entity;
-  }, [authContext.entity, data])
+  }, [authContext.entity, data]);
 
   const getDate = () => {
-    if (data.game) {
-      return `${moment(data.game.start_datetime * 1000).format('MMM')}\n${moment(data.game.start_datetime * 1000).format('DD')}`
+    if (data?.game) {
+      return data?.game?.start_datetime * 1000;
     }
-    return `${moment(data.start_datetime * 1000).format('MMM')}\n${moment(data.start_datetime * 1000).format('DD')}`
-  }
-  const getChallengerOrChallengee = () => {
-    if (data.responsible_to_secure_venue) {
-      if (data.invited_by === entity.uid) {
-        return strings.challengee
-      }
-      return strings.challenger
-    }
-    if (data.referee || data.scorekeeper) {
-      if (data.initiated_by === entity.uid) {
-        return strings.requestee
-      }
-      return strings.requester
-    }
-  }
+    return data?.start_datetime * 1000;
+  };
 
   const checkSenderOrReceiver = (challengeObj) => {
     console.log('sender & receiver Obj', challengeObj);
@@ -107,54 +93,66 @@ let entity = {};
   };
 
   return (
-
     <View style={styles.reservationTitleView}>
-      <TouchableOpacity>
-        <LinearGradient
-            colors={(getChallengerOrChallengee() === strings.challenger || getChallengerOrChallengee() === strings.requester) ? [colors.yellowColor, colors.themeColor] : [colors.greenGradientStart, colors.greenGradientEnd]}
-            style={styles.borderView}>
-          <View style={styles.dateView}>
-            <Text style={styles.dateText}>{getDate()}</Text>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
-      <View style={styles.reservationTypeView}>
+      <View >
+        <Text
+          style={{
+            fontFamily: fonts.RMedium,
+            fontSize: 12,
+            color: colors.lightBlackColor,
+            textAlign: 'center',
+          }}>
+          {moment(getDate()).format('MMM')}
+        </Text>
+        <Text
+          style={{
+            fontFamily: fonts.RMedium,
+            fontSize: 25,
+            color: colors.lightBlackColor,
+            textAlign: 'center',
+
+          }}>
+          {moment(getDate()).format('DD')}
+        </Text>
+      </View>
+
+      <TouchableOpacity style={{ marginLeft: 15 }} onPress={onClick}>
         {/* <Text style={[styles.reservationText, { color: getReservationStatus().color }]}>
           {getReservationStatus().status}
         </Text> */}
         <ChallengeStatusTitle
-        challengeObj={data}
-        isSender={checkSenderOrReceiver(data) === 'sender'}
-        isTeam={!!data?.home_team?.group_name}
-        teamName={getTeamName(data)}
-        // receiverName={challengee?.full_name ?? challengee?.group_name}
-        offerExpiry={
-          ReservationStatus.offered === 'offered'
-          || ReservationStatus.offered === 'changeRequest'
-            ? new Date().getTime()
-            : ''
-        } // only if status offered
-        status={data?.status}
-      />
+          challengeObj={data?.referee_id || data?.scorekeeper_id ? data : data?.game}
+          isSender={checkSenderOrReceiver(data?.referee_id || data?.scorekeeper_id ? data : data?.game) === 'sender'}
+          isTeam={!!data?.home_team?.group_name}
+          teamName={getTeamName(data?.referee_id || data?.scorekeeper_id ? data : data?.game)}
+          // receiverName={challengee?.full_name ?? challengee?.group_name}
+          offerExpiry={
+            ReservationStatus.offered === 'offered'
+            || ReservationStatus.offered === 'changeRequest'
+              ? new Date().getTime()
+              : ''
+          } // only if status offered
+          status={data?.status}
+        />
 
-        {data.responsible_to_secure_venue && (
-          <Text style={styles.matchText}>Match · {data.sport}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {!data?.referee_id && !data?.scorekeeper_id && (
+            <Text style={styles.matchText}>Match · {data.sport}</Text>
         )}
-        {data.referee && data.game && (
-          <Text style={styles.matchText}>Referee · {data.game.sport}</Text>
+          {data?.referee_id && (
+            <Text style={styles.matchText}>Referee · {data.game.sport}</Text>
         )}
-        {data.scorekeeper && data.game && (
-          <Text style={styles.matchText}>
-            Scorekeeper · {data.game.sport}
-          </Text>
+          {data?.scorekeeper_id && (
+            <Text style={styles.matchText}>Scorekeeper · {data.game.sport}</Text>
         )}
-      </View>
+          <Image source={images.nextArrow} style={{ height: 12, width: 8, marginLeft: 10 }}/>
+        </View>
+      </TouchableOpacity>
       <View style={styles.amountView}>
-        <Text style={styles.amountText}>${data.total_game_fee || 0} CAD</Text>
+        <Text style={styles.amountText}>${data.total_game_fee ?? 0} CAD</Text>
         {/* <Text style={styles.cancelAmountText}>$35 CAD</Text> */}
       </View>
     </View>
-
   );
 }
 
@@ -166,42 +164,9 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   amountView: {
-    marginTop: 10,
+   // marginTop: 10,
     position: 'absolute',
-    right: 15,
-  },
-
-  borderView: {
-    alignItems: 'center',
-    borderRadius: 27,
-    height: 54,
-    justifyContent: 'center',
-    marginLeft: 15,
-    width: 54,
-  },
-
-  // cancelAmountText: {
-  //   color: colors.veryLightGray,
-  //   fontFamily: fonts.RLight,
-  //   fontSize: 14,
-  //   textAlign: 'right',
-  //   textDecorationLine: 'line-through',
-  //   textDecorationStyle: 'solid',
-  // },
-  dateText: {
-    alignSelf: 'center',
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  dateView: {
-    alignItems: 'center',
-    backgroundColor: 'white',
-    borderRadius: 24,
-    height: 48,
-    justifyContent: 'center',
-    width: 48,
+    right: 10,
   },
 
   matchText: {
@@ -212,12 +177,9 @@ const styles = StyleSheet.create({
 
   reservationTitleView: {
     flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 15,
+  },
 
-  },
-  reservationTypeView: {
-    alignContent: 'flex-start',
-    alignSelf: 'center',
-    marginLeft: 10,
-  },
 });
-export default memo(ReservationStatusView)
+export default memo(ReservationStatusView);

@@ -389,6 +389,7 @@ arrowGT: require('../assets/images/arrow_gt.png'),
 
   reqIcon: require('../assets/images/req.png'),
   refIcon: require('../assets/images/ref.png'),
+  reqeIcon: require('../assets/images/reqe.png'),
 
 };
 

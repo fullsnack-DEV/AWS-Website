@@ -216,6 +216,7 @@ import ScorekeeperFee from '../screens/game/bookScorekeeper/scorekeeperSetting/S
 import AvailableAreaScorekeeper from '../screens/game/bookScorekeeper/scorekeeperSetting/AvailableAreaScorekeeper';
 import RefundPolicyReferee from '../screens/game/bookReferee/refereeSetting/RefundPolicyReferee';
 import RefundPolicyScorekeeper from '../screens/game/bookScorekeeper/scorekeeperSetting/RefundPolicyScorekeeper';
+import ReservationAcceptDeclineScreen from '../screens/referee/ReservationAcceptDeclineScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2856,6 +2857,13 @@ const AccountNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+         name="ReservationAcceptDeclineScreen"
+         component={ReservationAcceptDeclineScreen}
+         options={{
+           headerShown: false,
+         }}
+        />
   </Stack.Navigator>
 );
 

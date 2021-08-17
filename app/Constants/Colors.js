@@ -96,6 +96,7 @@ const colors = {
   darkGrayTrashColor: '#707070',
   orangeGradientColor: '#FF6F01',
   greenShadowColor: '#7CCF6B',
+  creamColor: '#FAFAFA',
   blueGradiantStart: '#004EFF',
   blueGradiantEnd: '#00BAFF',
   requestSentColor: '#FF4E00',
