@@ -59,22 +59,6 @@ export default function InviteChallengeScreen({ navigation, route }) {
   console.log('setting:=>', setting);
   const [teams, setteams] = useState([]);
 
-  // useEffect(() => {
-  //   setloading(true);
-  //   getChallengeSetting(authContext?.entity?.uid, sportName, authContext)
-  //     .then((response) => {
-  //       setloading(false);
-  //       console.log('manage challenge response:=>', response.payload);
-  //       setSettingObject(response.payload[0]);
-  //     })
-  //     .catch((e) => {
-  //       setloading(false);
-  //       setTimeout(() => {
-  //         Alert.alert(strings.alertmessagetitle, e.message);
-  //       }, 10);
-  //     });
-  // }, [authContext, sportName]);
-
   useEffect(() => {
     if (route?.params?.selectedVenueObj) {
       setVenue(route?.params?.selectedVenueObj);
@@ -294,24 +278,6 @@ export default function InviteChallengeScreen({ navigation, route }) {
     entity = authContext.entity;
     console.log('Entity:=>', entity);
 
-    // let entityID;
-    // let type;
-    // if (teams?.[0]?.group_id) {
-    //   type = 'teams';
-    //   if (teams?.[0]?.group_id === entity.uid) {
-    //     entityID = teams[1].group_id;
-    //   } else {
-    //     entityID = teams[0].group_id;
-    //   }
-    // } else {
-    //   type = 'users';
-    //   if (route.params.teamData[0].user_id === entity.uid) {
-    //     entityID = teams[1].user_id;
-    //   } else {
-    //     entityID = teams[0].user_id;
-    //   }
-    // }
-
     const body = {
       ...settingObject,
       ...feeObj,
@@ -330,6 +296,29 @@ export default function InviteChallengeScreen({ navigation, route }) {
           : entity?.uid,
       user_challenge: !groupObj?.group_id,
     };
+
+    const res_secure_referee = settingObject.responsible_for_referee.who_secure.map(
+      (obj) => ({
+        ...obj,
+        responsible_team_id:
+          obj.responsible_to_secure_referee === 'challengee'
+            ? body.challengee
+            : body.challenger,
+      }),
+    );
+
+    const res_secure_scorekeeper = settingObject.responsible_for_scorekeeper.who_secure.map(
+      (obj) => ({
+        ...obj,
+        responsible_team_id:
+          obj.responsible_to_secure_scorekeeper === 'challengee'
+            ? body.challengee
+            : body.challenger,
+      }),
+    );
+
+    body.responsible_for_referee.who_secure = res_secure_referee;
+    body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
 
     console.log('Challenge Object:=>', body);
 

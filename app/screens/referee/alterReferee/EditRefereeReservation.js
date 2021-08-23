@@ -49,6 +49,7 @@ import RefereeReservationStatus from '../../../Constants/RefereeReservationStatu
 import TCTabView from '../../../components/TCTabView';
 import TCThinDivider from '../../../components/TCThinDivider';
 import CurruentRefereeReservationView from './CurrentRefereeReservationView';
+import TCChallengeTitle from '../../../components/TCChallengeTitle';
 
 let entity = {};
 const scroll = React.createRef();
@@ -93,6 +94,7 @@ export default function EditRefereeReservation({ navigation, route }) {
       title: getNavigationTitle(),
     });
   }, [navigation, bodyParams, refereeUpdate]);
+
   useEffect(() => {
     entity = authContext.entity;
     const { reservationObj } = route.params ?? {};
@@ -1000,6 +1002,19 @@ export default function EditRefereeReservation({ navigation, route }) {
           </View>
 
           <TCThickDivider />
+          <View>
+            <TCChallengeTitle
+              title={'Refund Policy'}
+              value={bodyParams?.refund_policy}
+              tooltipText={
+              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+              }
+              tooltipHeight={Utility.heightPercentageToDP('18%')}
+              tooltipWidth={Utility.widthPercentageToDP('50%')}
+              isEdit={false}
+            />
+            <TCThickDivider />
+          </View>
           <View style={styles.editableView}>
             <TCLabel
               title={
@@ -1284,13 +1299,12 @@ export default function EditRefereeReservation({ navigation, route }) {
         </View>
       )}
       <SafeAreaView>
-
         {maintabNumber === 1 && (
           <CurruentRefereeReservationView
-          reservationObj={oldVersion}
-          navigation={navigation}
-        />
-      )}
+            reservationObj={oldVersion}
+            navigation={navigation}
+          />
+        )}
       </SafeAreaView>
     </TCKeyboardView>
   );

@@ -18,7 +18,10 @@ import {
 // import { useIsFocused } from '@react-navigation/native';
 import AuthContext from '../../../../auth/context';
 
-import { patchChallengeSetting } from '../../../../api/Challenge';
+import { patchPlayer } from '../../../../api/Users';
+import { patchGroup } from '../../../../api/Groups';
+
+   import * as Utility from '../../../../utils';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
@@ -271,6 +274,136 @@ export default function GameDuration({ navigation, route }) {
     return { hours: Math.floor(sum / 60), minutes: sum % 60 };
   };
 
+const saveUser = () => {
+  const bodyParams = {
+    sport: sportName,
+    entity_type: 'player',
+    game_duration: {
+      period: period.map((e) => {
+        delete e.id;
+        return e;
+      }),
+      first_period: firstPeriod,
+      details,
+    },
+  };
+  if (withOverTime) {
+    bodyParams.game_duration.overtime = overTime.map((e) => {
+      delete e.id;
+      return e;
+    });
+  } else {
+    delete bodyParams.game_duration.overtime;
+  }
+
+  bodyParams.game_duration.totalHours = calculateDuration().hours;
+  bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
+  console.log('body params:=>', bodyParams);
+
+  setloading(true);
+  const registerdPlayerData = authContext?.user?.registered_sports?.filter(
+    (obj) => obj.sport_name !== sportName,
+  );
+
+  const selectedSport = authContext?.user?.registered_sports?.filter(
+    (obj) => obj.sport_name === sportName,
+  )[0];
+
+  selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+  registerdPlayerData.push(selectedSport);
+
+  const body = { ...authContext?.user, registered_sports: registerdPlayerData };
+  console.log('Body::::--->', body);
+
+  patchPlayer(body, authContext)
+    .then(async (response) => {
+      if (response.status === true) {
+        setloading(false);
+        const entity = authContext.entity;
+        console.log('Register player response IS:: ', response.payload);
+        entity.auth.user = response.payload;
+        entity.obj = response.payload;
+        authContext.setEntity({ ...entity });
+        authContext.setUser(response.payload);
+        await Utility.setStorage('authContextUser', response.payload);
+        await Utility.setStorage('authContextEntity', { ...entity });
+        navigation.navigate(comeFrom, {
+          settingObj: response.payload.registered_sports.filter(
+            (obj) => obj.sport_name === sportName,
+          )[0].setting,
+        });
+      } else {
+        Alert.alert('Towns Cup', response.messages);
+      }
+      console.log('RESPONSE IS:: ', response);
+      setloading(false);
+    })
+    .catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+}
+
+const saveTeam = () => {
+  const bodyParams = {
+    sport: sportName,
+    entity_type: 'team',
+    game_duration: {
+      period: period.map((e) => {
+        delete e.id;
+        return e;
+      }),
+      first_period: firstPeriod,
+      details,
+    },
+  };
+  if (withOverTime) {
+    bodyParams.game_duration.overtime = overTime.map((e) => {
+      delete e.id;
+      return e;
+    });
+  } else {
+    delete bodyParams.game_duration.overtime;
+  }
+
+  bodyParams.game_duration.totalHours = calculateDuration().hours;
+  bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
+  console.log('body params:=>', bodyParams);
+  setloading(true);
+    const selectedTeam = authContext?.entity?.obj;
+    selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
+    const body = { ...selectedTeam };
+    console.log('Body Team::::--->', body);
+
+    patchGroup(authContext.entity.uid, body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          console.log('Team patch::::--->', response.payload);
+
+          setloading(false);
+          const entity = authContext.entity;
+          entity.obj = response.payload;
+          authContext.setEntity({ ...entity });
+
+          await Utility.setStorage('authContextEntity', { ...entity });
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.setting,
+          });
+        } else {
+          Alert.alert('Towns Cup', response.messages);
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+}
+
   const onSavePressed = () => {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       const gameDuration = {
@@ -294,48 +427,12 @@ export default function GameDuration({ navigation, route }) {
       navigation.navigate(comeFrom, {
         gameDuration,
       });
-    } else {
-      const bodyParams = {
-        sport: sportName,
-        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-        game_duration: {
-          period: period.map((e) => {
-            delete e.id;
-            return e;
-          }),
-          first_period: firstPeriod,
-          details,
-        },
-      };
-      if (withOverTime) {
-        bodyParams.game_duration.overtime = overTime.map((e) => {
-          delete e.id;
-          return e;
-        });
+    } else if (authContext.entity.role === 'team') {
+        saveTeam()
       } else {
-        delete bodyParams.game_duration.overtime;
+        saveUser()
       }
-
-      bodyParams.game_duration.totalHours = calculateDuration().hours;
-      bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
-      console.log('body params:=>', bodyParams);
-
-      setloading(true);
-      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-        .then((response) => {
-          setloading(false);
-          navigation.navigate(comeFrom, { settingObj: response.payload });
-          console.log('patch challenge response:=>', response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
     }
-  };
-
   return (
     <TCKeyboardView>
       <SafeAreaView>

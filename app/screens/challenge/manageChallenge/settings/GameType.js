@@ -13,8 +13,10 @@ import {
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
-import { patchChallengeSetting } from '../../../../api/Challenge';
+import * as Utility from '../../../../utils';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
+import { patchPlayer } from '../../../../api/Users';
+import { patchGroup } from '../../../../api/Groups';
 
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
@@ -32,12 +34,10 @@ export default function GameType({ navigation, route }) {
 
   const [loading, setloading] = useState(false);
   const [typeSelection, setTypeSelection] = useState(
-    (route?.params?.settingObj?.game_type === 'Official'
-          && gameTypeList[0])
-          || (route?.params?.settingObj?.game_type === 'Friendly'
-            && gameTypeList[1])
-          || (route?.params?.settingObj?.game_type === 'All' && gameTypeList[2]),
-
+    (route?.params?.settingObj?.game_type === 'Official' && gameTypeList[0])
+      || (route?.params?.settingObj?.game_type === 'Friendly'
+        && gameTypeList[1])
+      || (route?.params?.settingObj?.game_type === 'All' && gameTypeList[2]),
   );
 
   const { sportName } = route?.params;
@@ -56,6 +56,104 @@ export default function GameType({ navigation, route }) {
     });
   }, [comeFrom, navigation, typeSelection.key]);
 
+  const saveUser = () => {
+    const bodyParams = {
+      sport: sportName,
+      entity_type: 'player',
+      game_type:
+        (typeSelection.key === strings.officialOnly && 'Official')
+        || (typeSelection.key === strings.friendlyOnly && 'Friendly')
+        || (typeSelection.key === strings.allType && 'All'),
+    };
+    setloading(true);
+    const registerdPlayerData = authContext?.user?.registered_sports?.filter(
+      (obj) => obj.sport_name !== sportName,
+    );
+
+    const selectedSport = authContext?.user?.registered_sports?.filter(
+      (obj) => obj.sport_name === sportName,
+    )[0];
+
+    selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+
+    registerdPlayerData.push(selectedSport);
+
+    const body = { ...authContext?.user, registered_sports: registerdPlayerData };
+    console.log('Body::::--->', body);
+
+    patchPlayer(body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          setloading(false);
+          const entity = authContext.entity;
+          console.log('Register player response IS:: ', response.payload);
+          entity.auth.user = response.payload;
+          entity.obj = response.payload;
+          authContext.setEntity({ ...entity });
+          authContext.setUser(response.payload);
+          await Utility.setStorage('authContextUser', response.payload);
+          await Utility.setStorage('authContextEntity', { ...entity });
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.registered_sports.filter(
+              (obj) => obj.sport_name === sportName,
+            )[0].setting,
+          });
+        } else {
+          Alert.alert('Towns Cup', response.messages);
+        }
+        console.log('RESPONSE IS:: ', response);
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const saveTeam = () => {
+    const bodyParams = {
+      sport: sportName,
+      entity_type: 'team',
+      game_type:
+        (typeSelection.key === strings.officialOnly && 'Official')
+        || (typeSelection.key === strings.friendlyOnly && 'Friendly')
+        || (typeSelection.key === strings.allType && 'All'),
+    };
+    setloading(true);
+    const selectedTeam = authContext?.entity?.obj;
+    selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
+    const body = { ...selectedTeam };
+    console.log('Body Team::::--->', body);
+
+    patchGroup(authContext.entity.uid, body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          console.log('Team patch::::--->', response.payload);
+
+          setloading(false);
+          const entity = authContext.entity;
+          entity.obj = response.payload;
+          authContext.setEntity({ ...entity });
+
+          await Utility.setStorage('authContextEntity', { ...entity });
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.setting,
+          });
+        } else {
+          Alert.alert('Towns Cup', response.messages);
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   const onSavePressed = () => {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       navigation.navigate(comeFrom, {
@@ -64,28 +162,10 @@ export default function GameType({ navigation, route }) {
           || (typeSelection.key === strings.friendlyOnly && 'Friendly')
           || (typeSelection.key === strings.allType && 'All'),
       });
+    } else if (authContext.entity.role === 'team') {
+      saveTeam();
     } else {
-      const bodyParams = {
-        sport: sportName,
-        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-        game_type:
-          (typeSelection.key === strings.officialOnly && 'Official')
-          || (typeSelection.key === strings.friendlyOnly && 'Friendly')
-          || (typeSelection.key === strings.allType && 'All'),
-      };
-      setloading(true);
-      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-        .then((response) => {
-          setloading(false);
-          navigation.navigate(comeFrom, { settingObj: response.payload });
-          console.log('patch challenge response:=>', response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+      saveUser();
     }
   };
 

@@ -45,9 +45,10 @@ import {
   getGameHomeScreen,
 } from '../../../utils/gameUtils';
 import RefereeReservationStatus from '../../../Constants/RefereeReservationStatus';
-import { getHitSlop } from '../../../utils';
+import { getHitSlop, heightPercentageToDP, widthPercentageToDP } from '../../../utils';
 import TCTabView from '../../../components/TCTabView';
 import CurruentRefereeReservationView from './CurrentRefereeReservationView';
+import TCChallengeTitle from '../../../components/TCChallengeTitle';
 
 let entity = {};
 const scroll = React.createRef();
@@ -1252,6 +1253,20 @@ export default function AlterRefereeScreen({ navigation, route }) {
             }}
           /> */}
           <TCThickDivider />
+          <View>
+            <TCChallengeTitle
+          title={'Refund Policy'}
+          value={bodyParams?.refund_policy}
+          tooltipText={
+          '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+          }
+          tooltipHeight={heightPercentageToDP('18%')}
+          tooltipWidth={widthPercentageToDP('50%')}
+          isEdit={false}
+
+        />
+            <TCThickDivider />
+          </View>
           <View style={styles.editableView}>
             <View
               style={{

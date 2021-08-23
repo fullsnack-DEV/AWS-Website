@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useState } from 'react';
 import {
   Alert,
@@ -8,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import bodybuilder from 'bodybuilder';
 import images from '../../../../Constants/ImagePath';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
@@ -16,10 +18,14 @@ import TCSearchBox from '../../../../components/TCSearchBox';
 import RenderReferee from './RenderReferee';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import { getGameUser } from '../../../../api/Games';
+
 import AuthContext from '../../../../auth/context';
-import TCInnerLoader from '../../../../components/TCInnerLoader';
 import { getSearchData } from '../../../../utils';
-import TCStep from '../../../../components/TCStep';
+import strings from '../../../../Constants/String';
+import TCFormProgress from '../../../../components/TCFormProgress';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
+import { getSetting } from '../../../challenge/manageChallenge/settingUtility';
+import { postElasticSearch } from '../../../../api/elasticSearch';
 
 const TYPING_SPEED = 200;
 const BookReferee = ({ navigation, route }) => {
@@ -34,11 +40,27 @@ const BookReferee = ({ navigation, route }) => {
   const [typingTimeout, setTypingTimeout] = useState(0);
   useEffect(() => {
     setLoading(true);
-    getGameUser(gameData?.sport, 'referees', authContext)
-      .then((res) => {
-        setRefereesData([...res?.payload]);
-      })
-      .finally(() => setLoading(false));
+    // getGameUser(gameData?.sport, 'referees', authContext)
+    //   .then((res) => {
+    //     setRefereesData([...res?.payload]);
+    //   })
+    //   .finally(() => setLoading(false));
+
+      const refefreeList = bodybuilder()
+      // .query('match', 'sport', gameData?.sport)
+
+      .build();
+
+      postElasticSearch(refefreeList, 'userindex').then((res) => {
+        setLoading(false);
+        console.log('res1:=>', res);
+      }).catch(() => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, strings.defaultError);
+        }, 10);
+        // navigation.goBack();
+      });
   }, []);
 
   const renderRefereeData = ({ item }) => {
@@ -91,30 +113,30 @@ const BookReferee = ({ navigation, route }) => {
       />
       <View style={styles.headerBottomBorder} />
 
-      <TCStep totalStep={2} currentStep={1}/>
+      <TCFormProgress totalSteps={2} curruentStep={1} />
       {/* Loader */}
-      <TCInnerLoader visible={loading} />
+      <ActivityLoader visible={loading} />
       {/* Content */}
-      {!loading && (
-        <View style={styles.contentContainer}>
-          {/*  Search Bar */}
-          <TCSearchBox
+
+      <View style={styles.contentContainer}>
+        {/*  Search Bar */}
+        <TCSearchBox
             value={searchText}
             placeholderText={'Search'}
             onChangeText={onSearchRefreeTextChange}
           />
 
-          {/*  Total and Filter */}
-          <View style={styles.totalAndFilterContainer}>
-            <Text style={styles.totalRefereeText}>
-              Total {refereesData?.length ?? 0} Referees
-            </Text>
-            <Text style={styles.filtersText}></Text>
-          </View>
+        {/*  Total and Filter */}
+        <View style={styles.totalAndFilterContainer}>
+          <Text style={styles.totalRefereeText}>
+            Total {refereesData?.length ?? 0} Referees
+          </Text>
+          <Text style={styles.filtersText}></Text>
+        </View>
 
-          {/*  Referee List Container */}
-          {!loading && (
-            <FlatList
+        {/*  Referee List Container */}
+
+        <FlatList
               keyExtractor={(item) => item?.user_id}
               bounces={false}
               data={searchText === '' ? refereesData : searchData}
@@ -127,11 +149,11 @@ const BookReferee = ({ navigation, route }) => {
                 </Text>
               }
             />
-          )}
-          {/*  Next Button */}
-          {selectedReferee && (
-            <View style={{ justifyContent: 'flex-end', marginBottom: 50 }}>
-              <TCGradientButton
+
+        {/*  Next Button */}
+        {selectedReferee && (
+          <View style={{ justifyContent: 'flex-end', marginBottom: 50 }}>
+            <TCGradientButton
                 title={'NEXT'}
                 onPress={() => {
                   if (gameData?.referees) {
@@ -139,10 +161,41 @@ const BookReferee = ({ navigation, route }) => {
                       gameData?.referees?.length
                       < gameData?.challenge_referee?.who_secure?.length
                     ) {
-                      navigation.navigate('RefereeBookingDateAndTime', {
-                        userData: selectedReferee,
-                        gameData,
-                      });
+                      setLoading(true)
+                      getSetting(
+                        selectedReferee?.user_id,
+                        'referee',
+                        gameData.sport,
+                        authContext,
+                      )
+                        .then((response) => {
+                          setLoading(false)
+                          console.log('res3:::=>', response);
+                          if (
+                            response?.refereeAvailibility
+                            && response?.game_fee
+                            && response?.refund_policy
+                            && response?.available_area
+                          ) {
+                            navigation.navigate('RefereeBookingDateAndTime', {
+                              settingObj: response,
+                              userData: selectedReferee,
+                              navigationName: 'HomeScreen',
+                              gameData,
+                            });
+                          } else {
+                            setTimeout(() => {
+                              Alert.alert('Referee setting not configured yet.');
+                            }, 10);
+                          }
+                        })
+                        .catch(() => {
+                          setLoading(false);
+                          setTimeout(() => {
+                            Alert.alert(strings.alertmessagetitle, strings.defaultError);
+                          }, 10);
+                          // navigation.goBack();
+                        });
                     } else {
                       Alert.alert(
                         'Towns Cup',
@@ -150,10 +203,41 @@ const BookReferee = ({ navigation, route }) => {
                       );
                     }
                   } else if (gameData?.challenge_referee?.who_secure?.length > 0) {
-                    navigation.navigate('RefereeBookingDateAndTime', {
-                      userData: selectedReferee,
-                      gameData,
-                    });
+                    setLoading(true)
+                    getSetting(
+                      selectedReferee?.user_id,
+                      'referee',
+                      gameData.sport,
+                      authContext,
+                    )
+                      .then((response) => {
+                        setLoading(false)
+                        console.log('res3:::=>', response);
+                        if (
+                          response?.refereeAvailibility
+                          && response?.game_fee
+                          && response?.refund_policy
+                          && response?.available_area
+                        ) {
+                          navigation.navigate('RefereeBookingDateAndTime', {
+                            settingObj: response,
+                            userData: selectedReferee,
+                            navigationName: 'HomeScreen',
+                            gameData,
+                          });
+                        } else {
+                          setTimeout(() => {
+                            Alert.alert('Referee setting not configured yet.');
+                          }, 10);
+                        }
+                      })
+                      .catch(() => {
+                        setLoading(false);
+                        setTimeout(() => {
+                          Alert.alert(strings.alertmessagetitle, strings.defaultError);
+                        }, 10);
+                        // navigation.goBack();
+                      });
                   } else {
                     Alert.alert(
                       'Towns Cup',
@@ -162,10 +246,10 @@ const BookReferee = ({ navigation, route }) => {
                   }
                 }}
               />
-            </View>
+          </View>
           )}
-        </View>
-      )}
+      </View>
+
     </View>
   );
 };

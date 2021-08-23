@@ -515,6 +515,8 @@ const strings = {
   addrole: 'Add',
   addPlaying: 'Add playing',
   addRefereeing: 'Add refereeing',
+  refereeOffer: 'Send referee offer',
+  scorekeeperOffer: 'Send scorekeeper offer',
   addScorekeeping: 'Add scorekeeping',
   cards: 'Cards',
   addcard: 'Add New Card...',

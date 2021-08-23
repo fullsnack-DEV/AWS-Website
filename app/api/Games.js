@@ -262,9 +262,9 @@ const getGameSlots = async (entity_type, entity_id, queryString, headers, authCo
   authContext,
 });
 
-const getGameRefereeReservation = (gameId, authContext) => makeAPIRequest({
+const getGameRefereeReservation = (gameId, fetchReview = true, lightVersion = false, authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/referees/game/${gameId}/reservation?fetchReview=true`,
+  url: `${Config.BASE_URL}/referees/game/${gameId}/reservation?fetchReview=${fetchReview}&lightVersion=${lightVersion}`,
   authContext,
 });
 

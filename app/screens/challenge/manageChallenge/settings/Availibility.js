@@ -1,14 +1,7 @@
-import React, {
- useState, useLayoutEffect, useContext,
-} from 'react';
+import React, { useState, useLayoutEffect, useContext } from 'react';
 import {
-
-  StyleSheet,
-  View,
-  Text,
-  Alert,
-  SafeAreaView,
-} from 'react-native';
+ StyleSheet, View, Text, Alert, SafeAreaView,
+ } from 'react-native';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import AuthContext from '../../../../auth/context';
 
@@ -17,16 +10,24 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
 import ToggleView from '../../../../components/Schedule/ToggleView';
-import {
-  patchChallengeSetting,
-} from '../../../../api/Challenge';
+import * as Utility from '../../../../utils';
+
+import { patchPlayer } from '../../../../api/Users';
+import { patchGroup } from '../../../../api/Groups';
 
 export default function Availibility({ navigation, route }) {
   const { comeFrom, sportName } = route?.params;
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
-  const [acceptChallenge, setAcceptChallenge] = useState(route?.params?.settingObj?.availibility ? route?.params?.settingObj?.availibility === 'On' : true);
+  const [acceptChallenge, setAcceptChallenge] = useState(
+    route?.params?.settingObj?.availibility
+      ? route?.params?.settingObj?.availibility === 'On'
+      : true,
+  );
+
+  console.log('comeFrom ', comeFrom);
+  console.log('sportName ', sportName);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -34,7 +35,7 @@ export default function Availibility({ navigation, route }) {
         <Text
           style={styles.saveButtonStyle}
           onPress={() => {
-            onSavePressed()
+            onSavePressed();
           }}>
           Save
         </Text>
@@ -42,33 +43,111 @@ export default function Availibility({ navigation, route }) {
     });
   }, [acceptChallenge, comeFrom, navigation]);
 
-  const onSavePressed = () => {
+  const saveUser = () => {
     const bodyParams = {
       sport: sportName,
-      entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+      entity_type: 'player',
       availibility: acceptChallenge ? 'On' : 'Off',
-    }
+    };
     setloading(true);
-    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-    .then((response) => {
-      setloading(false);
-      navigation.navigate(comeFrom, { settingObj: response.payload })
-      console.log('patch challenge response:=>', response.payload);
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
-  }
+
+    const registerdPlayerData = authContext?.user?.registered_sports?.filter(
+      (obj) => obj.sport_name !== sportName,
+    );
+
+    const selectedSport = authContext?.user?.registered_sports?.filter(
+      (obj) => obj.sport_name === sportName,
+    )[0];
+
+    selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+    registerdPlayerData.push(selectedSport);
+
+    const body = { ...authContext?.user, registered_sports: registerdPlayerData };
+    console.log('Body::::--->', body);
+
+    patchPlayer(body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          setloading(false);
+          const entity = authContext.entity;
+          console.log('Register player response IS:: ', response.payload);
+          entity.auth.user = response.payload;
+          entity.obj = response.payload;
+          authContext.setEntity({ ...entity });
+          authContext.setUser(response.payload);
+          await Utility.setStorage('authContextUser', response.payload);
+          await Utility.setStorage('authContextEntity', { ...entity });
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.registered_sports.filter(
+              (obj) => obj.sport_name === sportName,
+            )[0].setting,
+          });
+        } else {
+          Alert.alert('Towns Cup', response.messages);
+        }
+        console.log('RESPONSE IS:: ', response);
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const saveTeam = () => {
+    const bodyParams = {
+      sport: sportName,
+      entity_type: 'team',
+      availibility: acceptChallenge ? 'On' : 'Off',
+    };
+    setloading(true);
+    const selectedTeam = authContext?.entity?.obj;
+    selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
+    const body = { ...selectedTeam };
+    console.log('Body Team::::--->', body);
+
+    patchGroup(authContext.entity.uid, body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          console.log('Team patch::::--->', response.payload);
+
+          setloading(false);
+          const entity = authContext.entity;
+          entity.obj = response.payload;
+          authContext.setEntity({ ...entity });
+
+          await Utility.setStorage('authContextEntity', { ...entity });
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.setting,
+          });
+        } else {
+          Alert.alert('Towns Cup', response.messages);
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const onSavePressed = () => {
+    console.log('Save press');
+    if (authContext.entity.role === 'team') {
+      saveTeam();
+    } else {
+      saveUser();
+    }
+  };
 
   return (
-
     <SafeAreaView>
       <ActivityLoader visible={loading} />
       <View>
-
         <TCLabel title={strings.availibilityTitle} style={{ marginRight: 15 }} />
 
         <View
@@ -88,7 +167,6 @@ export default function Availibility({ navigation, route }) {
           </Text>
           <ToggleView
             isOn={acceptChallenge}
-
             onToggle={() => setAcceptChallenge(!acceptChallenge)}
             onColor={colors.themeColor}
             offColor={colors.grayBackgroundColor}
@@ -96,7 +174,6 @@ export default function Availibility({ navigation, route }) {
         </View>
       </View>
     </SafeAreaView>
-
   );
 }
 const styles = StyleSheet.create({
@@ -105,5 +182,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 10,
   },
-
 });

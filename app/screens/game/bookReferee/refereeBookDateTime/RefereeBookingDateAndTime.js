@@ -34,6 +34,10 @@ import * as Utility from '../../../../utils';
 import strings from '../../../../Constants/String';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import TCChallengeTitle from '../../../../components/TCChallengeTitle';
+import TCThickDivider from '../../../../components/TCThickDivider';
+import {
+  getGameRefereeReservation,
+} from '../../../../api/Games';
 
 let body = {};
 const RefereeBookingDateAndTime = ({ navigation, route }) => {
@@ -42,13 +46,30 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
   const [gameData, setGameData] = useState(route?.params?.gameData ?? null);
   const [chiefOrAssistant, setChiefOrAssistant] = useState('chief');
   const [challengeObject, setChallengeObject] = useState(null);
+  const [refereeReservationList, setRefereeReservationList] = useState();
+
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    console.log('route?.params?.gameData', route?.params?.gameData);
     setGameData(route?.params?.gameData);
     getFeeDetail();
   }, [route?.params?.gameData]);
+
+  useEffect(() => {
+    if (gameData) {
+ getGameRefereeReservation(route?.params?.gameData?.game_id, false, true, authContext).then((response) => {
+      console.log('resp:=>', response);
+      setRefereeReservationList(response.payload)
+    }).catch((e) => {
+      setLoading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+ }
+  }, [authContext, gameData, route?.params?.gameData?.game_id])
+
   const getFeeDetail = () => {
     const gData = route?.params?.gameData;
     if (gData) {
@@ -59,7 +80,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
         start_datetime: gData?.start_datetime,
         end_datetime: gData?.end_datetime,
       };
-      getRefereeGameFeeEstimation(userData?.user_id, body, authContext)
+      getRefereeGameFeeEstimation(route?.params?.isHirer ? authContext.entity.uid : userData?.user_id, body, authContext)
         .then((response) => {
           body.hourly_game_fee = response?.payload?.hourly_game_fee ?? 0;
           body.currency_type = 'CAD';
@@ -126,9 +147,10 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
 
     const bodyParams = {
       ...challengeObject,
-      source: route?.params?.paymentMethod?.id,
-      referee_id: userData?.user_id,
+      // source: route?.params?.paymentMethod?.id,
+       referee_id: route?.params?.isHirer ? authContext.entity.uid : userData?.user_id,
       game_id: gameData?.game_id,
+      refund_policy: route?.params?.settingObj?.refund_policy,
       chief_referee: chiefOrAssistant === 'chief',
       total_game_fee: challengeObject?.total_game_fee,
       total_service_fee1: challengeObject?.total_service_fee1,
@@ -136,6 +158,12 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
       total_amount: challengeObject?.total_amount,
       // total_payout: challengeObject?.total_payout,
     };
+
+    if (route?.params?.isHirer) {
+      bodyParams.team_id = userData?.user_id ?? userData?.group_id;
+    } else {
+      bodyParams.source = route?.params?.paymentMethod?.id;
+    }
     delete bodyParams.sport;
     delete bodyParams.start_datetime;
     delete bodyParams.end_datetime;
@@ -145,13 +173,15 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     delete bodyParams.service_fee2_charges;
     // delete bodyParams.total_payout;
 
-    if (Number(bodyParams.hourly_game_fee) > 0 && !bodyParams?.source) {
+    if (Number(bodyParams.hourly_game_fee) > 0 && !bodyParams?.source && !route?.params?.isHirer) {
       Alert.alert('Towns Cup', 'Select Payment Method');
       return false;
     }
     if (Number(bodyParams.hourly_game_fee) === 0) delete bodyParams.source;
 
     delete bodyParams.hourly_game_fee;
+
+    console.log('bodyParams', bodyParams);
 
     setLoading(true);
     createUserReservation('referees', bodyParams, authContext)
@@ -179,7 +209,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
 
         {/* Name and country */}
         <View style={styles.contentContainer}>
-          <Title text={'Referee'} />
+          <Title text={route?.params?.isHirer ? 'Hirer' : 'Referee'} />
           <View style={{ marginVertical: 10 }}>
             <View style={styles.topViewContainer}>
               <View style={styles.profileView}>
@@ -194,7 +224,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               </View>
               <View style={styles.topTextContainer}>
                 <Text style={styles.nameText} numberOfLines={1}>
-                  {userData?.full_name}
+                  {userData?.full_name ?? userData?.group_name}
                 </Text>
                 <Text
                   style={styles.locationText}
@@ -224,7 +254,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               alignItems: 'center',
               justifyContent: 'space-between',
             }}>
-            <Title text={'Choose a game'} required={true}/>
+            <Title text={route?.params?.showMatches ? 'Choose a game' : 'Game'} required={!!route?.params?.showMatches}/>
             {route?.params?.showMatches && (
               <View
                 onPress={() => {
@@ -362,7 +392,20 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
-                onPress={() => setChiefOrAssistant(item)}>
+                onPress={() => {
+                  console.log('gameData', gameData);
+                  if (item === 'chief') {
+                    if (refereeReservationList.filter((obj) => obj.chief_referee).length > 0) {
+                      Alert.alert('You can’t book the chief referee for this game.')
+                    } else {
+                      setChiefOrAssistant(item)
+                    }
+                  } else if (gameData?.challenge_referee?.who_secure?.length - 1 === refereeReservationList.filter((obj) => !obj.chief_referee).length) {
+                      Alert.alert(`You can’t book more than ${refereeReservationList.filter((obj) => !obj.chief_referee).length} assistant referees for this game. You can change the number of referees in the reservation details.`)
+                    } else {
+                      setChiefOrAssistant(item)
+                    }
+                }}>
                 {item === chiefOrAssistant && (
                   <LinearGradient
                     colors={[colors.orangeColor, colors.yellowColor]}
@@ -379,15 +422,29 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
           ))}
         </View>
         <Seperator />
+        <View>
+          <TCChallengeTitle
+          title={'Refund Policy'}
+          value={route?.params?.settingObj?.refund_policy}
+          tooltipText={
+          '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+          }
+          tooltipHeight={Utility.heightPercentageToDP('18%')}
+          tooltipWidth={Utility.widthPercentageToDP('50%')}
+          isEdit={false}
+
+        />
+          <TCThickDivider />
+        </View>
 
         {/* Payment */}
         {gameData && (
           <View style={styles.contentContainer}>
-            <Title text={'Payment'} />
+            <Title text={route?.params?.isHirer ? 'Earning' : 'payment'} />
             <View style={{ marginTop: 10 }}>
               <MatchFeesCard
                 challengeObj={challengeObject}
-                senderOrReceiver={'sender'}
+                senderOrReceiver={route?.params?.isHirer ? 'receiver' : 'sender'}
                 type="referee"
               />
             </View>
@@ -395,7 +452,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
         )}
 
         {/* Payment Method */}
-        {Number(challengeObject?.hourly_game_fee) > 0 && (
+        {Number(challengeObject?.hourly_game_fee) > 0 && !route?.params?.isHirer && (
           <View style={styles.contentContainer}>
             <Title text={'Payment Method'} />
             <View style={{ marginTop: 10 }}>

@@ -106,29 +106,35 @@ const RefereeSelectMatch = ({ navigation, route }) => {
                       let isSameReferee = false;
                       const sameRefereeCount = game?.referees?.filter((gameReferee) => gameReferee?.user_id === userData?.user_id);
                       if (sameRefereeCount?.length > 0) isSameReferee = true;
-                      const isCheif = userData?.chief_referee;
-                      const cheifCnt = game?.referees?.filter((chal_ref) => chal_ref?.chief_referee)?.length;
-                      const assistantCnt = game?.referees?.filter((chal_ref) => !chal_ref?.chief_referee)?.length;
+                      // const isCheif = userData?.chief_referee;
+                      // const cheifCnt = game?.referees?.filter((chal_ref) => chal_ref?.chief_referee)?.length;
+                      // const assistantCnt = game?.referees?.filter((chal_ref) => !chal_ref?.chief_referee)?.length;
                       let message = '';
                       if (isSameReferee) {
-                        message = 'This referee is already booked for this game.';
-                      } else if (!game.isAvailable) {
-                        message = 'There is no available slot of a referee who you can book in this game.';
-                      } else if ((game?.referees?.count ?? 0) >= 3) {
-                        message = 'There is no available slot of a referee who you can book in this game.';
-                      } else if (isCheif && cheifCnt >= 1) {
-                        message = 'There is no available slot of a chief referee who you can book in this game.';
-                      } else if (!isCheif && assistantCnt >= 2) {
-                        message = 'There is no available slot of an assistant referee who you can book in this game.';
+                        message = 'This referee has already been booked for this game.';
                       }
+                      // else if (!game.isAvailable) {
+                      //   message = 'There is no available slot of a referee who you can book in this game.';
+                      // } else if ((game?.referees?.count ?? 0) >= 3) {
+                      //   message = 'There is no available slot of a referee who you can book in this game.';
+                      // } else if (isCheif && cheifCnt >= 1) {
+                      //   message = 'There is no available slot of a chief referee who you can book in this game.';
+                      // } else if (!isCheif && assistantCnt >= 2) {
+                      //   message = 'There is no available slot of an assistant referee who you can book in this game.';
+                      // }
                       if (message === '') {
                         navigation.navigate(route?.params?.comeFrom, {
                           comeFrom: 'RefereeSelectMatch',
                           gameData: item,
                         });
                       } else {
-                        setTimeout(() => Alert.alert('Towns Cup', message));
+                        setTimeout(() => Alert.alert(message));
                       }
+
+                      // navigation.navigate(route?.params?.comeFrom, {
+                      //   comeFrom: 'RefereeSelectMatch',
+                      //   gameData: item,
+                      // });
                     }}
                 />
                 </View>

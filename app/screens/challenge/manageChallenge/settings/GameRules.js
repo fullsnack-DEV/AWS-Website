@@ -12,14 +12,16 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
-import {
-  patchChallengeSetting,
-} from '../../../../api/Challenge';
+
 import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors'
 import strings from '../../../../Constants/String';
 import TCLabel from '../../../../components/TCLabel';
 import fonts from '../../../../Constants/Fonts';
+import { patchPlayer } from '../../../../api/Users';
+import { patchGroup } from '../../../../api/Groups';
+
+import * as Utility from '../../../../utils';
 
 export default function GameRules({ navigation, route }) {
   const { comeFrom, sportName } = route?.params;
@@ -40,33 +42,110 @@ export default function GameRules({ navigation, route }) {
     });
   }, [comeFrom, navigation, generalRules, specialRules]);
 
+const saveUser = () => {
+  const bodyParams = {
+    sport: sportName,
+    entity_type: 'player',
+    general_rules: generalRules,
+    special_rules: specialRules,
+  }
+  setloading(true);
+  const registerdPlayerData = authContext?.user?.registered_sports?.filter(
+    (obj) => obj.sport_name !== sportName,
+  );
+
+  const selectedSport = authContext?.user?.registered_sports?.filter(
+    (obj) => obj.sport_name === sportName,
+  )[0];
+
+  selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+  registerdPlayerData.push(selectedSport);
+
+  const body = { ...authContext?.user, registered_sports: registerdPlayerData };
+  console.log('Body::::--->', body);
+
+  patchPlayer(body, authContext)
+    .then(async (response) => {
+      if (response.status === true) {
+        setloading(false);
+        const entity = authContext.entity;
+        console.log('Register player response IS:: ', response.payload);
+        entity.auth.user = response.payload;
+        entity.obj = response.payload;
+        authContext.setEntity({ ...entity });
+        authContext.setUser(response.payload);
+        await Utility.setStorage('authContextUser', response.payload);
+        await Utility.setStorage('authContextEntity', { ...entity });
+        navigation.navigate(comeFrom, {
+          settingObj: response.payload.registered_sports.filter(
+            (obj) => obj.sport_name === sportName,
+          )[0].setting,
+        });
+      } else {
+        Alert.alert('Towns Cup', response.messages);
+      }
+      console.log('RESPONSE IS:: ', response);
+      setloading(false);
+    })
+    .catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+}
+
+const saveTeam = () => {
+  const bodyParams = {
+    sport: sportName,
+    entity_type: 'team',
+    general_rules: generalRules,
+    special_rules: specialRules,
+  }
+  setloading(true);
+  const selectedTeam = authContext?.entity?.obj;
+  selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
+  const body = { ...selectedTeam };
+  console.log('Body Team::::--->', body);
+
+  patchGroup(authContext.entity.uid, body, authContext)
+    .then(async (response) => {
+      if (response.status === true) {
+        console.log('Team patch::::--->', response.payload);
+
+        setloading(false);
+        const entity = authContext.entity;
+        entity.obj = response.payload;
+        authContext.setEntity({ ...entity });
+
+        await Utility.setStorage('authContextEntity', { ...entity });
+        navigation.navigate(comeFrom, {
+          settingObj: response.payload.setting,
+        });
+      } else {
+        Alert.alert('Towns Cup', response.messages);
+      }
+      setloading(false);
+    })
+    .catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+};
+
   const onSavePressed = () => {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       navigation.navigate(comeFrom, {
         gameGeneralRules: generalRules,
         gameSpecialRules: specialRules,
       });
-    } else {
-      const bodyParams = {
-        sport: sportName,
-        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-        general_rules: generalRules,
-        special_rules: specialRules,
-      }
-      setloading(true);
-      patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-      .then((response) => {
-        setloading(false);
-        navigation.navigate(comeFrom, { settingObj: response.payload })
-        console.log('patch challenge response:=>', response.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-    }
+    } else if (authContext.entity.role === 'team') {
+       saveTeam()
+     } else {
+       saveUser()
+     }
   }
 
   return (

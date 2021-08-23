@@ -7,11 +7,19 @@ import React, {
   useCallback,
 } from 'react';
 import {
- StyleSheet, View, Text, Image, Alert, ScrollView,
- } from 'react-native';
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  Alert,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native';
 import moment from 'moment';
+
 import { useIsFocused } from '@react-navigation/native';
 import _ from 'lodash';
+import * as Utility from '../../utils';
 import { acceptDeclineReservation, getReservation } from '../../api/Challenge';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
@@ -34,6 +42,8 @@ import TCGameCard from '../../components/TCGameCard';
 import { getGameFromToDateDiff, getGameHomeScreen } from '../../utils/gameUtils';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import TCChallengeTitle from '../../components/TCChallengeTitle';
+import { heightPercentageToDP, widthPercentageToDP } from '../../utils';
+import TCTouchableLabel from '../../components/TCTouchableLabel';
 
 let entity = {};
 
@@ -45,6 +55,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
   const [homeTeam, setHomeTeam] = useState();
   const [awayTeam, setAwayTeam] = useState();
   const [bodyParams, setbodyParams] = useState();
+  const [defaultCard, setDefaultCard] = useState();
 
   useEffect(() => {
     entity = authContext.entity;
@@ -64,6 +75,9 @@ export default function RefereeReservationScreen({ navigation, route }) {
     } else {
       setHomeTeam(reservationObj?.game?.home_team);
       setAwayTeam(reservationObj?.game?.away_team);
+    }
+    if (route?.params?.paymentMethod) {
+      setDefaultCard(route?.params?.paymentMethod);
     }
   }, [isFocused]);
   useLayoutEffect(() => {
@@ -94,7 +108,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
       callerID,
       versionNo,
       status,
-      {},
+      { source: defaultCard?.id },
       authContext,
     )
       .then((response) => {
@@ -222,15 +236,12 @@ export default function RefereeReservationScreen({ navigation, route }) {
     return 'referee';
   };
   const checkSenderForPayment = useCallback((reservationObj) => {
-    console.log(
-      'reservationObj::=>',
-      reservationObj,
-    );
+    console.log('reservationObj::=>', reservationObj);
     if (reservationObj?.referee?.user_id === entity.uid) {
       return 'receiver';
     }
 
-      return 'sender';
+    return 'sender';
   }, []);
   const checkSenderOrReceiver = (reservationObj) => {
     const teampObj = { ...reservationObj };
@@ -366,23 +377,20 @@ export default function RefereeReservationScreen({ navigation, route }) {
               }}>
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
-                  <Image
-                    source={images.reqIcon}
-                    style={styles.reqOutImage}
-                  />
+                  <Image source={images.reqIcon} style={styles.reqOutImage} />
                   <Text style={styles.challengerText}>Requester</Text>
                 </View>
 
                 <View style={styles.teamView}>
                   <View style={styles.profileView}>
                     <Image
-                    source={
-                      getRequester(bodyParams).thumbnail
-                        ? { uri: getRequester(bodyParams).thumbnail }
-                        : images.teamPlaceholder
-                    }
-                    style={styles.profileImage}
-                  />
+                      source={
+                        getRequester(bodyParams).thumbnail
+                          ? { uri: getRequester(bodyParams).thumbnail }
+                          : images.teamPlaceholder
+                      }
+                      style={styles.profileImage}
+                    />
                   </View>
                   <Text style={styles.teamNameText}>
                     {getRequester(bodyParams).group_id
@@ -459,7 +467,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                     </Text>
                   ) : (
                     <Text style={styles.challengeText}>
-                      Your team sent a match reservation request to{' '}
+                      You sent a match reservation request to{' '}
                       {getEntityName(bodyParams)}. This request will be expired
                       in{' '}
                       <Text style={styles.timeText}>
@@ -730,7 +738,10 @@ export default function RefereeReservationScreen({ navigation, route }) {
 
             {bodyParams && (
               <View>
-                <TCLabel title="Game" style={{ marginLeft: 15, marginBottom: 15, marginTop: 15 }}/>
+                <TCLabel
+                  title="Game"
+                  style={{ marginLeft: 15, marginBottom: 15, marginTop: 15 }}
+                />
                 {bodyParams?.game && (
                   <TCGameCard
                     data={bodyParams?.game}
@@ -828,10 +839,14 @@ export default function RefereeReservationScreen({ navigation, route }) {
             )}
             <TCChallengeTitle title={'Game Rules'} />
             <Text style={styles.rulesTitle}>General Rules</Text>
-            <Text style={styles.rulesDetail}>{bodyParams?.game?.general_rules}</Text>
+            <Text style={styles.rulesDetail}>
+              {bodyParams?.game?.general_rules}
+            </Text>
             <View style={{ marginBottom: 10 }} />
             <Text style={styles.rulesTitle}>Special Rules</Text>
-            <Text style={[styles.rulesDetail, { marginBottom: 10 }]}>{bodyParams?.game?.special_rules}</Text>
+            <Text style={[styles.rulesDetail, { marginBottom: 10 }]}>
+              {bodyParams?.game?.special_rules}
+            </Text>
             <TCThickDivider />
             {/* {bodyParams && (
             <View>
@@ -867,6 +882,19 @@ export default function RefereeReservationScreen({ navigation, route }) {
               </View>
             </View>
             <TCThickDivider />
+            <View>
+              <TCChallengeTitle
+                title={'Refund Policy'}
+                value={bodyParams?.refund_policy}
+                tooltipText={
+                '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+                }
+                tooltipHeight={heightPercentageToDP('18%')}
+                tooltipWidth={widthPercentageToDP('50%')}
+                isEdit={false}
+              />
+              <TCThickDivider />
+            </View>
             <TCLabel
               title={
                 checkSenderForPayment(bodyParams) === 'sender'
@@ -884,56 +912,45 @@ export default function RefereeReservationScreen({ navigation, route }) {
               senderOrReceiver={checkSenderForPayment(bodyParams)}
             />
 
-            {checkSenderOrReceiver(bodyParams) === 'sender'
+            {bodyParams.initiated_by === authContext.entity.uid
               && bodyParams.status === RefereeReservationStatus.offered
-              && bodyParams.expiry_datetime < new Date().getTime() && (
-                <View>
-                  <TCBorderButton
-                    title={strings.calcelRequest}
-                    textColor={colors.grayColor}
-                    borderColor={colors.grayColor}
-                    marginBottom={15}
-                    height={40}
-                    shadow={true}
+              && bodyParams.total_game_fee > 0 && (
+                <View style={{ marginTop: 15 }}>
+                  <TCTouchableLabel
+                    title={
+                      defaultCard && defaultCard?.card?.brand
+                        ? Utility.capitalize(defaultCard?.card?.brand)
+                        : strings.addOptionMessage
+                    }
+                    subTitle={
+                      (defaultCard && defaultCard?.card?.last4)
+                      ?? defaultCard?.card?.last4
+                    }
+                    showNextArrow={true}
                     onPress={() => {
-                      let callerId = '';
-                      if (bodyParams?.referee?.user_id !== entity.uid) {
-                        callerId = entity.uid;
-                      }
-                      acceptDeclineRefereeReservation(
-                        bodyParams.reservation_id,
-                        callerId,
-                        bodyParams.version,
-                        'cancel',
-                      );
+                      navigation.navigate('PaymentMethodsScreen', {
+                        comeFrom: 'RefereeReservationScreen',
+                      });
                     }}
                   />
                 </View>
               )}
 
-            {checkSenderOrReceiver(bodyParams) === 'receiver'
-              && bodyParams.status === RefereeReservationStatus.offered
-              && bodyParams.expiry_datetime > new Date().getTime() / 1000 && (
-                <View style={{ marginTop: 15 }}>
-                  <TCGradientButton
-                    title={strings.accept}
-                    marginBottom={15}
-                    onPress={() => {
-                      // navigation.navigate('AlterRefereeScreen', { reservationObj: allReservationData })
+            <SafeAreaView>
+              {checkSenderOrReceiver(bodyParams) === 'sender'
+                && bodyParams.status === RefereeReservationStatus.offered
+                && bodyParams.expiry_datetime < new Date().getTime() && (
+                  <View>
+                    <TCBorderButton
+                      title={strings.calcelRequest}
+                      textColor={colors.grayColor}
+                      borderColor={colors.grayColor}
+                      marginBottom={15}
+                      marginTop={15}
 
-                      if (
-                        !(
-                          bodyParams?.game?.status === GameStatus.accepted
-                          || bodyParams?.game?.status === GameStatus.reset
-                        )
-                      ) {
-                        Alert.alert(strings.cannotAcceptText);
-                      } else if (
-                         bodyParams?.game?.start_datetime
-                          < new Date().getTime() / 1000
-                      ) {
-                        Alert.alert(strings.refereeOfferExpiryText);
-                      } else {
+                      height={40}
+                      shadow={true}
+                      onPress={() => {
                         let callerId = '';
                         if (bodyParams?.referee?.user_id !== entity.uid) {
                           callerId = entity.uid;
@@ -942,64 +959,148 @@ export default function RefereeReservationScreen({ navigation, route }) {
                           bodyParams.reservation_id,
                           callerId,
                           bodyParams.version,
-                          'accept',
+                          'cancel',
+                        );
+                      }}
+                    />
+                  </View>
+                )}
+
+              {checkSenderOrReceiver(bodyParams) === 'receiver'
+                && bodyParams.status === RefereeReservationStatus.offered
+                && bodyParams.expiry_datetime > new Date().getTime() / 1000 && (
+                  <View style={{ marginTop: 15 }}>
+                    <TCGradientButton
+                      title={strings.accept}
+                      marginBottom={15}
+                      onPress={() => {
+                        // navigation.navigate('AlterRefereeScreen', { reservationObj: allReservationData })
+
+                        if (
+                          !(
+                            bodyParams?.game?.status === GameStatus.accepted
+                            || bodyParams?.game?.status === GameStatus.reset
+                          )
+                        ) {
+                          Alert.alert(strings.cannotAcceptText);
+                        } else if (
+                          bodyParams?.game?.start_datetime
+                          < new Date().getTime() / 1000
+                        ) {
+                          Alert.alert(strings.refereeOfferExpiryText);
+                        } else if (bodyParams.initiated_by === authContext.entity.uid
+                          && bodyParams.status === RefereeReservationStatus.offered
+                          && bodyParams.total_game_fee > 0 && !defaultCard) {
+                            Alert.alert('Please choose payment method first.');
+                        } else {
+                          let callerId = '';
+                          if (bodyParams?.referee?.user_id !== entity.uid) {
+                            callerId = entity.uid;
+                          }
+                          acceptDeclineRefereeReservation(
+                            bodyParams.reservation_id,
+                            callerId,
+                            bodyParams.version,
+                            'accept',
+                          );
+                        }
+                      }}
+                    />
+                    <TCBorderButton
+                      title={strings.decline}
+                      textColor={colors.grayColor}
+                      borderColor={colors.grayColor}
+                      height={40}
+                      marginBottom={15}
+                      shadow={true}
+                      onPress={() => {
+                        let callerId = '';
+                        if (bodyParams?.referee?.user_id !== entity.uid) {
+                          callerId = entity.uid;
+                        }
+                        acceptDeclineRefereeReservation(
+                          bodyParams.reservation_id,
+                          callerId,
+                          bodyParams.version,
+                          'decline',
+                        );
+                      }}
+                    />
+                  </View>
+                )}
+
+              {(bodyParams.status === RefereeReservationStatus.accepted
+                || bodyParams.status === RefereeReservationStatus.restored
+                || bodyParams.status
+                  === RefereeReservationStatus.requestcancelled) && (
+                    <View>
+                      <TCBorderButton
+                    title={strings.alterReservation}
+                    textColor={colors.grayColor}
+                    borderColor={colors.grayColor}
+                    height={40}
+                    shadow={true}
+                    marginTop={15}
+                    onPress={() => {
+                      if (
+                        (bodyParams?.game?.status === GameStatus.accepted
+                          || bodyParams?.game?.status === GameStatus.reset)
+                        && bodyParams.start_datetime
+                          > parseFloat(new Date().getTime() / 1000).toFixed(0)
+                      ) {
+                        navigation.navigate('EditRefereeReservation', {
+                          reservationObj: bodyParams,
+                        });
+                      } else {
+                        Alert.alert(
+                          'Reservation cannot be change after game time passed or offer expired.',
                         );
                       }
                     }}
                   />
-                  <TCBorderButton
-                    title={strings.decline}
-                    textColor={colors.grayColor}
+                      <TCBorderButton
+                    title={strings.cancelreservation}
+                    textColor={colors.whiteColor}
                     borderColor={colors.grayColor}
+                    backgroundColor={colors.grayColor}
                     height={40}
-                    marginBottom={15}
                     shadow={true}
+                    marginBottom={15}
+                    marginTop={15}
                     onPress={() => {
-                      let callerId = '';
-                      if (bodyParams?.referee?.user_id !== entity.uid) {
-                        callerId = entity.uid;
+                      if (
+                        bodyParams?.game?.status
+                        === (GameStatus.accepted || GameStatus.reset)
+                      ) {
+                        let callerId = '';
+                        if (bodyParams?.referee?.user_id !== entity.uid) {
+                          callerId = entity.uid;
+                        }
+                        acceptDeclineRefereeReservation(
+                          bodyParams.reservation_id,
+                          callerId,
+                          bodyParams.version,
+                          'cancel',
+                        );
+                      } else if (
+                        bodyParams.start_datetime * 1000
+                        < new Date().getTime()
+                      ) {
+                        Alert.alert(
+                          'Reservation cannot be cancel after game time passed or offer expired.',
+                        );
+                      } else {
+                        Alert.alert(
+                          'Reservation can not be change after game has been started.',
+                        );
                       }
-                      acceptDeclineRefereeReservation(
-                        bodyParams.reservation_id,
-                        callerId,
-                        bodyParams.version,
-                        'decline',
-                      );
                     }}
                   />
-                </View>
+                    </View>
               )}
-
-            {(bodyParams.status === RefereeReservationStatus.accepted
-              || bodyParams.status === RefereeReservationStatus.restored
-              || bodyParams.status
-                === RefereeReservationStatus.requestcancelled) && (
-                  <View>
-                    <TCBorderButton
-                  title={strings.alterReservation}
-                  textColor={colors.grayColor}
-                  borderColor={colors.grayColor}
-                  height={40}
-                  shadow={true}
-                  marginTop={15}
-                  onPress={() => {
-                    if (
-                      (bodyParams?.game?.status === GameStatus.accepted
-                        || bodyParams?.game?.status === GameStatus.reset)
-                      && bodyParams.start_datetime
-                        > parseFloat(new Date().getTime() / 1000).toFixed(0)
-                    ) {
-                      navigation.navigate('EditRefereeReservation', {
-                        reservationObj: bodyParams,
-                      });
-                    } else {
-                      Alert.alert(
-                        'Reservation cannot be change after game time passed or offer expired.',
-                      );
-                    }
-                  }}
-                />
-                    <TCBorderButton
+              {bodyParams.status
+                === RefereeReservationStatus.pendingpayment && (
+                  <TCBorderButton
                   title={strings.cancelreservation}
                   textColor={colors.whiteColor}
                   borderColor={colors.grayColor}
@@ -1010,9 +1111,20 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   marginTop={15}
                   onPress={() => {
                     if (
-                      bodyParams?.game?.status
-                      === (GameStatus.accepted || GameStatus.reset)
+                      !(
+                        bodyParams?.game?.status === GameStatus.accepted
+                        || bodyParams?.game?.status === GameStatus.reset
+                      )
                     ) {
+                      Alert.alert(strings.cannotAcceptText);
+                    } else if (
+                      bodyParams?.expiry_datetime
+                        < new Date().getTime() / 1000
+                      || bodyParams?.game?.start_datetime
+                        < new Date().getTime() / 1000
+                    ) {
+                      Alert.alert(strings.refereeOfferExpiryText);
+                    } else {
                       let callerId = '';
                       if (bodyParams?.referee?.user_id !== entity.uid) {
                         callerId = entity.uid;
@@ -1023,61 +1135,11 @@ export default function RefereeReservationScreen({ navigation, route }) {
                         bodyParams.version,
                         'cancel',
                       );
-                    } else if (
-                      bodyParams.start_datetime * 1000
-                      < new Date().getTime()
-                    ) {
-                      Alert.alert(
-                        'Reservation cannot be cancel after game time passed or offer expired.',
-                      );
-                    } else {
-                      Alert.alert(
-                        'Reservation can not be change after game has been started.',
-                      );
                     }
                   }}
                 />
-                  </View>
-            )}
-            {bodyParams.status === RefereeReservationStatus.pendingpayment && (
-              <TCBorderButton
-                title={strings.cancelreservation}
-                textColor={colors.whiteColor}
-                borderColor={colors.grayColor}
-                backgroundColor={colors.grayColor}
-                height={40}
-                shadow={true}
-                marginBottom={15}
-                marginTop={15}
-                onPress={() => {
-                  if (
-                    !(
-                      bodyParams?.game?.status === GameStatus.accepted
-                      || bodyParams?.game?.status === GameStatus.reset
-                    )
-                  ) {
-                    Alert.alert(strings.cannotAcceptText);
-                  } else if (
-                    bodyParams?.expiry_datetime < new Date().getTime() / 1000
-                    || bodyParams?.game?.start_datetime
-                      < new Date().getTime() / 1000
-                  ) {
-                    Alert.alert(strings.refereeOfferExpiryText);
-                  } else {
-                    let callerId = '';
-                    if (bodyParams?.referee?.user_id !== entity.uid) {
-                      callerId = entity.uid;
-                    }
-                    acceptDeclineRefereeReservation(
-                      bodyParams.reservation_id,
-                      callerId,
-                      bodyParams.version,
-                      'cancel',
-                    );
-                  }
-                }}
-              />
-            )}
+              )}
+            </SafeAreaView>
           </View>
         )}
       </ScrollView>

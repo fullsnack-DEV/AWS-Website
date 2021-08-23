@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import React, { memo, useContext, useEffect } from 'react';
+import React, { memo, useContext } from 'react';
 import {
  StyleSheet, View, Text, Image,
   TouchableOpacity,
@@ -12,20 +12,15 @@ import fonts from '../../Constants/Fonts';
 import ReservationStatus from '../../Constants/ReservationStatus';
 import ChallengeStatusTitle from '../challenge/ChallengeStatusTitle';
 import images from '../../Constants/ImagePath';
+import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
+import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 
 let entity = {};
 function ReservationStatusView({ data, onClick }) {
   const authContext = useContext(AuthContext);
-  useEffect(() => {
-    entity = authContext.entity;
-  }, [authContext.entity, data]);
+  entity = authContext.entity;
 
-  const getDate = () => {
-    if (data?.game) {
-      return data?.game?.start_datetime * 1000;
-    }
-    return data?.start_datetime * 1000;
-  };
+  const getDate = () => data?.start_datetime * 1000
 
   const checkSenderOrReceiver = (challengeObj) => {
     console.log('sender & receiver Obj', challengeObj);
@@ -54,6 +49,14 @@ function ReservationStatusView({ data, onClick }) {
       }
       return 'receiver';
     }
+    if (challengeObj?.status === ReservationStatus.changeRequest) {
+      if (challengeObj?.requested_to === entity.uid) {
+        console.log('status:=>', challengeObj?.requested_by + entity.uid);
+
+        return 'sender';
+      }
+      return 'receiver';
+    }
     if (challengeObj?.status === ReservationStatus.accepted) {
       if (challengeObj?.requested_by === entity.uid) {
         return 'sender';
@@ -61,7 +64,7 @@ function ReservationStatusView({ data, onClick }) {
       return 'receiver';
     }
     if (challengeObj?.status === ReservationStatus.declined) {
-      if (challengeObj?.requested_to === entity.uid) {
+      if (challengeObj?.requested_by === entity.uid) {
         return 'sender';
       }
       return 'receiver';
@@ -78,18 +81,107 @@ function ReservationStatusView({ data, onClick }) {
     return 'receiver';
   };
 
-  // eslint-disable-next-line consistent-return
-  const getTeamName = (challengeObject) => {
-    if (!challengeObject?.user_challenge) {
-      if (challengeObject?.home_team?.group_id === entity.uid) {
-        return challengeObject?.away_team?.group_name;
+  const checkSenderOrReceiverReferee = (reservationObj) => {
+    console.log('checkSenderOrReceiverReferee', reservationObj);
+    const teampObj = { ...reservationObj };
+    if (
+      teampObj?.status === RefereeReservationStatus.pendingpayment
+      || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
+    ) {
+      if (teampObj?.updated_by) {
+        if (teampObj?.updated_by?.group_id) {
+          teampObj.requested_by = teampObj.updated_by.group_id;
+        } else {
+          teampObj.requested_by = teampObj.updated_by.uid;
+        }
+      } else if (teampObj?.created_by?.group_id) {
+        teampObj.requested_by = teampObj.created_by.group_id;
+      } else {
+        teampObj.requested_by = teampObj.created_by.uid;
       }
-      return challengeObject?.home_team?.group_name;
+    } else if (teampObj?.updated_by) {
+      if (teampObj?.updated_by?.group_id) {
+        if (
+          teampObj?.automatic_request
+          && teampObj?.status === RefereeReservationStatus.changeRequest
+          && entity?.obj?.entity_type === 'team'
+        ) {
+          teampObj.requested_by = teampObj.initiated_by;
+        } else {
+          teampObj.requested_by = teampObj.updated_by.group_id;
+        }
+      } else if (
+        teampObj?.automatic_request
+        && teampObj?.status === RefereeReservationStatus.changeRequest
+        && teampObj?.referee?.user_id !== entity.uid
+      ) {
+        teampObj.requested_by = teampObj.initiated_by;
+      } else {
+        teampObj.requested_by = teampObj.updated_by.uid;
+      }
+    } else if (teampObj?.created_by?.group_id) {
+      teampObj.requested_by = teampObj.created_by.group_id;
+    } else {
+      teampObj.requested_by = teampObj.created_by.uid;
     }
-    if (challengeObject?.home_team?.user_id === entity.uid) {
-      return `${challengeObject?.away_team?.first_name} ${challengeObject?.away_team?.last_name}`;
+
+    console.log('Temp Object::', teampObj);
+    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
+    if (teampObj?.requested_by === entity.uid) {
+      return 'sender';
     }
-    return `${challengeObject?.home_team?.first_name} ${challengeObject?.home_team?.last_name}`;
+    return 'receiver';
+  };
+
+  const checkSenderOrReceiverScorekeeper = (reservationObj) => {
+    const teampObj = { ...reservationObj };
+    if (
+      teampObj?.status === ScorekeeperReservationStatus.pendingpayment
+      || teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
+    ) {
+      if (teampObj?.updated_by) {
+        if (teampObj?.updated_by?.group_id) {
+          teampObj.requested_by = teampObj.updated_by.group_id;
+        } else {
+          teampObj.requested_by = teampObj.updated_by.uid;
+        }
+      } else if (teampObj?.created_by?.group_id) {
+        teampObj.requested_by = teampObj.created_by.group_id;
+      } else {
+        teampObj.requested_by = teampObj.created_by.uid;
+      }
+    } else if (teampObj?.updated_by) {
+      if (teampObj?.updated_by?.group_id) {
+        if (
+          teampObj?.automatic_request
+          && teampObj?.status === ScorekeeperReservationStatus.changeRequest
+          && entity?.obj?.entity_type === 'team'
+        ) {
+          teampObj.requested_by = teampObj.initiated_by;
+        } else {
+          teampObj.requested_by = teampObj.updated_by.group_id;
+        }
+      } else if (
+        teampObj?.automatic_request
+        && teampObj?.status === ScorekeeperReservationStatus.changeRequest
+        && teampObj?.referee?.user_id !== entity.uid
+      ) {
+        teampObj.requested_by = teampObj.initiated_by;
+      } else {
+        teampObj.requested_by = teampObj.updated_by.uid;
+      }
+    } else if (teampObj?.created_by?.group_id) {
+      teampObj.requested_by = teampObj.created_by.group_id;
+    } else {
+      teampObj.requested_by = teampObj.created_by.uid;
+    }
+
+    console.log('Temp Object::', teampObj);
+    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
+    if (teampObj?.requested_by === entity.uid) {
+      return 'sender';
+    }
+    return 'receiver';
   };
 
   return (
@@ -121,10 +213,10 @@ function ReservationStatusView({ data, onClick }) {
           {getReservationStatus().status}
         </Text> */}
         <ChallengeStatusTitle
-          challengeObj={data?.referee_id || data?.scorekeeper_id ? data : data?.game}
-          isSender={checkSenderOrReceiver(data?.referee_id || data?.scorekeeper_id ? data : data?.game) === 'sender'}
-          isTeam={!!data?.home_team?.group_name}
-          teamName={getTeamName(data?.referee_id || data?.scorekeeper_id ? data : data?.game)}
+          challengeObj={data}
+          isSender={(data?.referee_id && checkSenderOrReceiverReferee(data) === 'sender') || (data?.scorekeeper_id && checkSenderOrReceiverScorekeeper(data) === 'sender') || (!data?.referee_id && !data?.scorekeeper_id && checkSenderOrReceiver(data) === 'sender') }
+          // isTeam={!!data?.home_team?.group_name}
+          teamName={data}
           // receiverName={challengee?.full_name ?? challengee?.group_name}
           offerExpiry={
             ReservationStatus.offered === 'offered'

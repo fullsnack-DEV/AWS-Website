@@ -40,7 +40,6 @@ import { getGameHomeScreen, getNumberSuffix } from '../../../utils/gameUtils';
 import {
   acceptDeclineChallenge,
   acceptDeclineAlterChallenge,
-  getChallengeSetting,
 } from '../../../api/Challenge';
 
 import GameStatus from '../../../Constants/GameStatus';
@@ -48,6 +47,7 @@ import TCArrowView from '../../../components/TCArrowView';
 import TCGradientButton from '../../../components/TCGradientButton';
 
 import TCBorderButton from '../../../components/TCBorderButton';
+import { getSetting } from '../manageChallenge/settingUtility';
 
 let entity = {};
 export default function ChallengePreviewScreen({ navigation, route }) {
@@ -143,16 +143,16 @@ const getChallengee = () => {
   useEffect(() => {
     setloading(true);
     console.log('challenge data11:=>', challengeData);
-    getChallengeSetting(
+    getSetting(
       challengeData?.challengee,
-      challengeData?.sport,
       authContext.entity.role === 'user' ? 'player' : 'team',
+      challengeData?.sport,
       authContext,
     )
       .then((response) => {
         setloading(false);
-        console.log('manage challenge response:=>', response.payload);
-        setSettingObject(response.payload[0]);
+        console.log('manage challenge response:=>', response);
+        setSettingObject(response);
       })
       .catch((e) => {
         setloading(false);
