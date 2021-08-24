@@ -2864,6 +2864,7 @@ const AccountNavigator = () => (
            headerShown: false,
          }}
         />
+
   </Stack.Navigator>
 );
 

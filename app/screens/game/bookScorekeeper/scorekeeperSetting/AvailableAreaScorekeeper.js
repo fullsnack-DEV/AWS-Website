@@ -32,8 +32,8 @@ import images from '../../../../Constants/ImagePath';
 import { widthPercentageToDP } from '../../../../utils';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import LocationSearchModal from '../../../../components/Home/LocationSearchModal';
-import { patchChallengeSetting } from '../../../../api/Challenge';
-
+import * as Utility from '../../../../utils';
+import { patchPlayer } from '../../../../api/Users';
 // const entity = {};
 export default function AvailableAreaScorekeeper({ navigation, route }) {
    const { comeFrom, sportName } = route?.params;
@@ -184,11 +184,42 @@ export default function AvailableAreaScorekeeper({ navigation, route }) {
     bodyParams.sport = sportName
     bodyParams.entity_type = 'scorekeeper'
     setloading(true);
-    patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-      .then((response) => {
+    const registerdScorekeeperData = authContext?.user?.scorekeeper_data?.filter(
+      (obj) => obj.sport_name !== sportName,
+    );
+
+    const selectedSport = authContext?.user?.scorekeeper_data?.filter(
+      (obj) => obj.sport_name === sportName,
+    )[0];
+
+    selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+    registerdScorekeeperData.push(selectedSport);
+
+    const body = { ...authContext?.user, referee_data: registerdScorekeeperData };
+    console.log('Body::::--->', body);
+
+    patchPlayer(body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          setloading(false);
+          const entity = authContext.entity;
+          console.log('Register referee response IS:: ', response.payload);
+          entity.auth.user = response.payload;
+          entity.obj = response.payload;
+          authContext.setEntity({ ...entity });
+          authContext.setUser(response.payload);
+          await Utility.setStorage('authContextUser', response.payload);
+          await Utility.setStorage('authContextEntity', { ...entity });
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.scorekeeper_data.filter(
+              (obj) => obj.sport_name === sportName,
+            )[0].setting,
+          });
+        } else {
+          Alert.alert('Towns Cup', response.messages);
+        }
+        console.log('RESPONSE IS:: ', response);
         setloading(false);
-        navigation.navigate(comeFrom, { settingObj: response.payload });
-        console.log('patch challenge response:=>', response.payload);
       })
       .catch((e) => {
         setloading(false);

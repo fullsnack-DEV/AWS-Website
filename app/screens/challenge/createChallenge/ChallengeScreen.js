@@ -18,9 +18,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {
-  getChallengeSetting,
   getFeesEstimation,
-  createChallenge,
 } from '../../../api/Challenge';
 import { getNumberSuffix } from '../../../utils/gameUtils';
 
@@ -65,26 +63,6 @@ export default function ChallengeScreen({ navigation, route }) {
       getFeeDetail();
     }
   }, [authContext.entity, groupObj, settingObject?.game_fee?.fee]);
-
-  // useEffect(() => {
-  //   setloading(true);
-  //   getChallengeSetting(
-  //     groupObj?.user_id || groupObj?.group_id,
-  //     sportName,
-  //     authContext,
-  //   )
-  //     .then((response) => {
-  //       setloading(false);
-  //       console.log('manage challenge response:=>', response.payload);
-  //       setSettingObject(response.payload[0]);
-  //     })
-  //     .catch((e) => {
-  //       setloading(false);
-  //       setTimeout(() => {
-  //         Alert.alert(strings.alertmessagetitle, e.message);
-  //       }, 10);
-  //     });
-  // }, [authContext, sportName]);
 
   useEffect(() => {
     if (route?.params?.selectedVenueObj) {

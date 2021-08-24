@@ -139,7 +139,7 @@ const TennisHome = ({ navigation, route }) => {
     authContext,
   ]);
   const getRefereeReservation = useCallback(
-    (gameId) => getGameRefereeReservation(gameId, authContext),
+    (gameId) => getGameRefereeReservation(gameId, true, false, authContext),
     [authContext],
   );
   const getScorekeeperReservation = useCallback(

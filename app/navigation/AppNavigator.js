@@ -187,7 +187,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'BookReferee'
     || routeName === 'AlterRefereeScreen'
     || routeName === 'EditRefereeReservation'
-    || routeName === 'ReservationScreen'
+    || routeName === 'ReservationNavigator'
   ) {
     return false;
   }

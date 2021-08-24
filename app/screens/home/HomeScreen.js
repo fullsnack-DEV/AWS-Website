@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /* eslint-disable no-console */
 /* eslint-disable react-native/no-raw-text */
 /* eslint-disable no-nested-ternary */
@@ -44,8 +45,8 @@ import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
-
 import {
+  getGameSlots,
   getRefereedMatch,
   getRefereeReviewData,
   getScroreboardGameDetails,
@@ -53,8 +54,6 @@ import {
   getScorekeeperReviewData,
   getScorekeeperMatch,
 } from '../../api/Games';
-
-import { getChallengeSetting } from '../../api/Challenge';
 
 import AuthContext from '../../auth/context';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
@@ -142,6 +141,8 @@ import AllInOneGallery from './AllInOneGallery';
 import UserHomeHeader from '../../components/Home/UserHomeHeader';
 import TCProfileButton from '../../components/TCProfileButton';
 import UserProfileScreenShimmer from '../../components/shimmer/account/UserProfileScreenShimmer';
+import TCGameCard from '../../components/TCGameCard';
+import { getSetting } from '../challenge/manageChallenge/settingUtility';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews'];
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews'];
@@ -185,6 +186,8 @@ const history_Data = [
 const HomeScreen = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
   const galleryRef = useRef();
+  const gameListModalRef = useRef(null);
+
   const imageUploadContext = useContext(ImageUploadContext);
   const isFocused = useIsFocused();
   // const viewRef = useRef();
@@ -273,6 +276,8 @@ const HomeScreen = ({ navigation, route }) => {
   const [settingObject, setSettingObject] = useState();
   const [refereeSettingObject, setRefereeSettingObject] = useState();
 
+  const [offerModalVisible, setOfferModalVisible] = useState();
+
   const [
     isDoubleSportTeamCreatedVisible,
     setIsDoubleSportTeamCreatedVisible,
@@ -287,11 +292,12 @@ const HomeScreen = ({ navigation, route }) => {
 
   const [sportsSelection, setSportsSelection] = useState();
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  const [matchData, setMatchData] = useState();
 
   const eventEditDeleteAction = useRef();
   const addRoleActionSheet = useRef();
   const manageChallengeActionSheet = useRef();
-
+  const offerActionSheet = useRef();
   useEffect(() => {
     if (route?.params?.isEntityCreated) {
       onSwitchProfile(route?.params?.entityObj);
@@ -594,15 +600,16 @@ const HomeScreen = ({ navigation, route }) => {
           setUserID(uid);
           setFirstTimeLoading(false);
           console.log('authContext.entity.role:::-->', authContext.entity.role);
-          getChallengeSetting(
+
+          getSetting(
             uid,
+            authContext.entity.role,
             groupDetails.sport,
-            authContext.entity.role === 'user' ? 'player' : 'team',
             authContext,
           )
             .then((res3) => {
-              setSettingObject(res3.payload[0]);
-              console.log('res3:::=>', res3.payload[0]);
+              setSettingObject(res3);
+              console.log('res3:::=>', res3);
             })
             .catch(() => {
               setFirstTimeLoading(false);
@@ -1323,23 +1330,23 @@ const HomeScreen = ({ navigation, route }) => {
           })
           .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
 
-          getChallengeSetting(
-            route?.params?.uid || entity.uid,
-            refereeInObject.sport_name,
-            'referee',
-            authContext,
-          )
-            .then((response) => {
-              setRefereeSettingObject(response.payload[0]);
-              console.log('res3:::=>', response);
-            })
-            .catch(() => {
-              setFirstTimeLoading(false);
-              setTimeout(() => {
-                Alert.alert(strings.alertmessagetitle, strings.defaultError);
-              }, 10);
-              // navigation.goBack();
-            });
+        getSetting(
+          route?.params?.uid || entity.uid,
+          'referee',
+          refereeInObject.sport_name,
+          authContext,
+        )
+          .then((response) => {
+            setRefereeSettingObject(response);
+            console.log('res3:::=>', response);
+          })
+          .catch(() => {
+            setFirstTimeLoading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, strings.defaultError);
+            }, 10);
+            // navigation.goBack();
+          });
       } else {
         navigation.navigate('RegisterReferee');
       }
@@ -2456,30 +2463,38 @@ const HomeScreen = ({ navigation, route }) => {
                 style={{ height: 15, width: 15, tintColor: colors.whiteColor }}
               />
             </TouchableOpacity>
-            {(authContext.entity.uid === currentUserData?.user_id
-              || authContext.entity.uid === currentUserData?.group_id)
-              && !isClubHome && (
-                <TouchableOpacity
+            {!isClubHome && (
+              <TouchableOpacity
+                style={{
+                  backgroundColor: 'rgba(0,0,0,0.4)',
+                  height: 30,
+                  width: 30,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 25,
+                }}
+                onPress={() => {
+                  if (
+                    authContext.entity.uid === currentUserData?.user_id
+                    || authContext.entity.uid === currentUserData?.group_id
+                  ) {
+                    onThreeDotPressed();
+                  } else {
+                    offerOpetions();
+                    offerActionSheet.current.show();
+                  }
+                }}>
+                <Image
+                  source={images.threeDotIcon}
                   style={{
-                    backgroundColor: 'rgba(0,0,0,0.4)',
-                    height: 30,
-                    width: 30,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 25,
+                    height: 15,
+                    width: 15,
+                    tintColor: colors.whiteColor,
+                    resizeMode: 'contain',
                   }}
-                  onPress={onThreeDotPressed}>
-                  <Image
-                    source={images.threeDotIcon}
-                    style={{
-                      height: 15,
-                      width: 15,
-                      tintColor: colors.whiteColor,
-                      resizeMode: 'contain',
-                    }}
-                  />
-                </TouchableOpacity>
-              )}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         )}
       </View>
@@ -2540,6 +2555,30 @@ const HomeScreen = ({ navigation, route }) => {
   //   ),
   //   [onBackPress, onThreeDotPressed, route],
   // );
+
+  const offerOpetions = () => {
+    const opetionArray = [];
+    let a = [];
+    let b = [];
+    console.log('Auth:=>', authContext.entity);
+    console.log('Team data:::::=>', currentUserData);
+     a = authContext?.entity?.obj?.referee_data?.filter(
+      (obj) => obj.sport_name.toLowerCase() === currentUserData?.sport?.toLowerCase(),
+    );
+     b = authContext?.entity?.obj?.scorekeeper_data?.filter(
+      (obj) => obj.sport_name.toLowerCase() === currentUserData?.sport?.toLowerCase(),
+    );
+
+    if (a?.length > 0) {
+      opetionArray.push(strings.refereeOffer);
+    }
+    if (b?.length > 0) {
+      opetionArray.push(strings.scorekeeperOffer);
+    }
+    opetionArray.push(strings.cancel);
+
+    return opetionArray;
+  };
 
   const renderBackground = useMemo(
     () => (bgImage ? (
@@ -3145,6 +3184,88 @@ const HomeScreen = ({ navigation, route }) => {
     </TouchableOpacity>
   );
 
+  const ModalHeader = () => (
+    <View style={styles.headerStyle}>
+      <View style={styles.handleStyle} />
+      <Text
+        style={{
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
+          marginLeft: 15,
+        }}>
+        Choose a game that you want to referee.
+      </Text>
+    </View>
+  );
+
+  const renderGames = useCallback(
+    ({ item }) => (
+      <TCGameCard
+        data={item}
+        cardWidth={'88%'}
+        onPress={() => {
+          const game = item;
+          console.log('Selected game:=>', item);
+          let isSameReferee = false;
+          const sameRefereeCount = game?.referees?.filter(
+            (gameReferee) => gameReferee?.user_id === currentUserData?.user_id,
+          );
+          if (sameRefereeCount?.length > 0) isSameReferee = true;
+          const isCheif = currentUserData?.chief_referee;
+          const cheifCnt = game?.referees?.filter(
+            (chal_ref) => chal_ref?.chief_referee,
+          )?.length;
+          const assistantCnt = game?.referees?.filter(
+            (chal_ref) => !chal_ref?.chief_referee,
+          )?.length;
+          let message = '';
+          if (isSameReferee) {
+            message = 'This referee is already booked for this game.';
+          } else if (!game.isAvailable) {
+            message = 'There is no available slot of a referee who you can book in this game.';
+          } else if ((game?.referees?.count ?? 0) >= 3) {
+            message = 'There is no available slot of a referee who you can book in this game.';
+          } else if (isCheif && cheifCnt >= 1) {
+            message = 'There is no available slot of a chief referee who you can book in this game.';
+          } else if (!isCheif && assistantCnt >= 2) {
+            message = 'There is no available slot of an assistant referee who you can book in this game.';
+          }
+          if (message === '') {
+            gameListModalRef.current.close();
+            navigation.navigate('RefereeBookingDateAndTime', {
+              gameData: item,
+              settingObj: refereeSettingObject,
+              userData: currentUserData,
+              isHirer: true,
+              navigationName: 'HomeScreen',
+              sportName,
+            });
+          } else {
+            setTimeout(() => Alert.alert('Towns Cup', message));
+          }
+        }}
+      />
+    ),
+    [currentUserData, navigation, refereeSettingObject, sportName],
+  );
+  const listEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>No Games Yet</Text>
+    </View>
+  );
+
+  const flatListProps = {
+    showsVerticalScrollIndicator: false,
+    showsHorizontalScrollIndicator: false,
+    keyboardShouldPersistTaps: 'never',
+    bounces: false,
+    data: matchData,
+    renderItem: renderGames,
+    keyExtractor: (index) => index.toString(),
+    ListEmptyComponent: listEmptyComponent,
+    style: { marginTop: 15 },
+  };
   return (
     <View style={styles.mainContainer}>
       <ActionSheet
@@ -3191,6 +3312,66 @@ const HomeScreen = ({ navigation, route }) => {
                 sportName: currentUserData?.sport,
               });
             }
+          }
+        }}
+      />
+      <ActionSheet
+        ref={offerActionSheet}
+        options={offerOpetions()}
+        cancelButtonIndex={offerOpetions().length - 1}
+        onPress={(index) => {
+          if (offerOpetions()[index] === strings.refereeOffer) {
+            setloading(true);
+            const headers = {};
+            headers.caller_id = currentUserData?.group_id;
+
+            const promiseArr = [
+              getGameSlots(
+                'referees',
+                authContext?.entity?.uid,
+                `status=accepted&sport=${currentUserData?.sport}&refereeDetail=true`,
+                headers,
+                authContext,
+              ),
+              getSetting(
+                authContext.entity.uid,
+                'referee',
+                currentUserData?.sport,
+                authContext,
+              ),
+            ];
+
+            Promise.all(promiseArr)
+              .then(([gameList, refereeSetting]) => {
+                if (gameList) {
+                  setMatchData([...gameList?.payload]);
+                }
+
+                if (refereeSetting) {
+                  setRefereeSettingObject(refereeSetting);
+                  if (
+                    refereeSetting?.refereeAvailibility
+                    && refereeSetting?.game_fee
+                    && refereeSetting?.refund_policy
+                    && refereeSetting?.available_area
+                  ) {
+                    gameListModalRef.current.open();
+                  } else {
+                    Alert.alert('You can\'t send offer, please configure your referee setting first.')
+                  }
+                }
+                setloading(false);
+              })
+              .catch((e) => {
+                setloading(false);
+                setTimeout(() => {
+                  Alert.alert(strings.alertmessagetitle, e.messages);
+                }, 10);
+              });
+          } else if (offerOpetions()[index] === strings.scorekeeperOffer) {
+            // Alert('scorekeeper offer');
+            gameListModalRef.current.open();
+          } else if (offerOpetions()[index] === strings.cancel) {
           }
         }}
       />
@@ -3256,7 +3437,6 @@ const HomeScreen = ({ navigation, route }) => {
             margin: 0,
             justifyContent: 'flex-end',
             backgroundColor: colors.blackOpacityColor,
-
           }}
           hasBackdrop
           onBackdropPress={() => setRefereesInModalVisible(false)}
@@ -3313,16 +3493,22 @@ const HomeScreen = ({ navigation, route }) => {
                     : 0
                 }
                 onBookRefereePress={() => {
-                  if (refereeSettingObject?.refereeAvailibility && refereeSettingObject?.game_fee && refereeSettingObject?.refund_policy && refereeSettingObject?.available_area) {
+                  if (
+                    refereeSettingObject?.refereeAvailibility
+                    && refereeSettingObject?.game_fee
+                    && refereeSettingObject?.refund_policy
+                    && refereeSettingObject?.available_area
+                  ) {
                     setRefereesInModalVisible(false);
                     navigation.navigate('RefereeBookingDateAndTime', {
+                      settingObj: refereeSettingObject,
                       userData: currentUserData,
                       showMatches: true,
                       navigationName: 'HomeScreen',
                       sportName,
                     });
                   } else {
-                    Alert.alert('Referee setting not configured yet.')
+                    Alert.alert('Referee setting not configured yet.');
                   }
                 }}
               />
@@ -3346,7 +3532,6 @@ const HomeScreen = ({ navigation, route }) => {
                 margin: 0,
                 justifyContent: 'flex-end',
                 backgroundColor: colors.blackOpacityColor,
-
               }}
               hasBackdrop
               onBackdropPress={() => setRefereeInfoModalVisible(false)}
@@ -4426,20 +4611,32 @@ const HomeScreen = ({ navigation, route }) => {
           </View>
         </Modalize>
       </Portal>
-      {/* <Modal
-        isVisible={isEntityCreateModalVisible}
-        backdropColor="black"
-        style={{
-          margin: 0,
-          justifyContent: 'flex-end',
-          backgroundColor: colors.blackOpacityColor,
-          flex: 1,
-        }}
-        hasBackdrop
-        onBackdropPress={() => setIsEntityCreateModalVisible(false)}
-        backdropOpacity={0}>
-
-      </Modal> */}
+      <Portal>
+        <Modalize
+          visible={offerModalVisible}
+          onOpen={() => setOfferModalVisible(true)}
+          snapPoint={hp(50)}
+          withHandle={false}
+          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+          modalStyle={{
+            borderTopRightRadius: 25,
+            borderTopLeftRadius: 25,
+            shadowColor: colors.blackColor,
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 10,
+            elevation: 10,
+          }}
+          onPositionChange={(position) => {
+            if (position === 'top') {
+              setOfferModalVisible(false);
+            }
+          }}
+          ref={gameListModalRef}
+          HeaderComponent={ModalHeader}
+          flatListProps={flatListProps}
+        />
+      </Portal>
 
       <Modal
         isVisible={isDoubleSportTeamCreatedVisible} // isDoubleSportTeamCreatedVisible
@@ -4627,15 +4824,16 @@ const HomeScreen = ({ navigation, route }) => {
               setSelectedChallengeOption(1);
 
               setloading(true);
-              getChallengeSetting(
+              getSetting(
                 authContext?.entity?.uid,
-                currentUserData.sport,
                 authContext.entity.role === 'user' ? 'player' : 'team',
+                currentUserData.sport,
                 authContext,
               )
+
                 .then((response) => {
                   setloading(false);
-                  const obj = response.payload[0];
+                  const obj = response;
                   if (
                     obj?.game_duration
                     && obj?.availibility
@@ -5124,6 +5322,32 @@ const styles = StyleSheet.create({
     height: 22,
     resizeMode: 'contain',
     alignSelf: 'center',
+  },
+
+  headerStyle: {
+    borderTopRightRadius: 25,
+    borderTopLeftRadius: 25,
+    backgroundColor: colors.whiteColor,
+  },
+  handleStyle: {
+    marginVertical: 15,
+    alignSelf: 'center',
+    height: 5,
+    width: 40,
+    borderRadius: 15,
+    backgroundColor: '#DADBDA',
+  },
+  emptyText: {
+    fontSize: 18,
+    fontFamily: fonts.RMedium,
+    color: colors.grayColor,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: '20%',
   },
 });
 

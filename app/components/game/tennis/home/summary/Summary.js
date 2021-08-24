@@ -926,11 +926,11 @@ const Summary = ({
   const renderSpecialRulesSection = useMemo(
     () => (
       <SpecialRules
-        specialRulesData={gameData?.special_rule ?? ''}
-        isAdmin={isAdmin}
+        gameData={gameData}
+
       />
     ),
-    [gameData?.special_rule, isAdmin],
+    [gameData],
   );
 
   const renderRefereesSection = useMemo(

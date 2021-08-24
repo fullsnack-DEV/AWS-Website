@@ -9,7 +9,8 @@ import strings from '../../../../Constants/String';
 import TCLabel from '../../../../components/TCLabel';
 import fonts from '../../../../Constants/Fonts';
 import AuthContext from '../../../../auth/context';
-import { patchChallengeSetting } from '../../../../api/Challenge';
+import * as Utility from '../../../../utils';
+import { patchPlayer } from '../../../../api/Users';
 
 export default function RefereeFee({ navigation, route }) {
   const { comeFrom, sportName } = route?.params;
@@ -62,11 +63,42 @@ export default function RefereeFee({ navigation, route }) {
           },
         };
         setloading(true);
-        patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-          .then((response) => {
+        const registerdRefereeData = authContext?.user?.referee_data?.filter(
+          (obj) => obj.sport_name !== sportName,
+        );
+
+        const selectedSport = authContext?.user?.referee_data?.filter(
+          (obj) => obj.sport_name === sportName,
+        )[0];
+
+        selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+        registerdRefereeData.push(selectedSport);
+
+        const body = { ...authContext?.user, referee_data: registerdRefereeData };
+        console.log('Body::::--->', body);
+
+        patchPlayer(body, authContext)
+          .then(async (response) => {
+            if (response.status === true) {
+              setloading(false);
+              const entity = authContext.entity;
+              console.log('Register referee response IS:: ', response.payload);
+              entity.auth.user = response.payload;
+              entity.obj = response.payload;
+              authContext.setEntity({ ...entity });
+              authContext.setUser(response.payload);
+              await Utility.setStorage('authContextUser', response.payload);
+              await Utility.setStorage('authContextEntity', { ...entity });
+              navigation.navigate(comeFrom, {
+                settingObj: response.payload.referee_data.filter(
+                  (obj) => obj.sport_name === sportName,
+                )[0].setting,
+              });
+            } else {
+              Alert.alert('Towns Cup', response.messages);
+            }
+            console.log('RESPONSE IS:: ', response);
             setloading(false);
-            navigation.navigate(comeFrom, { settingObj: response.payload });
-            console.log('patch challenge response:=>', response.payload);
           })
           .catch((e) => {
             setloading(false);

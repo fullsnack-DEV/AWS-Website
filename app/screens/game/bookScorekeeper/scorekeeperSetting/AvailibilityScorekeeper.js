@@ -17,9 +17,8 @@ import React, {
    import colors from '../../../../Constants/Colors';
    import TCLabel from '../../../../components/TCLabel';
    import ToggleView from '../../../../components/Schedule/ToggleView';
-   import {
-     patchChallengeSetting,
-   } from '../../../../api/Challenge';
+   import * as Utility from '../../../../utils';
+   import { patchPlayer } from '../../../../api/Users';
 
    export default function AvailibilityScorekeeoer({ navigation, route }) {
      const { comeFrom, sportName } = route?.params;
@@ -52,18 +51,49 @@ import React, {
         console.log('data::=>', bodyParams);
 
         setloading(true);
-        patchChallengeSetting(authContext?.entity?.uid, bodyParams, authContext)
-        .then((response) => {
-          setloading(false);
-          navigation.navigate(comeFrom, { settingObj: response.payload })
-          console.log('patch challenge response:=>', response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+        const registerdScorekeeperData = authContext?.user?.scorekeeper_data?.filter(
+          (obj) => obj.sport_name !== sportName,
+        );
+
+        const selectedSport = authContext?.user?.scorekeeper_data?.filter(
+          (obj) => obj.sport_name === sportName,
+        )[0];
+
+        selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+        registerdScorekeeperData.push(selectedSport);
+
+        const body = { ...authContext?.user, referee_data: registerdScorekeeperData };
+        console.log('Body::::--->', body);
+
+        patchPlayer(body, authContext)
+          .then(async (response) => {
+            if (response.status === true) {
+              setloading(false);
+              const entity = authContext.entity;
+              console.log('Register referee response IS:: ', response.payload);
+              entity.auth.user = response.payload;
+              entity.obj = response.payload;
+              authContext.setEntity({ ...entity });
+              authContext.setUser(response.payload);
+              await Utility.setStorage('authContextUser', response.payload);
+              await Utility.setStorage('authContextEntity', { ...entity });
+              navigation.navigate(comeFrom, {
+                settingObj: response.payload.scorekeeper_data.filter(
+                  (obj) => obj.sport_name === sportName,
+                )[0].setting,
+              });
+            } else {
+              Alert.alert('Towns Cup', response.messages);
+            }
+            console.log('RESPONSE IS:: ', response);
+            setloading(false);
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
       }
 
      return (

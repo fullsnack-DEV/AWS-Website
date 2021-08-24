@@ -34,13 +34,13 @@ import PlayInStatsView from './stats/PlayInStatsView';
 import { patchPlayer } from '../../../api/Users';
 import strings from '../../../Constants/String';
 import AuthContext from '../../../auth/context';
-import { getChallengeSetting } from '../../../api/Challenge';
 
 import * as Utility from '../../../utils';
 import { getQBAccountType, QBcreateUser } from '../../../utils/QuickBlox';
 import TCGradientDivider from '../../../components/TCThinGradientDivider';
 import PlayInReviewsView from './stats/PlayInReviewsView';
 import TCScrollableTabs from '../../../components/TCScrollableTabs';
+import * as Utils from '../../challenge/manageChallenge/settingUtility';
 
 let TAB_ITEMS = [];
 const PlayInModule = ({
@@ -66,7 +66,7 @@ const PlayInModule = ({
   const onClose = useCallback(() => {
     setTimeout(() => {
       setCurrentTab(0);
-    }, 1000);
+    }, 10);
     setTimeout(() => onModalClose(), 0);
   }, [onModalClose]);
 
@@ -402,16 +402,16 @@ const PlayInModule = ({
             //   groupObj: currentUserData,
             // });
 
-            getChallengeSetting(
-              currentUserData?.user_id || currentUserData?.group_id,
+            Utils.getSetting(
+              currentUserData?.user_id,
+              'user',
               playInObject?.sport_name,
-              authContext.entity.role === 'user' ? 'player' : 'team',
               authContext,
             )
-              .then((response) => {
+              .then((obj) => {
                 setloading(false);
-                console.log('challenge setting:=>', response);
-                const obj = response.payload[0];
+                console.log('challenge setting:::::=>', obj);
+
                 if (
                   obj?.game_duration
                   && obj?.availibility
@@ -445,51 +445,50 @@ const PlayInModule = ({
               });
           }
           if (index === 1) {
-            onClose();
+             onClose();
+
             setloading(true);
-            getChallengeSetting(
-              authContext?.entity?.uid,
+
+           Utils.getSetting(
+              authContext?.entity.uid,
+              'user',
               playInObject?.sport_name,
-              authContext.entity.role === 'user' ? 'player' : 'team',
               authContext,
-            )
-              .then((response) => {
-                setloading(false);
-                const obj = response.payload[0];
-                if (
-                  obj?.game_duration
-                  && obj?.availibility
-                  && obj?.special_rules !== undefined
-                  && obj?.general_rules !== undefined
-                  && obj?.responsible_for_referee
-                  && obj?.responsible_for_scorekeeper
-                  && obj?.game_fee
-                  && obj?.venue
-                  && obj?.refund_policy
-                  && obj?.home_away
-                  && obj?.game_type
-                ) {
-                  navigation.navigate('InviteChallengeScreen', {
-                    setting: obj,
-                    sportName: currentUserData.sport,
-                    groupObj: currentUserData,
-                  });
-                } else {
-                  Alert.alert(
-                    'Please complete your all setting before send a challenge invitation.',
-                  );
-                }
-              })
-              .catch((e) => {
-                setloading(false);
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, e.message);
-                }, 10);
-              });
-            // navigation.navigate('InviteChallengeScreen', {
-            //   sportName: playInObject?.sport_name,
-            //   groupObj: currentUserData,
-            // });
+            ).then((obj) => {
+              setloading(false);
+              console.log('challenge setting:::::=>', obj);
+
+              if (
+                obj?.game_duration
+                && obj?.availibility
+                && obj?.special_rules !== undefined
+                && obj?.general_rules !== undefined
+                && obj?.responsible_for_referee
+                && obj?.responsible_for_scorekeeper
+                && obj?.game_fee
+                && obj?.venue
+                && obj?.refund_policy
+                && obj?.home_away
+                && obj?.game_type
+              ) {
+                navigation.navigate('InviteChallengeScreen', {
+                  setting: obj,
+                  sportName: currentUserData.sport,
+                  groupObj: currentUserData,
+                });
+              } else {
+                Alert.alert(
+                  'Please complete your all setting before send a challenge invitation.',
+                );
+              }
+            })
+            .catch((e) => {
+              setloading(false);
+
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            });
           }
         }}
       />

@@ -2189,6 +2189,7 @@ const HomeNavigator = () => (
            headerShown: false,
          }}
         />
+
   </Stack.Navigator>
 );
 

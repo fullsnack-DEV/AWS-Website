@@ -120,7 +120,7 @@ function ReservationCard({
       {!data?.referee_id && !data?.scorekeeper_id && <TeamEntityView data={data} />}
 
       <View style={styles.timeView}>
-        <Text style={[styles.timeLocationText, { marginLeft: 15 }]}>
+        <Text style={[styles.timeLocationText, { marginLeft: 10, flex: 0.5 }]}>
           {moment(new Date(data?.start_datetime * 1000)).format(
             'hh:mm a',
           )}{' '}
@@ -130,13 +130,10 @@ function ReservationCard({
         <Text
           style={[
             styles.timeLocationText,
-            { marginRight: 15, color: colors.lightgrayColor },
-          ]}>
-          {' '}
-          |{' '}
-        </Text>
-        <Text style={[styles.timeLocationText, { marginRight: 15 }]}>
-          {'Test Data'}
+            { marginRight: 5, marginLeft: 5, color: colors.lightgrayColor },
+          ]}>|</Text>
+        <Text style={[styles.timeLocationText, { marginRight: 0, flex: 0.5 }]} numberOfLines={1}>
+          {data?.game?.city}
         </Text>
       </View>
       {/* {isPendingButtonOrDetailButton() ? (
@@ -146,11 +143,10 @@ function ReservationCard({
       )} */}
       {isOfferExpired() && (
         <Text style={styles.expiryText}>
-          The reponse time will be expired within{' '}
-          <Text style={styles.timeText}>{`${getDayTimeDifferent(
+          Respond within {getDayTimeDifferent(
             (data.offer_expiry || data.expiry_datetime) * 1000,
             new Date().getTime(),
-          )}.`}</Text>
+          )}
         </Text>
       )}
       {/* <TCThickDivider height={7} marginTop={isOfferExpired() ? 0 : 25}/> */}
@@ -160,24 +156,24 @@ function ReservationCard({
 
 const styles = StyleSheet.create({
   expiryText: {
-    marginLeft: 30,
-    fontFamily: fonts.RRegular,
-    fontSize: 12,
+    textAlign: 'center',
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
     color: colors.darkOrangColor,
-    marginBottom: 25,
+    marginTop: 10,
+    textDecorationLine: 'underline',
   },
-  timeText: {
-    fontFamily: fonts.RLight,
-  },
+
   timeLocationText: {
     fontFamily: fonts.RLight,
     fontSize: 16,
     color: colors.lightBlackColor,
   },
   timeView: {
+    flex: 1,
     flexDirection: 'row',
     backgroundColor: colors.creamColor,
-    width: '92%',
+     width: '92%',
     height: 25,
     borderRadius: 5,
     alignSelf: 'center',

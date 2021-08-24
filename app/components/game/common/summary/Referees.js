@@ -8,12 +8,22 @@ import React, {
   useMemo,
 } from 'react';
 import {
- Text, View, StyleSheet, FlatList,
- } from 'react-native';
+  Text,
+  View,
+  StyleSheet,
+  FlatList,
+  Alert,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
+import { Portal } from 'react-native-portalize';
+import { Modalize } from 'react-native-modalize';
 import { useIsFocused } from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
+
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -26,7 +36,13 @@ import ActivityLoader from '../../../loader/ActivityLoader';
 import GameStatus from '../../../../Constants/GameStatus';
 import RefereeReservationStatus from '../../../../Constants/RefereeReservationStatus';
 
-import { checkReviewExpired } from '../../../../utils/gameUtils';
+import {
+  checkReviewExpired,
+  getGameHomeScreen,
+} from '../../../../utils/gameUtils';
+import strings from '../../../../Constants/String';
+import images from '../../../../Constants/ImagePath';
+import { getSetting } from '../../../../screens/challenge/manageChallenge/settingUtility';
 
 let selectedRefereeData;
 const Referees = ({
@@ -40,11 +56,16 @@ const Referees = ({
   onReviewPress,
 }) => {
   const actionSheet = useRef();
+  const teamListModalRef = useRef(null);
+
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [refree, setRefree] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState();
+  const [refereeSetting, setRefereeSetting] = useState();
   const [myUserId, setMyUserId] = useState(null);
+  const [teamModalVisible, setTeamModalVisible] = useState(false);
 
   useEffect(() => {
     setMyUserId(authContext.entity.uid);
@@ -70,6 +91,7 @@ const Referees = ({
           }
           return false;
         });
+        console.log('referee reservation:=>', cloneRefData);
         setRefree([...cloneRefData]);
       });
     }
@@ -162,17 +184,20 @@ const Referees = ({
     [gameData?.actual_enddatetime, gameData?.status, isAdmin],
   );
 
-  const isCheckThreeDotButtonShown = useCallback((item) => {
-    // if (isCheckReviewButton(reservationDetail)) {
-    //   return false;
-    // }
-    const entity = authContext?.entity;
-    if (item?.initiated_by === entity?.uid) {
-      return true;
-    }
+  const isCheckThreeDotButtonShown = useCallback(
+    (item) => {
+      // if (isCheckReviewButton(reservationDetail)) {
+      //   return false;
+      // }
+      const entity = authContext?.entity;
+      if (item?.initiated_by === entity?.uid) {
+        return true;
+      }
 
-    return false;
-  }, [authContext?.entity]);
+      return false;
+    },
+    [authContext?.entity],
+  );
   const renderReferees = useCallback(
     ({ item }) => {
       const reservationDetail = item; // item?.reservation
@@ -218,6 +243,50 @@ const Referees = ({
     navigation.navigate('BookReferee', { gameData });
   }, [gameData, navigation]);
 
+  const handleSendOfferReferee = useCallback(() => {
+    setloading(true);
+    getSetting(
+      authContext.entity.uid,
+      'referee',
+      gameData?.sport,
+      authContext,
+    )
+      .then((response) => {
+        setloading(false);
+
+        setRefereeSetting(response);
+
+        if (
+          response?.refereeAvailibility
+          && response?.game_fee
+          && response?.refund_policy
+          && response?.available_area
+        ) {
+          teamListModalRef.current.open();
+
+          // Alert('setting availble');
+          // navigation.navigate('RefereeBookingDateAndTime', {
+          //   gameData,
+          //   settingObj: refereeSettingObject,
+          //   userData: currentUserData,
+          //   isHirer: true,
+          //   navigationName: 'HomeScreen',
+          //   sportName,
+          // });
+        } else {
+          Alert.alert(
+            'You can\'t send offer, please configure your referee setting first.',
+          );
+        }
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.messages);
+        }, 10);
+      });
+  }, [authContext, gameData?.sport]);
+
   const ListEmptyComponent = useMemo(
     () => (
       <View>
@@ -227,9 +296,30 @@ const Referees = ({
     [],
   );
 
-  const renderBookRefereeButton = useMemo(
-    () => isAdmin
-      && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status) && (
+  const refereeOfferValidation = useCallback(
+    () => {
+      if (
+        authContext.entity.role === 'user'
+        && authContext?.entity?.auth?.user?.referee_data.filter(
+          (obj) => obj?.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase(),
+        ).length > 0
+        && refree.filter((obj) => obj.referee_id === authContext.entity.uid)
+          .length === 0
+      ) {
+        return true;
+      }
+      return false;
+    },
+    [authContext.entity?.auth?.user?.referee_data, authContext.entity.role, authContext.entity.uid, gameData?.sport, refree],
+  );
+
+  const renderBookRefereeButton = useMemo(() => {
+    console.log('Book referee');
+    if (
+      isAdmin
+      && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status)
+    ) {
+      return (
         <TCGradientButton
           onPress={handleBookReferee}
           startGradientColor={colors.whiteColor}
@@ -248,9 +338,162 @@ const Referees = ({
             marginBottom: 0,
           }}
         />
-      ),
-    [gameData?.status, handleBookReferee, isAdmin],
+      );
+    }
+    if (refereeOfferValidation()) {
+      return (
+        <TCGradientButton
+          onPress={handleSendOfferReferee}
+          startGradientColor={colors.darkThemeColor}
+          endGradientColor={colors.themeColor}
+          title={'SEND REFEREE OFFER'}
+          style={{
+            borderRadius: 5,
+            borderWidth: 0,
+            height: 35,
+          }}
+          textStyle={{
+            color: colors.whiteColor,
+            fontSize: 14,
+            fontFamily: fonts.RBold,
+          }}
+          outerContainerStyle={{
+            marginHorizontal: 5,
+            marginTop: 5,
+            marginBottom: 0,
+          }}
+        />
+      );
+    }
+    return <View />;
+  }, [
+    gameData?.status,
+    handleBookReferee,
+    handleSendOfferReferee,
+    isAdmin,
+    refereeOfferValidation,
+  ]);
+
+  const ModalHeader = () => (
+    <View style={styles.headerStyle}>
+      <View style={styles.handleStyle} />
+      <Text
+        style={{
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
+          marginLeft: 15,
+        }}>
+        Which team do you want to send a referee offer to?
+      </Text>
+    </View>
   );
+
+  const renderTeams = useCallback(
+    ({ item }) => (selectedTeam === item ? (
+      <TouchableOpacity
+          style={styles.teamMainContainer}
+          onPress={() => {
+            setSelectedTeam(item);
+            setTimeout(() => {
+              teamListModalRef.current.close();
+              navigation.navigate('RefereeBookingDateAndTime', {
+                gameData,
+                settingObj: refereeSetting,
+                userData: item,
+                isHirer: true,
+                navigationName: getGameHomeScreen(gameData?.sport),
+                sportName: gameData?.sport,
+              });
+            }, 500);
+          }}>
+        <LinearGradient
+            colors={[colors.yellowColor, colors.orangeColor]}
+            style={styles.teamContainer}>
+          <View style={styles.profileView}>
+            <Image
+                source={
+                  item?.thumbnail
+                    ? { uri: item?.thumbnail }
+                    : images.teamPlaceholder
+                }
+                style={styles.profileImage}
+              />
+          </View>
+          <View style={styles.topTextContainer}>
+            <Text
+                style={[styles.nameText, { color: colors.whiteColor }]}
+                numberOfLines={1}>
+              {item?.group_name}
+            </Text>
+            <Text
+                style={[styles.locationText, { color: colors.whiteColor }]}
+                numberOfLines={1}>
+              {item?.city}
+            </Text>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={styles.teamMainContainer}
+          onPress={() => {
+            setSelectedTeam(item);
+            setTimeout(() => {
+              teamListModalRef.current.close();
+              navigation.navigate('RefereeBookingDateAndTime', {
+                gameData,
+                settingObj: refereeSetting,
+                userData: item,
+                isHirer: true,
+                navigationName: getGameHomeScreen(gameData?.sport),
+                sportName: gameData?.sport,
+              });
+            }, 500);
+          }}>
+          <View
+            colors={[colors.whiteColor, colors.whiteColor]}
+            style={styles.teamContainer}>
+            <View style={styles.profileView}>
+              <Image
+                source={
+                  item?.thumbnail
+                    ? { uri: item?.thumbnail }
+                    : images.teamPlaceholder
+                }
+                style={styles.profileImage}
+              />
+            </View>
+            <View style={styles.topTextContainer}>
+              <Text style={styles.nameText} numberOfLines={1}>
+                {item?.group_name}
+              </Text>
+              <Text style={styles.locationText} numberOfLines={1}>
+                {item?.city}
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      )),
+    [gameData, navigation, refereeSetting, selectedTeam],
+  );
+  const listEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>No Teams Yet</Text>
+    </View>
+  );
+
+  const flatListProps = {
+    showsVerticalScrollIndicator: false,
+    showsHorizontalScrollIndicator: false,
+    keyboardShouldPersistTaps: 'never',
+    bounces: false,
+    data: [gameData?.home_team, gameData?.away_team],
+    renderItem: renderTeams,
+    keyExtractor: (index) => index.toString(),
+    ListEmptyComponent: listEmptyComponent,
+    style: { marginTop: 15 },
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -276,6 +519,32 @@ const Referees = ({
           }}
         />
       </View>
+      <Portal>
+        <Modalize
+          visible={teamModalVisible}
+          onOpen={() => setTeamModalVisible(true)}
+          snapPoint={hp(50)}
+          withHandle={false}
+          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+          modalStyle={{
+            borderTopRightRadius: 25,
+            borderTopLeftRadius: 25,
+            shadowColor: colors.blackColor,
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 10,
+            elevation: 10,
+          }}
+          onPositionChange={(position) => {
+            if (position === 'top') {
+              setTeamModalVisible(false);
+            }
+          }}
+          ref={teamListModalRef}
+          HeaderComponent={ModalHeader}
+          flatListProps={flatListProps}
+        />
+      </Portal>
     </View>
   );
 };
@@ -298,6 +567,82 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RLight,
     fontSize: 14,
     color: colors.lightBlackColor,
+  },
+  headerStyle: {
+    borderTopRightRadius: 25,
+    borderTopLeftRadius: 25,
+    backgroundColor: colors.whiteColor,
+  },
+  handleStyle: {
+    marginVertical: 15,
+    alignSelf: 'center',
+    height: 5,
+    width: 40,
+    borderRadius: 15,
+    backgroundColor: '#DADBDA',
+  },
+  emptyText: {
+    fontSize: 18,
+    fontFamily: fonts.RMedium,
+    color: colors.grayColor,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: '20%',
+  },
+  profileImage: {
+    alignSelf: 'center',
+    height: 40,
+    width: 40,
+    borderRadius: 80,
+  },
+
+  profileView: {
+    backgroundColor: colors.whiteColor,
+    height: 44,
+    width: 44,
+    borderRadius: 88,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 3,
+    marginLeft: 15,
+  },
+  topTextContainer: {
+    marginLeft: 10,
+    alignSelf: 'center',
+  },
+  nameText: {
+    fontSize: 20,
+    fontFamily: fonts.RMedium,
+    // width: 200,
+  },
+  teamContainer: {
+    height: 70,
+    width: '90%',
+    backgroundColor: colors.whiteColor,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    borderRadius: 8,
+    elevation: 5,
+    marginBottom: 15,
+    marginTop: 5,
+    alignItems: 'center',
+    alignSelf: 'center',
+    flexDirection: 'row',
+  },
+
+  locationText: {
+    fontSize: 14,
+    fontFamily: fonts.RLight,
   },
 });
 export default Referees;

@@ -11,21 +11,17 @@ import React, {
      TouchableWithoutFeedback,
      ScrollView,
      TouchableOpacity,
-     Alert,
    } from 'react-native';
 
    import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
    import LinearGradient from 'react-native-linear-gradient';
-   import ActivityLoader from '../../../components/loader/ActivityLoader';
    import AuthContext from '../../../auth/context';
    import colors from '../../../Constants/Colors';
    import fonts from '../../../Constants/Fonts';
    import images from '../../../Constants/ImagePath';
    import strings from '../../../Constants/String';
-   import { getChallengeSetting } from '../../../api/Challenge';
 
    export default function ScorekeeperReservationSetting({ navigation, route }) {
-     const [loading, setloading] = useState(false);
      const [settingObject, setSettingObject] = useState();
      const [showBottomNotes, setShowBottomNotes] = useState(true);
      const authContext = useContext(AuthContext);
@@ -33,19 +29,7 @@ import React, {
      const { sportName } = route?.params;
 
      const getSettings = useCallback(() => {
-       setloading(true)
-       getChallengeSetting(authContext?.entity?.uid, sportName, 'scorekeeper', authContext)
-         .then((response) => {
-           setloading(false);
-           console.log('manage challenge response:=>', response.payload);
-           setSettingObject(response.payload[0]);
-         })
-         .catch((e) => {
-           setloading(false);
-           setTimeout(() => {
-             Alert.alert(strings.alertmessagetitle, e.message);
-           }, 10);
-         });
+      setSettingObject((authContext?.user?.scorekeeper_data ?? []).filter((obj) => obj.sport_name === sportName)[0].setting);
      }, [authContext, sportName]);
 
      useEffect(() => {
@@ -174,7 +158,6 @@ import React, {
      return (
        <>
          <ScrollView style={styles.mainContainer}>
-           <ActivityLoader visible={loading} />
 
            <View
              style={{ padding: 15, backgroundColor: colors.grayBackgroundColor }}>

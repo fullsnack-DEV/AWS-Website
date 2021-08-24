@@ -11,21 +11,17 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
-import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-import { getChallengeSetting } from '../../../api/Challenge';
 
 export default function ManageChallengeScreen({ navigation, route }) {
-  const [loading, setloading] = useState(false);
   const [settingObject, setSettingObject] = useState();
   const [showBottomNotes, setShowBottomNotes] = useState(true);
   const authContext = useContext(AuthContext);
@@ -33,19 +29,12 @@ export default function ManageChallengeScreen({ navigation, route }) {
   const { sportName } = route?.params;
 
   const getSettings = useCallback(() => {
-    setloading(true)
-    getChallengeSetting(authContext?.entity?.uid, sportName, authContext.entity.role === 'user' ? 'player' : 'team', authContext)
-      .then((response) => {
-        setloading(false);
-        console.log('manage challenge response:=>', response.payload);
-        setSettingObject(response.payload[0]);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+    if (authContext.entity.role === 'team') {
+      console.log('Au:::=>', authContext);
+      setSettingObject(authContext?.entity?.obj?.setting);
+    } else {
+      setSettingObject((authContext?.user?.registered_sports ?? []).filter((obj) => obj.sport_name === sportName)[0].setting);
+    }
   }, [authContext, sportName]);
 
   useEffect(() => {
@@ -291,7 +280,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
   return (
     <>
       <ScrollView style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
+        {/* <ActivityLoader visible={loading} /> */}
 
         <View
           style={{ padding: 15, backgroundColor: colors.grayBackgroundColor }}>

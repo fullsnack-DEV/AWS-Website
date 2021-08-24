@@ -142,9 +142,9 @@ export const getChallengeSetting = async (entityId, sport, entityType, authConte
   authContext,
 })
 
-export const patchChallengeSetting = async (entityId, params, authContext) => makeAPIRequest({
-  method: 'patch',
-  url: `${Config.BASE_URL}managesetting/${entityId}`,
-  data: params,
-  authContext,
-})
+// export const patchChallengeSetting = async (entityId, params, authContext) => makeAPIRequest({
+//   method: 'patch',
+//   url: `${Config.BASE_URL}managesetting/${entityId}`,
+//   data: params,
+//   authContext,
+// })

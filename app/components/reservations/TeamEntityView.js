@@ -14,6 +14,19 @@ function TeamEntityView({ data }) {
   const authContext = useContext(AuthContext);
   useEffect(() => {}, [authContext.entity, data]);
 
+const getChallengerEntityObject = () => {
+  if (data?.challenger === (data?.home_team?.group_id ?? data?.home_team?.user_id)) {
+    return data?.home_team
+  }
+    return data?.away_team
+}
+const getChallengeeEntityObject = () => {
+  if (data?.challengee === (data?.home_team?.group_id ?? data?.home_team?.user_id)) {
+    return data?.home_team
+  }
+    return data?.away_team
+}
+
   return (
     <View>
       <View
@@ -27,8 +40,8 @@ function TeamEntityView({ data }) {
           <View style={styles.imageShadowView}>
             <Image
               source={
-                data?.home_team?.thumbnail
-                  ? { uri: data?.home_team?.thumbnail }
+                getChallengerEntityObject()?.thumbnail
+                  ? { uri: getChallengerEntityObject()?.thumbnail }
                   : images.teamPlaceholder
               }
               style={styles.profileImage}
@@ -36,7 +49,7 @@ function TeamEntityView({ data }) {
           </View>
           <View style={{ flex: 0.75, flexDirection: 'row' }}>
             <Text style={styles.entityName} numberOfLines={1}>
-              {data?.home_team?.first_name ? `${data?.home_team?.first_name} ${data?.home_team?.last_name}` : `${data?.home_team?.group_name}`}
+              {getChallengerEntityObject()?.first_name ? `${getChallengerEntityObject()?.first_name} ${getChallengerEntityObject()?.last_name}` : `${getChallengerEntityObject()?.group_name}`}
             </Text>
           </View>
         </View>
@@ -52,8 +65,8 @@ function TeamEntityView({ data }) {
           <View style={styles.imageShadowView}>
             <Image
               source={
-                data?.away_team?.thumbnail
-                  ? { uri: data?.away_team?.thumbnail }
+                getChallengeeEntityObject()?.thumbnail
+                  ? { uri: getChallengeeEntityObject()?.thumbnail }
                   : images.teamPlaceholder
               }
               style={styles.profileImage}
@@ -62,7 +75,7 @@ function TeamEntityView({ data }) {
 
           <View style={{ flex: 0.75, flexDirection: 'row' }}>
             <Text style={styles.entityName} numberOfLines={1}>
-              {data?.away_team?.first_name ? `${data?.away_team?.first_name} ${data?.gaway_team?.last_name}` : `${data?.away_team?.group_name}`}
+              {getChallengeeEntityObject()?.first_name ? `${getChallengeeEntityObject()?.first_name} ${getChallengeeEntityObject()?.last_name}` : `${getChallengeeEntityObject()?.group_name}`}
             </Text>
           </View>
         </View>

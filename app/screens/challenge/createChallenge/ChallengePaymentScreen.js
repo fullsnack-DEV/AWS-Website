@@ -11,15 +11,15 @@ import {
   Image,
 } from 'react-native';
 import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-  } from 'react-native-responsive-screen';
-  import moment from 'moment';
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
-  import Modal from 'react-native-modal';
-  import ActivityLoader from '../../../components/loader/ActivityLoader';
+import Modal from 'react-native-modal';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-  import AuthContext from '../../../auth/context';
+import AuthContext from '../../../auth/context';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -37,144 +37,167 @@ import * as Utility from '../../../utils';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import images from '../../../Constants/ImagePath';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
-import {
-  acceptDeclineChallenge,
-  createChallenge,
-} from '../../../api/Challenge';
+import { acceptDeclineChallenge, createChallenge } from '../../../api/Challenge';
 
 let entity = {};
 export default function ChallengePaymentScreen({ route, navigation }) {
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
-    const isFocused = useIsFocused();
-    const [loading, setloading] = useState(false);
+  const isFocused = useIsFocused();
+  const [loading, setloading] = useState(false);
 
-    const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
-    const [challengeData] = useState(
-      route?.params?.challengeObj,
+  const [challengeData] = useState(route?.params?.challengeObj);
+  console.log(' route?.params?.challengeObj,', route?.params?.challengeObj);
+  const [groupObj] = useState(route?.params?.groupObj);
+  const [defaultCard, setDefaultCard] = useState();
+
+  useEffect(() => {
+    if (isFocused) {
+      if (route?.params?.paymentMethod) {
+        setDefaultCard(route?.params?.paymentMethod);
+      }
+    }
+  }, [isFocused, route?.params?.paymentMethod]);
+
+  const getTimeDifferent = (sDate, eDate) => {
+    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+
+    const days = Math.floor(delta / 86400);
+    delta -= days * 86400;
+
+    const hours = Math.floor(delta / 3600) % 24;
+    delta -= hours * 3600;
+
+    const minutes = Math.floor(delta / 60) % 60;
+    delta -= minutes * 60;
+
+    return `${hours}h ${minutes}m`;
+  };
+
+  const sendChallenge = () => {
+    entity = authContext.entity;
+    console.log('Entity:=>', entity);
+
+    const res_secure_referee = challengeData.responsible_for_referee.who_secure.map(
+      (obj) => ({
+        ...obj,
+        responsible_team_id:
+          obj.responsible_to_secure_referee === 'challengee'
+            ? challengeData.challengee
+            : challengeData.challenger,
+      }),
     );
-    console.log(' route?.params?.challengeObj,', route?.params?.challengeObj);
-    const [groupObj] = useState(
-      route?.params?.groupObj,
-    );
-    const [defaultCard, setDefaultCard] = useState();
 
-    useEffect(() => {
-        if (isFocused) {
-          if (route?.params?.paymentMethod) {
-            setDefaultCard(route?.params?.paymentMethod);
+    const res_secure_scorekeeper = challengeData.responsible_for_scorekeeper.who_secure.map(
+      (obj) => ({
+        ...obj,
+        responsible_team_id:
+          obj.responsible_to_secure_scorekeeper === 'challengee'
+            ? challengeData.challengee
+            : challengeData.challenger,
+      }),
+    );
+
+    const body = {
+      ...challengeData,
+      payment_method_type: 'card',
+      start_datetime: Number(
+        parseFloat(challengeData?.start_datetime).toFixed(0),
+      ),
+      end_datetime: Number(parseFloat(challengeData?.end_datetime).toFixed(0)),
+    };
+    body.responsible_for_referee.who_secure = res_secure_referee;
+    body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
+
+    console.log('body:=>', body);
+
+    const homeID = body.home_team.group_id ?? body.home_team.user_id;
+    const awayID = body.away_team.group_id ?? body.away_team.user_id;
+    delete body.home_team;
+    delete body.away_team;
+    body.home_team = homeID;
+    body.away_team = awayID;
+
+    if (defaultCard) {
+      body.source = defaultCard.id;
+    }
+
+    console.log('Challenge Object:=>', body);
+
+    setloading(true);
+
+    createChallenge(body, authContext)
+      .then((response) => {
+        console.log(' challenge response:=>', response.payload);
+        // navigation.navigate('ChallengeSentScreen', {
+        //   groupObj,
+        // });
+        setModalVisible(true);
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const challengeOperation = (
+    teamID,
+    ChallengeId,
+    versionNo,
+    status,
+    payment,
+  ) => {
+    console.log('payment:=>', payment);
+
+    setloading(true);
+    acceptDeclineChallenge(
+      teamID,
+      ChallengeId,
+      versionNo,
+      status,
+      payment,
+      authContext,
+    )
+      .then((response) => {
+        setloading(false);
+        let obj;
+        if (challengeData?.home_team?.full_name) {
+          if (challengeData?.home_team?.user_id === authContext?.entity?.uid) {
+            obj = challengeData?.away_team;
+          } else {
+            obj = challengeData?.home_team;
           }
-        }
-      }, [isFocused, route?.params?.paymentMethod]);
-
-      const getTimeDifferent = (sDate, eDate) => {
-        let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
-
-        const days = Math.floor(delta / 86400);
-        delta -= days * 86400;
-
-        const hours = Math.floor(delta / 3600) % 24;
-        delta -= hours * 3600;
-
-        const minutes = Math.floor(delta / 60) % 60;
-        delta -= minutes * 60;
-
-        return `${hours}h ${minutes}m`;
-      };
-
-      const sendChallenge = () => {
-        entity = authContext.entity;
-        console.log('Entity:=>', entity);
-
-        const body = {
-          ...challengeData,
-          payment_method_type: 'card',
-          start_datetime: Number(parseFloat(challengeData?.start_datetime).toFixed(0)),
-          end_datetime: Number(parseFloat(challengeData?.end_datetime).toFixed(0)),
-        };
-
-        console.log('body:=>', body);
-
-        const homeID = body.home_team.group_id ?? body.home_team.user_id;
-        const awayID = body.away_team.group_id ?? body.away_team.user_id;
-        delete body.home_team;
-        delete body.away_team;
-        body.home_team = homeID;
-        body.away_team = awayID;
-
-        if (defaultCard) {
-          body.source = defaultCard.id
+        } else if (
+          challengeData?.home_team?.group_id === authContext?.entity?.uid
+        ) {
+          obj = challengeData?.away_team;
+        } else {
+          obj = challengeData?.home_team;
         }
 
-        console.log('Challenge Object:=>', body);
-
-        setloading(true);
-
-        createChallenge(body, authContext)
-          .then((response) => {
-            console.log(' challenge response:=>', response.payload);
-            // navigation.navigate('ChallengeSentScreen', {
-            //   groupObj,
-            // });
-            setModalVisible(true)
-            setloading(false);
-          })
-          .catch((e) => {
-            setloading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
+        if (status === 'accept') {
+          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+            teamObj: {
+              ...obj,
+              game_id: response?.payload?.game_id,
+              sport: challengeData?.sport,
+            },
+            status: 'accept',
           });
-      };
-
-      const challengeOperation = (teamID, ChallengeId, versionNo, status, payment) => {
-        console.log('payment:=>', payment);
-
-        setloading(true);
-        acceptDeclineChallenge(
-          teamID,
-          ChallengeId,
-          versionNo,
-          status,
-          payment,
-          authContext,
-        )
-          .then((response) => {
-            setloading(false);
-            let obj;
-            if (challengeData?.home_team?.full_name) {
-              if (challengeData?.home_team?.user_id === authContext?.entity?.uid) {
-                obj = challengeData?.away_team;
-              } else {
-                obj = challengeData?.home_team;
-              }
-            } else if (
-              challengeData?.home_team?.group_id === authContext?.entity?.uid
-            ) {
-              obj = challengeData?.away_team;
-            } else {
-              obj = challengeData?.home_team;
-            }
-
-            if (status === 'accept') {
-              navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-                teamObj: {
-                  ...obj,
-                  game_id: response?.payload?.game_id,
-                  sport: challengeData?.sport,
-                },
-                status: 'accept',
-              });
-            }
-          })
-          .catch((e) => {
-            setloading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
-      };
+        }
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   return (
     <TCKeyboardView>
@@ -196,77 +219,78 @@ export default function ChallengePaymentScreen({ route, navigation }) {
       />
       <TCThinDivider />
 
-      {route?.params?.type === 'challenge' && <View>
+      {route?.params?.type === 'challenge' && (
+        <View>
+          <TCLabel title={`Game · ${challengeData?.sport}`} />
+          <TCInfoImageField
+            title={'Home'}
+            image={
+              challengeData?.home_team?.thumbnail
+                ? { uri: challengeData?.home_team?.thumbnail }
+                : challengeData?.home_team?.full_name
+                ? images.profilePlaceHolder
+                : images.teamPlaceholder
+            }
+            name={
+              challengeData?.home_team?.group_name
+              ?? challengeData?.home_team?.full_name
+            }
+            marginLeft={30}
+          />
+          <TCThinDivider />
+          <TCInfoImageField
+            title={'Away'}
+            image={
+              challengeData?.away_team?.thumbnail
+                ? { uri: challengeData?.away_team?.thumbnail }
+                : challengeData?.away_team?.full_name
+                ? images.profilePlaceHolder
+                : images.teamPlaceholder
+            }
+            name={
+              challengeData?.away_team?.group_name
+              ?? challengeData?.away_team?.full_name
+            }
+            marginLeft={30}
+          />
+          <TCThinDivider />
 
-        <TCLabel title={`Game · ${challengeData?.sport}`} />
-        <TCInfoImageField
-          title={'Home'}
-          image={
-            challengeData?.home_team?.thumbnail
-              ? { uri: challengeData?.home_team?.thumbnail }
-              : challengeData?.home_team?.full_name
-              ? images.profilePlaceHolder
-              : images.teamPlaceholder
-          }
-          name={
-            challengeData?.home_team?.group_name
-            ?? challengeData?.home_team?.full_name
-          }
-          marginLeft={30}
-        />
-        <TCThinDivider />
-        <TCInfoImageField
-          title={'Away'}
-          image={
-            challengeData?.away_team?.thumbnail
-              ? { uri: challengeData?.away_team?.thumbnail }
-              : challengeData?.away_team?.full_name
-              ? images.profilePlaceHolder
-              : images.teamPlaceholder
-          }
-          name={
-            challengeData?.away_team?.group_name
-            ?? challengeData?.away_team?.full_name
-          }
-          marginLeft={30}
-        />
-        <TCThinDivider />
+          <TCInfoField
+            title={'Time'}
+            value={`${moment(
+              new Date(challengeData?.start_datetime * 1000),
+            ).format('MMM DD, YYYY  hh:mm a')} -\n${moment(
+              new Date(challengeData?.end_datetime * 1000),
+            ).format('MMM DD, YYYY  hh:mm a')}\n( ${getTimeDifferent(
+              new Date(challengeData?.start_datetime * 1000),
+              new Date(challengeData?.end_datetime * 1000),
+            )} )   `}
+            marginLeft={30}
+            titleStyle={{ fontSize: 16 }}
+          />
+          <TCThinDivider />
 
-        <TCInfoField
-          title={'Time'}
-          value={`${moment(
-            new Date(challengeData?.start_datetime * 1000),
-          ).format('MMM DD, YYYY  hh:mm a')} -\n${moment(
-            new Date(challengeData?.end_datetime * 1000),
-          ).format('MMM DD, YYYY  hh:mm a')}\n( ${getTimeDifferent(
-            new Date(challengeData?.start_datetime * 1000),
-            new Date(challengeData?.end_datetime * 1000),
-          )} )   `}
-          marginLeft={30}
-          titleStyle={{ fontSize: 16 }}
-        />
-        <TCThinDivider />
-
-        <TCInfoField
-          title={'Venue'}
-          value={challengeData?.venue?.name}
-          marginLeft={30}
-          titleStyle={{ fontSize: 16 }}
-        />
-        <TCThinDivider />
-        <TCInfoField
-          title={'Address'}
-          value={challengeData?.venue?.address}
-          marginLeft={30}
-          titleStyle={{ fontSize: 16 }}
-        />
-        <EventMapView
-          coordinate={challengeData?.venue?.coordinate}
-          region={challengeData?.venue?.region}
-          style={styles.map}
-        />
-        <TCThickDivider marginTop={20} />
-      </View>}
+          <TCInfoField
+            title={'Venue'}
+            value={challengeData?.venue?.name}
+            marginLeft={30}
+            titleStyle={{ fontSize: 16 }}
+          />
+          <TCThinDivider />
+          <TCInfoField
+            title={'Address'}
+            value={challengeData?.venue?.address}
+            marginLeft={30}
+            titleStyle={{ fontSize: 16 }}
+          />
+          <EventMapView
+            coordinate={challengeData?.venue?.coordinate}
+            region={challengeData?.venue?.region}
+            style={styles.map}
+          />
+          <TCThickDivider marginTop={20} />
+        </View>
+      )}
 
       <TCLabel title={'Payment details'} style={{ marginBottom: 15 }} />
       <GameFeeCard
@@ -283,67 +307,79 @@ export default function ChallengePaymentScreen({ route, navigation }) {
       />
       <TCThickDivider marginTop={20} />
 
-      {challengeData?.total_game_fee !== 0 && <View>
-        <View >
-          <TCLabel title={'Payment Method'} />
-          <View style={styles.viewMarginStyle}>
-            <TCTouchableLabel
-            title={
-              defaultCard && defaultCard?.card?.brand && defaultCard?.card?.last4
-                ? `${Utility.capitalize(defaultCard?.card?.brand)} ****${defaultCard?.card?.last4}`
-                : strings.addOptionMessage
-            }
-            showNextArrow={true}
-            onPress={() => {
-              navigation.navigate('PaymentMethodsScreen', {
-                comeFrom: 'ChallengePaymentScreen',
-              })
-            }}
-          />
+      {challengeData?.total_game_fee !== 0 && (
+        <View>
+          <View>
+            <TCLabel title={'Payment Method'} />
+            <View style={styles.viewMarginStyle}>
+              <TCTouchableLabel
+                title={
+                  defaultCard
+                  && defaultCard?.card?.brand
+                  && defaultCard?.card?.last4
+                    ? `${Utility.capitalize(defaultCard?.card?.brand)} ****${
+                        defaultCard?.card?.last4
+                      }`
+                    : strings.addOptionMessage
+                }
+                showNextArrow={true}
+                onPress={() => {
+                  navigation.navigate('PaymentMethodsScreen', {
+                    comeFrom: 'ChallengePaymentScreen',
+                  });
+                }}
+              />
+            </View>
           </View>
+          <TCThickDivider marginTop={20} />
         </View>
-        <TCThickDivider marginTop={20} />
-      </View>}
+      )}
 
       <TCChallengeTitle
-            title={'Refund Policy'}
-            value={challengeData?.refund_policy}
-            tooltipText={
-            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
-            }
-            tooltipHeight={hp('18%')}
-            tooltipWidth={wp('50%')}
-          />
-      <Text style={styles.normalTextStyle}>When you cancel this game reservation before
-        3:55pm on August 11, you will get a 50% refund,
-        minus the service fee. </Text>
+        title={'Refund Policy'}
+        value={challengeData?.refund_policy}
+        tooltipText={
+        '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+        }
+        tooltipHeight={hp('18%')}
+        tooltipWidth={wp('50%')}
+      />
+      <Text style={styles.normalTextStyle}>
+        When you cancel this game reservation before 3:55pm on August 11, you
+        will get a 50% refund, minus the service fee.{' '}
+      </Text>
       <TCThickDivider />
 
-      <Text style={styles.termsTextStyle}>By selecting the button below, I agree to the Game Rules
-        cancellation policy and refund policy. I also agree to pay
-        the total amount shown above.</Text>
+      <Text style={styles.termsTextStyle}>
+        By selecting the button below, I agree to the Game Rules cancellation
+        policy and refund policy. I also agree to pay the total amount shown
+        above.
+      </Text>
 
       <TCGradientButton
-      isDisabled={challengeData?.total_game_fee !== 0 ? !defaultCard : false}
+        isDisabled={challengeData?.total_game_fee !== 0 ? !defaultCard : false}
         title={strings.confirmAndPayTitle}
         onPress={() => {
-            // navigation.push('ChallengeSentScreen');
+          // navigation.push('ChallengeSentScreen');
 
-            if (route?.params?.type === 'challenge') {
-              sendChallenge()
-            } else {
-              let paymentObj = {}
-              if (challengeData?.total_game_fee !== 0) {
-                 paymentObj = { source: defaultCard?.id, payment_method_type: 'card' }
-              }
-              challengeOperation(
-                entity.uid,
-                challengeData?.challenge_id,
-                challengeData?.version,
-                'accept',
-                paymentObj,
-              );
+          if (route?.params?.type === 'challenge') {
+            sendChallenge();
+          } else {
+            let paymentObj = {};
+            if (challengeData?.total_game_fee !== 0) {
+              paymentObj = {
+                source: defaultCard?.id,
+                payment_method_type: 'card',
+              };
             }
+            challengeOperation(
+              entity.uid,
+              challengeData?.challenge_id,
+              challengeData?.version,
+              'accept',
+              paymentObj,
+            );
+          }
         }}
         outerContainerStyle={{ marginBottom: 45 }}
       />
@@ -377,7 +413,7 @@ export default function ChallengePaymentScreen({ route, navigation }) {
             <Text style={styles.infoText}>
               When{' '}
               {groupObj?.group_name
-                  ?? `${groupObj?.first_name} ${groupObj?.last_name}`}{' '}
+                ?? `${groupObj?.first_name} ${groupObj?.last_name}`}{' '}
               accepts your match reservation request, you will be notified.
             </Text>
             <View style={styles.imageContainer}>
@@ -390,15 +426,14 @@ export default function ChallengePaymentScreen({ route, navigation }) {
 
           <SafeAreaView>
             <TouchableOpacity
-                style={styles.goToProfileButton}
-                onPress={() => {
-                  setModalVisible(false)
-                  navigation.popToTop();
-                }}>
+              style={styles.goToProfileButton}
+              onPress={() => {
+                setModalVisible(false);
+                navigation.popToTop();
+              }}>
               <Text style={styles.goToProfileTitle}>OK</Text>
             </TouchableOpacity>
           </SafeAreaView>
-
         </View>
       </Modal>
     </TCKeyboardView>
@@ -416,8 +451,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   normalTextStyle: {
-   margin: 15,
-   marginTop: 0,
+    margin: 15,
+    marginTop: 0,
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,

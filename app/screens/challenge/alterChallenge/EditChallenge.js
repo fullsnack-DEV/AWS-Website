@@ -26,9 +26,7 @@ import * as Utility from '../../../utils';
 import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import {
-  getChallengeSetting,
   getFeesEstimation,
-  createChallenge,
   updateChallenge,
 } from '../../../api/Challenge';
 
@@ -50,6 +48,7 @@ import EventMapView from '../../../components/Schedule/EventMapView';
 import TCSmallButton from '../../../components/TCSmallButton';
 import { widthPercentageToDP } from '../../../utils';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
+import { getSetting } from '../manageChallenge/settingUtility';
 
 let entity = {};
 export default function EditChallenge({ navigation, route }) {
@@ -118,15 +117,15 @@ export default function EditChallenge({ navigation, route }) {
   useEffect(() => {
     console.log('authContext.entitity', authContext.entity);
     setloading(true);
-    getChallengeSetting(challengeObj?.challengee, sportName, authContext.entity.role === 'user' ? 'player' : 'team', authContext)
+    getSetting(challengeObj?.challengee, authContext.entity.role === 'user' ? 'player' : 'team', sportName, authContext)
       .then((response) => {
         setloading(false);
-        console.log('manage challenge response:=>', response.payload);
+        console.log('manage challenge response:=>', response);
         if (challengeObj?.venue?.isCustom) {
-          response.payload[0].venue.push(challengeObj?.venue)
-          setVenueList(response.payload[0].venue);
+          response.venue.push(challengeObj?.venue)
+          setVenueList(response.venue);
         } else {
-          setVenueList(response.payload[0].venue);
+          setVenueList(response.venue);
         }
       })
       .catch((e) => {
@@ -323,6 +322,27 @@ export default function EditChallenge({ navigation, route }) {
     // if (route?.params?.paymentMethod) {
     //   setDefaultCard(route?.params?.paymentMethod)
     // }
+
+    const res_secure_referee = challengeObj.responsible_for_referee.who_secure.map(
+      (obj) => ({
+        ...obj,
+        responsible_team_id:
+          obj.responsible_to_secure_referee === 'challengee'
+            ? body.challengee
+            : body.challenger,
+      }),
+    );
+
+    const res_secure_scorekeeper = challengeObj.responsible_for_scorekeeper.who_secure.map(
+      (obj) => ({
+        ...obj,
+        responsible_team_id:
+          obj.responsible_to_secure_scorekeeper === 'challengee'
+            ? body.challengee
+            : body.challenger,
+      }),
+    );
+
     delete body.created_at;
     delete body.created_by;
     delete body.entity_id;
@@ -348,11 +368,15 @@ export default function EditChallenge({ navigation, route }) {
     body.home_team = home_id;
     body.away_team = away_id;
 
+    body.responsible_for_referee.who_secure = res_secure_referee;
+    body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
+
     if (defaultCard) {
       body.source = defaultCard.id;
     }
 
     console.log('FINAL BODY PARAMS::', body);
+
     updateChallenge(challengeID, body, authContext)
       .then(() => {
         setloading(false);
@@ -394,7 +418,6 @@ export default function EditChallenge({ navigation, route }) {
         />
 
         <TCThickDivider marginTop={15} />
-
         <View>
           <TCChallengeTitle
             title={'Home & Away'}
