@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import React, {
   useEffect,
   useState,
@@ -7,12 +8,23 @@ import React, {
   useMemo,
 } from 'react';
 import {
- Text, View, StyleSheet, FlatList,
- } from 'react-native';
+  Text,
+  View,
+  StyleSheet,
+  FlatList,
+  Alert,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import _ from 'lodash';
 // import { useIsFocused } from '@react-navigation/native';
-
 import ActionSheet from 'react-native-actionsheet';
+import { Portal } from 'react-native-portalize';
+import { Modalize } from 'react-native-modalize';
+import LinearGradient from 'react-native-linear-gradient';
+
+import { getSetting } from '../../../../screens/challenge/manageChallenge/settingUtility';
+
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import {
@@ -25,9 +37,14 @@ import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../loader/ActivityLoader';
 import GameStatus from '../../../../Constants/GameStatus';
 import * as ScorekeeperUtils from '../../../../screens/scorekeeper/ScorekeeperUtility';
-import { checkReviewExpired } from '../../../../utils/gameUtils';
+import {
+  checkReviewExpired,
+  getGameHomeScreen,
+} from '../../../../utils/gameUtils';
 
 import ScorekeeperReservationStatus from '../../../../Constants/ScorekeeperReservationStatus';
+import strings from '../../../../Constants/String';
+import images from '../../../../Constants/ImagePath';
 
 let selectedScorekeeperData;
 const Scorekeepers = ({
@@ -41,11 +58,17 @@ const Scorekeepers = ({
   getScorekeeperReservation,
 }) => {
   const actionSheet = useRef();
+  const teamListModalRef = useRef(null);
+
   // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [myUserId, setMyUserId] = useState(null);
   const [scorekeeper, setScorekeeper] = useState([]);
+  const [scorekeeperSetting, setScorekeeperSetting] = useState();
+  const [selectedTeam, setSelectedTeam] = useState();
+
+  const [teamModalVisible, setTeamModalVisible] = useState(false);
 
   useEffect(() => {
     setMyUserId(authContext.entity.uid);
@@ -120,9 +143,9 @@ const Scorekeepers = ({
       case ScorekeeperReservationStatus.cancelled:
         statusData = { status: 'Cancelled', color: colors.greeColor };
         break;
-        case ScorekeeperReservationStatus.declined:
-          statusData = { status: 'Declined', color: colors.grayColor };
-          break;
+      case ScorekeeperReservationStatus.declined:
+        statusData = { status: 'Declined', color: colors.grayColor };
+        break;
       case ScorekeeperReservationStatus.pendingpayment:
         statusData = { status: 'Pending payment', color: colors.yellowColor };
         break;
@@ -197,6 +220,51 @@ const Scorekeepers = ({
     navigation.navigate('BookScorekeeper', { gameData });
   }, [gameData, navigation]);
 
+  const handleSendOfferScorekeeper = useCallback(() => {
+    setloading(true);
+    getSetting(
+      authContext.entity.uid,
+      'scorekeeper',
+      gameData?.sport,
+      authContext,
+    )
+      .then((response) => {
+        setloading(false);
+        console.log('Scorekeeper setting:=>', response);
+
+        setScorekeeperSetting(response);
+
+        if (
+          response?.scorekeeperAvailibility
+          && response?.game_fee
+          && response?.refund_policy
+          && response?.available_area
+        ) {
+          teamListModalRef.current.open();
+
+          // Alert('setting availble');
+          // navigation.navigate('ScorekeeperBookingDateAndTime', {
+          //   gameData,
+          //   settingObj: scorekeeperSettingObject,
+          //   userData: currentUserData,
+          //   isHirer: true,
+          //   navigationName: 'HomeScreen',
+          //   sportName,
+          // });
+        } else {
+          Alert.alert(
+            'You can\'t send offer, please configure your scorekeeper setting first.',
+          );
+        }
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.messages);
+        }, 10);
+      });
+  }, [authContext, gameData?.sport]);
+
   const ListEmptyComponent = useMemo(
     () => (
       <View>
@@ -206,9 +274,34 @@ const Scorekeepers = ({
     [],
   );
 
-  const renderBookScorekeepersButton = useMemo(
-    () => isAdmin
-      && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status) && (
+  const scorekeeperOfferValidation = useCallback(() => {
+    if (
+      authContext.entity.role === 'user'
+      && authContext?.entity?.auth?.user?.scorekeeper_data.filter(
+        (obj) => obj?.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase(),
+      ).length > 0
+      && scorekeeper.filter((obj) => obj.scorekeeper_id === authContext.entity.uid)
+        .length === 0
+    ) {
+      return true;
+    }
+    return false;
+  }, [
+    authContext.entity?.auth?.user?.scorekeeper_data,
+    authContext.entity.role,
+    authContext.entity.uid,
+    gameData?.sport,
+    scorekeeper,
+  ]);
+
+  const renderBookScorekeepersButton = useMemo(() => {
+    console.log('Book scorekeeper');
+
+    if (
+      isAdmin
+      && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status)
+    ) {
+      return (
         <TCGradientButton
           onPress={handleBookScorekeeper}
           startGradientColor={colors.whiteColor}
@@ -227,14 +320,168 @@ const Scorekeepers = ({
             marginBottom: 0,
           }}
         />
-      ),
-    [gameData?.status, handleBookScorekeeper, isAdmin],
+      );
+    }
+    if (scorekeeperOfferValidation()) {
+      return (
+        <TCGradientButton
+          onPress={handleSendOfferScorekeeper}
+          startGradientColor={colors.darkThemeColor}
+          endGradientColor={colors.themeColor}
+          title={'SEND SCOREKEEPER OFFER'}
+          style={{
+            borderRadius: 5,
+            borderWidth: 0,
+            height: 35,
+          }}
+          textStyle={{
+            color: colors.whiteColor,
+            fontSize: 14,
+            fontFamily: fonts.RBold,
+          }}
+          outerContainerStyle={{
+            marginHorizontal: 5,
+            marginTop: 5,
+            marginBottom: 0,
+          }}
+        />
+      );
+    }
+    return <View />;
+  }, [
+    gameData?.status,
+    handleBookScorekeeper,
+    handleSendOfferScorekeeper,
+    isAdmin,
+    scorekeeperOfferValidation,
+  ]);
+
+  const ModalHeader = () => (
+    <View style={styles.headerStyle}>
+      <View style={styles.handleStyle} />
+      <Text
+        style={{
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
+          marginLeft: 15,
+        }}>
+        Which team do you want to send a scorekeeper offer to?
+      </Text>
+    </View>
   );
+
+  const renderTeams = useCallback(
+    ({ item }) => (selectedTeam === item ? (
+      <TouchableOpacity
+          style={styles.teamMainContainer}
+          onPress={() => {
+            setSelectedTeam(item);
+            setTimeout(() => {
+              teamListModalRef.current.close();
+              navigation.navigate('ScorekeeperBookingDateAndTime', {
+                gameData,
+                settingObj: scorekeeperSetting,
+                userData: item,
+                isHirer: true,
+                navigationName: getGameHomeScreen(gameData?.sport),
+                sportName: gameData?.sport,
+              });
+            }, 500);
+          }}>
+        <LinearGradient
+            colors={[colors.yellowColor, colors.orangeColor]}
+            style={styles.teamContainer}>
+          <View style={styles.profileView}>
+            <Image
+                source={
+                  item?.thumbnail
+                    ? { uri: item?.thumbnail }
+                    : images.teamPlaceholder
+                }
+                style={styles.profileImage}
+              />
+          </View>
+          <View style={styles.topTextContainer}>
+            <Text
+                style={[styles.nameText, { color: colors.whiteColor }]}
+                numberOfLines={1}>
+              {item?.group_name}
+            </Text>
+            <Text
+                style={[styles.locationText, { color: colors.whiteColor }]}
+                numberOfLines={1}>
+              {item?.city}
+            </Text>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={styles.teamMainContainer}
+          onPress={() => {
+            setSelectedTeam(item);
+            setTimeout(() => {
+              teamListModalRef.current.close();
+              navigation.navigate('ScorekeeperBookingDateAndTime', {
+                gameData,
+                settingObj: scorekeeperSetting,
+                userData: item,
+                isHirer: true,
+                navigationName: getGameHomeScreen(gameData?.sport),
+                sportName: gameData?.sport,
+              });
+            }, 500);
+          }}>
+          <View
+            colors={[colors.whiteColor, colors.whiteColor]}
+            style={styles.teamContainer}>
+            <View style={styles.profileView}>
+              <Image
+                source={
+                  item?.thumbnail
+                    ? { uri: item?.thumbnail }
+                    : images.teamPlaceholder
+                }
+                style={styles.profileImage}
+              />
+            </View>
+            <View style={styles.topTextContainer}>
+              <Text style={styles.nameText} numberOfLines={1}>
+                {item?.group_name}
+              </Text>
+              <Text style={styles.locationText} numberOfLines={1}>
+                {item?.city}
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      )),
+    [gameData, navigation, scorekeeperSetting, selectedTeam],
+  );
+  const listEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>No Teams Yet</Text>
+    </View>
+  );
+
+  const flatListProps = {
+    showsVerticalScrollIndicator: false,
+    showsHorizontalScrollIndicator: false,
+    keyboardShouldPersistTaps: 'never',
+    bounces: false,
+    data: [gameData?.home_team, gameData?.away_team],
+    renderItem: renderTeams,
+    keyExtractor: (index) => index.toString(),
+    ListEmptyComponent: listEmptyComponent,
+    style: { marginTop: 15 },
+  };
 
   return (
     <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
+
       <View style={styles.contentContainer}>
-        <ActivityLoader visible={loading} />
         <Text style={styles.title}>Scorekeepers</Text>
         <FlatList
           keyExtractor={(item) => item?.user_id}
@@ -256,6 +503,32 @@ const Scorekeepers = ({
           }}
         />
       </View>
+      <Portal>
+        <Modalize
+          visible={teamModalVisible}
+          onOpen={() => setTeamModalVisible(true)}
+          snapPoint={hp(50)}
+          withHandle={false}
+          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+          modalStyle={{
+            borderTopRightRadius: 25,
+            borderTopLeftRadius: 25,
+            shadowColor: colors.blackColor,
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 10,
+            elevation: 10,
+          }}
+          onPositionChange={(position) => {
+            if (position === 'top') {
+              setTeamModalVisible(false);
+            }
+          }}
+          ref={teamListModalRef}
+          HeaderComponent={ModalHeader}
+          flatListProps={flatListProps}
+        />
+      </Portal>
     </View>
   );
 };
@@ -278,6 +551,83 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RLight,
     fontSize: 14,
     color: colors.lightBlackColor,
+  },
+
+  headerStyle: {
+    borderTopRightRadius: 25,
+    borderTopLeftRadius: 25,
+    backgroundColor: colors.whiteColor,
+  },
+  handleStyle: {
+    marginVertical: 15,
+    alignSelf: 'center',
+    height: 5,
+    width: 40,
+    borderRadius: 15,
+    backgroundColor: '#DADBDA',
+  },
+  emptyText: {
+    fontSize: 18,
+    fontFamily: fonts.RMedium,
+    color: colors.grayColor,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: '20%',
+  },
+  profileImage: {
+    alignSelf: 'center',
+    height: 40,
+    width: 40,
+    borderRadius: 80,
+  },
+
+  profileView: {
+    backgroundColor: colors.whiteColor,
+    height: 44,
+    width: 44,
+    borderRadius: 88,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 3,
+    marginLeft: 15,
+  },
+  topTextContainer: {
+    marginLeft: 10,
+    alignSelf: 'center',
+  },
+  nameText: {
+    fontSize: 20,
+    fontFamily: fonts.RMedium,
+    // width: 200,
+  },
+  teamContainer: {
+    height: 70,
+    width: '90%',
+    backgroundColor: colors.whiteColor,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    borderRadius: 8,
+    elevation: 5,
+    marginBottom: 15,
+    marginTop: 5,
+    alignItems: 'center',
+    alignSelf: 'center',
+    flexDirection: 'row',
+  },
+
+  locationText: {
+    fontSize: 14,
+    fontFamily: fonts.RLight,
   },
 });
 export default Scorekeepers;

@@ -1,9 +1,11 @@
-import React, {
-   useState, useLayoutEffect, useContext,
-} from 'react';
+import React, { useState, useLayoutEffect, useContext } from 'react';
 import {
-  View, StyleSheet, Text, ScrollView, Alert,
- SafeAreaView,
+  View,
+  StyleSheet,
+  Text,
+  ScrollView,
+  Alert,
+  SafeAreaView,
 } from 'react-native';
 import { acceptDeclineChallenge } from '../../../api/Challenge';
 import AuthContext from '../../../auth/context';
@@ -23,16 +25,21 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: (screenName && screenName === 'change' && 'Change Match Reservation') || (screenName && screenName === 'cancel' && 'Cancel Match Reservation'),
+      title:
+        (screenName && screenName === 'change' && 'Change Match Reservation')
+        || (screenName && screenName === 'cancel' && 'Cancel Match Reservation'),
     });
   }, [navigation, screenName]);
 
-const getOpponentEntity = () => {
-  if (entity?.uid === challengeObj?.home_team?.user_id || entity?.uid === challengeObj?.home_team?.group_id) {
-    return challengeObj?.away_team
-  }
-  return challengeObj?.home_team
-}
+  const getOpponentEntity = () => {
+    if (
+      entity?.uid === challengeObj?.home_team?.user_id
+      || entity?.uid === challengeObj?.home_team?.group_id
+    ) {
+      return challengeObj?.away_team;
+    }
+    return challengeObj?.home_team;
+  };
 
   const acceptDeclineChallengeOperation = (
     teamID,
@@ -103,11 +110,13 @@ const getOpponentEntity = () => {
               • When the game reservation is canceled, all the referees of the
               game will still remain as booked referees of the game and the team
               which has booked a referee still has to pay the referee fee to the
-              referee.{'\n'}{'\n'}• You can cancel the referee reservation. The referee
-              fee will be refunded according to the cancellation policy.{'\n'}{'\n'}•
-              The game fee will be refunded according to the cancellation
-              policy.{'\n'}{'\n'}• The cancellation stats will be displayed on your home
-              or stats, which shows the number or percentage of the cancellation
+              referee.{'\n'}
+              {'\n'}• You can cancel the referee reservation. The referee fee
+              will be refunded according to the cancellation policy.{'\n'}
+              {'\n'}• The game fee will be refunded according to the
+              cancellation policy.{'\n'}
+              {'\n'}• The cancellation stats will be displayed on your home or
+              stats, which shows the number or percentage of the cancellation
               that your team have made.
             </Text>
           )}
@@ -115,41 +124,46 @@ const getOpponentEntity = () => {
       </ScrollView>
       <SafeAreaView>
         <TCGradientButton
-        title={screenName === 'change' ? strings.nextTitle : strings.cancelMatch}
-        onPress={() => {
-          if (screenName === 'change') {
-            navigation.navigate('EditChallenge', {
- groupObj: getOpponentEntity(), sportName: challengeObj?.sport, challengeObj,
-});
-          } else {
-            Alert.alert(
-              'Are you sure that you want to cancel the match reservation?',
-              '',
-              [{
-                text: 'Yes',
-                onPress: () => {
-                  acceptDeclineChallengeOperation(
-                    entity.uid,
-                    challengeObj?.challenge_id,
-                    challengeObj?.version,
-                    'cancel',
-                  );
-                },
-              },
-              {
-                text: 'No',
-                style: 'cancel',
-                onPress: () => {
-                  navigation.goBack()
-                },
-              },
-
-              ],
-              { cancelable: false },
-            );
+          title={
+            screenName === 'change' ? strings.nextTitle : strings.cancelMatch
           }
-        }}
-      />
+          onPress={() => {
+            if (screenName === 'change') {
+              navigation.navigate('EditChallenge', {
+                groupObj: getOpponentEntity(),
+                sportName: challengeObj?.sport,
+                challengeObj,
+                settingObj: route?.params?.settingObj,
+              });
+            } else {
+              Alert.alert(
+                'Are you sure that you want to cancel the match reservation?',
+                '',
+                [
+                  {
+                    text: 'Yes',
+                    onPress: () => {
+                      acceptDeclineChallengeOperation(
+                        entity.uid,
+                        challengeObj?.challenge_id,
+                        challengeObj?.version,
+                        'cancel',
+                      );
+                    },
+                  },
+                  {
+                    text: 'No',
+                    style: 'cancel',
+                    onPress: () => {
+                      navigation.goBack();
+                    },
+                  },
+                ],
+                { cancelable: false },
+              );
+            }
+          }}
+        />
       </SafeAreaView>
     </>
   );

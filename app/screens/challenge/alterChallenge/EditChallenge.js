@@ -1,8 +1,5 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
-import React, {
- useEffect, useState, useContext,
- } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -25,10 +22,7 @@ import Modal from 'react-native-modal';
 import * as Utility from '../../../utils';
 import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
-import {
-  getFeesEstimation,
-  updateChallenge,
-} from '../../../api/Challenge';
+import { getFeesEstimation, updateChallenge } from '../../../api/Challenge';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
@@ -52,24 +46,18 @@ import { getSetting } from '../manageChallenge/settingUtility';
 
 let entity = {};
 export default function EditChallenge({ navigation, route }) {
-  const { sportName, groupObj, settingObj } = route?.params;
+  const { sportName, groupObj } = route?.params;
+
+  console.log('settingObjsettingObj:=>', route?.params?.settingObj);
 
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
-  const [totalZero, setTotalZero] = useState(false);
   const [feeObj, setFeeObj] = useState();
   const [venueList, setVenueList] = useState();
   const [venue, setVenue] = useState();
   const [alterModalVisible, setAlterModalVisible] = useState(false);
   const [defaultCard, setDefaultCard] = useState();
-
-  const [startDate, setStartDate] = useState(
-    new Date().setHours(new Date().getHours() + 1),
-  );
-  const [endDate, setEndDate] = useState(
-    new Date().setHours(new Date().getHours() + 4),
-  );
 
   const [challengeObj, setChallengeObj] = useState(route?.params?.challengeObj);
   const [teams, setteams] = useState([]);
@@ -104,25 +92,27 @@ export default function EditChallenge({ navigation, route }) {
         setteams([{ ...groupObj }, { ...entity.obj }]);
       }
     }
-    if (challengeObj?.game_fee?.fee) {
+    if (challengeObj?.game_fee?.fee || challengeObj?.game_fee?.fee === 0) {
+      console.log('challengeObj check 1:=>', challengeObj);
+
       getFeeDetail();
     }
-  }, [
-    authContext.entity,
-    groupObj,
-    challengeObj?.game_fee?.fee,
-    challengeObj?.challenger,
-  ]);
+  }, [authContext.entity, challengeObj, groupObj]);
 
   useEffect(() => {
     console.log('authContext.entitity', authContext.entity);
     setloading(true);
-    getSetting(challengeObj?.challengee, authContext.entity.role === 'user' ? 'player' : 'team', sportName, authContext)
+    getSetting(
+      challengeObj?.challengee,
+      authContext.entity.role === 'user' ? 'player' : 'team',
+      sportName,
+      authContext,
+    )
       .then((response) => {
         setloading(false);
         console.log('manage challenge response:=>', response);
         if (challengeObj?.venue?.isCustom) {
-          response.venue.push(challengeObj?.venue)
+          response.venue.push(challengeObj?.venue);
           setVenueList(response.venue);
         } else {
           setVenueList(response.venue);
@@ -203,6 +193,26 @@ export default function EditChallenge({ navigation, route }) {
     route?.params?.scorekeeperSetting,
   ]);
 
+  const getChallenger = () => {
+    if (
+      challengeObj?.challenger === challengeObj?.home_team?.user_id
+      || challengeObj?.challenger === challengeObj?.home_team?.group_id
+    ) {
+      return challengeObj?.home_team;
+    }
+    return challengeObj?.away_team;
+  };
+
+  const getChallengee = () => {
+    if (
+      challengeObj?.challengee === challengeObj?.home_team?.user_id
+      || challengeObj?.challengee === challengeObj?.home_team?.group_id
+    ) {
+      return challengeObj?.home_team;
+    }
+    return challengeObj?.away_team;
+  };
+
   const renderPeriod = ({ item, index }) => (
     <>
       <TCChallengeTitle
@@ -265,24 +275,53 @@ export default function EditChallenge({ navigation, route }) {
     </>
   );
 
-  const renderReferees = ({ item, index }) => (
-    <SecureRefereeView
-      entityName={
-        item.responsible_to_secure_referee === 'challenger'
-          ? teams[1]?.full_name ?? teams[1]?.group_name
-          : teams[0]?.full_name ?? teams[0]?.group_name
-      }
-      entity={'Referee'}
-      entityNumber={index + 1}
-    />
-  );
+  const renderReferees = ({ item, index }) => {
+    console.log('Referee Item:=>', item);
+    return (
+      <SecureRefereeView
+        entityName={
+          item.responsible_to_secure_referee === 'challenger'
+            ? getChallenger()?.full_name ?? getChallenger()?.group_name
+            : getChallengee()?.full_name ?? getChallengee()?.group_name
+        }
+        image={
+          item.responsible_to_secure_referee === 'challenger'
+            ? getChallenger()?.thumbnail
+              ? { uri: getChallenger()?.thumbnail }
+              : getChallenger()?.full_name
+              ? images.profilePlaceHolder
+              : images.teamPlaceholder
+            : getChallenger()?.thumbnail
+            ? { uri: getChallengee()?.thumbnail }
+            : getChallengee()?.full_name
+            ? images.profilePlaceHolder
+            : images.teamPlaceholder
+        }
+        entity={'Referee'}
+        entityNumber={index + 1}
+      />
+    );
+  };
 
   const renderScorekeepers = ({ item, index }) => (
     <SecureRefereeView
       entityName={
         item.responsible_to_secure_scorekeeper === 'challenger'
-          ? teams[1]?.full_name ?? teams[1]?.group_name
-          : teams[0]?.full_name ?? teams[0]?.group_name
+          ? getChallenger()?.full_name ?? getChallenger()?.group_name
+          : getChallengee()?.full_name ?? getChallengee()?.group_name
+      }
+      image={
+        item.responsible_to_secure_scorekeeper === 'challenger'
+          ? getChallenger()?.thumbnail
+            ? { uri: getChallenger()?.thumbnail }
+            : getChallenger()?.full_name
+            ? images.profilePlaceHolder
+            : images.teamPlaceholder
+          : getChallengee()?.thumbnail
+          ? { uri: getChallengee()?.thumbnail }
+          : getChallengee()?.full_name
+          ? images.profilePlaceHolder
+          : images.teamPlaceholder
       }
       entity={'Scorekeeper'}
       entityNumber={index + 1}
@@ -291,18 +330,30 @@ export default function EditChallenge({ navigation, route }) {
 
   const getFeeDetail = () => {
     const feeBody = {};
+    console.log('challengeObj check:=>', challengeObj);
     feeBody.challenge_id = challengeObj?.challenge_id;
     feeBody.payment_method_type = 'card';
     feeBody.currency_type = challengeObj?.game_fee?.currency_type?.toLowerCase();
-    feeBody.total_game_fee = Number(challengeObj?.game_fee?.fee?.toString());
+    feeBody.total_game_fee = Number(
+      parseFloat(challengeObj?.game_fee?.fee).toFixed(2),
+    );
     setloading(true);
     getFeesEstimation(feeBody, authContext)
       .then((response) => {
         setFeeObj(response.payload);
+        // setChallengeObj({
+        //   ...challengeObj,
+        //   total_game_fee: response.payload?.total_game_fee,
+        //   total_service_fee1: response.payload?.total_service_fee1,
+        //   total_service_fee2: response.payload?.total_service_fee2,
+        //   total_stripe_fee: response.payload?.total_stripe_fee,
+        //   total_payout: response.payload?.total_payout,
+        //   total_amount: response.payload?.total_amount,
+        // });
 
-        if (response.payload.total_game_fee === 0) {
-          setTotalZero(true);
-        }
+        // if (response.payload.total_game_fee === 0) {
+        //   setTotalZero(true);
+        // }
         console.log('Body estimate fee:=>', response.payload);
 
         setloading(false);
@@ -317,12 +368,26 @@ export default function EditChallenge({ navigation, route }) {
 
   const updateChallengeDetail = () => {
     setloading(true);
-    const body = { ...challengeObj, ...feeObj };
+    const body = {
+      ...challengeObj,
+      total_game_fee: feeObj?.total_game_fee,
+      total_service_fee1: feeObj?.total_service_fee1,
+      total_service_fee2: feeObj?.total_service_fee2,
+      total_stripe_fee: feeObj?.total_stripe_fee,
+      total_payout: feeObj?.total_payout,
+      total_amount: feeObj?.total_amount,
+    };
     const challengeID = body.challenge_id;
     // if (route?.params?.paymentMethod) {
     //   setDefaultCard(route?.params?.paymentMethod)
     // }
 
+    if (route?.params?.startTime) {
+      body.start_datetime = route?.params?.startTime / 1000;
+    }
+    if (route?.params?.endTime) {
+      body.end_datetime = route?.params?.endTime / 1000;
+    }
     const res_secure_referee = challengeObj.responsible_for_referee.who_secure.map(
       (obj) => ({
         ...obj,
@@ -342,6 +407,8 @@ export default function EditChallenge({ navigation, route }) {
             : body.challenger,
       }),
     );
+
+    body.manual_fee = true;
 
     delete body.created_at;
     delete body.created_by;
@@ -381,7 +448,7 @@ export default function EditChallenge({ navigation, route }) {
       .then(() => {
         setloading(false);
         // navigation.navigate('AlterRequestSent');
-        setAlterModalVisible(true)
+        setAlterModalVisible(true);
       })
       .catch((e) => {
         setloading(false);
@@ -534,7 +601,10 @@ export default function EditChallenge({ navigation, route }) {
             title={'Date & Time'}
             isEdit={true}
             onEditPress={() => {
-              navigation.navigate('ChooseTimeSlotScreen');
+              navigation.navigate('ChooseTimeSlotScreen', {
+                settingObject: route?.params?.settingObj,
+                comeFrom: 'EditChallenge',
+              });
             }}
           />
 
@@ -542,13 +612,22 @@ export default function EditChallenge({ navigation, route }) {
             <View style={styles.dateTimeValue}>
               <Text style={styles.dateTimeText}>Start </Text>
               <Text style={styles.dateTimeText}>
-                {moment(startDate).format('MMM DD, YYYY hh:mm a')}
+                {moment(
+                  new Date(
+                    route?.params?.startTime
+                      ?? challengeObj?.start_datetime * 1000,
+                  ),
+                ).format('MMM DD, YYYY hh:mm a')}
               </Text>
             </View>
             <View style={styles.dateTimeValue}>
               <Text style={styles.dateTimeText}>End </Text>
               <Text style={styles.dateTimeText}>
-                {moment(endDate).format('MMM DD, YYYY hh:mm a')}
+                {moment(
+                  new Date(
+                    route?.params?.endTime ?? challengeObj?.end_datetime * 1000,
+                  ),
+                ).format('MMM DD, YYYY hh:mm a')}
               </Text>
             </View>
             <View style={styles.dateTimeValue}>
@@ -581,10 +660,10 @@ export default function EditChallenge({ navigation, route }) {
             title={'Venue'}
             isEdit={true}
             onEditPress={() => {
-                navigation.navigate('ChooseVenueScreen', {
-                  venues: venueList || [],
-                  comeFrom: 'EditChallenge',
-                });
+              navigation.navigate('ChooseVenueScreen', {
+                venues: venueList || [],
+                comeFrom: 'EditChallenge',
+              });
             }}
           />
 
@@ -644,27 +723,34 @@ export default function EditChallenge({ navigation, route }) {
         />
         <TCThickDivider />
 
-        {Number(challengeObj?.game_fee?.fee) !== 0 && challengeObj?.challenger === authContext.entity.uid && <View>
-          <View >
-            <TCLabel title={'Payment Method'} style={{ marginBottom: 10 }}/>
-            <View style={styles.viewMarginStyle}>
-              <TCTouchableLabel
-            title={
-              defaultCard && defaultCard?.card?.brand && defaultCard?.card?.last4
-                ? `${Utility.capitalize(defaultCard?.card?.brand)} ****${defaultCard?.card?.last4}`
-                : strings.addOptionMessage
-            }
-            showNextArrow={true}
-            onPress={() => {
-              navigation.navigate('PaymentMethodsScreen', {
-                comeFrom: 'EditChallenge',
-              })
-            }}
-          />
+        {Number(challengeObj?.game_fee?.fee) !== 0
+          && challengeObj?.challenger === authContext.entity.uid && (
+            <View>
+              <View>
+                <TCLabel title={'Payment Method'} style={{ marginBottom: 10 }} />
+                <View style={styles.viewMarginStyle}>
+                  <TCTouchableLabel
+                    title={
+                      defaultCard
+                      && defaultCard?.card?.brand
+                      && defaultCard?.card?.last4
+                        ? `${Utility.capitalize(
+                            defaultCard?.card?.brand,
+                          )} ****${defaultCard?.card?.last4}`
+                        : strings.addOptionMessage
+                    }
+                    showNextArrow={true}
+                    onPress={() => {
+                      navigation.navigate('PaymentMethodsScreen', {
+                        comeFrom: 'EditChallenge',
+                      });
+                    }}
+                  />
+                </View>
+              </View>
+              <TCThickDivider marginTop={20} />
             </View>
-          </View>
-          <TCThickDivider marginTop={20} />
-        </View>}
+          )}
 
         <TCChallengeTitle
           title={'Game Rules'}
@@ -714,7 +800,7 @@ export default function EditChallenge({ navigation, route }) {
           style={{ marginBottom: 15 }}
         />
 
-        <TCThickDivider marginTop={20} />
+        <TCThickDivider />
 
         <TCChallengeTitle
           title={'Scorekeepers'}
@@ -742,19 +828,35 @@ export default function EditChallenge({ navigation, route }) {
           ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
           style={{ marginBottom: 15 }}
         />
-        <TCThickDivider marginTop={20} />
+        <TCThickDivider />
 
-        {!totalZero && (
-          <View>
-            <TCLabel title={'Income'} style={{ marginBottom: 15 }} />
-            <GameFeeCard
-              feeObject={feeObj}
-              currency={challengeObj?.game_fee?.currency_type}
-              isChallenger={false}
-            />
-            <TCThickDivider marginTop={20} />
-          </View>
-        )}
+        <TCChallengeTitle
+          title={
+            challengeObj?.challenger === entity.uid ? 'Payment' : 'Earning'
+          }
+          isEdit={false}
+          onEditPress={() => {
+            navigation.navigate('EditFeeScreen', {
+              editableAlter: true,
+              body: challengeObj,
+            });
+          }}
+        />
+        <GameFeeCard
+          feeObject={
+            feeObj ?? {
+              total_game_fee: challengeObj?.total_game_fee,
+              total_service_fee1: challengeObj?.total_service_fee1,
+              total_service_fee2: challengeObj?.total_service_fee2,
+              total_stripe_fee: challengeObj?.total_stripe_fee,
+              total_payout: challengeObj?.total_payout,
+              total_amount: challengeObj?.total_amount,
+          }
+          }
+          currency={challengeObj?.game_fee?.currency_type}
+          isChallenger={challengeObj?.challenger === entity.uid}
+        />
+        <TCThickDivider marginTop={20} />
       </View>
 
       {/* <TCGradientButton
@@ -779,7 +881,7 @@ export default function EditChallenge({ navigation, route }) {
         }
         tooltipHeight={hp('18%')}
         tooltipWidth={wp('50%')}
-        isEdit={true}
+        isEdit={false}
         onEditPress={() => {
           navigation.navigate('RefundPolicy', {
             settingObj: challengeObj,
@@ -842,12 +944,14 @@ export default function EditChallenge({ navigation, route }) {
           <Image style={styles.background} source={images.entityCreatedBG} />
 
           <View style={styles.mailContainer}>
-            <Text style={styles.invitationText}>{'Alteration request\nsent'}</Text>
+            <Text style={styles.invitationText}>
+              {'Alteration request\nsent'}
+            </Text>
             <View style={styles.imageContainer}>
               <Image
-                  source={images.challengeSentPlane}
-                  style={styles.rotateImage}
-                />
+                source={images.challengeSentPlane}
+                style={styles.rotateImage}
+              />
             </View>
           </View>
 
@@ -1044,5 +1148,4 @@ const styles = StyleSheet.create({
     height: 150,
     resizeMode: 'contain',
   },
-
 });

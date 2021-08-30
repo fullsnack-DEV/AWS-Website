@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-unused-expressions */
 import {
 
@@ -438,7 +439,31 @@ export const getSearchData = (data = [], field = [], searchString) => {
       let isSearch = false;
       field?.map((key) => {
         if (!isSearch
-            && item?.[key]
+            && item?._source?.[key]
+              ?.toLowerCase()
+              ?.toString()
+              ?.replace(' ', '')
+              ?.match(searchStr?.toLowerCase()?.toString())) {
+          isSearch = true;
+        }
+        return true;
+      })
+      if (isSearch) searchData.push(item);
+      return true;
+    })
+  }
+  return searchData;
+}
+
+export const getSearchEntityData = (data = [], field = [], searchString) => {
+  const searchData = [];
+  const searchStr = escapeRegExp(searchString).replace(' ', '')
+  if (searchStr !== '') {
+    data?.map((item) => {
+      let isSearch = false;
+      field?.map((key) => {
+        if (!isSearch
+          && item?.[key]
               ?.toLowerCase()
               ?.toString()
               ?.replace(' ', '')
@@ -482,7 +507,7 @@ export const getTaggedEntityData = (entity_raw_data, entity_item, entity_type) =
   let entity = { ...entity_raw_data }
   if (entity_type === 'game') {
     const pickedEntity = _.pick(entity_item, [
-      'sport', 'status', 'start_datetime', 'end_datetime', 'singlePlayerGame', 'userChallenge',
+      'sport', 'status', 'start_datetime', 'end_datetime', 'user_challenge', 'userChallenge',
       'home_team.thumbnail', 'home_team.group_name', 'home_team.full_name',
       'away_team.thumbnail', 'away_team.group_name', 'away_team.full_name',
       'venue.address', 'venue.description',
@@ -551,3 +576,7 @@ export const getSportIcon = (sport) => {
     default: return images.soccerIcon;
   }
 }
+
+export const roundValue = (value, decimals) => (value ? parseFloat(+value.toFixed(decimals)) : 0)
+
+  // return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals)

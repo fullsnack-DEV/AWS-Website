@@ -19,8 +19,8 @@ export default function ScorekeeperFee({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [basicFee, setBasicFee] = useState(
     route?.params?.settingObj?.game_fee
-      ? route?.params?.settingObj?.game_fee?.fee?.toString()
-      : '0.0',
+      ? route?.params?.settingObj?.game_fee?.fee
+      : 0,
   );
   const [currencyType] = useState(
     route?.params?.settingObj?.game_fee
@@ -49,7 +49,7 @@ export default function ScorekeeperFee({ navigation, route }) {
      if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
         navigation.navigate(comeFrom, {
           gameFee: {
-            fee: Number(basicFee).toFixed(2),
+            fee: Number(parseFloat(basicFee).toFixed(2)),
             currency_type: currencyType,
           },
         });
@@ -58,7 +58,7 @@ export default function ScorekeeperFee({ navigation, route }) {
           sport: sportName,
           entity_type: 'scorekeeper',
           game_fee: {
-            fee: Number(basicFee).toFixed(2),
+            fee: Number(parseFloat(basicFee).toFixed(2)),
             currency_type: currencyType,
           },
         };
@@ -71,10 +71,10 @@ export default function ScorekeeperFee({ navigation, route }) {
           (obj) => obj.sport_name === sportName,
         )[0];
 
-        selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+        selectedSport.setting = { ...selectedSport?.setting, ...bodyParams };
         registerdScorekeeperData.push(selectedSport);
 
-        const body = { ...authContext?.user, referee_data: registerdScorekeeperData };
+        const body = { ...authContext?.user, scorekeeper_data: registerdScorekeeperData };
         console.log('Body::::--->', body);
 
         patchPlayer(body, authContext)
@@ -82,7 +82,7 @@ export default function ScorekeeperFee({ navigation, route }) {
             if (response.status === true) {
               setloading(false);
               const entity = authContext.entity;
-              console.log('Register referee response IS:: ', response.payload);
+              console.log('Register scorekeeper response IS:: ', response.payload);
               entity.auth.user = response.payload;
               entity.obj = response.payload;
               authContext.setEntity({ ...entity });
@@ -123,7 +123,7 @@ export default function ScorekeeperFee({ navigation, route }) {
               setBasicFee(text);
             }
           }}
-          value={basicFee}
+          value={basicFee.toString()}
           keyboardType={'decimal-pad'}>
         </TextInput>
         <Text style={styles.curruency}>{currencyType}/hour</Text>

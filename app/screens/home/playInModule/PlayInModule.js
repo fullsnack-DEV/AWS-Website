@@ -261,9 +261,9 @@ const PlayInModule = ({
                 width: '100%',
                 paddingHorizontal: 25,
                 flexDirection: 'row',
-                justifyContent: 'space-between',
+                justifyContent: 'center',
               }}>
-              <View
+              {/* <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -281,7 +281,7 @@ const PlayInModule = ({
                   {' '}
                   (per hours)
                 </Text>
-              </View>
+              </View> */}
               <Text style={styles.challengeTextStyle}>CHALLENGE</Text>
             </View>
           </LinearGradient>

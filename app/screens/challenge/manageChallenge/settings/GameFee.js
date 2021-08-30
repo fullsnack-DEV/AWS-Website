@@ -21,8 +21,8 @@ export default function GameFee({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [basicFee, setBasicFee] = useState(
     route?.params?.settingObj?.game_fee
-      ? route?.params?.settingObj?.game_fee?.fee?.toString()
-      : '0.0',
+      ? route?.params?.settingObj?.game_fee?.fee
+      : 0,
   );
   const [currencyType] = useState(
     route?.params?.settingObj?.game_fee
@@ -49,10 +49,12 @@ const saveUser = () => {
     sport: sportName,
     entity_type: 'player',
     game_fee: {
-      fee: Number(basicFee).toFixed(2),
+      fee: Number(parseFloat(basicFee).toFixed(2)),
       currency_type: currencyType,
     },
   };
+console.log('Fee user:', bodyParams);
+
   setloading(true);
   const registerdPlayerData = authContext?.user?.registered_sports?.filter(
     (obj) => obj.sport_name !== sportName,
@@ -104,10 +106,13 @@ const saveTeam = () => {
     sport: sportName,
     entity_type: 'team',
     game_fee: {
-      fee: Number(basicFee).toFixed(2),
+      fee: Number(parseFloat(basicFee).toFixed(2)),
       currency_type: currencyType,
     },
   };
+
+  console.log('Fee team:', bodyParams);
+
   setloading(true);
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
@@ -148,7 +153,7 @@ const saveTeam = () => {
      if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
         navigation.navigate(comeFrom, {
           gameFee: {
-            fee: Number(basicFee).toFixed(2),
+            fee: Number(parseFloat(basicFee).toFixed(2)),
             currency_type: currencyType,
           },
         });
@@ -173,7 +178,7 @@ const saveTeam = () => {
               setBasicFee(text);
             }
           }}
-          value={basicFee}
+          value={basicFee.toString()}
           keyboardType={'decimal-pad'}></TextInput>
         <Text style={styles.curruency}>{currencyType}</Text>
       </View>

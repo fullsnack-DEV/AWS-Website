@@ -20,19 +20,12 @@ import CurruentReservationScreen from '../screens/challenge/alterChallenge/Curru
 import SoccerHome from '../screens/game/soccer/SoccerHome';
 import TennisHome from '../screens/game/tennis/TennisHome';
 
-import AlterAcceptDeclineScreen from '../screens/challenge/alterChallenge/AlterAcceptDeclineScreen';
 import PayAgainScreen from '../screens/challenge/alterChallenge/PayAgainScreen';
 import PayAgainRefereeScreen from '../screens/referee/PayAgainRefereeScreen';
 import EditFeeScreen from '../screens/challenge/alterChallenge/EditFeeScreen';
 import EditChallenge from '../screens/challenge/alterChallenge/EditChallenge';
 import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
 
-import CreateChallengeForm1 from '../screens/challenge/createChallenge/CreateChallengeForm1';
-import CreateChallengeForm2 from '../screens/challenge/createChallenge/CreateChallengeForm2';
-import CreateChallengeForm3 from '../screens/challenge/createChallenge/CreateChallengeForm3';
-import CreateChallengeForm4 from '../screens/challenge/createChallenge/CreateChallengeForm4';
-import CreateChallengeForm5 from '../screens/challenge/createChallenge/CreateChallengeForm5';
-import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDateTimeScreen';
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
 
 import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
@@ -274,22 +267,7 @@ const ReservationNavigator = () => (
             headerShown: false,
           }}
       />
-    <Stack.Screen
-        name="AlterAcceptDeclineScreen"
-        component={ AlterAcceptDeclineScreen }
-        options={ {
-          title: 'Change Match Reservation',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
+
     <Stack.Screen
         name="PayAgainScreen"
         component={ PayAgainScreen }
@@ -345,103 +323,7 @@ const ReservationNavigator = () => (
           headerShown: false,
         } }
       />
-    <Stack.Screen
-        name="CreateChallengeForm1"
-        component={ CreateChallengeForm1 }
-        options={ {
-          title: 'Challenge',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
 
-    <Stack.Screen
-        name="CreateChallengeForm2"
-        component={ CreateChallengeForm2 }
-        options={ {
-          title: 'Challenge',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
-    <Stack.Screen
-        name="CreateChallengeForm3"
-        component={ CreateChallengeForm3 }
-        options={ {
-          title: 'Challenge',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
-    <Stack.Screen
-        name="CreateChallengeForm4"
-        component={ CreateChallengeForm4 }
-        options={ {
-          title: 'Challenge',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
-    <Stack.Screen
-        name="CreateChallengeForm5"
-        component={ CreateChallengeForm5 }
-        options={ {
-          title: 'Challenge',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
-    <Stack.Screen
-        name="ChooseDateTimeScreen"
-        component={ ChooseDateTimeScreen }
-        options={ {
-          title: 'Challenge',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
     <Stack.Screen
         name="PaymentMethodsScreen"
         component={ PaymentMethodsScreen }

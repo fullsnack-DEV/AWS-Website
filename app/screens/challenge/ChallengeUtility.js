@@ -15,7 +15,7 @@ export const getChallengeDetail = (challengeID, authContext) => {
       if (ReservationStatus.changeRequest === response.payload[0].status
         || ReservationStatus.pendingrequestpayment === response.payload[0].status) {
         Obj.challengeObj = response.payload
-        Obj.screenName = 'ChallengePreviewScreen'// AlterAcceptDeclineScreen
+        Obj.screenName = 'ChallengePreviewScreen'
         return Obj
       }
       if (ReservationStatus.pendingpayment === response.payload[0].status
@@ -42,15 +42,15 @@ export const getChallengeDetail = (challengeID, authContext) => {
       }
       if (ReservationStatus.declined === response.payload[0].status) {
         console.log('ReservationStatus.declined === response.payload[0].status', response);
-        // if (response.payload[0].requested_by) {
+
           if (response.payload[1].status !== ReservationStatus.offered) {
           Obj.challengeObj = response.payload
-          Obj.screenName = 'ChallengePreviewScreen'// AlterAcceptDeclineScreen
+          Obj.screenName = 'ChallengePreviewScreen'
           return Obj
         }
-        Obj.challengeObj = response.payload[0]
-        Obj.screenName = 'ChallengePreviewScreen'// AcceptDeclineChallengeScreen
-        return Obj
+          Obj.challengeObj = response.payload[0]
+          Obj.screenName = 'ChallengePreviewScreen'// AcceptDeclineChallengeScreen
+          return Obj
       }
     }
   }).catch((e) => {

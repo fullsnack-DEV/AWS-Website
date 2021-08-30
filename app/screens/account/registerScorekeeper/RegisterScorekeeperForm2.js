@@ -6,212 +6,288 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
+  FlatList,
   ScrollView,
-  Alert, Platform,
+  Alert,
+  SafeAreaView,
+  TouchableWithoutFeedback,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import LinearGradient from 'react-native-linear-gradient';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
-import AuthContext from '../../../auth/context'
+import * as Utility from '../../../utils';
+
+import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
+import uploadImages from '../../../utils/imageAction';
 
 import { getUserDetails, patchRegisterScorekeeperDetails } from '../../../api/Users';
-import colors from '../../../Constants/Colors'
-import fonts from '../../../Constants/Fonts'
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
 import TCKeyboardView from '../../../components/TCKeyboardView';
+import TCFormProgress from '../../../components/TCFormProgress';
+import TCInnerLoader from '../../../components/TCInnerLoader';
+import TCGradientButton from '../../../components/TCGradientButton';
+import TCLabel from '../../../components/TCLabel';
+
+const MAX_CERTIFICATE_UPLOAD = 5;
 
 export default function RegisterScorekeeperForm2({ navigation, route }) {
   const [loading, setloading] = useState(false);
-  const authContext = useContext(AuthContext)
-  const [matchFee, onMatchFeeChanged] = React.useState('0');
-  const [selected, setSelected] = useState(0);
+  const authContext = useContext(AuthContext);
+
+  const [certificate, setCertificate] = useState([{ title: '' }]);
+  const [validationError, setError] = useState(null);
+
+  const [imageUploadingLoader, setImageUploadingLoader] = useState(null);
   const [currentScorekeeperData, setCurrentScorekeeperData] = useState([]);
   useEffect(() => {
-    getUserDetails(authContext?.entity?.uid, authContext).then((res) => {
-      setCurrentScorekeeperData(res?.payload?.scorekeeper_data || []);
-    }).catch((error) => {
-      console.log(error);
-    })
-  }, [])
+    getUserDetails(authContext?.entity?.uid, authContext)
+      .then((res) => {
+        setCurrentScorekeeperData(res?.payload?.scorekeeper_data || []);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  const checkValidation = () => {
+    const findCertiTitleIndex = certificate?.findIndex(
+      (item) => item?.title && (!item?.thumbnail || !item?.url),
+    );
+    if (findCertiTitleIndex !== -1) {
+      setError({ certificate: findCertiTitleIndex });
+      Alert.alert('Towns Cup', 'Add certificate');
+      return false;
+    }
+
+    const findIndex = certificate?.findIndex(
+      (item) => !item?.title && (item?.thumbnail || item?.url),
+    );
+    if (findIndex !== -1) {
+      setError({ certificate: findIndex });
+      Alert.alert('Towns Cup', 'Add title for certificate');
+      return false;
+    }
+    setError(null);
+
+    return true;
+  };
+
   const registerScorekeeperCall = () => {
-    setloading(true);
-    if (route.params && route.params.bodyParams) {
-      const bodyParams = { ...route.params.bodyParams };
-      bodyParams.scorekeeper_data[0].certificates.pop();
-      bodyParams.scorekeeper_data[0].fee = matchFee;
-      bodyParams.scorekeeper_data[0].is_published = true;
-      if (selected === 0) {
-        bodyParams.scorekeeper_data[0].cancellation_policy = 'strict';
-      } else if (selected === 1) {
-        bodyParams.scorekeeper_data[0].cancellation_policy = 'moderate';
-      } else {
-        bodyParams.scorekeeper_data[0].cancellation_policy = 'flexible';
+    const isValid = checkValidation();
+    if (isValid) {
+       setloading(true);
+      if (route?.params?.bodyParams) {
+        const bodyParams = { ...route?.params?.bodyParams };
+        bodyParams.scorekeeper_data[0].certificates = certificate;
+        bodyParams.scorekeeper_data[0].is_published = true;
+        bodyParams.scorekeeper_data[0].certificates.pop();
+        const allData = {
+          scorekeeper_data: [...bodyParams?.scorekeeper_data, ...currentScorekeeperData],
+        };
+        console.log('All data:=>', allData);
+
+        patchRegisterScorekeeperDetails(allData, authContext)
+          .then(async (res) => {
+            setloading(false);
+            const entity = authContext.entity;
+            entity.auth.user = res.payload;
+            entity.obj = res.payload;
+            authContext.setEntity({ ...entity });
+            await Utility.setStorage('authContextUser', res.payload);
+            await Utility.setStorage('authContextEntity', { ...entity });
+            navigation.navigate('RegisterScorekeeperSuccess');
+          })
+          .catch((error) => {
+            Alert.alert(error);
+          })
+          .finally(() => setloading(false));
       }
-      const allData = { scorekeeper_data: [...bodyParams?.scorekeeper_data, ...currentScorekeeperData] }
-      patchRegisterScorekeeperDetails(allData, authContext).then((res) => {
-        const entity = authContext.entity
-        entity.auth.user = res.payload;
-        entity.obj = res.payload;
-        authContext.setEntity({ ...entity })
-        navigation.navigate('RegisterScorekeeperSuccess');
-      }).catch((error) => {
-        Alert.alert(error)
-      }).finally(() => setloading(false));
-    } else {
-      setloading(false);
     }
   };
 
-  return (
-    <TCKeyboardView>
-      <ScrollView style={ styles.mainContainer }>
-        <ActivityLoader visible={ loading } />
-        <View style={ styles.formSteps }>
-          <View style={ styles.form1 }></View>
-          <View style={ styles.form2 }></View>
-        </View>
-
-        <Text style={ styles.LocationText }>
-          {strings.matchFeesTitle}
-        </Text>
-
-        <View style={ styles.matchFeeView }>
+  const addMore = () => {
+    setCertificate([...certificate, {}]);
+  };
+  const renderItem = ({ item, index }) => (
+    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'column' }}>
+        <View style={styles.addCertificateView}>
           <TextInput
-            placeholder={ strings.enterFeePlaceholder }
-            style={ styles.feeText }
-            onChangeText={ (text) => {
-              if (text <= 0.0 || text >= 1.0) {
-                onMatchFeeChanged(text)
-                } else {
-                Alert.alert(strings.enterValidGameFee)
-              }
+            placeholder={strings.titleOrDescriptionText}
+            style={{
+              ...styles.certificateDescription,
+              borderWidth: validationError?.certificate === index ? 1 : 0,
+              borderColor: validationError?.certificate === index ? colors.redDelColor : colors.whiteColor,
             }}
-            value={matchFee}
-            keyboardType={ 'decimal-pad' }/>
-          <Text style={ styles.curruency } numberOfLines={1}>CAD/hour</Text>
+            onChangeText={(text) => {
+              const certi = certificate;
+              certi[index] = {
+                ...certi[index],
+                title: text,
+              };
+              setCertificate([...certi]);
+            }}
+            value={certificate?.[index]?.title}
+          />
         </View>
-        <View>
-          <Text style={ styles.LocationText }>
-            {strings.cancellationPolicyTitle}
-          </Text>
-        </View>
-        <View style={ styles.radioButtonView }>
-          <TouchableWithoutFeedback onPress={ () => setSelected(0) }>
-            {selected === 0 ? (
-              <FastImage source={ images.radioSelect } style={ styles.radioImage } />
-            ) : (
-              <FastImage
-                source={ images.radioUnselect }
-                style={ styles.unSelectRadioImage }
-              />
-            )}
+        {/* eslint-disable-next-line no-mixed-operators */}
+        {/* {(item?.url || item?.title) ? ( */}
+        <TouchableOpacity
+          onPress={() => {
+            if (certificate?.length === 1) {
+              setCertificate([{}]);
+            } else if (index !== certificate?.length - 1) {
+              const certiUrl = certificate;
+              certiUrl.splice(index, 1);
+              setCertificate([...certiUrl]);
+            }
+          }}></TouchableOpacity>
+        {/* ) : null} */}
+        {!item?.url && (
+          <TouchableWithoutFeedback
+            onPress={() => {
+              ImagePicker.openPicker({
+                width: 300,
+                height: 400,
+                cropping: true,
+                maxFiles: 10,
+              }).then((pickImages) => {
+                setImageUploadingLoader(index);
+                const certiUrl = certificate;
+                certiUrl[index] = {
+                  ...certiUrl[index],
+                  url: pickImages?.sourceURL,
+                };
+                setCertificate([...certiUrl]);
+                uploadImages([pickImages], authContext)
+                  .then((responses) => {
+                    certiUrl[index] = {
+                      ...certiUrl[index],
+                      url: responses?.[0].fullImage ?? '',
+                      thumbnail: responses?.[0].thumbnail ?? '',
+                    };
+                    setCertificate([...certiUrl]);
+                  })
+                  .catch(() => {
+                    certiUrl.splice(index, 1);
+                    setCertificate([...certiUrl]);
+                  })
+                  .finally(() => {
+                    setTimeout(() => setImageUploadingLoader(null), 1500);
+                    if (certificate?.length < MAX_CERTIFICATE_UPLOAD) {
+                      addMore();
+                    }
+                  });
+              });
+            }}>
+            <View style={styles.addCertificateButton}>
+              <Text style={styles.addCertificateText} numberOfLines={1}>
+                {strings.addCertificateTitle}
+              </Text>
+            </View>
           </TouchableWithoutFeedback>
-          <Text style={ styles.radioText }>{strings.strictText}</Text>
-        </View>
-        <View style={ styles.radioButtonView }>
-          <TouchableWithoutFeedback onPress={ () => setSelected(1) }>
-            {selected === 1 ? (
-              <FastImage source={ images.radioSelect } style={ styles.radioImage } />
-            ) : (
-              <FastImage
-                source={ images.radioUnselect }
-                style={ styles.unSelectRadioImage }
-              />
-            )}
-          </TouchableWithoutFeedback>
-          <Text style={ styles.radioText }>{strings.moderateText}</Text>
-        </View>
-        <View style={ styles.radioButtonView }>
-          <TouchableWithoutFeedback onPress={ () => setSelected(2) }>
-            {selected === 2 ? (
-              <Image source={ images.radioSelect } style={ styles.radioImage } />
-            ) : (
+        )}
+      </View>
+      {item?.url && (
+        <View
+          style={{
+            padding: 15,
+            alignSelf: 'flex-start',
+          }}>
+          <View>
+            <FastImage
+              resizeMode={FastImage.resizeMode.cover}
+              source={{ uri: certificate?.[index]?.url }}
+              style={{ width: 195, height: 150, borderRadius: 10 }}
+            />
+
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                position: 'absolute',
+                height: 22,
+                width: 22,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 50,
+                right: -10,
+                top: -5,
+              }}
+              onPress={() => {
+                certificate.splice(index, 1);
+                setCertificate([...certificate]);
+              }}>
               <Image
-                source={ images.radioUnselect }
-                style={ styles.unSelectRadioImage }
+                source={images.menuClose}
+                style={{
+                  zIndex: 100,
+                  tintColor: colors.whiteColor,
+                  height: 15,
+                  width: 15,
+                }}
               />
+            </TouchableOpacity>
+
+            {index === imageUploadingLoader && (
+              <View
+                style={{
+                  alignSelf: 'center',
+                  position: 'absolute',
+                  height: 150,
+                  width: 195,
+                  borderRadius: 10,
+                  backgroundColor: 'rgba(0,0,0,0.7)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                }}>
+                <TCInnerLoader visible={index === imageUploadingLoader} />
+                <Text
+                  style={{
+                    fontFamily: fonts.RLight,
+                    fontSize: 20,
+                    color: colors.yellowColor,
+                    marginLeft: 5,
+                  }}>
+                  Uploading...
+                </Text>
+              </View>
             )}
-          </TouchableWithoutFeedback>
-          <Text style={ styles.radioText }>{strings.flexibleText}</Text>
+          </View>
         </View>
-        {selected === 0 && (
-          <View>
-            <Text style={ styles.membershipText }>{strings.strictText} </Text>
-            <Text style={ styles.whoJoinText }>
-              <Text style={ styles.membershipSubText }>
-                {strings.strictPoint1Title}
-              </Text>
-              {'\n'}
-              {strings.strictPoint1Desc}
-              {'\n'}
-              {'\n'}
-              <Text style={ styles.membershipSubText }>
-                {strings.strictPoint2Title}
-              </Text>
-              {'\n'}
-              {strings.strictPoint2Desc}
-            </Text>
-          </View>
-        )}
-        {selected === 1 && (
-          <View>
-            <Text style={ styles.membershipText }>{strings.moderateText} </Text>
-            <Text style={ styles.whoJoinText }>
-              <Text style={ styles.membershipSubText }>
-                {strings.moderatePoint1Title}
-              </Text>
-              {'\n'}
-              {strings.moderatePoint1Desc}
-              {'\n'}
-              {'\n'}
-              <Text style={ styles.membershipSubText }>
-                {strings.moderatePoint2Title}
-              </Text>
-              {'\n'}
-              {strings.moderatePoint2Desc}
-              {'\n'}
-              {'\n'}
-              <Text style={ styles.membershipSubText }>
-                {strings.moderatePoint3Title}
-              </Text>
-              {strings.moderatePoint3Desc}
-            </Text>
-          </View>
-        )}
-        {selected === 2 && (
-          <View>
-            <Text style={ styles.membershipText }>{strings.flexibleText} </Text>
-            <Text style={ styles.whoJoinText }>
-              <Text style={ styles.membershipSubText }>
-                {strings.flexiblePoint1Title}
-              </Text>
-              {'\n'}
-              {strings.flexiblePoint1Desc}
-              {'\n'}
-              {'\n'}
-              <Text style={ styles.membershipSubText }>
-                {strings.flexiblePoint2Title}
-              </Text>
-              {'\n'}
-              {strings.flexiblePoint2Desc}
-            </Text>
-          </View>
-        )}
-        <TouchableOpacity onPress={ () => registerScorekeeperCall() }>
-          <LinearGradient
-            colors={ [colors.yellowColor, colors.themeColor] }
-            style={ styles.nextButton }>
-            <Text style={ styles.nextButtonText }>{strings.doneTitle}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </ScrollView>
-    </TCKeyboardView>
+      )}
+    </View>
+  );
+
+  return (
+    <>
+      <TCKeyboardView>
+        <ScrollView style={styles.mainContainer}>
+          <ActivityLoader visible={loading} />
+          <TCFormProgress totalSteps={2} curruentStep={2} />
+
+          <TCLabel title={strings.certiTitle} required={false} />
+          <FlatList
+            scrollEnabled={false}
+            data={certificate}
+            renderItem={renderItem}
+          />
+        </ScrollView>
+      </TCKeyboardView>
+
+      <SafeAreaView>
+        <TCGradientButton
+          isDisabled={false}
+          title={strings.doneTitle}
+          style={{ marginBottom: 5 }}
+          onPress={() => registerScorekeeperCall()}
+        />
+      </SafeAreaView>
+    </>
   );
 }
 const styles = StyleSheet.create({
@@ -219,129 +295,54 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
-  formSteps: {
-    alignSelf: 'flex-end',
+
+  addCertificateView: {
     flexDirection: 'row',
-    padding: 15,
-  },
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form2: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  LocationText: {
-    marginTop: hp('2%'),
-    color: colors.lightBlackColor,
-    fontSize: wp('3.8%'),
-    textAlign: 'left',
-    // fontFamily: fonts.RBold,
-    paddingLeft: 15,
-  },
-  curruency: {
+    // backgroundColor: 'red',
+    marginTop: 12,
+    marginBottom: 12,
+    width: wp('92%'),
     alignSelf: 'center',
+  },
+  addCertificateButton: {
+    marginTop: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 5,
+    height: 25,
+    justifyContent: 'center',
+    backgroundColor: colors.whiteColor,
+    paddingHorizontal: 5,
+    shadowColor: colors.blackColor,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+    width: 120,
+    marginBottom: 15,
+  },
+  addCertificateText: {
     color: colors.lightBlackColor,
+    fontFamily: fonts.RBold,
+
+    fontSize: 12,
+  },
+
+  certificateDescription: {
+    paddingVertical: 10,
+    width: '100%',
+    alignSelf: 'center',
+    fontSize: 16,
     fontFamily: fonts.RRegular,
-    fontSize: 15,
-    flex: 0.3,
-    textAlign: 'center',
-  },
-  feeText: {
-    fontSize: wp('3.8%'),
-    flex: 0.7,
-  },
-  matchFeeView: {
-    flex: 1,
-    alignSelf: 'center',
+    paddingHorizontal: 15,
+    color: colors.lightBlackColor,
     backgroundColor: colors.offwhite,
     borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    flexDirection: 'row',
-    fontSize: wp('3.5%'),
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    paddingVertical: Platform.OS === 'ios' ? 12 : 0,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
-    width: wp('92%'),
+    elevation: 3,
   },
-  nextButton: {
-    alignSelf: 'center',
-    borderRadius: 30,
-    height: 45,
-    marginBottom: 40,
-    marginTop: wp('12%'),
-    width: '90%',
-  },
-  nextButtonText: {
-    alignSelf: 'center',
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: wp('4%'),
-    marginVertical: 10,
-  },
-  radioButtonView: {
-    flexDirection: 'row',
-    marginLeft: 15,
-    marginRight: 15,
-    marginTop: 15,
-  },
-  radioText: {
-    alignSelf: 'center',
-    color: colors.lightBlackColor,
-    fontSize: wp('3.8%'),
-    marginLeft: 15,
-    marginRight: 15,
-  },
-  radioImage: {
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
-    // tintColor: colors.radioButtonColor,
-    alignSelf: 'center',
-  },
-  unSelectRadioImage: {
-    alignSelf: 'center',
-    height: 22,
-    resizeMode: 'contain',
-    tintColor: colors.grayColor,
-    width: 22,
-  },
-  membershipText: {
-    color: colors.veryLightBlack,
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    marginLeft: 15,
-    marginTop: 20,
-  },
-  membershipSubText: {
-    color: colors.veryLightBlack,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    fontWeight: 'bold',
-    lineHeight: 20,
-    marginLeft: 15,
-    marginTop: 20,
-  },
-  whoJoinText: {
-    color: colors.veryLightBlack,
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginBottom: 20,
-    marginLeft: 15,
-    marginTop: 10,
-  },
-
 });

@@ -29,7 +29,7 @@ import React, {
      const { sportName } = route?.params;
 
      const getSettings = useCallback(() => {
-      setSettingObject((authContext?.user?.scorekeeper_data ?? []).filter((obj) => obj.sport_name === sportName)[0].setting);
+      setSettingObject((authContext?.user?.scorekeeper_data ?? []).filter((obj) => obj.sport_name.toLowerCase() === sportName.toLowerCase())[0]?.setting);
      }, [authContext, sportName]);
 
      useEffect(() => {
@@ -167,7 +167,7 @@ import React, {
                  fontFamily: fonts.RRegular,
                  color: colors.lightBlackColor,
                }}>
-               {strings.refereeSettingHeading}
+               {strings.scorekeeperSettingHeading}
              </Text>
            </View>
            <FlatList
@@ -191,7 +191,7 @@ import React, {
                  fontSize: 14,
                  width: '88%',
                }}>
-               {strings.refereeSettingNotes}
+               {strings.scorekeeperSettingNotes}
              </Text>
              <TouchableOpacity onPress={() => setShowBottomNotes(false)}>
                <Image

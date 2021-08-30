@@ -94,7 +94,7 @@
 //         };
 //       }
 
-//       if (data?.game?.singlePlayerGame) {
+//       if (data?.game?.user_challenge) {
 //         if (data.initiated_by === data.game.home_team.user_id) {
 //           return {
 //             name: `${data.game.home_team.first_name} ${data.game.home_team.last_name}`,
@@ -128,7 +128,7 @@
 //         };
 //       }
 
-//       if (data?.game?.singlePlayerGame) {
+//       if (data?.game?.user_challenge) {
 //         if (data.initiated_by === data.game.home_team.user_id) {
 //           return {
 //             name: `${data.game.home_team.first_name} ${data.game.home_team.last_name}`,
@@ -368,7 +368,7 @@ function ChallengerInOutView({ data }) {
     //     };
     //   }
 
-    //   if (data?.game?.singlePlayerGame) {
+    //   if (data?.game?.user_challenge) {
     //     if (data.initiated_by === data.game.home_team.user_id) {
     //       return {
     //         name: `${data.game.home_team.first_name} ${data.game.home_team.last_name}`,
@@ -402,7 +402,7 @@ function ChallengerInOutView({ data }) {
     //     };
     //   }
 
-    //   if (data?.game?.singlePlayerGame) {
+    //   if (data?.game?.user_challenge) {
     //     if (data.initiated_by === data.game.home_team.user_id) {
     //       return {
     //         name: `${data.game.home_team.first_name} ${data.game.home_team.last_name}`,

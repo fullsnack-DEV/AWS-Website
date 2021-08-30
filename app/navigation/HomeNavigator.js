@@ -85,16 +85,9 @@ import GroupEventScreen from '../screens/account/schedule/GroupEventScreen';
 import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 
 // Create challenge
-import CreateChallengeForm1 from '../screens/challenge/createChallenge/CreateChallengeForm1';
-import CreateChallengeForm2 from '../screens/challenge/createChallenge/CreateChallengeForm2';
-import CreateChallengeForm3 from '../screens/challenge/createChallenge/CreateChallengeForm3';
-import CreateChallengeForm4 from '../screens/challenge/createChallenge/CreateChallengeForm4';
-import CreateChallengeForm5 from '../screens/challenge/createChallenge/CreateChallengeForm5';
-import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDateTimeScreen';
 
 import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChallengeScreen';
 import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen';
-import AlterAcceptDeclineScreen from '../screens/challenge/alterChallenge/AlterAcceptDeclineScreen';
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
 import PayAgainScreen from '../screens/challenge/alterChallenge/PayAgainScreen';
 import PayAgainRefereeScreen from '../screens/referee/PayAgainRefereeScreen';
@@ -178,6 +171,7 @@ import RespondToInviteScreen from '../screens/account/createGroup/createTeam/Res
 import RefereeReservationSetting from '../screens/game/bookReferee/RefereeReservationSetting';
 import ScorekeeperReservationSetting from '../screens/game/bookScorekeeper/ScorekeeperReservationSetting';
 import ReservationAcceptDeclineScreen from '../screens/referee/ReservationAcceptDeclineScreen';
+import fonts from '../Constants/Fonts';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -628,7 +622,17 @@ const HomeNavigator = () => (
       name="ScorekeeperBookingDateAndTime"
       component={ScorekeeperBookingDateAndTime}
       options={{
-        headerShown: false,
+        title: 'Book a scorekeeper',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontSize: 16,
+          fontFamily: fonts.RBold,
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
 
@@ -1352,103 +1356,7 @@ const HomeNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name="CreateChallengeForm1"
-      component={CreateChallengeForm1}
-      options={{
-        title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
 
-    <Stack.Screen
-      name="CreateChallengeForm2"
-      component={CreateChallengeForm2}
-      options={{
-        title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-    <Stack.Screen
-      name="CreateChallengeForm3"
-      component={CreateChallengeForm3}
-      options={{
-        title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-    <Stack.Screen
-      name="CreateChallengeForm4"
-      component={CreateChallengeForm4}
-      options={{
-        title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-    <Stack.Screen
-      name="CreateChallengeForm5"
-      component={CreateChallengeForm5}
-      options={{
-        title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-    <Stack.Screen
-      name="ChooseDateTimeScreen"
-      component={ChooseDateTimeScreen}
-      options={{
-        title: 'Challenge',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
     <Stack.Screen
       name="ChooseAddressScreen"
       component={ChooseAddressScreen}
@@ -1490,22 +1398,7 @@ const HomeNavigator = () => (
         headerShown: false,
       }}
     />
-    <Stack.Screen
-      name="AlterAcceptDeclineScreen"
-      component={AlterAcceptDeclineScreen}
-      options={{
-        title: 'Change Match Reservation',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
+
     <Stack.Screen
       name="PayAgainScreen"
       component={PayAgainScreen}

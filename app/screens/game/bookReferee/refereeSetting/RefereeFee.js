@@ -19,8 +19,8 @@ export default function RefereeFee({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [basicFee, setBasicFee] = useState(
     route?.params?.settingObj?.game_fee
-      ? route?.params?.settingObj?.game_fee?.fee?.toString()
-      : '0.0',
+      ? route?.params?.settingObj?.game_fee?.fee
+      : 0,
   );
   const [currencyType] = useState(
     route?.params?.settingObj?.game_fee
@@ -49,7 +49,7 @@ export default function RefereeFee({ navigation, route }) {
      if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
         navigation.navigate(comeFrom, {
           gameFee: {
-            fee: Number(basicFee).toFixed(2),
+            fee: Number(parseFloat(basicFee).toFixed(2)),
             currency_type: currencyType,
           },
         });
@@ -58,7 +58,7 @@ export default function RefereeFee({ navigation, route }) {
           sport: sportName,
           entity_type: 'referee',
           game_fee: {
-            fee: Number(basicFee).toFixed(2),
+            fee: Number(parseFloat(basicFee).toFixed(2)),
             currency_type: currencyType,
           },
         };
@@ -123,7 +123,7 @@ export default function RefereeFee({ navigation, route }) {
               setBasicFee(text);
             }
           }}
-          value={basicFee}
+          value={basicFee.toString()}
           keyboardType={'decimal-pad'}>
         </TextInput>
         <Text style={styles.curruency}>{currencyType}/hour</Text>
