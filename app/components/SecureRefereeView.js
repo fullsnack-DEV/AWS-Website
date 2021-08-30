@@ -48,9 +48,9 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   teamViewStyle: {
-    flex: 1,
+    // flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+   // alignItems: 'center',
   },
 
   imageView: {

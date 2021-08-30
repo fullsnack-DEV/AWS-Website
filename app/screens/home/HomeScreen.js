@@ -275,8 +275,10 @@ const HomeScreen = ({ navigation, route }) => {
 
   const [settingObject, setSettingObject] = useState();
   const [refereeSettingObject, setRefereeSettingObject] = useState();
+  const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
-  const [offerModalVisible, setOfferModalVisible] = useState();
+  const [refereeOfferModalVisible, setRefereeOfferModalVisible] = useState();
+  const [scorekeeperOfferModalVisible, setScorekeeperOfferModalVisible] = useState();
 
   const [
     isDoubleSportTeamCreatedVisible,
@@ -568,6 +570,7 @@ const HomeScreen = ({ navigation, route }) => {
     const userHome = role === 'user';
     const clubHome = role === 'club';
     const teamHome = role === 'team';
+    console.log('home screen');
 
     // setloading(true);
     if (userHome) {
@@ -609,7 +612,7 @@ const HomeScreen = ({ navigation, route }) => {
           )
             .then((res3) => {
               setSettingObject(res3);
-              console.log('res3:::=>', res3);
+              console.log('res3 setting:::=>', res3);
             })
             .catch(() => {
               setFirstTimeLoading(false);
@@ -1137,7 +1140,6 @@ const HomeScreen = ({ navigation, route }) => {
       === currentUserData.sport.toLowerCase()
     ) {
       setChallengePopup(true);
-      // navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData });
     } else {
       Alert.alert(
         strings.alertmessagetitle,
@@ -1237,6 +1239,24 @@ const HomeScreen = ({ navigation, route }) => {
             }
           })
           .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+
+          getSetting(
+            route?.params?.uid || entity.uid,
+            'scorekeeper',
+            scorekeeperInObject.sport_name,
+            authContext,
+          )
+            .then((response) => {
+              setScorekeeperSettingObject(response);
+              console.log('res3:::=>', response);
+            })
+            .catch(() => {
+              setFirstTimeLoading(false);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, strings.defaultError);
+              }, 10);
+              // navigation.goBack();
+            });
       } else {
         navigation.navigate('RegisterScorekeeper');
       }
@@ -1578,6 +1598,7 @@ const HomeScreen = ({ navigation, route }) => {
       {tabKey === 0 && (
         <ScorekeeperInfoSection
           data={currentUserData}
+          scorekeeperSetting={scorekeeperSettingObject}
           selectScorekeeperData={selectScorekeeperData}
           searchLocation={searchLocation}
           languagesName={languagesName}
@@ -3184,7 +3205,7 @@ const HomeScreen = ({ navigation, route }) => {
     </TouchableOpacity>
   );
 
-  const ModalHeader = () => (
+  const ModalRefereeHeader = () => (
     <View style={styles.headerStyle}>
       <View style={styles.handleStyle} />
       <Text
@@ -3199,7 +3220,22 @@ const HomeScreen = ({ navigation, route }) => {
     </View>
   );
 
-  const renderGames = useCallback(
+const ModalScorekeeperHeader = () => (
+  <View style={styles.headerStyle}>
+    <View style={styles.handleStyle} />
+    <Text
+      style={{
+        fontFamily: fonts.RBold,
+        fontSize: 16,
+        color: colors.lightBlackColor,
+        marginLeft: 15,
+      }}>
+      Choose a game that you want to scorekeeper.
+    </Text>
+  </View>
+);
+
+  const renderRefereeGames = useCallback(
     ({ item }) => (
       <TCGameCard
         data={item}
@@ -3249,23 +3285,59 @@ const HomeScreen = ({ navigation, route }) => {
     ),
     [currentUserData, navigation, refereeSettingObject, sportName],
   );
+
+  const renderScorekeeperGames = useCallback(
+    ({ item }) => (
+      <TCGameCard
+        data={item}
+        cardWidth={'88%'}
+        onPress={() => {
+          console.log('Selected game:=>', item);
+            gameListModalRef.current.close();
+            navigation.navigate('ScorekeeperBookingDateAndTime', {
+              gameData: item,
+              settingObj: scorekeeperSettingObject,
+              userData: currentUserData,
+              isHirer: true,
+              navigationName: 'HomeScreen',
+              sportName,
+            });
+        }}
+      />
+    ),
+    [currentUserData, navigation, scorekeeperSettingObject, sportName],
+  );
+
   const listEmptyComponent = () => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyText}>No Games Yet</Text>
     </View>
   );
 
-  const flatListProps = {
+  const flatListRefereeProps = {
     showsVerticalScrollIndicator: false,
     showsHorizontalScrollIndicator: false,
     keyboardShouldPersistTaps: 'never',
     bounces: false,
     data: matchData,
-    renderItem: renderGames,
+    renderItem: renderRefereeGames,
     keyExtractor: (index) => index.toString(),
     ListEmptyComponent: listEmptyComponent,
     style: { marginTop: 15 },
   };
+
+  const flatListScorekeeperProps = {
+    showsVerticalScrollIndicator: false,
+    showsHorizontalScrollIndicator: false,
+    keyboardShouldPersistTaps: 'never',
+    bounces: false,
+    data: matchData,
+    renderItem: renderScorekeeperGames,
+    keyExtractor: (index) => index.toString(),
+    ListEmptyComponent: listEmptyComponent,
+    style: { marginTop: 15 },
+  };
+
   return (
     <View style={styles.mainContainer}>
       <ActionSheet
@@ -3370,7 +3442,54 @@ const HomeScreen = ({ navigation, route }) => {
               });
           } else if (offerOpetions()[index] === strings.scorekeeperOffer) {
             // Alert('scorekeeper offer');
-            gameListModalRef.current.open();
+            // gameListModalRef.current.open();
+            setloading(true);
+            const headers = {};
+            headers.caller_id = currentUserData?.group_id;
+
+            const promiseArr = [
+              getGameSlots(
+                'scorekeepers',
+                authContext?.entity?.uid,
+                `status=accepted&sport=${currentUserData?.sport}&scorekeeperDetail=true`,
+                headers,
+                authContext,
+              ),
+              getSetting(
+                authContext.entity.uid,
+                'scorekeeper',
+                currentUserData?.sport,
+                authContext,
+              ),
+            ];
+
+            Promise.all(promiseArr)
+              .then(([gameList, scorekeeperSetting]) => {
+                if (gameList) {
+                  setMatchData([...gameList?.payload]);
+                }
+
+                if (scorekeeperSetting) {
+                  setScorekeeperSettingObject(scorekeeperSetting);
+                  if (
+                    scorekeeperSetting?.scorekeeperAvailibility
+                    && scorekeeperSetting?.game_fee
+                    && scorekeeperSetting?.refund_policy
+                    && scorekeeperSetting?.available_area
+                  ) {
+                    gameListModalRef.current.open();
+                  } else {
+                    Alert.alert('You can\'t send offer, please configure your scorekeeper setting first.')
+                  }
+                }
+                setloading(false);
+              })
+              .catch((e) => {
+                setloading(false);
+                setTimeout(() => {
+                  Alert.alert(strings.alertmessagetitle, e.messages);
+                }, 10);
+              });
           } else if (offerOpetions()[index] === strings.cancel) {
           }
         }}
@@ -3488,8 +3607,8 @@ const HomeScreen = ({ navigation, route }) => {
                 userName={fullName}
                 location={location}
                 feesCount={
-                  selectRefereeData && selectRefereeData.fee
-                    ? selectRefereeData.fee
+                  refereeSettingObject?.game_fee
+                    ? refereeSettingObject?.game_fee?.fee
                     : 0
                 }
                 onBookRefereePress={() => {
@@ -4027,18 +4146,28 @@ const HomeScreen = ({ navigation, route }) => {
                 userName={fullName}
                 location={location}
                 feesCount={
-                  selectScorekeeperData && selectScorekeeperData.fee
-                    ? selectScorekeeperData.fee
+                  scorekeeperSettingObject?.game_fee
+                    ? scorekeeperSettingObject?.game_fee?.fee
                     : 0
                 }
                 onBookRefereePress={() => {
-                  setScorekeeperInModalVisible(false);
-                  navigation.navigate('ScorekeeperBookingDateAndTime', {
-                    userData: currentUserData,
-                    showMatches: true,
-                    navigationName: 'HomeScreen',
-                    sportName,
-                  });
+                  if (
+                    scorekeeperSettingObject?.scorekeeperAvailibility
+                    && scorekeeperSettingObject?.game_fee
+                    && scorekeeperSettingObject?.refund_policy
+                    && scorekeeperSettingObject?.available_area
+                  ) {
+                    setScorekeeperInModalVisible(false);
+                    navigation.navigate('ScorekeeperBookingDateAndTime', {
+                      settingObj: scorekeeperSettingObject,
+                      userData: currentUserData,
+                      showMatches: true,
+                      navigationName: 'HomeScreen',
+                      sportName,
+                    });
+                  } else {
+                    Alert.alert('Scorekeeper setting not configured yet.');
+                  }
                 }}
               />
 
@@ -4613,8 +4742,8 @@ const HomeScreen = ({ navigation, route }) => {
       </Portal>
       <Portal>
         <Modalize
-          visible={offerModalVisible}
-          onOpen={() => setOfferModalVisible(true)}
+          visible={refereeOfferModalVisible}
+          onOpen={() => setRefereeOfferModalVisible(true)}
           snapPoint={hp(50)}
           withHandle={false}
           overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
@@ -4629,15 +4758,43 @@ const HomeScreen = ({ navigation, route }) => {
           }}
           onPositionChange={(position) => {
             if (position === 'top') {
-              setOfferModalVisible(false);
+              setRefereeOfferModalVisible(false);
             }
           }}
           ref={gameListModalRef}
-          HeaderComponent={ModalHeader}
-          flatListProps={flatListProps}
+          HeaderComponent={ModalRefereeHeader}
+          flatListProps={flatListRefereeProps}
         />
       </Portal>
 
+      {/* Scorekeeper offer */}
+
+      <Portal>
+        <Modalize
+          visible={scorekeeperOfferModalVisible}
+          onOpen={() => setScorekeeperOfferModalVisible(true)}
+          snapPoint={hp(50)}
+          withHandle={false}
+          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+          modalStyle={{
+            borderTopRightRadius: 25,
+            borderTopLeftRadius: 25,
+            shadowColor: colors.blackColor,
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 10,
+            elevation: 10,
+          }}
+          onPositionChange={(position) => {
+            if (position === 'top') {
+              setScorekeeperOfferModalVisible(false);
+            }
+          }}
+          ref={gameListModalRef}
+          HeaderComponent={ModalScorekeeperHeader}
+          flatListProps={flatListScorekeeperProps}
+        />
+      </Portal>
       <Modal
         isVisible={isDoubleSportTeamCreatedVisible} // isDoubleSportTeamCreatedVisible
         backdropColor="black"
@@ -4741,27 +4898,7 @@ const HomeScreen = ({ navigation, route }) => {
             </Text>
             <Text style={styles.locationText}>Challenge</Text>
             <Text style={styles.locationText}> </Text>
-            {/* <Text
-              style={styles.doneText}
-              onPress={() => {
-                if (selectedChallengeOption === 0) {
-                  setChallengePopup(false);
-                  navigation.navigate('ChallengeScreen', {
-                    groupObj: currentUserData,
-                  });
-                }
-                if (selectedChallengeOption === 1) {
-                  setChallengePopup(false);
-                  // navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData });
-                  navigation.navigate('InviteChallengeScreen', {
-                    groupObj: currentUserData,
-                  });
-                }
-              }}>
-              {selectedChallengeOption === 0 || selectedChallengeOption === 1
-                ? 'Next'
-                : ''}
-            </Text> */}
+
           </View>
           <TCThinDivider width={'100%'} marginBottom={15} />
           <TouchableWithoutFeedback

@@ -19,6 +19,7 @@ function ReservationCard({
   onPressButon = () => {},
   // onPressGameCard = () => {},
 }) {
+  console.log('reservation data:=>', data);
 //  const authContext = useContext(AuthContext);
 
 //   const isPendingButtonOrDetailButton = () => {
@@ -133,7 +134,7 @@ function ReservationCard({
             { marginRight: 5, marginLeft: 5, color: colors.lightgrayColor },
           ]}>|</Text>
         <Text style={[styles.timeLocationText, { marginRight: 0, flex: 0.5 }]} numberOfLines={1}>
-          {data?.game?.city}
+          {data?.game?.city ?? data?.city}
         </Text>
       </View>
       {/* {isPendingButtonOrDetailButton() ? (

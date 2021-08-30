@@ -128,6 +128,7 @@ const parseRefereeRequestNotification = async (data) => {
   }
 
   const reservationObject = notificationObject.reservationObject
+  console.log('reservationObject activity::=>', activity);
 
   if (reservationObject.referee_id === reservationObject.requested_by) {
     finalString.firstTitle = `${reservationObject.updated_by.first_name} ${reservationObject.updated_by.last_name}`
@@ -136,7 +137,7 @@ const parseRefereeRequestNotification = async (data) => {
     if (reservationObject.referee?.thumbnail) {
       finalString.imgName = reservationObject.referee.thumbnail
     }
-  } else if (reservationObject.game.singlePlayerGame) {
+  } else if (reservationObject.game.user_challenge) {
     finalString.entityType = 'user'
     if (reservationObject.requested_by === reservationObject.game.away_team.user_id) {
       finalString.firstTitle = `${reservationObject.game.away_team.first_name} ${reservationObject.game.away_team.last_name}`
@@ -205,7 +206,7 @@ const parseScorekeeperRequestNotification = async (data) => {
     if (reservationObject.scorekeeper?.thumbnail) {
       finalString.imgName = reservationObject.scorekeeper.thumbnail
     }
-  } else if (reservationObject.game.singlePlayerGame) {
+  } else if (reservationObject.game.user_challenge) {
     finalString.entityType = 'user'
     if (reservationObject.requested_by === reservationObject.game.away_team.user_id) {
       finalString.firstTitle = `${reservationObject.game.away_team.first_name} ${reservationObject.game.away_team.last_name}`
@@ -333,7 +334,7 @@ const parseRefereeAwaitingPaymentRequestNotification = async (data) => {
     if (reservationObject.referee?.thumbnail) {
       finalString.imgName = reservationObject.referee.thumbnail
     }
-  } else if (reservationObject.game.singlePlayerGame) {
+  } else if (reservationObject.game.user_challenge) {
     if (finalString.entityId === reservationObject.game.away_team.user_id) {
       if (reservationObject.game.away_team.thumbnail) {
         finalString.imgName = reservationObject.game.away_team.thumbnail
@@ -384,7 +385,7 @@ const parseScorekeeperAwaitingPaymentRequestNotification = async (data) => {
     if (reservationObject.scorekeeper?.thumbnail) {
       finalString.imgName = reservationObject.scorekeeper.thumbnail
     }
-  } else if (reservationObject.game.singlePlayerGame) {
+  } else if (reservationObject.game.user_challenge) {
     if (finalString.entityId === reservationObject.game.away_team.user_id) {
       if (reservationObject.game.away_team.thumbnail) {
         finalString.imgName = reservationObject.game.away_team.thumbnail

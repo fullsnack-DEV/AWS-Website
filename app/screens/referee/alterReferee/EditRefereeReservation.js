@@ -591,7 +591,7 @@ export default function EditRefereeReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
+        }, 20);
       });
   };
   const getOpponentEntity = (reservationObj) => {

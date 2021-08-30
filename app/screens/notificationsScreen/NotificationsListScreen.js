@@ -84,6 +84,8 @@ function NotificationsListScreen({ navigation }) {
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
 
   const onDetailPress = (item) => {
+    console.log('Group ITEM ID:::::=>', item);
+
     if (activeScreen) {
       const verb = item.activities[0].verb;
       if (

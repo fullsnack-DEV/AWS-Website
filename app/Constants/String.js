@@ -143,6 +143,8 @@ const strings = {
   selectSportPlaceholder: 'Choose a Sport',
   teamNameTitle: 'What is the team name?',
   whichSport: 'Which sport do you want to referee?',
+  whichSportScorekeeper: 'Which sport do you want to scorekeeper?',
+
   whichLanguage: 'Which languages can you\ncommunicate in.',
   teamNamePlaceholder: 'Enter Team Name',
 
@@ -538,6 +540,8 @@ const strings = {
   cannotAcceptText:
     'Reservation can not be change after game has been started.',
   refereeOfferExpiryText: 'Offer expired or game start time already passed.',
+  scorekeeperOfferExpiryText: 'Offer expired or game start time already passed.',
+
   selectCardText: 'Please select payment method.',
   reservationRequestSent: 'SENT',
   reservationRequestPending: 'PENDING',
@@ -714,6 +718,11 @@ const strings = {
     'The game result has an effect on TC points and TC level of the challenger and you.',
   friendlyTypeText:
     'The game result has no effect on TC points and TC level of the challenger and you.',
+
+    scorekeeperSettingHeading:
+    'These scorekeeper reservation settings will be applied when you receive a scorekeeper reservation request.',
+  scorekeeperSettingNotes:
+    'In order to activate the "book scorekeeper" button and receive a scorekeeper reservation request, please fill in and save all the lists above.',
 
   officialGameType: 'Official',
   friendlyGameType: 'Friendly',

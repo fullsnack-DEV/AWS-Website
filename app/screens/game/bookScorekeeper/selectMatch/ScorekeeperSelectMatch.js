@@ -104,10 +104,6 @@ const ScorekeeperSelectMatch = ({ navigation, route }) => {
                       let message = '';
                       if (isSameScorekeeper) {
                         message = 'This scorekeeper is already booked for this game.';
-                      } else if (!game.isAvailable) {
-                        message = 'There is no available slot of a scorekeeper who you can book in this game.';
-                      } else if ((game?.scorekeepers?.count ?? 0) >= 3) {
-                        message = 'There is no available slot of a scorekeeper who you can book in this game.';
                       }
                       if (message === '') {
                         navigation.navigate(route?.params?.comeFrom, {

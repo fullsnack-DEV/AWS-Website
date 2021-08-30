@@ -184,10 +184,17 @@ const getTabBarVisibility = (route) => {
     || routeName === 'RefundPolicyScorekeeper'
     || routeName === 'RefundPolicyReferee'
     || routeName === 'RefereeBookingDateAndTime'
+
     || routeName === 'BookReferee'
     || routeName === 'AlterRefereeScreen'
     || routeName === 'EditRefereeReservation'
+    || routeName === 'BookScorekeeper'
+    || routeName === 'AlterScorekeeperScreen'
+    || routeName === 'EditScorekeeperReservation'
+    || routeName === 'ScorekeeperBookingDateAndTime'
     || routeName === 'ReservationNavigator'
+    || routeName === 'ScorekeeperReservationScreen'
+    || routeName === 'RefereeReservationScreen'
   ) {
     return false;
   }

@@ -30,7 +30,7 @@ import TCGameDetailRules from '../../components/TCGameDetailRules';
 
 let entity = {};
 let timer;
-export default function CreateChallengeForm4({ navigation, route }) {
+export default function AcceptDeclineChallengeScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
 
   const isFocused = useIsFocused();

@@ -26,7 +26,7 @@ export default function EditScorekeeperFeeScreen({ navigation, route }) {
       bodyParams = {
         ...route.params.body,
       }
-      setBasicFee(route.params.body.total_game_charges)
+      setBasicFee(route.params.body.total_game_fee)
     }
   }, [isFocused]);
   return (
@@ -39,7 +39,7 @@ export default function EditScorekeeperFeeScreen({ navigation, route }) {
             onChangeText={ (text) => {
               bodyParams = {
                 ...route.params.body,
-                total_game_charges: text,
+                total_game_fee: text,
 
               }
               setBasicFee(text)
@@ -63,7 +63,7 @@ export default function EditScorekeeperFeeScreen({ navigation, route }) {
                   reservationObj: {
                     ...bodyParams,
                     manual_fee: true,
-                    total_game_charges: parseFloat(basicFee),
+                    total_game_fee: Number(parseFloat(basicFee).toFixed(2)),
                   },
                   updatedFee: true,
                 })

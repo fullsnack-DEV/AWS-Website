@@ -36,23 +36,35 @@ import * as Utility from '../../../../utils';
 import { patchPlayer } from '../../../../api/Users';
 // const entity = {};
 export default function AvailableAreaScorekeeper({ navigation, route }) {
-   const { comeFrom, sportName } = route?.params;
+  const { comeFrom, sportName } = route?.params;
 
   // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   // const [selectedAddressIndex, setSelectedAddressIndex] = useState();
 
   const [loading, setloading] = useState(false);
-  const [areaRadio, setAreaRadio] = useState(route?.params?.settingObj?.available_area?.is_specific_address ? 0 : 1);
+  const [areaRadio, setAreaRadio] = useState(
+    route?.params?.settingObj?.available_area?.is_specific_address ? 0 : 1,
+  );
   const [addressType, setAddressType] = useState();
-  const [searchAddress, setSearchAddress] = useState(route?.params?.settingObj?.available_area?.address);
+  const [searchAddress, setSearchAddress] = useState(
+    route?.params?.settingObj?.available_area?.address,
+  );
   const [addressModalVisible, setAddressModalVisible] = useState(false);
   const [addressListIndex, setAddressListIndex] = useState();
 
   const [distancePopup, setDistancePopup] = useState(false);
-  const [selectedDistanceOption, setSelectedDistanceOption] = useState(route?.params?.settingObj?.available_area?.distance_type && route?.params?.settingObj?.available_area?.distance_type === 'Mi' ? 0 : 1);
+  const [selectedDistanceOption, setSelectedDistanceOption] = useState(
+    route?.params?.settingObj?.available_area?.distance_type
+      && route?.params?.settingObj?.available_area?.distance_type === 'Mi'
+      ? 0
+      : 1,
+  );
 
-  const [radious, setRadious] = useState(`${route?.params?.settingObj?.available_area?.radious}`);
+  const [radious, setRadious] = useState(
+    route?.params?.settingObj?.available_area?.radious
+      && `${route?.params?.settingObj?.available_area?.radious}`,
+  );
   const [addressList, setAddressList] = useState(
     route?.params?.settingObj?.available_area?.address_list
       ? route?.params?.settingObj?.available_area?.address_list
@@ -79,14 +91,14 @@ export default function AvailableAreaScorekeeper({ navigation, route }) {
                 onSavePressed();
               }
             } else if (selectedDistanceOption === undefined) {
-                Alert.alert('Please selected type of distance.');
-              } else if (!searchAddress) {
-                Alert.alert('Please selected address for calculate range.');
-              } else if (!radious) {
-                Alert.alert('Please selected radious for calculate range.');
-              } else {
-                onSavePressed();
-              }
+              Alert.alert('Please selected type of distance.');
+            } else if (!searchAddress) {
+              Alert.alert('Please selected address for calculate range.');
+            } else if (!radious) {
+              Alert.alert('Please selected radious for calculate range.');
+            } else {
+              onSavePressed();
+            }
           }}>
           Save
         </Text>
@@ -156,13 +168,13 @@ export default function AvailableAreaScorekeeper({ navigation, route }) {
   const onSavePressed = () => {
     let availableArea = {};
     if (areaRadio === 0) {
-     const list = addressList.map((v) => {
-       const o = v
-       delete o.id;
-       return o
+      const list = addressList.map((v) => {
+        const o = v;
+        delete o.id;
+        return o;
       });
 
-     console.log('list', list);
+      console.log('list', list);
 
       availableArea = {
         is_specific_address: areaRadio === 0,
@@ -181,8 +193,8 @@ export default function AvailableAreaScorekeeper({ navigation, route }) {
     console.log('availableArea', availableArea);
     const bodyParams = {};
     bodyParams.available_area = availableArea;
-    bodyParams.sport = sportName
-    bodyParams.entity_type = 'scorekeeper'
+    bodyParams.sport = sportName;
+    bodyParams.entity_type = 'scorekeeper';
     setloading(true);
     const registerdScorekeeperData = authContext?.user?.scorekeeper_data?.filter(
       (obj) => obj.sport_name !== sportName,
@@ -192,10 +204,13 @@ export default function AvailableAreaScorekeeper({ navigation, route }) {
       (obj) => obj.sport_name === sportName,
     )[0];
 
-    selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+    selectedSport.setting = { ...selectedSport?.setting, ...bodyParams };
     registerdScorekeeperData.push(selectedSport);
 
-    const body = { ...authContext?.user, referee_data: registerdScorekeeperData };
+    const body = {
+      ...authContext?.user,
+      scorekeeper_data: registerdScorekeeperData,
+    };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
@@ -203,7 +218,7 @@ export default function AvailableAreaScorekeeper({ navigation, route }) {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
-          console.log('Register referee response IS:: ', response.payload);
+          console.log('Register scorekeeper response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({ ...entity });

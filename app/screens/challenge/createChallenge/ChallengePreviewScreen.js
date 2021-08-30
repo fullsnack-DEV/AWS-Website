@@ -37,6 +37,8 @@ import { heightPercentageToDP, widthPercentageToDP } from '../../../utils';
 import TCSmallButton from '../../../components/TCSmallButton';
 import images from '../../../Constants/ImagePath';
 import { getGameHomeScreen, getNumberSuffix } from '../../../utils/gameUtils';
+import * as Utility from '../../../utils';
+
 import {
   acceptDeclineChallenge,
   acceptDeclineAlterChallenge,
@@ -47,7 +49,8 @@ import TCArrowView from '../../../components/TCArrowView';
 import TCGradientButton from '../../../components/TCGradientButton';
 
 import TCBorderButton from '../../../components/TCBorderButton';
-import { getSetting } from '../manageChallenge/settingUtility';
+import * as Utils from '../manageChallenge/settingUtility';
+import TCTouchableLabel from '../../../components/TCTouchableLabel';
 
 let entity = {};
 export default function ChallengePreviewScreen({ navigation, route }) {
@@ -75,34 +78,25 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   );
   const [oldVersion, setOldVersion] = useState();
 
-  // const [challenger, setChallenger] = useState(
-  //   challengeData?.challenger === challengeData?.home_team?.user_id
-  //     || challengeData?.challenger === challengeData?.home_team?.group_id
-  //     ? challengeData?.home_team
-  //     : challengeData?.away_team,
-  // );
-  // const [challengee, setChallengee] = useState(
-  //   challengeData?.challengee === challengeData?.home_team?.user_id
-  //     || challengeData?.challengee === challengeData?.home_team?.group_id
-  //     ? challengeData?.home_team
-  //     : challengeData?.away_team,
-  // );
-
-const getChallenger = () => {
-  if (challengeData?.challenger === challengeData?.home_team?.user_id
-    || challengeData?.challenger === challengeData?.home_team?.group_id) {
-      return challengeData?.home_team
+  const getChallenger = () => {
+    if (
+      challengeData?.challenger === challengeData?.home_team?.user_id
+      || challengeData?.challenger === challengeData?.home_team?.group_id
+    ) {
+      return challengeData?.home_team;
     }
-      return challengeData?.away_team
-}
+    return challengeData?.away_team;
+  };
 
-const getChallengee = () => {
-  if (challengeData?.challengee === challengeData?.home_team?.user_id
-    || challengeData?.challengee === challengeData?.home_team?.group_id) {
-      return challengeData?.home_team
+  const getChallengee = () => {
+    if (
+      challengeData?.challengee === challengeData?.home_team?.user_id
+      || challengeData?.challengee === challengeData?.home_team?.group_id
+    ) {
+      return challengeData?.home_team;
     }
-      return challengeData?.away_team
-}
+    return challengeData?.away_team;
+  };
   useEffect(() => {
     if (route?.params?.challengeObj?.length > 1) {
       // setIsPendingRequestPayment(true);
@@ -142,86 +136,18 @@ const getChallengee = () => {
 
   useEffect(() => {
     setloading(true);
-    console.log('challenge data11:=>', challengeData);
-    getSetting(
+    console.log('challenge data11:=>', challengeData?.challengee);
+    Utils.getSetting(
       challengeData?.challengee,
       authContext.entity.role === 'user' ? 'player' : 'team',
       challengeData?.sport,
       authContext,
-    )
-      .then((response) => {
-        setloading(false);
-        console.log('manage challenge response:=>', response);
-        setSettingObject(response);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [
-    authContext,
-    challengeData,
-    challengeData?.challengee,
-    challengeData?.sport,
-  ]);
-
-  // const checkSenderOrReceiver = (challengeObj) => {
-  //   console.log('sender & receiver Obj', challengeObj);
-  //   if (!challengeObj?.user_challenge) {
-  //     if (
-  //       challengeObj?.status === ReservationStatus.pendingpayment
-  //       || challengeObj?.status === ReservationStatus.pendingrequestpayment
-  //     ) {
-  //       if (challengeObj?.challenger === entity.uid) {
-  //         return 'sender';
-  //       }
-  //       return 'receiver';
-  //     }
-  //     if (challengeObj?.status === ReservationStatus.offered) {
-  //       if (entity.uid === challengeData?.created_by?.group_id) {
-  //         return 'sender';
-  //       }
-  //       return 'receiver';
-  //     }
-  //     if (challengeObj?.status === ReservationStatus.accepted) {
-  //       if (challengeObj?.updated_by?.group_id === entity.uid) {
-  //         return 'sender';
-  //       }
-  //       return 'receiver';
-  //     }
-  //     // if (challengeObj?.updated_by?.group_id === entity.uid) {
-  //     //   return 'sender';
-  //     // }
-  //     // return 'receiver';
-  //     if (challengeObj?.updated_by?.group_id === entity.uid) {
-  //       return 'sender';
-  //     }
-  //     return 'receiver';
-  //   }
-  //   console.log('challenge for user to user');
-  //   if (
-  //     challengeObj?.status === ReservationStatus.pendingpayment
-  //     || challengeObj?.status === ReservationStatus.pendingrequestpayment
-  //   ) {
-  //     if (challengeObj?.challenger === entity.uid) {
-  //       return 'sender';
-  //     }
-  //     return 'receiver';
-  //   }
-  //   if (challengeObj?.status === ReservationStatus.offered) {
-  //     if (entity.uid === challengeData?.created_by?.uid) {
-  //       return 'sender';
-  //     }
-  //     return 'receiver';
-  //   }
-
-  //   if (challengeObj?.updated_by?.uid === entity.uid) {
-  //     return 'sender';
-  //   }
-  //   return 'receiver';
-  // };
+    ).then((response) => {
+      setloading(false);
+      console.log('manage challenge response:=>', response);
+      setSettingObject(response);
+    });
+  }, [authContext, challengeData?.challengee, challengeData?.sport]);
 
   const checkSenderOrReceiver = (challengeObj) => {
     console.log('sender & receiver Obj', challengeObj);
@@ -382,11 +308,8 @@ const getChallengee = () => {
     ChallengeId,
     versionNo,
     status,
-    paymentID,
+    paymentObj,
   ) => {
-    console.log(
-      `teamID:${teamID}challengeID:${ChallengeId}versionNo:${versionNo}status:${status}paymentID:${paymentID}`,
-    );
     setloading(true);
 
     acceptDeclineAlterChallenge(
@@ -394,7 +317,7 @@ const getChallengee = () => {
       ChallengeId,
       versionNo,
       status,
-      paymentID && { source: paymentID },
+      paymentObj,
       authContext,
     )
       .then((response) => {
@@ -541,7 +464,10 @@ const getChallengee = () => {
 
   const renderReferees = ({ item, index }) => {
     console.log('ITEm:', item);
-    console.log('challengee?.full_name ?? challengee?.group_name', getChallenger()?.full_name ?? getChallenger()?.group_name);
+    console.log(
+      'challengee?.full_name ?? challengee?.group_name',
+      getChallenger()?.full_name ?? getChallenger()?.group_name,
+    );
     return (
       <SecureRefereeView
         entityName={
@@ -565,7 +491,7 @@ const getChallengee = () => {
         entity={'Referee'}
         entityNumber={index + 1}
       />
-    )
+    );
   };
   const renderScorekeepers = ({ item, index }) => (
     <SecureRefereeView
@@ -819,11 +745,20 @@ const getChallengee = () => {
             <TCSmallButton
               title={strings.acceptTitle}
               onPress={() => {
+                let paymentObj = {};
+                if (route?.params?.paymentMethod) {
+                  paymentObj = {
+                    source: route?.params?.paymentMethod?.id,
+                    payment_method_type: 'card',
+                  };
+                }
+
                 alterChallengeOperation(
                   entity.uid,
                   challengeData?.challenge_id,
                   challengeData?.version,
                   'accept',
+                  paymentObj,
                 );
               }}
               style={{ width: widthPercentageToDP('45%') }}
@@ -883,6 +818,7 @@ const getChallengee = () => {
                     challengeData?.challenge_id,
                     challengeData?.version,
                     'cancel',
+                    {},
                   );
                 }
               } else {
@@ -1309,6 +1245,33 @@ const getChallengee = () => {
         isChallenger={challengeData?.challenger === entity.uid}
       />
       <TCThickDivider marginTop={20} />
+
+      {oldVersion?.total_game_fee === 0 && challengeData?.total_game_fee > 0 && challengeData?.challenger === entity.uid && (
+        <View>
+          <View>
+            <TCLabel title={'Payment Method'} />
+            <View style={styles.viewMarginStyle}>
+              <TCTouchableLabel
+                title={
+                  route?.params?.paymentMethod
+
+                    ? `${Utility.capitalize(route?.params?.paymentMethod?.card?.brand)} ****${
+                      route?.params?.paymentMethod?.card?.last4
+                      }`
+                    : strings.addOptionMessage
+                }
+                showNextArrow={true}
+                onPress={() => {
+                  navigation.navigate('PaymentMethodsScreen', {
+                    comeFrom: 'ChallengePreviewScreen',
+                  });
+                }}
+              />
+            </View>
+          </View>
+          <TCThickDivider marginTop={20} />
+        </View>
+      )}
 
       <SafeAreaView>{bottomButtonView()}</SafeAreaView>
 

@@ -98,10 +98,10 @@ export default function RefundPolicyScorekeeper({ navigation, route }) {
         (obj) => obj.sport_name === sportName,
       )[0];
 
-      selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+      selectedSport.setting = { ...selectedSport?.setting, ...bodyParams };
       registerdScorekeeperData.push(selectedSport);
 
-      const body = { ...authContext?.user, referee_data: registerdScorekeeperData };
+      const body = { ...authContext?.user, scorekeeper_data: registerdScorekeeperData };
       console.log('Body::::--->', body);
 
       patchPlayer(body, authContext)
@@ -109,7 +109,7 @@ export default function RefundPolicyScorekeeper({ navigation, route }) {
           if (response.status === true) {
             setloading(false);
             const entity = authContext.entity;
-            console.log('Register referee response IS:: ', response.payload);
+            console.log('Register scorekeeper response IS:: ', response.payload);
             entity.auth.user = response.payload;
             entity.obj = response.payload;
             authContext.setEntity({ ...entity });

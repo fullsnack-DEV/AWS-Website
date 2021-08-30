@@ -130,7 +130,7 @@ export default function PayAgainScreen({ navigation, route }) {
   //             body.service_fee1_charges = response.payload.total_service_fee1;
   //             body.service_fee2_charges = response.payload.total_service_fee2;
   //             body.total_charges = response.payload.total_amount;
-  //             body.total_game_charges = response.payload.total_game_fee;
+  //             body.total_game_fee = response.payload.total_game_fee;
   //             setEstimationFee({ ...body });
   //           }
 

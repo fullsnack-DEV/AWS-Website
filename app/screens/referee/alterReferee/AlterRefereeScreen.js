@@ -22,6 +22,8 @@ import {
   updateReservation,
   cancelAlterReservation,
 } from '../../../api/Challenge';
+import * as Utility from '../../../utils';
+
 import { paymentMethods } from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
@@ -49,6 +51,7 @@ import { getHitSlop, heightPercentageToDP, widthPercentageToDP } from '../../../
 import TCTabView from '../../../components/TCTabView';
 import CurruentRefereeReservationView from './CurrentRefereeReservationView';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
+import TCTouchableLabel from '../../../components/TCTouchableLabel';
 
 let entity = {};
 const scroll = React.createRef();
@@ -687,7 +690,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
     if (reservationObj?.initiated_by === entity.uid) {
       return `${reservationObj?.referee?.first_name} ${reservationObj?.referee?.last_name}`;
     }
-    if (!reservationObj?.game?.singlePlayerGame) {
+    if (!reservationObj?.game?.user_challenge) {
       if (
         reservationObj?.initiated_by
         === reservationObj?.game?.home_team?.group_id
@@ -869,6 +872,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     color: colors.lightBlackColor,
+                    width: '80%',
                   }}>
                   {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
                 </Text>
@@ -946,7 +950,10 @@ export default function AlterRefereeScreen({ navigation, route }) {
             && bodyParams.status === RefereeReservationStatus.changeRequest
             && !bodyParams.automatic_request && (
               <View>
-                <Text style={styles.challengeMessage}>
+                <Text style={[
+                    styles.challengeMessage,
+                    { color: colors.requestSentColor },
+                ]}>
                   ALTERATION REQUEST PENDING
                 </Text>
                 <Text style={styles.challengeText}>
@@ -1306,6 +1313,30 @@ export default function AlterRefereeScreen({ navigation, route }) {
             challengeObj={paymentCard}
             senderOrReceiver={checkSenderForPayment(bodyParams)}
           />
+
+          {/* Payment Method */}
+          {oldVersion?.total_game_fee === 0 && bodyParams?.total_game_fee > 0 && (
+            <View style={styles.contentContainer}>
+              <Title text={'Payment Method'} />
+              <View style={{ marginTop: 10 }}>
+                <TCTouchableLabel
+                title={
+                  route.params.paymentMethod
+                    ? Utility.capitalize(route.params.paymentMethod.card.brand)
+                    : strings.addOptionMessage
+                }
+                subTitle={route.params.paymentMethod?.card.last4}
+                showNextArrow={true}
+                onPress={() => {
+                  navigation.navigate('PaymentMethodsScreen', {
+                    comeFrom: 'AlterRefereeScreen',
+                  });
+                }}
+              />
+              </View>
+            </View>
+        )}
+
           {editPayment && (
             <View style={{ marginTop: 15 }}>
               <Text style={styles.differenceText}>
@@ -1593,6 +1624,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.lightBlackColor,
+    width: '80%',
   },
   challengerView: {
     marginRight: 15,
@@ -1731,4 +1763,5 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
   },
+
 });

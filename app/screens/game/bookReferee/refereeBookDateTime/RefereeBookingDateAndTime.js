@@ -38,6 +38,7 @@ import TCThickDivider from '../../../../components/TCThickDivider';
 import {
   getGameRefereeReservation,
 } from '../../../../api/Games';
+import TCFormProgress from '../../../../components/TCFormProgress';
 
 let body = {};
 const RefereeBookingDateAndTime = ({ navigation, route }) => {
@@ -202,9 +203,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     <>
       <ScrollView bounces={false} style={{ flex: 1 }}>
         {/*  Steps */}
-        {/* <TCStep totalStep={2} currentStep={2} style={{
-            margin: 0, padding: 0, paddingTop: 15, paddingRight: 15,
-          }}/> */}
+        <TCFormProgress totalSteps={2} curruentStep={2} />
         <ActivityLoader visible={loading} />
 
         {/* Name and country */}
@@ -356,10 +355,10 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
 
         <TCChallengeTitle title={'Game Rules'} />
         <Text style={styles.rulesTitle}>General Rules</Text>
-        <Text style={styles.rulesDetail}>{'Dummy general rules text'}</Text>
+        <Text style={styles.rulesDetail}>{gameData?.general_rules}</Text>
         <View style={{ marginBottom: 10 }} />
         <Text style={styles.rulesTitle}>Special Rules</Text>
-        <Text style={[styles.rulesDetail, { marginBottom: 10 }]}>{'Dummy special rules text'}</Text>
+        <Text style={[styles.rulesDetail, { marginBottom: 10 }]}>{gameData?.special_rules}</Text>
         <Seperator />
 
         {/* Chief or assistant */}

@@ -168,7 +168,7 @@ export default function CurruentRefereeReservationView({ reservationObj, navigat
     if (reservationObject?.initiated_by === entity.uid) {
       return `${reservationObject?.referee?.first_name} ${reservationObject?.referee?.last_name}`;
     }
-    if (!reservationObject?.game?.singlePlayerGame) {
+    if (!reservationObject?.game?.user_challenge) {
       if (
         reservationObject?.initiated_by
         === reservationObject?.game?.home_team?.group_id
@@ -302,6 +302,8 @@ export default function CurruentRefereeReservationView({ reservationObj, navigat
                       fontFamily: fonts.RMedium,
                       fontSize: 16,
                       color: colors.lightBlackColor,
+                      width: '80%',
+
                     }}>
                   {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
                 </Text>
@@ -750,6 +752,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.lightBlackColor,
+    width: '80%',
+
   },
   challengerView: {
     marginRight: 15,

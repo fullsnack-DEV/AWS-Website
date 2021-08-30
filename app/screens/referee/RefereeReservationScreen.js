@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable react/no-unescaped-entities */
 import React, {
   useEffect,
@@ -298,7 +299,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
     if (reservationObj?.initiated_by === entity.uid) {
       return `${reservationObj?.referee?.first_name} ${reservationObj?.referee?.last_name}`;
     }
-    if (!reservationObj?.game?.singlePlayerGame) {
+    if (!reservationObj?.game?.user_challenge) {
       if (
         reservationObj?.initiated_by
         === reservationObj?.game?.home_team?.group_id
@@ -307,13 +308,23 @@ export default function RefereeReservationScreen({ navigation, route }) {
       }
       return `${reservationObj?.game?.away_team.group_name}`;
     }
-    console.log('user challenge');
-    if (
-      reservationObj?.initiated_by === reservationObj?.game?.home_team?.user_id
-    ) {
-      return `${reservationObj?.game?.home_team.first_name} ${reservationObj?.game?.home_team.last_name}`;
+
+    if (reservationObj?.game?.user_challenge) {
+      if (
+        reservationObj?.initiated_by
+        === reservationObj?.game?.home_team?.user_id
+      ) {
+        return `${reservationObj?.game?.home_team.first_name} ${reservationObj?.game?.home_team.last_name}`;
+      }
+      return `${reservationObj?.game?.away_team.first_name} ${reservationObj?.game?.away_team.last_name}`;
     }
-    return `${reservationObj?.game?.away_team.first_name} ${reservationObj?.game?.away_team.last_name}`;
+
+    // if (
+    //   reservationObj?.initiated_by === reservationObj?.game?.home_team?.user_id
+    // ) {
+    //   return `${reservationObj?.game?.home_team.first_name} ${reservationObj?.game?.home_team.last_name}`;
+    // }
+    // return `${reservationObj?.game?.away_team.first_name} ${reservationObj?.game?.away_team.last_name}`;
   };
 
   const Title = ({ text, required }) => (
@@ -432,6 +443,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                       fontFamily: fonts.RMedium,
                       fontSize: 16,
                       color: colors.lightBlackColor,
+                      width: '80%',
                     }}>
                     {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
                   </Text>
@@ -1183,6 +1195,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.lightBlackColor,
+  width: '80%',
   },
   challengerView: {
     marginRight: 15,

@@ -41,11 +41,6 @@ export default function ChooseAddressScreen({ navigation, route }) {
   };
 
   const venueData = async (selectedAddress) => {
-    if (route.params.comeFrom === 'CreateChallengeForm1') {
-      navigation.navigate('CreateChallengeForm1', {
-        venueObj: selectedAddress,
-      });
-    }
     if (route.params.comeFrom === 'Venue') {
       navigation.navigate('Venue', {
         venueObj: selectedAddress,

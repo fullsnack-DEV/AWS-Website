@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useState } from 'react';
 import {
@@ -17,14 +18,13 @@ import Header from '../../../../components/Home/Header';
 import TCSearchBox from '../../../../components/TCSearchBox';
 import RenderReferee from './RenderReferee';
 import TCGradientButton from '../../../../components/TCGradientButton';
-import { getGameUser } from '../../../../api/Games';
 
 import AuthContext from '../../../../auth/context';
 import { getSearchData } from '../../../../utils';
 import strings from '../../../../Constants/String';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
-import { getSetting } from '../../../challenge/manageChallenge/settingUtility';
+import * as Utils from '../../../challenge/manageChallenge/settingUtility';
 import { postElasticSearch } from '../../../../api/elasticSearch';
 
 const TYPING_SPEED = 200;
@@ -40,46 +40,52 @@ const BookReferee = ({ navigation, route }) => {
   const [typingTimeout, setTypingTimeout] = useState(0);
   useEffect(() => {
     setLoading(true);
-    // getGameUser(gameData?.sport, 'referees', authContext)
-    //   .then((res) => {
-    //     setRefereesData([...res?.payload]);
-    //   })
-    //   .finally(() => setLoading(false));
 
-      const refefreeList = bodybuilder()
-      // .query('match', 'sport', gameData?.sport)
-
+    const refefreeList = bodybuilder()
+      .query('term', 'referee_data.sport_name.keyword', {
+        value: gameData?.sport?.toLowerCase(),
+        case_insensitive: true,
+      })
+      .query('term', 'referee_data.is_published', {
+        value: true,
+      })
       .build();
 
-      postElasticSearch(refefreeList, 'userindex').then((res) => {
+    postElasticSearch(refefreeList, 'userindex')
+      .then((res) => {
         setLoading(false);
-        console.log('res1:=>', res);
-      }).catch(() => {
+        console.log('res referee list:=>', res);
+        setRefereesData([...res?.hits?.hits]);
+      })
+      .catch(() => {
         setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, strings.defaultError);
         }, 10);
         // navigation.goBack();
       });
-  }, []);
+  }, [gameData?.sport]);
 
   const renderRefereeData = ({ item }) => {
-    const referee = item?.referee_data?.filter(
+    const referee = item._source;
+    const refereeObject = referee?.referee_data?.filter(
       (refereeItem) => refereeItem?.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase(),
     );
+
+    console.log('setting1:=>', refereeObject);
     return (
-      <TouchableOpacity onPress={() => setSelectedReferee(item)}>
+      <TouchableOpacity onPress={() => setSelectedReferee(referee)}>
         <RenderReferee
-        profilePic={item?.thumbnail}
-        isSelected={item?.user_id === selectedReferee?.user_id}
-        fees={referee?.[0]?.fee ?? 0}
-        name={item?.full_name}
-        country={`${item?.city ?? ''} ${item?.country ? ',' : ''} ${
-          item?.country ?? ''
-        }`}
-        rating={referee?.[0]?.avg_review?.total_avg ?? 0}
-        onRadioClick={() => setSelectedReferee(item)}
-      />
+          profilePic={referee?.thumbnail}
+          isSelected={referee?.user_id === selectedReferee?.user_id}
+          fees={refereeObject?.[0]?.setting?.game_fee?.fee ?? 0}
+          name={referee?.full_name}
+          country={`${referee?.city ?? ''} ${referee?.country ? ',' : ''} ${
+            referee?.country ?? ''
+          }`}
+          rating={referee?.[0]?.avg_review?.total_avg ?? 0}
+          onRadioClick={() => setSelectedReferee(referee)}
+        />
       </TouchableOpacity>
     );
   };
@@ -121,10 +127,10 @@ const BookReferee = ({ navigation, route }) => {
       <View style={styles.contentContainer}>
         {/*  Search Bar */}
         <TCSearchBox
-            value={searchText}
-            placeholderText={'Search'}
-            onChangeText={onSearchRefreeTextChange}
-          />
+          value={searchText}
+          placeholderText={'Search'}
+          onChangeText={onSearchRefreeTextChange}
+        />
 
         {/*  Total and Filter */}
         <View style={styles.totalAndFilterContainer}>
@@ -137,81 +143,39 @@ const BookReferee = ({ navigation, route }) => {
         {/*  Referee List Container */}
 
         <FlatList
-              keyExtractor={(item) => item?.user_id}
-              bounces={false}
-              data={searchText === '' ? refereesData : searchData}
-              renderItem={renderRefereeData}
-              ListEmptyComponent={
-                <Text style={styles.emptySectionListItem}>
-                  {searchText === ''
-                    ? 'No referee found'
-                    : `No referee found for '${searchText}'`}
-                </Text>
-              }
-            />
+          keyExtractor={(item) => item?.user_id}
+          bounces={false}
+          data={searchText === '' ? refereesData : searchData}
+          renderItem={renderRefereeData}
+          ListEmptyComponent={
+            <Text style={styles.emptySectionListItem}>
+              {searchText === ''
+                ? 'No referee found'
+                : `No referee found for '${searchText}'`}
+            </Text>
+          }
+        />
 
         {/*  Next Button */}
         {selectedReferee && (
           <View style={{ justifyContent: 'flex-end', marginBottom: 50 }}>
             <TCGradientButton
-                title={'NEXT'}
-                onPress={() => {
-                  if (gameData?.referees) {
-                    if (
-                      gameData?.referees?.length
-                      < gameData?.challenge_referee?.who_secure?.length
-                    ) {
-                      setLoading(true)
-                      getSetting(
-                        selectedReferee?.user_id,
-                        'referee',
-                        gameData.sport,
-                        authContext,
-                      )
-                        .then((response) => {
-                          setLoading(false)
-                          console.log('res3:::=>', response);
-                          if (
-                            response?.refereeAvailibility
-                            && response?.game_fee
-                            && response?.refund_policy
-                            && response?.available_area
-                          ) {
-                            navigation.navigate('RefereeBookingDateAndTime', {
-                              settingObj: response,
-                              userData: selectedReferee,
-                              navigationName: 'HomeScreen',
-                              gameData,
-                            });
-                          } else {
-                            setTimeout(() => {
-                              Alert.alert('Referee setting not configured yet.');
-                            }, 10);
-                          }
-                        })
-                        .catch(() => {
-                          setLoading(false);
-                          setTimeout(() => {
-                            Alert.alert(strings.alertmessagetitle, strings.defaultError);
-                          }, 10);
-                          // navigation.goBack();
-                        });
-                    } else {
-                      Alert.alert(
-                        'Towns Cup',
-                        `You can't book more than ${gameData?.challenge_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
-                      );
-                    }
-                  } else if (gameData?.challenge_referee?.who_secure?.length > 0) {
-                    setLoading(true)
-                    getSetting(
+              title={'NEXT'}
+              onPress={() => {
+                if (gameData?.referees) {
+                  if (
+                    gameData?.referees?.length
+                    < gameData?.challenge_referee?.who_secure?.length
+                  ) {
+                    setLoading(true);
+                    Utils.getSetting(
                       selectedReferee?.user_id,
                       'referee',
                       gameData.sport,
                       authContext,
                     )
                       .then((response) => {
-                        setLoading(false)
+                        setLoading(false);
                         console.log('res3:::=>', response);
                         if (
                           response?.refereeAvailibility
@@ -234,22 +198,71 @@ const BookReferee = ({ navigation, route }) => {
                       .catch(() => {
                         setLoading(false);
                         setTimeout(() => {
-                          Alert.alert(strings.alertmessagetitle, strings.defaultError);
+                          Alert.alert(
+                            strings.alertmessagetitle,
+                            strings.defaultError,
+                          );
                         }, 10);
                         // navigation.goBack();
                       });
                   } else {
                     Alert.alert(
                       'Towns Cup',
-                      `You can’t book more than ${gameData?.challenge_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
+                      `You can't book more than ${gameData?.challenge_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
                     );
                   }
-                }}
-              />
+                } else if (
+                  gameData?.challenge_referee?.who_secure?.length > 0
+                ) {
+                  setLoading(true);
+                  Utils.getSetting(
+                    selectedReferee?.user_id,
+                    'referee',
+                    gameData.sport,
+                    authContext,
+                  )
+                    .then((response) => {
+                      setLoading(false);
+                      console.log('res3:::=>', response);
+                      if (
+                        response?.refereeAvailibility
+                        && response?.game_fee
+                        && response?.refund_policy
+                        && response?.available_area
+                      ) {
+                        navigation.navigate('RefereeBookingDateAndTime', {
+                          settingObj: response,
+                          userData: selectedReferee,
+                          navigationName: 'HomeScreen',
+                          gameData,
+                        });
+                      } else {
+                        setTimeout(() => {
+                          Alert.alert('Referee setting not configured yet.');
+                        }, 10);
+                      }
+                    })
+                    .catch(() => {
+                      setLoading(false);
+                      setTimeout(() => {
+                        Alert.alert(
+                          strings.alertmessagetitle,
+                          strings.defaultError,
+                        );
+                      }, 10);
+                      // navigation.goBack();
+                    });
+                } else {
+                  Alert.alert(
+                    'Towns Cup',
+                    `You can’t book more than ${gameData?.challenge_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
+                  );
+                }
+              }}
+            />
           </View>
-          )}
+        )}
       </View>
-
     </View>
   );
 };

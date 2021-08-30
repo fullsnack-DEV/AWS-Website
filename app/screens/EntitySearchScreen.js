@@ -21,7 +21,7 @@ import {
 import AuthContext from '../auth/context'
 import TCThinDivider from '../components/TCThinDivider';
 import UserListShimmer from '../components/shimmer/commonComponents/UserListShimmer';
-import { getSearchData } from '../utils';
+import { getSearchEntityData } from '../utils';
 import TCSearchProfileView from '../components/TCSearchProfileView';
 
 export default function EntitySearchScreen({ navigation }) {
@@ -48,7 +48,7 @@ export default function EntitySearchScreen({ navigation }) {
   }, [])
 
   const searchFilterFunction = (text) => {
-    const result = getSearchData(searchMember, ['group_name', 'first_name', 'last_name', 'full_name'], text)
+    const result = getSearchEntityData(searchMember, ['group_name', 'first_name', 'last_name', 'full_name'], text)
     setGroups([...result]);
   };
 

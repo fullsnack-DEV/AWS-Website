@@ -422,24 +422,6 @@ const saveTeam = () => {
         </View>
       </SafeAreaView>
 
-      {/* <TCGradientButton title={editableAlter ? strings.doneTitle : strings.nextTitle} onPress={() => {
-        if (editableAlter) {
-          navigation.navigate('EditChallenge', {
-            challengeObj: {
-              ...route.params.body,
-              referee: referees.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),
-            },
-          })
-        } else {
-          navigation.push('CreateChallengeForm4', {
-            teamData: route.params.teamData,
-            body: {
-              ...route.params.body,
-              referee: referees.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),
-            },
-          })
-        }
-      }}/> */}
     </TCKeyboardView>
   );
 }

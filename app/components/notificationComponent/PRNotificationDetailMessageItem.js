@@ -18,6 +18,8 @@ console.log('Detail item cell');
 
   useEffect(() => {
     parseRequest(item, selectedEntity, authContext.entity).then((data) => {
+console.log('Notification data11:', data);
+
       setDataDictionary(data)
     })
   }, []);

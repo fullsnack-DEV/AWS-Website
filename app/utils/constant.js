@@ -36,7 +36,7 @@ export const gameData = {
   status: 'ended',
   invited_by: 'aCqH9ixc23SSPyrwzUbNDDw3YGG3',
   actual_enddatetime: 1611639994,
-  singlePlayerGame: true,
+  user_challenge: true,
   challenge_id: '1610622565569-20',
   resume_datetime: 0,
   away_team_goal: 0,
@@ -145,7 +145,7 @@ export const gameData = {
   }, {
   sport_name: 'Soccer', homePlace: 'Gorakhpur', fee: '0', latitude: 26.7605545, ntrp: '1.0', cancellation_policy: 'strict', descriptions: 'Soccer Description', point: 530, longitude: 83.3731675,
   }, {
-  sport_name: 'Tennis', currency_type: 'CAD', singlePlayerGame: false, fee: '15', language: ['English(Canada)'], cancellation_policy: 'strict', descriptions: 'I like', point: 500, sport_type: 'single-multiplayer',
+  sport_name: 'Tennis', currency_type: 'CAD', user_challenge: false, fee: '15', language: ['English(Canada)'], cancellation_policy: 'strict', descriptions: 'I like', point: 500, sport_type: 'single-multiplayer',
   }, {
   sport_name: 'Tennis Double', currency_type: 'CAD', fee: '10', language: ['English(Canada)', 'English(Singapore)'], cancellation_policy: 'strict', descriptions: 'I Like Tennis Double', point: 500,
   }, {

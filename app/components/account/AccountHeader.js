@@ -37,6 +37,7 @@ export default function AccountHeader({ authEntity, entityRole }) {
     console.log('AUTH DATA::', authEntity);
   }, [])
   const getParentClub = (item) => {
+    console.log('Account header');
     getGroupDetails(item.group_id, authContext).then((response) => {
       if (response.payload.club !== undefined) {
         setParentGroup(response.payload.club);

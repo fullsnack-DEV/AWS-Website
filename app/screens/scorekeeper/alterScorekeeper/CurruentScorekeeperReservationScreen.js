@@ -153,7 +153,7 @@ export default function CurruentScorekeeperReservationScreen({ navigation, route
     if (reservationObj?.initiated_by === entity.uid) {
       return `${reservationObj?.scorekeeper?.first_name} ${reservationObj?.scorekeeper?.last_name}`
     }
-    if (!reservationObj?.game?.singlePlayerGame) {
+    if (!reservationObj?.game?.user_challenge) {
       if (reservationObj?.initiated_by === reservationObj?.game?.home_team?.group_id) {
         return `${reservationObj?.game?.home_team.group_name}`
       }
