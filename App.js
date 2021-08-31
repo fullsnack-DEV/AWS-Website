@@ -6,6 +6,8 @@ import {
   Alert,
   StatusBar,
 } from 'react-native';
+import { decode, encode } from 'base-64'
+
 import firebase from '@react-native-firebase/app';
 import Orientation from 'react-native-orientation';
 import AuthContext from './app/auth/context';
@@ -25,6 +27,14 @@ console.disableYellowBox = true
 // }
 export default function App() {
   const [networkConnected, setNetworkConntected] = useState(true);
+
+  if (!global.btoa) {
+    global.btoa = encode;
+}
+
+if (!global.atob) {
+    global.atob = decode;
+}
 
   useEffect(() => {
     if (!networkConnected) {

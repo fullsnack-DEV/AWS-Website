@@ -33,7 +33,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
       console.log('Au:::=>', authContext);
       setSettingObject(authContext?.entity?.obj?.setting);
     } else {
-      setSettingObject((authContext?.user?.registered_sports ?? []).filter((obj) => obj.sport_name === sportName)[0].setting);
+      setSettingObject((authContext?.user?.registered_sports ?? []).filter((obj) => obj.sport_name === sportName)?.[0].setting);
     }
   }, [authContext, sportName]);
 

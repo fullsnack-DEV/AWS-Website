@@ -630,7 +630,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         || checkSenderOrReceiver(challengeData) === 'receiver')
       && selectedTab === 0
       && (challengeData?.status === ReservationStatus.accepted
-        || challengeData?.status === ReservationStatus.declined)
+        || challengeData?.status === ReservationStatus.declined) && challengeData?.version !== 2
     ) {
       return (
         <View style={styles.bottomButtonView}>
