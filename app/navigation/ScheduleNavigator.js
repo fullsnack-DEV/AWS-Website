@@ -167,6 +167,7 @@ import RegisterPlayerSuccess from '../screens/account/registerPlayer/RegisterPla
 import AccountScreen from '../screens/account/AccountScreen';
 import NotificationNavigator from './NotificationNavigator';
 import fonts from '../Constants/Fonts';
+import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChallengeScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1543,6 +1544,22 @@ const ScheduleNavigator = () => (
               },
             }}
         />
+    <Stack.Screen
+      name="AlterChallengeScreen"
+      component={AlterChallengeScreen}
+      options={{
+        title: 'Game Reservation',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
             name="CurrencySettingScreen"
             component={CurrencySettingScreen}

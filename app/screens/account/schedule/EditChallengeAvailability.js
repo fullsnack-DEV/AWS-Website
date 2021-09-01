@@ -66,7 +66,7 @@ export default function EditChallengeAvailability({ navigation }) {
             let obj = {};
             challengeAvailable.map((challenge_item) => {
               obj = {
-                manual_blocked: challenge_item.isBlock,
+                blocked: challenge_item.isBlock,
                 allDay: challenge_item.allDay,
                 start_datetime: new Date(challenge_item.startDateTime).getTime() / 1000,
                 end_datetime: new Date(challenge_item.endDateTime).getTime() / 1000,

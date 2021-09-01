@@ -169,7 +169,7 @@ return (
           || status === ReservationStatus.requestcancelled) && (
             <View>
               <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
-                RESERVATION CONFIRMED
+                CONFIRMED
               </Text>
               <Text style={styles.statusDescription}>
                 {teamName} confirmed your match reservation request.
@@ -182,7 +182,7 @@ return (
           || status === ReservationStatus.requestcancelled) && (
             <View>
               <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
-                RESERVATION CONFIRMED
+                CONFIRMED
               </Text>
               <Text style={styles.statusDescription}>
                 {isTeamText()} has the confirmed match reservation request against{' '}
@@ -195,7 +195,7 @@ return (
       <View>
         <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
           {challengeObj?.challenger === challengeObj?.invited_by
-              ? 'RESERVATION REQUEST DECLINED'
+              ? 'REQUEST DECLINED'
               : 'INVITE TO CHALLENGE DECLINED'}
         </Text>
         <Text style={styles.statusDescription}>
@@ -209,7 +209,7 @@ return (
       <View>
         <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
           {challengeObj?.challenger === challengeObj?.invited_by
-              ? 'RESERVATION REQUEST DECLINED'
+              ? 'REQUEST DECLINED'
               : 'INVITE TO CHALLENGE DECLINED'}
         </Text>
         <Text style={styles.statusDescription}>
@@ -335,7 +335,7 @@ return (
           ) : (
             <View>
               <Text style={styles.statusTitleText}>
-                ALTERATION REQUEST SENT
+                ALTERATION · AWAITING
               </Text>
               <Text style={styles.statusDescription}>
                 {isTeamText()} sent a match reservation alteration request to{' '}

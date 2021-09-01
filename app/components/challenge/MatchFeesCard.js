@@ -30,7 +30,7 @@ export default function MatchFeesCard({
                 <Text style={styles.smallFeeText}>
                   {' '}
                   ${challengeObj.hourly_game_fee || 0}{' '}
-                  {(challengeObj?.currency_type).toUpperCase() || 'CAD'} x{' '}
+                  {(challengeObj?.currency_type)?.toUpperCase() || 'CAD'} x{' '}
                   {getShortTimeDifForReservation(
                     challengeObj.start_datetime,
                     challengeObj.end_datetime,
@@ -40,7 +40,7 @@ export default function MatchFeesCard({
             </Text>
             <Text style={styles.matchServiceFeeText}>
               {`$${parseFloat(challengeObj?.total_game_charges ?? challengeObj?.total_game_fee).toFixed(2)} ${
-                (challengeObj?.currency_type).toUpperCase() || 'CAD'
+                (challengeObj?.currency_type)?.toUpperCase() || 'CAD'
               }`}
             </Text>
           </View>
@@ -51,7 +51,7 @@ export default function MatchFeesCard({
               {senderOrReceiver === 'sender'
                 ? challengeObj?.total_service_fee1?.toFixed(2)
                 : challengeObj?.total_service_fee2?.toFixed(2)}{' '}
-              {(challengeObj?.currency_type).toUpperCase() || 'CAD'}
+              {(challengeObj?.currency_type)?.toUpperCase() || 'CAD'}
             </Text>
           </View>
 
@@ -68,7 +68,7 @@ export default function MatchFeesCard({
               {senderOrReceiver === 'sender'
                 ? challengeObj?.total_amount?.toFixed(2)
                 : challengeObj?.total_payout?.toFixed(2)}{' '}
-              {(challengeObj?.currency_type).toUpperCase() || 'CAD'}
+              {(challengeObj?.currency_type)?.toUpperCase() || 'CAD'}
             </Text>
           </View>
         </View>

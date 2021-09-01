@@ -30,7 +30,6 @@ import EventMapView from '../../../components/Schedule/EventMapView';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import SecureRefereeView from '../../../components/SecureRefereeView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
-import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import ChallengeStatusView from '../../../components/challenge/ChallengeStatusView';
 import ReservationStatus from '../../../Constants/ReservationStatus';
 import { heightPercentageToDP, widthPercentageToDP } from '../../../utils';
@@ -51,6 +50,8 @@ import TCGradientButton from '../../../components/TCGradientButton';
 import TCBorderButton from '../../../components/TCBorderButton';
 import * as Utils from '../manageChallenge/settingUtility';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
+import TCTabView from '../../../components/TCTabView';
+import CurruentReservationView from '../alterChallenge/CurrentReservationView';
 
 let entity = {};
 export default function ChallengePreviewScreen({ navigation, route }) {
@@ -105,6 +106,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           route?.params?.challengeObj?.[i]?.status
           === ReservationStatus.accepted
         ) {
+          console.log('Old version111::=>', route?.params?.challengeObj?.[i]);
           setOldVersion(route?.params?.challengeObj?.[i]);
           break;
         }
@@ -266,34 +268,6 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           game_id: response?.payload?.game_id,
           sport: challengeData?.sport,
         });
-        // if (status === 'accept') {
-        //   navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-        //     teamObj: {
-        //       ...groupObj,
-        //       game_id: response?.payload?.game_id,
-        //       sport: challengeData?.sport,
-        //     },
-        //     status: 'accept',
-        //   });
-        // } else if (status === 'decline') {
-        //   navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-        //     teamObj: {
-        //       ...groupObj,
-        //       game_id: response?.payload?.game_id,
-        //       sport: challengeData?.sport,
-        //     },
-        //     status: 'decline',
-        //   });
-        // } else if (status === 'cancel') {
-        //   navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-        //     teamObj: {
-        //       ...groupObj,
-        //       game_id: response?.payload?.game_id,
-        //       sport: challengeData?.sport,
-        //     },
-        //     status: 'cancel',
-        //   });
-        // }
       })
       .catch((e) => {
         setloading(false);
@@ -346,51 +320,6 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           game_id: response?.payload?.game_id,
           sport: challengeData?.sport,
         });
-
-        //   setloading(false);
-        //   let groupObj;
-        //   if (challengeData?.home_team?.full_name) {
-        //     if (challengeData?.home_team?.user_id === authContext?.entity?.uid) {
-        //       groupObj = challengeData?.away_team;
-        //     } else {
-        //       groupObj = challengeData?.home_team;
-        //     }
-        //   } else if (
-        //     challengeData?.home_team?.group_id === authContext?.entity?.uid
-        //   ) {
-        //     groupObj = challengeData?.away_team;
-        //   } else {
-        //     groupObj = challengeData?.home_team;
-        //   }
-
-        //   if (status === 'accept') {
-        //     navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-        //       teamObj: {
-        //         ...groupObj,
-        //         game_id: response?.payload?.game_id,
-        //         sport: challengeData?.sport,
-        //       },
-        //       status: 'accept',
-        //     });
-        //   } else if (status === 'decline') {
-        //     navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-        //       teamObj: {
-        //         ...groupObj,
-        //         game_id: response?.payload?.game_id,
-        //         sport: challengeData?.sport,
-        //       },
-        //       status: 'decline',
-        //     });
-        //   } else if (status === 'cancel') {
-        //     navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-        //       teamObj: {
-        //         ...groupObj,
-        //         game_id: response?.payload?.game_id,
-        //         sport: challengeData?.sport,
-        //       },
-        //       status: 'cancel',
-        //     });
-        //   }
       })
       .catch((e) => {
         setloading(false);
@@ -630,7 +559,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         || checkSenderOrReceiver(challengeData) === 'receiver')
       && selectedTab === 0
       && (challengeData?.status === ReservationStatus.accepted
-        || challengeData?.status === ReservationStatus.declined) && challengeData?.version !== 2
+        || (challengeData?.status === ReservationStatus.declined
+          && challengeData?.version !== 2))
     ) {
       return (
         <View style={styles.bottomButtonView}>
@@ -658,6 +588,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                   ) {
                     Alert.alert(strings.cannotChangeReservationGameStartedText);
                   } else {
+                    console.log('settingObject1', settingObject);
                     navigation.navigate('ChangeReservationInfoScreen', {
                       screen: 'change',
                       challengeObj: challengeData,
@@ -950,330 +881,382 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
-      <Text style={styles.challengeNumberStyle}>
-        Request No.{`${challengeData?.challenge_id}`}
-      </Text>
-      {/* <View>
-        <Text style={styles.challengeNumberStyle}>
-          Request No.{`${challengeData?.challenge_id}`}
-        </Text>
-        <Text style={styles.curruentVersion}>Current reservation</Text>
-      </View> */}
-      <ChallengeHeaderView
-        challenger={
-          challengeData?.challenger === challengeData?.home_team?.user_id
-          || challengeData?.challenger === challengeData?.home_team?.group_id
-            ? challengeData?.home_team
-            : challengeData?.away_team
-        }
-        challengee={
-          challengeData?.challengee === challengeData?.home_team?.user_id
-          || challengeData?.challengee === challengeData?.home_team?.group_id
-            ? challengeData?.home_team
-            : challengeData?.away_team
-        }
-        role={challengeData?.home_team?.user_id ? 'user' : 'team'}
-      />
-      <TCThinDivider />
-      {/* offered: 'offered',*
-  changeRequest: 'changeRequest',*
-  accepted: 'accepted',*
-  restored: 'restored',*
-  declined: 'declined',*
-  cancelled: 'cancelled',*
-  pendingpayment: 'pendingpayment',*
-  pendingrequestpayment: 'pendingrequestpayment',*
-  requestcancelled: 'requestcancelled',*  */}
-      <ChallengeStatusView
-        challengeObj={challengeData}
-        isSender={checkSenderOrReceiver(challengeData) === 'sender'}
-        isTeam={!!challengeData?.home_team?.group_name}
-        teamName={getTeamName(challengeData)}
-        // receiverName={challengee?.full_name ?? challengee?.group_name}
-        offerExpiry={
-          ReservationStatus.offered === 'offered'
-          || ReservationStatus.offered === 'changeRequest'
-            ? new Date().getTime()
-            : ''
-        } // only if status offered
-        status={challengeData?.status}
-      />
 
-      {topButtons()}
-
-      {challengeData?.game_id && (
-        <TCArrowView
-          title={'Match Home '}
-          onPress={() => {
-            console.log('teamObject?.sport', challengeData);
-            const gameHome = getGameHomeScreen(challengeData?.sport);
-            console.log('gameHome', gameHome);
-
-            navigation.navigate(gameHome, {
-              gameId: challengeData?.game_id,
-            });
-
-            // if (
-            //   challengeData?.sport?.toLocaleLowerCase()
-            //   === 'soccer'.toLocaleLowerCase()
-            // ) {
-            //   navigation.navigate('SoccerHome', {
-            //     gameId: challengeData?.game_id,
-            //   });
-            // }
-            // if (
-            //   challengeData?.sport?.toLocaleLowerCase()
-            //   === 'tennis'.toLocaleLowerCase()
-            // ) {
-            //   navigation.navigate('TennisHome', {
-            //     gameId: challengeData?.game_id,
-            //   });
-            // }
-          }}
-          containerStyle={{ marginBottom: 15 }}
+      {(challengeData?.status === ReservationStatus.changeRequest
+        || selectedTab === 1) && (
+          <TCTabView
+          totalTabs={2}
+          firstTabTitle={'ALTERATION REQUEST'}
+          secondTabTitle={'CURRENT RESERVATION'}
+          indexCounter={selectedTab}
+          eventPrivacyContianer={{ width: 100 }}
+          onFirstTabPress={() => setSelectedTab(0)}
+          onSecondTabPress={() => setSelectedTab(1)}
+          activeHeight={36}
+          inactiveHeight={40}
         />
       )}
-      <TCThickDivider />
+      {challengeData && selectedTab === 0 && (
+        <View style={{ marginBottom: 15 }}>
+          <Text
+            style={[
+              styles.challengeNumberStyle,
+              {
+                marginTop:
+                  challengeData?.status === ReservationStatus.changeRequest
+                    ? 0
+                    : 15,
+              },
+            ]}>
+            Request No.{`${challengeData?.challenge_id}`}
+          </Text>
 
-      <View>
-        {(challengeData?.status === ReservationStatus.changeRequest
-          || selectedTab === 1) && (
-            <View
+          <ChallengeStatusView
+            challengeObj={challengeData}
+            isSender={checkSenderOrReceiver(challengeData) === 'sender'}
+            isTeam={!!challengeData?.home_team?.group_name}
+            teamName={getTeamName(challengeData)}
+            // receiverName={challengee?.full_name ?? challengee?.group_name}
+            offerExpiry={
+              ReservationStatus.offered === 'offered'
+              || ReservationStatus.offered === 'changeRequest'
+                ? new Date().getTime()
+                : ''
+            } // only if status offered
+            status={challengeData?.status}
+          />
+
+          {topButtons()}
+
+          {challengeData?.game_id && (
+            <TCArrowView
+              title={'Game Home '}
+              onPress={() => {
+                console.log('teamObject?.sport', challengeData);
+                const gameHome = getGameHomeScreen(challengeData?.sport);
+                console.log('gameHome', gameHome);
+
+                navigation.navigate(gameHome, {
+                  gameId: challengeData?.game_id,
+                });
+              }}
+              containerStyle={{
+                marginBottom: 15,
+                justifyContent: 'flex-start',
+                marginLeft: 15,
+              }}
+            />
+          )}
+
+          <TCThinDivider />
+
+          <View
             style={{
+              flex: 1,
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
             }}>
-              <Text
-              onPress={() => {
-                setSelectedTab(0);
-                setChallengeData(route?.params?.challengeObj[0]);
-              }}>
-                NEW OFFER
-              </Text>
-              <Text
-              onPress={() => {
-                setSelectedTab(1);
-                setChallengeData(oldVersion);
-                // route?.params?.challengeObj[0]
-              }}>
-                CURRENT RESERVATION
-              </Text>
+            <View style={styles.challengerView}>
+              <View style={styles.teamView}>
+                <Image source={images.reqIcon} style={styles.reqOutImage} />
+                <Text style={styles.challengerText}>Challenger</Text>
+              </View>
+
+              <View style={styles.teamView}>
+                <View style={styles.profileView}>
+                  <Image
+                    source={
+                      getChallenger()?.thumbnail
+                        ? { uri: getChallenger()?.thumbnail }
+                        : images.teamPlaceholder
+                    }
+                    style={styles.profileImage}
+                  />
+                </View>
+                <Text style={styles.teamNameText}>
+                  {getChallenger()?.group_id
+                    ? `${getChallenger()?.group_name}`
+                    : `${getChallenger()?.first_name} ${
+                        getChallenger()?.last_name
+                      }`}
+                </Text>
+              </View>
             </View>
-        )}
+            <View style={styles.challengeeView}>
+              <View style={styles.teamView}>
+                <Image source={images.reqeIcon} style={styles.reqOutImage} />
+                <Text style={styles.challengeeText}>Challengee</Text>
+              </View>
 
-        <TCLabel title={`Game · ${challengeData?.sport}`} />
-
-        <TCInfoImageField
-          title={'Home'}
-          image={
-            challengeData?.home_team?.thumbnail
-              ? { uri: challengeData?.home_team?.thumbnail }
-              : challengeData?.home_team?.full_name
-              ? images.profilePlaceHolder
-              : images.teamPlaceholder
-          }
-          name={
-            challengeData?.home_team?.group_name
-            ?? challengeData?.home_team?.full_name
-          }
-          marginLeft={30}
-        />
-        <TCThinDivider />
-        <TCInfoImageField
-          title={'Away'}
-          image={
-            challengeData?.away_team?.thumbnail
-              ? { uri: challengeData?.away_team?.thumbnail }
-              : challengeData?.away_team?.full_name
-              ? images.profilePlaceHolder
-              : images.teamPlaceholder
-          }
-          name={
-            challengeData?.away_team?.group_name
-            ?? challengeData?.away_team?.full_name
-          }
-          marginLeft={30}
-        />
-        <TCThinDivider />
-
-        <TCInfoField
-          title={'Time'}
-          value={`${moment(
-            new Date(challengeData?.start_datetime * 1000),
-          ).format('MMM DD, YYYY  hh:mm a')} -\n${moment(
-            new Date(challengeData?.end_datetime * 1000),
-          ).format('MMM DD, YYYY  hh:mm a')}\n( ${getTimeDifferent(
-            new Date(challengeData?.start_datetime * 1000),
-            new Date(challengeData?.end_datetime * 1000),
-          )} )   `}
-          marginLeft={30}
-          titleStyle={{ fontSize: 16 }}
-        />
-        <TCThinDivider />
-
-        <TCInfoField
-          title={'Venue'}
-          value={challengeData?.venue?.name}
-          marginLeft={30}
-          titleStyle={{ fontSize: 16 }}
-        />
-        <TCThinDivider />
-        <TCInfoField
-          title={'Address'}
-          value={challengeData?.venue?.address}
-          marginLeft={30}
-          titleStyle={{ fontSize: 16 }}
-        />
-        <EventMapView
-          coordinate={challengeData?.venue?.coordinate}
-          region={challengeData?.venue?.region}
-          style={styles.map}
-        />
-        <TCThickDivider marginTop={20} />
-      </View>
-
-      <TCChallengeTitle
-        title={'Type of Game'}
-        value={challengeData?.game_type}
-        tooltipText={
-        'The game result has an effect on TC points of the challengee and you.'
-        }
-        tooltipHeight={heightPercentageToDP('6%')}
-        tooltipWidth={widthPercentageToDP('50%')}
-      />
-      <TCThickDivider />
-
-      <TCLabel title={'Game Duration'} />
-      <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
-        title={'1st period'}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-        value={challengeData?.game_duration?.first_period}
-        valueStyle={{
-          fontFamily: fonts.RBold,
-          fontSize: 16,
-          color: colors.greenColorCard,
-          marginRight: 2,
-        }}
-        staticValueText={'min.'}
-      />
-
-      <FlatList
-        data={challengeData?.game_duration?.period}
-        renderItem={renderPeriod}
-        keyExtractor={(item, index) => index.toString()}
-        style={{ marginBottom: 15 }}
-      />
-      {challengeData?.game_duration?.period?.length > 0 && (
-        <Text style={styles.normalTextStyle}>{strings.gameDurationTitle2}</Text>
-      )}
-
-      <FlatList
-        data={challengeData?.game_duration?.overtime}
-        renderItem={renderOverTime}
-        keyExtractor={(item, index) => index.toString()}
-        style={{ marginBottom: 15 }}
-      />
-      <TCThickDivider marginTop={20} />
-
-      <View>
-        <TCChallengeTitle title={'Game Rules'} />
-        <Text style={styles.rulesTitle}>General Rules</Text>
-        <Text style={styles.rulesDetail}>{challengeData?.general_rules}</Text>
-        <View style={{ marginBottom: 10 }} />
-        <Text style={styles.rulesTitle}>Special Rules</Text>
-        <Text style={styles.rulesDetail}>{challengeData?.special_rules}</Text>
-        <TCThickDivider marginTop={20} />
-      </View>
-
-      <TCChallengeTitle
-        title={'Referees'}
-        value={challengeData?.responsible_for_referee?.who_secure?.length}
-        staticValueText={'Referees'}
-        valueStyle={{
-          fontFamily: fonts.RBold,
-          fontSize: 16,
-          color: colors.greenColorCard,
-          marginRight: 2,
-        }}
-      />
-      <FlatList
-        data={challengeData?.responsible_for_referee?.who_secure}
-        renderItem={renderReferees}
-        keyExtractor={(item, index) => index.toString()}
-        ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
-        style={{ marginBottom: 15 }}
-      />
-
-      <TCThickDivider marginTop={20} />
-
-      <TCChallengeTitle
-        title={'Scorekeepers'}
-        value={challengeData?.responsible_for_scorekeeper?.who_secure?.length}
-        staticValueText={'Scorekeepers'}
-        valueStyle={{
-          fontFamily: fonts.RBold,
-          fontSize: 16,
-          color: colors.greenColorCard,
-          marginRight: 2,
-        }}
-      />
-      <FlatList
-        data={challengeData?.responsible_for_scorekeeper?.who_secure}
-        renderItem={renderScorekeepers}
-        keyExtractor={(item, index) => index.toString()}
-        ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
-        style={{ marginBottom: 15 }}
-      />
-      <TCThickDivider marginTop={20} />
-
-      <TCLabel
-        title={challengeData?.challenger === entity.uid ? 'Payment' : 'Earning'}
-        style={{ marginBottom: 15 }}
-      />
-      <GameFeeCard
-        feeObject={{
-          total_game_fee: challengeData?.total_game_fee,
-          total_service_fee1: challengeData?.total_service_fee1,
-          total_service_fee2: challengeData?.total_service_fee2,
-          total_stripe_fee: challengeData?.total_stripe_fee,
-          total_payout: challengeData?.total_payout,
-          total_amount: challengeData?.total_amount,
-        }}
-        currency={challengeData?.game_fee?.currency_type}
-        isChallenger={challengeData?.challenger === entity.uid}
-      />
-      <TCThickDivider marginTop={20} />
-
-      {oldVersion?.total_game_fee === 0 && challengeData?.total_game_fee > 0 && challengeData?.challenger === entity.uid && (
-        <View>
-          <View>
-            <TCLabel title={'Payment Method'} />
-            <View style={styles.viewMarginStyle}>
-              <TCTouchableLabel
-                title={
-                  route?.params?.paymentMethod
-
-                    ? `${Utility.capitalize(route?.params?.paymentMethod?.card?.brand)} ****${
-                      route?.params?.paymentMethod?.card?.last4
-                      }`
-                    : strings.addOptionMessage
-                }
-                showNextArrow={true}
-                onPress={() => {
-                  navigation.navigate('PaymentMethodsScreen', {
-                    comeFrom: 'ChallengePreviewScreen',
-                  });
-                }}
-              />
+              <View style={styles.teamView}>
+                <View style={styles.profileView}>
+                  <Image
+                    source={
+                      getChallengee()?.thumbnail
+                        ? { uri: getChallengee()?.thumbnail }
+                        : images.teamPlaceholder
+                    }
+                    style={styles.profileImage}
+                  />
+                </View>
+                <Text style={styles.teamNameText}>
+                  {getChallengee()?.group_id
+                    ? `${getChallengee()?.group_name}`
+                    : `${getChallengee()?.first_name} ${
+                        getChallengee()?.last_name
+                      }`}
+                </Text>
+              </View>
             </View>
           </View>
+
+          <TCThickDivider />
+
+          <View>
+            <TCLabel title={`Game · ${challengeData?.sport}`} />
+
+            <TCInfoImageField
+              title={'Home'}
+              image={
+                challengeData?.home_team?.thumbnail
+                  ? { uri: challengeData?.home_team?.thumbnail }
+                  : challengeData?.home_team?.full_name
+                  ? images.profilePlaceHolder
+                  : images.teamPlaceholder
+              }
+              name={
+                challengeData?.home_team?.group_name
+                ?? challengeData?.home_team?.full_name
+              }
+              marginLeft={30}
+            />
+            <TCThinDivider />
+            <TCInfoImageField
+              title={'Away'}
+              image={
+                challengeData?.away_team?.thumbnail
+                  ? { uri: challengeData?.away_team?.thumbnail }
+                  : challengeData?.away_team?.full_name
+                  ? images.profilePlaceHolder
+                  : images.teamPlaceholder
+              }
+              name={
+                challengeData?.away_team?.group_name
+                ?? challengeData?.away_team?.full_name
+              }
+              marginLeft={30}
+            />
+            <TCThinDivider />
+
+            <TCInfoField
+              title={'Time'}
+              value={`${moment(
+                new Date(challengeData?.start_datetime * 1000),
+              ).format('MMM DD, YYYY  hh:mm a')} -\n${moment(
+                new Date(challengeData?.end_datetime * 1000),
+              ).format('MMM DD, YYYY  hh:mm a')}\n( ${getTimeDifferent(
+                new Date(challengeData?.start_datetime * 1000),
+                new Date(challengeData?.end_datetime * 1000),
+              )} )   `}
+              marginLeft={30}
+              titleStyle={{ fontSize: 16 }}
+            />
+            <TCThinDivider />
+
+            <TCInfoField
+              title={'Venue'}
+              value={challengeData?.venue?.name}
+              marginLeft={30}
+              titleStyle={{ fontSize: 16 }}
+            />
+            <TCThinDivider />
+            <TCInfoField
+              title={'Address'}
+              value={challengeData?.venue?.address}
+              marginLeft={30}
+              titleStyle={{ fontSize: 16 }}
+            />
+            <EventMapView
+              coordinate={challengeData?.venue?.coordinate}
+              region={challengeData?.venue?.region}
+              style={styles.map}
+            />
+            <TCThickDivider marginTop={20} />
+          </View>
+
+          <TCChallengeTitle
+            title={'Game Type'}
+            value={challengeData?.game_type}
+            tooltipText={
+            'The game result has an effect on TC points of the challengee and you.'
+            }
+            tooltipHeight={heightPercentageToDP('6%')}
+            tooltipWidth={widthPercentageToDP('50%')}
+          />
+          <TCThickDivider />
+
+          <TCLabel title={'Game Duration'} />
+          <TCChallengeTitle
+            containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
+            title={'1st period'}
+            titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+            value={challengeData?.game_duration?.first_period}
+            valueStyle={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.greenColorCard,
+              marginRight: 2,
+            }}
+            staticValueText={'min.'}
+          />
+
+          <FlatList
+            data={challengeData?.game_duration?.period}
+            renderItem={renderPeriod}
+            keyExtractor={(item, index) => index.toString()}
+            style={{ marginBottom: 15 }}
+          />
+          {challengeData?.game_duration?.period?.length > 0 && (
+            <Text style={styles.normalTextStyle}>
+              {strings.gameDurationTitle2}
+            </Text>
+          )}
+
+          <FlatList
+            data={challengeData?.game_duration?.overtime}
+            renderItem={renderOverTime}
+            keyExtractor={(item, index) => index.toString()}
+            style={{ marginBottom: 15 }}
+          />
           <TCThickDivider marginTop={20} />
+
+          <View>
+            <TCChallengeTitle title={'Game Rules'} />
+            <Text style={styles.rulesTitle}>General Rules</Text>
+            <Text style={styles.rulesDetail}>
+              {challengeData?.general_rules}
+            </Text>
+            <View style={{ marginBottom: 10 }} />
+            <Text style={styles.rulesTitle}>Special Rules</Text>
+            <Text style={styles.rulesDetail}>
+              {challengeData?.special_rules}
+            </Text>
+            <TCThickDivider marginTop={20} />
+          </View>
+
+          <TCChallengeTitle
+            title={'Referees'}
+            value={challengeData?.responsible_for_referee?.who_secure?.length}
+            staticValueText={'Referees'}
+            valueStyle={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.greenColorCard,
+              marginRight: 2,
+            }}
+          />
+          <FlatList
+            data={challengeData?.responsible_for_referee?.who_secure}
+            renderItem={renderReferees}
+            keyExtractor={(item, index) => index.toString()}
+            ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
+            style={{ marginBottom: 15 }}
+          />
+
+          <TCThickDivider marginTop={20} />
+
+          <TCChallengeTitle
+            title={'Scorekeepers'}
+            value={
+              challengeData?.responsible_for_scorekeeper?.who_secure?.length
+            }
+            staticValueText={'Scorekeepers'}
+            valueStyle={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.greenColorCard,
+              marginRight: 2,
+            }}
+          />
+          <FlatList
+            data={challengeData?.responsible_for_scorekeeper?.who_secure}
+            renderItem={renderScorekeepers}
+            keyExtractor={(item, index) => index.toString()}
+            ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
+            style={{ marginBottom: 15 }}
+          />
+          <TCThickDivider marginTop={20} />
+          <View>
+            <TCChallengeTitle
+              title={'Refund Policy'}
+              value={challengeData?.refund_policy}
+              tooltipText={
+              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+              }
+              tooltipHeight={heightPercentageToDP('18%')}
+              tooltipWidth={widthPercentageToDP('50%')}
+              isEdit={false}
+            />
+            <TCThickDivider />
+          </View>
+
+          <TCLabel
+            title={
+              challengeData?.challenger === entity.uid ? 'Payment' : 'Earning'
+            }
+            style={{ marginBottom: 15 }}
+          />
+          <GameFeeCard
+            feeObject={{
+              total_game_fee: challengeData?.total_game_fee,
+              total_service_fee1: challengeData?.total_service_fee1,
+              total_service_fee2: challengeData?.total_service_fee2,
+              total_stripe_fee: challengeData?.total_stripe_fee,
+              total_payout: challengeData?.total_payout,
+              total_amount: challengeData?.total_amount,
+            }}
+            currency={challengeData?.game_fee?.currency_type}
+            isChallenger={challengeData?.challenger === entity.uid}
+          />
+          <TCThickDivider marginTop={20} />
+
+          {oldVersion?.total_game_fee === 0
+            && challengeData?.total_game_fee > 0
+            && challengeData?.challenger === entity.uid && (
+              <View>
+                <View>
+                  <TCLabel title={'Payment Method'} />
+                  <View style={styles.viewMarginStyle}>
+                    <TCTouchableLabel
+                      title={
+                        route?.params?.paymentMethod
+                          ? `${Utility.capitalize(
+                              route?.params?.paymentMethod?.card?.brand,
+                            )} ****${route?.params?.paymentMethod?.card?.last4}`
+                          : strings.addOptionMessage
+                      }
+                      showNextArrow={true}
+                      onPress={() => {
+                        navigation.navigate('PaymentMethodsScreen', {
+                          comeFrom: 'ChallengePreviewScreen',
+                        });
+                      }}
+                    />
+                  </View>
+                </View>
+                <TCThickDivider marginTop={20} />
+              </View>
+            )}
+
+          <SafeAreaView>{bottomButtonView()}</SafeAreaView>
         </View>
       )}
-
-      <SafeAreaView>{bottomButtonView()}</SafeAreaView>
+      <SafeAreaView>
+        {selectedTab === 1 && (
+          <CurruentReservationView reservationObj={oldVersion} />
+        )}
+      </SafeAreaView>
 
       {/* <ChallengeModalView
         navigation={navigation}
@@ -1688,5 +1671,50 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RBold,
     color: colors.whiteColor,
+  },
+
+  challengerView: {
+    marginRight: 15,
+    flex: 0.5,
+  },
+  challengeeView: {
+    flex: 0.5,
+  },
+  profileImage: {
+    alignSelf: 'center',
+    height: 38,
+    width: 38,
+    borderRadius: 76,
+  },
+  teamNameText: {
+    marginLeft: 5,
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    width: '80%',
+  },
+  reqOutImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'cover',
+    marginRight: 5,
+  },
+  teamView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  profileView: {
+    backgroundColor: colors.whiteColor,
+    height: 40,
+    width: 40,
+    borderRadius: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });

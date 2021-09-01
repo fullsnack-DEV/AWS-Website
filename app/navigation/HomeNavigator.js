@@ -172,6 +172,7 @@ import RefereeReservationSetting from '../screens/game/bookReferee/RefereeReserv
 import ScorekeeperReservationSetting from '../screens/game/bookScorekeeper/ScorekeeperReservationSetting';
 import ReservationAcceptDeclineScreen from '../screens/referee/ReservationAcceptDeclineScreen';
 import fonts from '../Constants/Fonts';
+import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChallengeScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1721,6 +1722,22 @@ const HomeNavigator = () => (
       component={AlterRefereeScreen}
       options={{
         title: 'Change Referee Reservation',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="AlterChallengeScreen"
+      component={AlterChallengeScreen}
+      options={{
+        title: 'Game Reservation',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

@@ -30,11 +30,12 @@ export default function HomeAway({ navigation, route }) {
 
   const [loading, setloading] = useState(false);
 
+  console.log('route?.params?.settingObj', route?.params?.settingObj);
   const [teams, setteams] = useState(
     route?.params?.settingObj?.home_away
       ? route?.params?.settingObj?.home_away === 'Home'
-        ? [authContext?.entity?.obj, { name: 'Challenger' }]
-        : [{ name: 'Challenger' }, authContext?.entity?.obj]
+        ? [{ name: 'Challenger' }, authContext?.entity?.obj]
+        : [authContext?.entity?.obj, { name: 'Challenger' }]
       : [authContext?.entity?.obj, { name: 'Challenger' }],
   );
 
@@ -162,7 +163,7 @@ export default function HomeAway({ navigation, route }) {
       navigation.navigate(comeFrom, {
         homeAway:
           authContext?.entity?.uid === teams?.[0]?.user_id
-          || authContext?.entity?.uid === teams?.[0]?.group_id
+          ?? authContext?.entity?.uid === teams?.[0]?.group_id
             ? 'Home'
             : 'Away',
         home_team: teams[0],
