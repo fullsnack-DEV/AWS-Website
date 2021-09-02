@@ -50,6 +50,7 @@ const globalApiCall = async ({
   } catch (e) {
     const error = {
       options,
+      error: e,
     };
     console.log('SERVER ERROR ::--->', error);
     throw new Error(e);

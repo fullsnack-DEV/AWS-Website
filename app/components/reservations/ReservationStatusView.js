@@ -50,7 +50,7 @@ function ReservationStatusView({ data, onClick }) {
       return 'receiver';
     }
     if (challengeObj?.status === ReservationStatus.changeRequest) {
-      if (challengeObj?.requested_to === entity.uid) {
+      if (challengeObj?.requested_by === entity.uid) {
         console.log('status:=>', challengeObj?.requested_by + entity.uid);
 
         return 'sender';

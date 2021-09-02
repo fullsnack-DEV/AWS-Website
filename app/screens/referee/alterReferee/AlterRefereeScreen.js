@@ -466,7 +466,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
         console.log('payment method', response.payload);
         for (const tempCard of response?.payload) {
           if (tempCard?.id === bodyParams?.source) {
-            setDefaultCard(response?.payload?.card);
+            setDefaultCard(tempCard);
             break;
           }
         }

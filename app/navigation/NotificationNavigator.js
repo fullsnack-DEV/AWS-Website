@@ -64,6 +64,7 @@ import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotif
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 import InviteToMemberScreen from '../screens/account/groupConnections/createMemberProfile/InviteToMemberScreen';
 import fonts from '../Constants/Fonts';
+import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChallengeScreen';
 
 const Stack = createStackNavigator();
 
@@ -186,6 +187,22 @@ function NotificationNavigator() {
               },
             }}
         />
+      <Stack.Screen
+      name="AlterChallengeScreen"
+      component={AlterChallengeScreen}
+      options={{
+        title: 'Game Reservation',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
       <Stack.Screen
             name="EditRefereeReservation"
             component={EditRefereeReservation}

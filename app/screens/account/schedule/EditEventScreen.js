@@ -388,7 +388,7 @@ export default function EditEventScreen({ navigation, route }) {
                 location: searchLocation,
                 latitude: locationDetail.lat,
                 longitude: locationDetail.lng,
-                manual_blocked: is_Blocked,
+                blocked: is_Blocked,
                 is_recurring: selectWeekMonth !== '',
                 allDay: toggle,
               };

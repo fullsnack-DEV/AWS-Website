@@ -128,11 +128,13 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
             screenName === 'change' ? strings.nextTitle : strings.cancelMatch
           }
           onPress={() => {
+            console.log('route?.params?.settingObj', route?.params?.settingObj);
             if (screenName === 'change') {
               navigation.navigate('EditChallenge', {
                 groupObj: getOpponentEntity(),
                 sportName: challengeObj?.sport,
                 challengeObj,
+                lastConfirmVersion: challengeObj,
                 settingObj: route?.params?.settingObj,
               });
             } else {

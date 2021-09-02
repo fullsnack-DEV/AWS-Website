@@ -34,6 +34,7 @@ import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequest
 import colors from '../Constants/Colors'
 import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
+import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChallengeScreen';
 
 const Stack = createStackNavigator();
 
@@ -133,6 +134,22 @@ const ReservationNavigator = () => (
               },
             }}
         />
+    <Stack.Screen
+      name="AlterChallengeScreen"
+      component={AlterChallengeScreen}
+      options={{
+        title: 'Game Reservation',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
             name="EditRefereeReservation"
             component={EditRefereeReservation}

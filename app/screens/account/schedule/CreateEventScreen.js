@@ -395,7 +395,7 @@ export default function CreateEventScreen({ navigation, route }) {
                       location: searchLocation,
                       latitude: locationDetail.lat,
                       longitude: locationDetail.lng,
-                      manual_blocked: is_Blocked,
+                      blocked: is_Blocked,
                       owner_id:
                         authContext.entity.obj.user_id
                         || authContext.entity.obj.group_id,
@@ -421,7 +421,7 @@ export default function CreateEventScreen({ navigation, route }) {
                         ).toFixed(0),
                       ),
                       is_recurring: selectWeekMonth !== '',
-                      manual_blocked: is_Blocked,
+                      blocked: is_Blocked,
                       owner_id:
                         authContext.entity.obj.user_id
                         || authContext.entity.obj.group_id,

@@ -229,7 +229,7 @@ export default function ChallengeStatusTitle({
           ) : (
             <View>
               <Text style={styles.statusTitleText}>
-                ALTERATION REQUEST SENT
+                ALTERATION · AWAITING
               </Text>
             </View>
           )}

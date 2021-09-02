@@ -455,7 +455,7 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
          console.log('payment method', response.payload);
          for (const tempCard of response?.payload) {
            if (tempCard?.id === bodyParams?.source) {
-             setDefaultCard(response?.payload?.card);
+             setDefaultCard(tempCard);
              break;
            }
          }
@@ -1280,7 +1280,7 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
                 showNextArrow={true}
                 onPress={() => {
                   navigation.navigate('PaymentMethodsScreen', {
-                    comeFrom: 'AlterRefereeScreen',
+                    comeFrom: 'AlterScorekeeperScreen',
                   });
                 }}
               />

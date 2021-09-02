@@ -17,12 +17,23 @@ function TCChallengeTitle({
   isEdit = false,
   onEditPress,
   containerStyle,
+  isNew = false,
   ...otherProps
 }) {
   return (
     <View style={[styles.mainViewContainer, containerStyle]}>
       <Text style={[styles.labelText, titleStyle]} {...otherProps}>
         {title}
+        {isNew && (
+          <Text
+            style={{
+              fontFamily: fonts.RRegular,
+              fontSize: 14,
+              color: colors.darkThemeColor,
+            }}>
+            {'  new'}
+          </Text>
+        )}
       </Text>
       <View
         style={{
