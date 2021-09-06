@@ -87,12 +87,20 @@ export default function AvailableAreaReferee({ navigation, route }) {
           style={styles.saveButtonStyle}
           onPress={() => {
             console.log('searchAddress::', searchAddress?.address);
-            console.log('searchAddress?.description::', searchAddress?.description);
+            console.log(
+              'searchAddress?.description::',
+              searchAddress?.description,
+            );
 
-            console.log('!route?.params?.settingObj?.available_area?.address::', !route?.params?.settingObj?.available_area?.address);
+            console.log(
+              '!route?.params?.settingObj?.available_area?.address::',
+              !route?.params?.settingObj?.available_area?.address,
+            );
 
             if (areaRadio === 0) {
-              const addresses = addressList.filter((obj) => obj?.address === '');
+              const addresses = addressList.filter(
+                (obj) => obj?.address === '',
+              );
 
               if (addresses.length > 0) {
                 Alert.alert('Please fill all address fields.');
@@ -101,7 +109,10 @@ export default function AvailableAreaReferee({ navigation, route }) {
               }
             } else if (selectedDistanceOption === undefined) {
               Alert.alert('Please selected type of distance.');
-            } else if (searchAddress?.address === '' || searchAddress?.description === '') {
+            } else if (
+              searchAddress?.address === ''
+              || searchAddress?.description === ''
+            ) {
               Alert.alert('Please selected address for calculate range.');
             } else if (!radious) {
               Alert.alert('Please selected radious for calculate range.');
@@ -113,7 +124,15 @@ export default function AvailableAreaReferee({ navigation, route }) {
         </Text>
       ),
     });
-  }, [navigation, areaRadio, selectedDistanceOption, searchAddress, radious, addressList, route?.params?.settingObj?.available_area?.address]);
+  }, [
+    navigation,
+    areaRadio,
+    selectedDistanceOption,
+    searchAddress,
+    radious,
+    addressList,
+    route?.params?.settingObj?.available_area?.address,
+  ]);
 
   const onSavePressed = () => {
     let availableArea = {};
@@ -136,10 +155,19 @@ export default function AvailableAreaReferee({ navigation, route }) {
         is_specific_address: areaRadio === 0,
         radious: Number(radious),
         distance_type: selectedDistanceOption === 0 ? 'Mi' : 'Km',
-        address: searchAddress?.description ?? searchAddress?.address ?? route?.params?.settingObj?.available_area?.address,
+        address:
+          searchAddress?.description
+          ?? searchAddress?.address
+          ?? route?.params?.settingObj?.available_area?.address,
         latlong: {
-          latitude: searchAddress.latitude ?? searchAddress?.latlong?.latitude ?? route?.params?.settingObj?.available_area?.latlong?.latitude,
-          longitude: searchAddress.longitude ?? searchAddress?.latlong?.longitude ?? route?.params?.settingObj?.available_area?.latlong?.longitude,
+          latitude:
+            searchAddress.latitude
+            ?? searchAddress?.latlong?.latitude
+            ?? route?.params?.settingObj?.available_area?.latlong?.latitude,
+          longitude:
+            searchAddress.longitude
+            ?? searchAddress?.latlong?.longitude
+            ?? route?.params?.settingObj?.available_area?.latlong?.longitude,
         },
       };
     }
@@ -388,7 +416,11 @@ export default function AvailableAreaReferee({ navigation, route }) {
                 pointerEvents="none"
                 style={styles.detailsSingleText}
                 placeholder={'Address'}
-                value={searchAddress?.description ?? searchAddress?.address ?? route?.params?.settingObj?.available_area?.address}
+                value={
+                  searchAddress?.description
+                  ?? searchAddress?.address
+                  ?? route?.params?.settingObj?.available_area?.address
+                }
               />
             </TouchableOpacity>
           </View>

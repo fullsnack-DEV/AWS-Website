@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable no-nested-ternary */
 import React, { useState, useLayoutEffect, useContext } from 'react';
 import {
@@ -26,11 +27,13 @@ import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import images from '../../../../Constants/ImagePath';
-import TCTextInputClear from '../../../../components/TCTextInputClear';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 export default function RefereesSetting({ navigation, route }) {
-  console.log('route?.params?.settingObj?.responsible_for_referee', route?.params?.settingObj?.responsible_for_referee);
+  console.log(
+    'route?.params?.settingObj?.responsible_for_referee',
+    route?.params?.settingObj?.responsible_for_referee,
+  );
   const { comeFrom, sportName } = route?.params;
   const authContext = useContext(AuthContext);
 
@@ -39,19 +42,27 @@ export default function RefereesSetting({ navigation, route }) {
 
   const [selection, setSelection] = useState(
     route?.params?.settingObj?.responsible_for_referee
-      && route?.params?.settingObj?.responsible_for_referee?.who_secure === 'None' ? 'None' : route?.params?.settingObj?.responsible_for_referee?.who_secure?.length,
+      && route?.params?.settingObj?.responsible_for_referee?.who_secure === 'None'
+      ? 'None'
+      : route?.params?.settingObj?.responsible_for_referee?.who_secure?.length,
   );
 
-  const [detail, setDetail] = useState(
-    route?.params?.settingObj?.responsible_for_referee?.details
-      ? route?.params?.settingObj?.responsible_for_referee?.details
-      : '',
-  );
+  // const [detail, setDetail] = useState(
+  //   route?.params?.settingObj?.responsible_for_referee?.details
+  //     ? route?.params?.settingObj?.responsible_for_referee?.details
+  //     : '',
+  // );
 
   const [referee, setReferee] = useState(
-    route?.params?.settingObj?.responsible_for_referee && route?.params?.settingObj?.responsible_for_referee?.who_secure !== 'None'
+    route?.params?.settingObj?.responsible_for_referee
+      && route?.params?.settingObj?.responsible_for_referee?.who_secure !== 'None'
       ? route?.params?.settingObj?.responsible_for_referee?.who_secure
       : [],
+  );
+
+  console.log(
+    'route?.params?.settingObj?.responsible_for_referee',
+    route?.params?.settingObj?.responsible_for_referee,
   );
 
   useLayoutEffect(() => {
@@ -66,45 +77,45 @@ export default function RefereesSetting({ navigation, route }) {
         </Text>
       ),
     });
-  }, [comeFrom, navigation, referee, detail, selection]);
+  }, [comeFrom, navigation, referee, selection]);
 
   const renderNumbersOf = ({ item }) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-       if (item !== 'None') {
-        setSelection(item);
-        const arr = [];
+        if (item !== 'None') {
+          setSelection(item);
+          const arr = [];
 
-        for (let i = 0; i < item; i++) {
-          const obj = {
-            id: i,
-            responsible_to_secure_referee: 'challengee',
-            is_chief: i === 0,
-          };
-          arr.push(obj);
-        }
-        setReferee(arr);
-        setTimeout(() => {
-          setVisibleModal(false);
-        }, 300);
-       } else {
-        setSelection(item);
-        const arr = [];
+          for (let i = 0; i < item; i++) {
+            const obj = {
+              id: i,
+              responsible_to_secure_referee: 'challengee',
+              is_chief: i === 0,
+            };
+            arr.push(obj);
+          }
+          setReferee(arr);
+          setTimeout(() => {
+            setVisibleModal(false);
+          }, 300);
+        } else {
+          setSelection(item);
+          const arr = [];
 
-        for (let i = 0; i < item; i++) {
-          const obj = {
-            id: i,
-            responsible_to_secure_referee: 'None',
-            is_chief: i === 0,
-          };
-          arr.push(obj);
+          for (let i = 0; i < item; i++) {
+            const obj = {
+              id: i,
+              responsible_to_secure_referee: 'None',
+              is_chief: i === 0,
+            };
+            arr.push(obj);
+          }
+          setReferee(arr);
+          setTimeout(() => {
+            setVisibleModal(false);
+          }, 300);
         }
-        setReferee(arr);
-        setTimeout(() => {
-          setVisibleModal(false);
-        }, 300);
-       }
       }}>
       <View
         style={{
@@ -128,292 +139,312 @@ export default function RefereesSetting({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 
-  const renderReferee = ({ index, item }) => (
-   item !== 'None' ? <View>
-     <View style={styles.viewTitleContainer}>
-       <Text style={styles.venueCountTitle}>
-         Referee {index + 1} {index === 0 && '(Chief)'}
-       </Text>
-     </View>
-     <Text
-     style={{
-       fontSize: 16,
-       marginLeft: 15,
-       marginRight: 15,
-       marginBottom: 10,
-       fontFamily: fonts.RRegular,
-       color: colors.lightBlackColor,
-     }}>
-       {strings.refereeSettingNote}
-     </Text>
-     <TouchableOpacity
-     style={{
-       flexDirection: 'row',
-       justifyContent: 'space-between',
-       alignItems: 'center',
-       margin: 15,
-       marginBottom: 5,
-     }}
-     onPress={() => {
-       const ref = [...referee];
-       referee[index].responsible_to_secure_referee = 'challengee';
-       referee[index].is_chief = index === 0;
+  // const renderReferee = ({ index, item }) => (item !== 'None' ? (
+  //   <View>
+  //     <View style={styles.viewTitleContainer}>
+  //       <Text style={styles.venueCountTitle}>
+  //         Referee {index + 1} {index === 0 && '(Chief)'}
+  //       </Text>
+  //     </View>
+  //     <Text
+  //         style={{
+  //           fontSize: 16,
+  //           marginLeft: 15,
+  //           marginRight: 15,
+  //           marginBottom: 10,
+  //           fontFamily: fonts.RRegular,
+  //           color: colors.lightBlackColor,
+  //         }}>
+  //       {strings.refereeSettingNote}
+  //     </Text>
+  //     <TouchableOpacity
+  //         style={{
+  //           flexDirection: 'row',
+  //           justifyContent: 'space-between',
+  //           alignItems: 'center',
+  //           margin: 15,
+  //           marginBottom: 5,
+  //         }}
+  //         onPress={() => {
+  //           const ref = [...referee];
+  //           referee[index].responsible_to_secure_referee = 'challengee';
+  //           referee[index].is_chief = index === 0;
 
-       setReferee(ref);
-     }}>
-       <View style={styles.teamContainer}>
-         <View style={styles.teamViewStyle}>
-           <View style={styles.imageShadowView}>
-             <Image
-             source={
-               authContext?.entity?.role === 'user'
-               || authContext?.entity?.role === 'player'
-                 ? authContext?.entity?.obj?.thumbnail
-                   ? { uri: authContext?.entity?.obj?.thumbnail }
-                   : images.profilePlaceHolder
-                 : authContext?.entity?.obj?.thumbnail
-                 ? { uri: authContext?.entity?.obj?.thumbnail }
-                 : images.teamPlaceholder
-             }
-             style={styles.imageView}
-           />
-           </View>
-           <View style={styles.teamTextContainer}>
-             <Text style={styles.teamNameLable}>
-               {authContext?.entity?.role === 'user'
-             || authContext?.entity?.role === 'player'
-               ? authContext?.entity?.obj?.full_name
-               : authContext?.entity?.obj?.group_name}
-             </Text>
-             <Text style={styles.locationLable}>
-               {authContext?.entity?.obj?.city},{' '}
-               {authContext?.entity?.obj?.state_abbr}
-             </Text>
-           </View>
-         </View>
-       </View>
-       <View style={styles.checkbox}>
-         {item?.responsible_to_secure_referee === 'challengee' ? (
-           <Image
-           source={images.radioCheckYellow}
-           style={styles.checkboxImg}
-         />
-       ) : (
-         <Image source={images.radioUnselect} style={styles.checkboxImg} />
-       )}
-       </View>
-     </TouchableOpacity>
-     <TouchableOpacity
-     style={{
-       flexDirection: 'row',
-       justifyContent: 'space-between',
-       alignItems: 'center',
-       margin: 15,
-       marginBottom: 5,
-     }}
-     onPress={() => {
-       const ref = [...referee];
-       referee[index].responsible_to_secure_referee = 'challenger';
-       referee[index].is_chief = index === 0;
-       setReferee(ref);
-     }}>
-       <View style={styles.teamContainer}>
-         <View style={styles.teamViewStyle}>
-           <View style={styles.imageShadowView}>
-             <Image
-             source={
-               // teams[0].thumbnail
-               //   ? { uri: teams[0].thumbnail }
-               //   : images.teamPlaceholder
-               images.teamPlaceholder
-             }
-             style={styles.imageView}
-           />
-           </View>
-           <View style={styles.teamTextContainer}>
-             <Text style={styles.teamNameLable}>Challenger</Text>
-           </View>
-         </View>
-       </View>
-       <View style={styles.checkbox}>
-         {item?.responsible_to_secure_referee === 'challenger' ? (
-           <Image
-           source={images.radioCheckYellow}
-           style={styles.checkboxImg}
-         />
-       ) : (
-         <Image source={images.radioUnselect} style={styles.checkboxImg} />
-       )}
-       </View>
-     </TouchableOpacity>
+  //           setReferee(ref);
+  //         }}>
+  //       <View style={styles.teamContainer}>
+  //         <View style={styles.teamViewStyle}>
+  //           <View style={styles.imageShadowView}>
+  //             <Image
+  //                 source={
+  //                   authContext?.entity?.role === 'user'
+  //                   || authContext?.entity?.role === 'player'
+  //                     ? authContext?.entity?.obj?.thumbnail
+  //                       ? { uri: authContext?.entity?.obj?.thumbnail }
+  //                       : images.profilePlaceHolder
+  //                     : authContext?.entity?.obj?.thumbnail
+  //                     ? { uri: authContext?.entity?.obj?.thumbnail }
+  //                     : images.teamPlaceholder
+  //                 }
+  //                 style={styles.imageView}
+  //               />
+  //           </View>
+  //           <View style={styles.teamTextContainer}>
+  //             <Text style={styles.teamNameLable}>
+  //               {authContext?.entity?.role === 'user'
+  //                 || authContext?.entity?.role === 'player'
+  //                   ? authContext?.entity?.obj?.full_name
+  //                   : authContext?.entity?.obj?.group_name}
+  //             </Text>
+  //             <Text style={styles.locationLable}>
+  //               {authContext?.entity?.obj?.city},{' '}
+  //               {authContext?.entity?.obj?.state_abbr}
+  //             </Text>
+  //           </View>
+  //         </View>
+  //       </View>
+  //       <View style={styles.checkbox}>
+  //         {item?.responsible_to_secure_referee === 'challengee' ? (
+  //           <Image
+  //               source={images.radioCheckYellow}
+  //               style={styles.checkboxImg}
+  //             />
+  //           ) : (
+  //             <Image source={images.radioUnselect} style={styles.checkboxImg} />
+  //           )}
+  //       </View>
+  //     </TouchableOpacity>
+  //     <TouchableOpacity
+  //         style={{
+  //           flexDirection: 'row',
+  //           justifyContent: 'space-between',
+  //           alignItems: 'center',
+  //           margin: 15,
+  //           marginBottom: 5,
+  //         }}
+  //         onPress={() => {
+  //           const ref = [...referee];
+  //           referee[index].responsible_to_secure_referee = 'challenger';
+  //           referee[index].is_chief = index === 0;
+  //           setReferee(ref);
+  //         }}>
+  //       <View style={styles.teamContainer}>
+  //         <View style={styles.teamViewStyle}>
+  //           <View style={styles.imageShadowView}>
+  //             <Image
+  //                 source={
+  //                   // teams[0].thumbnail
+  //                   //   ? { uri: teams[0].thumbnail }
+  //                   //   : images.teamPlaceholder
+  //                   images.teamPlaceholder
+  //                 }
+  //                 style={styles.imageView}
+  //               />
+  //           </View>
+  //           <View style={styles.teamTextContainer}>
+  //             <Text style={styles.teamNameLable}>Challenger</Text>
+  //           </View>
+  //         </View>
+  //       </View>
+  //       <View style={styles.checkbox}>
+  //         {item?.responsible_to_secure_referee === 'challenger' ? (
+  //           <Image
+  //               source={images.radioCheckYellow}
+  //               style={styles.checkboxImg}
+  //             />
+  //           ) : (
+  //             <Image source={images.radioUnselect} style={styles.checkboxImg} />
+  //           )}
+  //       </View>
+  //     </TouchableOpacity>
 
-     {/* <TCTextInputClear
-     placeholder={strings.venueDetailsPlaceholder}
-       onChangeText={(text) => {
-         const ven = [...venue];
-         venue[index].details = text;
-         setVenue(ven);
-       }}
-       value={venue[index].details}
-       onPressClear={() => {
-         const ven = [...venue];
-         venue[index].details = '';
-         setVenue(ven);
-       }}
-       multiline={true}
-     /> */}
-   </View> : <View></View>
-  );
+  //     {/* <TCTextInputClear
+  //    placeholder={strings.venueDetailsPlaceholder}
+  //      onChangeText={(text) => {
+  //        const ven = [...venue];
+  //        venue[index].details = text;
+  //        setVenue(ven);
+  //      }}
+  //      value={venue[index].details}
+  //      onPressClear={() => {
+  //        const ven = [...venue];
+  //        venue[index].details = '';
+  //        setVenue(ven);
+  //      }}
+  //      multiline={true}
+  //    /> */}
+  //   </View>
+  //   ) : (
+  //     <View></View>
+  //   ));
 
-const saveUser = () => {
-  let bodyParams;
-        if (selection === 'None') {
-          bodyParams = {
-            sport: sportName,
-            entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-            responsible_for_referee: {
-              who_secure: 'None',
-            },
-          };
-        } else {
-          bodyParams = {
-            sport: sportName,
-            entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-            responsible_for_referee: {
-              who_secure: referee.map((e) => {
-                delete e.id;
-                return e;
-              }),
-              details: detail,
-            },
-          };
-        }
-
-        console.log('Referee secure:=>', bodyParams);
-
-        setloading(true);
-        const registerdPlayerData = authContext?.user?.registered_sports?.filter(
-          (obj) => obj.sport_name !== sportName,
-        );
-
-        const selectedSport = authContext?.user?.registered_sports?.filter(
-          (obj) => obj.sport_name === sportName,
-        )[0];
-
-        selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
-        registerdPlayerData.push(selectedSport);
-
-        const body = { ...authContext?.user, registered_sports: registerdPlayerData };
-        console.log('Body::::--->', body);
-
-        patchPlayer(body, authContext)
-          .then(async (response) => {
-            if (response.status === true) {
-              setloading(false);
-              const entity = authContext.entity;
-              console.log('Register player response IS:: ', response.payload);
-              entity.auth.user = response.payload;
-              entity.obj = response.payload;
-              authContext.setEntity({ ...entity });
-              authContext.setUser(response.payload);
-              await Utility.setStorage('authContextUser', response.payload);
-              await Utility.setStorage('authContextEntity', { ...entity });
-              navigation.navigate(comeFrom, {
-                settingObj: response.payload.registered_sports.filter(
-                  (obj) => obj.sport_name === sportName,
-                )[0].setting,
-              });
-            } else {
-              Alert.alert('Towns Cup', response.messages);
-            }
-            console.log('RESPONSE IS:: ', response);
-            setloading(false);
-          })
-          .catch((e) => {
-            setloading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
-}
-
-const saveTeam = () => {
-  let bodyParams;
-        if (selection === 'None') {
-          bodyParams = {
-            sport: sportName,
-            entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-            responsible_for_referee: {
-              who_secure: 'None',
-            },
-          };
-        } else {
-          bodyParams = {
-            sport: sportName,
-            entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-            responsible_for_referee: {
-              who_secure: referee.map((e) => {
-                delete e.id;
-                return e;
-              }),
-              details: detail,
-            },
-          };
-        }
-
-        console.log('Referee secure:=>', bodyParams);
-  setloading(true);
-  const selectedTeam = authContext?.entity?.obj;
-  selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
-  const body = { ...selectedTeam };
-  console.log('Body Team::::--->', body);
-
-  patchGroup(authContext.entity.uid, body, authContext)
-    .then(async (response) => {
-      if (response.status === true) {
-        console.log('Team patch::::--->', response.payload);
-
-        setloading(false);
-        const entity = authContext.entity;
-        entity.obj = response.payload;
-        authContext.setEntity({ ...entity });
-
-        await Utility.setStorage('authContextEntity', { ...entity });
-        navigation.navigate(comeFrom, {
-          settingObj: response.payload.setting,
-        });
-      } else {
-        Alert.alert('Towns Cup', response.messages);
+  const saveUser = () => {
+    let bodyParams;
+    if (selection === 'None') {
+      bodyParams = {
+        sport: sportName,
+        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+        responsible_for_referee: {
+          who_secure: 'None',
+        },
+      };
+    } else {
+      let ref;
+      for (let i = 0; i < selection; i++) {
+       ref = [...referee]
+       ref[i].responsible_to_secure_referee = 'challengee';
+       ref[i].is_chief = i === 0;
       }
-      setloading(false);
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
-};
+      setReferee(ref);
+
+      bodyParams = {
+        sport: sportName,
+        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+        responsible_for_referee: {
+          who_secure: referee.map((e) => {
+            delete e.id;
+            return e;
+          }),
+          // details: detail,
+        },
+      };
+    }
+
+    console.log('Referee secure:=>', bodyParams);
+
+    setloading(true);
+    const registerdPlayerData = authContext?.user?.registered_sports?.filter(
+      (obj) => obj.sport_name !== sportName,
+    );
+
+    const selectedSport = authContext?.user?.registered_sports?.filter(
+      (obj) => obj.sport_name === sportName,
+    )[0];
+
+    selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+    registerdPlayerData.push(selectedSport);
+
+    const body = { ...authContext?.user, registered_sports: registerdPlayerData };
+    console.log('Body::::--->', body);
+
+    patchPlayer(body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          setloading(false);
+          const entity = authContext.entity;
+          console.log('Register player response IS:: ', response.payload);
+          entity.auth.user = response.payload;
+          entity.obj = response.payload;
+          authContext.setEntity({ ...entity });
+          authContext.setUser(response.payload);
+          await Utility.setStorage('authContextUser', response.payload);
+          await Utility.setStorage('authContextEntity', { ...entity });
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.registered_sports.filter(
+              (obj) => obj.sport_name === sportName,
+            )[0].setting,
+          });
+        } else {
+          Alert.alert('Towns Cup', response.messages);
+        }
+        console.log('RESPONSE IS:: ', response);
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const saveTeam = () => {
+    let bodyParams;
+    if (selection === 'None') {
+      bodyParams = {
+        sport: sportName,
+        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+        responsible_for_referee: {
+          who_secure: 'None',
+        },
+      };
+    } else {
+      let ref;
+      for (let i = 0; i < selection; i++) {
+       ref = [...referee]
+       ref[i].responsible_to_secure_referee = 'challengee';
+       ref[i].is_chief = i === 0;
+      }
+      setReferee(ref);
+      bodyParams = {
+        sport: sportName,
+        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+        responsible_for_referee: {
+          who_secure: referee.map((e) => {
+            delete e.id;
+            return e;
+          }),
+          // details: detail,
+        },
+      };
+    }
+
+    console.log('Referee secure:=>', bodyParams);
+
+    setloading(true);
+    const selectedTeam = authContext?.entity?.obj;
+    selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
+    const body = { ...selectedTeam };
+    console.log('Body Team::::--->', body);
+
+    patchGroup(authContext.entity.uid, body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          console.log('Team patch::::--->', response.payload);
+
+          setloading(false);
+          const entity = authContext.entity;
+          entity.obj = response.payload;
+          authContext.setEntity({ ...entity });
+
+          await Utility.setStorage('authContextEntity', { ...entity });
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.setting,
+          });
+        } else {
+          Alert.alert('Towns Cup', response.messages);
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   const onSavePressed = () => {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
-        navigation.navigate(comeFrom, {
-
-          refereeSetting: selection !== 'None' ? {
-            who_secure: referee.map((e) => {
-              delete e.id;
-              return e;
-            }),
-            details: detail,
-          } : {
-            who_secure: 'None',
-          },
-        });
+      navigation.navigate(comeFrom, {
+        refereeSetting:
+          selection !== 'None'
+            ? {
+                who_secure: referee.map((e) => {
+                  delete e.id;
+                  return e;
+                }),
+                // details: detail,
+              }
+            : {
+                who_secure: 'None',
+              },
+      });
     } else if (authContext.entity.role === 'team') {
-          saveTeam()
-        } else {
-          saveUser()
-        }
+      saveTeam();
+    } else {
+      saveUser();
+    }
   };
 
   return (
@@ -425,6 +456,26 @@ const saveTeam = () => {
           title={strings.refereeSettingTitle}
           style={{ marginRight: 15 }}
         />
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            fontSize: 16,
+            color: colors.lightBlackColor,
+            marginLeft: 15,
+            marginRight: 15,
+            marginTop: 15,
+          }}>
+          {strings.refereeRules1}
+        </Text>
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            fontSize: 16,
+            color: colors.lightBlackColor,
+            margin: 15,
+          }}>
+          {strings.refereeRules2}
+        </Text>
         <TouchableOpacity
           style={styles.viewContainer}
           onPress={() => setVisibleModal(true)}>
@@ -438,28 +489,13 @@ const saveTeam = () => {
           </View>
         </TouchableOpacity>
 
-        {/* <View
-          style={{
-            flexDirection: 'row',
-            margin: 15,
-            marginTop: 35,
-          }}>
-          <Text
-            style={{
-              fontSize: 16,
-              fontFamily: fonts.RRegular,
-              color: colors.lightBlackColor,
-            }}>
-            {strings.AvailibilitySubTitle}
-          </Text>
-        </View> */}
-        <FlatList
+        {/* <FlatList
           data={referee}
           renderItem={renderReferee}
           keyExtractor={(item, index) => index.toString()}
           style={{ marginBottom: 15 }}
-        />
-        {selection !== 'None' && (
+        /> */}
+        {/* {selection !== 'None' && (
           <TCTextInputClear
             placeholder={strings.venueDetailsPlaceholder}
             onChangeText={(text) => setDetail(text)}
@@ -469,7 +505,17 @@ const saveTeam = () => {
             }}
             multiline={true}
           />
-        )}
+        )} */}
+
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            fontSize: 16,
+            color: colors.darkThemeColor,
+            margin: 15,
+          }}>
+          {'In order to complete this part, please click the Save button on the right top after choosing your preference.'}
+        </Text>
 
         <Modal
           isVisible={visibleModal}
@@ -599,56 +645,56 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
 
-  venueCountTitle: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    marginLeft: 15,
-    marginTop: 15,
-    marginBottom: 10,
-  },
+  // venueCountTitle: {
+  //   fontSize: 16,
+  //   fontFamily: fonts.RMedium,
+  //   color: colors.lightBlackColor,
+  //   marginLeft: 15,
+  //   marginTop: 15,
+  //   marginBottom: 10,
+  // },
 
-  viewTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
+  // viewTitleContainer: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   justifyContent: 'space-between',
+  // },
 
-  teamContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 15,
-    marginRight: 15,
-  },
+  // teamContainer: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   marginLeft: 15,
+  //   marginRight: 15,
+  // },
 
-  teamViewStyle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  imageShadowView: {
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.4,
-    shadowRadius: 1,
-  },
-  imageView: {
-    height: 40,
-    width: 40,
-    resizeMode: 'cover',
-    borderRadius: 20,
-  },
+  // teamViewStyle: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  // },
+  // imageShadowView: {
+  //   shadowColor: colors.googleColor,
+  //   shadowOffset: { width: 0, height: 1 },
+  //   shadowOpacity: 0.4,
+  //   shadowRadius: 1,
+  // },
+  // imageView: {
+  //   height: 40,
+  //   width: 40,
+  //   resizeMode: 'cover',
+  //   borderRadius: 20,
+  // },
 
-  teamNameLable: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
-  locationLable: {
-    fontFamily: fonts.RLight,
-    fontSize: 14,
-    color: colors.lightBlackColor,
-  },
-  teamTextContainer: {
-    marginLeft: 20,
-  },
+  // teamNameLable: {
+  //   fontFamily: fonts.RMedium,
+  //   fontSize: 16,
+  //   color: colors.lightBlackColor,
+  // },
+  // locationLable: {
+  //   fontFamily: fonts.RLight,
+  //   fontSize: 14,
+  //   color: colors.lightBlackColor,
+  // },
+  // teamTextContainer: {
+  //   marginLeft: 20,
+  // },
 });

@@ -26,7 +26,6 @@ import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import images from '../../../../Constants/ImagePath';
-import TCTextInputClear from '../../../../components/TCTextInputClear';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 export default function ScorekeepersSetting({ navigation, route }) {
@@ -40,12 +39,6 @@ export default function ScorekeepersSetting({ navigation, route }) {
   const [selection, setSelection] = useState(
     route?.params?.settingObj?.responsible_for_scorekeeper
       && route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure === 'None' ? 'None' : route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure?.length,
-  );
-
-  const [detail, setDetail] = useState(
-    route?.params?.settingObj?.responsible_for_scorekeeper?.details
-      ? route?.params?.settingObj?.responsible_for_scorekeeper?.details
-      : '',
   );
 
   const [scorekeeper, setScorekeeper] = useState(
@@ -66,7 +59,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
         </Text>
       ),
     });
-  }, [comeFrom, navigation, scorekeeper, detail, selection]);
+  }, [comeFrom, navigation, scorekeeper, selection]);
 
   const renderNumbersOf = ({ item }) => (
     <TouchableWithoutFeedback
@@ -128,143 +121,143 @@ export default function ScorekeepersSetting({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 
-  const renderScorekeeper = ({ index, item }) => (
-    <View>
-      {item !== 'None' ? <View>
-        <View style={styles.viewTitleContainer}>
-          <Text style={styles.venueCountTitle}>
-            Scorekeeper {index + 1} {index === 0 && '(Chief)'}
-          </Text>
-        </View>
-        <Text
-        style={{
-          fontSize: 16,
-          marginLeft: 15,
-          marginRight: 15,
-          marginBottom: 10,
-          fontFamily: fonts.RRegular,
-          color: colors.lightBlackColor,
-        }}>
-          {strings.scorekeeperSettingNote}
-        </Text>
-        <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          margin: 15,
-          marginBottom: 5,
-        }}
-        onPress={() => {
-            const ref = [...scorekeeper];
-            scorekeeper[index].responsible_to_secure_scorekeeper = 'challengee';
-            scorekeeper[index].is_chief = index === 0;
-            setScorekeeper(ref);
-        }}>
-          <View style={styles.teamContainer}>
-            <View style={styles.teamViewStyle}>
-              <View style={styles.imageShadowView}>
-                <Image
-                source={
-                  authContext?.entity?.role === 'user'
-                  || authContext?.entity?.role === 'player'
-                    ? authContext?.entity?.obj?.thumbnail
-                      ? { uri: authContext?.entity?.obj?.thumbnail }
-                      : images.profilePlaceHolder
-                    : authContext?.entity?.obj?.thumbnail
-                    ? { uri: authContext?.entity?.obj?.thumbnail }
-                    : images.teamPlaceholder
-                }
-                style={styles.imageView}
-              />
-              </View>
-              <View style={styles.teamTextContainer}>
-                <Text style={styles.teamNameLable}>
-                  {authContext?.entity?.role === 'user'
-                || authContext?.entity?.role === 'player'
-                  ? authContext?.entity?.obj?.full_name
-                  : authContext?.entity?.obj?.group_name}
-                </Text>
-                <Text style={styles.locationLable}>
-                  {authContext?.entity?.obj?.city},{' '}
-                  {authContext?.entity?.obj?.state_abbr}
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.checkbox}>
-            {item?.responsible_to_secure_scorekeeper === 'challengee' ? (
-              <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          margin: 15,
-          marginBottom: 5,
-        }}
-        onPress={() => {
-          const ref = [...scorekeeper];
-          scorekeeper[index].responsible_to_secure_scorekeeper = 'challenger';
-          scorekeeper[index].is_chief = index === 0;
-          setScorekeeper(ref);
-        }}>
-          <View style={styles.teamContainer}>
-            <View style={styles.teamViewStyle}>
-              <View style={styles.imageShadowView}>
-                <Image
-                source={
-                  // teams[0].thumbnail
-                  //   ? { uri: teams[0].thumbnail }
-                  //   : images.teamPlaceholder
-                  images.teamPlaceholder
-                }
-                style={styles.imageView}
-              />
-              </View>
-              <View style={styles.teamTextContainer}>
-                <Text style={styles.teamNameLable}>Challenger</Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.checkbox}>
-            {item?.responsible_to_secure_scorekeeper === 'challenger' ? (
-              <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-          </View>
-        </TouchableOpacity>
+  // const renderScorekeeper = ({ index, item }) => (
+  //   <View>
+  //     {item !== 'None' ? <View>
+  //       <View style={styles.viewTitleContainer}>
+  //         <Text style={styles.venueCountTitle}>
+  //           Scorekeeper {index + 1} {index === 0 && '(Chief)'}
+  //         </Text>
+  //       </View>
+  //       <Text
+  //       style={{
+  //         fontSize: 16,
+  //         marginLeft: 15,
+  //         marginRight: 15,
+  //         marginBottom: 10,
+  //         fontFamily: fonts.RRegular,
+  //         color: colors.lightBlackColor,
+  //       }}>
+  //         {strings.scorekeeperSettingNote}
+  //       </Text>
+  //       <TouchableOpacity
+  //       style={{
+  //         flexDirection: 'row',
+  //         justifyContent: 'space-between',
+  //         alignItems: 'center',
+  //         margin: 15,
+  //         marginBottom: 5,
+  //       }}
+  //       onPress={() => {
+  //           const ref = [...scorekeeper];
+  //           scorekeeper[index].responsible_to_secure_scorekeeper = 'challengee';
+  //           scorekeeper[index].is_chief = index === 0;
+  //           setScorekeeper(ref);
+  //       }}>
+  //         <View style={styles.teamContainer}>
+  //           <View style={styles.teamViewStyle}>
+  //             <View style={styles.imageShadowView}>
+  //               <Image
+  //               source={
+  //                 authContext?.entity?.role === 'user'
+  //                 || authContext?.entity?.role === 'player'
+  //                   ? authContext?.entity?.obj?.thumbnail
+  //                     ? { uri: authContext?.entity?.obj?.thumbnail }
+  //                     : images.profilePlaceHolder
+  //                   : authContext?.entity?.obj?.thumbnail
+  //                   ? { uri: authContext?.entity?.obj?.thumbnail }
+  //                   : images.teamPlaceholder
+  //               }
+  //               style={styles.imageView}
+  //             />
+  //             </View>
+  //             <View style={styles.teamTextContainer}>
+  //               <Text style={styles.teamNameLable}>
+  //                 {authContext?.entity?.role === 'user'
+  //               || authContext?.entity?.role === 'player'
+  //                 ? authContext?.entity?.obj?.full_name
+  //                 : authContext?.entity?.obj?.group_name}
+  //               </Text>
+  //               <Text style={styles.locationLable}>
+  //                 {authContext?.entity?.obj?.city},{' '}
+  //                 {authContext?.entity?.obj?.state_abbr}
+  //               </Text>
+  //             </View>
+  //           </View>
+  //         </View>
+  //         <View style={styles.checkbox}>
+  //           {item?.responsible_to_secure_scorekeeper === 'challengee' ? (
+  //             <Image
+  //             source={images.radioCheckYellow}
+  //             style={styles.checkboxImg}
+  //           />
+  //         ) : (
+  //           <Image source={images.radioUnselect} style={styles.checkboxImg} />
+  //         )}
+  //         </View>
+  //       </TouchableOpacity>
+  //       <TouchableOpacity
+  //       style={{
+  //         flexDirection: 'row',
+  //         justifyContent: 'space-between',
+  //         alignItems: 'center',
+  //         margin: 15,
+  //         marginBottom: 5,
+  //       }}
+  //       onPress={() => {
+  //         const ref = [...scorekeeper];
+  //         scorekeeper[index].responsible_to_secure_scorekeeper = 'challenger';
+  //         scorekeeper[index].is_chief = index === 0;
+  //         setScorekeeper(ref);
+  //       }}>
+  //         <View style={styles.teamContainer}>
+  //           <View style={styles.teamViewStyle}>
+  //             <View style={styles.imageShadowView}>
+  //               <Image
+  //               source={
+  //                 // teams[0].thumbnail
+  //                 //   ? { uri: teams[0].thumbnail }
+  //                 //   : images.teamPlaceholder
+  //                 images.teamPlaceholder
+  //               }
+  //               style={styles.imageView}
+  //             />
+  //             </View>
+  //             <View style={styles.teamTextContainer}>
+  //               <Text style={styles.teamNameLable}>Challenger</Text>
+  //             </View>
+  //           </View>
+  //         </View>
+  //         <View style={styles.checkbox}>
+  //           {item?.responsible_to_secure_scorekeeper === 'challenger' ? (
+  //             <Image
+  //             source={images.radioCheckYellow}
+  //             style={styles.checkboxImg}
+  //           />
+  //         ) : (
+  //           <Image source={images.radioUnselect} style={styles.checkboxImg} />
+  //         )}
+  //         </View>
+  //       </TouchableOpacity>
 
-        {/* <TCTextInputClear
-        placeholder={strings.venueDetailsPlaceholder}
-          onChangeText={(text) => {
-            const ven = [...venue];
-            venue[index].details = text;
-            setVenue(ven);
-          }}
-          value={venue[index].details}
-          onPressClear={() => {
-            const ven = [...venue];
-            venue[index].details = '';
-            setVenue(ven);
-          }}
-          multiline={true}
-        /> */}
-      </View> : <View/>}
-    </View>
-  );
+  //       {/* <TCTextInputClear
+  //       placeholder={strings.venueDetailsPlaceholder}
+  //         onChangeText={(text) => {
+  //           const ven = [...venue];
+  //           venue[index].details = text;
+  //           setVenue(ven);
+  //         }}
+  //         value={venue[index].details}
+  //         onPressClear={() => {
+  //           const ven = [...venue];
+  //           venue[index].details = '';
+  //           setVenue(ven);
+  //         }}
+  //         multiline={true}
+  //       /> */}
+  //     </View> : <View/>}
+  //   </View>
+  // );
 
 const saveUser = () => {
   let bodyParams;
@@ -277,6 +270,13 @@ const saveUser = () => {
       },
     };
   } else {
+    let score;
+      for (let i = 0; i < selection; i++) {
+        score = [...scorekeeper]
+        score[i].responsible_to_secure_scorekeeper = 'challengee';
+        score[i].is_chief = i === 0;
+      }
+    setScorekeeper(score);
      bodyParams = {
       sport: sportName,
       entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
@@ -285,7 +285,7 @@ const saveUser = () => {
           delete e.id;
           return e;
         }),
-        details: detail,
+
       },
     };
   }
@@ -349,6 +349,14 @@ const saveTeam = () => {
       },
     };
   } else {
+    let score;
+      for (let i = 0; i < selection; i++) {
+        score = [...scorekeeper]
+        score[i].responsible_to_secure_scorekeeper = 'challengee';
+        score[i].is_chief = i === 0;
+      }
+      setScorekeeper(score);
+
      bodyParams = {
       sport: sportName,
       entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
@@ -357,7 +365,7 @@ const saveTeam = () => {
           delete e.id;
           return e;
         }),
-        details: detail,
+
       },
     };
   }
@@ -404,7 +412,7 @@ const saveTeam = () => {
               delete e.id;
               return e;
             }),
-            details: detail,
+
           } : {
             who_secure: 'None',
           },
@@ -425,6 +433,27 @@ const saveTeam = () => {
           title={strings.scorekeeperSettingTitle}
           style={{ marginRight: 15 }}
         />
+
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            fontSize: 16,
+            color: colors.lightBlackColor,
+            marginLeft: 15,
+            marginRight: 15,
+            marginTop: 15,
+          }}>
+          {strings.scorekeeperRules1}
+        </Text>
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            fontSize: 16,
+            color: colors.lightBlackColor,
+            margin: 15,
+          }}>
+          {strings.scorekeeperRules2}
+        </Text>
         <TouchableOpacity
           style={styles.viewContainer}
           onPress={() => setVisibleModal(true)}>
@@ -453,24 +482,15 @@ const saveTeam = () => {
             {strings.AvailibilitySubTitle}
           </Text>
         </View> */}
-        <FlatList
-          data={scorekeeper}
-          renderItem={renderScorekeeper}
-          keyExtractor={(item, index) => index.toString()}
-          style={{ marginBottom: 15 }}
-        />
-        {selection !== 'None' && (
-          <TCTextInputClear
-            placeholder={strings.venueDetailsPlaceholder}
-            onChangeText={(text) => setDetail(text)}
-            value={detail}
-            onPressClear={() => {
-              setDetail('');
-            }}
-            multiline={true}
-          />
-        )}
-
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            fontSize: 16,
+            color: colors.darkThemeColor,
+            margin: 15,
+          }}>
+          {'In order to complete this part, please click the Save button on the right top after choosing your preference.'}
+        </Text>
         <Modal
           isVisible={visibleModal}
           backdropColor="black"
@@ -599,56 +619,4 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
 
-  venueCountTitle: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    marginLeft: 15,
-    marginTop: 15,
-    marginBottom: 10,
-  },
-
-  viewTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-
-  teamContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 15,
-    marginRight: 15,
-  },
-
-  teamViewStyle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  imageShadowView: {
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.4,
-    shadowRadius: 1,
-  },
-  imageView: {
-    height: 40,
-    width: 40,
-    resizeMode: 'cover',
-    borderRadius: 20,
-  },
-
-  teamNameLable: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
-  locationLable: {
-    fontFamily: fonts.RLight,
-    fontSize: 14,
-    color: colors.lightBlackColor,
-  },
-  teamTextContainer: {
-    marginLeft: 20,
-  },
 });

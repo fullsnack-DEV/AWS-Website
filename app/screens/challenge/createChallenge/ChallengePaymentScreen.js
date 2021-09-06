@@ -31,13 +31,13 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import TCInfoImageField from '../../../components/TCInfoImageField';
 import TCInfoField from '../../../components/TCInfoField';
 import EventMapView from '../../../components/Schedule/EventMapView';
-import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import * as Utility from '../../../utils';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import images from '../../../Constants/ImagePath';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import { acceptDeclineChallenge, createChallenge } from '../../../api/Challenge';
+import TCFormProgress from '../../../components/TCFormProgress';
 
 let entity = {};
 export default function ChallengePaymentScreen({ route, navigation }) {
@@ -52,6 +52,26 @@ export default function ChallengePaymentScreen({ route, navigation }) {
   console.log(' route?.params?.challengeObj,', route?.params?.challengeObj);
   const [groupObj] = useState(route?.params?.groupObj);
   const [defaultCard, setDefaultCard] = useState();
+
+  const getChallenger = () => {
+    if (
+      challengeData?.challenger === challengeData?.home_team?.user_id
+      || challengeData?.challenger === challengeData?.home_team?.group_id
+    ) {
+      return challengeData?.home_team;
+    }
+    return challengeData?.away_team;
+  };
+
+  const getChallengee = () => {
+    if (
+      challengeData?.challengee === challengeData?.home_team?.user_id
+      || challengeData?.challengee === challengeData?.home_team?.group_id
+    ) {
+      return challengeData?.home_team;
+    }
+    return challengeData?.away_team;
+  };
 
   useEffect(() => {
     if (isFocused) {
@@ -202,7 +222,9 @@ export default function ChallengePaymentScreen({ route, navigation }) {
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
-      <ChallengeHeaderView
+      <TCFormProgress totalSteps={4} curruentStep={4} />
+
+      {/* <ChallengeHeaderView
         challenger={
           challengeData?.challenger === challengeData?.home_team?.user_id
           || challengeData?.challenger === challengeData?.home_team?.group_id
@@ -216,7 +238,68 @@ export default function ChallengePaymentScreen({ route, navigation }) {
             : challengeData?.away_team
         }
         role={challengeData?.home_team?.user_id ? 'user' : 'team'}
-      />
+      /> */}
+
+      <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              margin: 15,
+            }}>
+        <View style={styles.challengerView}>
+          <View style={styles.teamView}>
+            <Image source={images.reqIcon} style={styles.reqOutImage} />
+            <Text style={styles.challengerText}>Challenger</Text>
+          </View>
+
+          <View style={styles.teamView}>
+            <View style={styles.profileView}>
+              <Image
+                    source={
+                      getChallenger()?.thumbnail
+                        ? { uri: getChallenger()?.thumbnail }
+                        : images.teamPlaceholder
+                    }
+                    style={styles.profileImage}
+                  />
+            </View>
+            <Text style={styles.teamNameText}>
+              {getChallenger()?.group_id
+                    ? `${getChallenger()?.group_name}`
+                    : `${getChallenger()?.first_name} ${
+                        getChallenger()?.last_name
+                      }`}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.challengeeView}>
+          <View style={styles.teamView}>
+            <Image source={images.reqeIcon} style={styles.reqOutImage} />
+            <Text style={styles.challengeeText}>Challengee</Text>
+          </View>
+
+          <View style={styles.teamView}>
+            <View style={styles.profileView}>
+              <Image
+                    source={
+                      getChallengee()?.thumbnail
+                        ? { uri: getChallengee()?.thumbnail }
+                        : images.teamPlaceholder
+                    }
+                    style={styles.profileImage}
+                  />
+            </View>
+            <Text style={styles.teamNameText}>
+              {getChallengee()?.group_id
+                    ? `${getChallengee()?.group_name}`
+                    : `${getChallengee()?.first_name} ${
+                        getChallengee()?.last_name
+                      }`}
+            </Text>
+          </View>
+        </View>
+      </View>
       <TCThinDivider />
 
       {route?.params?.type === 'challenge' && (
@@ -519,5 +602,50 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     width: 230,
     height: 150,
+  },
+
+  challengerView: {
+    marginRight: 15,
+    flex: 0.5,
+  },
+  challengeeView: {
+    flex: 0.5,
+  },
+  profileImage: {
+    alignSelf: 'center',
+    height: 38,
+    width: 38,
+    borderRadius: 76,
+  },
+  teamNameText: {
+    marginLeft: 5,
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    width: '80%',
+  },
+  reqOutImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'cover',
+    marginRight: 5,
+  },
+  teamView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  profileView: {
+    backgroundColor: colors.whiteColor,
+    height: 40,
+    width: 40,
+    borderRadius: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });

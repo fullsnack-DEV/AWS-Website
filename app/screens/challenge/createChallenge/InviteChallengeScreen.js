@@ -16,9 +16,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
-import { getFeesEstimation, createChallenge } from '../../../api/Challenge';
+import { getFeesEstimation } from '../../../api/Challenge';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
@@ -32,9 +31,9 @@ import images from '../../../Constants/ImagePath';
 import TCLabel from '../../../components/TCLabel';
 import AuthContext from '../../../auth/context';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
-import SecureRefereeView from '../../../components/SecureRefereeView';
 import { getNumberSuffix } from '../../../utils/gameUtils';
 import EventMapView from '../../../components/Schedule/EventMapView';
+import TCFormProgress from '../../../components/TCFormProgress';
 
 let entity = {};
 export default function InviteChallengeScreen({ navigation, route }) {
@@ -196,56 +195,6 @@ export default function InviteChallengeScreen({ navigation, route }) {
     </>
   );
 
-  const renderReferees = ({ item, index }) => (
-    <SecureRefereeView
-      entityName={
-        item.responsible_to_secure_referee === 'challenger'
-          ? teams[1]?.full_name ?? teams[1]?.group_name
-          : teams[0]?.full_name ?? teams[0]?.group_name
-      }
-      image={
-        item.responsible_to_secure_referee === 'challenger'
-          ? teams?.[1]?.thumbnail
-            ? { uri: teams[1]?.thumbnail }
-            : teams?.[1]?.full_name
-            ? images.profilePlaceHolder
-            : images.teamPlaceholder
-          : teams?.[0]?.thumbnail
-          ? { uri: teams[0]?.thumbnail }
-          : teams?.[0]?.full_name
-          ? images.profilePlaceHolder
-          : images.teamPlaceholder
-      }
-      entity={'Referee'}
-      entityNumber={index + 1}
-    />
-  );
-
-  const renderScorekeepers = ({ item, index }) => (
-    <SecureRefereeView
-      entityName={
-        item.responsible_to_secure_scorekeeper === 'challenger'
-          ? teams[1]?.full_name ?? teams[1]?.group_name
-          : teams[0]?.full_name ?? teams[0]?.group_name
-      }
-      image={
-        item.responsible_to_secure_scorekeeper === 'challenger'
-          ? teams?.[1]?.thumbnail
-            ? { uri: teams[1]?.thumbnail }
-            : teams?.[1]?.full_name
-            ? images.profilePlaceHolder
-            : images.teamPlaceholder
-          : teams?.[0]?.thumbnail
-          ? { uri: teams[0]?.thumbnail }
-          : teams?.[0]?.full_name
-          ? images.profilePlaceHolder
-          : images.teamPlaceholder
-      }
-      entity={'Scorekeeper'}
-      entityNumber={index + 1}
-    />
-  );
-
   const getFeeDetail = () => {
     const feeBody = {};
     feeBody.payment_method_type = 'card';
@@ -256,6 +205,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
     console.log('Body estimate fee:=>', feeBody);
     getFeesEstimation(feeBody, authContext)
       .then((response) => {
+        setloading(false);
         setFeeObj(response.payload);
         if (response.payload.total_game_fee === 0) {
           setTotalZero(true);
@@ -263,8 +213,6 @@ export default function InviteChallengeScreen({ navigation, route }) {
           setTotalZero(false);
         }
         console.log('Body estimate fee:=>', response.payload);
-
-        setloading(false);
       })
       .catch((e) => {
         setloading(false);
@@ -274,9 +222,34 @@ export default function InviteChallengeScreen({ navigation, route }) {
       });
   };
 
-  const sendChallengeInvitation = () => {
+  const onNextPress = () => {
     entity = authContext.entity;
-    console.log('Entity:=>', entity);
+    console.log('Entity:=>', settingObject);
+
+    // const res_secure_referee = body?.responsible_for_referee?.who_secure.map((obj) => ({
+    //     ...obj,
+    //   responsible_team_id:
+    //     obj.responsible_to_secure_referee === 'challengee'
+    //       ? teams?.[0]?.group_id || teams?.[0]?.user_id
+    //       : teams?.[1]?.group_id || teams?.[1]?.user_id,
+    //   }));
+
+    // const res_secure_scorekeeper = body?.responsible_for_scorekeeper?.who_secure.map((obj) => ({
+    //   ...obj,
+    //   responsible_team_id:
+    //     obj.responsible_to_secure_scorekeeper === 'challengee'
+    //       ? teams?.[0]?.group_id || teams?.[0]?.user_id
+    //       : teams?.[1]?.group_id || teams?.[1]?.user_id,
+    // }));
+
+    const res_secure_referee = [];
+    const res_secure_scorekeeper = [];
+    for (let i = 0; i < settingObject?.responsible_for_referee?.who_secure?.length; i++) {
+      res_secure_referee.push({ ...settingObject?.responsible_for_referee?.who_secure[i], responsible_team_id: teams?.[0]?.group_id || teams?.[0]?.user_id })
+    }
+    for (let i = 0; i < settingObject?.responsible_for_scorekeeper?.who_secure?.length; i++) {
+      res_secure_scorekeeper.push({ ...settingObject?.responsible_for_scorekeeper?.who_secure[i], responsible_team_id: teams?.[0]?.group_id || teams?.[0]?.user_id })
+    }
 
     const body = {
       ...settingObject,
@@ -297,51 +270,87 @@ export default function InviteChallengeScreen({ navigation, route }) {
       user_challenge: !groupObj?.group_id,
     };
 
-    const res_secure_referee = settingObject.responsible_for_referee.who_secure.map(
-      (obj) => ({
-        ...obj,
-        responsible_team_id:
-          obj.responsible_to_secure_referee === 'challengee'
-            ? body.challengee
-            : body.challenger,
-      }),
-    );
-
-    const res_secure_scorekeeper = settingObject.responsible_for_scorekeeper.who_secure.map(
-      (obj) => ({
-        ...obj,
-        responsible_team_id:
-          obj.responsible_to_secure_scorekeeper === 'challengee'
-            ? body.challengee
-            : body.challenger,
-      }),
-    );
-
     body.responsible_for_referee.who_secure = res_secure_referee;
     body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
 
     console.log('Challenge Object:=>', body);
 
-    setloading(true);
-    createChallenge(body, authContext)
-      .then((response) => {
-        console.log(' challenge response:=>', response.payload);
-        navigation.navigate('InviteToChallengeSentScreen', {
-          groupObj,
-        });
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+    navigation.navigate('RefereeInviteAgreementScreen', {
+      challengeObj: body,
+      groupObj,
+      type: 'invite',
+    });
   };
+
+  // const sendChallengeInvitation = () => {
+  //   entity = authContext.entity;
+  //   console.log('Entity:=>', entity);
+
+  //   const body = {
+  //     ...settingObject,
+  //     ...feeObj,
+  //     venue,
+  //     start_datetime: route?.params?.startTime / 1000,
+  //     end_datetime: route?.params?.endTime / 1000,
+  //     challenger: teams?.[1]?.group_id || teams?.[1]?.user_id,
+  //     challengee: teams?.[0]?.group_id || teams?.[0]?.user_id,
+  //     home_team:
+  //       settingObject?.home_away === 'Home'
+  //         ? entity?.uid
+  //         : groupObj?.group_id || groupObj?.user_id,
+  //     away_team:
+  //       settingObject?.home_away === 'Home'
+  //         ? groupObj?.group_id || groupObj?.user_id
+  //         : entity?.uid,
+  //     user_challenge: !groupObj?.group_id,
+  //   };
+
+  //   const res_secure_referee = settingObject.responsible_for_referee.who_secure.map(
+  //     (obj) => ({
+  //       ...obj,
+  //       responsible_team_id:
+  //         obj.responsible_to_secure_referee === 'challengee'
+  //           ? body.challengee
+  //           : body.challenger,
+  //     }),
+  //   );
+
+  //   const res_secure_scorekeeper = settingObject.responsible_for_scorekeeper.who_secure.map(
+  //     (obj) => ({
+  //       ...obj,
+  //       responsible_team_id:
+  //         obj.responsible_to_secure_scorekeeper === 'challengee'
+  //           ? body.challengee
+  //           : body.challenger,
+  //     }),
+  //   );
+
+  //   body.responsible_for_referee.who_secure = res_secure_referee;
+  //   body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
+
+  //   console.log('Challenge Object:=>', body);
+
+  //   setloading(true);
+  //   createChallenge(body, authContext)
+  //     .then((response) => {
+  //       console.log(' challenge response:=>', response.payload);
+  //       navigation.navigate('InviteToChallengeSentScreen', {
+  //         groupObj,
+  //       });
+  //       setloading(false);
+  //     })
+  //     .catch((e) => {
+  //       setloading(false);
+  //       setTimeout(() => {
+  //         Alert.alert(strings.alertmessagetitle, e.message);
+  //       }, 10);
+  //     });
+  // };
 
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
+      <TCFormProgress totalSteps={3} curruentStep={1} />
 
       <View>
         <View
@@ -360,7 +369,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
             {strings.inviteToChallengeText}
           </Text>
         </View>
-        <ChallengeHeaderView
+        {/* <ChallengeHeaderView
           challenger={teams[1]}
           challengee={teams[0]}
           role={
@@ -368,7 +377,64 @@ export default function InviteChallengeScreen({ navigation, route }) {
               ? 'user'
               : 'team'
           }
-        />
+        /> */}
+
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            margin: 15,
+          }}>
+          <View style={styles.challengerView}>
+            <View style={styles.teamView}>
+              <Image source={images.reqIcon} style={styles.reqOutImage} />
+              <Text style={styles.challengerText}>Challenger</Text>
+            </View>
+
+            <View style={styles.teamView}>
+              <View style={styles.profileView}>
+                <Image
+                  source={
+                    teams?.[1]?.thumbnail
+                      ? { uri: teams?.[1]?.thumbnail }
+                      : images.teamPlaceholder
+                  }
+                  style={styles.profileImage}
+                />
+              </View>
+              <Text style={styles.teamNameText}>
+                {teams?.[1]?.group_id
+                  ? `${teams?.[1]?.group_name}`
+                  : `${teams?.[1]?.first_name} ${teams?.[1]?.last_name}`}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.challengeeView}>
+            <View style={styles.teamView}>
+              <Image source={images.reqeIcon} style={styles.reqOutImage} />
+              <Text style={styles.challengeeText}>Challengee</Text>
+            </View>
+
+            <View style={styles.teamView}>
+              <View style={styles.profileView}>
+                <Image
+                  source={
+                    teams?.[0]?.thumbnail
+                      ? { uri: teams?.[0]?.thumbnail }
+                      : images.teamPlaceholder
+                  }
+                  style={styles.profileImage}
+                />
+              </View>
+              <Text style={styles.teamNameText}>
+                {teams?.[0]?.group_id
+                  ? `${teams?.[0]?.group_name}`
+                  : `${teams?.[0]?.first_name} ${teams?.[0]?.last_name}`}
+              </Text>
+            </View>
+          </View>
+        </View>
 
         <TCThickDivider marginTop={15} />
 
@@ -687,11 +753,19 @@ export default function InviteChallengeScreen({ navigation, route }) {
         <Text style={styles.rulesTitle}>Special Rules</Text>
         <Text style={styles.rulesDetail}>{settingObject?.special_rules}</Text>
         <TCThickDivider marginTop={20} />
-
+        {/*
         <TCChallengeTitle
           title={'Referees'}
-          value={settingObject?.responsible_for_referee?.who_secure !== 'None' ? settingObject?.responsible_for_referee?.who_secure?.length : ''}
-          staticValueText={settingObject?.responsible_for_referee?.who_secure !== 'None' ? 'Referees' : ''}
+          value={
+            settingObject?.responsible_for_referee?.who_secure !== 'None'
+              ? settingObject?.responsible_for_referee?.who_secure?.length
+              : ''
+          }
+          staticValueText={
+            settingObject?.responsible_for_referee?.who_secure !== 'None'
+              ? 'Referees'
+              : ''
+          }
           valueStyle={{
             fontFamily: fonts.RBold,
             fontSize: 16,
@@ -732,8 +806,16 @@ export default function InviteChallengeScreen({ navigation, route }) {
 
         <TCChallengeTitle
           title={'Scorekeepers'}
-          value={settingObject?.responsible_for_scorekeeper?.who_secure !== 'None' ? settingObject?.responsible_for_scorekeeper?.who_secure?.length : ''}
-          staticValueText={settingObject?.responsible_for_scorekeeper?.who_secure !== 'None' ? 'Scorekeepers' : ''}
+          value={
+            settingObject?.responsible_for_scorekeeper?.who_secure !== 'None'
+              ? settingObject?.responsible_for_scorekeeper?.who_secure?.length
+              : ''
+          }
+          staticValueText={
+            settingObject?.responsible_for_scorekeeper?.who_secure !== 'None'
+              ? 'Scorekeepers'
+              : ''
+          }
           valueStyle={{
             fontFamily: fonts.RBold,
             fontSize: 16,
@@ -749,15 +831,16 @@ export default function InviteChallengeScreen({ navigation, route }) {
             });
           }}
         />
-        {settingObject?.responsible_for_scorekeeper?.who_secure !== 'None'
-          ? <FlatList
-          data={settingObject?.responsible_for_scorekeeper?.who_secure}
-          renderItem={renderScorekeepers}
-          keyExtractor={(item, index) => index.toString()}
-          ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
-          style={{ marginBottom: 15 }}
-        />
-          : <Text
+        {settingObject?.responsible_for_scorekeeper?.who_secure !== 'None' ? (
+          <FlatList
+            data={settingObject?.responsible_for_scorekeeper?.who_secure}
+            renderItem={renderScorekeepers}
+            keyExtractor={(item, index) => index.toString()}
+            ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
+            style={{ marginBottom: 15 }}
+          />
+        ) : (
+          <Text
             style={{
               color: colors.grayColor,
               fontFamily: fonts.RMedium,
@@ -766,8 +849,8 @@ export default function InviteChallengeScreen({ navigation, route }) {
             }}>
             No Scorekeepers
           </Text>
-        }
-        <TCThickDivider marginTop={20} />
+        )}
+         <TCThickDivider marginTop={20} /> */}
 
         {!totalZero && (
           <View>
@@ -786,7 +869,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
         isDisabled={
           !route?.params?.startTime || !route?.params?.endTime || !venue
         }
-        title={strings.sendInviteTitle}
+        title={strings.nextTitle} // sendInviteTitle
         onPress={() => {
           // navigation.push('ChallengePaymentScreen');
           // navigation.push('InviteToChallengeSentScreen');
@@ -798,7 +881,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
               'Please choose future time for challenge.',
             );
           } else {
-            sendChallengeInvitation();
+            onNextPress();
           }
         }}
         outerContainerStyle={{
@@ -950,5 +1033,50 @@ const styles = StyleSheet.create({
   venueContainer: {
     marginLeft: 15,
     marginRight: 15,
+  },
+
+  challengerView: {
+    marginRight: 15,
+    flex: 0.5,
+  },
+  challengeeView: {
+    flex: 0.5,
+  },
+  profileImage: {
+    alignSelf: 'center',
+    height: 38,
+    width: 38,
+    borderRadius: 76,
+  },
+  teamNameText: {
+    marginLeft: 5,
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    width: '80%',
+  },
+  reqOutImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'cover',
+    marginRight: 5,
+  },
+  teamView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  profileView: {
+    backgroundColor: colors.whiteColor,
+    height: 40,
+    width: 40,
+    borderRadius: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });

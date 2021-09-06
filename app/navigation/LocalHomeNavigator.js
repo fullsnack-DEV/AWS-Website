@@ -13,6 +13,10 @@ import ScorekeeperListScreen from '../screens/localhome/ScorekeeperListScreen';
 import SearchCityScreen from '../screens/localhome/SearchCityScreen';
 import ShortsPlayScreen from '../screens/localhome/shorts/ShortsPlayScreen';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
+import ScorekeeperAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperAgreementScreen';
+import RefereeAgreementScreen from '../screens/challenge/createChallenge/RefereeAgreementScreen';
+import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperInviteAgreementScreen';
+import RefereeInviteAgreementScreen from '../screens/challenge/createChallenge/RefereeInviteAgreementScreen';
 
 const Stack = createStackNavigator();
 
@@ -82,6 +86,72 @@ const LocalHomeNavigator = () => (
             borderBottomWidth: 0.3,
           },
         }}
+      />
+    <Stack.Screen
+          name="RefereeAgreementScreen"
+          component={RefereeAgreementScreen}
+          options={{
+              title: 'Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+
+    <Stack.Screen
+          name="ScorekeeperAgreementScreen"
+          component={ScorekeeperAgreementScreen}
+          options={{
+              title: 'Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+    <Stack.Screen
+          name="RefereeInviteAgreementScreen"
+          component={RefereeInviteAgreementScreen}
+          options={{
+              title: 'Invite to Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+
+    <Stack.Screen
+          name="ScorekeeperInviteAgreementScreen"
+          component={ScorekeeperInviteAgreementScreen}
+          options={{
+              title: 'Invite to Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
       />
     <Stack.Screen
         name="HiringPlayerScreen"

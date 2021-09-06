@@ -1,26 +1,44 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-unused-expressions */
+import {} from 'react';
 import {
-
-} from 'react';
-import {
-  Platform, Alert, Dimensions, PixelRatio, LayoutAnimation,
+  Platform,
+  Alert,
+  Dimensions,
+  PixelRatio,
+  LayoutAnimation,
 } from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
 import _ from 'lodash';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import strings from '../Constants/String'
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+import strings from '../Constants/String';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
+// eslint-disable-next-line import/no-cycle
+import { postElasticSearch } from '../api/elasticSearch';
 
 export const deviceHeight = Dimensions.get('window').height;
 export const deviceWidth = Dimensions.get('window').width;
 
 export const getPageLimit = () => 10;
 
-export const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
-  'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+export const monthNames = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'June',
+  'July',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 export const groupMemberGenderItems = [
@@ -45,7 +63,7 @@ export const groupMembershipFeeTypes = [
   { label: 'Biweekly', value: 'biweekly' },
   { label: 'Monthly', value: 'monthly' },
   { label: 'Yearly', value: 'yearly' },
-]
+];
 
 export const isFieldEmpty = (text) => {
   console.log('text', text);
@@ -62,7 +80,7 @@ export const passwordPattern = (password) => {
   return false;
 };
 
-export const capitalize = (word) => word[0].toUpperCase() + word.slice(1).toLowerCase()
+export const capitalize = (word) => word[0].toUpperCase() + word.slice(1).toLowerCase();
 
 export const isValidEmail = (email) => {
   // var reg = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -132,7 +150,7 @@ export const showAlertWithCallBack = (msg, onOkClick) => {
 export const removeAuthKey = async () => {};
 // New Utility Method for set any kind of value
 export const setStorage = async (key, value) => {
-  console.log('storing in storage')
+  console.log('storing in storage');
   const valueString = typeof value === 'object' ? JSON.stringify(value) : value.toString();
   await AsyncStorage.setItem(key, valueString);
 };
@@ -164,11 +182,11 @@ export function logCurrentStorage() {
     AsyncStorage.multiGet(keyArray).then((keyValArray) => {
       const myStorage = {};
       for (const keyVal of keyValArray) {
-        myStorage[keyVal[0]] = keyVal[1]
+        myStorage[keyVal[0]] = keyVal[1];
       }
 
       console.log('CURRENT STORAGE: ', myStorage);
-    })
+    });
   });
 }
 
@@ -195,14 +213,15 @@ const backgroundColors = [
   '#e95555',
   '#7eda54',
   '#f9b647',
-]
+];
 
 export const eventDefaultColor = [
-'#FF3B00',
-'#FF7F00',
-'#FFAE01',
-'#00C168',
-'#0093FF']
+  '#FF3B00',
+  '#FF7F00',
+  '#FFAE01',
+  '#00C168',
+  '#0093FF',
+];
 
 export const createdEventData = [
   {
@@ -307,7 +326,6 @@ export const importedEventData = [
     color: colors.googleColor,
     isSelected: false,
   },
-
 ];
 export const gamesEventData = [
   {
@@ -362,21 +380,21 @@ export const gamesEventData = [
   },
 ];
 // eslint-disable-next-line no-bitwise
-export const getRandomColor = () => backgroundColors[backgroundColors.length * Math.random() | 0]
+export const getRandomColor = () => backgroundColors[(backgroundColors.length * Math.random()) | 0];
 
 export const STAR_COLOR = {
   YELLOW: 'YELLOW',
   GREEN: 'GREEN',
   BLUE: 'BLUE',
   WHITE: 'WHITE',
-}
+};
 
 export const STAR_IMAGE = {
   YELLOW: images.yellowRatingStar,
   GREEN: images.greenRatingStar,
   BLUE: images.blueRatingStar,
   WHITE: images.blankRatingStar,
-}
+};
 
 export const toggleView = (callbackMethod, duration = 2000) => {
   const CustomLayoutLinear = {
@@ -400,7 +418,10 @@ export const toggleView = (callbackMethod, duration = 2000) => {
 };
 
 export const getRegionFromMarkers = (markers, delta = 0.025, offset = 2.5) => {
-  let minLat = 0, maxLat = 0, minLng = 0, maxLng = 0;
+  let minLat = 0,
+    maxLat = 0,
+    minLng = 0,
+    maxLng = 0;
   for (let i = 0; i < markers.length; i++) {
     const marker = markers[i];
     if (i === 0) {
@@ -420,9 +441,12 @@ export const getRegionFromMarkers = (markers, delta = 0.025, offset = 2.5) => {
   const latDelta = (Math.abs(minLat - maxLat) || delta) * offset;
   const lngDelta = (Math.abs(minLng - maxLng) || delta) * offset;
   return {
-    latitude, longitude, latitudeDelta: latDelta, longitudeDelta: lngDelta,
+    latitude,
+    longitude,
+    latitudeDelta: latDelta,
+    longitudeDelta: lngDelta,
   };
-}
+};
 
 export const escapeRegExp = (str) => {
   if (!_.isString(str)) {
@@ -433,150 +457,252 @@ export const escapeRegExp = (str) => {
 
 export const getSearchData = (data = [], field = [], searchString) => {
   const searchData = [];
-  const searchStr = escapeRegExp(searchString).replace(' ', '')
+  const searchStr = escapeRegExp(searchString).replace(' ', '');
   if (searchStr !== '') {
     data?.map((item) => {
       let isSearch = false;
       field?.map((key) => {
-        if (!isSearch
-            && item?._source?.[key]
-              ?.toLowerCase()
-              ?.toString()
-              ?.replace(' ', '')
-              ?.match(searchStr?.toLowerCase()?.toString())) {
+        if (
+          !isSearch
+          && item?._source?.[key]
+            ?.toLowerCase()
+            ?.toString()
+            ?.replace(' ', '')
+            ?.match(searchStr?.toLowerCase()?.toString())
+        ) {
           isSearch = true;
         }
         return true;
-      })
+      });
       if (isSearch) searchData.push(item);
       return true;
-    })
+    });
   }
   return searchData;
-}
+};
 
 export const getSearchEntityData = (data = [], field = [], searchString) => {
   const searchData = [];
-  const searchStr = escapeRegExp(searchString).replace(' ', '')
+  const searchStr = escapeRegExp(searchString).replace(' ', '');
   if (searchStr !== '') {
     data?.map((item) => {
       let isSearch = false;
       field?.map((key) => {
-        if (!isSearch
+        if (
+          !isSearch
           && item?.[key]
-              ?.toLowerCase()
-              ?.toString()
-              ?.replace(' ', '')
-              ?.match(searchStr?.toLowerCase()?.toString())) {
+            ?.toLowerCase()
+            ?.toString()
+            ?.replace(' ', '')
+            ?.match(searchStr?.toLowerCase()?.toString())
+        ) {
           isSearch = true;
         }
         return true;
-      })
+      });
       if (isSearch) searchData.push(item);
       return true;
-    })
+    });
   }
   return searchData;
-}
+};
 
-export const round = (value, decimals) => value.toFixed(decimals)
+export const round = (value, decimals) => value.toFixed(decimals);
 
 export const getHitSlop = (slopValue) => {
   let hitSlop = {
- top: 0, bottom: 0, right: 0, left: 0,
-}
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+  };
   if (['string', 'number']?.includes(typeof slopValue)) {
- hitSlop = {
- top: slopValue, bottom: slopValue, right: slopValue, left: slopValue,
-}
-} else if (typeof slopValue === 'object') hitSlop = { ...hitSlop, ...slopValue };
+    hitSlop = {
+      top: slopValue,
+      bottom: slopValue,
+      right: slopValue,
+      left: slopValue,
+    };
+  } else if (typeof slopValue === 'object') { hitSlop = { ...hitSlop, ...slopValue }; }
   return hitSlop;
-}
+};
 
 export const validURL = (str) => {
-  const pattern = new RegExp('^(https?:\\/\\/)?' // protocol
+  const pattern = new RegExp(
+    '^(https?:\\/\\/)?' // protocol
       + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' // domain name
       + '((\\d{1,3}\\.){3}\\d{1,3}))' // OR ip (v4) address
       + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' // port and path
       + '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
-      + '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+      + '(\\#[-a-z\\d_]*)?$',
+    'i',
+  ); // fragment locator
   return !!pattern.test(str);
-}
+};
 
-export const getTaggedEntityData = (entity_raw_data, entity_item, entity_type) => {
-  let entity = { ...entity_raw_data }
+export const getTaggedEntityData = (
+  entity_raw_data,
+  entity_item,
+  entity_type,
+) => {
+  let entity = { ...entity_raw_data };
   if (entity_type === 'game') {
     const pickedEntity = _.pick(entity_item, [
-      'sport', 'status', 'start_datetime', 'end_datetime', 'user_challenge', 'userChallenge',
-      'home_team.thumbnail', 'home_team.group_name', 'home_team.full_name',
-      'away_team.thumbnail', 'away_team.group_name', 'away_team.full_name',
-      'venue.address', 'venue.description',
-    ])
-    entity = { ...entity, ...pickedEntity }
+      'sport',
+      'status',
+      'start_datetime',
+      'end_datetime',
+      'user_challenge',
+      'userChallenge',
+      'home_team.thumbnail',
+      'home_team.group_name',
+      'home_team.full_name',
+      'away_team.thumbnail',
+      'away_team.group_name',
+      'away_team.full_name',
+      'venue.address',
+      'venue.description',
+    ]);
+    entity = { ...entity, ...pickedEntity };
   } else {
-    const pickedEntity = _.pick(entity_item, ['group_name', 'full_name', 'city', 'thumbnail']);
-    entity = { ...entity, ...pickedEntity }
+    const pickedEntity = _.pick(entity_item, [
+      'group_name',
+      'full_name',
+      'city',
+      'thumbnail',
+    ]);
+    entity = { ...entity, ...pickedEntity };
   }
   return entity;
-}
+};
 
 export const getTaggedText = (format_tagged_data) => {
-  const gameTagList = format_tagged_data?.filter((item) => item?.entity_type === 'game')
-  const entityTagList = format_tagged_data?.filter((item) => item?.entity_type !== 'game')
+  const gameTagList = format_tagged_data?.filter(
+    (item) => item?.entity_type === 'game',
+  );
+  const entityTagList = format_tagged_data?.filter(
+    (item) => item?.entity_type !== 'game',
+  );
   const entityTagsListLength = entityTagList?.length ?? 0;
   const gameTagsListLength = gameTagList?.length ?? 0;
-  let matchText = '', entityText = '', betweenText = '', lastText = '', entityLengthText = '', matchLengthText = '';
+  let matchText = '',
+    entityText = '',
+    betweenText = '',
+    lastText = '',
+    entityLengthText = '',
+    matchLengthText = '';
   if (entityTagsListLength > 0) entityLengthText = `${entityTagsListLength} `;
   if (gameTagsListLength > 0) matchLengthText = `${gameTagsListLength} `;
-  if (gameTagsListLength > 0) matchText = gameTagsListLength > 1 ? 'matches ' : 'match ';
-  if (entityTagsListLength > 0) entityText = entityTagsListLength > 1 ? 'people  ' : 'person ';
+  if (gameTagsListLength > 0) { matchText = gameTagsListLength > 1 ? 'matches ' : 'match '; }
+  if (entityTagsListLength > 0) { entityText = entityTagsListLength > 1 ? 'people  ' : 'person '; }
   if (gameTagsListLength > 0 && entityTagsListLength > 0) betweenText = 'and ';
-  if ((entityTagsListLength + gameTagsListLength) > 0) lastText = (entityTagsListLength + gameTagsListLength) > 1 ? 'were tagged' : 'was tagged';
-  return `${entityLengthText}${entityText}${betweenText}${matchLengthText}${matchText}${lastText}`
+  if (entityTagsListLength + gameTagsListLength > 0) {
+ lastText = entityTagsListLength + gameTagsListLength > 1
+        ? 'were tagged'
+        : 'was tagged';
 }
+  return `${entityLengthText}${entityText}${betweenText}${matchLengthText}${matchText}${lastText}`;
+};
 
 export const getScreenWidth = ({
- isLandscape,
- screenInsets,
- avoidScreenInsets = null,
- portraitWidth = 100,
- landscapeWidth = portraitWidth,
+  isLandscape,
+  screenInsets,
+  avoidScreenInsets = null,
+  portraitWidth = 100,
+  landscapeWidth = portraitWidth,
 }) => {
   let avoidInsets = avoidScreenInsets ?? false;
   if (avoidScreenInsets === null) {
-    if (!isLandscape && portraitWidth !== 100) avoidInsets = true
-    else if (isLandscape && landscapeWidth !== 100) avoidInsets = true
+    if (!isLandscape && portraitWidth !== 100) avoidInsets = true;
+    else if (isLandscape && landscapeWidth !== 100) avoidInsets = true;
   }
-  const avoidLength = !avoidInsets ? (screenInsets.left + screenInsets.right) : 0;
-  return (isLandscape ? hp(landscapeWidth) : wp(portraitWidth)) - avoidLength
-}
+  const avoidLength = !avoidInsets ? screenInsets.left + screenInsets.right : 0;
+  return (isLandscape ? hp(landscapeWidth) : wp(portraitWidth)) - avoidLength;
+};
 
 export const getScreenHeight = ({
- isLandscape,
- screenInsets,
- avoidScreenInsets = null,
- portraitHeight = 100,
- landscapeHeight = portraitHeight,
+  isLandscape,
+  screenInsets,
+  avoidScreenInsets = null,
+  portraitHeight = 100,
+  landscapeHeight = portraitHeight,
 }) => {
   let avoidInsets = avoidScreenInsets ?? false;
   if (avoidScreenInsets === null) {
-    if (!isLandscape && portraitHeight !== 100) avoidInsets = true
-    else if (isLandscape && landscapeHeight !== 100) avoidInsets = true
+    if (!isLandscape && portraitHeight !== 100) avoidInsets = true;
+    else if (isLandscape && landscapeHeight !== 100) avoidInsets = true;
   }
-  const avoidLength = !avoidInsets ? (screenInsets.top + screenInsets.bottom) : 0;
+  const avoidLength = !avoidInsets ? screenInsets.top + screenInsets.bottom : 0;
   return (isLandscape ? wp(landscapeHeight) : hp(portraitHeight)) - avoidLength;
-}
+};
 
-export const stringContainValidURL = (str) => new RegExp('([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?').test(str)
+export const stringContainValidURL = (str) => new RegExp(
+    '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?',
+  ).test(str);
 
 export const getSportIcon = (sport) => {
   switch (sport.toLowerCase()) {
-    case 'soccer': return images.soccerIcon;
-    case 'tennis': return images.tennisIcon;
-    default: return images.soccerIcon;
+    case 'soccer':
+      return images.soccerIcon;
+    case 'tennis':
+      return images.tennisIcon;
+    default:
+      return images.soccerIcon;
   }
-}
+};
 
-export const roundValue = (value, decimals) => (value ? parseFloat(+value.toFixed(decimals)) : 0)
+export const roundValue = (value, decimals) => (value ? parseFloat(+value.toFixed(decimals)) : 0);
 
-  // return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals)
+export const getCalendar = async (participantId, fromDate, toDate, type, blocked) => {
+  const body = {
+    query: {
+      bool: {
+        must: [
+          {
+            term: {
+              'participants.entity_id.keyword': participantId,
+            },
+          },
+        ],
+      },
+    },
+  };
+
+  if (type) {
+    body.query.bool.must.push({
+      term: {
+        'cal_type.keyword': type,
+      },
+    });
+  }
+
+  if (blocked === true || blocked === false) {
+    body.query.bool.must.push({
+      match: {
+        blocked,
+      },
+    });
+  }
+
+  if (fromDate) {
+    body.query.bool.must.push({ range: { end_datetime: { gt: fromDate } } });
+  }
+  if (toDate) {
+    body.query.bool.must.push({ range: { start_datetime: { lt: toDate } } });
+  }
+
+  if (blocked === true || blocked === false) {
+    body.query.bool.must.push({
+      match: {
+        blocked,
+      },
+    });
+  }
+
+   return postElasticSearch(body, 'calendarindex').then((response) => {
+    console.log('elastic search :=>', response);
+
+     return response
+   });
+};
+// return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals)

@@ -47,6 +47,7 @@ const ReservationNavigator = () => (
         // headerTitle: true,
         headerBackTitleVisible: false,
       } }>
+
     <Stack.Screen
         name="ReservationScreen"
         component={ ReservationScreen }

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
 import makeElasticAPIRequest from '../utils/ElasticGloble';

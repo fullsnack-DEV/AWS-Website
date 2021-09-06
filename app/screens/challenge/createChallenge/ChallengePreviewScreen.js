@@ -35,6 +35,8 @@ import ReservationStatus from '../../../Constants/ReservationStatus';
 import { heightPercentageToDP, widthPercentageToDP } from '../../../utils';
 import TCSmallButton from '../../../components/TCSmallButton';
 import images from '../../../Constants/ImagePath';
+import RefereeAgreementView from '../../../components/challenge/RefereeAgreementView';
+
 import { getGameHomeScreen, getNumberSuffix } from '../../../utils/gameUtils';
 import * as Utility from '../../../utils';
 
@@ -52,6 +54,7 @@ import * as Utils from '../manageChallenge/settingUtility';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCTabView from '../../../components/TCTabView';
 import CurruentReservationView from '../alterChallenge/CurrentReservationView';
+import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
 
 let entity = {};
 export default function ChallengePreviewScreen({ navigation, route }) {
@@ -66,6 +69,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   const [settingObject, setSettingObject] = useState();
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [moreButtonReferee, setMoreButtonReferee] = useState();
+  const [moreButtonScorekeeper, setMoreButtonScorekeeper] = useState();
   const [alterModalVisible, setAlterModalVisible] = useState(false);
 
   const [challengeStatus, setChallengeStatus] = useState();
@@ -74,7 +79,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
   const [challengeData, setChallengeData] = useState(
     route?.params?.challengeObj?.length > 1
-      ? route?.params?.challengeObj[0]
+      ? route?.params?.challengeObj
       : route?.params?.challengeObj,
   );
   const [oldVersion, setOldVersion] = useState();
@@ -391,62 +396,6 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     </>
   );
 
-  const renderReferees = ({ item, index }) => {
-    console.log('ITEm:', item);
-    console.log(
-      'challengee?.full_name ?? challengee?.group_name',
-      getChallenger()?.full_name ?? getChallenger()?.group_name,
-    );
-    return (
-      <SecureRefereeView
-        entityName={
-          item.responsible_to_secure_referee === 'challenger'
-            ? getChallenger()?.full_name ?? getChallenger()?.group_name
-            : getChallengee()?.full_name ?? getChallengee()?.group_name
-        }
-        image={
-          item.responsible_to_secure_referee === 'challenger'
-            ? getChallenger()?.thumbnail
-              ? { uri: getChallenger()?.thumbnail }
-              : getChallenger()?.full_name
-              ? images.profilePlaceHolder
-              : images.teamPlaceholder
-            : getChallenger()?.thumbnail
-            ? { uri: getChallengee()?.thumbnail }
-            : getChallengee()?.full_name
-            ? images.profilePlaceHolder
-            : images.teamPlaceholder
-        }
-        entity={'Referee'}
-        entityNumber={index + 1}
-      />
-    );
-  };
-  const renderScorekeepers = ({ item, index }) => (
-    <SecureRefereeView
-      entityName={
-        item.responsible_to_secure_scorekeeper === 'challenger'
-          ? getChallenger()?.full_name ?? getChallenger()?.group_name
-          : getChallengee()?.full_name ?? getChallengee()?.group_name
-      }
-      image={
-        item.responsible_to_secure_scorekeeper === 'challenger'
-          ? getChallenger()?.thumbnail
-            ? { uri: getChallenger()?.thumbnail }
-            : getChallenger()?.full_name
-            ? images.profilePlaceHolder
-            : images.teamPlaceholder
-          : getChallengee()?.thumbnail
-          ? { uri: getChallengee()?.thumbnail }
-          : getChallengee()?.full_name
-          ? images.profilePlaceHolder
-          : images.teamPlaceholder
-      }
-      entity={'Scorekeeper'}
-      entityNumber={index + 1}
-    />
-  );
-
   const bottomButtonView = () => {
     if (
       checkSenderOrReceiver(challengeData) === 'sender'
@@ -541,10 +490,16 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                 } else {
                   groupObj = challengeData?.home_team;
                 }
-                navigation.push('ChallengePaymentScreen', {
+                // navigation.push('ChallengePaymentScreen', {
+                //   challengeObj: challengeData,
+                //   groupObj,
+                //   type: 'invite',
+                // });
+                navigation.push('RefereeAgreementScreen', {
                   challengeObj: challengeData,
                   groupObj,
                   type: 'invite',
+                  comeFrom: 'ChallengePreviewScreen',
                 });
               }
             }}
@@ -1145,48 +1100,41 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             <TCThickDivider marginTop={20} />
           </View>
 
-          <TCChallengeTitle
-            title={'Referees'}
-            value={challengeData?.responsible_for_referee?.who_secure?.length}
-            staticValueText={'Referees'}
-            valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-            }}
-          />
-          <FlatList
-            data={challengeData?.responsible_for_referee?.who_secure}
-            renderItem={renderReferees}
-            keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
-            style={{ marginBottom: 15 }}
-          />
+          {challengeData?.min_referee >= 0 ? <View>
+            <RefereeAgreementView
+              teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+              teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+              numberOfReferee={
+                challengeData?.responsible_for_referee?.who_secure?.length ?? 0
+              }
+              agreementOpetion={challengeData?.min_referee === 0 ? 1 : 2}
+              moreButtonVisible={true}
+              morePressed={(value) => {
+                setMoreButtonReferee(value);
+              }}
+              isMore={moreButtonReferee}
+            />
+            <TCThickDivider marginTop={20} />
+          </View> : null}
 
-          <TCThickDivider marginTop={20} />
+          {challengeData?.min_scorekeeper >= 0 ? <View>
+            <ScorekeeperAgreementView
+              teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+              teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+              numberOfScorekeeper={
+                challengeData?.responsible_for_scorekeeper?.who_secure
+                  ?.length ?? 0
+              }
+              agreementOpetion={challengeData?.min_scorekeeper === 0 ? 1 : 2}
+              moreButtonVisible={true}
+              morePressed={(value) => {
+                setMoreButtonScorekeeper(value);
+              }}
+              isMore={moreButtonScorekeeper}
+            />
+            <TCThickDivider marginTop={20} />
+          </View> : null}
 
-          <TCChallengeTitle
-            title={'Scorekeepers'}
-            value={
-              challengeData?.responsible_for_scorekeeper?.who_secure?.length
-            }
-            staticValueText={'Scorekeepers'}
-            valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-            }}
-          />
-          <FlatList
-            data={challengeData?.responsible_for_scorekeeper?.who_secure}
-            renderItem={renderScorekeepers}
-            keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
-            style={{ marginBottom: 15 }}
-          />
-          <TCThickDivider marginTop={20} />
           <View>
             <TCChallengeTitle
               title={'Refund Policy'}
