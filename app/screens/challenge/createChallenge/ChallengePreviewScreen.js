@@ -79,7 +79,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
   const [challengeData, setChallengeData] = useState(
     route?.params?.challengeObj?.length > 1
-      ? route?.params?.challengeObj
+      ? route?.params?.challengeObj[0]
       : route?.params?.challengeObj,
   );
   const [oldVersion, setOldVersion] = useState();

@@ -36,7 +36,7 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
-import { createEvent, getEvents } from '../../../api/Schedule';
+import { createEvent } from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import { getLocationNameWithLatLong } from '../../../api/External';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
@@ -369,7 +369,6 @@ export default function CreateEventScreen({ navigation, route }) {
                   'Please Select Event End Date and Time.',
                 );
               } else {
-                setloading(true);
                 let data;
 
                 if (searchLocation) {
@@ -396,9 +395,11 @@ export default function CreateEventScreen({ navigation, route }) {
                       latitude: locationDetail.lat,
                       longitude: locationDetail.lng,
                       blocked: is_Blocked,
-                      owner_id:
-                        authContext.entity.obj.user_id
+                      participants: [{
+                        entity_id: authContext.entity.obj.user_id
                         || authContext.entity.obj.group_id,
+                      entity_type: entityRole,
+                      }],
                     },
                   ];
                 } else {
@@ -422,9 +423,11 @@ export default function CreateEventScreen({ navigation, route }) {
                       ),
                       is_recurring: selectWeekMonth !== '',
                       blocked: is_Blocked,
-                      owner_id:
-                        authContext.entity.obj.user_id
+                      participants: [{
+                        entity_id: authContext.entity.obj.user_id
                         || authContext.entity.obj.group_id,
+                      entity_type: entityRole,
+                      }],
                     },
                   ];
                 }
@@ -458,13 +461,14 @@ export default function CreateEventScreen({ navigation, route }) {
                   );
                   data[0].rrule = `FREQ=${rule}`;
                 }
-                console.log('Response :-', data);
+                setloading(true);
                 createEvent(entityRole, uid, data, authContext)
-                  .then(() => getEvents(entityRole, uid, authContext))
                   .then((response) => {
-                    setloading(false);
-                    navigation.goBack();
                     console.log('Response :-', response);
+                    setTimeout(() => {
+                      setloading(false)
+                      navigation.goBack();
+                  }, 5000);
                   })
                   .catch((e) => {
                     setloading(false);

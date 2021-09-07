@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-param-reassign */
 /* eslint-disable array-callback-return */
-/* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
 import React, {
@@ -47,25 +46,16 @@ import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import EventScheduleScreen from './EventScheduleScreen';
 import fonts from '../../../Constants/Fonts';
-import TwoTabView from '../../../components/Schedule/TowTabView';
-import BackForwardView from '../../../components/Schedule/BackForwardView';
-import EventInCalender from '../../../components/Schedule/EventInCalender';
+
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
 import CalendarTimeTableView from '../../../components/Schedule/CalendarTimeTableView';
 import AuthContext from '../../../auth/context';
 import * as RefereeUtils from '../../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../../scorekeeper/ScorekeeperUtility';
 import * as Utils from '../../challenge/ChallengeUtility';
-import {
-  getEventById,
-  getEvents,
-  getSlots,
-  blockedSlots,
-  // deleteEvent
-} from '../../../api/Schedule';
+import { getEventById } from '../../../api/Schedule';
 import CreateEventButton from '../../../components/Schedule/CreateEventButton';
 import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModal';
-import EventBlockTimeTableView from '../../../components/Schedule/EventBlockTimeTableView';
 import strings from '../../../Constants/String';
 import {
   getRefereeReservationDetails,
@@ -88,31 +78,14 @@ import {
 } from '../../../utils/QuickBlox';
 import NotificationListTopHeaderShimmer from '../../../components/shimmer/account/NotificationListTopHeaderShimmer';
 import TCThinDivider from '../../../components/TCThinDivider';
-import UnavailableTimeView from '../../../components/challenge/UnavailableTimeView';
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import MonthHeader from '../../../components/Schedule/Monthheader';
 import { postElasticSearch } from '../../../api/elasticSearch';
 
-const lastDistance = null;
 let selectedCalendarDate = moment(new Date());
 const { width } = Dimensions.get('window');
 
 export default function ScheduleScreen({ navigation }) {
-  const monthNames = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'June',
-    'July',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-  const daysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
@@ -120,9 +93,7 @@ export default function ScheduleScreen({ navigation }) {
   const [timeTable, setTimeTable] = useState([]);
   const [selectedEventItem, setSelectedEventItem] = useState(null);
   const [eventSelectDate, setEventSelectDate] = useState(new Date());
-  const [filterEventData, setFilterEventData] = useState([]);
   const [filterTimeTable, setFilterTimeTable] = useState([]);
-  const [calenderInnerIndexCounter, setCalenderInnerIdexCounter] = useState(0);
   const [loading, setloading] = useState(false);
   const [createEventModal, setCreateEventModal] = useState(false);
   const [isRefereeModal, setIsRefereeModal] = useState(false);
@@ -134,22 +105,13 @@ export default function ScheduleScreen({ navigation }) {
 
   const [listView, setListView] = useState(true);
 
-  const minimumDate = moment().add(-1, 'day'); // one day before for midnight check-in usecase
-  const currentDate = moment();
-
-  const [ratesInventoryDataArray, setRatesInventoryDataArray] = useState([]);
-  const [calendarLoading, setCalendarLoading] = useState(false);
-  const [selectedCalendarDateString, setselectedCalendarDateString] = useState(
+  const [selectedCalendarDateString] = useState(
     selectedCalendarDate.format('YYYY-MM-DD'),
   );
-  const [
-    selectedCalendarMonthString,
-    setselectedCalendarMonthString,
-  ] = useState(selectedCalendarDate.format('YYYY-MM-DD'));
+
   const [markingDays, setMarkingDays] = useState({});
 
   const actionSheet = useRef();
-  const agendaRef = useRef();
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
   const [notifAPI, setNotifAPI] = useState();
@@ -157,7 +119,6 @@ export default function ScheduleScreen({ navigation }) {
   const [selectedEntity, setSelectedEntity] = useState();
   const [activeScreen, setActiveScreen] = useState(false);
   const [animatedOpacityValue] = useState(new Animated.Value(0));
-  const [blockedSlot, setBlockedSlot] = useState();
   const [slots, setSlots] = useState();
 
   const [blockedGroups, setBlockedGroups] = useState([]);
@@ -337,16 +298,21 @@ export default function ScheduleScreen({ navigation }) {
   };
 
   const configureEvents = useCallback(
-    (eventTimeTableData, games) => {
-      eventTimeTableData = eventTimeTableData.map((item) => {
-        const gameObj = games.filter((game) => game.game_id === item.game_id);
+    (eventsData, games) => {
+     const eventTimeTableData = eventsData.map((item) => {
+      if (item?.game_id) {
+        const gameObj = (games || []).filter((game) => game.game_id === item.game_id) ?? [];
 
         if (gameObj.length > 0) {
           item.game = gameObj[0];
         }
+      } else {
+        return item
+      }
 
         return item;
       });
+
       setEventData(
         (eventTimeTableData || []).sort(
           (a, b) => new Date(a.start_datetime * 1000)
@@ -356,35 +322,35 @@ export default function ScheduleScreen({ navigation }) {
 
       setTimeTable(eventTimeTableData);
 
-      // eventTimeTableData.filter((event_item) => {
-      //   const startDate = new Date(event_item.start_datetime * 1000);
-      //   const eventDate = moment(startDate).format('YYYY-MM-DD');
+      (eventTimeTableData || []).filter((event_item) => {
+        const startDate = new Date(event_item.start_datetime * 1000);
+        const eventDate = moment(startDate).format('YYYY-MM-DD');
 
-      //   if (eventDate === date) {
-      //     eventdata.push(event_item);
-      //   }
-      //   return null;
-      // });
-      drawMarkDay(eventData);
-      setFilterEventData(eventData);
-      eventTimeTableData.filter((timetable_item) => {
-        const timetable_date = new Date(timetable_item.start_datetime * 1000);
-        const endDate = new Date(timetable_item.end_datetime * 1000);
-        const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
-        if (timetabledate === date) {
-          const obj = {
-            ...timetable_item,
-            start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
-            end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-          };
-          timetabledata.push(obj);
+        if (eventDate === selectedDate) {
+          eventData.push(event_item);
         }
         return null;
       });
-      console.log('timetabledata', timetabledata);
-      setFilterTimeTable(timetabledata);
+      drawMarkDay(eventsData);
+      // setFilterEventData(eventData);
+      // (eventTimeTableData || []).filter((timetable_item) => {
+      //   const timetable_date = new Date(timetable_item.start_datetime * 1000);
+      //   const endDate = new Date(timetable_item.end_datetime * 1000);
+      //   const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
+      //   if (timetabledate === selectedDate) {
+      //     const obj = {
+      //       ...timetable_item,
+      //       start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
+      //       end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+      //     };
+      //     timetabledate.push(obj);
+      //   }
+      //   return null;
+      // });
+      // console.log('timetabledate', timetabledate);
+      // setFilterTimeTable(timetabledate);
     },
-    [eventData],
+    [eventData, selectedDate],
   );
 
   const getEventsList = useCallback(
@@ -399,11 +365,11 @@ export default function ScheduleScreen({ navigation }) {
       )
         // blockedSlots(entityRole, uid, authContext)
         .then((response) => {
-          console.log('calcender list:=>', response);
+          console.log('calender list:=>', response);
           eventTimeTableData = [...response];
           let gameIDs = [...new Set(response.map((item) => item.game_id))];
 
-          gameIDs = gameIDs.filter((item) => item !== undefined);
+          gameIDs = (gameIDs || []).filter((item) => item !== undefined);
           console.log('gameIds  list:=>', gameIDs);
 
           if (gameIDs.length > 0) {
@@ -471,7 +437,7 @@ export default function ScheduleScreen({ navigation }) {
                       }
 
                       if (userData) {
-                        const userGames = games.filter(
+                        const userGames = (games || []).filter(
                           (game) => game.user_challenge,
                         );
                         userGames.map((game) => {
@@ -491,7 +457,7 @@ export default function ScheduleScreen({ navigation }) {
                         });
                       }
                       if (groupData) {
-                        const groupGames = games.filter(
+                        const groupGames = (games || []).filter(
                           (game) => !game.user_challenge,
                         );
                         groupGames.map((game) => {
@@ -511,21 +477,16 @@ export default function ScheduleScreen({ navigation }) {
                         });
                       }
                       configureEvents(eventTimeTableData, games);
-                      setLoading(false);
+                      setloading(false);
                     })
                     .catch((error) => {
-                      console.log(error);
-                      setLoading(false);
+                      Alert.alert(strings.alertmessagetitle, error.messages);
+                      setloading(false);
                     });
                 } else {
                   configureEvents(eventTimeTableData, games);
                 }
               })
-              .catch(() => {
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, strings.defaultError);
-                }, 10);
-              });
           }
           configureEvents(eventTimeTableData);
 
@@ -533,7 +494,8 @@ export default function ScheduleScreen({ navigation }) {
         })
         .catch((e) => {
           setloading(false);
-          Alert.alert('', e.messages);
+          console.log('Error::=>', e);
+          Alert.alert(strings.alertmessagetitle, e.messages);
         });
       return null;
     },
@@ -863,26 +825,7 @@ export default function ScheduleScreen({ navigation }) {
 
   const renderCalenderEvent = (event) => {
     console.log('renderCalenderEvent Event:', event);
-    let event_color = colors.themeColor;
-    let eventTitle = 'Game';
-    let eventDesc = 'Game With';
-    let eventDesc2 = '';
-    if (event?.color?.length > 0) {
-      if (event?.color?.[0] !== '#') {
-        event_color = `#${event?.color}`;
-      } else {
-        event_color = event?.color;
-      }
-    }
-    if (event?.title) {
-      eventTitle = event.title;
-    }
-    if (event?.descriptions) {
-      eventDesc = event.descriptions;
-    }
-    if (event?.game?.away_team) {
-      eventDesc2 = event?.game?.away_team?.group_name;
-    }
+
     return (
       <View style={{ flex: 1 }}>
         {event?.cal_type === 'event' && event?.game && (
@@ -895,15 +838,12 @@ export default function ScheduleScreen({ navigation }) {
             }}
             eventTitleStyle={{ color: event_color }}
             onPress={() => {
-              if (event?.game?.sport.toLowerCase() === 'soccer') {
-                navigation.navigate('SoccerHome', {
-                  gameId: event?.game_id,
-                });
-              } else {
-                navigation.navigate('TennisHome', {
-                  gameId: event?.game_id,
-                });
-              }
+              const gameHome = getGameHomeScreen(event?.game?.sport);
+              console.log('gameHome', gameHome);
+
+              navigation.navigate(gameHome, {
+                gameId: challengeData?.game_id,
+              });
             }}
           />
         )}
@@ -1003,7 +943,7 @@ export default function ScheduleScreen({ navigation }) {
   const drawMarkDay = (eData) => {
     const eventTimeTableData = eData;
     const tempMarkDate = {};
-    eventTimeTableData.filter((event_item) => {
+    (eventTimeTableData || []).filter((event_item) => {
       const startDate = new Date(event_item.start_datetime * 1000);
       const eventDate = moment(startDate).format('YYYY-MM-DD');
       tempMarkDate[eventDate] = {
@@ -1044,13 +984,13 @@ export default function ScheduleScreen({ navigation }) {
   const onDayPress = (dateObj) => {
     selectedCalendarDate = moment(dateObj.dateString);
     getSelectedDayEvents(dateObj.dateString);
-    const selectedCalendarDateStr = selectedCalendarDate.format('YYYY-MM-DD');
-    setselectedCalendarMonthString(selectedCalendarDateStr);
+    // setselectedCalendarMonthString(selectedCalendarDateStr);
     // drawMarkDay(eventData)
     setEventSelectDate(dateObj.dateString);
     const date = moment(dateObj.dateString).format('YYYY-MM-DD');
+    setSelectedDate(moment(dateObj.dateString).format('YYYY-MM-DD'));
     const dataItem = [];
-    timeTable.filter((time_table_item) => {
+    (timeTable || []).filter((time_table_item) => {
       const startDate = new Date(time_table_item.start_datetime * 1000);
       const endDate = new Date(time_table_item.end_datetime * 1000);
       const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
@@ -1074,7 +1014,7 @@ export default function ScheduleScreen({ navigation }) {
         temp.push(e);
       }
     });
-    setBlockedSlot(temp);
+    // setBlockedSlot(temp);
     setFilterTimeTable(dataItem);
     return null;
   };
@@ -1102,15 +1042,6 @@ export default function ScheduleScreen({ navigation }) {
     onReachedCalenderTop(event);
   };
 
-  console.log(
-    'OKOKOKOKOKOKOK::=>',
-    eventSelectDate
-      ? (eventData || []).filter(
-          (e) => moment(eventSelectDate).format('YYYY-MM-DD')
-            === moment(e.start_datetime * 1000).format('YYYY-MM-DD'),
-        )
-      : eventData,
-  );
   return (
     <View
       style={[styles.mainContainer, { opacity: activeScreen ? 1.0 : 0.5 }]}
