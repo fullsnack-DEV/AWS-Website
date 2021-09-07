@@ -38,12 +38,11 @@ export default function RefundPolicy({ navigation, route }) {
 
   const [typeSelection, setTypeSelection] = useState(
     (route?.params?.settingObj?.refund_policy === strings.strictText
-          && policiesTypeList[0])
-          || (route?.params?.settingObj?.refund_policy === strings.moderateText
-            && policiesTypeList[1])
-          || (route?.params?.settingObj?.refund_policy === strings.flexibleText
-            && policiesTypeList[2]),
-
+      && policiesTypeList[0])
+      || (route?.params?.settingObj?.refund_policy === strings.moderateText
+        && policiesTypeList[1])
+      || (route?.params?.settingObj?.refund_policy === strings.flexibleText
+        && policiesTypeList[2]),
   );
 
   useLayoutEffect(() => {
@@ -81,65 +80,65 @@ export default function RefundPolicy({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 
-const saveUser = () => {
-  const bodyParams = {
-    sport: sportName,
-    entity_type: 'player',
-    refund_policy: typeSelection.key,
-  };
-  setloading(true);
-  const registerdPlayerData = authContext?.user?.registered_sports?.filter(
-    (obj) => obj.sport_name !== sportName,
-  );
+  const saveUser = () => {
+    const bodyParams = {
+      sport: sportName,
+      entity_type: 'player',
+      refund_policy: typeSelection.key,
+    };
+    setloading(true);
+    const registerdPlayerData = authContext?.user?.registered_sports?.filter(
+      (obj) => obj.sport_name !== sportName,
+    );
 
-  const selectedSport = authContext?.user?.registered_sports?.filter(
-    (obj) => obj.sport_name === sportName,
-  )[0];
+    const selectedSport = authContext?.user?.registered_sports?.filter(
+      (obj) => obj.sport_name === sportName,
+    )[0];
 
-  selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
-  registerdPlayerData.push(selectedSport);
+    selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+    registerdPlayerData.push(selectedSport);
 
-  const body = { ...authContext?.user, registered_sports: registerdPlayerData };
-  console.log('Body::::--->', body);
+    const body = { ...authContext?.user, registered_sports: registerdPlayerData };
+    console.log('Body::::--->', body);
 
-  patchPlayer(body, authContext)
-    .then(async (response) => {
-      if (response.status === true) {
+    patchPlayer(body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          setloading(false);
+          const entity = authContext.entity;
+          console.log('Register player response IS:: ', response.payload);
+          entity.auth.user = response.payload;
+          entity.obj = response.payload;
+          authContext.setEntity({ ...entity });
+          authContext.setUser(response.payload);
+          await Utility.setStorage('authContextUser', response.payload);
+          await Utility.setStorage('authContextEntity', { ...entity });
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.registered_sports.filter(
+              (obj) => obj.sport_name === sportName,
+            )[0].setting,
+          });
+        } else {
+          Alert.alert('Towns Cup', response.messages);
+        }
+        console.log('RESPONSE IS:: ', response);
         setloading(false);
-        const entity = authContext.entity;
-        console.log('Register player response IS:: ', response.payload);
-        entity.auth.user = response.payload;
-        entity.obj = response.payload;
-        authContext.setEntity({ ...entity });
-        authContext.setUser(response.payload);
-        await Utility.setStorage('authContextUser', response.payload);
-        await Utility.setStorage('authContextEntity', { ...entity });
-        navigation.navigate(comeFrom, {
-          settingObj: response.payload.registered_sports.filter(
-            (obj) => obj.sport_name === sportName,
-          )[0].setting,
-        });
-      } else {
-        Alert.alert('Towns Cup', response.messages);
-      }
-      console.log('RESPONSE IS:: ', response);
-      setloading(false);
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
-}
-
-const saveTeam = () => {
-  const bodyParams = {
-    sport: sportName,
-    entity_type: 'team',
-    refund_policy: typeSelection.key,
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
-  setloading(true);
+
+  const saveTeam = () => {
+    const bodyParams = {
+      sport: sportName,
+      entity_type: 'team',
+      refund_policy: typeSelection.key,
+    };
+    setloading(true);
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
     const body = { ...selectedTeam };
@@ -170,17 +169,17 @@ const saveTeam = () => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-}
+  };
   const onSavePressed = () => {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       navigation.navigate(comeFrom, {
         refundPolicy: typeSelection.key,
       });
     } else if (authContext.entity.role === 'team') {
-        saveTeam()
-      } else {
-        saveUser()
-      }
+      saveTeam();
+    } else {
+      saveUser();
+    }
   };
 
   return (

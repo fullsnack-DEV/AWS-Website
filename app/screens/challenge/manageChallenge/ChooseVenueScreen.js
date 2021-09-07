@@ -12,7 +12,6 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
-
 } from 'react-native';
 
 import EventMapView from '../../../components/Schedule/EventMapView';
@@ -29,18 +28,24 @@ function ChooseVenueScreen({ navigation, route }) {
   const { venues, comeFrom } = route?.params;
   const authContext = useContext(AuthContext);
 
-  const [venueFooter, setVenueFooter] = useState(venues[venues.length - 1].isCustom ? {
-    isCustom: true,
-     name: venues[venues.length - 1].name,
-     address: venues[venues.length - 1].address,
-     details: venues[venues.length - 1].details,
-     region: venues[venues.length - 1].region,
-     coordinate: venues[venues.length - 1].coordinate,
-     city: venues[venues.length - 1].city,
-     state: venues[venues.length - 1].state,
-     country: venues[venues.length - 1].country,
-  } : { isCustom: true });
-  const [isChanged, setIsChanged] = useState(!venues[venues.length - 1].isCustom);
+  const [venueFooter, setVenueFooter] = useState(
+    venues[venues.length - 1].isCustom
+      ? {
+          isCustom: true,
+          name: venues[venues.length - 1].name,
+          address: venues[venues.length - 1].address,
+          details: venues[venues.length - 1].details,
+          region: venues[venues.length - 1].region,
+          coordinate: venues[venues.length - 1].coordinate,
+          city: venues[venues.length - 1].city,
+          state: venues[venues.length - 1].state,
+          country: venues[venues.length - 1].country,
+        }
+      : { isCustom: true },
+  );
+  const [isChanged, setIsChanged] = useState(
+    !venues[venues.length - 1].isCustom,
+  );
 
   const [selectedVenue, setSelectedVenue] = useState();
 
@@ -61,7 +66,11 @@ function ChooseVenueScreen({ navigation, route }) {
             console.log('selected venue details:=>', selectedVenue);
             if (selectedVenue) {
               if (selectedVenue.isCustom) {
-                if (selectedVenue.name && selectedVenue.address && selectedVenue.details) {
+                if (
+                  selectedVenue.name
+                  && selectedVenue.address
+                  && selectedVenue.details
+                ) {
                   navigation.navigate(comeFrom, {
                     selectedVenueObj: selectedVenue,
                   });
@@ -126,16 +135,18 @@ function ChooseVenueScreen({ navigation, route }) {
             style={styles.map}
           />
         </View>
-        {item.isCustom && <Text
-        onPress={() => setIsChanged(!isChanged)}
-          style={{
-            color: colors.darkThemeColor,
-            textAlign: 'right',
-            marginRight: 15,
-            marginTop: 10,
-          }}>
-          Change
-        </Text>}
+        {item.isCustom && (
+          <Text
+            onPress={() => setIsChanged(!isChanged)}
+            style={{
+              color: colors.darkThemeColor,
+              textAlign: 'right',
+              marginRight: 15,
+              marginTop: 10,
+            }}>
+            Change
+          </Text>
+        )}
       </View>
     );
   };
@@ -255,11 +266,11 @@ function ChooseVenueScreen({ navigation, route }) {
 
   const preparedVenueList = () => {
     if (venues[venues.length - 1].isCustom) {
-      venues[venues.length - 1] = venueFooter
-      return venues
+      venues[venues.length - 1] = venueFooter;
+      return venues;
     }
-       return [...venues, venueFooter]
-  }
+    return [...venues, venueFooter];
+  };
   return (
     <SafeAreaView>
       <FlatList

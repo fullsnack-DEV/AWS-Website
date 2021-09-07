@@ -26,6 +26,7 @@ import strings from '../../../Constants/String';
 import ChallengeAvailabilityItem from '../../../components/Schedule/ChallengeAvailabilityItem';
 import AddTimeItem from '../../../components/Schedule/AddTimeItem';
 import { editSlots } from '../../../api/Schedule';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 const challegeAvailability = [
   {
@@ -40,6 +41,7 @@ const challegeAvailability = [
 export default function EditChallengeAvailability({ navigation }) {
   const authContext = useContext(AuthContext)
   const [challengeAvailable, setChallengeAvailable] = useState(challegeAvailability);
+  const [loading, setLoading] = useState(false);
 
   const deleteItemById = (id) => {
     const filteredData = challengeAvailable.filter((item) => item.id !== id);
@@ -48,6 +50,8 @@ export default function EditChallengeAvailability({ navigation }) {
 
   return (
     <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
+      <ActivityLoader visible={loading} />
+
       <Header
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack() }>
@@ -59,6 +63,7 @@ export default function EditChallengeAvailability({ navigation }) {
         }
         rightComponent={
           <TouchableOpacity style={{ padding: 2 }} onPress={async () => {
+            setLoading(true)
             const entity = authContext.entity
             const uid = entity.uid || entity.auth.user_id;
             const entityRole = entity.role === 'user' ? 'users' : 'groups';
@@ -74,9 +79,15 @@ export default function EditChallengeAvailability({ navigation }) {
               filterData.push(obj);
               return null;
             })
+
+            console.log('Entity role', entityRole);
+            console.log('filterData', filterData);
+
             editSlots(entityRole, uid, filterData, authContext).then(() => {
+              setLoading(false)
               navigation.goBack();
             }).catch((error) => {
+              setLoading(false)
               console.log('Error ::--', error);
             })
           }}>

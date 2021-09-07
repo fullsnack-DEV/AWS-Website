@@ -51,6 +51,8 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import TCArrowView from '../../../components/TCArrowView';
 import ChallengeStatusView from '../../../components/challenge/ChallengeStatusView';
 import GameStatus from '../../../Constants/GameStatus';
+import RefereeAgreementView from '../../../components/challenge/RefereeAgreementView';
+import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
 
 let entity = {};
 export default function AlterChallengeScreen({ navigation, route }) {
@@ -82,6 +84,8 @@ export default function AlterChallengeScreen({ navigation, route }) {
   const [teamObject, setTeamObject] = useState();
   const [groupObject, setGroupObject] = useState();
 
+  const [moreButtonReferee, setMoreButtonReferee] = useState();
+  const [moreButtonScorekeeper, setMoreButtonScorekeeper] = useState();
   // const [challengeObj, setChallengeObj] = useState(route?.params?.challengeObj);
   const [teams, setteams] = useState([]);
 
@@ -1430,7 +1434,7 @@ const bottomButtonView = () => {
           </View>
 
           <View>
-            <TCChallengeTitle
+            {/* <TCChallengeTitle
           title={'Referees'}
           value={bodyParams?.responsible_for_referee?.who_secure?.length}
           staticValueText={'Referees'}
@@ -1456,11 +1460,34 @@ const bottomButtonView = () => {
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
           style={{ marginBottom: 15 }}
-        />
+        /> */}
+
+            <RefereeAgreementView
+            teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+            teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+            numberOfReferee={
+              bodyParams?.responsible_for_referee?.who_secure?.length ?? 0
+            }
+            agreementOpetion={bodyParams?.min_referee === 0 ? 1 : 2}
+            moreButtonVisible={true}
+            morePressed={(value) => {
+              setMoreButtonReferee(value)
+            }}
+          isMore={moreButtonReferee}
+
+          isEdit={true}
+          onEditPress={() => {
+            navigation.navigate('RefereesSetting', {
+              settingObj: bodyParams,
+              comeFrom: 'AlterChallengeScreen',
+              sportName,
+            });
+          }}
+          />
 
             <TCThickDivider />
 
-            <TCChallengeTitle
+            {/* <TCChallengeTitle
           title={'Scorekeepers'}
           value={bodyParams?.responsible_for_scorekeeper?.who_secure?.length}
           staticValueText={'Scorekeepers'}
@@ -1485,7 +1512,31 @@ const bottomButtonView = () => {
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
           style={{ marginBottom: 15 }}
-        />
+        /> */}
+
+            <ScorekeeperAgreementView
+            teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+            teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+            numberOfScorekeeper={
+              bodyParams?.responsible_for_scorekeeper?.who_secure?.length ?? 0
+            }
+            agreementOpetion={bodyParams?.min_scorekeeper === 0 ? 1 : 2}
+            moreButtonVisible={true}
+            morePressed={(value) => {
+              setMoreButtonScorekeeper(value)
+            }}
+          isMore={moreButtonScorekeeper}
+
+          isEdit={true}
+          onEditPress={() => {
+            navigation.navigate('ScorekeepersSetting', {
+              settingObj: bodyParams,
+              comeFrom: 'AlterChallengeScreen',
+              sportName,
+            });
+          }}
+          />
+
             <TCThickDivider />
 
             <TCChallengeTitle

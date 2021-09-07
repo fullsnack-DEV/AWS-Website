@@ -38,7 +38,6 @@ import images from '../../../Constants/ImagePath';
 import TCLabel from '../../../components/TCLabel';
 import AuthContext from '../../../auth/context';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
-import SecureRefereeView from '../../../components/SecureRefereeView';
 import { getNumberSuffix } from '../../../utils/gameUtils';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import TCSmallButton from '../../../components/TCSmallButton';
@@ -47,6 +46,8 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import { getSetting } from '../manageChallenge/settingUtility';
 import TCTabView from '../../../components/TCTabView';
 import CurruentReservationView from './CurrentReservationView';
+import RefereeAgreementView from '../../../components/challenge/RefereeAgreementView';
+import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
 
 let entity = {};
 export default function EditChallenge({ navigation, route }) {
@@ -62,13 +63,13 @@ export default function EditChallenge({ navigation, route }) {
   const [venue, setVenue] = useState();
   const [alterModalVisible, setAlterModalVisible] = useState(false);
   const [defaultCard, setDefaultCard] = useState();
-
   const [maintabNumber, setMaintabNumber] = useState(0);
-
   const [oldVersion, setOldVersion] = useState();
-
   const [challengeObj, setChallengeObj] = useState(route?.params?.challengeObj);
   const [teams, setteams] = useState([]);
+
+  const [moreButtonReferee, setMoreButtonReferee] = useState();
+  const [moreButtonScorekeeper, setMoreButtonScorekeeper] = useState();
 
   useEffect(() => {
     if (isFocused) {
@@ -313,59 +314,6 @@ export default function EditChallenge({ navigation, route }) {
     </>
   );
 
-  const renderReferees = ({ item, index }) => {
-    console.log('Referee Item:=>', item);
-    return (
-      <SecureRefereeView
-        entityName={
-          item.responsible_to_secure_referee === 'challenger'
-            ? getChallenger()?.full_name ?? getChallenger()?.group_name
-            : getChallengee()?.full_name ?? getChallengee()?.group_name
-        }
-        image={
-          item.responsible_to_secure_referee === 'challenger'
-            ? getChallenger()?.thumbnail
-              ? { uri: getChallenger()?.thumbnail }
-              : getChallenger()?.full_name
-              ? images.profilePlaceHolder
-              : images.teamPlaceholder
-            : getChallenger()?.thumbnail
-            ? { uri: getChallengee()?.thumbnail }
-            : getChallengee()?.full_name
-            ? images.profilePlaceHolder
-            : images.teamPlaceholder
-        }
-        entity={'Referee'}
-        entityNumber={index + 1}
-      />
-    );
-  };
-
-  const renderScorekeepers = ({ item, index }) => (
-    <SecureRefereeView
-      entityName={
-        item.responsible_to_secure_scorekeeper === 'challenger'
-          ? getChallenger()?.full_name ?? getChallenger()?.group_name
-          : getChallengee()?.full_name ?? getChallengee()?.group_name
-      }
-      image={
-        item.responsible_to_secure_scorekeeper === 'challenger'
-          ? getChallenger()?.thumbnail
-            ? { uri: getChallenger()?.thumbnail }
-            : getChallenger()?.full_name
-            ? images.profilePlaceHolder
-            : images.teamPlaceholder
-          : getChallengee()?.thumbnail
-          ? { uri: getChallengee()?.thumbnail }
-          : getChallengee()?.full_name
-          ? images.profilePlaceHolder
-          : images.teamPlaceholder
-      }
-      entity={'Scorekeeper'}
-      entityNumber={index + 1}
-    />
-  );
-
   const getFeeDetail = () => {
     const feeBody = {};
     console.log('challengeObj check:=>', challengeObj);
@@ -426,6 +374,7 @@ export default function EditChallenge({ navigation, route }) {
     if (route?.params?.endTime) {
       body.end_datetime = route?.params?.endTime / 1000;
     }
+
     const res_secure_referee = challengeObj.responsible_for_referee.who_secure.map(
       (obj) => ({
         ...obj,
@@ -501,7 +450,6 @@ export default function EditChallenge({ navigation, route }) {
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
-
       <TCTabView
         totalTabs={2}
         firstTabTitle={'ALTERATION REQUEST'}
@@ -520,15 +468,7 @@ export default function EditChallenge({ navigation, route }) {
               Please edit the reservation details below before you send the
               alteration request.
             </Text>
-            {/* <ChallengeHeaderView
-          challenger={teams[0]}
-          challengee={teams[1]}
-          role={
-            route?.params?.role === 'user' || route?.params?.role === 'player'
-              ? 'user'
-              : 'team'
-          }
-        /> */}
+
             <View
               style={{
                 flex: 1,
@@ -876,7 +816,7 @@ export default function EditChallenge({ navigation, route }) {
           </View>
 
           <View>
-            <TCChallengeTitle
+            {/* <TCChallengeTitle
           title={'Referees'}
           value={challengeObj?.responsible_for_referee?.who_secure?.length}
           staticValueText={'Referees'}
@@ -903,11 +843,35 @@ export default function EditChallenge({ navigation, route }) {
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
           style={{ marginBottom: 15 }}
-        />
+        /> */}
+
+            <RefereeAgreementView
+            teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+            teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+
+            numberOfReferee={
+              challengeObj?.responsible_for_referee?.who_secure?.length ?? 0
+            }
+            agreementOpetion={challengeObj?.min_referee === 0 ? 1 : 2}
+            moreButtonVisible={true}
+            morePressed={(value) => {
+              setMoreButtonReferee(value)
+            }}
+          isMore={moreButtonReferee}
+          isNew={!_.isEqual(challengeObj?.responsible_for_referee, oldVersion?.responsible_for_referee)}
+          isEdit={true}
+          onEditPress={() => {
+            navigation.navigate('RefereesSetting', {
+              settingObj: challengeObj,
+              comeFrom: 'AlterChallengeScreen',
+              sportName,
+            });
+          }}
+          />
 
             <TCThickDivider />
 
-            <TCChallengeTitle
+            {/* <TCChallengeTitle
           title={'Scorekeepers'}
           value={challengeObj?.responsible_for_scorekeeper?.who_secure?.length}
           staticValueText={'Scorekeepers'}
@@ -934,7 +898,31 @@ export default function EditChallenge({ navigation, route }) {
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
           style={{ marginBottom: 15 }}
-        />
+        /> */}
+
+            <ScorekeeperAgreementView
+            teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+            teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+            numberOfScorekeeper={
+              challengeObj?.responsible_for_scorekeeper?.who_secure?.length ?? 0
+            }
+            agreementOpetion={challengeObj?.min_scorekeeper === 0 ? 1 : 2}
+            moreButtonVisible={true}
+            morePressed={(value) => {
+              setMoreButtonScorekeeper(value)
+            }}
+          isMore={moreButtonScorekeeper}
+          isNew={!_.isEqual(challengeObj?.responsible_for_scorekeeper, oldVersion?.responsible_for_scorekeeper)}
+          isEdit={true}
+          onEditPress={() => {
+            navigation.navigate('ScorekeepersSetting', {
+              settingObj: challengeObj,
+              comeFrom: 'AlterChallengeScreen',
+              sportName,
+            });
+          }}
+          />
+
             <TCThickDivider />
 
             <TCChallengeTitle

@@ -17,8 +17,8 @@ import {
   Alert,
   FlatList,
   TouchableOpacity,
- ScrollView,
- SafeAreaView,
+  ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import moment from 'moment';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -26,7 +26,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
 import AuthContext from '../../../auth/context';
-import { blockedSlots } from '../../../api/Schedule';
+import * as Utility from '../../../utils/index';
 
 import strings from '../../../Constants/String';
 
@@ -80,16 +80,16 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
                 'Please choose valid time slot.',
               );
             } else if (new Date(from).getTime() < new Date().getTime()) {
-                Alert.alert(
-                  strings.alertmessagetitle,
-                  'Please choose future time for challenge.',
-                );
+              Alert.alert(
+                strings.alertmessagetitle,
+                'Please choose future time for challenge.',
+              );
             } else if (!selectedSlot) {
               console.log('selected slot', selectedSlot);
-                Alert.alert(
-                  strings.alertmessagetitle,
-                  'Please choose time slot from the list.',
-                );
+              Alert.alert(
+                strings.alertmessagetitle,
+                'Please choose time slot from the list.',
+              );
             } else {
               navigation.navigate(comeFrom, { startTime: from, endTime: to });
             }
@@ -101,12 +101,16 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
   }, [comeFrom, from, navigation, selectedSlot, to]);
 
   const getBlockedSlots = () => {
-    setloading(true);
+   // setloading(true);
 
-    blockedSlots(
-      authContext?.entity?.obj?.entity_type === 'player' ? 'users' : 'groups',
+    // blockedSlots(
+    //   authContext?.entity?.obj?.entity_type === 'player' ? 'users' : 'groups',
+    //   authContext?.entity?.obj?.group_id || authContext?.entity?.obj?.user_id,
+    //   authContext,
+    // )
+    Utility.getCalendar(
       authContext?.entity?.obj?.group_id || authContext?.entity?.obj?.user_id,
-      authContext,
+      new Date().getTime() / 1000,
     )
       .then((response) => {
         console.table(response.payload);
@@ -223,7 +227,8 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     setTo();
     getFreeslot(
       new Date(dateObj.dateString),
-      settingObject?.game_duration?.totalMinutes * 60 + settingObject?.game_duration?.totalHours * 60 * 60,
+      settingObject?.game_duration?.totalMinutes * 60
+        + settingObject?.game_duration?.totalHours * 60 * 60,
     );
     console.log('Date string:=>', dateObj.dateString);
     getSelectedDayEvents(dateObj.dateString);
@@ -256,7 +261,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
 
     console.log('Start/End time:=>', starttime, endtime);
 
-    let blockedSlot = slots.filter(
+    let blockedSlot = (slots || []).filter(
       (slot) => slot.blocked === true
         && ((slot.start_datetime >= starttime && slot.start_datetime <= endtime)
           || (slot.end_datetime >= starttime && slot.end_datetime <= endtime)),
@@ -293,7 +298,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
       freeslot.push({ starttime, endtime, diff });
     }
 
-    const getSlot = freeslot.filter((slot) => slot.diff > slotTime);
+    const getSlot = (freeslot || []).filter((slot) => slot.diff > slotTime);
 
     console.log('Free slot:=>', getSlot);
     setAvailavbleSlot(getSlot);
@@ -310,17 +315,21 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
         if (item.starttime * 1000 < date.getTime()) {
           setFrom(date.setMinutes(date.getMinutes() + 5));
           const dt = new Date(date.getTime());
-        dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
-        dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
+          dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
+          dt.setMinutes(
+            dt.getMinutes() + settingObject?.game_duration?.totalMinutes,
+          );
 
-        setTo(dt.getTime());
+          setTo(dt.getTime());
         } else {
           setFrom(item.starttime * 1000);
           const dt = new Date(item.starttime * 1000);
-        dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
-        dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
+          dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
+          dt.setMinutes(
+            dt.getMinutes() + settingObject?.game_duration?.totalMinutes,
+          );
 
-        setTo(dt.getTime());
+          setTo(dt.getTime());
         }
       }}>
       <BlockSlotView
@@ -382,16 +391,16 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
       <View style={{ marginTop: 15, flex: 1 }}>
         <ActivityLoader visible={loading} />
         <EventAgendaSection
-        onKnobPress={onKnobPress}
-        showTimeTable={showTimeTable}
-        isMenu={isMenu}
-        horizontal={!listView}
-        onPressListView={onPressListView}
-        onPressGridView={onPressGridView}
-        onDayPress={onDayPress}
-        // selectedCalendarDate={selectedCalendarDateString}
-        calendarMarkedDates={markingDays}
-      />
+          onKnobPress={onKnobPress}
+          showTimeTable={showTimeTable}
+          isMenu={isMenu}
+          horizontal={!listView}
+          onPressListView={onPressListView}
+          onPressGridView={onPressGridView}
+          onDayPress={onDayPress}
+          // selectedCalendarDate={selectedCalendarDateString}
+          calendarMarkedDates={markingDays}
+        />
         <ScrollView style={{ flex: 1 }}>
           <Text style={styles.slotHeader}>Available Time Zone</Text>
           {/* <SectionList
@@ -411,31 +420,31 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
           )}
         /> */}
           <FlatList
-          data={availableSlot}
-          keyExtractor={(index) => index.toString()}
-          renderItem={renderSlotsList}
-          ItemSeparatorComponent={() => (
-            <View style={styles.separatorLine}></View>
-          )}
-          style={{ marginTop: 10, marginBottom: 10 }}
-        />
+            data={availableSlot}
+            keyExtractor={(index) => index.toString()}
+            renderItem={renderSlotsList}
+            ItemSeparatorComponent={() => (
+              <View style={styles.separatorLine}></View>
+            )}
+            style={{ marginTop: 10, marginBottom: 10 }}
+          />
 
           <Text style={[styles.slotHeader, { marginBottom: 10 }]}>
             Choose The Game Time
           </Text>
           <View style={{ flexDirection: 'row', marginBottom: 10 }}>
             <TouchableOpacity
-            style={styles.fieldView}
-            onPress={() => {
-              if (from) {
-                setFromPickerVisible(!fromPickerVisible)
-              }
-            }}>
-              <View
-              style={{
-                height: 35,
-                justifyContent: 'center',
+              style={styles.fieldView}
+              onPress={() => {
+                if (from) {
+                  setFromPickerVisible(!fromPickerVisible);
+                }
               }}>
+              <View
+                style={{
+                  height: 35,
+                  justifyContent: 'center',
+                }}>
                 <Text style={styles.fieldTitle} numberOfLines={1}>
                   From
                 </Text>
@@ -443,81 +452,84 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
               <View style={{ marginRight: 15, flexDirection: 'row' }}>
                 <Text style={styles.fieldValue} numberOfLines={1}>
                   {from
-                  ? moment(new Date(from)).format('MMM DD, yyyy hh:mm a')
-                  : ''}
+                    ? moment(new Date(from)).format('MMM DD, yyyy hh:mm a')
+                    : ''}
                 </Text>
               </View>
             </TouchableOpacity>
           </View>
 
           <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-            <TouchableOpacity style={styles.fieldView}
-             onPress={() => {
-               if (to) {
-                 setToPickerVisible(!toPickerVisible)
-               }
-             }}>
-              <View
-              style={{
-                height: 35,
-                justifyContent: 'center',
+            <TouchableOpacity
+              style={styles.fieldView}
+              onPress={() => {
+                if (to) {
+                  setToPickerVisible(!toPickerVisible);
+                }
               }}>
+              <View
+                style={{
+                  height: 35,
+                  justifyContent: 'center',
+                }}>
                 <Text style={styles.fieldTitle} numberOfLines={1}>
                   To
                 </Text>
               </View>
               <View style={{ marginRight: 15, flexDirection: 'row' }}>
                 <Text style={styles.fieldValue} numberOfLines={1}>
-                  {to ? moment(new Date(to)).format('MMM DD, yyyy hh:mm a') : ''}
+                  {to
+                    ? moment(new Date(to)).format('MMM DD, yyyy hh:mm a')
+                    : ''}
                 </Text>
               </View>
             </TouchableOpacity>
           </View>
           <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            margin: 15,
-          }}>
-            <Text
             style={{
-              fontSize: 16,
-              fontFamily: fonts.RRegular,
-              color: colors.lightBlackColor,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              margin: 15,
             }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.lightBlackColor,
+              }}>
               Total Game Duration
             </Text>
             <Text
-            style={{
-              fontSize: 16,
-              fontFamily: fonts.RBold,
-              color: colors.themeColor,
-            }}>{`${settingObject?.game_duration?.totalHours} Hours ${settingObject?.game_duration?.totalMinutes} Minutes`}</Text>
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.themeColor,
+              }}>{`${settingObject?.game_duration?.totalHours} Hours ${settingObject?.game_duration?.totalMinutes} Minutes`}</Text>
           </View>
           <DateTimePickerView
-          title={'Choose a Time'}
-          date={new Date(from)}
-          visible={fromPickerVisible}
-          onDone={onFromDone}
-          onCancel={handleCancelPress}
-          onHide={handleCancelPress}
-          minimumDate={new Date(selectedSlot?.starttime * 1000)}
-          maximumDate={maxFromDate}
-          // minutesGap={5}
-          mode={'time'}
-        />
+            title={'Choose a Time'}
+            date={new Date(from)}
+            visible={fromPickerVisible}
+            onDone={onFromDone}
+            onCancel={handleCancelPress}
+            onHide={handleCancelPress}
+            minimumDate={new Date(selectedSlot?.starttime * 1000)}
+            maximumDate={maxFromDate}
+            // minutesGap={5}
+            mode={'time'}
+          />
           <DateTimePickerView
-          title={'Choose a Time'}
-          date={new Date(to)}
-          visible={toPickerVisible}
-          onDone={onToDone}
-          onCancel={handleCancelPress}
-          onHide={handleCancelPress}
-          minimumDate={maxToDate}
-          maximumDate={new Date(selectedSlot?.endtime * 1000)}
-          // minutesGap={5}
-          mode={'time'}
-        />
+            title={'Choose a Time'}
+            date={new Date(to)}
+            visible={toPickerVisible}
+            onDone={onToDone}
+            onCancel={handleCancelPress}
+            onHide={handleCancelPress}
+            minimumDate={maxToDate}
+            maximumDate={new Date(selectedSlot?.endtime * 1000)}
+            // minutesGap={5}
+            mode={'time'}
+          />
         </ScrollView>
       </View>
     </SafeAreaView>

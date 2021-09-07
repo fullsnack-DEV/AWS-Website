@@ -49,14 +49,14 @@ export default function AvailibilityReferee({ navigation, route }) {
     setloading(true);
 
     const registerdRefereeData = authContext?.user?.referee_data?.filter(
-      (obj) => obj.sport_name !== sportName,
+      (obj) => obj?.sport_name?.toLowerCase() !== sportName?.toLowerCase(),
     );
 
     const selectedSport = authContext?.user?.referee_data?.filter(
-      (obj) => obj.sport_name === sportName,
+      (obj) => obj?.sport_name?.toLowerCase() === sportName?.toLowerCase(),
     )[0];
 
-    selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+    selectedSport.setting = { ...selectedSport?.setting, ...bodyParams };
     registerdRefereeData.push(selectedSport);
 
     const body = { ...authContext?.user, referee_data: registerdRefereeData };

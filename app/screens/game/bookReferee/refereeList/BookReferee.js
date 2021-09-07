@@ -55,7 +55,7 @@ const BookReferee = ({ navigation, route }) => {
       .then((res) => {
         setLoading(false);
         console.log('res referee list:=>', res);
-        setRefereesData([...res?.hits?.hits]);
+        setRefereesData([...res]);
       })
       .catch(() => {
         setLoading(false);

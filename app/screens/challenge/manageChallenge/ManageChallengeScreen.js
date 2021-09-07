@@ -33,7 +33,11 @@ export default function ManageChallengeScreen({ navigation, route }) {
       console.log('Au:::=>', authContext);
       setSettingObject(authContext?.entity?.obj?.setting);
     } else {
-      setSettingObject((authContext?.user?.registered_sports ?? []).filter((obj) => obj.sport_name === sportName)?.[0].setting);
+      setSettingObject(
+        (authContext?.user?.registered_sports ?? []).filter(
+          (obj) => obj.sport_name === sportName,
+        )?.[0].setting,
+      );
     }
   }, [authContext, sportName]);
 
@@ -239,13 +243,21 @@ export default function ManageChallengeScreen({ navigation, route }) {
 
     if (item.key === 'Referees') {
       if (settingObject?.responsible_for_referee) {
-        return `${settingObject?.responsible_for_referee?.who_secure === 'None' ? 'No' : settingObject?.responsible_for_referee?.who_secure?.length} Referees`;
+        return `${
+          settingObject?.responsible_for_referee?.who_secure === 'None'
+            ? 'No'
+            : settingObject?.responsible_for_referee?.who_secure?.length
+        } Referees`;
       }
     }
 
     if (item.key === 'Scorekeepers') {
       if (settingObject?.responsible_for_scorekeeper) {
-        return `${settingObject?.responsible_for_scorekeeper?.who_secure === 'None' ? 'No' : settingObject?.responsible_for_scorekeeper?.who_secure?.length} Scorekeepers`;
+        return `${
+          settingObject?.responsible_for_scorekeeper?.who_secure === 'None'
+            ? 'No'
+            : settingObject?.responsible_for_scorekeeper?.who_secure?.length
+        } Scorekeepers`;
       }
     }
 

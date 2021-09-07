@@ -35,12 +35,11 @@ export default function RefundPolicyReferee({ navigation, route }) {
 
   const [typeSelection, setTypeSelection] = useState(
     (route?.params?.settingObj?.refund_policy === strings.strictText
-          && policiesTypeList[0])
-          || (route?.params?.settingObj?.refund_policy === strings.moderateText
-            && policiesTypeList[1])
-          || (route?.params?.settingObj?.refund_policy === strings.flexibleText
-            && policiesTypeList[2]),
-
+      && policiesTypeList[0])
+      || (route?.params?.settingObj?.refund_policy === strings.moderateText
+        && policiesTypeList[1])
+      || (route?.params?.settingObj?.refund_policy === strings.flexibleText
+        && policiesTypeList[2]),
   );
 
   useLayoutEffect(() => {

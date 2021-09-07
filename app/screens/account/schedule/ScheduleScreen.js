@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-param-reassign */
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-vars */
@@ -90,6 +91,7 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import UnavailableTimeView from '../../../components/challenge/UnavailableTimeView';
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import MonthHeader from '../../../components/Schedule/Monthheader';
+import { postElasticSearch } from '../../../api/elasticSearch';
 
 const lastDistance = null;
 let selectedCalendarDate = moment(new Date());
@@ -190,9 +192,12 @@ export default function ScheduleScreen({ navigation }) {
     const ruleObj = RRule.parseString(event.rrule);
 
     ruleObj.dtstart = new Date(
-      new Date((event.start_datetime + (6 * 3600)) * 1000).toLocaleString('en-US', {
-        timeZone: 'Asia/Calcutta',
-      }),
+      new Date((event.start_datetime + 6 * 3600) * 1000).toLocaleString(
+        'en-US',
+        {
+          timeZone: 'Asia/Calcutta',
+        },
+      ),
     );
 
     ruleObj.until = new Date(
@@ -201,7 +206,7 @@ export default function ScheduleScreen({ navigation }) {
       }),
     );
 
-     ruleObj.tzid = 'Asia/Calcutta';
+    ruleObj.tzid = 'Asia/Calcutta';
 
     console.log('ruleObj::=>', ruleObj);
     const rule = new RRule(ruleObj);
@@ -227,18 +232,21 @@ export default function ScheduleScreen({ navigation }) {
   const getBlockedSlots = () => {
     setloading(true);
     console.log('Other team Object:', authContext?.entity?.obj);
-    blockedSlots(
-      authContext?.entity?.obj?.entity_type === 'player' ? 'users' : 'groups',
+    // blockedSlots(
+    //   authContext?.entity?.obj?.entity_type === 'player' ? 'users' : 'groups',
+    //   authContext?.entity?.obj?.group_id || authContext?.entity?.obj?.user_id,
+    //   authContext,
+    // )
+
+    Utility.getCalendar(
       authContext?.entity?.obj?.group_id || authContext?.entity?.obj?.user_id,
-      authContext,
+      new Date().getTime() / 1000,
     )
       .then((response) => {
         setloading(false);
-
         console.log('Events List:=>', response);
-
         const bookSlots = [];
-        response.payload.forEach((item) => {
+        response.forEach((item) => {
           if (item.rrule) {
             const rEvents = getEventOccuranceFromRule(item);
             bookSlots.push(...rEvents);
@@ -328,71 +336,200 @@ export default function ScheduleScreen({ navigation }) {
       });
   };
 
+  const configureEvents = useCallback(
+    (eventTimeTableData, games) => {
+      eventTimeTableData = eventTimeTableData.map((item) => {
+        const gameObj = games.filter((game) => game.game_id === item.game_id);
+
+        if (gameObj.length > 0) {
+          item.game = gameObj[0];
+        }
+
+        return item;
+      });
+      setEventData(
+        (eventTimeTableData || []).sort(
+          (a, b) => new Date(a.start_datetime * 1000)
+            - new Date(b.start_datetime * 1000),
+        ),
+      );
+
+      setTimeTable(eventTimeTableData);
+
+      // eventTimeTableData.filter((event_item) => {
+      //   const startDate = new Date(event_item.start_datetime * 1000);
+      //   const eventDate = moment(startDate).format('YYYY-MM-DD');
+
+      //   if (eventDate === date) {
+      //     eventdata.push(event_item);
+      //   }
+      //   return null;
+      // });
+      drawMarkDay(eventData);
+      setFilterEventData(eventData);
+      eventTimeTableData.filter((timetable_item) => {
+        const timetable_date = new Date(timetable_item.start_datetime * 1000);
+        const endDate = new Date(timetable_item.end_datetime * 1000);
+        const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
+        if (timetabledate === date) {
+          const obj = {
+            ...timetable_item,
+            start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
+            end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+          };
+          timetabledata.push(obj);
+        }
+        return null;
+      });
+      console.log('timetabledata', timetabledata);
+      setFilterTimeTable(timetabledata);
+    },
+    [eventData],
+  );
+
   const getEventsList = useCallback(
     (selectedObj) => {
       setloading(true);
       console.log('selectedObj:=>', selectedObj);
-      const date = moment(new Date()).format('YYYY-MM-DD');
-      const entity = selectedObj; // authContext.entity;
-      const entityRole = entity?.obj?.entity_type === 'user'
-        || entity?.obj?.entity_type === 'player'
-          ? 'users'
-          : 'groups';
-      const uid = entity?.group_id || entity?.user_id;
-      const eventdata = [];
-      const timetabledata = [];
+
       let eventTimeTableData = [];
-      blockedSlots(entityRole, uid, authContext)
+      Utility.getCalendar(
+        authContext?.entity?.obj?.group_id || authContext?.entity?.obj?.user_id,
+        new Date().getTime() / 1000,
+      )
         // blockedSlots(entityRole, uid, authContext)
         .then((response) => {
-          getSlots(entityRole, uid, authContext)
-            .then((res) => {
-              eventTimeTableData = [...response.payload, ...res.payload];
-              console.log('Event & challenge data::', response);
+          console.log('calcender list:=>', response);
+          eventTimeTableData = [...response];
+          let gameIDs = [...new Set(response.map((item) => item.game_id))];
 
-              setEventData(
-                (eventTimeTableData || []).sort(
-                  (a, b) => new Date(a.start_datetime * 1000)
-                    - new Date(b.start_datetime * 1000),
-                ),
-              );
+          gameIDs = gameIDs.filter((item) => item !== undefined);
+          console.log('gameIds  list:=>', gameIDs);
 
-              // setSearchEvents(eventTimeTableData);
-              setTimeTable(eventTimeTableData);
+          if (gameIDs.length > 0) {
+            const gameList = {
+              query: {
+                terms: {
+                  _id: gameIDs,
+                },
+              },
+            };
 
-              eventTimeTableData.filter((event_item) => {
-                const startDate = new Date(event_item.start_datetime * 1000);
-                const eventDate = moment(startDate).format('YYYY-MM-DD');
+            postElasticSearch(gameList, 'gameindex')
+              .then((games) => {
+                const promiseArr = [];
+                // postElasticSearch(userList, 'userindex'),
+                //   postElasticSearch(groupList, 'groupindex')
+                let userIDs = [];
+                let groupIDs = [];
 
-                if (eventDate === date) {
-                  eventdata.push(event_item);
-                }
-                return null;
-              });
-              drawMarkDay(eventData);
-              setFilterEventData(eventdata);
-              eventTimeTableData.filter((timetable_item) => {
-                const timetable_date = new Date(
-                  timetable_item.start_datetime * 1000,
-                );
-                const endDate = new Date(timetable_item.end_datetime * 1000);
-                const timetabledate = moment(timetable_date).format(
-                  'YYYY-MM-DD',
-                );
-                if (timetabledate === date) {
-                  const obj = {
-                    ...timetable_item,
-                    start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
-                    end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+                games.map((game) => {
+                  if (game.user_challenge) {
+                    userIDs.push(game.home_team);
+                    userIDs.push(game.away_team);
+                  } else {
+                    groupIDs.push(game.home_team);
+                    groupIDs.push(game.away_team);
+                  }
+                });
+
+                userIDs = [...new Set(userIDs)];
+                groupIDs = [...new Set(groupIDs)];
+
+                if (userIDs.length > 0) {
+                  const userQuery = {
+                    query: {
+                      terms: {
+                        _id: userIDs,
+                      },
+                    },
                   };
-                  timetabledata.push(obj);
+                  promiseArr.push(postElasticSearch(userQuery, 'userindex'));
                 }
-                return null;
+                if (groupIDs.length > 0) {
+                  const groupQuery = {
+                    query: {
+                      terms: {
+                        _id: groupIDs,
+                      },
+                    },
+                  };
+                  promiseArr.push(postElasticSearch(groupQuery, 'groupindex'));
+                }
+
+                if (promiseArr.length > 0) {
+                  Promise.all(promiseArr)
+                    .then(([data1, data2]) => {
+                      let userData, groupData;
+                      if (userIDs.length > 0 && groupIDs.length > 0) {
+                        userData = data1;
+                        groupData = data2;
+                      } else if (userIDs.length > 0) {
+                        userData = data1;
+                      } else {
+                        groupData = data1;
+                      }
+
+                      if (userData) {
+                        const userGames = games.filter(
+                          (game) => game.user_challenge,
+                        );
+                        userGames.map((game) => {
+                          let userObj = userData.find(
+                            (user) => user.user_id === game.home_team,
+                          );
+                          if (userObj) {
+                            game.home_team = userObj;
+                          }
+
+                          userObj = userData.find(
+                            (user) => user.user_id === game.away_team,
+                          );
+                          if (userObj) {
+                            game.away_team = userObj;
+                          }
+                        });
+                      }
+                      if (groupData) {
+                        const groupGames = games.filter(
+                          (game) => !game.user_challenge,
+                        );
+                        groupGames.map((game) => {
+                          let groupObj = groupData.find(
+                            (group) => group.group_id === game.home_team,
+                          );
+                          if (groupObj) {
+                            game.home_team = groupObj;
+                          }
+
+                          groupObj = groupData.find(
+                            (group) => group.group_id === game.away_team,
+                          );
+                          if (groupObj) {
+                            game.away_team = groupObj;
+                          }
+                        });
+                      }
+                      configureEvents(eventTimeTableData, games);
+                      setLoading(false);
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                      setLoading(false);
+                    });
+                } else {
+                  configureEvents(eventTimeTableData, games);
+                }
+              })
+              .catch(() => {
+                setTimeout(() => {
+                  Alert.alert(strings.alertmessagetitle, strings.defaultError);
+                }, 10);
               });
-              setFilterTimeTable(timetabledata);
-              setloading(false);
-            })
-            .catch(() => setloading(false));
+          }
+          configureEvents(eventTimeTableData);
+
+          setloading(false);
         })
         .catch((e) => {
           setloading(false);
@@ -400,7 +537,11 @@ export default function ScheduleScreen({ navigation }) {
         });
       return null;
     },
-    [authContext, eventData],
+    [
+      authContext?.entity?.obj?.group_id,
+      authContext?.entity?.obj?.user_id,
+      configureEvents,
+    ],
   );
 
   // useEffect(() => {

@@ -286,7 +286,8 @@ const strings = {
 
   // Register Referee Screen
   certificateTitle: 'Certificates',
-  certiTitle: 'Please add the certificates or documents showing your professional experience.',
+  certiTitle:
+    'Please add the certificates or documents showing your professional experience.',
   addCertiTitle: 'Add a Certificate',
   addCertiMainTitle:
     'Please add the certificates or documents showing your professional experience.',
@@ -540,7 +541,8 @@ const strings = {
   cannotAcceptText:
     'Reservation can not be change after game has been started.',
   refereeOfferExpiryText: 'Offer expired or game start time already passed.',
-  scorekeeperOfferExpiryText: 'Offer expired or game start time already passed.',
+  scorekeeperOfferExpiryText:
+    'Offer expired or game start time already passed.',
 
   selectCardText: 'Please select payment method.',
   reservationRequestSent: 'SENT',
@@ -719,7 +721,7 @@ const strings = {
   friendlyTypeText:
     'The game result has no effect on TC points and TC level of the challenger and you.',
 
-    scorekeeperSettingHeading:
+  scorekeeperSettingHeading:
     'These scorekeeper reservation settings will be applied when you receive a scorekeeper reservation request.',
   scorekeeperSettingNotes:
     'In order to activate the "book scorekeeper" button and receive a scorekeeper reservation request, please fill in and save all the lists above.',
@@ -730,8 +732,8 @@ const strings = {
   refuncPolicyTitle: 'Choose one of refund policies',
 
   gameFeeTitle: 'Set the game fee that you want to charge to your challenger.',
-refereeFeeTitle: 'Set the referee fee that you want to charge.',
-scorekeeperFeeTitle: 'Set the scorekeeper fee that you want to charge.',
+  refereeFeeTitle: 'Set the referee fee that you want to charge.',
+  scorekeeperFeeTitle: 'Set the scorekeeper fee that you want to charge.',
 
   gameRulesTitle:
     'Write down the rules of the game you will play against the challenger.',
@@ -749,8 +751,10 @@ scorekeeperFeeTitle: 'Set the scorekeeper fee that you want to charge.',
 
   homeAwayTitle: 'Choose which team will be the home team and the away team.',
   availibilityTitle: 'Are you ready to accept new challenges?',
-  availibilityRefereeTitle: 'Are you ready to receive new referee Reservation requests?',
-  availibilityScorekeeperTitle: 'Are you ready to receive new scorekeeper Reservation requests?',
+  availibilityRefereeTitle:
+    'Are you ready to receive new referee Reservation requests?',
+  availibilityScorekeeperTitle:
+    'Are you ready to receive new scorekeeper Reservation requests?',
 
   AvailibilitySubTitle: 'Accept new challenges',
 
@@ -760,14 +764,23 @@ scorekeeperFeeTitle: 'Set the scorekeeper fee that you want to charge.',
   friendlyOnly: 'Friendly only',
   allType: 'All',
 
-  refereeSettingTitle: 'How many referees do you want to hire for the match?',
+  refereeSettingTitle:
+    'How many referees will your team hire for a game at its own cost?',
   refereeSettingNote: 'Which team will secure the referee at its own expense?',
 
+  refereeRules1:
+    '• Your team must secure the follwing number of referees for a game at its own cost within 5 days after the challenge is accepted.',
+  refereeRules2:
+    '• If your team isn’t reserving the following number of referees 5 days after the challenge is accepted, the confirmed game may be canceled.',
   scorekeeperSettingTitle:
-    'How many scorekeepers do you want to hire for the match?',
+  'How many scorekeepers will your team hire for a game at its own cost?',
   scorekeeperSettingNote:
     'Which team will secure the scorekeeper at its own expense?',
 
+    scorekeeperRules1:
+    '• Your team must secure the follwing number of scorekeepers for a game at its own cost within 5 days after the challenge is accepted.',
+  scorekeeperRules2:
+    '• If your team isn’t reserving the following number of scorekeepers 5 days after the challenge is accepted, the confirmed game may be canceled.',
   gameDurationTitle1: 'Set the Game duration.',
   gameDurationTitle2: 'If the scores are tied at the end of the periods above,',
   detailsTitleText: 'Please add more details if needed.',
@@ -790,7 +803,7 @@ scorekeeperFeeTitle: 'Set the scorekeeper fee that you want to charge.',
   totalTimeTitle: 'Total time :',
 
   inviteToChallengeText:
-    'Through "Invite to challenge", you can set the custom price for the challenger. Once you invite a team to challenge you, the invitation will be valid for 48 hours. In the mean time, your calendar will remain open.',
+    'Through “Invite to challenge”, you can invite another team to challenge your team.',
 
   teamExist: 'The team name in the sports already exists in the city.',
 };

@@ -17,6 +17,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import TCFormProgress from '../../../components/TCFormProgress';
 import {
   getFeesEstimation,
 } from '../../../api/Challenge';
@@ -161,56 +162,6 @@ export default function ChallengeScreen({ navigation, route }) {
     </>
   );
 
-  const renderReferees = ({ item, index }) => (
-    <SecureRefereeView
-      entityName={
-        item.responsible_to_secure_referee === 'challenger'
-          ? teams?.[0]?.full_name ?? teams?.[0]?.group_name
-          : teams?.[1]?.full_name ?? teams?.[1]?.group_name
-      }
-      image={
-        item.responsible_to_secure_referee === 'challenger'
-          ? teams?.[0]?.thumbnail
-            ? { uri: teams[0]?.thumbnail }
-            : teams?.[0]?.full_name
-            ? images.profilePlaceHolder
-            : images.teamPlaceholder
-          : teams?.[1]?.thumbnail
-          ? { uri: teams[1]?.thumbnail }
-          : teams?.[1]?.full_name
-          ? images.profilePlaceHolder
-          : images.teamPlaceholder
-      }
-      entity={'Referee'}
-      entityNumber={index + 1}
-    />
-  );
-
-  const renderScorekeepers = ({ item, index }) => (
-    <SecureRefereeView
-      entityName={
-        item.responsible_to_secure_scorekeeper === 'challenger'
-          ? teams[0]?.full_name ?? teams[0]?.group_name
-          : teams[1]?.full_name ?? teams[1]?.group_name
-      }
-      image={
-        item.responsible_to_secure_scorekeeper === 'challenger'
-          ? teams?.[0]?.thumbnail
-            ? { uri: teams[0]?.thumbnail }
-            : teams?.[0]?.full_name
-            ? images.profilePlaceHolder
-            : images.teamPlaceholder
-          : teams?.[1]?.thumbnail
-          ? { uri: teams[1]?.thumbnail }
-          : teams?.[1]?.full_name
-          ? images.profilePlaceHolder
-          : images.teamPlaceholder
-      }
-      entity={'Scorekeeper'}
-      entityNumber={index + 1}
-    />
-  );
-
   const validation = () => {
     if (settingObject?.venue?.length === 1) {
       return false;
@@ -229,6 +180,8 @@ export default function ChallengeScreen({ navigation, route }) {
 
   return (
     <TCKeyboardView>
+      <TCFormProgress totalSteps={4} curruentStep={1} />
+
       <View>
         <View style={[styles.teamContainer, { marginTop: 15 }]}>
           <View
@@ -524,7 +477,7 @@ export default function ChallengeScreen({ navigation, route }) {
         <Text style={styles.rulesDetail}>{settingObject?.special_rules}</Text>
         <TCThickDivider marginTop={20} />
 
-        <TCChallengeTitle
+        {/* <TCChallengeTitle
           title={'Referees'}
           value={settingObject?.responsible_for_referee?.who_secure?.length}
           staticValueText={'Referees'}
@@ -543,9 +496,9 @@ export default function ChallengeScreen({ navigation, route }) {
           style={{ marginBottom: 15 }}
         />
 
-        <TCThickDivider marginTop={20} />
+        <TCThickDivider marginTop={20} /> */}
 
-        <TCChallengeTitle
+        {/* <TCChallengeTitle
           title={'Scorekeepers'}
           value={settingObject?.responsible_for_scorekeeper?.who_secure?.length}
           staticValueText={'Scorekeepers'}
@@ -563,7 +516,7 @@ export default function ChallengeScreen({ navigation, route }) {
           ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
           style={{ marginBottom: 15 }}
         />
-        <TCThickDivider marginTop={20} />
+        <TCThickDivider marginTop={20} /> */}
 
         {!totalZero && (
           <View>
@@ -585,7 +538,7 @@ export default function ChallengeScreen({ navigation, route }) {
           // || settingObject?.venue?.length !== 1
           || !venue
         }
-        title={strings.reservTitle}
+        title={strings.nextTitle}
         onPress={() => {
            if (new Date(route?.params?.startTime).getTime() < new Date().getTime()) {
             Alert.alert(
@@ -608,12 +561,17 @@ export default function ChallengeScreen({ navigation, route }) {
               settingObject?.home_away === 'Home' ? entity?.obj : groupObj,
             user_challenge: !groupObj?.group_id,
           };
-
-          navigation.push('ChallengePaymentScreen', {
+          navigation.push('RefereeAgreementScreen', {
             challengeObj: body,
             groupObj,
             type: 'challenge',
           });
+
+          // navigation.push('ChallengePaymentScreen', {
+          //   challengeObj: body,
+          //   groupObj,
+          //   type: 'challenge',
+          // });
         }
 
           // navigation.push('ChallengePreviewScreen');

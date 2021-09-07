@@ -23,14 +23,18 @@ import colors from '../../../Constants/Colors';
 import TCThickDivider from '../../../components/TCThickDivider';
 import images from '../../../Constants/ImagePath';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
-import SecureRefereeView from '../../../components/SecureRefereeView';
+// import SecureRefereeView from '../../../components/SecureRefereeView';
 import { getNumberSuffix } from '../../../utils/gameUtils';
 import EventMapView from '../../../components/Schedule/EventMapView';
+import RefereeAgreementView from '../../../components/challenge/RefereeAgreementView';
+import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
 
 const entity = {};
 export default function CurruentReservationView({ reservationObj }) {
   const [challengeObj] = useState(reservationObj);
 
+  const [moreButtonReferee, setMoreButtonReferee] = useState();
+  const [moreButtonScorekeeper, setMoreButtonScorekeeper] = useState();
   const getChallenger = () => {
     if (
       challengeObj?.challenger === challengeObj?.home_team?.user_id
@@ -113,58 +117,30 @@ export default function CurruentReservationView({ reservationObj }) {
     </>
   );
 
-  const renderReferees = ({ item, index }) => {
-    console.log('Referee Item:=>', item);
-    return (
-      <SecureRefereeView
-        entityName={
-          item.responsible_to_secure_referee === 'challenger'
-            ? getChallenger()?.full_name ?? getChallenger()?.group_name
-            : getChallengee()?.full_name ?? getChallengee()?.group_name
-        }
-        image={
-          item.responsible_to_secure_referee === 'challenger'
-            ? getChallenger()?.thumbnail
-              ? { uri: getChallenger()?.thumbnail }
-              : getChallenger()?.full_name
-              ? images.profilePlaceHolder
-              : images.teamPlaceholder
-            : getChallenger()?.thumbnail
-            ? { uri: getChallengee()?.thumbnail }
-            : getChallengee()?.full_name
-            ? images.profilePlaceHolder
-            : images.teamPlaceholder
-        }
-        entity={'Referee'}
-        entityNumber={index + 1}
-      />
-    );
-  };
-
-  const renderScorekeepers = ({ item, index }) => (
-    <SecureRefereeView
-      entityName={
-        item.responsible_to_secure_scorekeeper === 'challenger'
-          ? getChallenger()?.full_name ?? getChallenger()?.group_name
-          : getChallengee()?.full_name ?? getChallengee()?.group_name
-      }
-      image={
-        item.responsible_to_secure_scorekeeper === 'challenger'
-          ? getChallenger()?.thumbnail
-            ? { uri: getChallenger()?.thumbnail }
-            : getChallenger()?.full_name
-            ? images.profilePlaceHolder
-            : images.teamPlaceholder
-          : getChallengee()?.thumbnail
-          ? { uri: getChallengee()?.thumbnail }
-          : getChallengee()?.full_name
-          ? images.profilePlaceHolder
-          : images.teamPlaceholder
-      }
-      entity={'Scorekeeper'}
-      entityNumber={index + 1}
-    />
-  );
+  // const renderScorekeepers = ({ item, index }) => (
+  //   <SecureRefereeView
+  //     entityName={
+  //       item.responsible_to_secure_scorekeeper === 'challenger'
+  //         ? getChallenger()?.full_name ?? getChallenger()?.group_name
+  //         : getChallengee()?.full_name ?? getChallengee()?.group_name
+  //     }
+  //     image={
+  //       item.responsible_to_secure_scorekeeper === 'challenger'
+  //         ? getChallenger()?.thumbnail
+  //           ? { uri: getChallenger()?.thumbnail }
+  //           : getChallenger()?.full_name
+  //           ? images.profilePlaceHolder
+  //           : images.teamPlaceholder
+  //         : getChallengee()?.thumbnail
+  //         ? { uri: getChallengee()?.thumbnail }
+  //         : getChallengee()?.full_name
+  //         ? images.profilePlaceHolder
+  //         : images.teamPlaceholder
+  //     }
+  //     entity={'Scorekeeper'}
+  //     entityNumber={index + 1}
+  //   />
+  // );
 
   console.log('challengeObj', challengeObj);
 
@@ -460,7 +436,7 @@ export default function CurruentReservationView({ reservationObj }) {
       </View>
 
       <View>
-        <TCChallengeTitle
+        {/* <TCChallengeTitle
           title={'Referees'}
           value={challengeObj?.responsible_for_referee?.who_secure?.length}
           staticValueText={'Referees'}
@@ -480,11 +456,27 @@ export default function CurruentReservationView({ reservationObj }) {
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
           style={{ marginBottom: 15 }}
-        />
+        /> */}
+
+        <RefereeAgreementView
+            teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+            teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+            numberOfReferee={
+              challengeObj?.responsible_for_referee?.who_secure?.length ?? 0
+            }
+            agreementOpetion={challengeObj?.min_referee === 0 ? 1 : 2}
+            moreButtonVisible={true}
+            morePressed={(value) => {
+              setMoreButtonReferee(value)
+            }}
+          isMore={moreButtonReferee}
+          isEdit={false}
+
+          />
 
         <TCThickDivider />
 
-        <TCChallengeTitle
+        {/* <TCChallengeTitle
           title={'Scorekeepers'}
           value={challengeObj?.responsible_for_scorekeeper?.who_secure?.length}
           staticValueText={'Scorekeepers'}
@@ -503,7 +495,24 @@ export default function CurruentReservationView({ reservationObj }) {
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
           style={{ marginBottom: 15 }}
-        />
+        /> */}
+
+        <ScorekeeperAgreementView
+            teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+            teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+            numberOfScorekeeper={
+              challengeObj?.responsible_for_scorekeeper?.who_secure?.length ?? 0
+            }
+            agreementOpetion={challengeObj?.min_scorekeeper === 0 ? 1 : 2}
+            moreButtonVisible={true}
+            morePressed={(value) => {
+              setMoreButtonScorekeeper(value)
+            }}
+          isMore={moreButtonScorekeeper}
+
+          isEdit={false}
+
+          />
         <TCThickDivider />
 
         <TCChallengeTitle
