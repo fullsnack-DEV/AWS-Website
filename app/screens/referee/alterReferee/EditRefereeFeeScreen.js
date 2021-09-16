@@ -18,6 +18,7 @@ import TCLabel from '../../../components/TCLabel';
 
 let bodyParams = {};
 export default function EditRefereeFeeScreen({ navigation, route }) {
+  // eslint-disable-next-line no-unused-vars
   const isFocused = useIsFocused();
   const [basicFee, setBasicFee] = useState(0.0);
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function EditRefereeFeeScreen({ navigation, route }) {
       }
       setBasicFee(route.params.body.total_game_charges)
     }
-  }, [isFocused]);
+  }, [route]);
   return (
     <View style={ styles.mainContainer }>
       <TCLabel title={'Referee Fee'}/>

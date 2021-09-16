@@ -299,16 +299,16 @@ export default function ScheduleScreen({ navigation }) {
 
   const configureEvents = useCallback(
     (eventsData, games) => {
-     const eventTimeTableData = eventsData.map((item) => {
-      if (item?.game_id) {
-        const gameObj = (games || []).filter((game) => game.game_id === item.game_id) ?? [];
+      const eventTimeTableData = eventsData.map((item) => {
+        if (item?.game_id) {
+          const gameObj = (games || []).filter((game) => game.game_id === item.game_id) ?? [];
 
-        if (gameObj.length > 0) {
-          item.game = gameObj[0];
+          if (gameObj.length > 0) {
+            item.game = gameObj[0];
+          }
+        } else {
+          return item;
         }
-      } else {
-        return item
-      }
 
         return item;
       });
@@ -366,6 +366,24 @@ export default function ScheduleScreen({ navigation }) {
         // blockedSlots(entityRole, uid, authContext)
         .then((response) => {
           console.log('calender list:=>', response);
+
+          response = (response || []).filter((obj) => {
+            if (obj.cal_type === 'blocked') {
+              return obj;
+            }
+            if (obj.cal_type === 'event') {
+              if (obj?.expiry_datetime) {
+                if (obj?.expiry_datetime >= parseFloat(new Date().getTime() / 1000).toFixed(0)
+                ) {
+                  return obj;
+                }
+              } else {
+                return obj
+              }
+            }
+          });
+          console.log('filter list:=>', response);
+
           eventTimeTableData = [...response];
           let gameIDs = [...new Set(response.map((item) => item.game_id))];
 
@@ -381,115 +399,117 @@ export default function ScheduleScreen({ navigation }) {
               },
             };
 
-            postElasticSearch(gameList, 'gameindex')
-              .then((games) => {
-                const promiseArr = [];
-                // postElasticSearch(userList, 'userindex'),
-                //   postElasticSearch(groupList, 'groupindex')
-                let userIDs = [];
-                let groupIDs = [];
-
-                games.map((game) => {
-                  if (game.user_challenge) {
-                    userIDs.push(game.home_team);
-                    userIDs.push(game.away_team);
-                  } else {
-                    groupIDs.push(game.home_team);
-                    groupIDs.push(game.away_team);
-                  }
-                });
-
-                userIDs = [...new Set(userIDs)];
-                groupIDs = [...new Set(groupIDs)];
-
-                if (userIDs.length > 0) {
-                  const userQuery = {
-                    query: {
-                      terms: {
-                        _id: userIDs,
-                      },
-                    },
-                  };
-                  promiseArr.push(postElasticSearch(userQuery, 'userindex'));
-                }
-                if (groupIDs.length > 0) {
-                  const groupQuery = {
-                    query: {
-                      terms: {
-                        _id: groupIDs,
-                      },
-                    },
-                  };
-                  promiseArr.push(postElasticSearch(groupQuery, 'groupindex'));
-                }
-
-                if (promiseArr.length > 0) {
-                  Promise.all(promiseArr)
-                    .then(([data1, data2]) => {
-                      let userData, groupData;
-                      if (userIDs.length > 0 && groupIDs.length > 0) {
-                        userData = data1;
-                        groupData = data2;
-                      } else if (userIDs.length > 0) {
-                        userData = data1;
-                      } else {
-                        groupData = data1;
-                      }
-
-                      if (userData) {
-                        const userGames = (games || []).filter(
-                          (game) => game.user_challenge,
-                        );
-                        userGames.map((game) => {
-                          let userObj = userData.find(
-                            (user) => user.user_id === game.home_team,
-                          );
-                          if (userObj) {
-                            game.home_team = userObj;
-                          }
-
-                          userObj = userData.find(
-                            (user) => user.user_id === game.away_team,
-                          );
-                          if (userObj) {
-                            game.away_team = userObj;
-                          }
-                        });
-                      }
-                      if (groupData) {
-                        const groupGames = (games || []).filter(
-                          (game) => !game.user_challenge,
-                        );
-                        groupGames.map((game) => {
-                          let groupObj = groupData.find(
-                            (group) => group.group_id === game.home_team,
-                          );
-                          if (groupObj) {
-                            game.home_team = groupObj;
-                          }
-
-                          groupObj = groupData.find(
-                            (group) => group.group_id === game.away_team,
-                          );
-                          if (groupObj) {
-                            game.away_team = groupObj;
-                          }
-                        });
-                      }
-                      configureEvents(eventTimeTableData, games);
-                      setloading(false);
-                    })
-                    .catch((error) => {
-                      Alert.alert(strings.alertmessagetitle, error.messages);
-                      setloading(false);
-                    });
-                } else {
-                  configureEvents(eventTimeTableData, games);
-                }
+            postElasticSearch(gameList, 'gameindex').then((games) => {
+              Utility.getGamesList(games).then((gamedata) => {
+                configureEvents(eventTimeTableData, gamedata);
               })
+
+              // const promiseArr = [];
+              // // postElasticSearch(userList, 'userindex'),
+              // //   postElasticSearch(groupList, 'groupindex')
+              // let userIDs = [];
+              // let groupIDs = [];
+
+              // games.map((game) => {
+              //   if (game.user_challenge) {
+              //     userIDs.push(game.home_team);
+              //     userIDs.push(game.away_team);
+              //   } else {
+              //     groupIDs.push(game.home_team);
+              //     groupIDs.push(game.away_team);
+              //   }
+              // });
+
+              // userIDs = [...new Set(userIDs)];
+              // groupIDs = [...new Set(groupIDs)];
+
+              // if (userIDs.length > 0) {
+              //   const userQuery = {
+              //     query: {
+              //       terms: {
+              //         _id: userIDs,
+              //       },
+              //     },
+              //   };
+              //   promiseArr.push(postElasticSearch(userQuery, 'userindex'));
+              // }
+              // if (groupIDs.length > 0) {
+              //   const groupQuery = {
+              //     query: {
+              //       terms: {
+              //         _id: groupIDs,
+              //       },
+              //     },
+              //   };
+              //   promiseArr.push(postElasticSearch(groupQuery, 'groupindex'));
+              // }
+
+              // if (promiseArr.length > 0) {
+              //   Promise.all(promiseArr)
+              //     .then(([data1, data2]) => {
+              //       let userData, groupData;
+              //       if (userIDs.length > 0 && groupIDs.length > 0) {
+              //         userData = data1;
+              //         groupData = data2;
+              //       } else if (userIDs.length > 0) {
+              //         userData = data1;
+              //       } else {
+              //         groupData = data1;
+              //       }
+
+              //       if (userData) {
+              //         const userGames = (games || []).filter(
+              //           (game) => game.user_challenge,
+              //         );
+              //         userGames.map((game) => {
+              //           let userObj = userData.find(
+              //             (user) => user.user_id === game.home_team,
+              //           );
+              //           if (userObj) {
+              //             game.home_team = userObj;
+              //           }
+
+              //           userObj = userData.find(
+              //             (user) => user.user_id === game.away_team,
+              //           );
+              //           if (userObj) {
+              //             game.away_team = userObj;
+              //           }
+              //         });
+              //       }
+              //       if (groupData) {
+              //         const groupGames = (games || []).filter(
+              //           (game) => !game.user_challenge,
+              //         );
+              //         groupGames.map((game) => {
+              //           let groupObj = groupData.find(
+              //             (group) => group.group_id === game.home_team,
+              //           );
+              //           if (groupObj) {
+              //             game.home_team = groupObj;
+              //           }
+
+              //           groupObj = groupData.find(
+              //             (group) => group.group_id === game.away_team,
+              //           );
+              //           if (groupObj) {
+              //             game.away_team = groupObj;
+              //           }
+              //         });
+              //       }
+              //       configureEvents(eventTimeTableData, games);
+              //       setloading(false);
+              //     })
+              //     .catch((error) => {
+              //       Alert.alert(strings.alertmessagetitle, error.messages);
+              //       setloading(false);
+              //     });
+              // } else {
+              //   configureEvents(eventTimeTableData, games);
+              // }
+            });
           }
           configureEvents(eventTimeTableData);
-
           setloading(false);
         })
         .catch((e) => {

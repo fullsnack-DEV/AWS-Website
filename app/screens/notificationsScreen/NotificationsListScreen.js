@@ -63,6 +63,7 @@ import NotificationListTopHeaderShimmer from '../../components/shimmer/account/N
 import TCGradientButton from '../../components/TCGradientButton';
 import PRNotificationTeamInvite from '../../components/notificationComponent/PRNotificationTeamInvite';
 import PRNotificationDetailItem from '../../components/notificationComponent/PRNotificationDetailItem';
+import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 
 function NotificationsListScreen({ navigation }) {
   const actionSheet = useRef();
@@ -74,7 +75,7 @@ function NotificationsListScreen({ navigation }) {
   const [mainNotificationsList, setMainNotificationsList] = useState();
   const currentDate = new Date();
   const [selectedEntity, setSelectedEntity] = useState();
-  const [activeScreen, setActiveScreen] = useState(false);
+  const [activeScreen, setActiveScreen] = useState(groupList?.length === 0);
 
   const [isRulesModalVisible, setIsRulesModalVisible] = useState(false);
   const [groupData, setGroupData] = useState();
@@ -88,6 +89,7 @@ function NotificationsListScreen({ navigation }) {
 
     if (activeScreen) {
       const verb = item.activities[0].verb;
+
       if (
         verb.includes(NotificationType.initialChallengePaymentFail)
         || verb.includes(NotificationType.alterChallengePaymentFail)
@@ -136,7 +138,8 @@ function NotificationsListScreen({ navigation }) {
         || verb.includes(NotificationType.changeRefereeRequest)
       ) {
         const a = JSON.parse(item.activities[0].object)?.reservationObject
-          ?.reservation_id;
+            ?.reservation_id
+          || JSON.parse(item.activities[0].object)?.reservation?.reservation_id;
         setloading(true);
         RefereeUtils.getRefereeReservationDetail(
           a,
@@ -144,9 +147,56 @@ function NotificationsListScreen({ navigation }) {
           authContext,
         )
           .then((obj) => {
-            navigation.navigate(obj.screenName, {
-              reservationObj: obj.reservationObj || obj.reservationObj[0],
-            });
+            const reservationObj = obj.reservationObj || obj.reservationObj[0];
+
+            console.log('reservationObj:1>=>', reservationObj);
+            if (reservationObj?.referee?.user_id === authContext.entity.uid) {
+              navigation.navigate(obj.screenName, {
+                reservationObj,
+              });
+            } else if (reservationObj?.approved_by === authContext.entity.uid && reservationObj.status === RefereeReservationStatus.accepted) {
+              navigation.navigate('RefereeApprovalScreen', {
+                type: 'accepted',
+                reservationObj,
+              });
+            } else if (
+              reservationObj.status === RefereeReservationStatus.offered
+              && !reservationObj?.is_offer
+            ) {
+              navigation.navigate('RefereeApprovalScreen', {
+                type: 'approve',
+                reservationObj,
+              });
+            } else if (
+              reservationObj.status === RefereeReservationStatus.approved
+              && reservationObj?.is_offer
+            ) {
+              navigation.navigate('RefereeApprovalScreen', {
+                type: 'accept',
+                reservationObj,
+              });
+            } else if (
+              reservationObj.status === RefereeReservationStatus.approved
+              && !reservationObj?.is_offer
+            ) {
+              navigation.navigate('RefereeApprovalScreen', {
+                type: 'accepted',
+                reservationObj,
+              });
+            } else if (
+              reservationObj.status === RefereeReservationStatus.offered
+              && reservationObj?.expiry_datetime
+                < parseFloat(new Date().getTime() / 1000).toFixed(0)
+            ) {
+              navigation.navigate('RefereeApprovalScreen', {
+                type: 'expired',
+                reservationObj,
+              });
+            } else {
+              navigation.navigate(obj.screenName, {
+                reservationObj,
+              });
+            }
             setloading(false);
           })
           .catch(() => setloading(false));
@@ -190,9 +240,7 @@ function NotificationsListScreen({ navigation }) {
             setloading(false);
           })
           .catch(() => setloading(false));
-      } else if (verb.includes(
-        NotificationType.inviteToConnectMember,
-      )) {
+      } else if (verb.includes(NotificationType.inviteToConnectMember)) {
         navigation.navigate('InviteToMemberScreen', {
           data: item,
         });
@@ -473,6 +521,73 @@ function NotificationsListScreen({ navigation }) {
       navigation.navigate('SingleNotificationScreen', { notificationItem });
     }
   };
+
+  const notificationComponentType = (item) => {
+    if (isInvite(item.activities[0].verb)) {
+      console.log('Ok ok1');
+      if (
+        item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam)
+      ) {
+        console.log('Ok ok2');
+
+        return (
+          <PRNotificationTeamInvite
+            item={item}
+            selectedEntity={selectedEntity}
+            // onAccept={() => onAccept(item.activities[0].id)}
+            onRespond={() => onRespond(
+                JSON.parse(item.activities[0].object)?.groupData?.group_id,
+            )
+            } // JSON.parse(item.activities[0].object))
+            onPress={() => onNotificationClick(item)}
+            onPressFirstEntity={openHomePage}
+          />
+        );
+      }
+      console.log('Ok ok3');
+      return (
+        <PRNotificationInviteCell
+          item={item}
+          selectedEntity={selectedEntity}
+          onAccept={() => onAccept(item.activities[0].id)}
+          onDecline={() => onDecline(item.activities[0].id)}
+          onPress={() => onNotificationClick(item)}
+          onPressFirstEntity={openHomePage}
+        />
+      );
+    }
+    if (
+      item.activities[0].verb.includes(
+        NotificationType.inviteToConnectMember,
+      )
+      || item.activities[0].verb.includes(NotificationType.refereeRequest)
+    ) {
+      console.log('Ok ok4');
+
+      return (
+        <PRNotificationDetailItem
+          item={item}
+          selectedEntity={selectedEntity}
+          onDetailPress={() => onDetailPress(item)}
+          onPress={() => onNotificationClick(item)}
+          onPressFirstEntity={openHomePage}
+        />
+      );
+    }
+    console.log('Ok ok5');
+
+    return (
+      <PRNotificationDetailMessageItem
+        item={item}
+        selectedEntity={selectedEntity}
+        onDetailPress={() => onDetailPress(item)}
+        onMessagePress={onMessagePress}
+        onPress={() => onNotificationClick(item)}
+        onPressFirstEntity={openHomePage}
+      />
+    );
+  };
+
   const renderPendingRequestComponent = ({ item }) => {
     console.log('ITEm:,', item);
     return (
@@ -480,52 +595,9 @@ function NotificationsListScreen({ navigation }) {
         onPress={() => onDelete({ item })}
         color={colors.redDelColor}
         image={images.deleteIcon}>
-        {isInvite(item.activities[0].verb) ? (
-          item.activities[0].verb.includes(
-            NotificationType.inviteToDoubleTeam,
-          ) ? (
-            <PRNotificationTeamInvite
-              item={item}
-              selectedEntity={selectedEntity}
-              // onAccept={() => onAccept(item.activities[0].id)}
-              onRespond={() => onRespond(
-                  JSON.parse(item.activities[0].object)?.groupData?.group_id,
-              )
-              } // JSON.parse(item.activities[0].object))
-              onPress={() => onNotificationClick(item)}
-              onPressFirstEntity={openHomePage}
-            />
-          ) : (
-            <PRNotificationInviteCell
-              item={item}
-              selectedEntity={selectedEntity}
-              onAccept={() => onAccept(item.activities[0].id)}
-              onDecline={() => onDecline(item.activities[0].id)}
-              onPress={() => onNotificationClick(item)}
-              onPressFirstEntity={openHomePage}
-            />
-          )
-        ) : item.activities[0].verb.includes(NotificationType.inviteToConnectMember) ? (
-          <PRNotificationDetailItem
-            item={item}
-            selectedEntity={selectedEntity}
-            onDetailPress={() => onDetailPress(item)}
-
-            onPress={() => onNotificationClick(item)}
-            onPressFirstEntity={openHomePage}
-          />
-        ) : (
-          <PRNotificationDetailMessageItem
-            item={item}
-            selectedEntity={selectedEntity}
-            onDetailPress={() => onDetailPress(item)}
-            onMessagePress={onMessagePress}
-            onPress={() => onNotificationClick(item)}
-            onPressFirstEntity={openHomePage}
-          />
-        )}
+        {notificationComponentType(item)}
       </AppleStyleSwipeableRow>
-    )
+    );
   };
 
   const renderNotificationComponent = ({ item }) => {

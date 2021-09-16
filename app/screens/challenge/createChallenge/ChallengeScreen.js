@@ -529,6 +529,7 @@ export default function ChallengeScreen({ navigation, route }) {
             <TCThickDivider marginTop={20} />
           </View>
         )}
+
       </View>
 
       <TCGradientButton

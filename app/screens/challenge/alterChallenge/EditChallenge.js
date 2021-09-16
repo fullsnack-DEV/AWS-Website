@@ -757,8 +757,8 @@ export default function EditChallenge({ navigation, route }) {
             });
           }}
         />
-            <TCThickDivider />
 
+            <TCThickDivider />
             {Number(challengeObj?.game_fee?.fee) !== 0
           && challengeObj?.challenger === authContext.entity.uid && (
             <View>

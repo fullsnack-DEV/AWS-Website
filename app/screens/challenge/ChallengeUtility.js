@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import {
   Alert,
 } from 'react-native';
@@ -12,23 +13,32 @@ export const getChallengeDetail = (challengeID, authContext) => {
   return getChallenge(challengeID, authContext).then((response) => {
     console.log('Challenge Utils:', JSON.stringify(response.payload));
     if (response.payload.length > 0) {
-      if (ReservationStatus.changeRequest === response.payload[0].status
-        || ReservationStatus.pendingrequestpayment === response.payload[0].status) {
-        Obj.challengeObj = response.payload
+      const reservations = response.payload[0].reservations;
+      const gameStatus = response.payload[0].game_status;
+
+     const challenges = response.payload.map((challenge) => {
+        challenge.reservations = reservations
+        challenge.game_status = gameStatus
+        return challenge
+        })
+
+      if (ReservationStatus.changeRequest === challenges[0].status
+        || ReservationStatus.pendingrequestpayment === challenges[0].status) {
+        Obj.challengeObj = challenges
         Obj.screenName = 'ChallengePreviewScreen' // 'AlterChallengeScreen'
         return Obj
       }
-      if (ReservationStatus.pendingpayment === response.payload[0].status
-        || ReservationStatus.accepted === response.payload[0].status
-        || ReservationStatus.restored === response.payload[0].status
-        || ReservationStatus.cancelled === response.payload[0].status
-        || ReservationStatus.completed === response.payload[0].status
-        || ReservationStatus.offered === response.payload[0].status) {
-        Obj.challengeObj = response.payload
+      if (ReservationStatus.pendingpayment === challenges[0].status
+        || ReservationStatus.accepted === challenges[0].status
+        || ReservationStatus.restored === challenges[0].status
+        || ReservationStatus.cancelled === challenges[0].status
+        || ReservationStatus.completed === challenges[0].status
+        || ReservationStatus.offered === challenges[0].status) {
+        Obj.challengeObj = challenges
         Obj.screenName = 'ChallengePreviewScreen'
         return Obj
       }
-      if (ReservationStatus.restored === response.payload[0].status || ReservationStatus.requestcancelled === response.payload[0].status) {
+      if (ReservationStatus.restored === challenges[0].status || ReservationStatus.requestcancelled === challenges[0].status) {
         // let tempObj;
         // for (let i = 0; i < response.payload.length; i++) {
         //   if (response.payload[i].status === ReservationStatus.accepted) {
@@ -36,19 +46,17 @@ export const getChallengeDetail = (challengeID, authContext) => {
         //     break;
         //   }
         // }
-        Obj.challengeObj = response.payload
+        Obj.challengeObj = challenges
         Obj.screenName = 'ChallengePreviewScreen'// AcceptDeclineChallengeScreen
         return Obj
       }
-      if (ReservationStatus.declined === response.payload[0].status) {
-        console.log('ReservationStatus.declined === response.payload[0].status', response);
-
-          if (response.payload[1].status !== ReservationStatus.offered) {
-          Obj.challengeObj = response.payload
+      if (ReservationStatus.declined === challenges[0].status) {
+          if (challenges[1].status !== ReservationStatus.offered) {
+          Obj.challengeObj = challenges
           Obj.screenName = 'ChallengePreviewScreen'
           return Obj
         }
-          Obj.challengeObj = response.payload[0]
+          Obj.challengeObj = challenges[0]
           Obj.screenName = 'ChallengePreviewScreen'// AcceptDeclineChallengeScreen
           return Obj
       }

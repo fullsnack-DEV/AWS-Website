@@ -67,7 +67,7 @@ const BookReferee = ({ navigation, route }) => {
   }, [gameData?.sport]);
 
   const renderRefereeData = ({ item }) => {
-    const referee = item._source;
+    const referee = item;
     const refereeObject = referee?.referee_data?.filter(
       (refereeItem) => refereeItem?.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase(),
     );

@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+/* eslint-disable array-callback-return */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-unused-expressions */
 import {} from 'react';
@@ -705,4 +707,100 @@ export const getCalendar = async (participantId, fromDate, toDate, type, blocked
      return response
    });
 };
-// return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals)
+
+export const getGamesList = async (games) => {
+  const promiseArr = [];
+  let userIDs = [];
+  let groupIDs = [];
+
+  games.map((game) => {
+    if (game.user_challenge) {
+      userIDs.push(game.home_team);
+      userIDs.push(game.away_team);
+    } else {
+      groupIDs.push(game.home_team);
+      groupIDs.push(game.away_team);
+    }
+  });
+
+  userIDs = [...new Set(userIDs)];
+  groupIDs = [...new Set(groupIDs)];
+
+  if (userIDs.length > 0) {
+    const userQuery = {
+      query: {
+        terms: {
+          _id: userIDs,
+        },
+      },
+    };
+    promiseArr.push(postElasticSearch(userQuery, 'userindex'));
+  }
+  if (groupIDs.length > 0) {
+    const groupQuery = {
+      query: {
+        terms: {
+          _id: groupIDs,
+        },
+      },
+    };
+    promiseArr.push(postElasticSearch(groupQuery, 'groupindex'));
+  }
+
+  if (promiseArr.length > 0) {
+   return Promise.all(promiseArr)
+      .then(([data1, data2]) => {
+        let userData, groupData;
+        if (userIDs.length > 0 && groupIDs.length > 0) {
+          userData = data1;
+          groupData = data2;
+        } else if (userIDs.length > 0) {
+          userData = data1;
+        } else {
+          groupData = data1;
+        }
+
+        if (userData) {
+          const userGames = (games || []).filter(
+            (game) => game.user_challenge,
+          );
+          for (const game of userGames) {
+            let userObj = userData.find(
+              (user) => user.user_id === game.home_team,
+            );
+            if (userObj) {
+              game.home_team = userObj;
+            }
+
+            userObj = userData.find(
+              (user) => user.user_id === game.away_team,
+            );
+            if (userObj) {
+              game.away_team = userObj;
+            }
+          }
+        }
+        if (groupData) {
+          const groupGames = (games || []).filter(
+            (game) => !game.user_challenge,
+          );
+          for (const game of groupGames) {
+            let groupObj = groupData.find(
+              (group) => group.group_id === game.home_team,
+            );
+            if (groupObj) {
+              game.home_team = groupObj;
+            }
+
+            groupObj = groupData.find(
+              (group) => group.group_id === game.away_team,
+            );
+            if (groupObj) {
+              game.away_team = groupObj;
+            }
+          }
+        }
+        return games
+      })
+    }
+}

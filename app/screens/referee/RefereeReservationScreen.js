@@ -45,6 +45,7 @@ import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import TCChallengeTitle from '../../components/TCChallengeTitle';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils';
 import TCTouchableLabel from '../../components/TCTouchableLabel';
+// import RefereeReservationTitle from '../../components/reservations/RefereeReservationTitle';
 
 let entity = {};
 
@@ -89,7 +90,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
 
   const getNavigationTitle = () => {
     if (
-      bodyParams?.status === RefereeReservationStatus.offered
+      bodyParams?.status === RefereeReservationStatus.approved
       || bodyParams?.status === RefereeReservationStatus.declined
     ) {
       return strings.refereeRequestScreenTitle;
@@ -246,46 +247,46 @@ export default function RefereeReservationScreen({ navigation, route }) {
   }, []);
   const checkSenderOrReceiver = (reservationObj) => {
     const teampObj = { ...reservationObj };
-    if (
-      teampObj?.status === RefereeReservationStatus.pendingpayment
-      || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
-    ) {
-      if (teampObj?.updated_by) {
-        if (teampObj?.updated_by?.group_id) {
-          teampObj.requested_by = teampObj.updated_by.group_id;
-        } else {
-          teampObj.requested_by = teampObj.updated_by.uid;
-        }
-      } else if (teampObj?.created_by?.group_id) {
-        teampObj.requested_by = teampObj.created_by.group_id;
-      } else {
-        teampObj.requested_by = teampObj.created_by.uid;
-      }
-    } else if (teampObj?.updated_by) {
-      if (teampObj?.updated_by?.group_id) {
-        if (
-          teampObj?.automatic_request
-          && teampObj?.status === RefereeReservationStatus.changeRequest
-          && entity.obj.entity_type === 'team'
-        ) {
-          teampObj.requested_by = teampObj.initiated_by;
-        } else {
-          teampObj.requested_by = teampObj.updated_by.group_id;
-        }
-      } else if (
-        teampObj?.automatic_request
-        && teampObj?.status === RefereeReservationStatus.changeRequest
-        && teampObj?.referee?.user_id !== entity.uid
-      ) {
-        teampObj.requested_by = teampObj.initiated_by;
-      } else {
-        teampObj.requested_by = teampObj.updated_by.uid;
-      }
-    } else if (teampObj?.created_by?.group_id) {
-      teampObj.requested_by = teampObj.created_by.group_id;
-    } else {
-      teampObj.requested_by = teampObj.created_by.uid;
-    }
+    // if (
+    //   teampObj?.status === RefereeReservationStatus.pendingpayment
+    //   || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
+    // ) {
+    //   if (teampObj?.updated_by) {
+    //     if (teampObj?.updated_by?.group_id) {
+    //       teampObj.requested_by = teampObj.updated_by.group_id;
+    //     } else {
+    //       teampObj.requested_by = teampObj.updated_by.uid;
+    //     }
+    //   } else if (teampObj?.created_by?.group_id) {
+    //     teampObj.requested_by = teampObj.created_by.group_id;
+    //   } else {
+    //     teampObj.requested_by = teampObj.created_by.uid;
+    //   }
+    // } else if (teampObj?.updated_by) {
+    //   if (teampObj?.updated_by?.group_id) {
+    //     if (
+    //       teampObj?.automatic_request
+    //       && teampObj?.status === RefereeReservationStatus.changeRequest
+    //       && entity.obj.entity_type === 'team'
+    //     ) {
+    //       teampObj.requested_by = teampObj.initiated_by;
+    //     } else {
+    //       teampObj.requested_by = teampObj.updated_by.group_id;
+    //     }
+    //   } else if (
+    //     teampObj?.automatic_request
+    //     && teampObj?.status === RefereeReservationStatus.changeRequest
+    //     && teampObj?.referee?.user_id !== entity.uid
+    //   ) {
+    //     teampObj.requested_by = teampObj.initiated_by;
+    //   } else {
+    //     teampObj.requested_by = teampObj.updated_by.uid;
+    //   }
+    // } else if (teampObj?.created_by?.group_id) {
+    //   teampObj.requested_by = teampObj.created_by.group_id;
+    // } else {
+    //   teampObj.requested_by = teampObj.created_by.uid;
+    // }
 
     console.log('Temp Object::', teampObj);
     console.log(`${teampObj?.requested_by}:::${entity.uid}`);
@@ -379,6 +380,11 @@ export default function RefereeReservationScreen({ navigation, route }) {
         {bodyParams && (
           <View>
             <ReservationNumber reservationNumber={bodyParams.reservation_id} />
+
+            {/* <Text onPress={() => {
+              navigation.navigate('RefereeApprovalScreen', { reservationObj: bodyParams })
+            }}>On Press</Text> */}
+
             <View
               style={{
                 flex: 1,
@@ -452,9 +458,10 @@ export default function RefereeReservationScreen({ navigation, route }) {
             </View>
             <TCThinDivider />
 
-            {/* status offered */}
+            {/* <RefereeReservationTitle reservationObject={bodyParams}/> */}
+            {/* status offered/approved
             {checkSenderOrReceiver(bodyParams) === 'sender'
-              && bodyParams.status === RefereeReservationStatus.offered && (
+              && (bodyParams.status === RefereeReservationStatus.approved || bodyParams.status === RefereeReservationStatus.offered) && (
                 <View>
                   {bodyParams.expiry_datetime > new Date().getTime() ? (
                     <Text
@@ -470,7 +477,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                         styles.challengeMessage,
                         { color: colors.requestSentColor },
                       ]}>
-                      SENT
+                      Awaiting
                     </Text>
                   )}
                   {bodyParams.expiry_datetime > new Date().getTime() ? (
@@ -494,7 +501,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                 </View>
               )}
             {checkSenderOrReceiver(bodyParams) === 'receiver'
-              && bodyParams.status === RefereeReservationStatus.offered && (
+              && (bodyParams.status === RefereeReservationStatus.approved || bodyParams.status === RefereeReservationStatus.offered) && (
                 <View>
                   {bodyParams.expiry_datetime > new Date().getTime() ? (
                     <Text
@@ -510,7 +517,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                         styles.challengeMessage,
                         { color: colors.requestSentColor },
                       ]}>
-                      PENDING
+                      Pending
                     </Text>
                   )}
                   {bodyParams.expiry_datetime > new Date().getTime() ? (
@@ -623,6 +630,48 @@ export default function RefereeReservationScreen({ navigation, route }) {
               )}
             {/* Status accepted */}
             {/* Status declined */}
+            {/* {bodyParams?.approved_by === entity.uid && !bodyParams?.is_offer
+              && bodyParams.status === RefereeReservationStatus.declined && (
+                <View>
+                  <Text
+                    style={[
+                      styles.challengeMessage,
+                      { color: colors.googleColor },
+                    ]}>
+                    DECLINED
+                  </Text>
+                  <Text style={styles.challengeText}>
+                    {checkRefereeOrTeam(bodyParams) === 'referee'
+                      ? `You have declined a referee request from ${getEntityName(
+                          bodyParams,
+                        )}.`
+                      : `Your team have declined referee reservation request from ${getEntityName(
+                          bodyParams,
+                        )}.`}
+                  </Text>
+                </View>
+              )}
+            {bodyParams?.initiated_by === entity.uid && !bodyParams?.is_offer
+              && bodyParams.status === RefereeReservationStatus.declined && (
+                <View>
+                  <Text
+                    style={[
+                      styles.challengeMessage,
+                      { color: colors.googleColor },
+                    ]}>
+                    DECLINED
+                  </Text>
+                  <Text style={styles.challengeText}>
+                    {checkRefereeOrTeam(bodyParams) === 'referee'
+                      ? `${getEntityName(
+                        bodyParams,
+                      )} has declined a referee request sent by you.`
+                      : `${getEntityName(
+                        bodyParams,
+                      )} has declined referee reservation request sent by your team.`}
+                  </Text>
+                </View>
+              )} */}
             {checkSenderOrReceiver(bodyParams) === 'sender'
               && bodyParams.status === RefereeReservationStatus.declined && (
                 <View>
@@ -656,9 +705,9 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   </Text>
                   <Text style={styles.challengeText}>
                     {checkRefereeOrTeam(bodyParams) === 'referee'
-                      ? `${getEntityName(
+                      ? `You has declined a referee request from ${getEntityName(
                           bodyParams,
-                        )} has declined a referee request from your team.`
+                        )}.`
                       : `${getEntityName(
                           bodyParams,
                         )} have declined a referee reservation request sent by you.`}
@@ -721,30 +770,9 @@ export default function RefereeReservationScreen({ navigation, route }) {
                       comeFrom: 'RefereeReservationScreen',
                     });
                   }}
+                  style={{ marginTop: 15 }}
                 />
               )}
-
-            {/* {!(
-            bodyParams.status === RefereeReservationStatus.offered
-            || bodyParams.status === RefereeReservationStatus.cancelled
-            || bodyParams.status === RefereeReservationStatus.declined
-          ) && (
-            <TCBorderButton
-              title={'GAME HOME'}
-              onPress={() => {
-                if (`${bodyParams.sport}`.toLowerCase() === 'soccer') {
-                  navigation.navigate('SoccerHome', {
-                    gameId: bodyParams.game_id,
-                  });
-                } else {
-                  navigation.navigate('TennisHome', {
-                    gameId: bodyParams.game_id,
-                  });
-                }
-              }}
-              marginBottom={15}
-            />
-          )} */}
 
             <TCThickDivider marginTop={15} />
 
@@ -925,7 +953,8 @@ export default function RefereeReservationScreen({ navigation, route }) {
             />
 
             {bodyParams.initiated_by === authContext.entity.uid
-              && bodyParams.status === RefereeReservationStatus.offered
+              && (bodyParams.status === RefereeReservationStatus.approved
+                || bodyParams.status === RefereeReservationStatus.offered)
               && bodyParams.total_game_fee > 0 && (
                 <View style={{ marginTop: 15 }}>
                   <TCTouchableLabel
@@ -950,7 +979,8 @@ export default function RefereeReservationScreen({ navigation, route }) {
 
             <SafeAreaView>
               {checkSenderOrReceiver(bodyParams) === 'sender'
-                && bodyParams.status === RefereeReservationStatus.offered
+                && (bodyParams.status === RefereeReservationStatus.approved
+                  || bodyParams.status === RefereeReservationStatus.offered)
                 && bodyParams.expiry_datetime < new Date().getTime() && (
                   <View>
                     <TCBorderButton
@@ -959,7 +989,6 @@ export default function RefereeReservationScreen({ navigation, route }) {
                       borderColor={colors.grayColor}
                       marginBottom={15}
                       marginTop={15}
-
                       height={40}
                       shadow={true}
                       onPress={() => {
@@ -979,7 +1008,8 @@ export default function RefereeReservationScreen({ navigation, route }) {
                 )}
 
               {checkSenderOrReceiver(bodyParams) === 'receiver'
-                && bodyParams.status === RefereeReservationStatus.offered
+                && (bodyParams.status === RefereeReservationStatus.approved
+                  || bodyParams.status === RefereeReservationStatus.offered)
                 && bodyParams.expiry_datetime > new Date().getTime() / 1000 && (
                   <View style={{ marginTop: 15 }}>
                     <TCGradientButton
@@ -1000,10 +1030,16 @@ export default function RefereeReservationScreen({ navigation, route }) {
                           < new Date().getTime() / 1000
                         ) {
                           Alert.alert(strings.refereeOfferExpiryText);
-                        } else if (bodyParams.initiated_by === authContext.entity.uid
-                          && bodyParams.status === RefereeReservationStatus.offered
-                          && bodyParams.total_game_fee > 0 && !defaultCard) {
-                            Alert.alert('Please choose payment method first.');
+                        } else if (
+                          bodyParams.initiated_by === authContext.entity.uid
+                          && (bodyParams.status
+                            === RefereeReservationStatus.approved
+                            || bodyParams.status
+                              === RefereeReservationStatus.offered)
+                          && bodyParams.total_game_fee > 0
+                          && !defaultCard
+                        ) {
+                          Alert.alert('Please choose payment method first.');
                         } else {
                           let callerId = '';
                           if (bodyParams?.referee?.user_id !== entity.uid) {
@@ -1013,7 +1049,11 @@ export default function RefereeReservationScreen({ navigation, route }) {
                             bodyParams.reservation_id,
                             callerId,
                             bodyParams.version,
-                            'accept',
+                            bodyParams?.status
+                              === RefereeReservationStatus.offered
+                              && bodyParams?.is_offer === true
+                              ? 'approve'
+                              : 'accept',
                           );
                         }
                       }}
@@ -1062,6 +1102,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                       ) {
                         navigation.navigate('EditRefereeReservation', {
                           reservationObj: bodyParams,
+                          lastConfirmVersion: bodyParams,
                         });
                       } else {
                         Alert.alert(
@@ -1195,7 +1236,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.lightBlackColor,
-  width: '80%',
+    width: '80%',
   },
   challengerView: {
     marginRight: 15,
@@ -1219,17 +1260,10 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginBottom: 15,
   },
-  // challengeText: {
-  //   fontFamily: fonts.RMedium,
-  //   fontSize: 23,
-  //   color: colors.lightBlackColor,
-  //   marginLeft: 15,
-  //   marginRight: 15,
-  //   marginBottom: 15,
+
+  // timeText: {
+  //   color: colors.themeColor,
   // },
-  timeText: {
-    color: colors.themeColor,
-  },
   awatingNotesText: {
     color: colors.userPostTimeColor,
     marginRight: 15,

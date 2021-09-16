@@ -168,6 +168,8 @@ import AccountScreen from '../screens/account/AccountScreen';
 import NotificationNavigator from './NotificationNavigator';
 import fonts from '../Constants/Fonts';
 import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChallengeScreen';
+import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
+import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -409,12 +411,21 @@ const ScheduleNavigator = () => (
           }}
       />
     <Stack.Screen
-          name="RefereeSelectMatch"
-          component={RefereeSelectMatch}
-          options={{
-            headerShown: false,
-          }}
-      />
+      name="RefereeSelectMatch"
+      component={RefereeSelectMatch}
+      options={{
+        title: 'Choose a match',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
           name="BookRefereeSuccess"
           component={ BookRefereeSuccess }
@@ -811,6 +822,38 @@ const ScheduleNavigator = () => (
             component={RefereeReservationScreen}
             options={{
               title: 'Referee Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+            name="RefereeApprovalScreen"
+            component={RefereeApprovalScreen}
+            options={{
+              title: 'Referee Approval Request',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+            name="ScorekeeperApprovalScreen"
+            component={ScorekeeperApprovalScreen}
+            options={{
+              title: 'Scorekeeper Approval Request',
               headerTintColor: colors.blackColor,
               headerTitleStyle: {
                 fontWeight: '500',
@@ -1777,12 +1820,21 @@ const ScheduleNavigator = () => (
             }}
         />
     <Stack.Screen
-            name="ScorekeeperSelectMatch"
-            component={ScorekeeperSelectMatch}
-            options={{
-              headerShown: false,
-            }}
-        />
+      name="ScorekeeperSelectMatch"
+      component={ScorekeeperSelectMatch}
+      options={{
+        title: 'Choose a match',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
          name="ScorekeeperAcceptDeclineScreen"
          component={ScorekeeperAcceptDeclineScreen}

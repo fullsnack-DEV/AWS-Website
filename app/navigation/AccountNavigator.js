@@ -216,6 +216,8 @@ import RefereeAgreementScreen from '../screens/challenge/createChallenge/Referee
 import ScorekeeperAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperAgreementScreen';
 import RefereeInviteAgreementScreen from '../screens/challenge/createChallenge/RefereeInviteAgreementScreen';
 import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperInviteAgreementScreen';
+import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
+import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -642,11 +644,21 @@ const AccountNavigator = () => (
         },
       }}
     />
+
     <Stack.Screen
       name="RefereeSelectMatch"
       component={RefereeSelectMatch}
       options={{
-        headerShown: false,
+        title: 'Choose a match',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1056,6 +1068,38 @@ const AccountNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+            name="RefereeApprovalScreen"
+            component={RefereeApprovalScreen}
+            options={{
+              title: 'Referee Approval Request',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+            name="ScorekeeperApprovalScreen"
+            component={ScorekeeperApprovalScreen}
+            options={{
+              title: 'Scorekeeper Approval Request',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
     <Stack.Screen
       name="GroupSettingPrivacyScreen"
       component={GroupSettingPrivacyScreen}
@@ -2033,11 +2077,21 @@ const AccountNavigator = () => (
         },
       }}
     />
+
     <Stack.Screen
       name="ScorekeeperSelectMatch"
       component={ScorekeeperSelectMatch}
       options={{
-        headerShown: false,
+        title: 'Choose a match',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen

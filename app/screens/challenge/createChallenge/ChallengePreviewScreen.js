@@ -514,6 +514,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         || checkSenderOrReceiver(challengeData) === 'receiver')
       && selectedTab === 0
       && (challengeData?.status === ReservationStatus.accepted
+        || challengeData?.status === ReservationStatus.restored
         || (challengeData?.status === ReservationStatus.declined
           && challengeData?.version !== 2))
     ) {

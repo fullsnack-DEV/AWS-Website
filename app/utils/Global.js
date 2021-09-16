@@ -22,7 +22,6 @@ const prepareHeader = (headers, authToken, caller_id, caller) => {
   if (caller) {
     apiHeaders = { ...apiHeaders, caller };
   }
-
   apiHeaders = { ...apiHeaders, ...headers };
 
   return apiHeaders;
@@ -134,6 +133,7 @@ const globalApiCall = async ({
     const error = {
       withRenewToken,
       options,
+      error: e,
     }
     console.log('SERVER ERROR ::--->', error);
     throw new Error(e);

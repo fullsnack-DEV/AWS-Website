@@ -62,7 +62,7 @@ const BookScorekeeper = ({ navigation, route }) => {
   }, [gameData?.sport])
 
   const renderScorekeepersData = ({ item }) => {
-    const scorekeeper = item._source;
+    const scorekeeper = item;
     const scorekeeperObject = scorekeeper?.scorekeeper_data?.filter((scorekeeperItem) => scorekeeperItem?.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase());
     return (
       <TouchableOpacity onPress={() => setSelectedScorekeeper(scorekeeper)}>

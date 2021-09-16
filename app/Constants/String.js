@@ -259,6 +259,7 @@ const strings = {
   noTeamText: 'No, a team doesn’t.',
   yesTeamText: 'Yes, a team does.',
   approvalTitle: 'Approval for Membership request',
+  approveTitle: 'APPROVE',
   approvalUserSubTitle:
     'Does a user need the approval for his or her membership request from the club to join it?',
   approvalTeamSubTitle:

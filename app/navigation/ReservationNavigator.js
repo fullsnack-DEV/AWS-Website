@@ -20,6 +20,8 @@ import CurruentReservationScreen from '../screens/challenge/alterChallenge/Curru
 import SoccerHome from '../screens/game/soccer/SoccerHome';
 import TennisHome from '../screens/game/tennis/TennisHome';
 
+import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
+
 import PayAgainScreen from '../screens/challenge/alterChallenge/PayAgainScreen';
 import PayAgainRefereeScreen from '../screens/referee/PayAgainRefereeScreen';
 import EditFeeScreen from '../screens/challenge/alterChallenge/EditFeeScreen';
@@ -35,6 +37,9 @@ import colors from '../Constants/Colors'
 import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChallengeScreen';
+import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
+import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
+import ScorekeeperSelectMatch from '../screens/game/bookScorekeeper/selectMatch/ScorekeeperSelectMatch';
 
 const Stack = createStackNavigator();
 
@@ -120,6 +125,38 @@ const ReservationNavigator = () => (
             }}
         />
     <Stack.Screen
+            name="RefereeApprovalScreen"
+            component={RefereeApprovalScreen}
+            options={{
+              title: 'Referee Approval Request',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+            name="ScorekeeperApprovalScreen"
+            component={ScorekeeperApprovalScreen}
+            options={{
+              title: 'Scorekeeper Approval Request',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
             name="AlterRefereeScreen"
             component={AlterRefereeScreen}
             options={{
@@ -135,6 +172,39 @@ const ReservationNavigator = () => (
               },
             }}
         />
+    <Stack.Screen
+      name="RefereeSelectMatch"
+      component={RefereeSelectMatch}
+      options={{
+        title: 'Choose a match',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="ScorekeeperSelectMatch"
+      component={ScorekeeperSelectMatch}
+      options={{
+        title: 'Choose a match',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="AlterChallengeScreen"
       component={AlterChallengeScreen}

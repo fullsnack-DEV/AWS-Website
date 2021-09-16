@@ -200,6 +200,10 @@ const getTabBarVisibility = (route) => {
     || routeName === 'ScorekeeperAgreementScreen'
     || routeName === 'ScorekeeperInviteAgreementScreen'
 || routeName === 'RefereeInviteAgreementScreen'
+|| routeName === 'RefereeApprovalScreen'
+|| routeName === 'ScorekeeperApprovalScreen'
+|| routeName === 'RefereeSelectMatch'
+|| routeName === 'ScorekeeperSelectMatch'
   ) {
     return false;
   }

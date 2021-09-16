@@ -1,25 +1,25 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   Alert,
-  FlatList, StyleSheet, Text, TouchableOpacity, View,
+  FlatList, StyleSheet, Text, View,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import images from '../../../../Constants/ImagePath';
+
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
-import Header from '../../../../components/Home/Header';
 import TCSearchBox from '../../../../components/TCSearchBox';
-import { getGameSlots } from '../../../../api/Games';
 import AuthContext from '../../../../auth/context'
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 import { getSearchData } from '../../../../utils';
 import TCGameCard from '../../../../components/TCGameCard';
 import strings from '../../../../Constants/String';
+import * as Utility from '../../../../utils';
+import { postElasticSearch } from '../../../../api/elasticSearch';
 
 const TYPING_SPEED = 200;
 
+let bodyParams = {};
+
 const RefereeSelectMatch = ({ navigation, route }) => {
-  const sport = route?.params?.sport;
   const userData = route?.params?.userData;
   const authContext = useContext(AuthContext)
   const [searchText, setSearchText] = useState('');
@@ -27,27 +27,151 @@ const RefereeSelectMatch = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [matchData, setMatchData] = useState(null);
   const [typingTimeout, setTypingTimeout] = useState(0);
+
   useEffect(() => {
-    console.log('userData:::::=>', userData);
+    if (route && route.params && route.params.editableAlter && route.params.body) {
+      console.log('EDIT Games::', route.params.body);
+      bodyParams = {
+        ...route.params.body,
+      }
+    }
+  }, [route]);
+
+  useEffect(() => {
+    console.log('route?.params?.comeFrom:::::=>', route?.params?.comeFrom);
     setLoading(true);
     const headers = {}
     headers.caller_id = authContext?.entity?.uid;
-    getGameSlots(
-      'referees',
-      userData?.user_id,
-      `status=accepted&sport=${sport}&refereeDetail=true`,
-      headers,
-      authContext,
-    ).then((res) => {
+
+    getGamesForReferee(userData?.user_id, authContext?.entity?.uid)
+    .then((res) => {
       setLoading(false);
-        setMatchData([...res?.payload]);
-      }).catch((e) => {
+        setMatchData([...res]);
+      })
+    // getGameSlots(
+    //   'referees',
+    //   userData?.user_id,
+    //   `status=accepted&sport=${sport}&refereeDetail=true`,
+    //   headers,
+    //   authContext,
+    // ).then((res) => {
+    //   setLoading(false);
+    //     setMatchData([...res?.payload]);
+    //   }).catch((e) => {
+    //     setLoading(false);
+    //     setTimeout(() => {
+    //       Alert.alert(strings.alertmessagetitle, e.messages);
+    //     }, 10);
+    //   });
+  }, [authContext, userData])
+
+  const getGamesForReferee = async (refereeId, teamId) => {
+    const gameListWithFilter = {
+      query: {
+        bool: {
+          must: [
+            {
+              bool: {
+                should: [
+                  { term: { 'home_team.keyword': teamId } },
+                  { term: { 'away_team.keyword': teamId } },
+                ],
+              },
+            },
+            {
+              range: {
+                end_datetime: {
+                  gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+                },
+              },
+            },
+            { term: { 'status.keyword': 'accepted' } },
+            { term: { 'challenge_referee.who_secure.responsible_team_id.keyword': teamId } },
+          ],
+        },
+      },
+      sort: [
+        { start_datetime: 'asc' },
+      ],
+    };
+
+    console.log('Json string:=>', JSON.stringify(gameListWithFilter));
+    const refereeList = {
+      query: {
+        bool: {
+          must: [
+            { term: { 'participants.entity_id.keyword': refereeId } },
+            {
+              range: {
+                end_datetime: {
+                  gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+                },
+              },
+            },
+            { term: { 'cal_type.keyword': 'event' } },
+            { match: { blocked: true } },
+          ],
+        },
+      },
+    };
+
+    const promiseArr = [
+      postElasticSearch(gameListWithFilter, 'gameindex'),
+      postElasticSearch(refereeList, 'calendarindex'),
+    ];
+
+    return Promise.all(promiseArr)
+      .then(([gameList, eventList]) => {
+        setLoading(false);
+        console.log('gameList', gameList);
+        console.log('refereeList', eventList);
+
+        for (const game of gameList) {
+          game.isAvailable = true;
+          eventList.forEach((slot) => {
+            // check if slot start time comes between the game time
+            if (
+              game.start_datetime <= slot.start_datetime
+              && game.end_datetime >= slot.start_datetime
+            ) {
+              game.isAvailable = false;
+            }
+
+            // check if slot end time comes between the game time
+            if (
+              game.start_datetime <= slot.end_datetime
+              && game.end_datetime >= slot.end_datetime
+            ) {
+              game.isAvailable = false;
+            }
+
+            // Check if game is under the blocked time
+            if (
+              slot.start_datetime <= game.start_datetime
+              && slot.end_datetime >= game.start_datetime
+            ) {
+              game.isAvailable = false;
+            }
+          });
+        }
+
+       return Utility.getGamesList(gameList).then((gamedata) => gamedata)
+      })
+      .catch((e) => {
         setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.messages);
         }, 10);
       });
-  }, [authContext, sport, userData])
+    // return postElasticSearch(gameListWithFilter, 'gameindex')
+    // .then((games) => games)
+    // .catch((e) => {
+    //   setloading(false);
+    //   setTimeout(() => {
+    //     Alert.alert(strings.alertmessagetitle, e.messages);
+    //   }, 10);
+    // });
+  };
 
   const onSearchTextChange = (text) => {
     if (typingTimeout) clearTimeout(typingTimeout);
@@ -63,17 +187,6 @@ const RefereeSelectMatch = ({ navigation, route }) => {
   }
   return (
     <View style={styles.mainContainer}>
-      <Header
-            leftComponent={
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <FastImage resizeMode={'contain'} source={images.backArrow} style={styles.backImageStyle}/>
-              </TouchableOpacity>
-            }
-            centerComponent={
-              <Text style={styles.eventTitleTextStyle}>Choose a match</Text>
-            }
-        />
-      <View style={styles.headerBottomBorder}/>
 
       {/* Loader */}
       <TCInnerLoader visible={loading}/>
@@ -123,12 +236,20 @@ const RefereeSelectMatch = ({ navigation, route }) => {
                       //   message = 'There is no available slot of an assistant referee who you can book in this game.';
                       // }
                       if (message === '') {
+                        // navigation.navigate(route?.params?.comeFrom, {
+                        //   comeFrom: 'RefereeSelectMatch',
+                        //   gameData: item,
+                        //   reservationObj: { ...bodyParams, game: item },
+
+                        // });
+
                         navigation.navigate(route?.params?.comeFrom, {
-                          comeFrom: 'RefereeSelectMatch',
-                          gameData: item,
-                        });
-                      } else {
-                        setTimeout(() => Alert.alert(message));
+                          reservationObj: {
+                            ...bodyParams,
+                            game: item,
+                          },
+
+                        })
                       }
 
                       // navigation.navigate(route?.params?.comeFrom, {
@@ -153,21 +274,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
-  backImageStyle: {
-    height: 20,
-    width: 16,
-    tintColor: colors.blackColor,
-    resizeMode: 'contain',
-  },
-  eventTitleTextStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    alignSelf: 'center',
-  },
-  headerBottomBorder: {
-    height: 1,
-    backgroundColor: colors.writePostSepratorColor,
-  },
+
   contentContainer: {
     flex: 1,
     padding: 15,
