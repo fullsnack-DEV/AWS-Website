@@ -448,19 +448,24 @@ export default function ChallengePaymentScreen({ route, navigation }) {
           if (route?.params?.type === 'challenge') {
             sendChallenge();
           } else {
-            let paymentObj = {};
+            let challengeObj = {};
             if (challengeData?.total_game_fee !== 0) {
-              paymentObj = {
+              challengeObj = {
                 source: defaultCard?.id,
                 payment_method_type: 'card',
               };
             }
+
+            challengeObj.min_referee = challengeData.min_referee;
+            challengeObj.min_scorekeeper = challengeData.min_scorekeeper;
+            console.log('Payment obj:=>', challengeObj);
+
             challengeOperation(
               entity.uid,
               challengeData?.challenge_id,
               challengeData?.version,
               'accept',
-              paymentObj,
+              challengeObj,
             );
           }
         }}

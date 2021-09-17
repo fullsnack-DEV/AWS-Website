@@ -146,15 +146,12 @@ export default function EditChallenge({ navigation, route }) {
     if (isFocused) {
       const settings = { ...challengeObj };
       if (route?.params?.gameType) {
-        console.log('route?.params?.gameType', route?.params?.gameType);
         settings.game_type = route?.params?.gameType;
       }
       if (route?.params?.gameFee) {
-        console.log('route?.params?.gameFee', route?.params?.gameFee);
         settings.game_fee = route?.params?.gameFee;
       }
       if (route?.params?.refundPolicy) {
-        console.log('route?.params?.refundPolicy', route?.params?.refundPolicy);
         settings.refund_policy = route?.params?.refundPolicy;
       }
       if (route?.params?.homeAway) {
@@ -170,25 +167,22 @@ export default function EditChallenge({ navigation, route }) {
 
         //  settings.home_team = route?.params?.home_team;
         //  settings.away_team = route?.params?.away_team;
-
-        console.log('setting:=> ', settings);
       }
       if (route?.params?.gameDuration) {
         settings.game_duration = route?.params?.gameDuration;
       }
       if (route?.params?.gameGeneralRules) {
-        console.log(
-          'route?.params?.gameGeneralRules',
-          route?.params?.gameGeneralRules,
-        );
         settings.general_rules = route?.params?.gameGeneralRules;
         settings.special_rules = route?.params?.gameSpecialRules;
       }
       if (route?.params?.refereeSetting) {
+        console.log('route?.params?.refereeSetting', route?.params?.refereeSetting);
         settings.responsible_for_referee = route?.params?.refereeSetting;
+        settings.min_referee = route?.params?.refereeSetting?.who_secure?.length;
       }
       if (route?.params?.scorekeeperSetting) {
         settings.responsible_for_scorekeeper = route?.params?.scorekeeperSetting;
+        settings.min_scorekeeper = route?.params?.scorekeeperSetting?.who_secure?.length;
       }
 
       setChallengeObj(settings);
@@ -353,7 +347,7 @@ export default function EditChallenge({ navigation, route }) {
   };
 
   const updateChallengeDetail = () => {
-    setloading(true);
+     setloading(true);
     const body = {
       ...challengeObj,
       total_game_fee: feeObj?.total_game_fee,
@@ -763,8 +757,8 @@ export default function EditChallenge({ navigation, route }) {
             });
           }}
         />
-            <TCThickDivider />
 
+            <TCThickDivider />
             {Number(challengeObj?.game_fee?.fee) !== 0
           && challengeObj?.challenger === authContext.entity.uid && (
             <View>
@@ -863,7 +857,7 @@ export default function EditChallenge({ navigation, route }) {
           onEditPress={() => {
             navigation.navigate('RefereesSetting', {
               settingObj: challengeObj,
-              comeFrom: 'AlterChallengeScreen',
+              comeFrom: 'EditChallenge',
               sportName,
             });
           }}
@@ -917,7 +911,7 @@ export default function EditChallenge({ navigation, route }) {
           onEditPress={() => {
             navigation.navigate('ScorekeepersSetting', {
               settingObj: challengeObj,
-              comeFrom: 'AlterChallengeScreen',
+              comeFrom: 'EditChallenge',
               sportName,
             });
           }}

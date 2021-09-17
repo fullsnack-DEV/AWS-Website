@@ -314,9 +314,10 @@ const Referees = ({
   );
 
   const renderBookRefereeButton = useMemo(() => {
-    console.log('Book referee');
+    console.log('Book referee,', gameData);
     if (
-      isAdmin
+        gameData.invited_to === authContext.entity.uid
+       // isAdmin
       && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status)
     ) {
       return (

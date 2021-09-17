@@ -84,8 +84,10 @@ export default function EditChallengeAvailability({ navigation }) {
             console.log('filterData', filterData);
 
             editSlots(entityRole, uid, filterData, authContext).then(() => {
-              setLoading(false)
-              navigation.goBack();
+              setTimeout(() => {
+                setLoading(false)
+                navigation.goBack();
+            }, 5000);
             }).catch((error) => {
               setLoading(false)
               console.log('Error ::--', error);

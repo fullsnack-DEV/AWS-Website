@@ -1,9 +1,9 @@
 const RefereeReservationStatus = {
   // Invite Notification
   offered: 'offered',
+  approved: 'approved',
   changeRequest: 'changeRequest',
   accepted: 'accepted',
-  confirmed: 'confirmed',
   restored: 'restored',
   declined: 'declined',
   cancelled: 'cancelled',

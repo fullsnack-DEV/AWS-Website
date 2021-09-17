@@ -298,7 +298,8 @@ const Scorekeepers = ({
     console.log('Book scorekeeper');
 
     if (
-      isAdmin
+      // isAdmin
+      gameData.invited_to === authContext.entity.uid
       && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status)
     ) {
       return (

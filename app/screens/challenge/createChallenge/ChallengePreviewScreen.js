@@ -79,7 +79,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
   const [challengeData, setChallengeData] = useState(
     route?.params?.challengeObj?.length > 1
-      ? route?.params?.challengeObj
+      ? route?.params?.challengeObj[0]
       : route?.params?.challengeObj,
   );
   const [oldVersion, setOldVersion] = useState();
@@ -514,6 +514,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         || checkSenderOrReceiver(challengeData) === 'receiver')
       && selectedTab === 0
       && (challengeData?.status === ReservationStatus.accepted
+        || challengeData?.status === ReservationStatus.restored
         || (challengeData?.status === ReservationStatus.declined
           && challengeData?.version !== 2))
     ) {

@@ -21,6 +21,7 @@ export const getRefereeReservationDetail = (reservationID, callerID, authContext
     if (RefereeReservationStatus.pendingpayment === response.payload[0].status
           || RefereeReservationStatus.accepted === response.payload[0].status
           || RefereeReservationStatus.cancelled === response.payload[0].status
+          || RefereeReservationStatus.approved === response.payload[0].status
           || RefereeReservationStatus.offered === response.payload[0].status
     ) {
       Obj.reservationObj = response.payload[0]
@@ -47,8 +48,8 @@ export const getRefereeReservationDetail = (reservationID, callerID, authContext
         Obj.screenName = 'RefereeReservationScreen'
         return Obj
       }
-      Obj.reservationObj = response.payload
-      Obj.screenName = 'AlterRefereeScreen'
+      Obj.reservationObj = response.payload[0]
+      Obj.screenName = 'RefereeReservationScreen'
       return Obj
     }
   }).catch((e) => {

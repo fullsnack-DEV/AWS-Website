@@ -3,7 +3,6 @@ const ScorekeeperReservationStatus = {
   offered: 'offered',
   changeRequest: 'changeRequest',
   accepted: 'accepted',
-  confirmed: 'confirmed',
   restored: 'restored',
   declined: 'declined',
   cancelled: 'cancelled',

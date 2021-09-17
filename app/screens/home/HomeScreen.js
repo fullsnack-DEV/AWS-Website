@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable no-empty */
 /* eslint-disable no-console */
 /* eslint-disable react-native/no-raw-text */
@@ -46,7 +47,6 @@ import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import {
-  getGameSlots,
   getRefereedMatch,
   getRefereeReviewData,
   getScroreboardGameDetails,
@@ -79,6 +79,7 @@ import {
 } from '../../api/Groups';
 import * as RefereeUtils from '../referee/RefereeUtility';
 import * as Utils from '../challenge/ChallengeUtility';
+
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import UserInfo from '../../components/Home/User/UserInfo';
@@ -142,7 +143,9 @@ import UserHomeHeader from '../../components/Home/UserHomeHeader';
 import TCProfileButton from '../../components/TCProfileButton';
 import UserProfileScreenShimmer from '../../components/shimmer/account/UserProfileScreenShimmer';
 import TCGameCard from '../../components/TCGameCard';
-import { getSetting } from '../challenge/manageChallenge/settingUtility';
+import * as settingUtils from '../challenge/manageChallenge/settingUtility';
+import { postElasticSearch } from '../../api/elasticSearch';
+// import { getSetting } from '../challenge/manageChallenge/settingUtility';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews'];
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews'];
@@ -186,7 +189,8 @@ const history_Data = [
 const HomeScreen = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
   const galleryRef = useRef();
-  const gameListModalRef = useRef(null);
+  const gameListRefereeModalRef = useRef(null);
+  const gameListScorekeeperModalRef = useRef(null);
 
   const imageUploadContext = useContext(ImageUploadContext);
   const isFocused = useIsFocused();
@@ -278,7 +282,10 @@ const HomeScreen = ({ navigation, route }) => {
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
   const [refereeOfferModalVisible, setRefereeOfferModalVisible] = useState();
-  const [scorekeeperOfferModalVisible, setScorekeeperOfferModalVisible] = useState();
+  const [
+    scorekeeperOfferModalVisible,
+    setScorekeeperOfferModalVisible,
+  ] = useState();
 
   const [
     isDoubleSportTeamCreatedVisible,
@@ -604,12 +611,13 @@ const HomeScreen = ({ navigation, route }) => {
           setFirstTimeLoading(false);
           console.log('authContext.entity.role:::-->', authContext.entity.role);
 
-          getSetting(
-            uid,
-            authContext.entity.role,
-            groupDetails.sport,
-            authContext,
-          )
+          settingUtils
+            .getSetting(
+              uid,
+              authContext.entity.role,
+              groupDetails.sport,
+              authContext,
+            )
             .then((res3) => {
               setSettingObject(res3);
               console.log('res3 setting:::=>', res3);
@@ -1240,23 +1248,24 @@ const HomeScreen = ({ navigation, route }) => {
           })
           .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
 
-          getSetting(
+        settingUtils
+          .getSetting(
             route?.params?.uid || entity.uid,
             'scorekeeper',
             scorekeeperInObject.sport_name,
             authContext,
           )
-            .then((response) => {
-              setScorekeeperSettingObject(response);
-              console.log('res3:::=>', response);
-            })
-            .catch(() => {
-              setFirstTimeLoading(false);
-              setTimeout(() => {
-                Alert.alert(strings.alertmessagetitle, strings.defaultError);
-              }, 10);
-              // navigation.goBack();
-            });
+          .then((response) => {
+            setScorekeeperSettingObject(response);
+            console.log('res3:::=>', response);
+          })
+          .catch(() => {
+            setFirstTimeLoading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, strings.defaultError);
+            }, 10);
+            // navigation.goBack();
+          });
       } else {
         navigation.navigate('RegisterScorekeeper');
       }
@@ -1350,12 +1359,13 @@ const HomeScreen = ({ navigation, route }) => {
           })
           .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
 
-        getSetting(
-          route?.params?.uid || entity.uid,
-          'referee',
-          refereeInObject.sport_name,
-          authContext,
-        )
+        settingUtils
+          .getSetting(
+            route?.params?.uid || entity.uid,
+            'referee',
+            refereeInObject.sport_name,
+            authContext,
+          )
           .then((response) => {
             setRefereeSettingObject(response);
             console.log('res3:::=>', response);
@@ -2583,10 +2593,10 @@ const HomeScreen = ({ navigation, route }) => {
     let b = [];
     console.log('Auth:=>', authContext.entity);
     console.log('Team data:::::=>', currentUserData);
-     a = authContext?.entity?.obj?.referee_data?.filter(
+    a = authContext?.entity?.obj?.referee_data?.filter(
       (obj) => obj.sport_name.toLowerCase() === currentUserData?.sport?.toLowerCase(),
     );
-     b = authContext?.entity?.obj?.scorekeeper_data?.filter(
+    b = authContext?.entity?.obj?.scorekeeper_data?.filter(
       (obj) => obj.sport_name.toLowerCase() === currentUserData?.sport?.toLowerCase(),
     );
 
@@ -3220,20 +3230,20 @@ const HomeScreen = ({ navigation, route }) => {
     </View>
   );
 
-const ModalScorekeeperHeader = () => (
-  <View style={styles.headerStyle}>
-    <View style={styles.handleStyle} />
-    <Text
-      style={{
-        fontFamily: fonts.RBold,
-        fontSize: 16,
-        color: colors.lightBlackColor,
-        marginLeft: 15,
-      }}>
-      Choose a game that you want to scorekeeper.
-    </Text>
-  </View>
-);
+  const ModalScorekeeperHeader = () => (
+    <View style={styles.headerStyle}>
+      <View style={styles.handleStyle} />
+      <Text
+        style={{
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
+          marginLeft: 15,
+        }}>
+        Choose a game that you want to scorekeeper.
+      </Text>
+    </View>
+  );
 
   const renderRefereeGames = useCallback(
     ({ item }) => (
@@ -3268,7 +3278,7 @@ const ModalScorekeeperHeader = () => (
             message = 'There is no available slot of an assistant referee who you can book in this game.';
           }
           if (message === '') {
-            gameListModalRef.current.close();
+            gameListRefereeModalRef.current.close();
             navigation.navigate('RefereeBookingDateAndTime', {
               gameData: item,
               settingObj: refereeSettingObject,
@@ -3293,15 +3303,15 @@ const ModalScorekeeperHeader = () => (
         cardWidth={'88%'}
         onPress={() => {
           console.log('Selected game:=>', item);
-            gameListModalRef.current.close();
-            navigation.navigate('ScorekeeperBookingDateAndTime', {
-              gameData: item,
-              settingObj: scorekeeperSettingObject,
-              userData: currentUserData,
-              isHirer: true,
-              navigationName: 'HomeScreen',
-              sportName,
-            });
+          gameListScorekeeperModalRef.current.close();
+          navigation.navigate('ScorekeeperBookingDateAndTime', {
+            gameData: item,
+            settingObj: scorekeeperSettingObject,
+            userData: currentUserData,
+            isHirer: true,
+            navigationName: 'HomeScreen',
+            sportName,
+          });
         }}
       />
     ),
@@ -3336,6 +3346,222 @@ const ModalScorekeeperHeader = () => (
     keyExtractor: (index) => index.toString(),
     ListEmptyComponent: listEmptyComponent,
     style: { marginTop: 15 },
+  };
+
+  const getGamesForReferee = async (refereeId, teamId) => {
+    const gameListWithFilter = {
+      query: {
+        bool: {
+          must: [
+            {
+              bool: {
+                should: [
+                  { term: { 'home_team.keyword': teamId } },
+                  { term: { 'away_team.keyword': teamId } },
+                ],
+              },
+            },
+            {
+              range: {
+                end_datetime: {
+                  gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+                },
+              },
+            },
+            { term: { 'status.keyword': 'accepted' } },
+            { term: { 'challenge_referee.who_secure.responsible_team_id.keyword': teamId } },
+          ],
+        },
+      },
+      sort: [
+        { start_datetime: 'asc' },
+      ],
+    };
+
+    console.log('Json string:=>', JSON.stringify(gameListWithFilter));
+    const refereeList = {
+      query: {
+        bool: {
+          must: [
+            { term: { 'participants.entity_id.keyword': refereeId } },
+            {
+              range: {
+                end_datetime: {
+                  gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+                },
+              },
+            },
+            { term: { 'cal_type.keyword': 'event' } },
+            { match: { blocked: true } },
+          ],
+        },
+      },
+    };
+
+    const promiseArr = [
+      postElasticSearch(gameListWithFilter, 'gameindex'),
+      postElasticSearch(refereeList, 'calendarindex'),
+    ];
+
+    return Promise.all(promiseArr)
+      .then(([gameList, eventList]) => {
+        setloading(false);
+        console.log('gameList', gameList);
+        console.log('refereeList', eventList);
+
+        for (const game of gameList) {
+          game.isAvailable = true;
+          eventList.forEach((slot) => {
+            // check if slot start time comes between the game time
+            if (
+              game.start_datetime <= slot.start_datetime
+              && game.end_datetime >= slot.start_datetime
+            ) {
+              game.isAvailable = false;
+            }
+
+            // check if slot end time comes between the game time
+            if (
+              game.start_datetime <= slot.end_datetime
+              && game.end_datetime >= slot.end_datetime
+            ) {
+              game.isAvailable = false;
+            }
+
+            // Check if game is under the blocked time
+            if (
+              slot.start_datetime <= game.start_datetime
+              && slot.end_datetime >= game.start_datetime
+            ) {
+              game.isAvailable = false;
+            }
+          });
+        }
+
+       return Utility.getGamesList(gameList).then((gamedata) => gamedata)
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.messages);
+        }, 10);
+      });
+    // return postElasticSearch(gameListWithFilter, 'gameindex')
+    // .then((games) => games)
+    // .catch((e) => {
+    //   setloading(false);
+    //   setTimeout(() => {
+    //     Alert.alert(strings.alertmessagetitle, e.messages);
+    //   }, 10);
+    // });
+  };
+
+  const getGamesForScorekeeper = async (scorekeeperId, teamId) => {
+    const gameListWithFilter = {
+      query: {
+        bool: {
+          must: [
+            {
+              bool: {
+                should: [
+                  { term: { 'home_team.keyword': teamId } },
+                  { term: { 'away_team.keyword': teamId } },
+                ],
+              },
+            },
+            {
+              range: {
+                end_datetime: {
+                  gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+                },
+              },
+            },
+            { term: { 'status.keyword': 'accepted' } },
+            { term: { 'challenge_scorekeeper.who_secure.responsible_team_id.keyword': teamId } },
+          ],
+        },
+      },
+      sort: [
+        { start_datetime: 'asc' },
+      ],
+    };
+
+    console.log('Json string:=>', JSON.stringify(gameListWithFilter));
+    const scorekeeperList = {
+      query: {
+        bool: {
+          must: [
+            { term: { 'participants.entity_id.keyword': scorekeeperId } },
+            {
+              range: {
+                end_datetime: {
+                  gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+                },
+              },
+            },
+            { term: { 'cal_type.keyword': 'event' } },
+            { match: { blocked: true } },
+          ],
+        },
+      },
+    };
+
+    const promiseArr = [
+      postElasticSearch(gameListWithFilter, 'gameindex'),
+      postElasticSearch(scorekeeperList, 'calendarindex'),
+    ];
+
+    return Promise.all(promiseArr)
+      .then(([gameList, eventList]) => {
+        setloading(false);
+        console.log('gameList', gameList);
+        console.log('scorekeeperList', eventList);
+
+        for (const game of gameList) {
+          game.isAvailable = true;
+          eventList.forEach((slot) => {
+            // check if slot start time comes between the game time
+            if (
+              game.start_datetime <= slot.start_datetime
+              && game.end_datetime >= slot.start_datetime
+            ) {
+              game.isAvailable = false;
+            }
+
+            // check if slot end time comes between the game time
+            if (
+              game.start_datetime <= slot.end_datetime
+              && game.end_datetime >= slot.end_datetime
+            ) {
+              game.isAvailable = false;
+            }
+
+            // Check if game is under the blocked time
+            if (
+              slot.start_datetime <= game.start_datetime
+              && slot.end_datetime >= game.start_datetime
+            ) {
+              game.isAvailable = false;
+            }
+          });
+        }
+
+       return Utility.getGamesList(gameList).then((gamedata) => gamedata)
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.messages);
+        }, 10);
+      });
+    // return postElasticSearch(gameListWithFilter, 'gameindex')
+    // .then((games) => games)
+    // .catch((e) => {
+    //   setloading(false);
+    //   setTimeout(() => {
+    //     Alert.alert(strings.alertmessagetitle, e.messages);
+    //   }, 10);
+    // });
   };
 
   return (
@@ -3398,64 +3624,66 @@ const ModalScorekeeperHeader = () => (
             headers.caller_id = currentUserData?.group_id;
 
             const promiseArr = [
-              getGameSlots(
-                'referees',
+              // getGameSlots(
+              //   'referees',
+              //   authContext?.entity?.uid,
+              //   `status=accepted&sport=${currentUserData?.sport}&refereeDetail=true`,
+              //   headers,
+              //   authContext,
+              // ),
+              getGamesForReferee(
                 authContext?.entity?.uid,
-                `status=accepted&sport=${currentUserData?.sport}&refereeDetail=true`,
-                headers,
-                authContext,
+                currentUserData?.group_id,
               ),
-              getSetting(
-                authContext.entity.uid,
+              settingUtils.getSetting(
+                authContext?.entity?.uid,
                 'referee',
                 currentUserData?.sport,
                 authContext,
               ),
             ];
 
-            Promise.all(promiseArr)
-              .then(([gameList, refereeSetting]) => {
-                if (gameList) {
-                  setMatchData([...gameList?.payload]);
-                }
-
-                if (refereeSetting) {
-                  setRefereeSettingObject(refereeSetting);
-                  if (
-                    refereeSetting?.refereeAvailibility
-                    && refereeSetting?.game_fee
-                    && refereeSetting?.refund_policy
-                    && refereeSetting?.available_area
-                  ) {
-                    gameListModalRef.current.open();
-                  } else {
-                    Alert.alert('You can\'t send offer, please configure your referee setting first.')
-                  }
-                }
-                setloading(false);
-              })
-              .catch((e) => {
-                setloading(false);
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, e.messages);
-                }, 10);
-              });
+            Promise.all(promiseArr).then(([gameList, refereeSetting]) => {
+              setloading(false);
+              console.log('Game slots:=>', gameList);
+              console.log('refereeSetting:=>', refereeSetting);
+              if (gameList.length > 0) {
+                setMatchData([...gameList]);
+              }
+              if (
+                refereeSetting?.refereeAvailibility
+                && refereeSetting?.game_fee
+                && refereeSetting?.refund_policy
+                && refereeSetting?.available_area
+              ) {
+                gameListRefereeModalRef.current.open();
+                setRefereeSettingObject(refereeSetting);
+              } else {
+                Alert.alert(
+                  'You can\'t send offer, please configure your referee setting first.',
+                );
+              }
+            });
           } else if (offerOpetions()[index] === strings.scorekeeperOffer) {
             // Alert('scorekeeper offer');
-            // gameListModalRef.current.open();
+            // gameListScorekeeperModalRef.current.open();
             setloading(true);
             const headers = {};
             headers.caller_id = currentUserData?.group_id;
 
             const promiseArr = [
-              getGameSlots(
-                'scorekeepers',
+              // getGameSlots(
+              //   'scorekeepers',
+              //   authContext?.entity?.uid,
+              //   `status=accepted&sport=${currentUserData?.sport}&scorekeeperDetail=true`,
+              //   headers,
+              //   authContext,
+              // ),
+              getGamesForScorekeeper(
                 authContext?.entity?.uid,
-                `status=accepted&sport=${currentUserData?.sport}&scorekeeperDetail=true`,
-                headers,
-                authContext,
+                currentUserData?.group_id,
               ),
-              getSetting(
+              settingUtils.getSetting(
                 authContext.entity.uid,
                 'scorekeeper',
                 currentUserData?.sport,
@@ -3477,9 +3705,11 @@ const ModalScorekeeperHeader = () => (
                     && scorekeeperSetting?.refund_policy
                     && scorekeeperSetting?.available_area
                   ) {
-                    gameListModalRef.current.open();
+                    gameListScorekeeperModalRef.current.open();
                   } else {
-                    Alert.alert('You can\'t send offer, please configure your scorekeeper setting first.')
+                    Alert.alert(
+                      'You can\'t send offer, please configure your scorekeeper setting first.',
+                    );
                   }
                 }
                 setloading(false);
@@ -4761,7 +4991,7 @@ const ModalScorekeeperHeader = () => (
               setRefereeOfferModalVisible(false);
             }
           }}
-          ref={gameListModalRef}
+          ref={gameListRefereeModalRef}
           HeaderComponent={ModalRefereeHeader}
           flatListProps={flatListRefereeProps}
         />
@@ -4790,7 +5020,7 @@ const ModalScorekeeperHeader = () => (
               setScorekeeperOfferModalVisible(false);
             }
           }}
-          ref={gameListModalRef}
+          ref={gameListScorekeeperModalRef}
           HeaderComponent={ModalScorekeeperHeader}
           flatListProps={flatListScorekeeperProps}
         />
@@ -4898,7 +5128,6 @@ const ModalScorekeeperHeader = () => (
             </Text>
             <Text style={styles.locationText}>Challenge</Text>
             <Text style={styles.locationText}> </Text>
-
           </View>
           <TCThinDivider width={'100%'} marginBottom={15} />
           <TouchableWithoutFeedback
@@ -4961,13 +5190,13 @@ const ModalScorekeeperHeader = () => (
               setSelectedChallengeOption(1);
 
               setloading(true);
-              getSetting(
-                authContext?.entity?.uid,
-                authContext.entity.role === 'user' ? 'player' : 'team',
-                currentUserData.sport,
-                authContext,
-              )
-
+              settingUtils
+                .getSetting(
+                  authContext?.entity?.uid,
+                  authContext.entity.role === 'user' ? 'player' : 'team',
+                  currentUserData.sport,
+                  authContext,
+                )
                 .then((response) => {
                   setloading(false);
                   const obj = response;
@@ -4991,9 +5220,11 @@ const ModalScorekeeperHeader = () => (
                       groupObj: currentUserData,
                     });
                   } else {
-                    Alert.alert(
-                      'Please complete your all setting before send a challenge invitation.',
-                    );
+                    setTimeout(() => {
+                      Alert.alert(
+                        'Please complete your all setting before send a challenge invitation.',
+                      );
+                    }, 100);
                   }
                 })
                 .catch((e) => {

@@ -52,6 +52,7 @@ import TCTabView from '../../../components/TCTabView';
 import CurruentRefereeReservationView from './CurrentRefereeReservationView';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
+// import RefereeReservationTitle from '../../../components/reservations/RefereeReservationTitle';
 
 let entity = {};
 const scroll = React.createRef();
@@ -879,6 +880,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
               </View>
             </View>
           </View>
+          {/* <RefereeReservationTitle reservationObject={bodyParams}/> */}
           {/* Status declined */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === RefereeReservationStatus.declined && (

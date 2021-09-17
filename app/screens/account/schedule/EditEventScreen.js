@@ -34,7 +34,7 @@ import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal
 import EventSearchLocation from '../../../components/Schedule/EventSearchLocation';
 import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import { editEvent, getEvents } from '../../../api/Schedule';
+import { editEvent } from '../../../api/Schedule';
 import EventTextInputItem from '../../../components/Schedule/EventTextInputItem';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
@@ -427,12 +427,13 @@ export default function EditEventScreen({ navigation, route }) {
               editEvent(entityRole, u_id, params, authContext)
                 .then((response) => {
                   console.log('Edit Response :-', response);
-                  getEvents(entityRole, u_id, authContext);
                 })
                 .then((response) => {
-                  setloading(false);
-                  navigation.goBack();
                   console.log('Get Response :-', response);
+                  setTimeout(() => {
+                    setloading(false)
+                    navigation.goBack();
+                }, 5000);
                 })
                 .catch((e) => {
                   setloading(false);

@@ -477,9 +477,11 @@ const PlayInModule = ({
                   groupObj: currentUserData,
                 });
               } else {
-                Alert.alert(
-                  'Please complete your all setting before send a challenge invitation.',
-                );
+                setTimeout(() => {
+                  Alert.alert(
+                    'Please complete your all setting before send a challenge invitation.',
+                  );
+                }, 100);
               }
             })
             .catch((e) => {

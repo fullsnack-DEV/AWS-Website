@@ -136,8 +136,10 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
 
     if (route?.params?.isHirer) {
       bodyParams.team_id = userData?.user_id ?? userData?.group_id;
+      bodyParams.is_offer = true;
     } else {
       bodyParams.source = route?.params?.paymentMethod?.id;
+      bodyParams.is_offer = true;
     }
 
     delete bodyParams.sport;

@@ -52,17 +52,16 @@ export const getSetting = async (entityID, entityType, sportName, authContext) =
         });
   }
   if (entityType === 'referee') {
-    console.log(`entityID === authContext.entity.uid${ entityID }::${ authContext.entity.uid}`);
     if (entityID === authContext.entity.uid) {
       obj = (authContext?.user?.referee_data ?? []).filter(
-          (o) => o.sport_name.toLowerCase() === sportName.toLowerCase(),
+          (o) => o?.sport_name?.toLowerCase() === sportName?.toLowerCase(),
         )[0]?.setting ?? {};
         return obj
     }
        return getUserDetails(entityID, authContext)
         .then((response) => {
           obj = (response?.payload?.referee_data ?? []).filter(
-            (o) => o.sport_name.toLowerCase() === sportName.toLowerCase(),
+            (o) => o?.sport_name?.toLowerCase() === sportName?.toLowerCase(),
           )[0]?.setting ?? {}
           return obj
         })

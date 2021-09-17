@@ -177,6 +177,8 @@ import ScorekeeperAgreementScreen from '../screens/challenge/createChallenge/Sco
 import RefereeAgreementScreen from '../screens/challenge/createChallenge/RefereeAgreementScreen';
 import RefereeInviteAgreementScreen from '../screens/challenge/createChallenge/RefereeInviteAgreementScreen';
 import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperInviteAgreementScreen';
+import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
+import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -605,7 +607,16 @@ const HomeNavigator = () => (
       name="RefereeSelectMatch"
       component={RefereeSelectMatch}
       options={{
-        headerShown: false,
+        title: 'Choose a match',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -1015,6 +1026,38 @@ const HomeNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+            name="RefereeApprovalScreen"
+            component={RefereeApprovalScreen}
+            options={{
+              title: 'Referee Approval Request',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+            name="ScorekeeperApprovalScreen"
+            component={ScorekeeperApprovalScreen}
+            options={{
+              title: 'Scorekeeper Approval Request',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
     <Stack.Screen
       name="GroupSettingPrivacyScreen"
       component={GroupSettingPrivacyScreen}
@@ -2047,7 +2090,16 @@ const HomeNavigator = () => (
       name="ScorekeeperSelectMatch"
       component={ScorekeeperSelectMatch}
       options={{
-        headerShown: false,
+        title: 'Choose a match',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen

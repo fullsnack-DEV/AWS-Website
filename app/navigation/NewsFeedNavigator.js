@@ -76,6 +76,8 @@ import ScorekeeperAgreementScreen from '../screens/challenge/createChallenge/Sco
 import RefereeAgreementScreen from '../screens/challenge/createChallenge/RefereeAgreementScreen';
 import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperInviteAgreementScreen';
 import RefereeInviteAgreementScreen from '../screens/challenge/createChallenge/RefereeInviteAgreementScreen';
+import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
+import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 
 const Stack = createStackNavigator();
 
@@ -259,19 +261,37 @@ const NewsFeedNavigator = () => (
           }}
       />
     <Stack.Screen
-          name="RefereeSelectMatch"
-          component={RefereeSelectMatch}
-          options={{
-            headerShown: false,
-          }}
-      />
+      name="RefereeSelectMatch"
+      component={RefereeSelectMatch}
+      options={{
+        title: 'Choose a match',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
-          name="ScorekeeperSelectMatch"
-          component={ScorekeeperSelectMatch}
-          options={{
-            headerShown: false,
-          }}
-      />
+      name="ScorekeeperSelectMatch"
+      component={ScorekeeperSelectMatch}
+      options={{
+        title: 'Choose a match',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
           name="BookRefereeSuccess"
           component={ BookRefereeSuccess }
@@ -366,7 +386,38 @@ const NewsFeedNavigator = () => (
               },
             }}
         />
-
+    <Stack.Screen
+            name="RefereeApprovalScreen"
+            component={RefereeApprovalScreen}
+            options={{
+              title: 'Referee Approval Request',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+            name="ScorekeeperApprovalScreen"
+            component={ScorekeeperApprovalScreen}
+            options={{
+              title: 'Scorekeeper Approval Request',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
     <Stack.Screen
           name="MembersProfileScreen"
           component={ MembersProfileScreen }

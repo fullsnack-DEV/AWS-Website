@@ -5,12 +5,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import ReservationStatus from '../../Constants/ReservationStatus';
+import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 
 export default function ChallengeStatusTitle({
   isSender,
-
   status,
-
   // receiverName,
   offerExpiry,
   challengeObj,
@@ -128,7 +127,22 @@ export default function ChallengeStatusTitle({
           )}
         </View>
       )}
-
+      {isSender
+        && (status === RefereeReservationStatus.approved) && (
+          <View>
+            <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
+              APPROVED
+            </Text>
+          </View>
+        )}
+      {!isSender
+        && (status === RefereeReservationStatus.approved) && (
+          <View>
+            <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
+              APPROVED
+            </Text>
+          </View>
+        )}
       {isSender
         && (status === ReservationStatus.accepted
           || status === ReservationStatus.restored
