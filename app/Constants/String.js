@@ -567,6 +567,7 @@ const strings = {
   reservationRequestDeclined: 'Reservation request declined',
   reservationRequestCancelled: 'Reservation request cancelled',
   reservationRequestRestored: 'Reservation request restored',
+  reservationRequestApproved: 'Reservation request approved',
 
   reservationAlterRequestAccepted: 'Alteration request accepted',
   reservationAlterRequestDeclined: 'Alteration request declined',

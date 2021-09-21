@@ -262,7 +262,7 @@ const approveDisapproveButton = () => (<View>
                       fontSize: 16,
                       color: colors.greenColorCard,
                     }}>
-              {'Accepted'}
+              {'Approved'}
             </Text>}
 
             {type === 'expired' && <Text

@@ -154,7 +154,10 @@ function NotificationsListScreen({ navigation }) {
               navigation.navigate(obj.screenName, {
                 reservationObj,
               });
-            } else if (reservationObj?.approved_by === authContext.entity.uid && reservationObj.status === RefereeReservationStatus.accepted) {
+            } else if (
+              reservationObj?.approved_by === authContext.entity.uid
+              && reservationObj.status === RefereeReservationStatus.accepted
+            ) {
               navigation.navigate('RefereeApprovalScreen', {
                 type: 'accepted',
                 reservationObj,
@@ -171,10 +174,16 @@ function NotificationsListScreen({ navigation }) {
               reservationObj.status === RefereeReservationStatus.approved
               && reservationObj?.is_offer
             ) {
-              navigation.navigate('RefereeApprovalScreen', {
-                type: 'accept',
-                reservationObj,
-              });
+              if (authContext.entity.uid === reservationObj.initiated_by) {
+                navigation.navigate(obj.screenName, {
+                  reservationObj,
+                });
+              } else {
+                navigation.navigate('RefereeApprovalScreen', {
+                  type: 'accept',
+                  reservationObj,
+                });
+              }
             } else if (
               reservationObj.status === RefereeReservationStatus.approved
               && !reservationObj?.is_offer
@@ -193,9 +202,17 @@ function NotificationsListScreen({ navigation }) {
                 reservationObj,
               });
             } else {
-              navigation.navigate(obj.screenName, {
-                reservationObj,
-              });
+              console.log('reservationObj', reservationObj.status);
+              if (authContext.entity.uid === reservationObj.approved_by) {
+                navigation.navigate('RefereeApprovalScreen', {
+                  type: 'accepted',
+                  reservationObj,
+                });
+              } else {
+                navigation.navigate(obj.screenName, {
+                  reservationObj,
+                });
+              }
             }
             setloading(false);
           })
