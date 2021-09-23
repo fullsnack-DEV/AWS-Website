@@ -3251,32 +3251,32 @@ const HomeScreen = ({ navigation, route }) => {
         data={item}
         cardWidth={'88%'}
         onPress={() => {
-          const game = item;
-          console.log('Selected game:=>', item);
-          let isSameReferee = false;
-          const sameRefereeCount = game?.referees?.filter(
-            (gameReferee) => gameReferee?.user_id === currentUserData?.user_id,
-          );
-          if (sameRefereeCount?.length > 0) isSameReferee = true;
-          const isCheif = currentUserData?.chief_referee;
-          const cheifCnt = game?.referees?.filter(
-            (chal_ref) => chal_ref?.chief_referee,
-          )?.length;
-          const assistantCnt = game?.referees?.filter(
-            (chal_ref) => !chal_ref?.chief_referee,
-          )?.length;
-          let message = '';
-          if (isSameReferee) {
-            message = 'This referee is already booked for this game.';
-          } else if (!game.isAvailable) {
-            message = 'There is no available slot of a referee who you can book in this game.';
-          } else if ((game?.referees?.count ?? 0) >= 3) {
-            message = 'There is no available slot of a referee who you can book in this game.';
-          } else if (isCheif && cheifCnt >= 1) {
-            message = 'There is no available slot of a chief referee who you can book in this game.';
-          } else if (!isCheif && assistantCnt >= 2) {
-            message = 'There is no available slot of an assistant referee who you can book in this game.';
-          }
+          // const game = item;
+          // console.log('Selected game:=>', item);
+          // let isSameReferee = false;
+          // const sameRefereeCount = game?.referees?.filter(
+          //   (gameReferee) => gameReferee?.user_id === currentUserData?.user_id,
+          // );
+          // if (sameRefereeCount?.length > 0) isSameReferee = true;
+          // const isCheif = currentUserData?.chief_referee;
+          // const cheifCnt = game?.referees?.filter(
+          //   (chal_ref) => chal_ref?.chief_referee,
+          // )?.length;
+          // const assistantCnt = game?.referees?.filter(
+          //   (chal_ref) => !chal_ref?.chief_referee,
+          // )?.length;
+          const message = '';
+          // if (isSameReferee) {
+          //   message = 'This referee is already booked for this game.';
+          // } else if (!game.isAvailable) {
+          //   message = 'There is no available slot of a referee who you can book in this game.';
+          // } else if ((game?.referees?.count ?? 0) >= 3) {
+          //   message = 'There is no available slot of a referee who you can book in this game.';
+          // } else if (isCheif && cheifCnt >= 1) {
+          //   message = 'There is no available slot of a chief referee who you can book in this game.';
+          // } else if (!isCheif && assistantCnt >= 2) {
+          //   message = 'There is no available slot of an assistant referee who you can book in this game.';
+          // }
           if (message === '') {
             gameListRefereeModalRef.current.close();
             navigation.navigate('RefereeBookingDateAndTime', {

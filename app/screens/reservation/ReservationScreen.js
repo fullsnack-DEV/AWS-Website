@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Alert,
   FlatList,
+  SafeAreaView,
 } from 'react-native';
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -132,6 +133,8 @@ const keyExtractor = useCallback(
             keyExtractor={keyExtractor}
             renderItem={matchReservationView}
             style={{ paddingTop: 15 }}
+            ListFooterComponent={<SafeAreaView forceInset={{ bottom: 'always' }} />}
+
             /> }
         </View>
         <View tabLabel='Past' style={{ flex: 1 }}>
@@ -147,7 +150,7 @@ const keyExtractor = useCallback(
                       keyExtractor={keyExtractor}
                       renderItem={matchReservationView}
                       style={{ paddingTop: 15 }}
-
+                      ListFooterComponent={<SafeAreaView forceInset={{ bottom: 'always' }} />}
                    />}
         </View>
       </TCScrollableTabs>

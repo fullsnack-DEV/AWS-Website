@@ -12,7 +12,7 @@
     "lint:fix": "eslint --fix .",
     "android:dev": "ENVFILE=.env.dev react-native run-android",
     "android:staging": "ENVFILE=.env.staging react-native run-android",
-    "android:prod": "ENVFILE=.env.prod react-native run-android",
+    "android:prod": "ENVFILE=.env.production react-native run-android",
     "postinstall": "patch-package"
   },
   "dependencies": {

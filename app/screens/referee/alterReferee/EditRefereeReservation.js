@@ -74,7 +74,6 @@ export default function EditRefereeReservation({ navigation, route }) {
   const [maintabNumber, setMaintabNumber] = useState(0);
 
   const [defaultCard, setDefaultCard] = useState();
-  const [isDeclined, setIsDeclined] = useState(false);
   const { reservationObj } = route.params ?? {};
 
   useEffect(() => {
@@ -134,7 +133,7 @@ export default function EditRefereeReservation({ navigation, route }) {
 
   useLayoutEffect(() => {
     sectionEdited();
-  }, [bodyParams, editVenue, editRules, editReferee, editScorekeeper, editInfo, defaultCard, editMatch]);
+  }, [editVenue, editRules, editReferee, editScorekeeper, editInfo, defaultCard, editMatch]);
 
   const sectionEdited = () => {
     if (bodyParams && oldVersion) {
@@ -528,15 +527,6 @@ export default function EditRefereeReservation({ navigation, route }) {
         }, 20);
       });
   };
-  const getOpponentEntity = (obj) => {
-    if (obj?.referee?.user_id === entity.uid) {
-      if (obj?.initiated_by === obj?.game?.home_team?.user_id) {
-        return obj?.game?.away_team;
-      }
-      return obj?.game?.home_team;
-    }
-    return obj?.referee;
-  };
 
   const Title = ({ text, required }) => (
     <Text style={styles.titleText}>
@@ -562,52 +552,6 @@ export default function EditRefereeReservation({ navigation, route }) {
     return `${startDate} - ${endDate} (${duration})`;
   };
 
-  const acceptDeclineRefereeReservation = (
-    reservationID,
-    versionNo,
-    status,
-  ) => {
-    setloading(true);
-    acceptDeclineReservation(
-      'referees',
-      reservationID,
-      versionNo,
-      status,
-      {},
-      authContext,
-    )
-      .then((response) => {
-        setloading(false);
-        console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
-
-        if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: {
-              ...getOpponentEntity(bodyParams),
-              game_id: bodyParams?.game_id,
-              sport: bodyParams?.sport,
-            },
-            status: 'accept',
-          });
-        } else if (status === 'decline') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: getOpponentEntity(bodyParams),
-            status: 'decline',
-          });
-        } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: getOpponentEntity(bodyParams),
-            status: 'cancel',
-          });
-        }
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
   console.log('Default card:', defaultCard);
 
   return (
@@ -629,11 +573,11 @@ export default function EditRefereeReservation({ navigation, route }) {
         <View style={{ marginBottom: 15 }}>
           {(!isPendingRequestPayment
             || (bodyParams.status === RefereeReservationStatus.declined
-              && isDeclined)) && (
-                <Text style={styles.buttonText}>
-                  Please edit the reservation details below before you send the
-                  alteration request.
-                </Text>
+            )) && (
+              <Text style={styles.buttonText}>
+                Please edit the reservation details below before you send the
+                alteration request.
+              </Text>
           )}
           {/* <View
             style={{
@@ -730,7 +674,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                   style={{ marginLeft: 0, marginTop: 0 }}
                 />
 
-                {bodyParams?.referee?.user_id !== entity.uid && (
+                {/* {bodyParams?.referee?.user_id !== entity.uid && (
                   <TouchableOpacity
                     style={styles.editTouchArea}
                     hitSlop={Utility.getHitSlop(15)}
@@ -752,7 +696,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                       Edit
                     </Text>
                   </TouchableOpacity>
-                )}
+                )} */}
               </View>
 
               {bodyParams?.game && (
@@ -961,13 +905,14 @@ export default function EditRefereeReservation({ navigation, route }) {
             />
 
             {(!isPendingRequestPayment
-              || (bodyParams.status === RefereeReservationStatus.declined
-                && isDeclined)) && (
+              || bodyParams.status === RefereeReservationStatus.declined
+                ) && (
                   <TouchableOpacity
                 style={styles.editTouchArea}
                 hitSlop={Utility.getHitSlop(15)}
                 onPress={() => {
                   navigation.navigate('EditRefereeFeeScreen', {
+                    comeFrom: 'EditRefereeReservation',
                     editableAlter: true,
                     body: bodyParams,
                   });
@@ -1093,8 +1038,8 @@ export default function EditRefereeReservation({ navigation, route }) {
           {(((bodyParams.status === RefereeReservationStatus.accepted
             || bodyParams.status === RefereeReservationStatus.restored)
             && !isPendingRequestPayment)
-            || (bodyParams.status === RefereeReservationStatus.declined
-              && isDeclined)) && (
+            || bodyParams.status === RefereeReservationStatus.declined
+              ) && (
                 <View>
                   <TCGradientButton
                 title={strings.sendAlterRequest}
@@ -1167,70 +1112,7 @@ export default function EditRefereeReservation({ navigation, route }) {
               />
                 </View>
           )}
-          {bodyParams.status === RefereeReservationStatus.declined
-            && !isDeclined && (
-              <View>
-                <TCBorderButton
-                  title={strings.alterReservation}
-                  textColor={colors.grayColor}
-                  borderColor={colors.grayColor}
-                  height={40}
-                  shadow={true}
-                  marginTop={15}
-                  onPress={() => {
-                    setIsDeclined(true);
-                    setbodyParams(oldVersion);
-                    scroll.current.scrollTo(0, 0);
-                    // if (
-                    //   (bodyParams?.game?.status === GameStatus.accepted
-                    //     || bodyParams?.game?.status === GameStatus.reset)
-                    //   && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
-                    // ) {
-                    //   navigation.navigate('AlterRefereeScreen', {
-                    //     reservationObj: bodyParams,
-                    //   });
-                    // } else {
-                    //   Alert.alert(
-                    //     'Reservation cannot be change after game time passed or offer expired.',
-                    //   );
-                    // }
-                  }}
-                />
-                <TCBorderButton
-                  title={strings.cancelreservation}
-                  textColor={colors.whiteColor}
-                  borderColor={colors.grayColor}
-                  backgroundColor={colors.grayColor}
-                  height={40}
-                  shadow={true}
-                  marginBottom={15}
-                  marginTop={15}
-                  onPress={() => {
-                    if (
-                      bodyParams?.game?.status
-                      === (GameStatus.accepted || GameStatus.reset)
-                    ) {
-                      acceptDeclineRefereeReservation(
-                        bodyParams.reservation_id,
-                        bodyParams.version,
-                        'cancel',
-                      );
-                    } else if (
-                      bodyParams.start_datetime * 1000
-                      < new Date().getTime()
-                    ) {
-                      Alert.alert(
-                        'Reservation cannot be cancel after game time passed or offer expired.',
-                      );
-                    } else {
-                      Alert.alert(
-                        'Reservation can not be change after game has been started.',
-                      );
-                    }
-                  }}
-                />
-              </View>
-            )}
+
         </View>
       )}
       <SafeAreaView>

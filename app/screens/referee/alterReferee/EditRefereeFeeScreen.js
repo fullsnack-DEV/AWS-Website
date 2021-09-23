@@ -60,7 +60,7 @@ export default function EditRefereeFeeScreen({ navigation, route }) {
             onPress={() => {
               console.log('BASIC FEE::', basicFee);
               if (basicFee <= 0.0 || basicFee >= 1.0) {
-                navigation.navigate('EditRefereeReservation', {
+                navigation.navigate(route?.params?.comeFrom, {
                   reservationObj: {
                     ...bodyParams,
                     manual_fee: true,

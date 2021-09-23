@@ -1,9 +1,8 @@
 /* eslint-disable consistent-return */
 import React, { memo, useContext } from 'react';
 import {
- StyleSheet, View, Text, Image,
-  TouchableOpacity,
-} from 'react-native';
+ StyleSheet, View, Text, Image, TouchableOpacity,
+ } from 'react-native';
 import moment from 'moment';
 import AuthContext from '../../auth/context';
 
@@ -14,13 +13,14 @@ import ChallengeStatusTitle from '../challenge/ChallengeStatusTitle';
 import images from '../../Constants/ImagePath';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
+import RefereeReservationTitle from './RefereeReservationTitle';
 
 let entity = {};
 function ReservationStatusView({ data, onClick }) {
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
 
-  const getDate = () => data?.start_datetime * 1000
+  const getDate = () => data?.start_datetime * 1000;
 
   const checkSenderOrReceiver = (challengeObj) => {
     console.log('sender & receiver Obj', challengeObj);
@@ -186,7 +186,7 @@ function ReservationStatusView({ data, onClick }) {
 
   return (
     <View style={styles.reservationTitleView}>
-      <View >
+      <View>
         <Text
           style={{
             fontFamily: fonts.RMedium,
@@ -202,7 +202,6 @@ function ReservationStatusView({ data, onClick }) {
             fontSize: 25,
             color: colors.lightBlackColor,
             textAlign: 'center',
-
           }}>
           {moment(getDate()).format('DD')}
         </Text>
@@ -212,32 +211,49 @@ function ReservationStatusView({ data, onClick }) {
         {/* <Text style={[styles.reservationText, { color: getReservationStatus().color }]}>
           {getReservationStatus().status}
         </Text> */}
-        <ChallengeStatusTitle
-          challengeObj={data}
-          isSender={(data?.referee_id && checkSenderOrReceiverReferee(data) === 'sender') || (data?.scorekeeper_id && checkSenderOrReceiverScorekeeper(data) === 'sender') || (!data?.referee_id && !data?.scorekeeper_id && checkSenderOrReceiver(data) === 'sender') }
-          // isTeam={!!data?.home_team?.group_name}
-          teamName={data}
-          // receiverName={challengee?.full_name ?? challengee?.group_name}
-          offerExpiry={
-            ReservationStatus.offered === 'offered'
-            || ReservationStatus.offered === 'changeRequest'
-              ? new Date().getTime()
-              : ''
-          } // only if status offered
-          status={data?.status}
-        />
+        {data?.referee ? (
+          <RefereeReservationTitle reservationObject={data} showDesc={false} fontSize={16} containerStyle={{ margin: 0 }}/>
+        ) : (
+          <ChallengeStatusTitle
+            challengeObj={data}
+            isSender={
+              (data?.referee_id
+                && checkSenderOrReceiverReferee(data) === 'sender')
+              || (data?.scorekeeper_id
+                && checkSenderOrReceiverScorekeeper(data) === 'sender')
+              || (!data?.referee_id
+                && !data?.scorekeeper_id
+                && checkSenderOrReceiver(data) === 'sender')
+            }
+            // isTeam={!!data?.home_team?.group_name}
+            teamName={data}
+            // receiverName={challengee?.full_name ?? challengee?.group_name}
+            offerExpiry={
+              ReservationStatus.offered === 'offered'
+              || ReservationStatus.offered === 'changeRequest'
+                ? new Date().getTime()
+                : ''
+            } // only if status offered
+            status={data?.status}
+          />
+        )}
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {!data?.referee_id && !data?.scorekeeper_id && (
             <Text style={styles.matchText}>Match · {data.sport}</Text>
-        )}
+          )}
           {data?.referee_id && (
             <Text style={styles.matchText}>Referee · {data.game.sport}</Text>
-        )}
+          )}
           {data?.scorekeeper_id && (
-            <Text style={styles.matchText}>Scorekeeper · {data.game.sport}</Text>
-        )}
-          <Image source={images.nextArrow} style={{ height: 12, width: 8, marginLeft: 10 }}/>
+            <Text style={styles.matchText}>
+              Scorekeeper · {data.game.sport}
+            </Text>
+          )}
+          <Image
+            source={images.nextArrow}
+            style={{ height: 12, width: 8, marginLeft: 10 }}
+          />
         </View>
       </TouchableOpacity>
       <View style={styles.amountView}>
@@ -256,7 +272,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   amountView: {
-   // marginTop: 10,
+    // marginTop: 10,
     position: 'absolute',
     right: 10,
   },
@@ -272,6 +288,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 15,
   },
-
 });
 export default memo(ReservationStatusView);

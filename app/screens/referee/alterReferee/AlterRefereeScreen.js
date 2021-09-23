@@ -52,7 +52,7 @@ import TCTabView from '../../../components/TCTabView';
 import CurruentRefereeReservationView from './CurrentRefereeReservationView';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
-// import RefereeReservationTitle from '../../../components/reservations/RefereeReservationTitle';
+import RefereeReservationTitle from '../../../components/reservations/RefereeReservationTitle';
 
 let entity = {};
 const scroll = React.createRef();
@@ -425,21 +425,6 @@ export default function AlterRefereeScreen({ navigation, route }) {
       });
   };
 
-  const getDayTimeDifferent = (sDate, eDate) => {
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
-
-    const days = Math.floor(delta / 86400);
-    delta -= days * 86400;
-
-    const hours = Math.floor(delta / 3600) % 24;
-    delta -= hours * 3600;
-
-    const minutes = Math.floor(delta / 60) % 60;
-    delta -= minutes * 60;
-
-    return `${days}d ${hours}h ${minutes}m`;
-  };
-
   const getRequester = (param) => {
     if (entity.uid === param?.referee?.user_id) {
       if (
@@ -545,62 +530,6 @@ export default function AlterRefereeScreen({ navigation, route }) {
     return 'receiver';
   };
 
-  const checkRefereeOrTeam = (reservationObj) => {
-    const teampObj = { ...reservationObj };
-    if (
-      teampObj?.status === RefereeReservationStatus.pendingpayment
-      || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
-    ) {
-      if (teampObj?.updated_by) {
-        if (teampObj?.updated_by?.group_id) {
-          teampObj.requested_by = teampObj.updated_by.group_id;
-        } else {
-          teampObj.requested_by = teampObj.updated_by.uid;
-        }
-      } else if (teampObj?.created_by?.group_id) {
-        teampObj.requested_by = teampObj.created_by.group_id;
-      } else {
-        teampObj.requested_by = teampObj.created_by.uid;
-      }
-    } else if (teampObj?.updated_by) {
-      if (teampObj?.updated_by?.group_id) {
-        if (
-          teampObj?.automatic_request
-          && teampObj?.status === RefereeReservationStatus.changeRequest
-          && entity?.obj?.entity_type === 'team'
-        ) {
-          teampObj.requested_by = teampObj.initiated_by;
-        } else {
-          teampObj.requested_by = teampObj.updated_by.group_id;
-        }
-      } else if (
-        teampObj?.automatic_request
-        && teampObj?.status === RefereeReservationStatus.changeRequest
-        && teampObj?.referee?.user_id !== entity.uid
-      ) {
-        teampObj.requested_by = teampObj.initiated_by;
-      } else {
-        teampObj.requested_by = teampObj.updated_by.uid;
-      }
-    } else if (teampObj?.created_by?.group_id) {
-      teampObj.requested_by = teampObj.created_by.group_id;
-    } else {
-      teampObj.requested_by = teampObj.created_by.uid;
-    }
-
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
-    if (entity.uid === teampObj?.referee?.user_id) {
-      if (teampObj?.requested_by === entity.uid) {
-        return 'referee';
-      }
-      return 'team';
-    }
-    if (teampObj?.requested_by === entity.uid) {
-      return 'team';
-    }
-    return 'referee';
-  };
   const updateReservationDetail = () => {
     setloading(true);
     const body = {};
@@ -652,18 +581,6 @@ export default function AlterRefereeScreen({ navigation, route }) {
       });
   };
 
-  const getPendingRequestPaymentMessage = () => {
-    if (bodyParams?.requested_by === entity.uid) {
-      return `${getEntityName(
-        bodyParams,
-      )} has accepted your referee reservation alteration request, but `;
-    }
-
-    return `Your team has accepted a referee reservation alteration request from ${getEntityName(
-      bodyParams,
-    )}, but `;
-  };
-
   const Title = ({ text, required }) => (
     <Text style={styles.titleText}>
       {text}
@@ -686,27 +603,6 @@ export default function AlterRefereeScreen({ navigation, route }) {
     const endDate = moment(toDate * 1000).format('hh:mm a');
     const duration = getGameFromToDateDiff(fromData, toDate);
     return `${startDate} - ${endDate} (${duration})`;
-  };
-  const getEntityName = (reservationObj) => {
-    if (reservationObj?.initiated_by === entity.uid) {
-      return `${reservationObj?.referee?.first_name} ${reservationObj?.referee?.last_name}`;
-    }
-    if (!reservationObj?.game?.user_challenge) {
-      if (
-        reservationObj?.initiated_by
-        === reservationObj?.game?.home_team?.group_id
-      ) {
-        return `${reservationObj?.game?.home_team.group_name}`;
-      }
-      return `${reservationObj?.game?.away_team.group_name}`;
-    }
-    console.log('user challenge');
-    if (
-      reservationObj?.initiated_by === reservationObj?.game?.home_team?.user_id
-    ) {
-      return `${reservationObj?.game?.home_team.first_name} ${reservationObj?.game?.home_team.last_name}`;
-    }
-    return `${reservationObj?.game?.away_team.first_name} ${reservationObj?.game?.away_team.last_name}`;
   };
 
   const getOpponentEntity = (reservationObj) => {
@@ -815,6 +711,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
+              marginBottom: 0,
             }}>
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
@@ -880,145 +777,11 @@ export default function AlterRefereeScreen({ navigation, route }) {
               </View>
             </View>
           </View>
-          {/* <RefereeReservationTitle reservationObject={bodyParams}/> */}
-          {/* Status declined */}
-          {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === RefereeReservationStatus.declined && (
-              <View>
-                <Text
-                  style={[
-                    styles.challengeMessage,
-                    { color: colors.googleColor },
-                  ]}>
-                  DECLINED
-                </Text>
-                <Text style={styles.challengeText}>
-                  {checkRefereeOrTeam(bodyParams) === 'referee'
-                    ? `You have declined a referee request from ${getEntityName(
-                        bodyParams,
-                      )}.`
-                    : `Your team have declined referee reservation request from ${getEntityName(
-                        bodyParams,
-                      )}.`}
-                </Text>
-              </View>
-            )}
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === RefereeReservationStatus.declined && (
-              <View>
-                <Text
-                  style={[
-                    styles.challengeMessage,
-                    { color: colors.googleColor },
-                  ]}>
-                  DECLINED
-                </Text>
-                <Text style={styles.challengeText}>
-                  {checkRefereeOrTeam(bodyParams) === 'referee'
-                    ? `${getEntityName(
-                        bodyParams,
-                      )} has declined a referee request from your team.`
-                    : `${getEntityName(
-                        bodyParams,
-                      )} have declined a referee reservation request sent by you.`}
-                </Text>
-              </View>
-            )}
-          {/* Status declined */}
-          {/* status change requested */}
-          {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === RefereeReservationStatus.changeRequest
-            && !bodyParams.automatic_request && (
-              <View>
-                <Text
-                  style={[
-                    styles.challengeMessage,
-                    { color: colors.requestSentColor },
-                  ]}>
-                  ALTERATION REQUEST SENT
-                </Text>
-                <Text style={styles.challengeText}>
-                  {checkRefereeOrTeam(bodyParams) === 'referee'
-                    ? `You sent a referee reservation alteration request to ${getEntityName(
-                        bodyParams,
-                      )}.`
-                    : `Your team sent a referee reservation alteration request to ${getEntityName(
-                        bodyParams,
-                      )}`}
-                </Text>
-              </View>
-            )}
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === RefereeReservationStatus.changeRequest
-            && !bodyParams.automatic_request && (
-              <View>
-                <Text style={[
-                    styles.challengeMessage,
-                    { color: colors.requestSentColor },
-                ]}>
-                  ALTERATION REQUEST PENDING
-                </Text>
-                <Text style={styles.challengeText}>
-                  {bodyParams?.referee?.user_id === entity.uid
-                    ? `You received a referee reservation alteration request from ${getEntityName(
-                        bodyParams,
-                      )}.`
-                    : `Your team received a referee reservation alteration request from ${getEntityName(
-                        bodyParams,
-                      )}.`}{' '}
-                  Please, respond within{' '}
-                  <Text style={{ color: colors.themeColor }}>
-                    {getDayTimeDifferent(
-                      bodyParams?.expiry_datetime * 1000,
-                      new Date().getTime(),
-                    )}
-                  </Text>
-                </Text>
-              </View>
-            )}
-          {/* status change requested */}
-          {/* status change requested automatic */}
-          {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === RefereeReservationStatus.changeRequest
-            && bodyParams.automatic_request && (
-              <View>
-                <Text
-                  style={[
-                    styles.challengeMessage,
-                    { color: colors.requestSentColor },
-                  ]}>
-                  ALTERATION REQUEST SENT
-                </Text>
-                <Text style={styles.challengeText}>
-                  {`An alteration request was sent to ${getEntityName(
-                    bodyParams,
-                  )} because the game had been rescheduled.`}
-                </Text>
-              </View>
-            )}
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === RefereeReservationStatus.changeRequest
-            && bodyParams.automatic_request && (
-              <View>
-                <Text style={styles.challengeMessage}>
-                  ALTERATION REQUEST PENDING
-                </Text>
-                <Text style={styles.challengeText}>
-                  {
-                    'You received a referee reservation alteration request because the game had been rescheduled.'
-                  }
-                  <Text style={{ color: colors.userPostTimeColor }}>
-                    {`\n\nIf you decline this alteration request, the reservation will be canceled by ${getEntityName(
-                      bodyParams,
-                    )} and you will be paid according to the cancellation policy.`}
-                  </Text>
-                </Text>
-              </View>
-            )}
-          {/* status change requested automatic */}
+
+          <RefereeReservationTitle reservationObject={bodyParams} showDesc={true} containerStyle={{ margin: 15 }}/>
 
           {/* status pending request payment */}
-          {bodyParams?.referee?.user_id !== entity.uid
+          {/* {bodyParams?.referee?.user_id !== entity.uid
             && bodyParams.status
               === RefereeReservationStatus.pendingrequestpayment && (
                 <View>
@@ -1053,7 +816,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   \nMeanwhile, you can cancel acceptance of the alteration request before the payment will go through.`}
                   </Text>
                 </View>
-            )}
+            )} */}
           {/* status pending request payment */}
 
           {bodyParams?.referee?.user_id !== entity.uid
@@ -1302,6 +1065,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 style={styles.editTouchArea}
                 hitSlop={getHitSlop(15)}
                 onPress={() => navigation.navigate('EditRefereeFeeScreen', {
+                  comeFrom: 'AlterRefereeScreen',
                     editableAlter: true,
                     body: bodyParams,
                   })
@@ -1703,27 +1467,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.themeColor,
   },
-  challengeMessage: {
-    fontFamily: fonts.RBold,
-    fontSize: 18,
-    color: colors.themeColor,
-    margin: 15,
-    marginBottom: 5,
-  },
-  challengeText: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    marginLeft: 15,
-    marginRight: 15,
-    marginBottom: 15,
-  },
-  awatingNotesText: {
-    color: colors.userPostTimeColor,
-    marginRight: 15,
-    marginLeft: 15,
-    marginBottom: 15,
-  },
+
   contentContainer: {
     padding: 15,
   },

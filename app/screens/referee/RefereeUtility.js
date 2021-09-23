@@ -43,12 +43,19 @@ export const getRefereeReservationDetail = (reservationID, callerID, authContext
       return Obj
     }
     if (RefereeReservationStatus.declined === response.payload[0].status) {
-      if (response.payload.length <= 2) {
+      if (response.payload.length <= 3) {
         Obj.reservationObj = response.payload[0]
         Obj.screenName = 'RefereeReservationScreen'
         return Obj
       }
-      Obj.reservationObj = response.payload[0]
+      let tempObj;
+      for (let i = 0; i < response.payload.length; i++) {
+        if (response.payload[i].status === RefereeReservationStatus.accepted) {
+          tempObj = response.payload[i]
+          break;
+        }
+      }
+      Obj.reservationObj = tempObj
       Obj.screenName = 'RefereeReservationScreen'
       return Obj
     }
