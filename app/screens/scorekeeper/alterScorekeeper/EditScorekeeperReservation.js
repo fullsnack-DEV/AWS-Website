@@ -726,7 +726,7 @@ import React, {
                    style={{ marginLeft: 0, marginTop: 0 }}
                  />
 
-                 {bodyParams?.scorekeeper?.user_id !== entity.uid && (
+                 {/* {bodyParams?.scorekeeper?.user_id !== entity.uid && (
                    <TouchableOpacity
                      style={styles.editTouchArea}
                      hitSlop={Utility.getHitSlop(15)}
@@ -748,7 +748,7 @@ import React, {
                        Edit
                      </Text>
                    </TouchableOpacity>
-                 )}
+                 )} */}
                </View>
 
                {bodyParams?.game && (

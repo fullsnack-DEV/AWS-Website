@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+/* eslint-disable consistent-return */
 /* eslint-disable react/no-unescaped-entities */
 import React, {
   useEffect,
@@ -18,7 +19,6 @@ import {
 } from 'react-native';
 import moment from 'moment';
 
-import { useIsFocused } from '@react-navigation/native';
 import _ from 'lodash';
 import * as Utility from '../../utils';
 import { acceptDeclineReservation, getReservation } from '../../api/Challenge';
@@ -45,13 +45,13 @@ import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservation
 import TCChallengeTitle from '../../components/TCChallengeTitle';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils';
 import TCTouchableLabel from '../../components/TCTouchableLabel';
+import ScorekeeperReservationTitle from '../../components/reservations/ScorekeeperReservationTitle';
 
 let entity = {};
 
 export default function ScorekeeperReservationScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
 
-  const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [homeTeam, setHomeTeam] = useState();
   const [awayTeam, setAwayTeam] = useState();
@@ -61,8 +61,8 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
   useEffect(() => {
     entity = authContext.entity;
     const { reservationObj } = route.params ?? {};
-    console.log('ALTER SCOREKEEPER RESERVATION OBJECT:', reservationObj);
-    console.log('ALTER SCOREKEEPER RESERVATION Home team OBJECT:', awayTeam);
+    console.log('ALTER Scorekeeper RESERVATION OBJECT:', reservationObj);
+    console.log('ALTER Scorekeeper RESERVATION Home team OBJECT:', awayTeam);
     if (route?.params?.isRefresh) {
       getReservationDetails(reservationObj?.reservation_id);
     }
@@ -80,7 +80,7 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
     if (route?.params?.paymentMethod) {
       setDefaultCard(route?.params?.paymentMethod);
     }
-  }, [isFocused]);
+  }, [authContext.entity, awayTeam, route.params]);
   useLayoutEffect(() => {
     navigation.setOptions({
       title: getNavigationTitle(),
@@ -89,14 +89,14 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
 
   const getNavigationTitle = () => {
     if (
-      bodyParams?.status === ScorekeeperReservationStatus.offered
+      bodyParams?.status === ScorekeeperReservationStatus.approved
       || bodyParams?.status === ScorekeeperReservationStatus.declined
     ) {
       return strings.scorekeeperRequestScreenTitle;
     }
     return strings.scorekeeperScreenTitle;
   };
-  const acceptDeclinescorekeeperReservation = (
+  const acceptDeclineScorekeeperReservation = (
     reservationID,
     callerID,
     versionNo,
@@ -129,6 +129,11 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
         } else if (status === 'cancel') {
           navigation.navigate('ScorekeeperRequestSent', {
             operationType: strings.reservationRequestCancelled,
+            imageAnimation: false,
+          });
+        } else if (status === 'approve') {
+          navigation.navigate('ScorekeeperRequestSent', {
+            operationType: strings.reservationRequestApproved,
             imageAnimation: false,
           });
         }
@@ -165,77 +170,6 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
       });
   };
 
-  const getDayTimeDifferent = (sDate, eDate) => {
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
-
-    const days = Math.floor(delta / 86400);
-    delta -= days * 86400;
-
-    const hours = Math.floor(delta / 3600) % 24;
-    delta -= hours * 3600;
-
-    const minutes = Math.floor(delta / 60) % 60;
-    delta -= minutes * 60;
-
-    return `${days}d ${hours}h ${minutes}m`;
-  };
-
-  const checkscorekeeperOrTeam = (reservationObj) => {
-    const teampObj = { ...reservationObj };
-    if (
-      teampObj?.status === ScorekeeperReservationStatus.pendingpayment
-      || teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
-    ) {
-      if (teampObj?.updated_by) {
-        if (teampObj?.updated_by?.group_id) {
-          teampObj.requested_by = teampObj.updated_by.group_id;
-        } else {
-          teampObj.requested_by = teampObj.updated_by.uid;
-        }
-      } else if (teampObj?.created_by?.group_id) {
-        teampObj.requested_by = teampObj.created_by.group_id;
-      } else {
-        teampObj.requested_by = teampObj.created_by.uid;
-      }
-    } else if (teampObj?.updated_by) {
-      if (teampObj?.updated_by?.group_id) {
-        if (
-          teampObj?.automatic_request
-          && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-          && entity.obj.entity_type === 'team'
-        ) {
-          teampObj.requested_by = teampObj.initiated_by;
-        } else {
-          teampObj.requested_by = teampObj.updated_by.group_id;
-        }
-      } else if (
-        teampObj?.automatic_request
-        && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-        && teampObj?.scorekeeper?.user_id !== entity.uid
-      ) {
-        teampObj.requested_by = teampObj.initiated_by;
-      } else {
-        teampObj.requested_by = teampObj.updated_by.uid;
-      }
-    } else if (teampObj?.created_by?.group_id) {
-      teampObj.requested_by = teampObj.created_by.group_id;
-    } else {
-      teampObj.requested_by = teampObj.created_by.uid;
-    }
-
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
-    if (entity.uid === teampObj?.scorekeeper?.user_id) {
-      if (teampObj?.requested_by === entity.uid) {
-        return 'scorekeeper';
-      }
-      return 'team';
-    }
-    if (teampObj?.requested_by === entity.uid) {
-      return 'team';
-    }
-    return 'scorekeeper';
-  };
   const checkSenderForPayment = useCallback((reservationObj) => {
     console.log('reservationObj::=>', reservationObj);
     if (reservationObj?.scorekeeper?.user_id === entity.uid) {
@@ -295,28 +229,6 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
     return 'receiver';
   };
 
-  const getEntityName = (reservationObj) => {
-    if (reservationObj?.initiated_by === entity.uid) {
-      return `${reservationObj?.scorekeeper?.first_name} ${reservationObj?.scorekeeper?.last_name}`;
-    }
-    if (!reservationObj?.game?.user_challenge) {
-      if (
-        reservationObj?.initiated_by
-        === reservationObj?.game?.home_team?.group_id
-      ) {
-        return `${reservationObj?.game?.home_team.group_name}`;
-      }
-      return `${reservationObj?.game?.away_team.group_name}`;
-    }
-    console.log('user challenge');
-    if (
-      reservationObj?.initiated_by === reservationObj?.game?.home_team?.user_id
-    ) {
-      return `${reservationObj?.game?.home_team.first_name} ${reservationObj?.game?.home_team.last_name}`;
-    }
-    return `${reservationObj?.game?.away_team.first_name} ${reservationObj?.game?.away_team.last_name}`;
-  };
-
   const Title = ({ text, required }) => (
     <Text style={styles.titleText}>
       {text}
@@ -352,16 +264,236 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
       }
       return param?.game?.away_team;
     }
-    if (
-      entity.uid
-      === (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)
+
+      if (
+      (entity.uid
+      === (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)) || (param?.initiated_by
+      === (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id))
     ) {
       return param?.game?.home_team;
     }
     return param?.game?.away_team;
   };
 
-  console.log('scorekeeper bodyparams:', bodyParams);
+const renderBottomBurron = () => (<SafeAreaView>
+  {checkSenderOrReceiver(bodyParams) === 'sender'
+      && (bodyParams.status === ScorekeeperReservationStatus.approved
+        || bodyParams.status === ScorekeeperReservationStatus.offered)
+      && bodyParams.expiry_datetime < new Date().getTime() && (
+        <View>
+          <TCBorderButton
+            title={strings.calcelRequest}
+            textColor={colors.grayColor}
+            borderColor={colors.grayColor}
+            marginBottom={15}
+            marginTop={15}
+            height={40}
+            shadow={true}
+            onPress={() => {
+              let callerId = '';
+              if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
+                callerId = entity.uid;
+              }
+              acceptDeclineScorekeeperReservation(
+                bodyParams.reservation_id,
+                callerId,
+                bodyParams.version,
+                'cancel',
+              );
+            }}
+          />
+        </View>
+      )}
+
+  {checkSenderOrReceiver(bodyParams) === 'receiver'
+      && ((bodyParams.status === ScorekeeperReservationStatus.offered) || ((bodyParams.status === ScorekeeperReservationStatus.approved) && !bodyParams.is_offer))
+      && bodyParams.expiry_datetime > new Date().getTime() / 1000 && (
+        <View style={{ marginTop: 15 }}>
+          <TCGradientButton
+            title={strings.accept}
+            marginBottom={15}
+            onPress={() => {
+              // navigation.navigate('AlterScorekeeperScreen', { reservationObj: allReservationData })
+
+              if (
+                !(
+                  bodyParams?.game?.status === GameStatus.accepted
+                  || bodyParams?.game?.status === GameStatus.reset
+                )
+              ) {
+                Alert.alert(strings.cannotAcceptText);
+              } else if (
+                bodyParams?.game?.start_datetime
+                < new Date().getTime() / 1000
+              ) {
+                Alert.alert(strings.scorekeeperOfferExpiryText);
+              } else if (
+                bodyParams.initiated_by === authContext.entity.uid
+                && (bodyParams.status
+                  === ScorekeeperReservationStatus.approved
+                  || bodyParams.status
+                    === ScorekeeperReservationStatus.offered)
+                && bodyParams.total_game_fee > 0
+                && !defaultCard
+              ) {
+                Alert.alert('Please choose payment method first.');
+              } else {
+                let callerId = '';
+                if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
+                  callerId = entity.uid;
+                }
+                acceptDeclineScorekeeperReservation(
+                  bodyParams.reservation_id,
+                  callerId,
+                  bodyParams.version,
+                  bodyParams?.status
+                    === ScorekeeperReservationStatus.offered
+                    && bodyParams?.is_offer === true
+                    ? 'approve'
+                    : 'accept',
+                );
+              }
+            }}
+          />
+          <TCBorderButton
+            title={strings.decline}
+            textColor={colors.grayColor}
+            borderColor={colors.grayColor}
+            height={40}
+            marginBottom={15}
+            shadow={true}
+            onPress={() => {
+              let callerId = '';
+              if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
+                callerId = entity.uid;
+              }
+              acceptDeclineScorekeeperReservation(
+                bodyParams.reservation_id,
+                callerId,
+                bodyParams.version,
+                'decline',
+              );
+            }}
+          />
+        </View>
+      )}
+
+  {(bodyParams.status === ScorekeeperReservationStatus.accepted
+      || bodyParams.status === ScorekeeperReservationStatus.restored
+      || bodyParams.status
+        === ScorekeeperReservationStatus.requestcancelled
+        || (bodyParams.status
+        === ScorekeeperReservationStatus.declined && bodyParams.version > 3)) && (
+          <View>
+            <TCBorderButton
+          title={strings.alterReservation}
+          textColor={colors.grayColor}
+          borderColor={colors.grayColor}
+          height={40}
+          shadow={true}
+          marginTop={15}
+          onPress={() => {
+            if (
+              (bodyParams?.game?.status === GameStatus.accepted
+                || bodyParams?.game?.status === GameStatus.reset)
+              && bodyParams.start_datetime
+                > parseFloat(new Date().getTime() / 1000).toFixed(0)
+            ) {
+              navigation.navigate('EditScorekeeperReservation', {
+                reservationObj: bodyParams,
+                lastConfirmVersion: bodyParams,
+              });
+            } else {
+              Alert.alert(
+                'Reservation cannot be change after game time passed or offer expired.',
+              );
+            }
+          }}
+        />
+            <TCBorderButton
+          title={strings.cancelreservation}
+          textColor={colors.whiteColor}
+          borderColor={colors.grayColor}
+          backgroundColor={colors.grayColor}
+          height={40}
+          shadow={true}
+          marginBottom={15}
+          marginTop={10}
+          onPress={() => {
+            if (
+              bodyParams?.game?.status
+              === (GameStatus.accepted || GameStatus.reset)
+            ) {
+              let callerId = '';
+              if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
+                callerId = entity.uid;
+              }
+              acceptDeclineScorekeeperReservation(
+                bodyParams.reservation_id,
+                callerId,
+                bodyParams.version,
+                'cancel',
+              );
+            } else if (
+              bodyParams.start_datetime * 1000
+              < new Date().getTime()
+            ) {
+              Alert.alert(
+                'Reservation cannot be cancel after game time passed or offer expired.',
+              );
+            } else {
+              Alert.alert(
+                'Reservation can not be change after game has been started.',
+              );
+            }
+          }}
+        />
+          </View>
+    )}
+  {((bodyParams.status
+      === ScorekeeperReservationStatus.pendingpayment) || (bodyParams.status === ScorekeeperReservationStatus.approved)) && (
+        <TCBorderButton
+        title={strings.cancelreservation}
+        textColor={colors.whiteColor}
+        borderColor={colors.grayColor}
+        backgroundColor={colors.grayColor}
+        height={40}
+        shadow={true}
+        marginBottom={15}
+        marginTop={15}
+        onPress={() => {
+          if (
+            !(
+              bodyParams?.game?.status === GameStatus.accepted
+              || bodyParams?.game?.status === GameStatus.reset
+            )
+          ) {
+            Alert.alert(strings.cannotAcceptText);
+          } else if (
+            bodyParams?.expiry_datetime
+              < new Date().getTime() / 1000
+            || bodyParams?.game?.start_datetime
+              < new Date().getTime() / 1000
+          ) {
+            Alert.alert(strings.scorekeeperOfferExpiryText);
+          } else {
+            let callerId = '';
+            if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
+              callerId = entity.uid;
+            }
+            acceptDeclineScorekeeperReservation(
+              bodyParams.reservation_id,
+              callerId,
+              bodyParams.version,
+              'cancel',
+            );
+          }
+        }}
+      />
+    )}
+</SafeAreaView>)
+
+  console.log('Scorekeeper bodyparams:', bodyParams);
   return (
     <TCKeyboardView>
       <ScrollView style={{ flex: 1 }}>
@@ -369,6 +501,11 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
         {bodyParams && (
           <View>
             <ReservationNumber reservationNumber={bodyParams.reservation_id} />
+
+            {/* <Text onPress={() => {
+              navigation.navigate('ScorekeeperApprovalScreen', { reservationObj: bodyParams })
+            }}>On Press</Text> */}
+
             <View
               style={{
                 flex: 1,
@@ -442,178 +579,10 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
             </View>
             <TCThinDivider />
 
-            {/* status offered */}
-            {checkSenderOrReceiver(bodyParams) === 'sender'
-              && bodyParams.status === ScorekeeperReservationStatus.offered && (
-                <View>
-                  {bodyParams.expiry_datetime > new Date().getTime() ? (
-                    <Text
-                      style={[
-                        styles.challengeMessage,
-                        { color: colors.googleColor },
-                      ]}>
-                      EXPIRED
-                    </Text>
-                  ) : (
-                    <Text
-                      style={[
-                        styles.challengeMessage,
-                        { color: colors.requestSentColor },
-                      ]}>
-                      SENT
-                    </Text>
-                  )}
-                  {bodyParams.expiry_datetime > new Date().getTime() ? (
-                    <Text style={styles.challengeText}>
-                      Your scorekeeper reservation request has been expired.
-                    </Text>
-                  ) : (
-                    <Text style={styles.challengeText}>
-                      You sent a match reservation request to{' '}
-                      {getEntityName(bodyParams)}. This request will be expired
-                      in{' '}
-                      <Text style={styles.timeText}>
-                        {getDayTimeDifferent(
-                          bodyParams?.expiry_datetime * 1000,
-                          new Date().getTime(),
-                        )}
-                        .
-                      </Text>
-                    </Text>
-                  )}
-                </View>
-              )}
-            {checkSenderOrReceiver(bodyParams) === 'receiver'
-              && bodyParams.status === ScorekeeperReservationStatus.offered && (
-                <View>
-                  {bodyParams.expiry_datetime > new Date().getTime() ? (
-                    <Text
-                      style={[
-                        styles.challengeMessage,
-                        { color: colors.googleColor },
-                      ]}>
-                      EXPIRED
-                    </Text>
-                  ) : (
-                    <Text
-                      style={[
-                        styles.challengeMessage,
-                        { color: colors.requestSentColor },
-                      ]}>
-                      PENDING
-                    </Text>
-                  )}
-                  {bodyParams.expiry_datetime > new Date().getTime() ? (
-                    <Text style={styles.challengeText}>
-                      The scorekeeper reservation request from{' '}
-                      {getEntityName(bodyParams)} has been expired.
-                    </Text>
-                  ) : (
-                    <Text style={styles.challengeText}>
-                      You received a scorekeeper reservation request from{' '}
-                      {getEntityName(bodyParams)}. Please, respond within{' '}
-                      <Text style={styles.timeText}>
-                        {getDayTimeDifferent(
-                          bodyParams.expiry_datetime * 1000,
-                          new Date().getTime(),
-                        )}
-                        .
-                      </Text>
-                    </Text>
-                  )}
-                </View>
-              )}
-            {/* status pending payment */}
-            {checkSenderOrReceiver(bodyParams) === 'sender'
-              && bodyParams.status === ScorekeeperReservationStatus.pendingpayment && (
-                <View>
-                  <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
-                  <Text style={styles.challengeText}>
-                    You accepted a scorekeeper reservation from{' '}
-                    {getEntityName(bodyParams)}, but the payment hasn't gone
-                    through yet.
-                  </Text>
-                  <Text style={styles.pendingRequestText}>
-                    {`This reservation will be canceled unless the payment goes through within ${getDayTimeDifferent(
-                      bodyParams.expiry_datetime * 1000,
-                      new Date().getTime(),
-                    )}.\nYou can cancel the scorekeeper reservation without a penalty before the payment will go through.`}
-                  </Text>
-                </View>
-              )}
-            {checkSenderOrReceiver(bodyParams) === 'receiver'
-              && bodyParams.status === ScorekeeperReservationStatus.pendingpayment && (
-                <View>
-                  <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
-                  <Text style={styles.challengeText}>
-                    {getEntityName(bodyParams)} has accepted your scorekeeper
-                    reservation, but your payment hasn't gone through yet.
-                  </Text>
-                  <Text style={styles.awatingNotesText}>
-                    This reservation will be canceled unless the payment goes
-                    through within{' '}
-                    {getDayTimeDifferent(
-                      bodyParams.expiry_datetime * 1000,
-                      new Date().getTime(),
-                    )}
-                    .
-                  </Text>
-                </View>
-              )}
-            {/* status pending payment */}
-            {/* Status accepted */}
-            {checkSenderOrReceiver(bodyParams) === 'sender'
-              && (bodyParams.status === ScorekeeperReservationStatus.accepted
-                || bodyParams.status === ScorekeeperReservationStatus.restored
-                || bodyParams.status
-                  === ScorekeeperReservationStatus.requestcancelled) && (
-                    <View>
-                      <Text
-                    style={[
-                      styles.challengeMessage,
-                      { color: colors.requestConfirmColor },
-                    ]}>
-                        {bodyParams.automatic_request
-                      ? 'CONFIRMED - RESCHEDULED'
-                      : 'CONFIRMED'}
-                      </Text>
-                      <Text style={styles.challengeText}>
-                        {checkscorekeeperOrTeam(bodyParams) === 'scorekeeper'
-                      ? `You have a confirmed scorekeeper reservation booked by ${getEntityName(
-                          bodyParams,
-                        )}.`
-                      : `Your team has the confirmed scorekeeper reservation for ${getEntityName(
-                          bodyParams,
-                        )}.`}
-                      </Text>
-                    </View>
-              )}
-            {checkSenderOrReceiver(bodyParams) === 'receiver'
-              && (bodyParams.status === ScorekeeperReservationStatus.accepted
-                || bodyParams.status === ScorekeeperReservationStatus.restored
-                || bodyParams.status
-                  === ScorekeeperReservationStatus.requestcancelled) && (
-                    <View>
-                      <Text
-                    style={[
-                      styles.challengeMessage,
-                      { color: colors.requestConfirmColor },
-                    ]}>
-                        {bodyParams.automatic_request
-                      ? 'CONFIRMED - RESCHEDULED'
-                      : 'CONFIRMED'}
-                      </Text>
-                      <Text style={styles.challengeText}>
-                        {/* {checkscorekeeperOrTeam(bodyParams) === 'scorekeeper' ? `${getEntityName(bodyParams)} has confirmed scorekeeper reservation request sent by you.` : `${getEntityName(bodyParams)} has confirmed scorekeeper reservation request sent to you.` } */}
-                        {`${getEntityName(
-                      bodyParams,
-                    )} has confirmed scorekeeper reservation request sent by you.`}
-                      </Text>
-                    </View>
-              )}
-            {/* Status accepted */}
+            <ScorekeeperReservationTitle reservationObject={bodyParams} showDesc={true} containerStyle={{ margin: 15 }}/>
+
             {/* Status declined */}
-            {checkSenderOrReceiver(bodyParams) === 'sender'
+            {/* {bodyParams?.approved_by === entity.uid && !bodyParams?.is_offer
               && bodyParams.status === ScorekeeperReservationStatus.declined && (
                 <View>
                   <Text
@@ -624,7 +593,7 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
                     DECLINED
                   </Text>
                   <Text style={styles.challengeText}>
-                    {checkscorekeeperOrTeam(bodyParams) === 'scorekeeper'
+                    {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
                       ? `You have declined a scorekeeper request from ${getEntityName(
                           bodyParams,
                         )}.`
@@ -634,7 +603,7 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
                   </Text>
                 </View>
               )}
-            {checkSenderOrReceiver(bodyParams) === 'receiver'
+            {bodyParams?.initiated_by === entity.uid && !bodyParams?.is_offer
               && bodyParams.status === ScorekeeperReservationStatus.declined && (
                 <View>
                   <Text
@@ -645,61 +614,16 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
                     DECLINED
                   </Text>
                   <Text style={styles.challengeText}>
-                    {checkscorekeeperOrTeam(bodyParams) === 'scorekeeper'
+                    {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
                       ? `${getEntityName(
-                          bodyParams,
-                        )} has declined a scorekeeper request from your team.`
+                        bodyParams,
+                      )} has declined a scorekeeper request sent by you.`
                       : `${getEntityName(
-                          bodyParams,
-                        )} have declined a scorekeeper reservation request sent by you.`}
-                    .
+                        bodyParams,
+                      )} has declined scorekeeper reservation request sent by your team.`}
                   </Text>
                 </View>
-              )}
-            {/* Status declined */}
-            {/* Status cancelled */}
-            {checkSenderOrReceiver(bodyParams) === 'sender'
-              && bodyParams.status === ScorekeeperReservationStatus.cancelled && (
-                <View>
-                  <Text
-                    style={[
-                      styles.challengeMessage,
-                      { color: colors.userPostTimeColor },
-                    ]}>
-                    CANCELLED
-                  </Text>
-                  <Text style={styles.challengeText}>
-                    {checkscorekeeperOrTeam(bodyParams) === 'scorekeeper'
-                      ? `You cancelled the scorekeeper reservation request booked by ${getEntityName(
-                          bodyParams,
-                        )}.`
-                      : `Your team has cancelled the scorekeeper reservation for ${getEntityName(
-                          bodyParams,
-                        )}.`}
-                  </Text>
-                </View>
-              )}
-            {checkSenderOrReceiver(bodyParams) === 'receiver'
-              && bodyParams.status === ScorekeeperReservationStatus.cancelled && (
-                <View>
-                  <Text
-                    style={[
-                      styles.challengeMessage,
-                      { color: colors.userPostTimeColor },
-                    ]}>
-                    CANCELLED
-                  </Text>
-                  <Text style={styles.challengeText}>
-                    {checkscorekeeperOrTeam(bodyParams) === 'scorekeeper'
-                      ? `${getEntityName(
-                          bodyParams,
-                        )} has cancelled the scorekeeper reservation request booked by your team.`
-                      : `${getEntityName(
-                          bodyParams,
-                        )} has cancelled the scorekeeper reservation request for you.`}
-                  </Text>
-                </View>
-              )}
+              )} */}
 
             {bodyParams?.scorekeeper?.user_id !== entity.uid
               && bodyParams.status === ScorekeeperReservationStatus.pendingpayment && (
@@ -711,6 +635,7 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
                       comeFrom: 'ScorekeeperReservationScreen',
                     });
                   }}
+                  style={{ marginTop: 15 }}
                 />
               )}
 
@@ -828,6 +753,15 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
               {bodyParams?.game?.special_rules}
             </Text>
             <TCThickDivider />
+            {/* {bodyParams && (
+            <View>
+              <TCLabel title={'Rules of the match'} />
+              <Text style={styles.rulesText}>
+                {bodyParams?.game?.special_rule}
+              </Text>
+            </View>
+          )}
+          <TCThickDivider marginTop={20} /> */}
 
             <View>
               <TCChallengeTitle
@@ -883,208 +817,7 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
                 </View>
               )}
 
-            <SafeAreaView>
-              {checkSenderOrReceiver(bodyParams) === 'sender'
-                && bodyParams.status === ScorekeeperReservationStatus.offered
-                && bodyParams.expiry_datetime < new Date().getTime() && (
-                  <View>
-                    <TCBorderButton
-                      title={strings.calcelRequest}
-                      textColor={colors.grayColor}
-                      borderColor={colors.grayColor}
-                      marginBottom={15}
-                      marginTop={15}
-
-                      height={40}
-                      shadow={true}
-                      onPress={() => {
-                        let callerId = '';
-                        if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
-                          callerId = entity.uid;
-                        }
-                        acceptDeclinescorekeeperReservation(
-                          bodyParams.reservation_id,
-                          callerId,
-                          bodyParams.version,
-                          'cancel',
-                        );
-                      }}
-                    />
-                  </View>
-                )}
-
-              {checkSenderOrReceiver(bodyParams) === 'receiver'
-                && bodyParams.status === ScorekeeperReservationStatus.offered
-                && bodyParams.expiry_datetime > new Date().getTime() / 1000 && (
-                  <View style={{ marginTop: 15 }}>
-                    <TCGradientButton
-                      title={strings.accept}
-                      marginBottom={15}
-                      onPress={() => {
-                        if (
-                          !(
-                            bodyParams?.game?.status === GameStatus.accepted
-                            || bodyParams?.game?.status === GameStatus.reset
-                          )
-                        ) {
-                          Alert.alert(strings.cannotAcceptText);
-                        } else if (
-                          bodyParams?.game?.start_datetime
-                          < new Date().getTime() / 1000
-                        ) {
-                          Alert.alert(strings.scorekeeperOfferExpiryText);
-                        } else if (bodyParams.initiated_by === authContext.entity.uid
-                          && bodyParams.status === ScorekeeperReservationStatus.offered
-                          && bodyParams.total_game_fee > 0 && !defaultCard) {
-                            Alert.alert('Please choose payment method first.');
-                        } else {
-                          let callerId = '';
-                          if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
-                            callerId = entity.uid;
-                          }
-                          acceptDeclinescorekeeperReservation(
-                            bodyParams.reservation_id,
-                            callerId,
-                            bodyParams.version,
-                            'accept',
-                          );
-                        }
-                      }}
-                    />
-                    <TCBorderButton
-                      title={strings.decline}
-                      textColor={colors.grayColor}
-                      borderColor={colors.grayColor}
-                      height={40}
-                      marginBottom={15}
-                      shadow={true}
-                      onPress={() => {
-                        let callerId = '';
-                        if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
-                          callerId = entity.uid;
-                        }
-                        acceptDeclinescorekeeperReservation(
-                          bodyParams.reservation_id,
-                          callerId,
-                          bodyParams.version,
-                          'decline',
-                        );
-                      }}
-                    />
-                  </View>
-                )}
-
-              {(bodyParams.status === ScorekeeperReservationStatus.accepted
-                || bodyParams.status === ScorekeeperReservationStatus.restored
-                || bodyParams.status
-                  === ScorekeeperReservationStatus.requestcancelled) && (
-                    <View>
-                      <TCBorderButton
-                    title={strings.alterReservation}
-                    textColor={colors.grayColor}
-                    borderColor={colors.grayColor}
-                    height={40}
-                    shadow={true}
-                    marginTop={15}
-                    onPress={() => {
-                      if (
-                        (bodyParams?.game?.status === GameStatus.accepted
-                          || bodyParams?.game?.status === GameStatus.reset)
-                        && bodyParams.start_datetime
-                          > parseFloat(new Date().getTime() / 1000).toFixed(0)
-                      ) {
-                        navigation.navigate('EditScorekeeperReservation', {
-                          reservationObj: bodyParams,
-                        });
-                      } else {
-                        Alert.alert(
-                          'Reservation cannot be change after game time passed or offer expired.',
-                        );
-                      }
-                    }}
-                  />
-                      <TCBorderButton
-                    title={strings.cancelreservation}
-                    textColor={colors.whiteColor}
-                    borderColor={colors.grayColor}
-                    backgroundColor={colors.grayColor}
-                    height={40}
-                    shadow={true}
-                    marginBottom={15}
-                    marginTop={15}
-                    onPress={() => {
-                      if (
-                        bodyParams?.game?.status
-                        === (GameStatus.accepted || GameStatus.reset)
-                      ) {
-                        let callerId = '';
-                        if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
-                          callerId = entity.uid;
-                        }
-                        acceptDeclinescorekeeperReservation(
-                          bodyParams.reservation_id,
-                          callerId,
-                          bodyParams.version,
-                          'cancel',
-                        );
-                      } else if (
-                        bodyParams.start_datetime * 1000
-                        < new Date().getTime()
-                      ) {
-                        Alert.alert(
-                          'Reservation cannot be cancel after game time passed or offer expired.',
-                        );
-                      } else {
-                        Alert.alert(
-                          'Reservation can not be change after game has been started.',
-                        );
-                      }
-                    }}
-                  />
-                    </View>
-              )}
-              {bodyParams.status
-                === ScorekeeperReservationStatus.pendingpayment && (
-                  <TCBorderButton
-                  title={strings.cancelreservation}
-                  textColor={colors.whiteColor}
-                  borderColor={colors.grayColor}
-                  backgroundColor={colors.grayColor}
-                  height={40}
-                  shadow={true}
-                  marginBottom={15}
-                  marginTop={15}
-                  onPress={() => {
-                    if (
-                      !(
-                        bodyParams?.game?.status === GameStatus.accepted
-                        || bodyParams?.game?.status === GameStatus.reset
-                      )
-                    ) {
-                      Alert.alert(strings.cannotAcceptText);
-                    } else if (
-                      bodyParams?.expiry_datetime
-                        < new Date().getTime() / 1000
-                      || bodyParams?.game?.start_datetime
-                        < new Date().getTime() / 1000
-                    ) {
-                      Alert.alert(strings.scorekeeperOfferExpiryText);
-                    } else {
-                      let callerId = '';
-                      if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
-                        callerId = entity.uid;
-                      }
-                      acceptDeclinescorekeeperReservation(
-                        bodyParams.reservation_id,
-                        callerId,
-                        bodyParams.version,
-                        'cancel',
-                      );
-                    }
-                  }}
-                />
-              )}
-            </SafeAreaView>
+            {renderBottomBurron()}
           </View>
         )}
       </ScrollView>
@@ -1092,13 +825,6 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
   );
 }
 const styles = StyleSheet.create({
-  // rulesText: {
-  //   fontSize: 16,
-  //   fontFamily: fonts.RRegular,
-  //   color: colors.lightBlackColor,
-  //   marginLeft: 15,
-  //   marginRight: 15,
-  // },
 
   teamView: {
     flexDirection: 'row',
@@ -1128,7 +854,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.lightBlackColor,
-  width: '80%',
+    width: '80%',
   },
   challengerView: {
     marginRight: 15,
@@ -1137,43 +863,7 @@ const styles = StyleSheet.create({
   challengeeView: {
     flex: 0.5,
   },
-  challengeMessage: {
-    fontFamily: fonts.RBold,
-    fontSize: 18,
-    color: colors.themeColor,
-    margin: 15,
-    marginBottom: 5,
-  },
-  challengeText: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    marginLeft: 15,
-    marginRight: 15,
-    marginBottom: 15,
-  },
-  // challengeText: {
-  //   fontFamily: fonts.RMedium,
-  //   fontSize: 23,
-  //   color: colors.lightBlackColor,
-  //   marginLeft: 15,
-  //   marginRight: 15,
-  //   marginBottom: 15,
-  // },
-  timeText: {
-    color: colors.themeColor,
-  },
-  awatingNotesText: {
-    color: colors.userPostTimeColor,
-    marginRight: 15,
-    marginLeft: 15,
-    marginBottom: 15,
-  },
-  pendingRequestText: {
-    color: colors.userPostTimeColor,
-    marginLeft: 15,
-    marginRight: 15,
-  },
+
   contentContainer: {
     padding: 15,
   },
