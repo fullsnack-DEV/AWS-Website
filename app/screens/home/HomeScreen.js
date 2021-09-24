@@ -3477,7 +3477,7 @@ const HomeScreen = ({ navigation, route }) => {
               },
             },
             { term: { 'status.keyword': 'accepted' } },
-            { term: { 'challenge_scorekeeper.who_secure.responsible_team_id.keyword': teamId } },
+            { term: { 'challenge_scorekeepers.who_secure.responsible_team_id.keyword': teamId } },
           ],
         },
       },
@@ -3665,17 +3665,15 @@ const HomeScreen = ({ navigation, route }) => {
               }
             });
           } else if (offerOpetions()[index] === strings.scorekeeperOffer) {
-            // Alert('scorekeeper offer');
-            // gameListScorekeeperModalRef.current.open();
             setloading(true);
             const headers = {};
             headers.caller_id = currentUserData?.group_id;
 
             const promiseArr = [
               // getGameSlots(
-              //   'scorekeepers',
+              //   'referees',
               //   authContext?.entity?.uid,
-              //   `status=accepted&sport=${currentUserData?.sport}&scorekeeperDetail=true`,
+              //   `status=accepted&sport=${currentUserData?.sport}&refereeDetail=true`,
               //   headers,
               //   authContext,
               // ),
@@ -3684,42 +3682,34 @@ const HomeScreen = ({ navigation, route }) => {
                 currentUserData?.group_id,
               ),
               settingUtils.getSetting(
-                authContext.entity.uid,
+                authContext?.entity?.uid,
                 'scorekeeper',
                 currentUserData?.sport,
                 authContext,
               ),
             ];
 
-            Promise.all(promiseArr)
-              .then(([gameList, scorekeeperSetting]) => {
-                if (gameList) {
-                  setMatchData([...gameList?.payload]);
-                }
-
-                if (scorekeeperSetting) {
-                  setScorekeeperSettingObject(scorekeeperSetting);
-                  if (
-                    scorekeeperSetting?.scorekeeperAvailibility
-                    && scorekeeperSetting?.game_fee
-                    && scorekeeperSetting?.refund_policy
-                    && scorekeeperSetting?.available_area
-                  ) {
-                    gameListScorekeeperModalRef.current.open();
-                  } else {
-                    Alert.alert(
-                      'You can\'t send offer, please configure your scorekeeper setting first.',
-                    );
-                  }
-                }
-                setloading(false);
-              })
-              .catch((e) => {
-                setloading(false);
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, e.messages);
-                }, 10);
-              });
+            Promise.all(promiseArr).then(([gameList, scorekeeperSetting]) => {
+              setloading(false);
+              console.log('Game slots:=>', gameList);
+              console.log('scorekeeperSetting:=>', scorekeeperSetting);
+              if (gameList.length > 0) {
+                setMatchData([...gameList]);
+              }
+              if (
+                scorekeeperSetting?.scorekeeperAvailibility
+                && scorekeeperSetting?.game_fee
+                && scorekeeperSetting?.refund_policy
+                && scorekeeperSetting?.available_area
+              ) {
+                gameListScorekeeperModalRef.current.open();
+                setScorekeeperSettingObject(scorekeeperSetting);
+              } else {
+                Alert.alert(
+                  'You can\'t send offer, please configure your scorekeeper setting first.',
+                );
+              }
+            });
           } else if (offerOpetions()[index] === strings.cancel) {
           }
         }}

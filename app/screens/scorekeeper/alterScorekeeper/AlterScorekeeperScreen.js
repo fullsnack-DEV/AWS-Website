@@ -53,6 +53,7 @@ import React, {
  import CurruentScorekeeperReservationView from './CurruentScorekeeperReservationView';
  import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
+import ScorekeeperReservationTitle from '../../../components/reservations/ScorekeeperReservationTitle';
 
  let entity = {};
  const scroll = React.createRef();
@@ -413,21 +414,6 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
        });
    };
 
-   const getDayTimeDifferent = (sDate, eDate) => {
-     let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
-
-     const days = Math.floor(delta / 86400);
-     delta -= days * 86400;
-
-     const hours = Math.floor(delta / 3600) % 24;
-     delta -= hours * 3600;
-
-     const minutes = Math.floor(delta / 60) % 60;
-     delta -= minutes * 60;
-
-     return `${days}d ${hours}h ${minutes}m`;
-   };
-
    const getRequester = (param) => {
      if (entity.uid === param?.scorekeeper?.user_id) {
        if (
@@ -455,7 +441,7 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
          console.log('payment method', response.payload);
          for (const tempCard of response?.payload) {
            if (tempCard?.id === bodyParams?.source) {
-             setDefaultCard(tempCard);
+             setDefaultCard(response?.payload?.card);
              break;
            }
          }
@@ -533,62 +519,6 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
      return 'receiver';
    };
 
-   const checkScorekeeperOrTeam = (reservationObj) => {
-     const teampObj = { ...reservationObj };
-     if (
-       teampObj?.status === ScorekeeperReservationStatus.pendingpayment
-       || teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
-     ) {
-       if (teampObj?.updated_by) {
-         if (teampObj?.updated_by?.group_id) {
-           teampObj.requested_by = teampObj.updated_by.group_id;
-         } else {
-           teampObj.requested_by = teampObj.updated_by.uid;
-         }
-       } else if (teampObj?.created_by?.group_id) {
-         teampObj.requested_by = teampObj.created_by.group_id;
-       } else {
-         teampObj.requested_by = teampObj.created_by.uid;
-       }
-     } else if (teampObj?.updated_by) {
-       if (teampObj?.updated_by?.group_id) {
-         if (
-           teampObj?.automatic_request
-           && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-           && entity?.obj?.entity_type === 'team'
-         ) {
-           teampObj.requested_by = teampObj.initiated_by;
-         } else {
-           teampObj.requested_by = teampObj.updated_by.group_id;
-         }
-       } else if (
-         teampObj?.automatic_request
-         && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-         && teampObj?.scorekeeper?.user_id !== entity.uid
-       ) {
-         teampObj.requested_by = teampObj.initiated_by;
-       } else {
-         teampObj.requested_by = teampObj.updated_by.uid;
-       }
-     } else if (teampObj?.created_by?.group_id) {
-       teampObj.requested_by = teampObj.created_by.group_id;
-     } else {
-       teampObj.requested_by = teampObj.created_by.uid;
-     }
-
-     console.log('Temp Object::', teampObj);
-     console.log(`${teampObj?.requested_by}:::${entity.uid}`);
-     if (entity.uid === teampObj?.scorekeeper?.user_id) {
-       if (teampObj?.requested_by === entity.uid) {
-         return 'scorekeeper';
-       }
-       return 'team';
-     }
-     if (teampObj?.requested_by === entity.uid) {
-       return 'team';
-     }
-     return 'scorekeeper';
-   };
    const updateReservationDetail = () => {
      setloading(true);
      const body = {};
@@ -639,18 +569,6 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
        });
    };
 
-   const getPendingRequestPaymentMessage = () => {
-     if (bodyParams?.requested_by === entity.uid) {
-       return `${getEntityName(
-         bodyParams,
-       )} has accepted your scorekeeper reservation alteration request, but `;
-     }
-
-     return `Your team has accepted a scorekeeper reservation alteration request from ${getEntityName(
-       bodyParams,
-     )}, but `;
-   };
-
    const Title = ({ text, required }) => (
      <Text style={styles.titleText}>
        {text}
@@ -673,27 +591,6 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
      const endDate = moment(toDate * 1000).format('hh:mm a');
      const duration = getGameFromToDateDiff(fromData, toDate);
      return `${startDate} - ${endDate} (${duration})`;
-   };
-   const getEntityName = (reservationObj) => {
-     if (reservationObj?.initiated_by === entity.uid) {
-       return `${reservationObj?.scorekeeper?.first_name} ${reservationObj?.scorekeeper?.last_name}`;
-     }
-     if (!reservationObj?.game?.user_challenge) {
-       if (
-         reservationObj?.initiated_by
-         === reservationObj?.game?.home_team?.group_id
-       ) {
-         return `${reservationObj?.game?.home_team.group_name}`;
-       }
-       return `${reservationObj?.game?.away_team.group_name}`;
-     }
-     console.log('user challenge');
-     if (
-       reservationObj?.initiated_by === reservationObj?.game?.home_team?.user_id
-     ) {
-       return `${reservationObj?.game?.home_team.first_name} ${reservationObj?.game?.home_team.last_name}`;
-     }
-     return `${reservationObj?.game?.away_team.first_name} ${reservationObj?.game?.away_team.last_name}`;
    };
 
    const getOpponentEntity = (reservationObj) => {
@@ -867,180 +764,8 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
                </View>
              </View>
            </View>
-           {/* Status declined */}
-           {checkSenderOrReceiver(bodyParams) === 'sender'
-             && bodyParams.status === ScorekeeperReservationStatus.declined && (
-               <View>
-                 <Text
-                   style={[
-                     styles.challengeMessage,
-                     { color: colors.googleColor },
-                   ]}>
-                   DECLINED
-                 </Text>
-                 <Text style={styles.challengeText}>
-                   {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
-                     ? `You have declined a scorekeeper request from ${getEntityName(
-                         bodyParams,
-                       )}.`
-                     : `Your team have declined scorekeeper reservation request from ${getEntityName(
-                         bodyParams,
-                       )}.`}
-                 </Text>
-               </View>
-             )}
-           {checkSenderOrReceiver(bodyParams) === 'receiver'
-             && bodyParams.status === ScorekeeperReservationStatus.declined && (
-               <View>
-                 <Text
-                   style={[
-                     styles.challengeMessage,
-                     { color: colors.googleColor },
-                   ]}>
-                   DECLINED
-                 </Text>
-                 <Text style={styles.challengeText}>
-                   {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
-                     ? `${getEntityName(
-                         bodyParams,
-                       )} has declined a scorekeeper request from your team.`
-                     : `${getEntityName(
-                         bodyParams,
-                       )} have declined a scorekeeper reservation request sent by you.`}
-                 </Text>
-               </View>
-             )}
-           {/* Status declined */}
-           {/* status change requested */}
-           {checkSenderOrReceiver(bodyParams) === 'sender'
-             && bodyParams.status === ScorekeeperReservationStatus.changeRequest
-             && !bodyParams.automatic_request && (
-               <View>
-                 <Text
-                   style={[
-                     styles.challengeMessage,
-                     { color: colors.requestSentColor },
-                   ]}>
-                   ALTERATION REQUEST SENT
-                 </Text>
-                 <Text style={styles.challengeText}>
-                   {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper'
-                     ? `You sent a scorekeeper reservation alteration request to ${getEntityName(
-                         bodyParams,
-                       )}.`
-                     : `Your team sent a scorekeeper reservation alteration request to ${getEntityName(
-                         bodyParams,
-                       )}`}
-                 </Text>
-               </View>
-             )}
-           {checkSenderOrReceiver(bodyParams) === 'receiver'
-             && bodyParams.status === ScorekeeperReservationStatus.changeRequest
-             && !bodyParams.automatic_request && (
-               <View>
-                 <Text style={[
-                     styles.challengeMessage,
-                     { color: colors.requestSentColor },
-                 ]}>
-                   ALTERATION REQUEST PENDING
-                 </Text>
-                 <Text style={styles.challengeText}>
-                   {bodyParams?.scorekeeper?.user_id === entity.uid
-                     ? `You received a scorekeeper reservation alteration request from ${getEntityName(
-                         bodyParams,
-                       )}.`
-                     : `Your team received a scorekeeper reservation alteration request from ${getEntityName(
-                         bodyParams,
-                       )}.`}{' '}
-                   Please, respond within{' '}
-                   <Text style={{ color: colors.themeColor }}>
-                     {getDayTimeDifferent(
-                       bodyParams?.expiry_datetime * 1000,
-                       new Date().getTime(),
-                     )}
-                   </Text>
-                 </Text>
-               </View>
-             )}
-           {/* status change requested */}
-           {/* status change requested automatic */}
-           {checkSenderOrReceiver(bodyParams) === 'sender'
-             && bodyParams.status === ScorekeeperReservationStatus.changeRequest
-             && bodyParams.automatic_request && (
-               <View>
-                 <Text
-                   style={[
-                     styles.challengeMessage,
-                     { color: colors.requestSentColor },
-                   ]}>
-                   ALTERATION REQUEST SENT
-                 </Text>
-                 <Text style={styles.challengeText}>
-                   {`An alteration request was sent to ${getEntityName(
-                     bodyParams,
-                   )} because the game had been rescheduled.`}
-                 </Text>
-               </View>
-             )}
-           {checkSenderOrReceiver(bodyParams) === 'receiver'
-             && bodyParams.status === ScorekeeperReservationStatus.changeRequest
-             && bodyParams.automatic_request && (
-               <View>
-                 <Text style={styles.challengeMessage}>
-                   ALTERATION REQUEST PENDING
-                 </Text>
-                 <Text style={styles.challengeText}>
-                   {
-                     'You received a scorekeeper reservation alteration request because the game had been rescheduled.'
-                   }
-                   <Text style={{ color: colors.userPostTimeColor }}>
-                     {`\n\nIf you decline this alteration request, the reservation will be canceled by ${getEntityName(
-                       bodyParams,
-                     )} and you will be paid according to the cancellation policy.`}
-                   </Text>
-                 </Text>
-               </View>
-             )}
-           {/* status change requested automatic */}
 
-           {/* status pending request payment */}
-           {bodyParams?.scorekeeper?.user_id !== entity.uid
-             && bodyParams.status
-               === ScorekeeperReservationStatus.pendingrequestpayment && (
-                 <View>
-                   <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
-                   <Text style={styles.challengeText}>
-                     {`${getPendingRequestPaymentMessage()} your payment hasn't gone through yet.`}
-                   </Text>
-                   <Text style={styles.awatingNotesText}>
-                     {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
-                     bodyParams.expiry_datetime * 1000,
-                     new Date().getTime(),
-                   )}
-                   \nMeanwhile, ${getEntityName(
-                     bodyParams,
-                   )} can cancel acceptance of the alteration request before the payment is completed.`}
-                   </Text>
-                 </View>
-             )}
-           {bodyParams?.scorekeeper?.user_id === entity.uid
-             && bodyParams.status
-               === ScorekeeperReservationStatus.pendingrequestpayment && (
-                 <View>
-                   <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
-                   <Text style={styles.challengeText}>
-                     {`${getPendingRequestPaymentMessage()} the payment hasn't gone through yet.`}
-                   </Text>
-                   <Text style={styles.awatingNotesText}>
-                     {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
-                     bodyParams.expiry_datetime * 1000,
-                     new Date().getTime(),
-                   )}
-                   \nMeanwhile, you can cancel acceptance of the alteration request before the payment will go through.`}
-                   </Text>
-                 </View>
-             )}
-           {/* status pending request payment */}
+           <ScorekeeperReservationTitle reservationObject={bodyParams} showDesc={true} containerStyle={{ margin: 15 }}/>
 
            {bodyParams?.scorekeeper?.user_id !== entity.uid
              && bodyParams.status
@@ -1280,7 +1005,7 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
                 showNextArrow={true}
                 onPress={() => {
                   navigation.navigate('PaymentMethodsScreen', {
-                    comeFrom: 'AlterScorekeeperScreen',
+                    comeFrom: 'AlterRefereeScreen',
                   });
                 }}
               />
@@ -1651,27 +1376,7 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
      fontSize: 15,
      color: colors.themeColor,
    },
-   challengeMessage: {
-     fontFamily: fonts.RBold,
-     fontSize: 18,
-     color: colors.themeColor,
-     margin: 15,
-     marginBottom: 5,
-   },
-   challengeText: {
-     fontFamily: fonts.RRegular,
-     fontSize: 16,
-     color: colors.lightBlackColor,
-     marginLeft: 15,
-     marginRight: 15,
-     marginBottom: 15,
-   },
-   awatingNotesText: {
-     color: colors.userPostTimeColor,
-     marginRight: 15,
-     marginLeft: 15,
-     marginBottom: 15,
-   },
+
    contentContainer: {
      padding: 15,
    },

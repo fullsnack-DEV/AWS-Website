@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable consistent-return */
 import React, { memo, useContext } from 'react';
 import {
@@ -14,6 +15,7 @@ import images from '../../Constants/ImagePath';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 import RefereeReservationTitle from './RefereeReservationTitle';
+import ScorekeeperReservationTitle from './ScorekeeperReservationTitle';
 
 let entity = {};
 function ReservationStatusView({ data, onClick }) {
@@ -211,9 +213,15 @@ function ReservationStatusView({ data, onClick }) {
         {/* <Text style={[styles.reservationText, { color: getReservationStatus().color }]}>
           {getReservationStatus().status}
         </Text> */}
-        {data?.referee ? (
+        {data?.referee_id && (
           <RefereeReservationTitle reservationObject={data} showDesc={false} fontSize={16} containerStyle={{ margin: 0 }}/>
-        ) : (
+        )}
+
+        {data?.scorekeeper_id && (
+          <ScorekeeperReservationTitle reservationObject={data} showDesc={false} fontSize={16} containerStyle={{ margin: 0 }}/>
+        )}
+
+        {!data?.referee_id && !data?.scorekeeper_id && (
           <ChallengeStatusTitle
             challengeObj={data}
             isSender={

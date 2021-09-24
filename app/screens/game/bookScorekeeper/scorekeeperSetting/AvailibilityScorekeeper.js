@@ -47,16 +47,21 @@ import React, {
           entity_type: 'scorekeeper',
           scorekeeperAvailibility: acceptChallenge ? 'On' : 'Off',
         }
+
         console.log('data::=>', bodyParams);
+
         setloading(true);
         const registerdScorekeeperData = authContext?.user?.scorekeeper_data?.filter(
-          (obj) => obj.sport_name?.toLowerCase() !== sportName?.toLowerCase(),
+          (obj) => obj.sport_name !== sportName,
         );
+
         const selectedSport = authContext?.user?.scorekeeper_data?.filter(
-          (obj) => obj.sport_name?.toLowerCase() === sportName?.toLowerCase(),
+          (obj) => obj.sport_name === sportName,
         )[0];
+
         selectedSport.setting = { ...selectedSport?.setting, ...bodyParams };
         registerdScorekeeperData.push(selectedSport);
+
         const body = { ...authContext?.user, scorekeeper_data: registerdScorekeeperData };
         console.log('Body::::--->', body);
 
@@ -90,7 +95,9 @@ import React, {
             }, 10);
           });
       }
+
      return (
+
        <SafeAreaView>
          <ActivityLoader visible={loading} />
          <View>

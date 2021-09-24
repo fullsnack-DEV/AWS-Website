@@ -64,6 +64,7 @@ import TCGradientButton from '../../components/TCGradientButton';
 import PRNotificationTeamInvite from '../../components/notificationComponent/PRNotificationTeamInvite';
 import PRNotificationDetailItem from '../../components/notificationComponent/PRNotificationDetailItem';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
+import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 
 function NotificationsListScreen({ navigation }) {
   const actionSheet = useRef();
@@ -242,21 +243,101 @@ function NotificationsListScreen({ navigation }) {
         || verb.includes(NotificationType.scorekeeperRequest)
         || verb.includes(NotificationType.changeScorekeeperRequest)
       ) {
+        // const a = JSON.parse(item.activities[0].object)?.reservationObject
+        //   ?.reservation_id;
+        // setloading(true);
+        // ScorekeeperUtils.getScorekeeperReservationDetail(
+        //   a,
+        //   authContext.entity.uid,
+        //   authContext,
+        // )
+        //   .then((obj) => {
+        //     navigation.navigate(obj.screenName, {
+        //       reservationObj: obj.reservationObj || obj.reservationObj[0],
+        //     });
+        //     setloading(false);
+        //   })
+        //   .catch(() => setloading(false));
         const a = JSON.parse(item.activities[0].object)?.reservationObject
-          ?.reservation_id;
-        setloading(true);
-        ScorekeeperUtils.getScorekeeperReservationDetail(
-          a,
-          authContext.entity.uid,
-          authContext,
-        )
-          .then((obj) => {
+        ?.reservation_id
+      || JSON.parse(item.activities[0].object)?.reservation?.reservation_id;
+    setloading(true);
+    ScorekeeperUtils.getScorekeeperReservationDetail(
+      a,
+      authContext.entity.uid,
+      authContext,
+    )
+      .then((obj) => {
+        const reservationObj = obj.reservationObj || obj.reservationObj[0];
+
+        console.log('reservationObj:1>=>', reservationObj);
+        if (reservationObj?.scorekeeper?.user_id === authContext.entity.uid) {
+          navigation.navigate(obj.screenName, {
+            reservationObj,
+          });
+        } else if (
+          reservationObj?.approved_by === authContext.entity.uid
+          && reservationObj.status === ScorekeeperReservationStatus.accepted
+        ) {
+          navigation.navigate('ScorekeeperApprovalScreen', {
+            type: 'accepted',
+            reservationObj,
+          });
+        } else if (
+          reservationObj.status === ScorekeeperReservationStatus.offered
+          && !reservationObj?.is_offer
+        ) {
+          navigation.navigate('ScorekeeperApprovalScreen', {
+            type: 'approve',
+            reservationObj,
+          });
+        } else if (
+          reservationObj.status === ScorekeeperReservationStatus.approved
+          && reservationObj?.is_offer
+        ) {
+          if (authContext.entity.uid === reservationObj.initiated_by) {
             navigation.navigate(obj.screenName, {
-              reservationObj: obj.reservationObj || obj.reservationObj[0],
+              reservationObj,
             });
-            setloading(false);
-          })
-          .catch(() => setloading(false));
+          } else {
+            navigation.navigate('ScorekeeperApprovalScreen', {
+              type: 'accept',
+              reservationObj,
+            });
+          }
+        } else if (
+          reservationObj.status === ScorekeeperReservationStatus.approved
+          && !reservationObj?.is_offer
+        ) {
+          navigation.navigate('ScorekeeperApprovalScreen', {
+            type: 'accepted',
+            reservationObj,
+          });
+        } else if (
+          reservationObj.status === ScorekeeperReservationStatus.offered
+          && reservationObj?.expiry_datetime
+            < parseFloat(new Date().getTime() / 1000).toFixed(0)
+        ) {
+          navigation.navigate('ScorekeeperApprovalScreen', {
+            type: 'expired',
+            reservationObj,
+          });
+        } else {
+          console.log('reservationObj', reservationObj.status);
+          if (authContext.entity.uid === reservationObj.approved_by) {
+            navigation.navigate('ScorekeeperApprovalScreen', {
+              type: 'accepted',
+              reservationObj,
+            });
+          } else {
+            navigation.navigate(obj.screenName, {
+              reservationObj,
+            });
+          }
+        }
+        setloading(false);
+      })
+      .catch(() => setloading(false));
       } else if (verb.includes(NotificationType.inviteToConnectMember)) {
         navigation.navigate('InviteToMemberScreen', {
           data: item,
@@ -577,7 +658,7 @@ function NotificationsListScreen({ navigation }) {
       item.activities[0].verb.includes(
         NotificationType.inviteToConnectMember,
       )
-      || item.activities[0].verb.includes(NotificationType.refereeRequest)
+      || item.activities[0].verb.includes(NotificationType.refereeRequest) || item.activities[0].verb.includes(NotificationType.scorekeeperRequest)
     ) {
       console.log('Ok ok4');
 
