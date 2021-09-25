@@ -19,17 +19,17 @@ import {
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import bodybuilder from 'bodybuilder';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import * as Utility from '../../utils/index';
 
 // import { gameData } from '../../utils/constant';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { widthPercentageToDP } from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
-import { postElasticSearch } from '../../api/elasticSearch';
-import strings from '../../Constants/String';
+import { getGameIndex } from '../../api/elasticSearch';
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 
 export default function RecentMatchScreen({ navigation, route }) {
@@ -40,7 +40,6 @@ export default function RecentMatchScreen({ navigation, route }) {
 
   const [pageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
-  const [totalRecord, setTotalRecord] = useState();
 
   const [location] = useState(route?.params?.location);
   const [selectedSport, setSelectedSport] = useState(
@@ -75,76 +74,20 @@ export default function RecentMatchScreen({ navigation, route }) {
 
     // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
 
-    postElasticSearch(recentMatchbody, 'gameindex/game')
-      .then((res1) => {
-        if (res1.hits.hits.length === 0) {
+    getGameIndex(recentMatchbody).then((games) => {
+      Utility.getGamesList(games).then((gamedata) => {
+        if (gamedata.length === 0) {
           setRecentMatch([]);
         } else {
-          console.log('recent  API Response:=>', res1.hits.hits);
-          console.log('Total record:=>', res1.hits.total.value);
-          setTotalRecord(res1.hits.total.value);
-          let entityArr = [];
-          let recentArr = [];
-
-          if (res1.hits) {
-            const arr = [];
-            res1.hits.hits.map((e) => {
-              arr.push(e._source.away_team);
-              arr.push(e._source.home_team);
-            });
-            const uniqueArray = [...new Set(arr)];
-            entityArr = uniqueArray;
-            recentArr = res1.hits.hits;
-          }
-
-          const ids = {
-            query: {
-              ids: {
-                values: entityArr,
-              },
-            },
-          };
-          if (entityArr?.length > 0) {
-            postElasticSearch(ids, 'entityindex/entity')
-              .then((response) => {
-                const arr = [];
-                recentArr.map((e) => {
-                  const obj = {
-                    ...e._source,
-                    home_team: response.hits.hits.find(
-                      (x) => x._source.group_id === e._source.home_team,
-                    ),
-                    away_team: response.hits.hits.find(
-                      (x) => x._source.group_id === e._source.away_team,
-                    ),
-                  };
-
-                  arr.push(obj);
-                });
-
-                setRecentMatch(arr);
-
-                console.log(' USER response.hits.hits:=>', arr);
-              })
-              .catch((e) => {
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, e.message);
-                }, 10);
-              });
-          }
+          setRecentMatch(gamedata);
         }
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
       });
+    });
   }, [location, pageSize, selectedSport]);
 
   const handleLoadMore = () => {
     console.log('Page Size:', pageSize);
     console.log('Page Number:', pageNumber);
-    console.log('Total:', totalRecord);
     const recentMatchbody = bodybuilder()
     .size(pageSize)
     .from((pageNumber * pageSize))
@@ -166,69 +109,15 @@ export default function RecentMatchScreen({ navigation, route }) {
       setRecentMatch([]);
     }
 
-    postElasticSearch(recentMatchbody, 'gameindex/game')
-      .then((res1) => {
-        console.log('recent  API Response:=>', res1.hits.hits);
-        console.log('Total record:=>', res1.hits.total.value);
-        setTotalRecord(res1.hits.total.value);
-        let entityArr = [];
-        let recentArr = [];
-
-        if (res1.hits) {
-          const arr = [];
-          res1.hits.hits.map((e) => {
-            arr.push(e._source.away_team);
-            arr.push(e._source.home_team);
-          });
-          const uniqueArray = [...new Set(arr)];
-          entityArr = uniqueArray;
-          recentArr = res1.hits.hits;
+    getGameIndex(recentMatchbody).then((games) => {
+      Utility.getGamesList(games).then((gamedata) => {
+        if (gamedata.length === 0) {
+          setRecentMatch([]);
+        } else {
+          setRecentMatch(gamedata);
         }
-
-        const ids = {
-          query: {
-            ids: {
-              values: entityArr,
-            },
-          },
-        };
-        if (entityArr?.length > 0) {
-          postElasticSearch(ids, 'entityindex/entity')
-            .then((response) => {
-              const arr = [];
-              recentArr.map((e) => {
-                const obj = {
-                  ...e._source,
-                  home_team: response.hits.hits.find(
-                    (x) => x._source.group_id === e._source.home_team,
-                  ),
-                  away_team: response.hits.hits.find(
-                    (x) => x._source.group_id === e._source.away_team,
-                  ),
-                };
-
-                arr.push(obj);
-              });
-
-              setRecentMatch(recentMatch.concat(arr));
-
-              console.log(
-                ' USER response.hits.hits:=>',
-                recentMatch.concat(arr),
-              );
-            })
-            .catch((e) => {
-              setTimeout(() => {
-                Alert.alert(strings.alertmessagetitle, e.message);
-              }, 10);
-            });
-        }
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
       });
+    });
   };
 
   const renderRecentMatchItems = useCallback(
@@ -438,70 +327,15 @@ export default function RecentMatchScreen({ navigation, route }) {
 
                   // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
 
-                  postElasticSearch(recentMatchBody, 'gameindex/game')
-                    .then((res1) => {
-                      if (res1.hits.hits.length === 0) {
+                  getGameIndex(recentMatchBody).then((games) => {
+                    Utility.getGamesList(games).then((gamedata) => {
+                      if (gamedata.length === 0) {
                         setRecentMatch([]);
                       } else {
-                        console.log('recent  API Response:=>', res1.hits.hits);
-                        console.log('Total record:=>', res1.hits.total.value);
-                        setTotalRecord(res1.hits.total.value);
-                        let entityArr = [];
-                        let recentArr = [];
-
-                        if (res1.hits) {
-                          const arr = [];
-                          res1.hits.hits.map((e) => {
-                            arr.push(e._source.away_team);
-                            arr.push(e._source.home_team);
-                          });
-                          const uniqueArray = [...new Set(arr)];
-                          entityArr = uniqueArray;
-                          recentArr = res1.hits.hits;
-                        }
-
-                        const ids = {
-                          query: {
-                            ids: {
-                              values: entityArr,
-                            },
-                          },
-                        };
-                        if (entityArr?.length > 0) {
-                          postElasticSearch(ids, 'entityindex/entity')
-                            .then((response) => {
-                              const arr = [];
-                              recentArr.map((e) => {
-                                const obj = {
-                                  ...e._source,
-                                  home_team: response.hits.hits.find(
-                                    (x) => x._source.group_id === e._source.home_team,
-                                  ),
-                                  away_team: response.hits.hits.find(
-                                    (x) => x._source.group_id === e._source.away_team,
-                                  ),
-                                };
-
-                                arr.push(obj);
-                              });
-
-                              setRecentMatch(arr);
-
-                              console.log(' USER response.hits.hits:=>', arr);
-                            })
-                            .catch((e) => {
-                              setTimeout(() => {
-                                Alert.alert(strings.alertmessagetitle, e.message);
-                              }, 10);
-                            });
-                        }
+                        setRecentMatch(gamedata);
                       }
-                    })
-                    .catch((e) => {
-                      setTimeout(() => {
-                        Alert.alert(strings.alertmessagetitle, e.message);
-                      }, 10);
                     });
+                  });
                 }
               }}>
               {'Apply'}

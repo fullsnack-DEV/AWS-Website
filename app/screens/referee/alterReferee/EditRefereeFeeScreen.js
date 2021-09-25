@@ -20,7 +20,7 @@ let bodyParams = {};
 export default function EditRefereeFeeScreen({ navigation, route }) {
   // eslint-disable-next-line no-unused-vars
   const isFocused = useIsFocused();
-  const [basicFee, setBasicFee] = useState(0.0);
+  const [basicFee, setBasicFee] = useState(0);
   useEffect(() => {
     if (route && route.params && route.params.editableAlter && route.params.body) {
       console.log('EDIT FEES::', route.params.body);
@@ -64,7 +64,7 @@ export default function EditRefereeFeeScreen({ navigation, route }) {
                   reservationObj: {
                     ...bodyParams,
                     manual_fee: true,
-                    total_game_fee: parseFloat(basicFee),
+                    total_game_fee: Number(parseFloat(basicFee).toFixed(2)),
                   },
                   updatedFee: true,
                 })

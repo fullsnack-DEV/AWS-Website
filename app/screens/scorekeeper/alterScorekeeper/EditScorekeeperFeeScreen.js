@@ -19,7 +19,7 @@ import TCLabel from '../../../components/TCLabel';
 let bodyParams = {};
 export default function EditScorekeeperFeeScreen({ navigation, route }) {
   const isFocused = useIsFocused();
-  const [basicFee, setBasicFee] = useState(0.0);
+  const [basicFee, setBasicFee] = useState(0);
   useEffect(() => {
     if (route && route.params && route.params.editableAlter && route.params.body) {
       console.log('EDIT FEES::', route.params.body);

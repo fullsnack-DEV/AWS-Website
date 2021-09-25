@@ -13,7 +13,7 @@ import { getSearchData } from '../../../../utils';
 import TCGameCard from '../../../../components/TCGameCard';
 import strings from '../../../../Constants/String';
 import * as Utility from '../../../../utils';
-import { postElasticSearch } from '../../../../api/elasticSearch';
+import { getCalendarIndex, getGameIndex } from '../../../../api/elasticSearch';
 
 const TYPING_SPEED = 200;
 
@@ -116,8 +116,8 @@ const RefereeSelectMatch = ({ navigation, route }) => {
     };
 
     const promiseArr = [
-      postElasticSearch(gameListWithFilter, 'gameindex'),
-      postElasticSearch(refereeList, 'calendarindex'),
+      getGameIndex(gameListWithFilter),
+      getCalendarIndex(refereeList),
     ];
 
     return Promise.all(promiseArr)
@@ -163,14 +163,6 @@ const RefereeSelectMatch = ({ navigation, route }) => {
           Alert.alert(strings.alertmessagetitle, e.messages);
         }, 10);
       });
-    // return postElasticSearch(gameListWithFilter, 'gameindex')
-    // .then((games) => games)
-    // .catch((e) => {
-    //   setloading(false);
-    //   setTimeout(() => {
-    //     Alert.alert(strings.alertmessagetitle, e.messages);
-    //   }, 10);
-    // });
   };
 
   const onSearchTextChange = (text) => {

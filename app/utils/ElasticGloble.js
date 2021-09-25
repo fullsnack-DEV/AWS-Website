@@ -22,10 +22,14 @@ const globalElasticApiCall = async ({
  method, url, data,
  }) => {
   const elasticCredential = await Utility.getStorage('appSetting');
+  console.log('elasticCredential', elasticCredential);
 
+  const URL = `${elasticCredential?.elastic_cred?.end_point}${url}`
+
+  console.log('FUll url : =>', URL);
   const options = {
     method,
-    url,
+    url: URL,
     data,
     auth: {
       username: elasticCredential?.elastic_cred?.user_name,
@@ -37,6 +41,7 @@ const globalElasticApiCall = async ({
   };
 
   try {
+    console.log('Elastic API Opetions:=>', options);
     const response = await axios(options);
     // if (response.data.error) {
     //   console.log('ERROR RESPONSE ::', response.data.error);

@@ -42,8 +42,9 @@ import { getSportsList, getShortsList } from '../../api/Games'; // getRecentGame
 import * as Utility from '../../utils';
 
 import {
-  postElasticSearch,
-  postMultiElasticSearch,
+  getGameIndex,
+  getGroupIndex,
+  getUserIndex,
 } from '../../api/elasticSearch';
 import { gameData } from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
@@ -240,116 +241,56 @@ export default function LocalHomeScreen({ navigation, route }) {
 
         challengeeBody = `{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"sport":"${selectedSport}"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
 
-        hiringPlayersBody = `{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"hiringPlayers": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
-        lookingTeamBody = `{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"lookingForTeam": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        // hiringPlayersBody = `{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"team"}},{"match":{"hiringPlayers": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        hiringPlayersBody = '{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"team"}}]}}}';
+
+        // lookingTeamBody = `{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"player"}},{"match":{"lookingForTeam": true}},{"match":{"sport":"${selectedSport}"}},{"match":{"entity_type":"team"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}}]}}}`;
+        lookingTeamBody = '{"size": 5,"query":{"bool":{"must":[{"match":{"entity_type":"player"}}]}}}';
       }
 
       console.log('upcomingMatchbody', challengeeBody);
 
-      const a = `{ }\n${recentMatchbody}\n{ }\n${upcomingMatchbody}\n{"index":"entityindex"}\n${challengeeBody}\n{"index":"entityindex"}\n${hiringPlayersBody}\n{"index":"entityindex"}\n${lookingTeamBody}\n`;
+      // const a = `{ }\n${recentMatchbody}\n{ }\n${upcomingMatchbody}\n{"index":"entityindex"}\n${challengeeBody}\n{"index":"entityindex"}\n${hiringPlayersBody}\n{"index":"entityindex"}\n${lookingTeamBody}\n`;
 
-      console.log('Full object :=>', a);
+      console.log('Full object :=>', upcomingMatchbody);
 
-      postMultiElasticSearch(a)
-        .then((res) => {
-          // console.log('Recent API Response:=>', res1);
-          console.log('recent  API Response:=>', res);
-
-          let entityArr = [];
-          let recentArr = [];
-          let upcomingArr = [];
-
-          setloading(false);
-          if (res?.responses) {
-            const arr = [];
-            res.responses[0].hits.hits.map((e) => {
-              arr.push(e._source.away_team);
-              arr.push(e._source.home_team);
-            });
-            const uniqueArray = [...new Set(arr)];
-            entityArr = uniqueArray;
-            recentArr = res.responses[0].hits.hits;
-
-            const arr1 = [];
-            res.responses[1].hits.hits.map((e) => {
-              arr1.push(e._source.away_team);
-              arr1.push(e._source.home_team);
-            });
-
-            const uniqueArray1 = [...new Set(arr1)];
-            entityArr = [...entityArr, ...uniqueArray1];
-            upcomingArr = res.responses[1].hits.hits;
-
-            setChallengeeMatch(res.responses[2].hits.hits);
-            setHiringPlayers(res.responses[3].hits.hits);
-            setLookingTeam(res.responses[4].hits.hits);
+      getGameIndex(upcomingMatchbody).then((games) => {
+        Utility.getGamesList(games).then((gamedata) => {
+          if (gamedata.length === 0) {
+            setUpcomingMatch([]);
+          } else {
+            setUpcomingMatch(gamedata);
           }
-
-          console.log('entityArr api:=>', entityArr);
-          const ids = {
-            query: {
-              ids: {
-                values: entityArr,
-              },
-            },
-          };
-
-          postElasticSearch(ids, 'entityindex/entity')
-            .then((response) => {
-              console.log('ID api:=>', response);
-              const arr = [];
-              recentArr.map((e) => {
-                const obj = {
-                  ...e._source,
-                  home_team: response.hits.hits.find(
-                    (x) => x._source?.group_id === e._source?.home_team,
-                  ),
-                  away_team: response.hits.hits.find(
-                    (x) => x._source?.group_id === e._source?.away_team,
-                  ),
-                };
-
-                arr.push(obj);
-              });
-
-              setRecentMatch([...arr]);
-
-              const arr1 = [];
-              upcomingArr.map((e) => {
-                const obj = {
-                  ...e._source,
-                  home_team: response.hits.hits.find(
-                    (x) => x._source?.group_id === e._source?.home_team,
-                  ),
-                  away_team: response.hits.hits.find(
-                    (x) => x._source?.group_id === e._source?.away_team,
-                  ),
-                };
-
-                arr1.push(obj);
-              });
-
-              setUpcomingMatch([...arr1]);
-
-              console.log(' USER response.hits.hits:=>', response.hits.hits);
-            })
-            .catch((e) => {
-              console.log('catch -> local home Screen id api');
-              setloading(false);
-              setTimeout(() => {
-                Alert.alert(strings.alertmessagetitle, e.message);
-              }, 10);
-            });
-        })
-        .catch((e) => {
-          console.log(
-            'catch -> local home Screen recent, upcoming,shorts  api',
-          );
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
         });
+      });
+
+      getGameIndex(recentMatchbody).then((games) => {
+        Utility.getGamesList(games).then((gamedata) => {
+          if (gamedata.length === 0) {
+            setRecentMatch([]);
+          } else {
+            setRecentMatch(gamedata);
+          }
+        });
+      });
+
+      getGroupIndex(challengeeBody).then((challengee) => {
+        console.log('challengee:=>', challengee);
+
+        setChallengeeMatch(challengee)
+      })
+
+      getGroupIndex(hiringPlayersBody).then((teams) => {
+        console.log('hiringPlayers::=>', teams);
+
+        setHiringPlayers(teams)
+      })
+
+      getUserIndex(lookingTeamBody).then((players) => {
+        console.log('lookingTeams', players);
+        setLookingTeam(players)
+      })
+
    // });
       }
   }, [authContext, isFocused, location, selectedSport]);
@@ -587,7 +528,7 @@ export default function LocalHomeScreen({ navigation, route }) {
   const renderChallengerItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15, flex: 1 }}>
-        <TCChallengerCard data={item._source} cardWidth={'92%'} />
+        <TCChallengerCard data={item} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -595,7 +536,7 @@ export default function LocalHomeScreen({ navigation, route }) {
   const renderHiringPlayersItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCHiringPlayersCard data={item._source} cardWidth={'92%'} />
+        <TCHiringPlayersCard data={item} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -604,7 +545,7 @@ export default function LocalHomeScreen({ navigation, route }) {
   const renderEntityListView = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCEntityView data={item._source} />
+        <TCEntityView data={item} />
       </View>
     ),
     [],
@@ -917,7 +858,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                         .build();
                       console.log('Query:=>', JSON.stringify(body));
 
-                      postElasticSearch(body, 'entityindex')
+                      getUserIndex(body)
                         .then((res) => {
                           console.log('Then s response', res);
                         })

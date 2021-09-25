@@ -144,7 +144,7 @@ import TCProfileButton from '../../components/TCProfileButton';
 import UserProfileScreenShimmer from '../../components/shimmer/account/UserProfileScreenShimmer';
 import TCGameCard from '../../components/TCGameCard';
 import * as settingUtils from '../challenge/manageChallenge/settingUtility';
-import { postElasticSearch } from '../../api/elasticSearch';
+import { getCalendarIndex, getGameIndex } from '../../api/elasticSearch';
 // import { getSetting } from '../challenge/manageChallenge/settingUtility';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews'];
@@ -3399,8 +3399,8 @@ const HomeScreen = ({ navigation, route }) => {
     };
 
     const promiseArr = [
-      postElasticSearch(gameListWithFilter, 'gameindex'),
-      postElasticSearch(refereeList, 'calendarindex'),
+      getGameIndex(gameListWithFilter),
+      getCalendarIndex(refereeList),
     ];
 
     return Promise.all(promiseArr)
@@ -3446,14 +3446,6 @@ const HomeScreen = ({ navigation, route }) => {
           Alert.alert(strings.alertmessagetitle, e.messages);
         }, 10);
       });
-    // return postElasticSearch(gameListWithFilter, 'gameindex')
-    // .then((games) => games)
-    // .catch((e) => {
-    //   setloading(false);
-    //   setTimeout(() => {
-    //     Alert.alert(strings.alertmessagetitle, e.messages);
-    //   }, 10);
-    // });
   };
 
   const getGamesForScorekeeper = async (scorekeeperId, teamId) => {
@@ -3507,8 +3499,8 @@ const HomeScreen = ({ navigation, route }) => {
     };
 
     const promiseArr = [
-      postElasticSearch(gameListWithFilter, 'gameindex'),
-      postElasticSearch(scorekeeperList, 'calendarindex'),
+      getGameIndex(gameListWithFilter),
+      getCalendarIndex(scorekeeperList),
     ];
 
     return Promise.all(promiseArr)
@@ -3554,14 +3546,6 @@ const HomeScreen = ({ navigation, route }) => {
           Alert.alert(strings.alertmessagetitle, e.messages);
         }, 10);
       });
-    // return postElasticSearch(gameListWithFilter, 'gameindex')
-    // .then((games) => games)
-    // .catch((e) => {
-    //   setloading(false);
-    //   setTimeout(() => {
-    //     Alert.alert(strings.alertmessagetitle, e.messages);
-    //   }, 10);
-    // });
   };
 
   return (

@@ -25,7 +25,7 @@ import strings from '../../../../Constants/String';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import * as Utils from '../../../challenge/manageChallenge/settingUtility';
-import { postElasticSearch } from '../../../../api/elasticSearch';
+import { getUserIndex } from '../../../../api/elasticSearch';
 
 const TYPING_SPEED = 200;
 const BookReferee = ({ navigation, route }) => {
@@ -51,7 +51,7 @@ const BookReferee = ({ navigation, route }) => {
       })
       .build();
 
-    postElasticSearch(refefreeList, 'userindex')
+    getUserIndex(refefreeList)
       .then((res) => {
         setLoading(false);
         console.log('res referee list:=>', res);
