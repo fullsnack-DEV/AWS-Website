@@ -1,9 +1,5 @@
-// import Config from 'react-native-config';
+import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
-
-import envs from '../../src/config/env';
-
-const { BASE_URL } = envs;
 
 export const GALLERY_TYPE = {
     ALL: 'All',
@@ -21,7 +17,7 @@ export const getWholeGallery = (gallery_type, entity_type, entity_id, authContex
     if (entity_type === 'club') eType = 'clubs'
     if (entity_type === 'team') eType = 'teams'
     if (entity_type === 'game') eType = 'games'
-    let url = `${BASE_URL}/${eType}/${entity_id}/${gal_type}`;
+    let url = `${Config.BASE_URL}/${eType}/${entity_id}/${gal_type}`;
     if (last_id) url += `?id_lt=${last_id}`
 
     return makeAPIRequest({
