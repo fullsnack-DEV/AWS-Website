@@ -12,7 +12,7 @@ import TCInnerLoader from '../../../../components/TCInnerLoader';
 import { getSearchData } from '../../../../utils';
 import GameCard from '../../../../components/TCGameCard';
 import * as Utility from '../../../../utils';
-import { postElasticSearch } from '../../../../api/elasticSearch';
+import { getCalendarIndex, getGameIndex } from '../../../../api/elasticSearch';
 import strings from '../../../../Constants/String';
 
 const TYPING_SPEED = 200;
@@ -109,8 +109,8 @@ const ScorekeeperSelectMatch = ({ navigation, route }) => {
     };
 
     const promiseArr = [
-      postElasticSearch(gameListWithFilter, 'gameindex'),
-      postElasticSearch(scorekeeperList, 'calendarindex'),
+      getGameIndex(gameListWithFilter),
+      getCalendarIndex(scorekeeperList),
     ];
 
     return Promise.all(promiseArr)
@@ -156,14 +156,6 @@ const ScorekeeperSelectMatch = ({ navigation, route }) => {
           Alert.alert(strings.alertmessagetitle, e.messages);
         }, 10);
       });
-    // return postElasticSearch(gameListWithFilter, 'gameindex')
-    // .then((games) => games)
-    // .catch((e) => {
-    //   setloading(false);
-    //   setTimeout(() => {
-    //     Alert.alert(strings.alertmessagetitle, e.messages);
-    //   }, 10);
-    // });
   };
 
   const onSearchTextChange = (text) => {

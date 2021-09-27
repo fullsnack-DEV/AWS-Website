@@ -21,7 +21,9 @@ import strings from '../Constants/String';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 // eslint-disable-next-line import/no-cycle
-import { postElasticSearch } from '../api/elasticSearch';
+import {
+ getCalendarIndex, getGroupIndex, getUserIndex,
+} from '../api/elasticSearch';
 
 export const deviceHeight = Dimensions.get('window').height;
 export const deviceWidth = Dimensions.get('window').width;
@@ -154,6 +156,8 @@ export const removeAuthKey = async () => {};
 export const setStorage = async (key, value) => {
   console.log('storing in storage');
   const valueString = typeof value === 'object' ? JSON.stringify(value) : value.toString();
+  console.log('Storage key/Value', `${key} ${valueString}`);
+
   await AsyncStorage.setItem(key, valueString);
 };
 
@@ -701,7 +705,7 @@ export const getCalendar = async (participantId, fromDate, toDate, type, blocked
     });
   }
 
-   return postElasticSearch(body, 'calendarindex').then((response) => {
+   return getCalendarIndex(body).then((response) => {
     console.log('elastic search :=>', response);
 
      return response
@@ -734,7 +738,7 @@ export const getGamesList = async (games) => {
         },
       },
     };
-    promiseArr.push(postElasticSearch(userQuery, 'userindex'));
+    promiseArr.push(getUserIndex(userQuery));
   }
   if (groupIDs.length > 0) {
     const groupQuery = {
@@ -744,7 +748,7 @@ export const getGamesList = async (games) => {
         },
       },
     };
-    promiseArr.push(postElasticSearch(groupQuery, 'groupindex'));
+    promiseArr.push(getGroupIndex(groupQuery));
   }
 
   if (promiseArr.length > 0) {

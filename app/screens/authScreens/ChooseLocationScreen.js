@@ -37,7 +37,6 @@ import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-import { postElasticSearch } from '../../api/elasticSearch';
 import { searchGroups } from '../../api/Groups';
 import { updateUserProfile, getAppSettingsWithoutAuth } from '../../api/Users';
 import * as Utility from '../../utils';
@@ -212,61 +211,6 @@ export default function ChooseLocationScreen({ navigation }) {
 
   const getTeamsData = async (item) => {
     console.log('item location data:=>', item);
-    // const queryParams = {
-    //   state: currentLocation.stateAbbr,
-    //   city: currentLocation.city,
-    // };
-
-    // getLatLongFromPlaceID(item?.place_id, authContext)
-    //   .then((response) => {
-    //     console.log(
-    //       'placeID location data:=>',
-    //       response.result.geometry.location,
-    //     );
-
-    //     const body1 = bodybuilder()
-    //       .query('match', 'entity_type', 'team')
-    //       .query('match', 'registered_sports.sport_name', 'Tennis')
-    //       .query('multi_match', {
-    //         query: 'india',
-    //         fields: ['city', 'country', 'state'],
-    //       })
-    //       .build();
-
-    //     console.log('Query:=>', JSON.stringify(body1));
-    //     console.log('Auth:=>', authContext);
-
-    //     const body = {
-    //       query: {
-    //         bool: {
-    //           must: { match: { entity_type: 'team' } },
-    //           filter: {
-    //             geo_distance: {
-    //               distance: '200km',
-    //               'pin.location': {
-    //                 lat: response.result.geometry.location.lat,
-    //                 lon: response.result.geometry.location.lng,
-    //               },
-    //             },
-    //           },
-    //         },
-    //       },
-    //     };
-
-    //     console.log('Query:=>', JSON.stringify(body));
-    //     postElasticSearch(body, 'entityindex')
-    //       .then((res) => {
-    //         console.log('Then s response', res);
-    //       })
-    //       .catch((err) => {
-    //         console.log(err.message);
-    //       });
-    //   })
-    //   .catch((e) => {
-    //     setTimeout(() => {
-    //       Alert.alert(strings.alertmessagetitle, e.message);
-    //     }, 10);
-    //   });
 
     setLoading(true);
     const queryParams = {

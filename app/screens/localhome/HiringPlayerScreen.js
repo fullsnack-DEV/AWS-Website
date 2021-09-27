@@ -28,7 +28,7 @@ import images from '../../Constants/ImagePath';
 import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
 import TCHiringPlayersCard from '../../components/TCHiringPlayersCard';
-import { postElasticSearch } from '../../api/elasticSearch';
+import { getGameIndex, getGroupIndex } from '../../api/elasticSearch';
 import strings from '../../Constants/String';
 
 export default function HiringPlayerScreen({ navigation, route }) {
@@ -66,7 +66,7 @@ export default function HiringPlayerScreen({ navigation, route }) {
 
     // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
 
-    postElasticSearch(hiringPlayerBody, 'entityindex/entity')
+    getGroupIndex(hiringPlayerBody)
       .then((res1) => {
         if (res1.hits.hits.length === 0) {
           setHiringPlayerMatch([]);
@@ -108,7 +108,7 @@ export default function HiringPlayerScreen({ navigation, route }) {
       setHiringPlayerMatch([]);
     }
 
-    postElasticSearch(hiringPlayerBody, 'gameindex/game')
+    getGameIndex(hiringPlayerBody)
       .then((res1) => {
         console.log('hiringplayer  API Response:=>', res1.hits.hits);
         console.log('Total record:=>', res1.hits.total.value);
@@ -243,7 +243,7 @@ export default function HiringPlayerScreen({ navigation, route }) {
 
                   // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
 
-                  postElasticSearch(challengeeBody, 'entityindex/entity')
+                  getGroupIndex(challengeeBody)
                     .then((res1) => {
                       if (res1.hits.hits.length === 0) {
                         setHiringPlayerMatch([]);

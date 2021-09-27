@@ -1,9 +1,12 @@
-import Config from 'react-native-config';
+// import Config from 'react-native-config';
+import envs from '../../src/config/env';
+
 import makeAPIRequest from '../utils/Global';
 
+const { BASE_URL } = envs;
 const getImagePreSignedURL = async (params, authContext, cancelToken) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/pre-signed-url`,
+  url: `${BASE_URL}/pre-signed-url`,
   params,
   authContext,
   cancelToken,

@@ -8,9 +8,10 @@ import {
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
-import Config from 'react-native-config';
+// import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from '@react-native-firebase/app';
+import envs from '../../../src/config/env';
 import { uploadImageOnPreSignedUrls } from '../../utils/imageAction';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -23,6 +24,8 @@ import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context'
 import apiCall from '../../utils/apiCall';
+
+const { BASE_URL } = envs;
 
 export default function SignupFromLoginScreen({ navigation, route }) {
   const authContext = useContext(AuthContext)
@@ -59,7 +62,7 @@ export default function SignupFromLoginScreen({ navigation, route }) {
         };
         const uploadImageConfig = {
           method: 'get',
-          url: `${Config.BASE_URL}/pre-signed-url?count=2`,
+          url: `${BASE_URL}/pre-signed-url?count=2`,
           headers: { Authorization: `Bearer ${token?.token}` },
         }
         const entity = {
