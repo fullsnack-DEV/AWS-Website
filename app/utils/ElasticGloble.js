@@ -47,8 +47,8 @@ const globalElasticApiCall = async ({
     //   console.log('ERROR RESPONSE ::', response.data.error);
     //   throw response.data.error;
     // }
-    console.log('RESPONSE ELASTIC ::', response.data.hits.hits.map((item) => item._source));
-    return response.data.hits.hits.map((item) => item._source);
+    console.log('RESPONSE ELASTIC ::', response?.data?.hits?.hits.map((item) => item?._source));
+    return response?.data?.hits?.hits?.map((item) => item?._source);
   } catch (e) {
     console.log('SERVER ERROR ::--->', e);
     throw new Error(e);

@@ -43,7 +43,7 @@ export const getGroupIndex = async (query) => makeElasticAPIRequest({
 })
 
 export const getCalendarIndex = async (query) => makeElasticAPIRequest({
-  method: 'get',
+  method: 'post',
   url: `/${CALENDAR_INDEX}/_search`,
   data: query,
 })

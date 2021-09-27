@@ -113,9 +113,9 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
       new Date().getTime() / 1000,
     )
       .then((response) => {
-        console.table(response.payload);
+        console.table('aa', response);
         setloading(false);
-        const bookSlots = response.payload;
+        const bookSlots = response;
         setSlots(bookSlots);
 
         const markedDates = {};
@@ -165,11 +165,6 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
 
         console.log('Marked dates::', JSON.stringify(markedDates));
       })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
   };
 
   const onPressListView = useCallback((value, buttonIndex) => {
