@@ -17,9 +17,8 @@ import {
 import FastImage from 'react-native-fast-image';
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
-// import Config from 'react-native-config';
+import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
-import envs from '../../../src/config/env';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
@@ -35,8 +34,6 @@ import { eventDefaultColorsData } from '../../Constants/LoaderImages';
 import apiCall from '../../utils/apiCall';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import { getAppSettingsWithoutAuth } from '../../api/Users';
-
-const { BASE_URL } = envs;
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('patidar.arvind1+3@gmail.com');
@@ -96,11 +93,10 @@ export default function LoginScreen({ navigation }) {
         entity.isLoggedIn = true;
         await Utility.setStorage('authContextEntity', { ...entity })
         await Utility.setStorage('loggedInEntity', { ...entity })
-        console.log('Settings call:=>');
 
         getAppSettingsWithoutAuth()
         .then(async (response) => {
-          console.log('Settings:=>', response);
+          console.log('Settings without auth:=>', response);
           await Utility.setStorage('appSetting', response.payload.app);
           await authContext.setEntity({ ...entity })
         })
@@ -139,14 +135,17 @@ export default function LoginScreen({ navigation }) {
           token: idTokenResult.token,
           expirationTime: idTokenResult.expirationTime,
         };
+        console.log('token:=>', token);
+
         dummyAuthContext.tokenData = token;
         Utility.setStorage('eventColor', eventDefaultColorsData);
         Utility.setStorage('groupEventValue', true)
         const userConfig = {
           method: 'get',
-          url: `${BASE_URL}/users/${user?.uid}`,
+          url: `${Config.BASE_URL}/users/${user?.uid}`,
           headers: { Authorization: `Bearer ${token?.token}` },
         }
+        console.log('Login Request:=>', userConfig);
         apiCall(userConfig).then(async (response) => {
           dummyAuthContext.entity = {
             uid: user.uid,
@@ -177,11 +176,15 @@ export default function LoginScreen({ navigation }) {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
+        console.log('then:=>');
+
         const loginOnAuthStateChanged = auth().onAuthStateChanged(onAuthStateChanged);
         loginOnAuthStateChanged();
       })
       .catch((error) => {
         setloading(false);
+        console.log('catch:=>');
+
         let message = error.message;
         if (error.code === 'auth/user-not-found') {
           message = 'Your email or password is incorrect.Please try again';

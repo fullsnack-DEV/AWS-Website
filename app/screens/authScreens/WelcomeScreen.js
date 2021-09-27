@@ -29,10 +29,9 @@ import {
   appleAuthAndroid,
 } from '@invertase/react-native-apple-authentication';
 import { v4 as uuid } from 'uuid';
-// import Config from 'react-native-config';
+import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-community/async-storage';
-import envs from '../../../src/config/env';
 import AuthContext from '../../auth/context';
 import FacebookButton from '../../components/FacebookButton';
 import GoogleButton from '../../components/GoogleButton';
@@ -48,8 +47,6 @@ import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import AppleButton from '../../components/AppleButton';
 import { checkTownscupEmail, createUser } from '../../api/Users';
 import { getHitSlop } from '../../utils/index';
-
-const { BASE_URL } = envs;
 
 const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
 export default function WelcomeScreen({ navigation }) {
@@ -273,7 +270,7 @@ export default function WelcomeScreen({ navigation }) {
                   console.log('User exist:=>', userExist);
                   const userConfig = {
                     method: 'get',
-                    url: `${BASE_URL}/users/${user?.uid}`,
+                    url: `${Config.BASE_URL}/users/${user?.uid}`,
                     headers: { Authorization: `Bearer ${token?.token}` },
                   };
                   if (userExist) {

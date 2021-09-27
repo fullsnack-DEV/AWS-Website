@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.cmcewen.blurview.BlurViewPackage;
 import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsPackage;
 import com.cmcewen.blurview.BlurViewPackage;
@@ -35,7 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
           //packages.add(new MapsPackage());
-          
+          //packages.add(new ReactNativeConfigPackage());
           return packages;
         }
 

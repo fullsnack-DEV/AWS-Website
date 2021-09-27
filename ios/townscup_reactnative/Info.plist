@@ -30,16 +30,6 @@
 				<string>fb462439657892341</string>
 			</array>
 		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>REVERSE_CLIENT_ID</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.1003329053001-d6vrap0re8g99pt8hc747a39b1ko9t9k</string>
-			</array>
-		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
@@ -75,7 +65,7 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>gallery access allow?</string>
 	<key>NSCameraUsageDescription</key>
-  <string>TownsCup want to use camera do you want to allow?</string>
+	<string>TownsCup want to use camera do you want to allow?</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Roboto-Regular.ttf</string>

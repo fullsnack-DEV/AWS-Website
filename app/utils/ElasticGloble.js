@@ -24,7 +24,7 @@ const globalElasticApiCall = async ({
   const elasticCredential = await Utility.getStorage('appSetting');
   console.log('elasticCredential', elasticCredential);
 
-  const URL = `${elasticCredential?.elastic_cred?.end_point}${url}`
+  const URL = `${elasticCredential?.elastic?.host}${url}`
 
   console.log('FUll url : =>', URL);
   const options = {
@@ -32,8 +32,8 @@ const globalElasticApiCall = async ({
     url: URL,
     data,
     auth: {
-      username: elasticCredential?.elastic_cred?.user_name,
-      password: elasticCredential?.elastic_cred?.pwd,
+      username: elasticCredential?.elastic?.username,
+      password: elasticCredential?.elastic?.password,
     },
     headers: {
       'Content-Type': 'application/json',
@@ -47,8 +47,8 @@ const globalElasticApiCall = async ({
     //   console.log('ERROR RESPONSE ::', response.data.error);
     //   throw response.data.error;
     // }
-    console.log('RESPONSE ELASTIC ::', response.data.hits.hits.map((item) => item._source));
-    return response.data.hits.hits.map((item) => item._source);
+    console.log('RESPONSE ELASTIC ::', response?.data?.hits?.hits.map((item) => item?._source));
+    return response?.data?.hits?.hits?.map((item) => item?._source);
   } catch (e) {
     console.log('SERVER ERROR ::--->', e);
     throw new Error(e);

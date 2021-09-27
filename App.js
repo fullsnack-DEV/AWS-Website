@@ -13,7 +13,7 @@ import Orientation from 'react-native-orientation';
 import AuthContext from './app/auth/context';
 import { QBinit } from './app/utils/QuickBlox';
 import NavigationMainContainer from './NavigationMainContainer';
-import { firebaseConfig } from './app/utils/constant';
+// import { firebaseConfig } from './app/utils/constant';
 import * as Utility from './app/utils';
 import strings from './app/Constants/String';
 import { ImageUploadProvider } from './app/context/GetContexts';
@@ -54,9 +54,11 @@ if (!global.atob) {
     StatusBar.setBarStyle('dark-content')
     StatusBar.setBackgroundColor('white')
     Orientation.lockToPortrait();
-    const firebaseAppInitialize = async () => {
+    const firebaseAppInitialize = () => {
       if (firebase.apps.length === 0) {
-        await firebase.initializeApp(firebaseConfig);
+       Utility.getStorage('appSetting').then(async (setting) => {
+        await firebase.initializeApp(setting.firebaseConfig);
+       })
       }
     }
     firebaseAppInitialize();

@@ -11,9 +11,8 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
-// import Config from 'react-native-config';
+import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
-import envs from '../../../src/config/env';
 import { uploadImageOnPreSignedUrls } from '../../utils/imageAction';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -29,8 +28,6 @@ import AuthContext from '../../auth/context'
 import apiCall from '../../utils/apiCall';
 import { checkTownscupEmail, createUser } from '../../api/Users';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
-
-const { BASE_URL } = envs;
 
 export default function SignupScreen({ navigation }) {
   const authContext = useContext(AuthContext)
@@ -181,7 +178,7 @@ export default function SignupScreen({ navigation }) {
         };
         const uploadImageConfig = {
           method: 'get',
-          url: `${BASE_URL}/pre-signed-url?count=2`,
+          url: `${Config.BASE_URL}/pre-signed-url?count=2`,
           headers: { Authorization: `Bearer ${token?.token}` },
         }
         const entity = {
