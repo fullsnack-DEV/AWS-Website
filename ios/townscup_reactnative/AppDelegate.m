@@ -36,7 +36,20 @@ static void InitializeFlipper(UIApplication *application) {
   if ([FIRApp defaultApp] == nil) {
     [FIRApp configure];
   }
+  
+//  NSString *filePath;
+//  filePath = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+//  FIROptions *options = [[FIROptions alloc] initWithContentsOfFile:filePath];
+//  [FIRApp configureWithOptions:options];
 
+  
+//  let firebasePlistFileName = FireBaseFileName
+//  var args = ProcessInfo.processInfo.arguments
+//  args.append("-FIRAnalyticsDebugEnabled")
+//  args.append("-FIRDebugEnabled")
+//  ProcessInfo.processInfo.setValue(args, forKey: "arguments")
+//  let firbaseOptions = FirebaseOptions(contentsOfFile: Bundle.main.path(forResource: firebasePlistFileName, ofType: "plist")!)!
+//FirebaseApp.configure(options: firbaseOptions)
   
   if (@available(iOS 13.4, *)) {
       [UIDatePicker appearance].preferredDatePickerStyle = UIDatePickerStyleWheels;
