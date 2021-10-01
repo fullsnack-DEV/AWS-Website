@@ -20,7 +20,6 @@ import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 import * as Utility from '../../../utils';
 import images from '../../../Constants/ImagePath';
-import { publishableKey } from '../../../utils/constant';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCInnerLoader from '../../../components/TCInnerLoader';
 
@@ -228,32 +227,33 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   }
 
   const openNewCardScreen = () => {
-    console.log('openNewCardScreen:::=>');
-    stripe.setOptions({
-      publishableKey,
-    })
-    stripe.paymentRequestWithCardForm({
-      requiredBillingAddressFields: 'zip',
-      theme: {
-        accentColor: colors.orangeColor,
-      },
-    }).then((token) => {
-      console.log('card/Token:=>', token)
+    Utility.getStorage('appSetting').then((setting) => {
+      stripe.setOptions({
+        publishableKey: setting.publishableKey,
+      })
+      stripe.paymentRequestWithCardForm({
+        requiredBillingAddressFields: 'zip',
+        theme: {
+          accentColor: colors.orangeColor,
+        },
+      }).then((token) => {
+        console.log('card/Token:=>', token)
 
-        const result = cards.filter((obj) => obj.card.fingerprint === token?.card?.fingerprint)
-        if (result.length > 0) {
-          Alert.alert('You already have added this card.')
-        } else {
-          onSaveCard(token);
+          const result = cards.filter((obj) => obj.card.fingerprint === token?.card?.fingerprint)
+          if (result.length > 0) {
+            Alert.alert('You already have added this card.')
+          } else {
+            onSaveCard(token);
+          }
+      }).catch((e) => {
+        console.log('error in openNewCardScreen', e)
+        setloading(false)
+        if (e.message !== 'Cancelled by user') {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 0.3)
         }
-    }).catch((e) => {
-      console.log('error in openNewCardScreen', e)
-      setloading(false)
-      if (e.message !== 'Cancelled by user') {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3)
-      }
+      })
     })
   }
 

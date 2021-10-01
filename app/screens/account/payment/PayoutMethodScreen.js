@@ -12,7 +12,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import { merchantAuthDetail, addMerchantAccount } from '../../../api/Users';
 import strings from '../../../Constants/String'
 import colors from '../../../Constants/Colors'
-import { resgisterMerchantURL } from '../../../utils/constant';
+import * as Utility from '../../../utils';
 import TCInnerLoader from '../../../components/TCInnerLoader';
 
 export default function PayoutMethodScreen({ navigation }) {
@@ -31,11 +31,12 @@ export default function PayoutMethodScreen({ navigation }) {
 
   const callPaymentAuthDetailAPI = async () => {
       setFirstTimeLoad(true)
-    merchantAuthDetail(authContext.entity.uid, authContext)
+      Utility.getStorage('appSetting').then((setting) => {
+        merchantAuthDetail(authContext.entity.uid, authContext)
       .then((response) => {
         setState(response.payload.state)
         setRedirectURI(response.payload.redirect_uri)
-        let urlString = `${resgisterMerchantURL}?client_id=${response.payload.client_id}&state=${response.payload.state}&redirect_uri=${encodeURI(response.payload.redirect_uri)}`;
+        let urlString = `${setting.resgisterMerchantURL}?client_id=${response.payload.client_id}&state=${response.payload.state}&redirect_uri=${encodeURI(response.payload.redirect_uri)}`;
         urlString = `${urlString}&stripe_user[business_type]=individual&stripe_user[business_name]=TownsCup&`
         urlString = `${urlString}&stripe_user[first_name]=${encodeURI(authContext.entity.obj.group_name || authContext.entity.obj.first_name)}`
         urlString = `${urlString}&stripe_user[last_name]=${encodeURI(authContext.entity.obj.last_name || '')}`
@@ -52,6 +53,7 @@ export default function PayoutMethodScreen({ navigation }) {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10)
+      })
       })
   }
 
