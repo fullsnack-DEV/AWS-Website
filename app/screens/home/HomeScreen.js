@@ -203,32 +203,18 @@ const HomeScreen = ({ navigation, route }) => {
   const [isTeamHome, setIsTeamHome] = useState(false);
   const [playsInModalVisible, setPlaysInModalVisible] = useState(false);
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false);
-  const [scorekeeperInModalVisible, setScorekeeperInModalVisible] = useState(
-    false,
-  );
-  const [reviewDetailModalVisible, setReviewDetailModalVisible] = useState(
-    false,
-  );
+  const [scorekeeperInModalVisible, setScorekeeperInModalVisible] = useState(false);
+  const [reviewDetailModalVisible, setReviewDetailModalVisible] = useState(false);
   const [feedDataIndex, setFeedDataIndex] = useState(0);
   const [feedDetailIndex, setFeedDetailIndex] = useState(0);
   const [orangeFeed, setOrangeFeed] = useState(false);
   const [reviewGameData, setReviewGameData] = useState();
   const [refereeInfoModalVisible, setRefereeInfoModalVisible] = useState(false);
-  const [
-    scorekeeperInfoModalVisible,
-    setScorekeeperInfoModalVisible,
-  ] = useState(false);
-  const [refereeMatchModalVisible, setRefereeMatchModalVisible] = useState(
-    false,
-  );
-  const [
-    scorekeeperMatchModalVisible,
-    setScorekeeperMatchModalVisible,
-  ] = useState(false);
+  const [scorekeeperInfoModalVisible, setScorekeeperInfoModalVisible] = useState(false);
+  const [refereeMatchModalVisible, setRefereeMatchModalVisible] = useState(false);
+  const [scorekeeperMatchModalVisible, setScorekeeperMatchModalVisible] = useState(false);
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false);
-  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(
-    false,
-  );
+  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserData, setCurrentUserData] = useState({});
   const [loading, setloading] = useState(false);
@@ -282,22 +268,14 @@ const HomeScreen = ({ navigation, route }) => {
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
   const [refereeOfferModalVisible, setRefereeOfferModalVisible] = useState();
-  const [
-    scorekeeperOfferModalVisible,
-    setScorekeeperOfferModalVisible,
-  ] = useState();
+  const [scorekeeperOfferModalVisible, setScorekeeperOfferModalVisible] = useState();
 
-  const [
-    isDoubleSportTeamCreatedVisible,
-    setIsDoubleSportTeamCreatedVisible,
-  ] = useState(false);
+  const [isDoubleSportTeamCreatedVisible, setIsDoubleSportTeamCreatedVisible] = useState(false);
 
   // const [reviewsData] = useState(reviews_data);
 
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
-  const timeTableSelectionDate = moment(timetableSelectDate).format(
-    'YYYY-MM-DD',
-  );
+  const timeTableSelectionDate = moment(timetableSelectDate).format('YYYY-MM-DD');
 
   const [sportsSelection, setSportsSelection] = useState();
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
@@ -3095,7 +3073,7 @@ const HomeScreen = ({ navigation, route }) => {
       .then(() => {
         const {
  USER, CLUB, LEAGUE, TEAM,
- } = QB_ACCOUNT_TYPE;
+} = QB_ACCOUNT_TYPE;
         let accountType = USER;
         if (entityType === 'club') accountType = CLUB;
         else if (entityType === 'team') accountType = TEAM;
@@ -3369,13 +3347,16 @@ const HomeScreen = ({ navigation, route }) => {
               },
             },
             { term: { 'status.keyword': 'accepted' } },
-            { term: { 'challenge_referee.who_secure.responsible_team_id.keyword': teamId } },
+            {
+              term: {
+                'challenge_referee.who_secure.responsible_team_id.keyword':
+                  teamId,
+              },
+            },
           ],
         },
       },
-      sort: [
-        { start_datetime: 'asc' },
-      ],
+      sort: [{ start_datetime: 'asc' }],
     };
 
     console.log('Json string:=>', JSON.stringify(gameListWithFilter));
@@ -3438,7 +3419,7 @@ const HomeScreen = ({ navigation, route }) => {
           });
         }
 
-       return Utility.getGamesList(gameList).then((gamedata) => gamedata)
+        return Utility.getGamesList(gameList).then((gamedata) => gamedata);
       })
       .catch((e) => {
         setloading(false);
@@ -3477,13 +3458,16 @@ const HomeScreen = ({ navigation, route }) => {
               },
             },
             { term: { 'status.keyword': 'accepted' } },
-            { term: { 'challenge_scorekeeper.who_secure.responsible_team_id.keyword': teamId } },
+            {
+              term: {
+                'challenge_scorekeeper.who_secure.responsible_team_id.keyword':
+                  teamId,
+              },
+            },
           ],
         },
       },
-      sort: [
-        { start_datetime: 'asc' },
-      ],
+      sort: [{ start_datetime: 'asc' }],
     };
 
     console.log('Json string:=>', JSON.stringify(gameListWithFilter));
@@ -3546,7 +3530,7 @@ const HomeScreen = ({ navigation, route }) => {
           });
         }
 
-       return Utility.getGamesList(gameList).then((gamedata) => gamedata)
+        return Utility.getGamesList(gameList).then((gamedata) => gamedata);
       })
       .catch((e) => {
         setloading(false);
