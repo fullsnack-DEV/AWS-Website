@@ -11,7 +11,8 @@ import { decode, encode } from 'base-64'
 import firebase from '@react-native-firebase/app';
 import Orientation from 'react-native-orientation';
 import AuthContext from './app/auth/context';
-import { QBinit } from './app/utils/QuickBlox';
+
+import { QBinit, getQBSetting } from './app/utils/QuickBlox';
 import NavigationMainContainer from './NavigationMainContainer';
 // import { firebaseConfig } from './app/utils/constant';
 import * as Utility from './app/utils';
@@ -99,6 +100,7 @@ if (!global.atob) {
     }),
     [role, user, entity, tokenData, setTokenData, updateAuth, networkConnected],
   );
+  getQBSetting();
   QBinit();
   return (
     <AuthContext.Provider value={authValue}>

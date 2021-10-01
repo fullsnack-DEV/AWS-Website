@@ -6,7 +6,7 @@ import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.cmcewen.blurview.BlurViewPackage;
-import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsPackage;
+//import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsPackage;
 import com.cmcewen.blurview.BlurViewPackage;
 import com.github.yamill.orientation.OrientationPackage;
 

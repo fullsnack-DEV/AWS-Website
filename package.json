@@ -33,7 +33,6 @@
     "@react-native-community/viewpager": "3.3.0",
     "@react-native-firebase/app": "^11.0.0",
     "@react-native-firebase/auth": "^11.0.0",
-    "@react-native-firebase/crashlytics": "^11.0.0",
     "@react-navigation/bottom-tabs": "^5.9.0",
     "@react-navigation/drawer": "^5.9.3",
     "@react-navigation/native": "^5.7.4",
