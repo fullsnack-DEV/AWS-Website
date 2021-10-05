@@ -219,6 +219,8 @@ export default function ChooseLocationScreen({ navigation }) {
     };
     searchGroups(queryParams, authContext)
       .then((response) => {
+        setLoading(false);
+
         const userData = {
           city: item?.terms?.[0]?.value,
           state_abbr: item?.terms?.[1]?.value,
@@ -243,6 +245,8 @@ export default function ChooseLocationScreen({ navigation }) {
         });
       })
       .catch((e) => {
+        setLoading(false);
+
         console.log(e);
         setTimeout(() => {
           Alert.alert(`${strings.alertmessagetitle} - 1`, e.message);
