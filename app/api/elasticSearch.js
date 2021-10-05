@@ -42,3 +42,8 @@ export const getCalendarIndex = async (query) => makeElasticAPIRequest({
   url: `/${Config.CALENDAR_INDEX}/_search`,
   data: query,
 })
+
+export const getGamesListIndex = async () => makeElasticAPIRequest({
+  method: 'get',
+  url: `/${Config.GAME_INDEX}/_search`,
+})

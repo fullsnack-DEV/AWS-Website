@@ -14,7 +14,6 @@ import {
   Platform,
   Dimensions,
   TextInput,
-
 } from 'react-native';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
@@ -35,20 +34,16 @@ import { getGameIndex, getGroupIndex } from '../../api/elasticSearch';
 import strings from '../../Constants/String';
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 
+let stopFetchMore = true;
+
 export default function LookingForChallengeScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
   const [challengeeMatch, setChallengeeMatch] = useState([]);
 
-  const [pageSize] = useState(10);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [totalRecord, setTotalRecord] = useState();
-
   const [location] = useState(route?.params?.location);
-  const [selectedSport, setSelectedSport] = useState(
-    route?.params?.selectedSport,
-  );
+  const [selectedSport, setSelectedSport] = useState(route?.params?.sport);
 
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
@@ -65,73 +60,57 @@ export default function LookingForChallengeScreen({ navigation, route }) {
   const [minAgeValue, setMinAgeValue] = React.useState([]);
   const [maxAgeValue, setMaxAgeValue] = React.useState([]);
   const [secureLocation, setSecureLocation] = useState(0);
-
+  const [pageSize] = useState(1);
+  const [pageFrom, setPageFrom] = useState(0);
+  // eslint-disable-next-line no-unused-vars
+  const [loadMore, setLoadMore] = useState(false);
   // const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    // ,{"match":{"sport":"${selectedSport}"}}]}}}`
+    getHiringList();
+  }, []);
 
-    const challengeeBody = bodybuilder()
-      .size(pageSize)
-      .query('match', 'entity_type', 'team')
-      .query('match', 'sport', selectedSport)
-      .query('multi_match', {
+  const getHiringList = () => {
+    console.log('pageSize', pageSize);
+    console.log('pageFrom', pageFrom);
+
+    // Looking Challengee query
+    const locationFilter = bodybuilder()
+      .filter('multi_match', {
         query: location,
         fields: ['city', 'country', 'state'],
       })
       .build();
-
-    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
-
-    getGroupIndex(challengeeBody)
-      .then((res1) => {
-        if (res1.hits.hits.length === 0) {
-          setChallengeeMatch([]);
-        } else {
-          console.log('challengee  API Response:=>', res1.hits.hits);
-          console.log('Total record:=>', res1.hits.total.value);
-          setTotalRecord(res1.hits.total.value);
-
-            setChallengeeMatch(res1.hits.hits)
-        }
+    const lookingChallengeeList = bodybuilder()
+      .filter('match', 'entity_type', 'team')
+      .filter('term', 'sport.keyword', {
+        value: selectedSport.toLowerCase(),
+        case_insensitive: true,
       })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [location, pageSize, selectedSport]);
+      .build();
+    let lookingChallengeeFilter = {
+      ...lookingChallengeeList.query.bool,
+    };
+    // Looking Challengee query
 
-  const handleLoadMore = () => {
-    console.log('Page Size:', pageSize);
-    console.log('Page Number:', pageNumber);
-    console.log('Total:', totalRecord);
-
-    const challengeeBody = bodybuilder()
-    .size(pageSize)
-    .from(pageNumber * pageSize)
-    .query('match', 'entity_type', 'team')
-    .query('match', 'sport', selectedSport)
-    .query('multi_match', {
-      query: location,
-      fields: ['city', 'country', 'state'],
-    })
-    .build();
-
-    setPageNumber(pageNumber + 1);
-    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
-    if (pageNumber < 1) {
-      setChallengeeMatch([]);
+    if (location !== 'world') {
+      lookingChallengeeFilter = {
+        ...locationFilter.query.bool,
+      };
     }
+    const lookingChallengeeQuery = bodybuilder()
+      .size(pageSize)
+      .from(pageFrom)
+      .andFilter('bool', lookingChallengeeFilter)
+      .build();
 
-    getGameIndex(challengeeBody)
-      .then((res1) => {
-        console.log('upcoming  API Response:=>', res1.hits.hits);
-        console.log('Total record:=>', res1.hits.total.value);
-        setTotalRecord(res1.hits.total.value);
-
-        if (res1.hits.hits.length > 0) {
-          setChallengeeMatch(challengeeMatch.concat(res1.hits.hits));
+    getGroupIndex(lookingChallengeeQuery)
+      .then((res) => {
+        if (res.length > 0) {
+          const fetchedData = [...challengeeMatch, ...res];
+          setChallengeeMatch(fetchedData);
+          setPageFrom(pageFrom + pageSize);
+          stopFetchMore = true;
         }
       })
       .catch((e) => {
@@ -141,10 +120,20 @@ export default function LookingForChallengeScreen({ navigation, route }) {
       });
   };
 
+  const handleLoadMore = () => {
+    console.log('handal called');
+    setLoadMore(true);
+    if (!stopFetchMore) {
+      getHiringList();
+      stopFetchMore = true;
+    }
+    setLoadMore(false);
+  };
+
   const renderRecentMatchItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCChallengerCard data={item._source} cardWidth={'92%'} />
+        <TCChallengerCard data={item} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -227,9 +216,12 @@ export default function LookingForChallengeScreen({ navigation, route }) {
         keyExtractor={keyExtractor}
         renderItem={renderRecentMatchItems}
         style={styles.listViewStyle}
-        scrollEnabled={true}
-          // onScroll={onScroll}
-          onScrollEndDrag={handleLoadMore}
+        contentContainerStyle={{ flex: 1 }}
+        onEndReachedThreshold={0.1}
+        onEndReached={handleLoadMore}
+        onScrollBeginDrag={() => {
+          stopFetchMore = false;
+        }}
       />
 
       <Modal
@@ -259,38 +251,46 @@ export default function LookingForChallengeScreen({ navigation, route }) {
               style={styles.doneText}
               onPress={() => {
                 if (new Date(from).getTime() > new Date(to).getTime()) {
-                  Alert.alert('From date should be less than to date.')
+                  Alert.alert('From date should be less than to date.');
                 } else {
                   setSettingPopup(false);
-                  let challengeeBody = ''
+                  let challengeeBody = '';
                   if (locationFilterOpetion === 0) {
-                     challengeeBody = bodybuilder()
-                    .size(pageSize)
-                    .query('match', 'entity_type', 'team')
-                    .query('match', 'sport', selectedSport)
-                    .query('range', 'start_datetime', {
-                      gt: parseFloat(new Date(from).getTime() / 1000).toFixed(0),
-                    })
-                    .query('range', 'start_datetime', {
-                      lt: parseFloat(new Date(to).getTime() / 1000).toFixed(0),
-                    })
-                    .build();
+                    challengeeBody = bodybuilder()
+                      .size(pageSize)
+                      .query('match', 'entity_type', 'team')
+                      .query('match', 'sport', selectedSport)
+                      .query('range', 'start_datetime', {
+                        gt: parseFloat(new Date(from).getTime() / 1000).toFixed(
+                          0,
+                        ),
+                      })
+                      .query('range', 'start_datetime', {
+                        lt: parseFloat(new Date(to).getTime() / 1000).toFixed(
+                          0,
+                        ),
+                      })
+                      .build();
                   } else {
                     challengeeBody = bodybuilder()
-                    .size(pageSize)
-                    .query('match', 'sport', selectedSport)
-                    .query('multi_match', {
-                      query: location,
-                      fields: ['city', 'country', 'state'],
-                    })
-                    .query('range', 'start_datetime', {
-                      gt: parseFloat(new Date(from).getTime() / 1000).toFixed(0),
-                    })
-                    .query('range', 'start_datetime', {
-                      lt: parseFloat(new Date(to).getTime() / 1000).toFixed(0),
-                    })
+                      .size(pageSize)
+                      .query('match', 'sport', selectedSport)
+                      .query('multi_match', {
+                        query: location,
+                        fields: ['city', 'country', 'state'],
+                      })
+                      .query('range', 'start_datetime', {
+                        gt: parseFloat(new Date(from).getTime() / 1000).toFixed(
+                          0,
+                        ),
+                      })
+                      .query('range', 'start_datetime', {
+                        lt: parseFloat(new Date(to).getTime() / 1000).toFixed(
+                          0,
+                        ),
+                      })
 
-                    .build();
+                      .build();
                   }
 
                   // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
@@ -300,9 +300,11 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                       if (res1.hits.hits.length === 0) {
                         setChallengeeMatch([]);
                       } else {
-                        console.log('upcoming  API Response:=>', res1.hits.hits);
+                        console.log(
+                          'upcoming  API Response:=>',
+                          res1.hits.hits,
+                        );
                         console.log('Total record:=>', res1.hits.total.value);
-                        setTotalRecord(res1.hits.total.value);
 
                         if (res1.hits.hits.length > 0) {
                           setChallengeeMatch(res1.hits.hits);
@@ -476,207 +478,207 @@ export default function LookingForChallengeScreen({ navigation, route }) {
 
           <View style={{ marginBottom: 15 }}>
             <View
-               style={{
-                 flexDirection: 'row',
-                 margin: 15,
-                 justifyContent: 'space-between',
-               }}>
+              style={{
+                flexDirection: 'row',
+                margin: 15,
+                justifyContent: 'space-between',
+              }}>
               <View style={{ flex: 0.2 }}>
                 <Text style={styles.filterTitle}>TC Level</Text>
               </View>
               <View style={{ marginLeft: 15, flex: 0.6 }}>
                 <View
-                   style={{
-                     flexDirection: 'row',
-                     justifyContent: 'space-between',
-                     flex: 1,
-                   }}>
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    flex: 1,
+                  }}>
                   <RNPickerSelect
-                     placeholder={{
-                       label: strings.minPlaceholder,
-                       value: 0,
-                     }}
-                     items={minAgeValue}
-                     onValueChange={(value) => {
-                       setMinAge(value);
-                     }}
-                     useNativeAndroidPickerStyle={false}
-                     style={{
-                       ...(Platform.OS === 'ios'
-                         ? styles.inputIOS
-                         : styles.inputAndroid),
-                       ...styles,
-                     }}
-                     value={minAge}
-                     Icon={() => (
-                       <Image
-                         source={images.dropDownArrow}
-                         style={styles.miniDownArrow}
-                       />
-                     )}
-                   />
+                    placeholder={{
+                      label: strings.minPlaceholder,
+                      value: 0,
+                    }}
+                    items={minAgeValue}
+                    onValueChange={(value) => {
+                      setMinAge(value);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      ...(Platform.OS === 'ios'
+                        ? styles.inputIOS
+                        : styles.inputAndroid),
+                      ...styles,
+                    }}
+                    value={minAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
+                  />
                   <RNPickerSelect
-                     placeholder={{
-                       label: strings.maxPlaceholder,
-                       value: 0,
-                     }}
-                     items={maxAgeValue}
-                     onValueChange={(value) => {
-                       setMaxAge(value);
-                     }}
-                     useNativeAndroidPickerStyle={false}
-                     style={{
-                       ...(Platform.OS === 'ios'
-                         ? styles.inputIOS
-                         : styles.inputAndroid),
-                       ...styles,
-                     }}
-                     value={maxAge}
-                     Icon={() => (
-                       <Image
-                         source={images.dropDownArrow}
-                         style={styles.miniDownArrow}
-                       />
-                     )}
-                   />
+                    placeholder={{
+                      label: strings.maxPlaceholder,
+                      value: 0,
+                    }}
+                    items={maxAgeValue}
+                    onValueChange={(value) => {
+                      setMaxAge(value);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      ...(Platform.OS === 'ios'
+                        ? styles.inputIOS
+                        : styles.inputAndroid),
+                      ...styles,
+                    }}
+                    value={maxAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
+                  />
                 </View>
               </View>
             </View>
           </View>
           <View style={{ marginBottom: 15 }}>
             <View
-               style={{
-                 flexDirection: 'row',
-                 margin: 15,
-                 justifyContent: 'space-between',
-               }}>
+              style={{
+                flexDirection: 'row',
+                margin: 15,
+                justifyContent: 'space-between',
+              }}>
               <View style={{ flex: 0.2 }}>
                 <Text style={styles.filterTitle}>Match fee</Text>
               </View>
               <View style={{ marginLeft: 15, flex: 0.6 }}>
                 <View
-                   style={{
-                     flexDirection: 'row',
-                     justifyContent: 'space-between',
-                     flex: 1,
-                   }}>
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    flex: 1,
+                  }}>
                   <RNPickerSelect
-                     placeholder={{
-                       label: strings.minPlaceholder,
-                       value: 0,
-                     }}
-                     items={minAgeValue}
-                     onValueChange={(value) => {
-                       setMinAge(value);
-                     }}
-                     useNativeAndroidPickerStyle={false}
-                     style={{
-                       ...(Platform.OS === 'ios'
-                         ? styles.inputIOS
-                         : styles.inputAndroid),
-                       ...styles,
-                     }}
-                     value={minAge}
-                     Icon={() => (
-                       <Image
-                         source={images.dropDownArrow}
-                         style={styles.miniDownArrow}
-                       />
-                     )}
-                   />
+                    placeholder={{
+                      label: strings.minPlaceholder,
+                      value: 0,
+                    }}
+                    items={minAgeValue}
+                    onValueChange={(value) => {
+                      setMinAge(value);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      ...(Platform.OS === 'ios'
+                        ? styles.inputIOS
+                        : styles.inputAndroid),
+                      ...styles,
+                    }}
+                    value={minAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
+                  />
                   <RNPickerSelect
-                     placeholder={{
-                       label: strings.maxPlaceholder,
-                       value: 0,
-                     }}
-                     items={maxAgeValue}
-                     onValueChange={(value) => {
-                       setMaxAge(value);
-                     }}
-                     useNativeAndroidPickerStyle={false}
-                     style={{
-                       ...(Platform.OS === 'ios'
-                         ? styles.inputIOS
-                         : styles.inputAndroid),
-                       ...styles,
-                     }}
-                     value={maxAge}
-                     Icon={() => (
-                       <Image
-                         source={images.dropDownArrow}
-                         style={styles.miniDownArrow}
-                       />
-                     )}
-                   />
+                    placeholder={{
+                      label: strings.maxPlaceholder,
+                      value: 0,
+                    }}
+                    items={maxAgeValue}
+                    onValueChange={(value) => {
+                      setMaxAge(value);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      ...(Platform.OS === 'ios'
+                        ? styles.inputIOS
+                        : styles.inputAndroid),
+                      ...styles,
+                    }}
+                    value={maxAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
+                  />
                 </View>
               </View>
             </View>
           </View>
           <View>
             <View
-               style={{
-                 flexDirection: 'row',
-                 margin: 15,
-                 justifyContent: 'space-between',
-               }}>
+              style={{
+                flexDirection: 'row',
+                margin: 15,
+                justifyContent: 'space-between',
+              }}>
               <View style={{ flex: 0.2 }}>
                 <Text style={styles.filterTitle}>Match duration</Text>
               </View>
               <View style={{ marginLeft: 15, flex: 0.6 }}>
                 <View
-                   style={{
-                     flexDirection: 'row',
-                     justifyContent: 'space-between',
-                     flex: 1,
-                   }}>
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    flex: 1,
+                  }}>
                   <RNPickerSelect
-                     placeholder={{
-                       label: strings.minPlaceholder,
-                       value: 0,
-                     }}
-                     items={minAgeValue}
-                     onValueChange={(value) => {
-                       setMinAge(value);
-                     }}
-                     useNativeAndroidPickerStyle={false}
-                     style={{
-                       ...(Platform.OS === 'ios'
-                         ? styles.inputIOS
-                         : styles.inputAndroid),
-                       ...styles,
-                     }}
-                     value={minAge}
-                     Icon={() => (
-                       <Image
-                         source={images.dropDownArrow}
-                         style={styles.miniDownArrow}
-                       />
-                     )}
-                   />
+                    placeholder={{
+                      label: strings.minPlaceholder,
+                      value: 0,
+                    }}
+                    items={minAgeValue}
+                    onValueChange={(value) => {
+                      setMinAge(value);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      ...(Platform.OS === 'ios'
+                        ? styles.inputIOS
+                        : styles.inputAndroid),
+                      ...styles,
+                    }}
+                    value={minAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
+                  />
                   <RNPickerSelect
-                     placeholder={{
-                       label: strings.maxPlaceholder,
-                       value: 0,
-                     }}
-                     items={maxAgeValue}
-                     onValueChange={(value) => {
-                       setMaxAge(value);
-                     }}
-                     useNativeAndroidPickerStyle={false}
-                     style={{
-                       ...(Platform.OS === 'ios'
-                         ? styles.inputIOS
-                         : styles.inputAndroid),
-                       ...styles,
-                     }}
-                     value={maxAge}
-                     Icon={() => (
-                       <Image
-                         source={images.dropDownArrow}
-                         style={styles.miniDownArrow}
-                       />
-                     )}
-                   />
+                    placeholder={{
+                      label: strings.maxPlaceholder,
+                      value: 0,
+                    }}
+                    items={maxAgeValue}
+                    onValueChange={(value) => {
+                      setMaxAge(value);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      ...(Platform.OS === 'ios'
+                        ? styles.inputIOS
+                        : styles.inputAndroid),
+                      ...styles,
+                    }}
+                    value={maxAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
+                  />
                 </View>
               </View>
             </View>
@@ -685,45 +687,45 @@ export default function LookingForChallengeScreen({ navigation, route }) {
           <View style={{ margin: 15 }}>
             <Text style={styles.filterTitle}>Match Place</Text>
             <View
-               style={{
-                 flexDirection: 'row',
-                 marginBottom: 10,
-                 marginTop: 10,
-                 justifyContent: 'space-between',
-               }}>
+              style={{
+                flexDirection: 'row',
+                marginBottom: 10,
+                marginTop: 10,
+                justifyContent: 'space-between',
+              }}>
               <Text style={styles.filterTitle}>
                 {strings.challengerSecureText}
               </Text>
               <TouchableWithoutFeedback onPress={() => setSecureLocation(0)}>
                 <Image
-                   source={
-                     secureLocation === 0
-                       ? images.checkRoundOrange
-                       : images.radioUnselect
-                   }
-                   style={styles.radioButtonStyle}
-                 />
+                  source={
+                    secureLocation === 0
+                      ? images.checkRoundOrange
+                      : images.radioUnselect
+                  }
+                  style={styles.radioButtonStyle}
+                />
               </TouchableWithoutFeedback>
             </View>
             <View
-               style={{
-                 flexDirection: 'row',
-                 marginBottom: 10,
-                 marginTop: 10,
-                 justifyContent: 'space-between',
-               }}>
+              style={{
+                flexDirection: 'row',
+                marginBottom: 10,
+                marginTop: 10,
+                justifyContent: 'space-between',
+              }}>
               <Text style={styles.filterTitle}>
                 {strings.challengeeSecureText}
               </Text>
               <TouchableWithoutFeedback onPress={() => setSecureLocation(1)}>
                 <Image
-                   source={
-                     secureLocation === 1
-                       ? images.checkRoundOrange
-                       : images.radioUnselect
-                   }
-                   style={styles.radioButtonStyle}
-                 />
+                  source={
+                    secureLocation === 1
+                      ? images.checkRoundOrange
+                      : images.radioUnselect
+                  }
+                  style={styles.radioButtonStyle}
+                />
               </TouchableWithoutFeedback>
             </View>
           </View>
@@ -1083,5 +1085,4 @@ const styles = StyleSheet.create({
 
     elevation: 3,
   },
-
 });

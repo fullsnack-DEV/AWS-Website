@@ -204,6 +204,14 @@ const getTabBarVisibility = (route) => {
 || routeName === 'ScorekeeperApprovalScreen'
 || routeName === 'RefereeSelectMatch'
 || routeName === 'ScorekeeperSelectMatch'
+|| routeName === 'UpcomingMatchScreen'
+|| routeName === 'RecentMatchScreen'
+|| routeName === 'ScorekeeperListScreen'
+|| routeName === 'RefereesListScreen'
+|| routeName === 'LookingForChallengeScreen'
+|| routeName === 'HiringPlayerScreen'
+|| routeName === 'LookingTeamScreen'
+
   ) {
     return false;
   }

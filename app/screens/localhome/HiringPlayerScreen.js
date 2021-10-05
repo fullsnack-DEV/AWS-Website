@@ -13,7 +13,6 @@ import {
   Platform,
   Dimensions,
   TextInput,
-
 } from 'react-native';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
@@ -28,8 +27,10 @@ import images from '../../Constants/ImagePath';
 import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
 import TCHiringPlayersCard from '../../components/TCHiringPlayersCard';
-import { getGameIndex, getGroupIndex } from '../../api/elasticSearch';
+import { getGroupIndex } from '../../api/elasticSearch';
 import strings from '../../Constants/String';
+
+let stopFetchMore = true;
 
 export default function HiringPlayerScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
@@ -37,85 +38,62 @@ export default function HiringPlayerScreen({ navigation, route }) {
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
   const [hiringPlayerMatch, setHiringPlayerMatch] = useState([]);
 
-  const [pageSize] = useState(10);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [totalRecord, setTotalRecord] = useState();
+  const [pageSize] = useState(1);
+  const [pageFrom, setPageFrom] = useState(0);
+  // eslint-disable-next-line no-unused-vars
+  const [loadMore, setLoadMore] = useState(false);
 
   const [location] = useState(route?.params?.location);
-  const [selectedSport, setSelectedSport] = useState(
-    route?.params?.selectedSport,
-  );
+  const [selectedSport, setSelectedSport] = useState(route?.params?.sport);
 
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
   // const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    // ,{"match":{"sport":"${selectedSport}"}}]}}}`
+    getHiringList();
+  }, []);
 
-    const hiringPlayerBody = bodybuilder()
-      .size(pageSize)
-      .query('match', 'entity_type', 'team')
-      .query('match', 'hiringPlayers', true)
-      .query('match', 'sport', selectedSport)
-      .query('multi_match', {
+  const getHiringList = () => {
+    console.log('pageSize', pageSize);
+    console.log('pageFrom', pageFrom);
+    const locationFilter = bodybuilder()
+      .filter('multi_match', {
         query: location,
         fields: ['city', 'country', 'state'],
       })
       .build();
 
-    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
-
-    getGroupIndex(hiringPlayerBody)
-      .then((res1) => {
-        if (res1.hits.hits.length === 0) {
-          setHiringPlayerMatch([]);
-        } else {
-          console.log('hiringplayer  API Response:=>', res1.hits.hits);
-          console.log('Total record:=>', res1.hits.total.value);
-          setTotalRecord(res1.hits.total.value);
-
-          setHiringPlayerMatch(res1.hits.hits)
-        }
+    // Hiring player query
+    const hiringPlayersList = bodybuilder()
+      .filter('match', 'entity_type', 'team')
+      .filter('match', 'hiringPlayers', true)
+      .filter('term', 'sport.keyword', {
+        value: selectedSport.toLowerCase(),
+        case_insensitive: true,
       })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [location, pageSize, selectedSport]);
-
-  const handleLoadMore = () => {
-    console.log('Page Size:', pageSize);
-    console.log('Page Number:', pageNumber);
-    console.log('Total:', totalRecord);
-
-    const hiringPlayerBody = bodybuilder()
-    .size(pageSize)
-    .from(pageNumber * pageSize)
-    .query('match', 'entity_type', 'team')
-    .query('match', 'hiringPlayers', true)
-    .query('match', 'sport', selectedSport)
-    .query('multi_match', {
-      query: location,
-      fields: ['city', 'country', 'state'],
-    })
-    .build();
-
-    setPageNumber(pageNumber + 1);
-    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
-    if (pageNumber < 1) {
-      setHiringPlayerMatch([]);
+      .build();
+    let hiringPlayerFilter = {
+      ...hiringPlayersList.query.bool,
+    };
+    if (location !== 'world') {
+      hiringPlayerFilter = {
+        ...locationFilter.query.bool,
+      };
     }
-
-    getGameIndex(hiringPlayerBody)
-      .then((res1) => {
-        console.log('hiringplayer  API Response:=>', res1.hits.hits);
-        console.log('Total record:=>', res1.hits.total.value);
-        setTotalRecord(res1.hits.total.value);
-
-        if (res1.hits.hits.length > 0) {
-          setHiringPlayerMatch(hiringPlayerMatch.concat(res1.hits.hits));
+    const hiringPlayerQuery = bodybuilder()
+    .size(pageSize)
+      .from(pageFrom)
+      .andFilter('bool', hiringPlayerFilter)
+      .build();
+    // Hiring player query
+    getGroupIndex(hiringPlayerQuery)
+      .then((res) => {
+        if (res.length > 0) {
+          const fetchedData = [...hiringPlayerMatch, ...res];
+          setHiringPlayerMatch(fetchedData);
+          setPageFrom(pageFrom + pageSize);
+          stopFetchMore = true;
         }
       })
       .catch((e) => {
@@ -125,10 +103,20 @@ export default function HiringPlayerScreen({ navigation, route }) {
       });
   };
 
+  const handleLoadMore = () => {
+    console.log('handal called');
+    setLoadMore(true);
+    if (!stopFetchMore) {
+      getHiringList();
+      stopFetchMore = true;
+    }
+    setLoadMore(false);
+  };
+
   const renderRecentMatchItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCHiringPlayersCard data={item._source} cardWidth={'92%'} />
+        <TCHiringPlayersCard data={item} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -188,9 +176,12 @@ export default function HiringPlayerScreen({ navigation, route }) {
         keyExtractor={keyExtractor}
         renderItem={renderRecentMatchItems}
         style={styles.listViewStyle}
-        scrollEnabled={true}
-          // onScroll={onScroll}
-          onScrollEndDrag={handleLoadMore}
+        contentContainerStyle={{ flex: 1 }}
+        onEndReachedThreshold={0.5}
+        onEndReached={handleLoadMore}
+        onScrollBeginDrag={() => {
+          stopFetchMore = false;
+        }}
       />
 
       <Modal
@@ -219,17 +210,17 @@ export default function HiringPlayerScreen({ navigation, route }) {
             <Text
               style={styles.doneText}
               onPress={() => {
-                  setSettingPopup(false);
-                  let challengeeBody = ''
-                  if (locationFilterOpetion === 0) {
-                    challengeeBody = bodybuilder()
+                setSettingPopup(false);
+                let challengeeBody = '';
+                if (locationFilterOpetion === 0) {
+                  challengeeBody = bodybuilder()
                     .size(pageSize)
                     .query('match', 'entity_type', 'team')
                     .query('match', 'hiringPlayers', true)
                     .query('match', 'sport', selectedSport)
                     .build();
-                  } else {
-                    challengeeBody = bodybuilder()
+                } else {
+                  challengeeBody = bodybuilder()
                     .size(pageSize)
                     .query('match', 'entity_type', 'team')
                     .query('match', 'hiringPlayers', true)
@@ -239,29 +230,28 @@ export default function HiringPlayerScreen({ navigation, route }) {
                       fields: ['city', 'country', 'state'],
                     })
                     .build();
-                  }
+                }
 
-                  // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+                // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
 
-                  getGroupIndex(challengeeBody)
-                    .then((res1) => {
-                      if (res1.hits.hits.length === 0) {
-                        setHiringPlayerMatch([]);
-                      } else {
-                        console.log('hiringplayer  API Response:=>', res1.hits.hits);
-                        console.log('Total record:=>', res1.hits.total.value);
-                        setTotalRecord(res1.hits.total.value);
+                getGroupIndex(challengeeBody)
+                  .then((res) => {
+                    if (res.length === 0) {
+                      setHiringPlayerMatch([]);
+                    } else {
+                      console.log('hiringplayer  API Response:=>', res);
+                      console.log('Total record:=>', res);
 
-                        if (res1.hits.hits.length > 0) {
-                          setHiringPlayerMatch(res1.hits.hits);
-                        }
+                      if (res.length > 0) {
+                        setHiringPlayerMatch(res);
                       }
-                    })
-                    .catch((e) => {
-                      setTimeout(() => {
-                        Alert.alert(strings.alertmessagetitle, e.message);
-                      }, 10);
-                    });
+                    }
+                  })
+                  .catch((e) => {
+                    setTimeout(() => {
+                      Alert.alert(strings.alertmessagetitle, e.message);
+                    }, 10);
+                  });
               }}>
               {'Apply'}
             </Text>
@@ -340,7 +330,6 @@ export default function HiringPlayerScreen({ navigation, route }) {
                 </View>
               </View>
             </View>
-
           </View>
 
           <View style={{ flex: 1 }} />
@@ -349,7 +338,6 @@ export default function HiringPlayerScreen({ navigation, route }) {
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>
-
       </Modal>
 
       {/* Sports modal */}
@@ -429,6 +417,10 @@ const styles = StyleSheet.create({
     width: 15,
     resizeMode: 'contain',
     // alignSelf: 'flex-end',
+  },
+  listViewStyle: {
+    flex: 1,
+    padding: 15,
   },
   searchViewContainer: {
     flexDirection: 'row',
@@ -607,5 +599,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     color: colors.lightBlackColor,
   },
-
 });

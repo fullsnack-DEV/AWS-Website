@@ -1,8 +1,10 @@
-import React, { useCallback, useState, useLayoutEffect } from 'react';
+import React, {
+ useCallback, useState, useLayoutEffect, useEffect,
+} from 'react';
 import {
  Dimensions,
  Platform,
- View, StyleSheet, FlatList, Image, TouchableOpacity, Text, TouchableWithoutFeedback,
+ View, StyleSheet, FlatList, Image, TouchableOpacity, Text, TouchableWithoutFeedback, Alert,
 } from 'react-native';
 
 import Modal from 'react-native-modal';
@@ -10,6 +12,7 @@ import Modal from 'react-native-modal';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 
 // import AuthContext from '../../auth/context';
+import bodybuilder from 'bodybuilder';
 
 import TCEntityView from '../../components/TCEntityView';
 import TCTextField from '../../components/TCTextField';
@@ -18,13 +21,95 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import { getHitSlop, widthPercentageToDP } from '../../utils';
+import { getUserIndex } from '../../api/elasticSearch';
+import strings from '../../Constants/String';
 
-export default function LookingTeamScreen({ navigation }) {
+let stopFetchMore = true;
+
+export default function LookingTeamScreen({ navigation, route }) {
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  // eslint-disable-next-line no-unused-vars
+  const [selectedSport, setSelectedSport] = useState(route?.params?.sport);
+  const [location] = useState(route?.params?.location);
+
+  const [lookingTeam, setLookingTeam] = useState([]);
+  const [pageSize] = useState(1);
+  const [pageFrom, setPageFrom] = useState(0);
+  // eslint-disable-next-line no-unused-vars
+  const [loadMore, setLoadMore] = useState(false);
   // const [loading, setloading] = useState(false);
 
   // const authContext = useContext(AuthContext);
+
+  useEffect(() => {
+    getLookingTeamList();
+  }, []);
+
+  const getLookingTeamList = () => {
+    console.log('pageSize', pageSize);
+    console.log('pageFrom', pageFrom);
+
+    // Looking team query
+    const locationFilter = bodybuilder()
+      .filter('multi_match', {
+        query: location,
+        fields: ['city', 'country', 'state'],
+      })
+      .build();
+    const lookingTeamList = bodybuilder()
+    .filter('term', 'registered_sports.sport_name.keyword', {
+      value: selectedSport.toLowerCase(),
+      case_insensitive: true,
+    })
+    .filter('term', 'lookingForTeam', {
+      value: true,
+    })
+    .build();
+
+  let lookingTeamFilter = {
+    ...lookingTeamList.query.bool,
+  };
+  // Looking team query
+    // Looking Challengee query
+
+    if (location !== 'world') {
+      lookingTeamFilter = {
+        ...locationFilter.query.bool,
+      };
+    }
+    const lookingTeamQuery = bodybuilder()
+      .size(pageSize)
+      .from(pageFrom)
+      .andFilter('bool', lookingTeamFilter)
+      .build();
+
+    getUserIndex(lookingTeamQuery)
+      .then((res) => {
+        if (res.length > 0) {
+          const fetchedData = [...lookingTeam, ...res];
+          setLookingTeam(fetchedData);
+          setPageFrom(pageFrom + pageSize);
+          stopFetchMore = true;
+        }
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const handleLoadMore = () => {
+    console.log('handal called');
+    setLoadMore(true);
+    if (!stopFetchMore) {
+      getLookingTeamList();
+      stopFetchMore = true;
+    }
+    setLoadMore(false);
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -40,9 +125,9 @@ export default function LookingTeamScreen({ navigation }) {
   }, [navigation]);
 
   const renderEntityListView = useCallback(
-    () => (
+    ({ item }) => (
       <View style={[styles.separator, { flex: 1 / 4 }]}>
-        <TCEntityView />
+        <TCEntityView data = {item} showStar={false} />
       </View>
 
     ),
@@ -76,29 +161,17 @@ export default function LookingTeamScreen({ navigation }) {
       <FlatList
           numColumns={4}
           showsHorizontalScrollIndicator={false}
-          data={[
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-          ]}
+          data={lookingTeam}
           ItemSeparatorComponent={renderSeparator}
           keyExtractor={keyExtractor}
           renderItem={renderEntityListView}
           style={styles.listStyle}
+          contentContainerStyle={{ flex: 1 }}
+        onEndReachedThreshold={0.1}
+        onEndReached={handleLoadMore}
+        onScrollBeginDrag={() => {
+          stopFetchMore = false;
+        }}
         />
       <Modal
         onBackdropPress={() => setSettingPopup(false)}

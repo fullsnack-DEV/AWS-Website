@@ -106,9 +106,9 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
           <View style={styles.gameVSView}>
             {data?.userChallenge || data?.user_challenge ? (
               <View style={styles.leftGameView}>
-                {data?.home_team?._source?.thumbnail ? (
+                {data?.home_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.home_team?._source?.thumbnail }}
+                    source={{ uri: data?.home_team?.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -118,14 +118,14 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
                   />
                 )}
                 <Text style={styles.leftEntityText} numberOfLines={2}>
-                  {data?.home_team?._source?.full_name}
+                  {data?.home_team?.full_name}
                 </Text>
               </View>
             ) : (
               <View style={styles.leftGameView}>
-                {data?.home_team?._source?.thumbnail ? (
+                {data?.home_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.home_team?._source?.thumbnail }}
+                    source={{ uri: data?.home_team?.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -135,7 +135,7 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
                   />
                 )}
                 <Text style={styles.leftEntityText} numberOfLines={2}>
-                  {data?.home_team?._source?.group_name}
+                  {data?.home_team?.group_name}
                 </Text>
               </View>
             )}
@@ -147,11 +147,11 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
             {data?.userChallenge || data?.user_challenge ? (
               <View style={styles.rightGameView}>
                 <Text style={styles.rightEntityText} numberOfLines={2}>
-                  {data?.away_team?._source?.full_name}
+                  {data?.away_team?.full_name}
                 </Text>
-                {data?.away_team?._source?.thumbnail ? (
+                {data?.away_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.away_team?._source.thumbnail }}
+                    source={{ uri: data?.away_team.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -164,11 +164,11 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
             ) : (
               <View style={styles.rightGameView}>
                 <Text style={styles.rightEntityText} numberOfLines={2}>
-                  {data?.away_team?._source?.group_name}
+                  {data?.away_team?.group_name}
                 </Text>
-                {data?.away_team?._source?.thumbnail ? (
+                {data?.away_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.away_team?._source?.thumbnail }}
+                    source={{ uri: data?.away_team?.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
