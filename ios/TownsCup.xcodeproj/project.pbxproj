@@ -968,7 +968,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug_Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6CE413565EA8BDDB78D5E715 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig */;
+			baseConfigurationReference = 4120585BA083FADC875B94BA /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_development.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -994,7 +994,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release_Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C15646BE66D2B43EEBB48A2F /* Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig */;
+			baseConfigurationReference = C255B95CB1DA8E39BB7999F4 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_development.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1017,7 +1017,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug_Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 503B2AE58BC21E53504D7A8E /* Pods-townscup_reactnative.debug.xcconfig */;
+			baseConfigurationReference = 673166674C2EF9A3D79541CF /* Pods-townscup_reactnative.debug_development.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1048,7 +1048,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release_Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6D6D85F67AC289560389AA6A /* Pods-townscup_reactnative.release.xcconfig */;
+			baseConfigurationReference = 28320A7545349024C164C328 /* Pods-townscup_reactnative.release_development.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1077,7 +1077,7 @@
 		};
 		2D02E4971E0B4A5E006451C7 /* Debug_Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7BD5BA1A8F873CE7EDF2F4D9 /* Pods-townscup_reactnative-tvOS.debug.xcconfig */;
+			baseConfigurationReference = 7DC80F1756383C6FCFBAE76D /* Pods-townscup_reactnative-tvOS.debug_development.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1108,7 +1108,7 @@
 		};
 		2D02E4981E0B4A5E006451C7 /* Release_Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B276689F687297FFB4124F78 /* Pods-townscup_reactnative-tvOS.release.xcconfig */;
+			baseConfigurationReference = B07C8DF7806283584F502265 /* Pods-townscup_reactnative-tvOS.release_development.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1139,7 +1139,7 @@
 		};
 		2D02E4991E0B4A5E006451C7 /* Debug_Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 425C075D501081AF228A4D6E /* Pods-townscup_reactnative-tvOSTests.debug.xcconfig */;
+			baseConfigurationReference = D9155AC71DDBEB8F3C03A200 /* Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1167,7 +1167,7 @@
 		};
 		2D02E49A1E0B4A5E006451C7 /* Release_Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4B3EEB853E757C1620EFDDC7 /* Pods-townscup_reactnative-tvOSTests.release.xcconfig */;
+			baseConfigurationReference = 854D2590355E9C85D5CCACD4 /* Pods-townscup_reactnative-tvOSTests.release_development.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1535,7 +1535,7 @@
 		};
 		DA00F7472705F02600934F04 /* Debug_QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 503B2AE58BC21E53504D7A8E /* Pods-townscup_reactnative.debug.xcconfig */;
+			baseConfigurationReference = 4B6B28D3B446DE61306444CA /* Pods-townscup_reactnative.debug_qa.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1566,7 +1566,7 @@
 		};
 		DA00F7482705F02600934F04 /* Debug_QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6CE413565EA8BDDB78D5E715 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig */;
+			baseConfigurationReference = 2C27A9E34E0941AC9A9AF555 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_qa.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1592,7 +1592,7 @@
 		};
 		DA00F7492705F02600934F04 /* Debug_QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7BD5BA1A8F873CE7EDF2F4D9 /* Pods-townscup_reactnative-tvOS.debug.xcconfig */;
+			baseConfigurationReference = A041746C0975FC314D5151E5 /* Pods-townscup_reactnative-tvOS.debug_qa.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1623,7 +1623,7 @@
 		};
 		DA00F74A2705F02600934F04 /* Debug_QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 425C075D501081AF228A4D6E /* Pods-townscup_reactnative-tvOSTests.debug.xcconfig */;
+			baseConfigurationReference = A2D3092619FB0647259E703C /* Pods-townscup_reactnative-tvOSTests.debug_qa.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1705,7 +1705,7 @@
 		};
 		DA00F74C2705F03000934F04 /* Release_QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6D6D85F67AC289560389AA6A /* Pods-townscup_reactnative.release.xcconfig */;
+			baseConfigurationReference = 24C131C2BEE8E12DA88679E5 /* Pods-townscup_reactnative.release_qa.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1734,7 +1734,7 @@
 		};
 		DA00F74D2705F03000934F04 /* Release_QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C15646BE66D2B43EEBB48A2F /* Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig */;
+			baseConfigurationReference = 7AFC16E177FC0BAFD0D45EF5 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_qa.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1757,7 +1757,7 @@
 		};
 		DA00F74E2705F03000934F04 /* Release_QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B276689F687297FFB4124F78 /* Pods-townscup_reactnative-tvOS.release.xcconfig */;
+			baseConfigurationReference = 41F8A84CD837327671EC56C7 /* Pods-townscup_reactnative-tvOS.release_qa.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1788,7 +1788,7 @@
 		};
 		DA00F74F2705F03000934F04 /* Release_QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4B3EEB853E757C1620EFDDC7 /* Pods-townscup_reactnative-tvOSTests.release.xcconfig */;
+			baseConfigurationReference = B1F5FF1183D84204D8357D8F /* Pods-townscup_reactnative-tvOSTests.release_qa.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2220,7 +2220,7 @@
 		};
 		DA472A2E2705BFB900E2D21B /* Debug_Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 503B2AE58BC21E53504D7A8E /* Pods-townscup_reactnative.debug.xcconfig */;
+			baseConfigurationReference = 1885BE2CA4FA0B08529F172C /* Pods-townscup_reactnative.debug_production.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -2251,7 +2251,7 @@
 		};
 		DA472A2F2705BFB900E2D21B /* Debug_Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6CE413565EA8BDDB78D5E715 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig */;
+			baseConfigurationReference = 07A472ED65881A7D066639F5 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_production.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2277,7 +2277,7 @@
 		};
 		DA472A302705BFB900E2D21B /* Debug_Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7BD5BA1A8F873CE7EDF2F4D9 /* Pods-townscup_reactnative-tvOS.debug.xcconfig */;
+			baseConfigurationReference = 540096C7404B490F1CA32A97 /* Pods-townscup_reactnative-tvOS.debug_production.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2308,7 +2308,7 @@
 		};
 		DA472A312705BFB900E2D21B /* Debug_Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 425C075D501081AF228A4D6E /* Pods-townscup_reactnative-tvOSTests.debug.xcconfig */;
+			baseConfigurationReference = 1E0980AF85618AAE77D75455 /* Pods-townscup_reactnative-tvOSTests.debug_production.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2397,7 +2397,7 @@
 		};
 		DA472A332705BFC400E2D21B /* Debug_Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 503B2AE58BC21E53504D7A8E /* Pods-townscup_reactnative.debug.xcconfig */;
+			baseConfigurationReference = 01EB3323C5E978FBFF56E0A8 /* Pods-townscup_reactnative.debug_staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -2428,7 +2428,7 @@
 		};
 		DA472A342705BFC400E2D21B /* Debug_Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6CE413565EA8BDDB78D5E715 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug.xcconfig */;
+			baseConfigurationReference = 0E0E15B2C4DF6481C996D9F7 /* Pods-townscup_reactnative-townscup_reactnativeTests.debug_staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2454,7 +2454,7 @@
 		};
 		DA472A352705BFC400E2D21B /* Debug_Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7BD5BA1A8F873CE7EDF2F4D9 /* Pods-townscup_reactnative-tvOS.debug.xcconfig */;
+			baseConfigurationReference = 4F38B4346DC71B5643133E28 /* Pods-townscup_reactnative-tvOS.debug_staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2485,7 +2485,7 @@
 		};
 		DA472A362705BFC400E2D21B /* Debug_Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 425C075D501081AF228A4D6E /* Pods-townscup_reactnative-tvOSTests.debug.xcconfig */;
+			baseConfigurationReference = 3BA4160D61B110F8CD115AEA /* Pods-townscup_reactnative-tvOSTests.debug_staging.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2567,7 +2567,7 @@
 		};
 		DA472A3D2705BFDF00E2D21B /* Release_Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6D6D85F67AC289560389AA6A /* Pods-townscup_reactnative.release.xcconfig */;
+			baseConfigurationReference = 790C3F5FDE39A928DEC6FDA1 /* Pods-townscup_reactnative.release_staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -2596,7 +2596,7 @@
 		};
 		DA472A3E2705BFDF00E2D21B /* Release_Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C15646BE66D2B43EEBB48A2F /* Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig */;
+			baseConfigurationReference = 5828DEC8A1F625712AF814B6 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2619,7 +2619,7 @@
 		};
 		DA472A3F2705BFDF00E2D21B /* Release_Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B276689F687297FFB4124F78 /* Pods-townscup_reactnative-tvOS.release.xcconfig */;
+			baseConfigurationReference = E776A54AD126B3D8A52CB89B /* Pods-townscup_reactnative-tvOS.release_staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2650,7 +2650,7 @@
 		};
 		DA472A402705BFDF00E2D21B /* Release_Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4B3EEB853E757C1620EFDDC7 /* Pods-townscup_reactnative-tvOSTests.release.xcconfig */;
+			baseConfigurationReference = 9A055AE03BDC6FC022500001 /* Pods-townscup_reactnative-tvOSTests.release_staging.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2732,7 +2732,7 @@
 		};
 		DA472A422705BFED00E2D21B /* Release_Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6D6D85F67AC289560389AA6A /* Pods-townscup_reactnative.release.xcconfig */;
+			baseConfigurationReference = E90E3DB15991A7D09DB7F402 /* Pods-townscup_reactnative.release_production.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -2761,7 +2761,7 @@
 		};
 		DA472A432705BFED00E2D21B /* Release_Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C15646BE66D2B43EEBB48A2F /* Pods-townscup_reactnative-townscup_reactnativeTests.release.xcconfig */;
+			baseConfigurationReference = 3FB63C0CB1C0B54132B88C06 /* Pods-townscup_reactnative-townscup_reactnativeTests.release_production.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2784,7 +2784,7 @@
 		};
 		DA472A442705BFED00E2D21B /* Release_Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B276689F687297FFB4124F78 /* Pods-townscup_reactnative-tvOS.release.xcconfig */;
+			baseConfigurationReference = F7B3EBEBD1F8CF5A59DC6D34 /* Pods-townscup_reactnative-tvOS.release_production.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2815,7 +2815,7 @@
 		};
 		DA472A452705BFED00E2D21B /* Release_Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4B3EEB853E757C1620EFDDC7 /* Pods-townscup_reactnative-tvOSTests.release.xcconfig */;
+			baseConfigurationReference = 0658B917D1256C97BF3A99FF /* Pods-townscup_reactnative-tvOSTests.release_production.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
