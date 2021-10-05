@@ -1,6 +1,6 @@
 import React, {
  useCallback, useState, useEffect, useLayoutEffect,
-} from 'react';
+ } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,7 +10,8 @@ import {
   Text,
   TouchableWithoutFeedback,
   Platform,
- Dimensions,
+  Dimensions,
+  Alert,
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -21,6 +22,7 @@ import Modal from 'react-native-modal';
 import moment from 'moment';
 import { AirbnbRating } from 'react-native-ratings';
 import RNPickerSelect from 'react-native-picker-select';
+import bodybuilder from 'bodybuilder';
 import TCEntityView from '../../components/TCEntityView';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -31,11 +33,16 @@ import TCThinDivider from '../../components/TCThinDivider';
 import TCTextField from '../../components/TCTextField';
 
 import strings from '../../Constants/String';
+import { getUserIndex } from '../../api/elasticSearch';
 
-export default function RefereesListScreen({ navigation }) {
+let stopFetchMore = true;
+
+export default function RefereesListScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  const [location] = useState(route?.params?.location);
+
   const [datePickerFor, setDatePickerFor] = useState();
   const [show, setShow] = useState(false);
   const [fromDate, setFromDate] = useState();
@@ -44,7 +51,13 @@ export default function RefereesListScreen({ navigation }) {
   const [maxAge, setMaxAge] = useState(0);
   const [minAgeValue, setMinAgeValue] = React.useState([]);
   const [maxAgeValue, setMaxAgeValue] = React.useState([]);
+  const [referees, setReferees] = useState([]);
+  const [pageSize] = useState(1);
+  const [pageFrom, setPageFrom] = useState(0);
+  // eslint-disable-next-line no-unused-vars
+  const [loadMore, setLoadMore] = useState(false);
   // const authContext = useContext(AuthContext);
+  const { sport } = route?.params ?? {};
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -59,6 +72,62 @@ export default function RefereesListScreen({ navigation }) {
       ),
     });
   }, [navigation]);
+
+  const getReferees = () => {
+    const locationFilter = bodybuilder()
+      .filter('multi_match', {
+        query: location,
+        fields: ['city', 'country', 'state'],
+      })
+      .build();
+    // Referee query
+    const refefreeList = bodybuilder()
+      .filter('term', 'referee_data.sport_name.keyword', {
+        value: sport.toLowerCase(),
+        case_insensitive: true,
+      })
+      .filter('term', 'referee_data.is_published', {
+        value: true,
+      })
+      .build();
+
+    let refereeFilter = {
+      ...refefreeList.query.bool,
+    };
+
+    if (location !== 'world') {
+      refereeFilter = {
+        ...locationFilter.query.bool,
+      };
+    }
+
+    const refereeQuery = bodybuilder()
+      .size(pageSize)
+      .from(pageFrom)
+      .andFilter('bool', refereeFilter)
+      .build();
+
+    // Referee query
+
+    getUserIndex(refereeQuery)
+      .then((res) => {
+        if (res.length > 0) {
+          const fetchedData = [...referees, ...res];
+          setReferees(fetchedData);
+          setPageFrom(pageFrom + pageSize);
+          stopFetchMore = true;
+        }
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e);
+        }, 10);
+      });
+  };
+
+  useEffect(() => {
+    getReferees();
+  }, []);
 
   useEffect(() => {
     const minAgeArray = [];
@@ -85,9 +154,9 @@ export default function RefereesListScreen({ navigation }) {
   }, [minAge]);
 
   const renderRefereesScorekeeperListView = useCallback(
-    () => (
+    ({ item }) => (
       <View style={[styles.separator, { flex: 1 / 4, alignItems: 'center' }]}>
-        <TCEntityView showStar={true} />
+        <TCEntityView data={item} showStar={true} />
       </View>
     ),
     [],
@@ -116,6 +185,14 @@ export default function RefereesListScreen({ navigation }) {
     setShow(false);
   };
 
+  const onScrollHandler = () => {
+    setLoadMore(true);
+    if (!stopFetchMore) {
+      getReferees();
+      stopFetchMore = true;
+    }
+    setLoadMore(false);
+  };
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.searchView}>
@@ -129,11 +206,17 @@ export default function RefereesListScreen({ navigation }) {
       <FlatList
         numColumns={4}
         showsHorizontalScrollIndicator={false}
-        data={['', '', '', '', '', '', '']}
+        data={referees}
         ItemSeparatorComponent={renderSeparator}
         keyExtractor={keyExtractor}
         renderItem={renderRefereesScorekeeperListView}
         style={styles.listStyle}
+        contentContainerStyle={{ flex: 1 }}
+        onEndReached={onScrollHandler}
+        onEndReachedThreshold={0.01}
+        onScrollBeginDrag={() => {
+          stopFetchMore = false;
+        }}
       />
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
@@ -146,7 +229,11 @@ export default function RefereesListScreen({ navigation }) {
           backgroundColor: colors.blackOpacityColor,
         }}
         visible={settingPopup}>
-        <View style={[styles.bottomPopupContainer, { height: Dimensions.get('window').height - 100 }]}>
+        <View
+          style={[
+            styles.bottomPopupContainer,
+            { height: Dimensions.get('window').height - 100 },
+          ]}>
           <View style={styles.viewsContainer}>
             <Text
               onPress={() => setSettingPopup(false)}
@@ -342,7 +429,12 @@ export default function RefereesListScreen({ navigation }) {
                 </View>
               </View>
             </View>
-            <View style={{ flexDirection: 'row', margin: 15, justifyContent: 'space-between' }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                margin: 15,
+                justifyContent: 'space-between',
+              }}>
               <View style={{ flex: 0.2 }}>
                 <Text style={styles.filterTitle}>Referee fee</Text>
               </View>

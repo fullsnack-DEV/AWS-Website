@@ -32,6 +32,8 @@ import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import { getGameIndex } from '../../api/elasticSearch';
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 
+let stopFetchMore = true;
+
 export default function RecentMatchScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
@@ -39,7 +41,7 @@ export default function RecentMatchScreen({ navigation, route }) {
   const [recentMatch, setRecentMatch] = useState([]);
 
   const [pageSize] = useState(10);
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageFrom, setPageFrom] = useState(0);
 
   const [location] = useState(route?.params?.location);
   const [selectedSport, setSelectedSport] = useState(
@@ -55,69 +57,65 @@ export default function RecentMatchScreen({ navigation, route }) {
 
   const [fromPickerVisible, setFromPickerVisible] = useState(false);
   const [toPickerVisible, setToPickerVisible] = useState(false);
-  // const authContext = useContext(AuthContext);
-
+// eslint-disable-next-line no-unused-vars
+const [loadMore, setLoadMore] = useState(false);
   useEffect(() => {
-    const recentMatchbody = bodybuilder()
-    .size(pageSize)
-    .query('match', 'sport', selectedSport)
-    .query('match', 'status', 'ended')
-    .query('multi_match', {
+    getRecentMatch()
+  }, []);
+
+  const getRecentMatch = () => {
+    const locationFilter = bodybuilder()
+    .filter('multi_match', {
       query: location,
       fields: ['city', 'country', 'state'],
     })
-    .query('range', 'start_datetime', {
-      lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-    })
-    .sort('actual_enddatetime', 'desc')
     .build();
+   // Recent match query
+   const recentMatchList = bodybuilder()
+   .query('match', 'sport', selectedSport.toLowerCase())
+   .query('range', 'start_datetime', {
+     lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+   })
+   .sort('actual_enddatetime', 'desc')
+   .build();
 
-    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+ let recentFilter = {
+   ...recentMatchList.query.bool,
+ };
 
-    getGameIndex(recentMatchbody).then((games) => {
+ if (location !== 'world') {
+  recentFilter = {
+    ...locationFilter.query.bool,
+  };
+}
+
+const recentQuery = bodybuilder()
+.size(pageSize)
+.from(pageFrom)
+  .andFilter('bool', recentFilter)
+  .build();
+
+ // Recent match query
+
+    getGameIndex(recentQuery).then((games) => {
       Utility.getGamesList(games).then((gamedata) => {
-        if (gamedata.length === 0) {
-          setRecentMatch([]);
-        } else {
-          setRecentMatch(gamedata);
+        if (gamedata.length > 0) {
+          const fetchedData = [...recentMatch, ...gamedata];
+          setRecentMatch(fetchedData);
+          setPageFrom(pageFrom + pageSize);
+          stopFetchMore = true;
         }
       });
     });
-  }, [location, pageSize, selectedSport]);
-
+  }
   const handleLoadMore = () => {
-    console.log('Page Size:', pageSize);
-    console.log('Page Number:', pageNumber);
-    const recentMatchbody = bodybuilder()
-    .size(pageSize)
-    .from((pageNumber * pageSize))
-    .query('match', 'sport', selectedSport)
-    .query('match', 'status', 'ended')
-    .query('multi_match', {
-      query: location,
-      fields: ['city', 'country', 'state'],
-    })
-    .query('range', 'start_datetime', {
-      lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-    })
-    .sort('actual_enddatetime', 'desc')
-    .build();
-
-    setPageNumber(pageNumber + 1);
-    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
-    if (pageNumber < 1) {
-      setRecentMatch([]);
+    console.log('handal called');
+    setLoadMore(true);
+    if (!stopFetchMore) {
+      getRecentMatch();
+      stopFetchMore = true;
     }
-
-    getGameIndex(recentMatchbody).then((games) => {
-      Utility.getGamesList(games).then((gamedata) => {
-        if (gamedata.length === 0) {
-          setRecentMatch([]);
-        } else {
-          setRecentMatch(gamedata);
-        }
-      });
-    });
+    setLoadMore(false);
   };
 
   const renderRecentMatchItems = useCallback(
@@ -202,9 +200,12 @@ export default function RecentMatchScreen({ navigation, route }) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderRecentMatchItems}
         style={styles.listViewStyle}
-        scrollEnabled={true}
-        // onScroll={onScroll}
-        onScrollEndDrag={handleLoadMore}
+        contentContainerStyle={{ flex: 1 }}
+        onEndReachedThreshold={0.01}
+        onEndReached={handleLoadMore}
+        onScrollBeginDrag={() => {
+          stopFetchMore = false;
+        }}
       />
       {/* <SectionList
         sections={[
