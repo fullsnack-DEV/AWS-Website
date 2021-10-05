@@ -361,7 +361,7 @@ export default function LocalHomeScreen({ navigation, route }) {
         console.log('challengee:=>', challengee);
 
         setChallengeeMatch(challengee);
-      });
+      })
 
       getGroupIndex(hiringPlayerQuery).then((teams) => {
         console.log('hiringPlayers::=>', teams);
