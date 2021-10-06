@@ -1,8 +1,8 @@
+/* eslint-disable import/no-cycle */
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 import firebase from '@react-native-firebase/app';
 import jwtDecode from 'jwt-decode';
-// eslint-disable-next-line import/no-cycle
 import * as Utility from '.';
 import { QBLogout } from './QuickBlox';
 import strings from '../Constants/String';

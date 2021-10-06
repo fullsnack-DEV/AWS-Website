@@ -1,5 +1,8 @@
 import Config from 'react-native-config';
+
 import makeAPIRequest from '../utils/Global';
+
+console.log('ENVS:=>', Config.BASE_URL);
 
 const GameRecordStatus = {
   Approve: 'approve',

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 import moment from 'moment';
@@ -14,7 +14,7 @@ import RefereeEntityView from './RefereeEntityView';
 import ScorekeeperEntityView from './ScorekeeperEntityView';
 import TeamEntityView from './TeamEntityView';
 
-function ReservationCard({
+export default function ReservationCard({
   data,
   onPressButon = () => {},
   // onPressGameCard = () => {},
@@ -196,5 +196,3 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
 });
-
-export default memo(ReservationCard);

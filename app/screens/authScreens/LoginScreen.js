@@ -33,6 +33,7 @@ import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import { eventDefaultColorsData } from '../../Constants/LoaderImages';
 import apiCall from '../../utils/apiCall';
 import TCKeyboardView from '../../components/TCKeyboardView';
+import { getAppSettingsWithoutAuth } from '../../api/Users';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('patidar.arvind1+3@gmail.com');
@@ -73,6 +74,7 @@ export default function LoginScreen({ navigation }) {
     await Utility.setStorage('authContextEntity', { ...entity })
     await Utility.setStorage('loggedInEntity', entity)
     await authContext.setEntity({ ...entity })
+
     // eslint-disable-next-line no-underscore-dangle
     if (!firebaseUser?._user?.emailVerified) {
       firebaseUser.sendEmailVerification()
@@ -85,12 +87,26 @@ export default function LoginScreen({ navigation }) {
     } else if (firebaseUser?._user?.emailVerified) {
       getRedirectionScreenName(userData).then((responseScreen) => {
         setloading(false);
+
         navigation.replace(responseScreen?.screen, { ...responseScreen?.params })
       }).catch(async () => {
         entity.isLoggedIn = true;
         await Utility.setStorage('authContextEntity', { ...entity })
         await Utility.setStorage('loggedInEntity', { ...entity })
-        await authContext.setEntity({ ...entity })
+
+        getAppSettingsWithoutAuth()
+        .then(async (response) => {
+          console.log('Settings without auth:=>', response);
+          await Utility.setStorage('appSetting', response.payload.app);
+          await authContext.setEntity({ ...entity })
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            console.log('catch -> location screen setting api');
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+
         setloading(false);
       });
     }
@@ -119,6 +135,8 @@ export default function LoginScreen({ navigation }) {
           token: idTokenResult.token,
           expirationTime: idTokenResult.expirationTime,
         };
+        console.log('token:=>', token);
+
         dummyAuthContext.tokenData = token;
         Utility.setStorage('eventColor', eventDefaultColorsData);
         Utility.setStorage('groupEventValue', true)
@@ -127,6 +145,7 @@ export default function LoginScreen({ navigation }) {
           url: `${Config.BASE_URL}/users/${user?.uid}`,
           headers: { Authorization: `Bearer ${token?.token}` },
         }
+        console.log('Login Request:=>', userConfig);
         apiCall(userConfig).then(async (response) => {
           dummyAuthContext.entity = {
             uid: user.uid,
@@ -157,11 +176,15 @@ export default function LoginScreen({ navigation }) {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
+        console.log('then:=>');
+
         const loginOnAuthStateChanged = auth().onAuthStateChanged(onAuthStateChanged);
         loginOnAuthStateChanged();
       })
       .catch((error) => {
         setloading(false);
+        console.log('catch:=>');
+
         let message = error.message;
         if (error.code === 'auth/user-not-found') {
           message = 'Your email or password is incorrect.Please try again';

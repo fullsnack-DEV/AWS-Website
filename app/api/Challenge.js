@@ -1,4 +1,5 @@
 import Config from 'react-native-config';
+
 import makeAPIRequest from '../utils/Global';
 
 export const getFeesEstimation = async (params, authContext) => makeAPIRequest({

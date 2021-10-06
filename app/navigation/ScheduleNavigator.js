@@ -170,6 +170,7 @@ import fonts from '../Constants/Fonts';
 import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChallengeScreen';
 import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
+import ChallengePreviewScreen from '../screens/challenge/createChallenge/ChallengePreviewScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1245,6 +1246,23 @@ const ScheduleNavigator = () => (
         options={ {
           headerShown: false,
         } }
+      />
+
+    <Stack.Screen
+          name="ChallengePreviewScreen"
+          component={ChallengePreviewScreen}
+          options={{
+              title: 'Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
       />
     <Stack.Screen
         name="ChallengeAcceptedDeclinedScreen"

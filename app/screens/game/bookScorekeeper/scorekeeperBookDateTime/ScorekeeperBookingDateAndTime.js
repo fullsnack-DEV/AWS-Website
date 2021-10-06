@@ -59,11 +59,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
         start_datetime: gData?.start_datetime,
         end_datetime: gData?.end_datetime,
       };
-      getScorekeeperGameFeeEstimation(
-        route?.params?.isHirer ? authContext.entity.uid : userData?.user_id,
-        body,
-        authContext,
-      )
+      getScorekeeperGameFeeEstimation(route?.params?.isHirer ? authContext.entity.uid : userData?.user_id, body, authContext)
         .then((response) => {
           console.log('Payment res', response.payload);
           body.hourly_game_fee = response?.payload?.hourly_game_fee ?? 0;
@@ -122,9 +118,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
     const bodyParams = {
       ...challengeObject,
       // source: route?.params?.paymentMethod?.id,
-      scorekeeper_id: route?.params?.isHirer
-        ? authContext.entity.uid
-        : userData?.user_id,
+       scorekeeper_id: route?.params?.isHirer ? authContext.entity.uid : userData?.user_id,
       game_id: gameData?.game_id,
       refund_policy: route?.params?.settingObj?.refund_policy,
       total_game_fee: challengeObject?.total_game_fee,
@@ -139,10 +133,10 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
       bodyParams.is_offer = true;
     } else {
       bodyParams.source = route?.params?.paymentMethod?.id;
-      bodyParams.is_offer = true;
+      bodyParams.is_offer = false;
     }
 
-    delete bodyParams.sport;
+     delete bodyParams.sport;
     delete bodyParams.start_datetime;
     delete bodyParams.end_datetime;
     delete bodyParams.total_game_charges;
@@ -150,11 +144,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
     delete bodyParams.total_charges;
     delete bodyParams.service_fee2_charges;
 
-    if (
-      Number(bodyParams.hourly_game_fee) > 0
-      && !bodyParams?.source
-      && !route?.params?.isHirer
-    ) {
+    if (Number(bodyParams.hourly_game_fee) > 0 && !bodyParams?.source && !route?.params?.isHirer) {
       Alert.alert('Towns Cup', 'Select Payment Method');
       return false;
     }
@@ -238,10 +228,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
               alignItems: 'center',
               justifyContent: 'space-between',
             }}>
-            <Title
-              text={route?.params?.showMatches ? 'Choose a game' : 'Game'}
-              required={!!route?.params?.showMatches}
-            />
+            <Title text={route?.params?.showMatches ? 'Choose a game' : 'Game'} required={!!route?.params?.showMatches}/>
             {route?.params?.showMatches && (
               <View
                 onPress={() => {
@@ -344,22 +331,21 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
         <Text style={styles.rulesDetail}>{gameData?.general_rules}</Text>
         <View style={{ marginBottom: 10 }} />
         <Text style={styles.rulesTitle}>Special Rules</Text>
-        <Text style={[styles.rulesDetail, { marginBottom: 10 }]}>
-          {gameData?.special_rules}
-        </Text>
+        <Text style={[styles.rulesDetail, { marginBottom: 10 }]}>{gameData?.special_rules}</Text>
         <Seperator />
 
         <View>
           <TCChallengeTitle
-            title={'Refund Policy'}
-            value={route?.params?.settingObj?.refund_policy}
-            tooltipText={
-            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
-            }
-            tooltipHeight={Utility.heightPercentageToDP('18%')}
-            tooltipWidth={Utility.widthPercentageToDP('50%')}
-            isEdit={false}
-          />
+          title={'Refund Policy'}
+          value={route?.params?.settingObj?.refund_policy}
+          tooltipText={
+          '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+          }
+          tooltipHeight={Utility.heightPercentageToDP('18%')}
+          tooltipWidth={Utility.widthPercentageToDP('50%')}
+          isEdit={false}
+
+        />
           <TCThickDivider />
         </View>
 
@@ -370,9 +356,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
             <View style={{ marginTop: 10 }}>
               <MatchFeesCard
                 challengeObj={challengeObject}
-                senderOrReceiver={
-                  route?.params?.isHirer ? 'receiver' : 'sender'
-                }
+                senderOrReceiver={route?.params?.isHirer ? 'receiver' : 'sender'}
                 type="scorekeeper"
               />
             </View>
@@ -380,41 +364,39 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
         )}
 
         {/* Payment Method */}
-        {Number(challengeObject?.hourly_game_fee) > 0
-          && !route?.params?.isHirer && (
-            <View style={styles.contentContainer}>
-              <Title text={'Payment Method'} />
-              <View style={{ marginTop: 10 }}>
-                <TCTouchableLabel
-                  title={
-                    route.params.paymentMethod
-                      ? Utility.capitalize(
-                          route.params.paymentMethod.card.brand,
-                        )
-                      : strings.addOptionMessage
-                  }
-                  subTitle={route.params.paymentMethod?.card.last4}
-                  showNextArrow={true}
-                  onPress={() => {
-                    navigation.navigate('PaymentMethodsScreen', {
-                      comeFrom: 'ScorekeeperBookingDateAndTime',
-                    });
-                  }}
-                />
-              </View>
+        {Number(challengeObject?.hourly_game_fee) > 0 && !route?.params?.isHirer && (
+          <View style={styles.contentContainer}>
+            <Title text={'Payment Method'} />
+            <View style={{ marginTop: 10 }}>
+              <TCTouchableLabel
+                title={
+                  route.params.paymentMethod
+                    ? Utility.capitalize(route.params.paymentMethod.card.brand)
+                    : strings.addOptionMessage
+                }
+                subTitle={route.params.paymentMethod?.card.last4}
+                showNextArrow={true}
+                onPress={() => {
+                  navigation.navigate('PaymentMethodsScreen', {
+                    comeFrom: 'ScorekeeperBookingDateAndTime',
+                  });
+                }}
+              />
             </View>
-          )}
+          </View>
+        )}
       </ScrollView>
       {/* Next Button */}
 
       <SafeAreaView>
         <TCGradientButton
-          isDisabled={!gameData} // || (Number(hourly_game_fee) >= 0 && !route.params.paymentMethod)
+          isDisabled={!gameData}// || (Number(hourly_game_fee) >= 0 && !route.params.paymentMethod)
           title={strings.doneTitle}
           style={{ marginBottom: 15 }}
           onPress={handleOnNext}
         />
       </SafeAreaView>
+
     </>
   );
 };
@@ -483,6 +465,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
   },
+
 });
 
 export default ScorekeeperBookingDateAndTime;

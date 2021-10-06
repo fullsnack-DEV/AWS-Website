@@ -1,4 +1,5 @@
-import Config from 'react-native-config';
+ import Config from 'react-native-config';
+
 import makeAPIRequest from '../utils/Global';
 
 export const getUnreadCount = (authContext) => makeAPIRequest({

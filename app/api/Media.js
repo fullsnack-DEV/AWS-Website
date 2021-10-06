@@ -1,4 +1,5 @@
 import Config from 'react-native-config';
+
 import makeAPIRequest from '../utils/Global';
 
 const getImagePreSignedURL = async (params, authContext, cancelToken) => makeAPIRequest({

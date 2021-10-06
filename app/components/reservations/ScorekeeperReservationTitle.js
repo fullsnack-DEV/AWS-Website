@@ -9,11 +9,11 @@ import colors from '../../Constants/Colors';
 
 // import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 import fonts from '../../Constants/Fonts';
-import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
+import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 
 let entity = {};
 
-export default function RefereeReservationTitle({
+export default function ScorekeeperReservationTitle({
  reservationObject, fontSize = 18, showDesc = true, containerStyle,
  }) {
   console.log('reservationObject OHHHH:=>', reservationObject);
@@ -21,7 +21,7 @@ export default function RefereeReservationTitle({
   const entityList = [
     { ...reservationObject.game.home_team },
     { ...reservationObject.game.away_team },
-    { ...reservationObject.referee },
+    { ...reservationObject.scorekeeper },
   ];
   console.log('entityList:=>', entityList);
 
@@ -47,93 +47,95 @@ export default function RefereeReservationTitle({
   const getTitle = () => {
     const statusObject = {};
     // Offered Status
-    if (reservationObject.status === RefereeReservationStatus.offered) {
+    if (reservationObject.status === ScorekeeperReservationStatus.offered) {
       if (reservationObject.is_offer) {
         // For team B
         if (entity.uid === reservationObject.initiated_by) {
           statusObject.title = 'Approval-Pending';
           statusObject.color = colors.themeColor;
-          statusObject.desc = `You received referee approval request from ${getReferee()}.`;
+          statusObject.desc = `You received scorekeeper approval request from ${getScorekeeper()}.`;
         } else if (entity.uid === reservationObject.approved_by) {
           // For team A
         } else {
-          // For Referee
+          // For Scorekeeper
           statusObject.title = 'Approval-awaiting';
           statusObject.color = colors.themeColor;
-          statusObject.desc = `You sent referee approval request to ${getTeamB()}.`;
+          statusObject.desc = `You sent scorekeeper approval request to ${getTeamB()}.`;
         }
       } else {
         // For team B
         if (entity.uid === reservationObject.initiated_by) {
           statusObject.title = 'Approval-awaiting';
           statusObject.color = colors.themeColor;
-          statusObject.desc = `You sent referee approval request to ${getTeamA()}.`;
+          statusObject.desc = `You sent scorekeeper approval request to ${getTeamA()}.`;
         } else if (entity.uid === reservationObject.approved_by) {
           // For team A
         } else {
-          // For Referee
+          // For Scorekeeper
+
         }
       }
     }
 
     // Approved Status
-    else if (reservationObject.status === RefereeReservationStatus.approved) {
+    else if (reservationObject.status === ScorekeeperReservationStatus.approved) {
       if (reservationObject.is_offer) {
         // For team B
         if (entity.uid === reservationObject.initiated_by) {
           statusObject.title = 'Pending';
           statusObject.color = colors.themeColor;
-          statusObject.desc = `${getTeamA()} received referee approval request.`;
+          statusObject.desc = `${getTeamA()} received scorekeeper approval request.`;
         } else if (entity.uid === reservationObject.approved_by) {
           // For team A
         } else {
-          // For Referee
+          // For Scorekeeper
           statusObject.title = 'Awaiting';
           statusObject.color = colors.themeColor;
-          statusObject.desc = `${getTeamA()} received referee approval request.`;
+          statusObject.desc = `${getTeamA()} received scorekeeper approval request.`;
         }
       } else {
         // For team B
         if (entity.uid === reservationObject.initiated_by) {
           statusObject.title = 'Awaiting';
           statusObject.color = colors.themeColor;
-          statusObject.desc = `${getReferee()} received referee request sent by you.`;
+          statusObject.desc = `${getScorekeeper()} received scorekeeper request sent by you.`;
         } else if (entity.uid === reservationObject.approved_by) {
           // For team A
+
         } else {
-          // For Referee
+          // For Scorekeeper
           statusObject.title = 'Pending';
           statusObject.color = colors.themeColor;
-          statusObject.desc = `You received referee request sent by ${getTeamB()}.`;
+          statusObject.desc = `You received scorekeeper request sent by ${getTeamB()}.`;
         }
       }
     }
 
     // Declined Status
-    else if (reservationObject.status === RefereeReservationStatus.declined) {
-      if (reservationObject.referee_booked) {
+    else if (reservationObject.status === ScorekeeperReservationStatus.declined) {
+      if (reservationObject.scorekeeper_booked) {
         // Alter request
 
         if (entity.uid === reservationObject.initiated_by) {
-          if (reservationObject.requested_by === reservationObject.referee_id) {
+          if (reservationObject.requested_by === reservationObject.scorekeeper_id) {
             statusObject.title = 'You-declined';
             statusObject.color = colors.googleColor;
-            statusObject.desc = 'You declined  referee alter request sent by referee.';
+            statusObject.desc = 'You declined  scorekeeper alter request sent by scorekeeper.';
           } else {
-            statusObject.title = 'Referee-declined';
+            statusObject.title = 'Scorekeeper-declined';
             statusObject.color = colors.googleColor;
-            statusObject.desc = 'Referee declined  referee alter request sent by you.';
+            statusObject.desc = 'Scorekeeper declined  scorekeeper alter request sent by you.';
           }
-        } else if (entity.uid === reservationObject.referee_id) {
-          // For Referee
-          if (reservationObject.requested_by === reservationObject.referee_id) {
+        } else if (entity.uid === reservationObject.scorekeeper_id) {
+          // For Scorekeeper
+          if (reservationObject.requested_by === reservationObject.scorekeeper_id) {
             statusObject.title = `${getTeamB()}-declined`;
             statusObject.color = colors.googleColor;
-            statusObject.desc = `${getTeamB()} declined  referee alter request sent by you.`;
+            statusObject.desc = `${getTeamB()} declined  scorekeeper alter request sent by you.`;
           } else {
             statusObject.title = 'You -declined';
             statusObject.color = colors.googleColor;
-            statusObject.desc = `You declined  referee alter request sent by ${getTeamA()}.`;
+            statusObject.desc = `You declined  scorekeeper alter request sent by ${getTeamA()}.`;
           }
         }
       } else {
@@ -141,14 +143,14 @@ export default function RefereeReservationTitle({
           if (entity.uid === reservationObject.initiated_by) {
             if (reservationObject.version === 2) {
               // declined team B
-              if (reservationObject.requested_by === reservationObject.referee_id) {
-                statusObject.title = 'You Declined';
+              if (reservationObject.requested_by === reservationObject.scorekeeper_id) {
+                statusObject.title = 'You-declined';
                 statusObject.color = colors.googleColor;
-                statusObject.desc = `You declined  referee alter request sent by ${getReferee()}.`;
+                statusObject.desc = `You declined  scorekeeper reservation request sent by ${getScorekeeper()}.`;
               } else {
-                statusObject.title = `${getTeamB()} Declined`;
+                statusObject.title = `${getTeamB()} -declined`;
                 statusObject.color = colors.googleColor;
-                statusObject.desc = `${getTeamB()} declined  referee alter request sent by you.`;
+                statusObject.desc = `You declined  scorekeeper_id alter request sent by ${getTeamA()}.`;
               }
             } else {
               // declined team A
@@ -157,11 +159,20 @@ export default function RefereeReservationTitle({
             // For team A
             if (reservationObject.version === 2) {
               // declined team B
+              if (reservationObject.requested_by === reservationObject.scorekeeper_id) {
+                statusObject.title = 'You-declined';
+                statusObject.color = colors.googleColor;
+                statusObject.desc = `${getTeamB()} declined  scorekeeper_id alter request sent by you.`;
+              } else {
+                statusObject.title = `${getTeamB()} -declined`;
+                statusObject.color = colors.googleColor;
+                statusObject.desc = `You declined  scorekeeper_id alter request sent by ${getTeamA()}.`;
+              }
             } else {
               // declined team A
             }
           } else {
-            // For Referee
+            // For Scorekeeper
             if (reservationObject.version === 2) {
               // declined team B
             } else {
@@ -173,107 +184,107 @@ export default function RefereeReservationTitle({
             if (reservationObject.version === 2) {
               statusObject.title = `${getTeamA()}-disapproved`;
               statusObject.color = colors.googleColor;
-              statusObject.desc = `${getTeamA()} disapproved your referee request sent by you.`;
+              statusObject.desc = `${getTeamA()} disapproved your scorekeeper request sent by you.`;
             } else {
-              statusObject.title = 'Referee-declined';
+              statusObject.title = 'Scorekeeper-declined';
               statusObject.color = colors.googleColor;
-              statusObject.desc = `${getReferee()} declined a referee request sent by you.`;
+              statusObject.desc = `${getScorekeeper()} declined a scorekeeper request sent by you.`;
             }
           } else if (entity.uid === reservationObject.approved_by) {
             // For team A
             if (reservationObject.version === 2) {
               statusObject.title = 'You-disapproved';
               statusObject.color = colors.googleColor;
-              statusObject.desc = `You disapproved referee request sent by ${getTeamB()}.`;
+              statusObject.desc = `You disapproved scorekeeper request sent by ${getTeamB()}.`;
             } else {
-              statusObject.title = 'Referee-declined';
+              statusObject.title = 'Scorekeeper-declined';
               statusObject.color = colors.googleColor;
-              statusObject.desc = `Referee declined referee request sent by ${getTeamB()}.`;
+              statusObject.desc = `Scorekeeper declined scorekeeper request sent by ${getTeamB()}.`;
             }
           } else {
             statusObject.title = 'You-declined';
             statusObject.color = colors.googleColor;
-            statusObject.desc = `You declined referee request sent by ${getTeamB()}.`;
+            statusObject.desc = `You declined scorekeeper request sent by ${getTeamB()}.`;
           }
         }
       }
     } else if (
-      reservationObject.status === RefereeReservationStatus.pendingpayment
+      reservationObject.status === ScorekeeperReservationStatus.pendingpayment
     ) {
       if (reservationObject?.requested_by === entity.uid) {
         statusObject.title = 'Awaiting Payment';
         statusObject.color = colors.themeColor;
-        statusObject.desc = `${getReferee()} has accepted your referee reservation, but your payment hasn't gone through yet.`;
+        statusObject.desc = `${getScorekeeper()} has accepted your scorekeeper reservation, but your payment hasn't gone through yet.`;
       } else {
         statusObject.title = 'Pending Payment';
         statusObject.color = colors.themeColor;
-        statusObject.desc = `You accepted a referee reservation from ${getTeamB()}, but the payment hasn't gone through yet.`;
+        statusObject.desc = `You accepted a scorekeeper reservation from ${getTeamB()}, but the payment hasn't gone through yet.`;
       }
     } else if (
-      reservationObject.status === RefereeReservationStatus.accepted
-      || reservationObject.status === RefereeReservationStatus.restored
-      || reservationObject.status === RefereeReservationStatus.requestcancelled
+      reservationObject.status === ScorekeeperReservationStatus.accepted
+      || reservationObject.status === ScorekeeperReservationStatus.restored
+      || reservationObject.status === ScorekeeperReservationStatus.requestcancelled
     ) {
       if (entity.uid === reservationObject.initiated_by) {
-        if (reservationObject?.requested_by === reservationObject.referee_id) {
+        if (reservationObject?.requested_by === reservationObject.scorekeeper_id) {
           statusObject.title = reservationObject.automatic_request
             ? 'Confirmed - Rescheduled'
             : 'Confirmed';
           statusObject.color = colors.requestConfirmColor;
-          statusObject.desc = `You have a confirmed referee reservation sent by ${getReferee()}.`;
+          statusObject.desc = `You have a confirmed scorekeeper reservation sent by ${getScorekeeper()}.`;
         } else {
           statusObject.title = reservationObject.automatic_request
             ? 'Confirmed - Rescheduled'
             : 'Confirmed';
           statusObject.color = colors.requestConfirmColor;
-          statusObject.desc = `${getReferee()} confirmed referee reservation sent by you.`;
+          statusObject.desc = `${getScorekeeper()} confirmed scorekeeper reservation sent by you.`;
         }
       } else {
-        if (reservationObject?.requested_by === reservationObject.referee_id) {
+        if (reservationObject?.requested_by === reservationObject.scorekeeper_id) {
           statusObject.title = reservationObject.automatic_request
             ? 'Confirmed - Rescheduled'
             : 'Confirmed';
           statusObject.color = colors.requestConfirmColor;
-          statusObject.desc = `${getTeamB()} confirmed referee reservation sent by you.`;
+          statusObject.desc = `${getTeamB()} confirmed scorekeeper reservation sent by you.`;
         } else {
           statusObject.title = reservationObject.automatic_request
             ? 'Confirmed - Rescheduled'
             : 'Confirmed';
           statusObject.color = colors.requestConfirmColor;
-          statusObject.desc = `You confirmed referee reservation sent by ${getTeamB()}.`;
+          statusObject.desc = `You confirmed scorekeeper reservation sent by ${getTeamB()}.`;
         }
       }
     } else if (
-      reservationObject.status === RefereeReservationStatus.cancelled
+      reservationObject.status === ScorekeeperReservationStatus.cancelled
     ) {
       if (reservationObject.is_offer) {
         if (entity.uid === reservationObject.initiated_by) {
-          if (reservationObject.done_by === reservationObject.referee_id) {
+          if (reservationObject.done_by === reservationObject.scorekeeper_id) {
             statusObject.title = 'Cancelled';
             statusObject.color = colors.googleColor;
-            statusObject.desc = `This referee reservation is cancelled by ${getReferee()}`;
+            statusObject.desc = `This scorekeeper reservation is cancelled by ${getScorekeeper()}`;
           } else {
             statusObject.title = 'Cancelled';
             statusObject.color = colors.googleColor;
-            statusObject.desc = 'This referee reservation is cancelled by you.';
+            statusObject.desc = 'This scorekeeper reservation is cancelled by you.';
           }
         } else if (entity.uid === reservationObject.approved_by) {
-          if (reservationObject.done_by === reservationObject.referee_id) {
+          if (reservationObject.done_by === reservationObject.scorekeeper_id) {
             statusObject.title = 'Cancelled';
             statusObject.color = colors.googleColor;
-            statusObject.desc = `This referee reservation is cancelled by ${getReferee()}`;
+            statusObject.desc = `This scorekeeper reservation is cancelled by ${getScorekeeper()}`;
           } else {
             statusObject.title = 'Cancelled';
             statusObject.color = colors.googleColor;
-            statusObject.desc = `This referee reservation is cancelled by ${getTeamB()}.`;
+            statusObject.desc = `This scorekeeper reservation is cancelled by ${getTeamB()}.`;
           }
         }
          else {
-          // For Referee
-          if (reservationObject.done_by === reservationObject.referee_id) {
+          // For Scorekeeper
+          if (reservationObject.done_by === reservationObject.scorekeeper_id) {
             statusObject.title = 'Cancelled';
             statusObject.color = colors.googleColor;
-            statusObject.desc = 'This referee reservation is cancelled by you.';
+            statusObject.desc = 'This scorekeeper reservation is cancelled by you.';
           } else {
             statusObject.title = 'Cancelled';
             statusObject.color = colors.googleColor;
@@ -282,21 +293,21 @@ export default function RefereeReservationTitle({
         }
       } else {
         if (entity.uid === reservationObject.initiated_by) {
-          if (reservationObject.done_by === reservationObject.referee_id) {
+          if (reservationObject.done_by === reservationObject.scorekeeper_id) {
             statusObject.title = 'Cancelled';
             statusObject.color = colors.googleColor;
-            statusObject.desc = `This referee reservation is cancelled by ${getReferee()}`;
+            statusObject.desc = `This scorekeeper reservation is cancelled by ${getScorekeeper()}`;
           } else {
             statusObject.title = 'Cancelled';
             statusObject.color = colors.googleColor;
-            statusObject.desc = 'This referee reservation is cancelled by you.';
+            statusObject.desc = 'This scorekeeper reservation is cancelled by you.';
           }
         } else {
-          // For Referee
-          if (reservationObject.done_by === reservationObject.referee_id) {
+          // For Scorekeeper
+          if (reservationObject.done_by === reservationObject.scorekeeper_id) {
             statusObject.title = 'Cancelled';
             statusObject.color = colors.googleColor;
-            statusObject.desc = 'This referee reservation is cancelled by you.';
+            statusObject.desc = 'This scorekeeper reservation is cancelled by you.';
           } else {
             statusObject.title = 'Cancelled';
             statusObject.color = colors.googleColor;
@@ -305,66 +316,66 @@ export default function RefereeReservationTitle({
         }
       }
     } else if (
-      reservationObject.status === RefereeReservationStatus.requestcancelled
+      reservationObject.status === ScorekeeperReservationStatus.requestcancelled
     ) {
       if (entity.uid === reservationObject.initiated_by) {
         statusObject.title = 'Withdrawn';
         statusObject.color = colors.darkThemeColor;
-        statusObject.desc = 'Referee reservation withdrawn by you.';
+        statusObject.desc = 'Scorekeeper reservation withdrawn by you.';
       } else {
         statusObject.title = 'Withdrawn';
         statusObject.color = colors.darkThemeColor;
-        statusObject.desc = 'Referee reservation withdrawn by Team B.';
+        statusObject.desc = 'Scorekeeper reservation withdrawn by Team B.';
       }
     }
     else if (
-      reservationObject.status === RefereeReservationStatus.changeRequest
+      reservationObject.status === ScorekeeperReservationStatus.changeRequest
     ) {
       if (reservationObject.automatic_request) {
         if (entity.uid === reservationObject.initiated_by) {
-          if (reservationObject.requested_by === reservationObject.referee_id) {
+          if (reservationObject.requested_by === reservationObject.scorekeeper_id) {
             statusObject.title = 'Alteration-pending automatic';
             statusObject.color = colors.darkThemeColor;
-            statusObject.desc = `You received a referee reservation alteration request from ${getTeamB()} because the game had been rescheduled. Please, respond within 4d 23h 57m.`;
+            statusObject.desc = `You received a scorekeeper reservation alteration request from ${getTeamB()} because the game had been rescheduled. Please, respond within 4d 23h 57m.`;
           } else {
             statusObject.title = 'Alteration-awaiting automatic';
             statusObject.color = colors.darkThemeColor;
-            statusObject.desc = `An alteration request was sent to ${getReferee()} because the game had been rescheduled.`;
+            statusObject.desc = `An alteration request was sent to ${getScorekeeper()} because the game had been rescheduled.`;
           }
         } else {
-          if (reservationObject.requested_by === reservationObject.referee_id) {
+          if (reservationObject.requested_by === reservationObject.scorekeeper_id) {
             statusObject.title = 'Alteration-awaiting automatic';
             statusObject.color = colors.darkThemeColor;
             statusObject.desc = 'An alteration request was sent to Team B because the game had been rescheduled.';
           } else {
             statusObject.title = 'Alteration-pending automatic';
             statusObject.color = colors.darkThemeColor;
-            statusObject.desc = `You received a referee alteration request from ${getTeamB()} because the game had been rescheduled. Please, respond within 4d 23h 57m.`;
+            statusObject.desc = `You received a scorekeeper alteration request from ${getTeamB()} because the game had been rescheduled. Please, respond within 4d 23h 57m.`;
           }
         }
       } else {
         if (entity.uid === reservationObject.initiated_by) {
-          if (reservationObject.requested_by === reservationObject.referee_id) {
+          if (reservationObject.requested_by === reservationObject.scorekeeper_id) {
             statusObject.title = 'Alteration Pending';
             statusObject.color = colors.darkThemeColor;
-            statusObject.desc = <>You received a referee alteration request from {getReferee()}. Please, respond within {<Text style={styles.timeColor}>{getDayTimeDifferent(
+            statusObject.desc = <>You received a scorekeeper alteration request from {getScorekeeper()}. Please, respond within {<Text style={styles.timeColor}>{getDayTimeDifferent(
               reservationObject?.expiry_datetime * 1000,
               new Date().getTime(),
               )}</Text>}.</>;
           } else {
             statusObject.title = 'Alteration Awaiting';
             statusObject.color = colors.darkThemeColor;
-            statusObject.desc = `You sent a referee alteration request to ${getReferee()}.`;
+            statusObject.desc = `You sent a scorekeeper alteration request to ${getScorekeeper()}.`;
           }
         } else {
-          if (reservationObject.requested_by === reservationObject.referee_id) {
+          if (reservationObject.requested_by === reservationObject.scorekeeper_id) {
             statusObject.title = 'Alteration Awaiting';
             statusObject.color = colors.darkThemeColor;
-            statusObject.desc = `You sent a referee alteration request to ${getTeamB()}.`;
+            statusObject.desc = `You sent a scorekeeper alteration request to ${getTeamB()}.`;
           } else {
             statusObject.title = 'Alteration Pending';
             statusObject.color = colors.darkThemeColor;
-            statusObject.desc = <>You received a referee alteration request from {getTeamB()}. Please, respond within {<Text style={styles.timeColor}>{getDayTimeDifferent(
+            statusObject.desc = <>You received a scorekeeper alteration request from {getTeamB()}. Please, respond within {<Text style={styles.timeColor}>{getDayTimeDifferent(
               reservationObject?.expiry_datetime * 1000,
               new Date().getTime(),
               )}</Text>}.</>;
@@ -373,16 +384,16 @@ export default function RefereeReservationTitle({
       }
     } else if (
       reservationObject.status
-      === RefereeReservationStatus.pendingrequestpayment
+      === ScorekeeperReservationStatus.pendingrequestpayment
     ) {
-      if (reservationObject?.referee?.user_id === entity.uid) {
+      if (reservationObject?.scorekeeper?.user_id === entity.uid) {
         statusObject.title = 'Awaiting Payment';
         statusObject.color = colors.themeColor;
-        statusObject.desc = `You has accepted a referee reservation alteration request from ${getTeamB()}, but the payment hasn't gone through yet.`;
+        statusObject.desc = `You has accepted a scorekeeper reservation alteration request from ${getTeamB()}, but the payment hasn't gone through yet.`;
       } else {
         statusObject.title = 'Pending Payment';
         statusObject.color = colors.themeColor;
-        statusObject.desc = `${getReferee()} has accepted your referee reservation alteration request, but your payment hasn't gone through yet.`;
+        statusObject.desc = `${getScorekeeper()} has accepted your scorekeeper reservation alteration request, but your payment hasn't gone through yet.`;
       }
     }
 
@@ -411,9 +422,9 @@ export default function RefereeReservationTitle({
     }
     return `${obj[0]?.group_name}`;
   };
-  const getReferee = () => {
+  const getScorekeeper = () => {
     const obj = entityList.filter(
-      (o) => o?.user_id === reservationObject?.referee_id,
+      (o) => o?.user_id === reservationObject?.scorekeeper_id,
     );
     return `${obj[0]?.full_name}`;
   };
@@ -443,4 +454,4 @@ const styles = StyleSheet.create({
   timeColor: { color: colors.themeColor },
 });
 
-// export default memo(RefereeReservationTitle);
+// export default memo(ScorekeeperReservationTitle);

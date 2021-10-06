@@ -345,7 +345,10 @@ export default function WritePostScreen({ navigation, route }) {
           multiple: true,
           maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
         }).then((data) => {
+          console.log('PICKED DATA:=>', data);
+
           const pickedData = getPickedData(data, selectImage?.length);
+
           let allSelectData = [];
           const secondData = [];
           if (selectImage?.length > 0) {

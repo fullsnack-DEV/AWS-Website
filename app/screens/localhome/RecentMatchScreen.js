@@ -19,18 +19,20 @@ import {
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import bodybuilder from 'bodybuilder';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import * as Utility from '../../utils/index';
 
 // import { gameData } from '../../utils/constant';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { widthPercentageToDP } from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
-import { postElasticSearch } from '../../api/elasticSearch';
-import strings from '../../Constants/String';
+import { getGameIndex } from '../../api/elasticSearch';
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
+
+let stopFetchMore = true;
 
 export default function RecentMatchScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
@@ -39,8 +41,7 @@ export default function RecentMatchScreen({ navigation, route }) {
   const [recentMatch, setRecentMatch] = useState([]);
 
   const [pageSize] = useState(10);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [totalRecord, setTotalRecord] = useState();
+  const [pageFrom, setPageFrom] = useState(0);
 
   const [location] = useState(route?.params?.location);
   const [selectedSport, setSelectedSport] = useState(
@@ -56,179 +57,65 @@ export default function RecentMatchScreen({ navigation, route }) {
 
   const [fromPickerVisible, setFromPickerVisible] = useState(false);
   const [toPickerVisible, setToPickerVisible] = useState(false);
-  // const authContext = useContext(AuthContext);
-
+// eslint-disable-next-line no-unused-vars
+const [loadMore, setLoadMore] = useState(false);
   useEffect(() => {
-    const recentMatchbody = bodybuilder()
-    .size(pageSize)
-    .query('match', 'sport', selectedSport)
-    .query('match', 'status', 'ended')
-    .query('multi_match', {
+    getRecentMatch()
+  }, []);
+
+  const getRecentMatch = () => {
+    const locationFilter = bodybuilder()
+    .filter('multi_match', {
       query: location,
       fields: ['city', 'country', 'state'],
     })
-    .query('range', 'start_datetime', {
-      lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-    })
-    .sort('actual_enddatetime', 'desc')
     .build();
+   // Recent match query
+   const recentMatchList = bodybuilder()
+   .query('match', 'sport', selectedSport.toLowerCase())
+   .query('range', 'start_datetime', {
+     lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+   })
+   .sort('actual_enddatetime', 'desc')
+   .build();
 
-    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
+ let recentFilter = {
+   ...recentMatchList.query.bool,
+ };
 
-    postElasticSearch(recentMatchbody, 'gameindex/game')
-      .then((res1) => {
-        if (res1.hits.hits.length === 0) {
-          setRecentMatch([]);
-        } else {
-          console.log('recent  API Response:=>', res1.hits.hits);
-          console.log('Total record:=>', res1.hits.total.value);
-          setTotalRecord(res1.hits.total.value);
-          let entityArr = [];
-          let recentArr = [];
+ if (location !== 'world') {
+  recentFilter = {
+    ...locationFilter.query.bool,
+  };
+}
 
-          if (res1.hits) {
-            const arr = [];
-            res1.hits.hits.map((e) => {
-              arr.push(e._source.away_team);
-              arr.push(e._source.home_team);
-            });
-            const uniqueArray = [...new Set(arr)];
-            entityArr = uniqueArray;
-            recentArr = res1.hits.hits;
-          }
+const recentQuery = bodybuilder()
+.size(pageSize)
+.from(pageFrom)
+  .andFilter('bool', recentFilter)
+  .build();
 
-          const ids = {
-            query: {
-              ids: {
-                values: entityArr,
-              },
-            },
-          };
-          if (entityArr?.length > 0) {
-            postElasticSearch(ids, 'entityindex/entity')
-              .then((response) => {
-                const arr = [];
-                recentArr.map((e) => {
-                  const obj = {
-                    ...e._source,
-                    home_team: response.hits.hits.find(
-                      (x) => x._source.group_id === e._source.home_team,
-                    ),
-                    away_team: response.hits.hits.find(
-                      (x) => x._source.group_id === e._source.away_team,
-                    ),
-                  };
+ // Recent match query
 
-                  arr.push(obj);
-                });
-
-                setRecentMatch(arr);
-
-                console.log(' USER response.hits.hits:=>', arr);
-              })
-              .catch((e) => {
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, e.message);
-                }, 10);
-              });
-          }
+    getGameIndex(recentQuery).then((games) => {
+      Utility.getGamesList(games).then((gamedata) => {
+        if (gamedata.length > 0) {
+          const fetchedData = [...recentMatch, ...gamedata];
+          setRecentMatch(fetchedData);
+          setPageFrom(pageFrom + pageSize);
+          stopFetchMore = true;
         }
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
       });
-  }, [location, pageSize, selectedSport]);
-
+    });
+  }
   const handleLoadMore = () => {
-    console.log('Page Size:', pageSize);
-    console.log('Page Number:', pageNumber);
-    console.log('Total:', totalRecord);
-    const recentMatchbody = bodybuilder()
-    .size(pageSize)
-    .from((pageNumber * pageSize))
-    .query('match', 'sport', selectedSport)
-    .query('match', 'status', 'ended')
-    .query('multi_match', {
-      query: location,
-      fields: ['city', 'country', 'state'],
-    })
-    .query('range', 'start_datetime', {
-      lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-    })
-    .sort('actual_enddatetime', 'desc')
-    .build();
-
-    setPageNumber(pageNumber + 1);
-    // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
-    if (pageNumber < 1) {
-      setRecentMatch([]);
+    console.log('handal called');
+    setLoadMore(true);
+    if (!stopFetchMore) {
+      getRecentMatch();
+      stopFetchMore = true;
     }
-
-    postElasticSearch(recentMatchbody, 'gameindex/game')
-      .then((res1) => {
-        console.log('recent  API Response:=>', res1.hits.hits);
-        console.log('Total record:=>', res1.hits.total.value);
-        setTotalRecord(res1.hits.total.value);
-        let entityArr = [];
-        let recentArr = [];
-
-        if (res1.hits) {
-          const arr = [];
-          res1.hits.hits.map((e) => {
-            arr.push(e._source.away_team);
-            arr.push(e._source.home_team);
-          });
-          const uniqueArray = [...new Set(arr)];
-          entityArr = uniqueArray;
-          recentArr = res1.hits.hits;
-        }
-
-        const ids = {
-          query: {
-            ids: {
-              values: entityArr,
-            },
-          },
-        };
-        if (entityArr?.length > 0) {
-          postElasticSearch(ids, 'entityindex/entity')
-            .then((response) => {
-              const arr = [];
-              recentArr.map((e) => {
-                const obj = {
-                  ...e._source,
-                  home_team: response.hits.hits.find(
-                    (x) => x._source.group_id === e._source.home_team,
-                  ),
-                  away_team: response.hits.hits.find(
-                    (x) => x._source.group_id === e._source.away_team,
-                  ),
-                };
-
-                arr.push(obj);
-              });
-
-              setRecentMatch(recentMatch.concat(arr));
-
-              console.log(
-                ' USER response.hits.hits:=>',
-                recentMatch.concat(arr),
-              );
-            })
-            .catch((e) => {
-              setTimeout(() => {
-                Alert.alert(strings.alertmessagetitle, e.message);
-              }, 10);
-            });
-        }
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+    setLoadMore(false);
   };
 
   const renderRecentMatchItems = useCallback(
@@ -313,9 +200,12 @@ export default function RecentMatchScreen({ navigation, route }) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderRecentMatchItems}
         style={styles.listViewStyle}
-        scrollEnabled={true}
-        // onScroll={onScroll}
-        onScrollEndDrag={handleLoadMore}
+        contentContainerStyle={{ flex: 1 }}
+        onEndReachedThreshold={0.01}
+        onEndReached={handleLoadMore}
+        onScrollBeginDrag={() => {
+          stopFetchMore = false;
+        }}
       />
       {/* <SectionList
         sections={[
@@ -438,70 +328,15 @@ export default function RecentMatchScreen({ navigation, route }) {
 
                   // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
 
-                  postElasticSearch(recentMatchBody, 'gameindex/game')
-                    .then((res1) => {
-                      if (res1.hits.hits.length === 0) {
+                  getGameIndex(recentMatchBody).then((games) => {
+                    Utility.getGamesList(games).then((gamedata) => {
+                      if (gamedata.length === 0) {
                         setRecentMatch([]);
                       } else {
-                        console.log('recent  API Response:=>', res1.hits.hits);
-                        console.log('Total record:=>', res1.hits.total.value);
-                        setTotalRecord(res1.hits.total.value);
-                        let entityArr = [];
-                        let recentArr = [];
-
-                        if (res1.hits) {
-                          const arr = [];
-                          res1.hits.hits.map((e) => {
-                            arr.push(e._source.away_team);
-                            arr.push(e._source.home_team);
-                          });
-                          const uniqueArray = [...new Set(arr)];
-                          entityArr = uniqueArray;
-                          recentArr = res1.hits.hits;
-                        }
-
-                        const ids = {
-                          query: {
-                            ids: {
-                              values: entityArr,
-                            },
-                          },
-                        };
-                        if (entityArr?.length > 0) {
-                          postElasticSearch(ids, 'entityindex/entity')
-                            .then((response) => {
-                              const arr = [];
-                              recentArr.map((e) => {
-                                const obj = {
-                                  ...e._source,
-                                  home_team: response.hits.hits.find(
-                                    (x) => x._source.group_id === e._source.home_team,
-                                  ),
-                                  away_team: response.hits.hits.find(
-                                    (x) => x._source.group_id === e._source.away_team,
-                                  ),
-                                };
-
-                                arr.push(obj);
-                              });
-
-                              setRecentMatch(arr);
-
-                              console.log(' USER response.hits.hits:=>', arr);
-                            })
-                            .catch((e) => {
-                              setTimeout(() => {
-                                Alert.alert(strings.alertmessagetitle, e.message);
-                              }, 10);
-                            });
-                        }
+                        setRecentMatch(gamedata);
                       }
-                    })
-                    .catch((e) => {
-                      setTimeout(() => {
-                        Alert.alert(strings.alertmessagetitle, e.message);
-                      }, 10);
                     });
+                  });
                 }
               }}>
               {'Apply'}

@@ -1,4 +1,5 @@
 import Config from 'react-native-config';
+
 import makeAPIRequest from '../utils/Global';
 
 export const blockedSlots = async (entityType, entityID, authContext) => makeAPIRequest({

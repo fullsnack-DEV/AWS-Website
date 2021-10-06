@@ -78,7 +78,7 @@ const globalApiCall = async ({
       withRenewToken,
       options,
     }
-    console.log('SERVER ERROR ::--->', error);
+    console.log('SERVER WITHOUT AUTH ERROR ::--->', error);
     throw new Error(e);
   }
 };

@@ -14,7 +14,7 @@ function TCEntityView({ onPress, showStar = false, data }) {
         style={styles.viewContainer}>
         <View style={styles.backgroundView}>
           <Image
-            source={images.soccerBackground}
+            source={data?.thumbnail ? { uri: data?.thumbnail } : images.profilePlaceHolder}
             style={styles.profileImage}
           />
         </View>

@@ -5,6 +5,7 @@ const ScorekeeperReservationStatus = {
   accepted: 'accepted',
   restored: 'restored',
   declined: 'declined',
+  approved: 'approved',
   cancelled: 'cancelled',
   pendingpayment: 'pendingpayment',
   pendingrequestpayment: 'pendingrequestpayment',

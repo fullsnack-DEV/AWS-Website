@@ -1,4 +1,4 @@
-import Config from 'react-native-config';
+ import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
 
 export const getGroupDetails = (groupID, authContext) => makeAPIRequest({
