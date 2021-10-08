@@ -1,17 +1,13 @@
 import React from 'react';
-import {
- View, StyleSheet, TouchableOpacity, ScrollView,
-} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
 import TCSearchBox from '../../components/TCSearchBox';
 import AllInOneGallery from '../home/AllInOneGallery';
 
-const SearchScreen = ({ navigation, route }) => {
+const SearchScreen = ({navigation, route}) => {
   console.log('route value --->');
   console.log(route.params);
 
-  const {
- isAdmin, galleryRef, entityType, entityID,
-} = route?.params;
+  const {isAdmin, galleryRef, entityType, entityID} = route?.params;
 
   const onPressSearchScreen = () => {
     navigation.navigate('EntitySearchScreen', {});

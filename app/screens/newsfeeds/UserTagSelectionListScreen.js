@@ -1,5 +1,9 @@
 import React, {
-  useEffect, useState, useContext, useMemo, useCallback,
+  useEffect,
+  useState,
+  useContext,
+  useMemo,
+  useCallback,
 } from 'react';
 import {
   View,
@@ -11,15 +15,13 @@ import {
   Image,
   Text,
   FlatList,
- SafeAreaView,
+  SafeAreaView,
 } from 'react-native';
 import _ from 'lodash';
-import {
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import { getUserList } from '../../api/Users';
-import { getMyGroups } from '../../api/Groups';
-import AuthContext from '../../auth/context'
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {getUserList} from '../../api/Users';
+import {getMyGroups} from '../../api/Groups';
+import AuthContext from '../../auth/context';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -29,9 +31,9 @@ import TagItemView from '../../components/newsFeed/TagItemView';
 import SelectedTagList from '../../components/newsFeed/SelectedTagList';
 import ScrollableTabs from '../../components/ScrollableTabs';
 import TagMatches from './TagMatches';
-import { getAllGames } from '../../api/NewsFeeds';
+import {getAllGames} from '../../api/NewsFeeds';
 
-export default function UserTagSelectionListScreen({ navigation, route }) {
+export default function UserTagSelectionListScreen({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [currentTab, setCurrentTab] = useState(0);
   const [currentGrpupTab, setCurrentGroupTab] = useState('team');
@@ -42,7 +44,7 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
   const [selectedMatch, setSelectedMatch] = useState([]);
   const [gamesData, setGamesData] = useState([]);
 
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     const userAddData = [];
@@ -62,21 +64,23 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
               title: fullName,
             });
             return null;
-          })
+          });
         }
         setUserData(userAddData);
       })
       .catch((e) => {
         console.log('eeeee Get Users :-', e.response);
-        Alert.alert('', e.messages)
+        Alert.alert('', e.messages);
       });
 
-      getAllGames(authContext.entity.uid, authContext).then((res) => {
-        setGamesData([...res?.payload])
+    getAllGames(authContext.entity.uid, authContext)
+      .then((res) => {
+        setGamesData([...res?.payload]);
         console.log(res);
-      }).catch((error) => {
-        console.log(error)
       })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   useEffect(() => {
@@ -95,20 +99,20 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
               title: fullName,
             });
             return null;
-          })
+          });
         }
         setGroupData(userAddData);
       })
       .catch((e) => {
         console.log('eeeee Get Group Users :-', e.response);
-        Alert.alert('', e.messages)
+        Alert.alert('', e.messages);
       });
   }, []);
 
   useEffect(() => {
     if (searchText !== '') {
-      const dataTabList = [userData, groupData]
-      const data = dataTabList[currentTab]
+      const dataTabList = [userData, groupData];
+      const data = dataTabList[currentTab];
 
       const escapeRegExp = (str) => {
         if (!_.isString(str)) {
@@ -116,196 +120,259 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
         }
         return str.replace(/[-[\]\\/{}()*+?.^$|]/g, '\\$&');
       };
-      const searchStr = escapeRegExp(searchText)
-      const answer = data?.filter((a) => (a.title)
-        .toLowerCase()
-        .toString()
-        .match(searchStr.toLowerCase().toString()));
-      setSearchData([...answer])
+      const searchStr = escapeRegExp(searchText);
+      const answer = data?.filter((a) =>
+        a.title
+          .toLowerCase()
+          .toString()
+          .match(searchStr.toLowerCase().toString()),
+      );
+      setSearchData([...answer]);
     }
-  }, [searchText])
+  }, [searchText]);
 
-  const toggleSelection = useCallback((isChecked, user) => {
-    const data = selectedUsers;
-    if (isChecked) {
-      const uIndex = data.findIndex(({ id }) => user.id === id);
-      if (uIndex !== -1) data.splice(uIndex, 1);
-    } else {
-      data.push(user);
-    }
-    setSelectedUsers([...data]);
-  }, [selectedUsers]);
+  const toggleSelection = useCallback(
+    (isChecked, user) => {
+      const data = selectedUsers;
+      if (isChecked) {
+        const uIndex = data.findIndex(({id}) => user.id === id);
+        if (uIndex !== -1) data.splice(uIndex, 1);
+      } else {
+        data.push(user);
+      }
+      setSelectedUsers([...data]);
+    },
+    [selectedUsers],
+  );
 
-  const renderItem = useCallback(({ item }) => {
-    let thumbnail = null;
-    let fullName = '';
-    let locationName = '-';
-    if (item) {
-      if (item.thumbnail) {
-        thumbnail = item.thumbnail;
+  const renderItem = useCallback(
+    ({item}) => {
+      let thumbnail = null;
+      let fullName = '';
+      let locationName = '-';
+      if (item) {
+        if (item.thumbnail) {
+          thumbnail = item.thumbnail;
+        }
+        if (item.title) {
+          fullName = item.title;
+        }
+        if (item.city && item.state_abbr) {
+          locationName = `${item.city}, ${item.state_abbr}`;
+        }
       }
-      if (item.title) {
-        fullName = item.title;
-      }
-      if (item.city && item.state_abbr) {
-        locationName = `${item.city}, ${item.state_abbr}`;
-      }
-    }
-    const isChecked = selectedUsers.some((val) => {
-      if (item.id === val.id) {
-        return true;
-      }
-      return false
-    })
-    return (
-      <TagItemView
-            source={thumbnail ? { uri: thumbnail } : images.profilePlaceHolder}
-            userName={fullName}
-            userLocation={locationName}
-            checkUncheckSource={isChecked ? images.checkWhiteLanguage : images.uncheckWhite}
-            onItemPress={() => toggleSelection(isChecked, item)}
-        />
-    );
-  }, [selectedUsers, toggleSelection]);
-
-  const onSelectMatch = useCallback((gameItem) => {
-    const gData = _.cloneDeep(selectedMatch)
-    const gIndex = gData?.findIndex((item) => item?.game_id === gameItem?.game_id)
-    if (gIndex === -1) gData.push(gameItem);
-    else gData.splice(gIndex, 1);
-    setSelectedMatch([...gData]);
-  }, [selectedMatch]);
-
-  const renderSingleTab = useCallback((data) => {
-    let filteredData = data;
-    if (currentTab === 1) {
-      filteredData = data?.filter((item) => item?.entity_type === currentGrpupTab)
-    }
-    if (currentTab === 2) {
+      const isChecked = selectedUsers.some((val) => {
+        if (item.id === val.id) {
+          return true;
+        }
+        return false;
+      });
       return (
-        <TagMatches
-              gamesData={gamesData}
-              selectedMatch={selectedMatch}
-              onSelectMatch={onSelectMatch}
-          />
-      )
-    }
-    return (
-      <View>
-        {currentTab === 1 && (
-          <View style={{ flexDirection: 'row', borderBottomColor: colors.lightgrayColor, borderBottomWidth: 1 }}>
-            {['team', 'club', 'league'].map((item) => (
-              <TouchableOpacity key={item} style={{ padding: 10 }} onPress={() => setCurrentGroupTab(item)}>
-                <Text style={{
-                        color: item === currentGrpupTab ? colors.themeColor : colors.lightBlackColor,
-                        fontFamily: item === currentGrpupTab ? fonts.RBold : fonts.RRegular,
-                }}>
-                  {_.startCase(item)}
-                </Text>
-              </TouchableOpacity>
-                ))}
+        <TagItemView
+          source={thumbnail ? {uri: thumbnail} : images.profilePlaceHolder}
+          userName={fullName}
+          userLocation={locationName}
+          checkUncheckSource={
+            isChecked ? images.checkWhiteLanguage : images.uncheckWhite
+          }
+          onItemPress={() => toggleSelection(isChecked, item)}
+        />
+      );
+    },
+    [selectedUsers, toggleSelection],
+  );
 
-          </View>
+  const onSelectMatch = useCallback(
+    (gameItem) => {
+      const gData = _.cloneDeep(selectedMatch);
+      const gIndex = gData?.findIndex(
+        (item) => item?.game_id === gameItem?.game_id,
+      );
+      if (gIndex === -1) gData.push(gameItem);
+      else gData.splice(gIndex, 1);
+      setSelectedMatch([...gData]);
+    },
+    [selectedMatch],
+  );
+
+  const renderSingleTab = useCallback(
+    (data) => {
+      let filteredData = data;
+      if (currentTab === 1) {
+        filteredData = data?.filter(
+          (item) => item?.entity_type === currentGrpupTab,
+        );
+      }
+      if (currentTab === 2) {
+        return (
+          <TagMatches
+            gamesData={gamesData}
+            selectedMatch={selectedMatch}
+            onSelectMatch={onSelectMatch}
+          />
+        );
+      }
+      return (
+        <View>
+          {currentTab === 1 && (
+            <View
+              style={{
+                flexDirection: 'row',
+                borderBottomColor: colors.lightgrayColor,
+                borderBottomWidth: 1,
+              }}>
+              {['team', 'club', 'league'].map((item) => (
+                <TouchableOpacity
+                  key={item}
+                  style={{padding: 10}}
+                  onPress={() => setCurrentGroupTab(item)}>
+                  <Text
+                    style={{
+                      color:
+                        item === currentGrpupTab
+                          ? colors.themeColor
+                          : colors.lightBlackColor,
+                      fontFamily:
+                        item === currentGrpupTab ? fonts.RBold : fonts.RRegular,
+                    }}>
+                    {_.startCase(item)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           )}
-        <FlatList
-              ListEmptyComponent={
-                <Text style={{
+          <FlatList
+            ListEmptyComponent={
+              <Text
+                style={{
                   textAlign: 'center',
                   marginTop: hp(2),
                   color: colors.userPostTimeColor,
-                }}>No Records Found</Text>}
-              data={filteredData}
-              ListHeaderComponent={() => <View style={{ height: 8 }} />}
-              ListFooterComponent={() => <View style={{ height: 8, marginBottom: 50 }} />}
-              ItemSeparatorComponent={() => <View style={styles.sperateLine} />}
-              style={{ paddingHorizontal: 15 }}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
+                }}>
+                No Records Found
+              </Text>
+            }
+            data={filteredData}
+            ListHeaderComponent={() => <View style={{height: 8}} />}
+            ListFooterComponent={() => (
+              <View style={{height: 8, marginBottom: 50}} />
+            )}
+            ItemSeparatorComponent={() => <View style={styles.sperateLine} />}
+            style={{paddingHorizontal: 15}}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
           />
-      </View>
-    )
-  }, [currentGrpupTab, currentTab, gamesData, onSelectMatch, renderItem, selectedMatch]);
+        </View>
+      );
+    },
+    [
+      currentGrpupTab,
+      currentTab,
+      gamesData,
+      onSelectMatch,
+      renderItem,
+      selectedMatch,
+    ],
+  );
 
   const renderTabContain = useMemo(() => {
-    const dataTabList = [userData, groupData]
+    const dataTabList = [userData, groupData];
     return (
-
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flex: 1 }}>
-          {renderSingleTab(searchText === '' ? dataTabList[currentTab] : searchData)}
+      <SafeAreaView style={{flex: 1}}>
+        <View style={{flex: 1}}>
+          {renderSingleTab(
+            searchText === '' ? dataTabList[currentTab] : searchData,
+          )}
         </View>
       </SafeAreaView>
+    );
+  }, [
+    currentTab,
+    groupData,
+    renderSingleTab,
+    searchData,
+    searchText,
+    userData,
+  ]);
 
-    )
-  }, [currentTab, groupData, renderSingleTab, searchData, searchText, userData])
-
-  const renderHeader = useMemo(() => (
-    <Header
-          leftComponent={
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Image source={images.backArrow} style={styles.backImageStyle} />
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={styles.eventTextStyle}>Tag</Text>
-          }
-          rightComponent={
-            <TouchableOpacity style={{ padding: 2 }} onPress={() => {
+  const renderHeader = useMemo(
+    () => (
+      <Header
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image source={images.backArrow} style={styles.backImageStyle} />
+          </TouchableOpacity>
+        }
+        centerComponent={<Text style={styles.eventTextStyle}>Tag</Text>}
+        rightComponent={
+          <TouchableOpacity
+            style={{padding: 2}}
+            onPress={() => {
               if (route?.params?.comeFrom) {
-                if (selectedMatch?.length > 0 && route?.params?.onSelectMatch) route.params.onSelectMatch(selectedMatch)
-                navigation.navigate(route?.params?.comeFrom, { selectedTagList: selectedUsers });
+                if (selectedMatch?.length > 0 && route?.params?.onSelectMatch)
+                  route.params.onSelectMatch(selectedMatch);
+                navigation.navigate(route?.params?.comeFrom, {
+                  selectedTagList: selectedUsers,
+                });
               }
             }}>
-              <Text style={styles.doneTextStyle}>Done</Text>
-            </TouchableOpacity>
-          }
+            <Text style={styles.doneTextStyle}>Done</Text>
+          </TouchableOpacity>
+        }
       />
-  ), [navigation, route.params, selectedMatch, selectedUsers])
-  const renderSearchBox = useMemo(() => (
-
-    currentTab !== 2 ? <TCSearchBox
-          style={{ alignSelf: 'center', marginVertical: 5 }}
+    ),
+    [navigation, route.params, selectedMatch, selectedUsers],
+  );
+  const renderSearchBox = useMemo(
+    () =>
+      currentTab !== 2 ? (
+        <TCSearchBox
+          style={{alignSelf: 'center', marginVertical: 5}}
           value={searchText}
           onChangeText={(text) => {
-            setSearchText(text)
+            setSearchText(text);
           }}
-      /> : <View></View>
-  ), [currentTab, searchText])
+        />
+      ) : (
+        <View></View>
+      ),
+    [currentTab, searchText],
+  );
 
-  const renderSelectedEntity = useMemo(() => selectedUsers.length > 0 && (
-    <SelectedTagList
-                dataSource={selectedUsers}
-                titleKey={'title'}
-                onTagCancelPress={({ item }) => {
-                  toggleSelection(true, item)
-                }}
-            />
-        ), [selectedUsers, toggleSelection]);
+  const renderSelectedEntity = useMemo(
+    () =>
+      selectedUsers.length > 0 && (
+        <SelectedTagList
+          dataSource={selectedUsers}
+          titleKey={'title'}
+          onTagCancelPress={({item}) => {
+            toggleSelection(true, item);
+          }}
+        />
+      ),
+    [selectedUsers, toggleSelection],
+  );
 
   const onTabPress = useCallback((tab) => {
-    setCurrentTab(tab)
+    setCurrentTab(tab);
     setSearchText('');
   }, []);
 
   return (
-
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: 'white' }}
-      behavior={ Platform.OS === 'ios' ? 'padding' : null }>
-
+      style={{flex: 1, backgroundColor: 'white'}}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       {renderHeader}
       <View style={styles.sperateLine} />
       {renderSearchBox}
       {renderSelectedEntity}
       <ScrollableTabs
-          tabs={['People', 'Groups', 'Matches']}
-          onTabPress={onTabPress}
-          currentTab={currentTab}
+        tabs={['People', 'Groups', 'Matches']}
+        onTabPress={onTabPress}
+        currentTab={currentTab}
       />
       {renderTabContain}
-
     </KeyboardAvoidingView>
-
   );
 }
 
