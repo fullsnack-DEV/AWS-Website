@@ -60,8 +60,8 @@ import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import Header from '../../components/Home/Header';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
-import TCUpcomingMatch from '../../components/TCUpcomingMatch';
 import { getAppSettings } from '../../api/Users';
+import TCUpcomingMatchCard from '../../components/TCUpcomingMatchCard';
 
 let selectedSports = [];
 const defaultPageSize = 5;
@@ -79,11 +79,11 @@ export default function LocalHomeScreen({ navigation, route }) {
   const [selectedSettingOption, setSelectedSettingOption] = useState();
 
   const [location, setLocation] = useState(
-    route?.params?.locationText ? route?.params?.locationText : authContext?.entity?.obj?.city.charAt(0).toUpperCase()
+    authContext?.entity?.obj?.city.charAt(0).toUpperCase()
       + authContext?.entity?.obj?.city.slice(1),
   );
 
-  const [selectedSport, setSelectedSport] = useState('Soccer');
+  const [selectedSport, setSelectedSport] = useState('All');
   const [settingPopup, setSettingPopup] = useState(false);
 
   const [sportsPopup, setSportsPopup] = useState(false);
@@ -99,6 +99,24 @@ export default function LocalHomeScreen({ navigation, route }) {
   const [lookingTeam, setLookingTeam] = useState([]);
   const [referees, setReferees] = useState([]);
   const [scorekeepers, setScorekeepers] = useState([]);
+
+  const [filters, setFilters] = useState({
+    sport: selectedSport,
+    location,
+  });
+
+  useEffect(() => {
+    if (route?.params?.locationText) {
+      setTimeout(() => {
+        setLocation(route?.params?.locationText);
+        // setFilters({
+        //   ...filters,
+        //   location: route?.params?.locationText,
+        // });
+      }, 10);
+      // navigation.setParams({ locationText: null });
+    }
+  }, [route?.params?.locationText]);
 
   useEffect(() => {
     if (isFocused) {
@@ -123,7 +141,12 @@ export default function LocalHomeScreen({ navigation, route }) {
         .then((res) => {
           setloading(false);
           if (res.payload) {
-            const arr = [];
+            const arr = [
+              {
+                isChecked: true,
+                sport_name: 'All',
+              },
+            ];
             for (const tempData of res.payload) {
               tempData.isChecked = false;
               arr.push(tempData);
@@ -172,35 +195,90 @@ export default function LocalHomeScreen({ navigation, route }) {
         .build();
 
       // Recent match query
-      const recentMatchList = bodybuilder()
-        // .query('match', 'sport', selectedSport.toLowerCase())
-        .filter('term', 'sport.keyword', {
-          value: selectedSport.toLowerCase(),
-          case_insensitive: true,
-        })
-        .query('range', 'start_datetime', {
-          lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-        })
-        .sort('actual_enddatetime', 'desc')
-        .build();
 
-      let recentFilter = {
-        ...recentMatchList.query.bool,
+      const recentMatchQuery = {
+        size: defaultPageSize,
+        query: {
+          bool: {
+            must: [
+              { match: { status: 'accepted' } },
+              {
+                range: {
+                  start_datetime: {
+                    lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+                  },
+                },
+              },
+            ],
+          },
+        },
+        sort: [{ actual_enddatetime: 'desc' }],
       };
+
+      if (location !== 'world') {
+        recentMatchQuery.query.bool.must.push({
+          multi_match: {
+            query: location,
+            fields: ['city', 'country', 'state', 'venue.address'],
+          },
+        });
+      }
+      if (selectedSport !== 'All') {
+        recentMatchQuery.query.bool.must.push({
+          term: {
+            'sport.keyword': {
+              value: selectedSport.toLowerCase(),
+              case_insensitive: true,
+            },
+          },
+        });
+      }
+      console.log('Recent match Query:=>', recentMatchQuery);
       // Recent match query
 
       // Upcoming match query
-      const upcomingMatchList = bodybuilder()
-        .query('match', 'sport', selectedSport.toLowerCase())
-        .query('range', 'start_datetime', {
-          gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-        })
-        .sort('actual_enddatetime', 'desc')
-        .build();
 
-      let upcomingFilter = {
-        ...upcomingMatchList.query.bool,
+      const upcomingMatchQuery = {
+        size: defaultPageSize,
+        query: {
+          bool: {
+            must: [
+              {
+                range: {
+                  start_datetime: {
+                    gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+                  },
+                },
+              },
+            ],
+          },
+        },
+        sort: [{ actual_enddatetime: 'desc' }],
       };
+
+      if (location !== 'world') {
+        upcomingMatchQuery.query.bool.must.push({
+          multi_match: {
+            query: location,
+            fields: ['city', 'country', 'state', 'venue.address'],
+          },
+        });
+      }
+      if (selectedSport !== 'All') {
+        upcomingMatchQuery.query.bool.must.push({
+          term: {
+            'sport.keyword': {
+              value: selectedSport.toLowerCase(),
+              case_insensitive: true,
+            },
+          },
+        });
+      }
+      console.log(
+        'Upcoming match Query:=>',
+        JSON.stringify(upcomingMatchQuery),
+      );
+
       // Upcoming match query
 
       // Looking Challengee query
@@ -247,71 +325,78 @@ export default function LocalHomeScreen({ navigation, route }) {
       // Looking team query
 
       // Referee query
-      const refefreeList = bodybuilder()
-        .filter('term', 'referee_data.sport_name.keyword', {
-          value: selectedSport.toLowerCase(),
-          case_insensitive: true,
-        })
-        .filter('term', 'referee_data.is_published', {
-          value: true,
-        })
-        .build();
-
-      let refereeFilter = {
-        ...refefreeList.query.bool,
+      const refereeQuery = {
+        size: defaultPageSize,
+        query: {
+          bool: {
+            must: [{ term: { 'referee_data.is_published': true } }],
+          },
+        },
       };
+      if (location !== 'world') {
+        refereeQuery.query.bool.must.push({
+          multi_match: {
+            query: `${location}`,
+            fields: ['city', 'country', 'state'],
+          },
+        });
+      }
+      if (selectedSport !== 'All') {
+        refereeQuery.query.bool.must.push({
+          term: {
+            'referee_data.sport_name.keyword': {
+              value: `${selectedSport.toLowerCase()}`,
+              case_insensitive: true,
+            },
+          },
+        });
+      }
       // Referee query
 
       // Scorekeeper query
-      const scorekeeperList = bodybuilder()
-        .filter('term', 'scorekeeper_data.sport_name.keyword', {
-          value: selectedSport.toLowerCase(),
-          case_insensitive: true,
-        })
-        .filter('term', 'scorekeeper_data.is_published', {
-          value: true,
-        })
-        // .query('term', 'referee_data.sport', {
-        //   value: selectedSport,
-        // })
-        .build();
-      let scorekeeperFilter = {
-        ...scorekeeperList.query.bool,
+      const scorekeeperQuery = {
+        size: defaultPageSize,
+        query: {
+          bool: {
+            must: [{ term: { 'scorekeeper_data.is_published': true } }],
+          },
+        },
       };
+      if (location !== 'world') {
+        scorekeeperQuery.query.bool.must.push({
+          multi_match: {
+            query: `${location}`,
+            fields: ['city', 'country', 'state'],
+          },
+        });
+      }
+      if (selectedSport !== 'All') {
+        scorekeeperQuery.query.bool.must.push({
+          term: {
+            'scorekeeper_data.sport_name.keyword': {
+              value: `${selectedSport.toLowerCase()}`,
+              case_insensitive: true,
+            },
+          },
+        });
+      }
       // Scorekeeper Query
 
       if (location !== 'world') {
-        recentFilter = {
-          ...locationFilter.query.bool,
-        };
-        upcomingFilter = {
-          ...locationFilter.query.bool,
-        };
-        refereeFilter = {
-          ...locationFilter.query.bool,
-        };
-        scorekeeperFilter = {
-          ...locationFilter.query.bool,
-        };
         lookingChallengeeFilter = {
+          ...lookingChallengeeFilter,
           ...locationFilter.query.bool,
         };
         hiringPlayerFilter = {
+          ...hiringPlayerFilter,
           ...locationFilter.query.bool,
         };
         lookingFilter = {
+          ...lookingFilter,
           ...locationFilter.query.bool,
         };
       }
 
-      const recentQuery = bodybuilder()
-        .size(defaultPageSize)
-        .andFilter('bool', recentFilter)
-        .build();
-      const upcomingQuery = bodybuilder()
-        .size(defaultPageSize)
-        .andFilter('bool', upcomingFilter)
-        .build();
       const lookingChallengeeQuery = bodybuilder()
         .size(defaultPageSize)
         .andFilter('bool', lookingChallengeeFilter)
@@ -324,20 +409,12 @@ export default function LocalHomeScreen({ navigation, route }) {
         .size(defaultPageSize)
         .andFilter('bool', lookingFilter)
         .build();
-      const refereeQuery = bodybuilder()
-        .size(defaultPageSize)
-        .andFilter('bool', refereeFilter)
-        .build();
-      const scorekeeperQuery = bodybuilder()
-        .size(defaultPageSize)
-        .andFilter('bool', scorekeeperFilter)
-        .build();
 
-      getGameIndex(recentQuery).then((games) => {
+      getGameIndex(recentMatchQuery).then((games) => {
         console.log('Recent match response :=>', games);
 
         Utility.getGamesList(games).then((gamedata) => {
-          if (gamedata.length === 0) {
+          if (games.length === 0) {
             setRecentMatch([]);
           } else {
             setRecentMatch(gamedata);
@@ -345,11 +422,11 @@ export default function LocalHomeScreen({ navigation, route }) {
         });
       });
 
-      getGameIndex(upcomingQuery).then((games) => {
-        Utility.getGamesList(games).then((gamedata) => {
-          console.log('Upcoming match response :=>', gamedata);
+      getGameIndex(upcomingMatchQuery).then((games) => {
+        console.log('Upcoming match response :=>', games);
 
-          if (gamedata.length === 0) {
+        Utility.getGamesList(games).then((gamedata) => {
+          if (games.length === 0) {
             setUpcomingMatch([]);
           } else {
             setUpcomingMatch(gamedata);
@@ -361,7 +438,7 @@ export default function LocalHomeScreen({ navigation, route }) {
         console.log('challengee:=>', challengee);
 
         setChallengeeMatch(challengee);
-      })
+      });
 
       getGroupIndex(hiringPlayerQuery).then((teams) => {
         console.log('hiringPlayers::=>', teams);
@@ -551,11 +628,12 @@ export default function LocalHomeScreen({ navigation, route }) {
           });
           console.log('selected sport::=>', item.sport_name);
           setSelectedSport(item.sport_name);
+          setFilters({ ...filters, sport: item.sport_name });
         }}>
         {item.sport_name}
       </Text>
     ),
-    [selectedSport],
+    [filters, selectedSport],
   );
 
   const renderSportsView = useCallback(
@@ -566,7 +644,8 @@ export default function LocalHomeScreen({ navigation, route }) {
           <Text
             style={styles.sportNameTitle}
             onPress={() => {
-              setSelectedSport(item)
+              setSelectedSport(item);
+              setFilters({ ...filters, sport: item });
             }}>
             {item}
           </Text>
@@ -616,7 +695,7 @@ export default function LocalHomeScreen({ navigation, route }) {
   const renderGameItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCUpcomingMatch data={item} cardWidth={'92%'} />
+        <TCUpcomingMatchCard data={item} cardWidth={'92%'} />
       </View>
     ),
     [],
@@ -682,7 +761,7 @@ export default function LocalHomeScreen({ navigation, route }) {
             <TouchableOpacity
               style={styles.titleHeaderView}
               onPress={() => {
-                  setLocationPopup(true);
+                setLocationPopup(true);
               }}
               hitSlop={getHitSlop(15)}>
               <Text style={styles.headerTitle}>
@@ -739,6 +818,10 @@ export default function LocalHomeScreen({ navigation, route }) {
             city.charAt(0).toUpperCase() + city.slice(1),
           );
           setLocation(city.charAt(0).toUpperCase() + city.slice(1));
+          setFilters({
+            ...filters,
+            location: city.charAt(0).toUpperCase() + city.slice(1),
+          });
         });
         console.log(position.coords.latitude);
       },
@@ -814,9 +897,8 @@ export default function LocalHomeScreen({ navigation, route }) {
                 showArrow={true}
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
                 onPress={() => navigation.navigate('RecentMatchScreen', {
-                    location,
-                    selectedSport,
-                    sports,
+                    filters,
+                    sportsList: sports,
                   })
                 }
               />
@@ -848,9 +930,8 @@ export default function LocalHomeScreen({ navigation, route }) {
                 viewStyle={{ marginTop: 20, marginBottom: 15 }}
                 onPress={() => {
                   navigation.navigate('UpcomingMatchScreen', {
-                    location,
-                    sport: selectedSport,
-                    sports,
+                    filters,
+                    sportsList: sports,
                   });
 
                   // navigation.navigate('AddLogScreen')
@@ -874,21 +955,23 @@ export default function LocalHomeScreen({ navigation, route }) {
                 )}
               />
             </View>
-            <View>
-              <TCTitleWithArrow
-                isDisabled={!(shortsList?.length > 0)}
-                title={strings.shortsTitle}
-                showArrow={true}
-                viewStyle={{ marginTop: 20, marginBottom: 15 }}
-              />
-              <FlatList
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                data={shortsList}
-                keyExtractor={keyExtractor}
-                renderItem={shortsListView}
-              />
-            </View>
+            {shortsList.length > 2 && (
+              <View>
+                <TCTitleWithArrow
+                  isDisabled={!(shortsList?.length > 0)}
+                  title={strings.shortsTitle}
+                  showArrow={true}
+                  viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                />
+                <FlatList
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  data={shortsList}
+                  keyExtractor={keyExtractor}
+                  renderItem={shortsListView}
+                />
+              </View>
+            )}
             <View>
               <TCTitleWithArrow
                 isDisabled={!(challengeeMatch.length > 0)}
@@ -1025,62 +1108,68 @@ export default function LocalHomeScreen({ navigation, route }) {
                 )}
               />
             </View>
-            <View>
-              <TCTitleWithArrow
-                title={strings.refereesTitle}
-                showArrow={true}
-                viewStyle={{ marginTop: 20, marginBottom: 15 }}
-                onPress={() => navigation.navigate('RefereesListScreen', {
-                    location,
-                    sport: selectedSport,
-                  })
-                }
-              />
-              <FlatList
-                horizontal={true}
-                scrollEnabled={referees.length > 0}
-                showsHorizontalScrollIndicator={false}
-                data={referees}
-                ItemSeparatorComponent={renderSeparator}
-                keyExtractor={keyExtractor}
-                renderItem={renderRefereesScorekeeperListView}
-                style={{ marginLeft: 15 }}
-                ListEmptyComponent={() => (
-                  <TCEntityListPlaceholder
-                    cardWidth={'94%'}
-                    placeholderText={strings.refereesPlaceholderText}
-                  />
-                )}
-              />
-            </View>
-            <View>
-              <TCTitleWithArrow
-                title={strings.scorekeeperTitle}
-                showArrow={true}
-                viewStyle={{ marginTop: 20, marginBottom: 15 }}
-                onPress={() => navigation.navigate('ScorekeeperListScreen', {
-                    location,
-                    sport: selectedSport,
-                  })
-                }
-              />
-              <FlatList
-                horizontal={true}
-                scrollEnabled={scorekeepers.length > 0}
-                showsHorizontalScrollIndicator={false}
-                data={scorekeepers}
-                ItemSeparatorComponent={renderSeparator}
-                keyExtractor={keyExtractor}
-                renderItem={renderRefereesScorekeeperListView}
-                style={{ marginLeft: 15 }}
-                ListEmptyComponent={() => (
-                  <TCEntityListPlaceholder
-                    cardWidth={'94%'}
-                    placeholderText={strings.scorekeepersPlaceholderText}
-                  />
-                )}
-              />
-            </View>
+            {referees.length > 0 && (
+              <View>
+                <TCTitleWithArrow
+                  title={strings.refereesTitle}
+                  showArrow={true}
+                  viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                  onPress={() => {
+                    console.log('Applicable filter::=>', filters);
+                    navigation.navigate('RefereesListScreen', {
+                      filters,
+                      sportsList: sports,
+                    });
+                  }}
+                />
+                <FlatList
+                  horizontal={true}
+                  scrollEnabled={referees.length > 0}
+                  showsHorizontalScrollIndicator={false}
+                  data={referees}
+                  ItemSeparatorComponent={renderSeparator}
+                  keyExtractor={keyExtractor}
+                  renderItem={renderRefereesScorekeeperListView}
+                  style={{ marginLeft: 15 }}
+                  ListEmptyComponent={() => (
+                    <TCEntityListPlaceholder
+                      cardWidth={'94%'}
+                      placeholderText={strings.refereesPlaceholderText}
+                    />
+                  )}
+                />
+              </View>
+            )}
+            {scorekeepers.length > 0 && (
+              <View>
+                <TCTitleWithArrow
+                  title={strings.scorekeeperTitle}
+                  showArrow={true}
+                  viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                  onPress={() => navigation.navigate('ScorekeeperListScreen', {
+                      filters,
+                      sportsList: sports,
+                    })
+                  }
+                />
+                <FlatList
+                  horizontal={true}
+                  scrollEnabled={scorekeepers.length > 0}
+                  showsHorizontalScrollIndicator={false}
+                  data={scorekeepers}
+                  ItemSeparatorComponent={renderSeparator}
+                  keyExtractor={keyExtractor}
+                  renderItem={renderRefereesScorekeeperListView}
+                  style={{ marginLeft: 15 }}
+                  ListEmptyComponent={() => (
+                    <TCEntityListPlaceholder
+                      cardWidth={'94%'}
+                      placeholderText={strings.scorekeepersPlaceholderText}
+                    />
+                  )}
+                />
+              </View>
+            )}
             <Modal
               onBackdropPress={() => setLocationPopup(false)}
               backdropOpacity={1}
@@ -1146,6 +1235,12 @@ export default function LocalHomeScreen({ navigation, route }) {
                       authContext?.entity?.obj?.city.charAt(0).toUpperCase()
                         + authContext?.entity?.obj?.city.slice(1),
                     );
+                    setFilters({
+                      ...filters,
+                      location:
+                        authContext?.entity?.obj?.city.charAt(0).toUpperCase()
+                        + authContext?.entity?.obj?.city.slice(1),
+                    });
 
                     setTimeout(() => {
                       setLocationPopup(false);
@@ -1170,6 +1265,11 @@ export default function LocalHomeScreen({ navigation, route }) {
                   onPress={() => {
                     setSelectedLocationOption(2);
                     setLocation('world');
+                    setFilters({
+                      ...filters,
+                      location: 'world',
+                    });
+
                     setTimeout(() => {
                       setLocationPopup(false);
                     }, 300);
@@ -1259,7 +1359,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                     </View>
                   )}
                 </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                {/* <TouchableWithoutFeedback
                   onPress={() => setSelectedSettingOption(1)}>
                   {selectedSettingOption === 1 ? (
                     <LinearGradient
@@ -1275,7 +1375,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                       <Text style={styles.myCityText}>Location</Text>
                     </View>
                   )}
-                </TouchableWithoutFeedback>
+                </TouchableWithoutFeedback> */}
               </View>
             </Modal>
             <Modal

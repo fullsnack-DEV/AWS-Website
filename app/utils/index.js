@@ -659,6 +659,17 @@ export const getSportIcon = (sport) => {
 
 export const roundValue = (value, decimals) => (value ? parseFloat(+value.toFixed(decimals)) : 0);
 
+export const getFiltersOpetions = (opetions) => {
+  const arr = [];
+  Object.keys(opetions).forEach((key) => {
+    const obj = {}
+    obj[key] = opetions[key]
+    arr.push(obj);
+  });
+
+  return arr;
+};
+
 export const getCalendar = async (participantId, fromDate, toDate, type, blocked) => {
   const body = {
     query: {

@@ -18,6 +18,7 @@ export const QB_MAX_ASSET_SIZE_UPLOAD = 104857600;
 export const getQBSetting = () => {
   Utility.getStorage('appSetting')
     .then((setting) => {
+      console.log('setting fetched::=>', setting);
       QUICKBLOX_BASE_URL = setting.quickblox.QUICKBLOX_BASE_URL;
       QB_Auth_Password = setting.quickblox.QB_Auth_Password;
       MESSAGE_LIMIT = setting.quickblox.MESSAGE_LIMIT;

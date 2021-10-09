@@ -29,6 +29,8 @@ console.disableYellowBox = true
 export default function App() {
   const [networkConnected, setNetworkConntected] = useState(true);
 
+  getQBSetting();
+
   if (!global.btoa) {
     global.btoa = encode;
 }
@@ -100,7 +102,6 @@ if (!global.atob) {
     }),
     [role, user, entity, tokenData, setTokenData, updateAuth, networkConnected],
   );
-  getQBSetting();
   QBinit();
   return (
     <AuthContext.Provider value={authValue}>
