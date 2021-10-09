@@ -1,25 +1,22 @@
 /* eslint-disable no-underscore-dangle */
 import React, { memo } from 'react';
 import {
- View, Text, TouchableOpacity, StyleSheet, Image,
- } from 'react-native';
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+} from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
-import FastImage from 'react-native-fast-image';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import ReservationStatus from '../Constants/ReservationStatus';
 
-function TCUpcomingMatch({
-  data,
-  onPress,
-  cardWidth = '86%',
-  isSelected = false,
-  showSelectionCheckBox = false,
-}) {
+function TCUpcomingMatchCard({ data, onPress, cardWidth = '86%' }) {
   const months = [
     'Jan',
     'Feb',
@@ -46,11 +43,33 @@ function TCUpcomingMatch({
     return time;
   };
 
+  // const renderMediaList = useCallback(
+  //   () => (
+  //     <Image
+  //       source={images.soccerBackground}
+  //       style={{
+  //         height: 66,
+  //         width: 66,
+  //         resizeMode: 'cover',
+  //         borderRadius: 10,
+  //       }}
+  //     />
+  //   ),
+  //   [],
+  // );
+
+  // const keyExtractor = useCallback((item, index) => index.toString(), []);
+  // const renderSeparator = () => (
+  //   <View
+  //     style={{
+  //       height: 50,
+  //       width: 10,
+  //     }}
+  //   />
+  // );
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.7}
-      style={styles.mainContainer}>
+    <TouchableOpacity onPress={onPress}>
+
       <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
         <LinearGradient
           colors={
@@ -73,27 +92,7 @@ function TCUpcomingMatch({
           </View>
         </LinearGradient>
         <View style={styles.eventText}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={styles.eventTitle}>{data?.sport}</Text>
-            <View style={{ marginRight: 7, marginBottom: 5 }}>
-              {/* eslint-disable-next-line no-nested-ternary */}
-              {showSelectionCheckBox ? (
-                isSelected ? (
-                  <FastImage
-                    source={images.orangeCheckBox}
-                    resizeMode={'contain'}
-                    style={styles.checkboxImg}
-                  />
-                ) : (
-                  <FastImage
-                    resizeMode={'contain'}
-                    source={images.uncheckWhite}
-                    style={styles.unCheckboxImg}
-                  />
-                )
-              ) : null}
-            </View>
-          </View>
+          <Text style={styles.eventTitle}>{data?.sport}</Text>
           <View style={styles.bottomView}>
             <Text style={styles.eventTimeLocation}>
               {formatAMPM(new Date(data?.start_datetime * 1000))} -{' '}
@@ -101,7 +100,7 @@ function TCUpcomingMatch({
             </Text>
             <Text style={styles.textSaperator}> | </Text>
             <Text style={styles.addressView} numberOfLines={1}>
-              {data?.venue?.address ?? data?.venue?.description}
+              {data?.venue?.address}
             </Text>
           </View>
           <View style={styles.gameVSView}>
@@ -150,7 +149,7 @@ function TCUpcomingMatch({
                 </Text>
                 {data?.away_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data?.away_team?.thumbnail }}
+                    source={{ uri: data?.away_team.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -179,6 +178,22 @@ function TCUpcomingMatch({
               </View>
             )}
           </View>
+          {/* <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              backgroundColor: 'red',
+              marginTop: 15,
+            }}>
+            <FlatList
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              data={['', '', '', '', '']}
+              keyExtractor={keyExtractor}
+              renderItem={renderMediaList}
+              ItemSeparatorComponent={renderSeparator}
+            />
+          </View> */}
         </View>
       </View>
     </TouchableOpacity>
@@ -186,33 +201,29 @@ function TCUpcomingMatch({
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    backgroundColor: colors.whiteColor,
-    margin: 10,
-    borderRadius: 8,
-    elevation: 2,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1.5 },
-    shadowOpacity: 0.16,
-    shadowRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   backgroundView: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 8,
+    elevation: 5,
     flexDirection: 'row',
     height: 102,
+    // 183
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
     width: wp('86%'),
+    // marginTop: 15,
   },
   bottomView: {
     flexDirection: 'row',
   },
   colorView: {
-    borderBottomLeftRadius: 6,
-    borderTopLeftRadius: 6,
+    borderBottomLeftRadius: 8,
+    borderTopLeftRadius: 8,
     height: 102,
+    // 183
     width: 42,
   },
   dateMonthText: {
@@ -233,7 +244,7 @@ const styles = StyleSheet.create({
   eventText: {
     flexDirection: 'column',
     padding: 10,
-    width: wp('76%'),
+    width: wp('82%'),
   },
   eventTimeLocation: {
     color: colors.googleColor,
@@ -249,11 +260,9 @@ const styles = StyleSheet.create({
 
   gameVSView: {
     alignItems: 'center',
-
     flexDirection: 'row',
-    flex: 1,
     justifyContent: 'space-between',
-    marginTop: 5,
+    marginTop: 10,
   },
 
   addressView: {
@@ -266,7 +275,7 @@ const styles = StyleSheet.create({
   vsView: {
     fontSize: 12,
     fontFamily: fonts.RRegular,
-    color: colors.googleColor,
+    color: colors.userPostTimeColor,
   },
 
   profileImage: {
@@ -312,15 +321,6 @@ const styles = StyleSheet.create({
     marginRight: 5,
     opacity: 0.4,
   },
-  unCheckboxImg: {
-    width: 22,
-    height: 22,
-    tintColor: colors.whiteColor,
-  },
-  checkboxImg: {
-    width: 22,
-    height: 22,
-  },
 });
 
-export default memo(TCUpcomingMatch);
+export default memo(TCUpcomingMatchCard);

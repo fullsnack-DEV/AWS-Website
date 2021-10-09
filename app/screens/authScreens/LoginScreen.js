@@ -56,6 +56,7 @@ export default function LoginScreen({ navigation }) {
   }, [email, password]);
 
   const getRedirectionScreenName = useCallback((townscupUser) => new Promise((resolve, reject) => {
+    console.log('screen name object:=>', townscupUser);
     if (!townscupUser.birthday) resolve({ screen: 'AddBirthdayScreen' })
     else if (!townscupUser.gender) resolve({ screen: 'ChooseGenderScreen' })
     else if (!townscupUser.city) resolve({ screen: 'ChooseLocationScreen' })
@@ -66,6 +67,10 @@ export default function LoginScreen({ navigation }) {
   const loginFinalRedirection = useCallback(async (firebaseUser, townscupUser) => {
     const entity = { ...dummyAuthContext.entity }
     const userData = { ...townscupUser }
+
+    console.log('entity Data:', entity);
+    console.log('User Data/townscupUser:', townscupUser);
+
     entity.auth.user = { ...userData }
     entity.obj = { ...userData };
     await authContext.setTokenData(dummyAuthContext?.tokenData);
@@ -85,6 +90,7 @@ export default function LoginScreen({ navigation }) {
         });
       // eslint-disable-next-line no-underscore-dangle
     } else if (firebaseUser?._user?.emailVerified) {
+      console.log('User Data:', userData);
       getRedirectionScreenName(userData).then((responseScreen) => {
         setloading(false);
 
@@ -115,16 +121,20 @@ export default function LoginScreen({ navigation }) {
   const QBInitialLogin = useCallback((firebaseUser, townscupUser) => {
     const response = { ...townscupUser };
     let qbEntity = { ...dummyAuthContext?.entity };
+
+    console.log('response : ', response);
+    console.log('qbEntity : ', qbEntity);
+
     QBlogin(qbEntity.uid, response).then(async (res) => {
       qbEntity = { ...qbEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
       QBconnectAndSubscribe(qbEntity)
       dummyAuthContext.entity = { ...qbEntity }
-      loginFinalRedirection(firebaseUser, townscupUser);
+      loginFinalRedirection(firebaseUser, response);
     }).catch((error) => {
       console.log('QB Login Error : ', error.message);
       qbEntity = { ...qbEntity, QB: { connected: false } }
       dummyAuthContext.entity = { ...qbEntity }
-      loginFinalRedirection(firebaseUser);
+      loginFinalRedirection(firebaseUser, response);
     });
   }, [dummyAuthContext, loginFinalRedirection])
 
@@ -214,8 +224,8 @@ export default function LoginScreen({ navigation }) {
   }, []);
 
   const renderEmailInput = useMemo(() => (
-    <View style={styles.textFieldContainerStyle}>
-      <TCTextField
+
+    <TCTextField
             style={styles.textFieldStyle}
             placeholder={strings.emailPlaceHolder}
             placeholderTextColor={colors.darkYellowColor}
@@ -224,13 +234,13 @@ export default function LoginScreen({ navigation }) {
             onChangeText={(text) => setEmail(text)}
             value={email}
         />
-    </View>
+
   ), [email]);
 
   const renderPasswordInput = useMemo(() => (
-    <View style={styles.passwordView}>
+    <View style={styles.passwordContainer}>
       <TextInput
-            style={styles.textInput}
+      style={styles.passwordInput}
             placeholder={strings.passwordPlaceHolder}
             onChangeText={(text) => setPassword(text)}
             value={password}
@@ -318,34 +328,40 @@ const styles = StyleSheet.create({
     color: colors.darkYellowColor,
     textDecorationLine: 'underline',
   },
-  passwordView: {
+
+  passwordContainer: {
+    alignSelf: 'center',
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    width: wp('85%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     height: 40,
-    alignSelf: 'center',
-    paddingVertical: 5,
-    borderRadius: 5,
     color: 'black',
     elevation: 3,
     flexDirection: 'row',
-    marginTop: 4,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
-    width: wp('85%'),
+    justifyContent: 'space-between',
+    marginTop: 15,
   },
-  textInput: {
+
+  passwordInput: {
+    alignSelf: 'center',
     paddingVertical: 0,
     paddingHorizontal: 10,
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('75%'),
-  },
-  textFieldContainerStyle: {
+    width: wp('70%'),
     height: 40,
-    marginBottom: 10,
+    color: 'black',
+
   },
+
   textFieldStyle: {
     alignSelf: 'center',
     width: wp('85%'),

@@ -14,7 +14,6 @@ import Modal from 'react-native-modal';
 // import AuthContext from '../../auth/context';
 import bodybuilder from 'bodybuilder';
 
-import TCEntityView from '../../components/TCEntityView';
 import TCTextField from '../../components/TCTextField';
 import TCThinDivider from '../../components/TCThinDivider';
 import colors from '../../Constants/Colors';
@@ -23,6 +22,7 @@ import images from '../../Constants/ImagePath';
 import { getHitSlop, widthPercentageToDP } from '../../utils';
 import { getUserIndex } from '../../api/elasticSearch';
 import strings from '../../Constants/String';
+import TCPlayerView from '../../components/TCPlayerView';
 
 let stopFetchMore = true;
 
@@ -126,8 +126,8 @@ export default function LookingTeamScreen({ navigation, route }) {
 
   const renderEntityListView = useCallback(
     ({ item }) => (
-      <View style={[styles.separator, { flex: 1 / 4 }]}>
-        <TCEntityView data = {item} showStar={false} />
+      <View style={[styles.separator, { flex: 1 }]}>
+        <TCPlayerView data = {item} showStar={false} />
       </View>
 
     ),
@@ -136,15 +136,11 @@ export default function LookingTeamScreen({ navigation, route }) {
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   const renderSeparator = () => (
-    <View
-      style={{
-        height: 10,
-      }}
-    />
+    <TCThinDivider marginTop={10} marginBottom={10} width={'100%'}/>
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View>
       <View
         style={styles.searchView}>
         <View
@@ -159,14 +155,13 @@ export default function LookingTeamScreen({ navigation, route }) {
         </TouchableWithoutFeedback>
       </View>
       <FlatList
-          numColumns={4}
           showsHorizontalScrollIndicator={false}
           data={lookingTeam}
           ItemSeparatorComponent={renderSeparator}
           keyExtractor={keyExtractor}
           renderItem={renderEntityListView}
           style={styles.listStyle}
-          contentContainerStyle={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 1 }}
         onEndReachedThreshold={0.1}
         onEndReached={handleLoadMore}
         onScrollBeginDrag={() => {
@@ -249,7 +244,10 @@ export default function LookingTeamScreen({ navigation, route }) {
   );
 }
 const styles = StyleSheet.create({
-  listStyle: { marginLeft: 15 },
+  listStyle: {
+    padding: 15,
+     // backgroundColor: 'red',
+    },
 
    separator: {
     borderRightWidth: 20,

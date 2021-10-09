@@ -1,10 +1,10 @@
 /* eslint-disable array-callback-return */
-/* eslint-disable no-underscore-dangle */
-import React, { useCallback, useState, useEffect } from 'react';
+import React, {
+ useCallback, useState, useEffect, useContext,
+ } from 'react';
 import {
   View,
   StyleSheet,
-  Alert,
   FlatList,
   Image,
   TouchableOpacity,
@@ -12,257 +12,375 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Dimensions,
+  Alert,
   TextInput,
+  KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
+
 // import ActivityLoader from '../../components/loader/ActivityLoader';
-// import AuthContext from '../../auth/context';
+
 import Modal from 'react-native-modal';
 import moment from 'moment';
-import bodybuilder from 'bodybuilder';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import * as Utility from '../../utils/index';
+import Geolocation from '@react-native-community/geolocation';
+import AuthContext from '../../auth/context';
 
-// import { gameData } from '../../utils/constant';
-import { widthPercentageToDP } from '../../utils';
+import { getLocationNameWithLatLong } from '../../api/External';
+import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import TCThinDivider from '../../components/TCThinDivider';
-import fonts from '../../Constants/Fonts';
-import TCRecentMatchCard from '../../components/TCRecentMatchCard';
-import { getGameIndex } from '../../api/elasticSearch';
+import { widthPercentageToDP } from '../../utils';
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
+import fonts from '../../Constants/Fonts';
+import TCThinDivider from '../../components/TCThinDivider';
+
+import strings from '../../Constants/String';
+import { getGameIndex } from '../../api/elasticSearch';
+import TCTagsFilter from '../../components/TCTagsFilter';
+import TCPicker from '../../components/TCPicker';
+import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 
 let stopFetchMore = true;
+const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function RecentMatchScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
+  const authContext = useContext(AuthContext);
+  const [filters, setFilters] = useState(route?.params?.filters);
+
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
-  const [recentMatch, setRecentMatch] = useState([]);
 
+  const [sports, setSports] = useState([]);
+
+  const [datePickerFor, setDatePickerFor] = useState();
+  const [showFrom, setShowFrom] = useState(false);
+  const [showTo, setShowTo] = useState(false);
+
+  const [fromDate, setFromDate] = useState(filters?.fromDate && new Date(filters?.fromDate));
+  const [toDate, setToDate] = useState(filters?.toDate && new Date(filters?.toDate));
+
+  const [teamName, setTeamName] = useState();
+  const [recentMatch, setRecentMatch] = useState([]);
   const [pageSize] = useState(10);
   const [pageFrom, setPageFrom] = useState(0);
-
-  const [location] = useState(route?.params?.location);
+  // eslint-disable-next-line no-unused-vars
+  const [loadMore, setLoadMore] = useState(false);
+  const [searchData, setSearchData] = useState();
   const [selectedSport, setSelectedSport] = useState(
-    route?.params?.selectedSport,
+    route?.params?.filters.sport,
   );
+  const [location, setLocation] = useState(route?.params?.filters.location);
 
-  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  const { sportsList } = route?.params ?? {};
 
-  const [from, setFrom] = useState(new Date());
-  const [to, setTo] = useState(
-    new Date().setMinutes(new Date().getMinutes() + 5),
-  );
+  console.log('Recent Match Filter:=>', filters);
 
-  const [fromPickerVisible, setFromPickerVisible] = useState(false);
-  const [toPickerVisible, setToPickerVisible] = useState(false);
-// eslint-disable-next-line no-unused-vars
-const [loadMore, setLoadMore] = useState(false);
   useEffect(() => {
-    getRecentMatch()
+    if (route?.params?.locationText) {
+      setSettingPopup(true);
+      setTimeout(() => {
+        setLocation(route?.params?.locationText);
+        // setFilters({
+        //   ...filters,
+        //   location: route?.params?.locationText,
+        // });
+      }, 10);
+      // navigation.setParams({ locationText: null });
+    }
+  }, [route?.params?.locationText]);
+  useEffect(() => {
+    const list = [];
+    sportsList.map((obj) => {
+      const dataSource = {
+        label: obj.sport_name,
+        value: obj.sport_name,
+      };
+      list.push(dataSource);
+    });
+
+    setSports(list);
+  }, [sportsList]);
+
+  const getRecentGames = useCallback(
+    (filerGames) => {
+      // Recent match query
+
+      const recentMatchQuery = {
+        size: pageSize,
+        from: pageFrom,
+        query: {
+          bool: {
+            must: [
+              { match: { status: 'accepted' } },
+
+            ],
+          },
+        },
+        sort: [{ actual_enddatetime: 'desc' }],
+      };
+
+      if (filerGames.location !== 'world') {
+        recentMatchQuery.query.bool.must.push({
+          multi_match: {
+            query: filerGames.location.toLowerCase(),
+            fields: ['city', 'country', 'state', 'venue.address'],
+          },
+        });
+      }
+      if (filerGames.sport !== 'All') {
+        recentMatchQuery.query.bool.must.push({
+          term: {
+            'sport.keyword': {
+              value: filerGames.sport.toLowerCase(),
+              case_insensitive: true,
+            },
+          },
+        });
+      }
+      if (filerGames.fromDate && filerGames.toDate) {
+        recentMatchQuery.query.bool.must.push({
+          range: {
+            start_datetime: {
+              gt: Number(parseFloat(new Date(filerGames.fromDate).getTime() / 1000).toFixed(0)),
+              lt: Number(parseFloat(new Date(filerGames.toDate).getTime() / 1000).toFixed(0)),
+            },
+          },
+        });
+      } else if (!filerGames.fromDate && !filerGames?.toDate) {
+        console.log('from:::', filerGames.fromDate);
+
+        console.log('from:::', parseFloat(new Date(filerGames.fromDate).getTime() / 1000).toFixed(0));
+        recentMatchQuery.query.bool.must.push({
+          range: {
+            start_datetime: {
+              lt: Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+            },
+          },
+        });
+      } else if (filerGames.fromDate && !filerGames?.toDate) {
+        console.log('from:::', filerGames.fromDate);
+
+        console.log('from:::', parseFloat(new Date(filerGames.fromDate).getTime() / 1000).toFixed(0));
+        recentMatchQuery.query.bool.must.push({
+          range: {
+            start_datetime: {
+              gt: Number(parseFloat(new Date(filerGames.fromDate).getTime() / 1000).toFixed(0)),
+            lt: Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+            },
+          },
+        });
+      } else if (!filerGames?.fromDate && filerGames.toDate) {
+        recentMatchQuery.query.bool.must.push({
+          range: {
+            start_datetime: {
+              lt: Number(parseFloat(new Date(filerGames.toDate).getTime() / 1000).toFixed(0)),
+            },
+          },
+        });
+      }
+      console.log('Recent match Query:=>', JSON.stringify(recentMatchQuery));
+      // Recent match query
+
+      getGameIndex(recentMatchQuery)
+        .then((games) => {
+          console.log('Recent match response :=>', games);
+
+          if (games.length > 0) {
+            Utility.getGamesList(games).then((gamedata) => {
+                const fetchedData = [...recentMatch, ...gamedata];
+                setRecentMatch(fetchedData);
+                setSearchData(fetchedData);
+                setPageFrom(pageFrom + pageSize);
+                stopFetchMore = true;
+            });
+          }
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e);
+          }, 10);
+        });
+    },
+    [pageFrom, pageSize, recentMatch],
+  );
+
+  useEffect(() => {
+    getRecentGames(filters);
   }, []);
 
-  const getRecentMatch = () => {
-    const locationFilter = bodybuilder()
-    .filter('multi_match', {
-      query: location,
-      fields: ['city', 'country', 'state'],
-    })
-    .build();
-   // Recent match query
-   const recentMatchList = bodybuilder()
-   .query('match', 'sport', selectedSport.toLowerCase())
-   .query('range', 'start_datetime', {
-     lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-   })
-   .sort('actual_enddatetime', 'desc')
-   .build();
+  const renderRecentMatchItems = useCallback(({ item }) => {
+    console.log('Recent Item:=>', item);
+    return (
+      <View style={{ marginBottom: 15 }}>
+        <TCRecentMatchCard data={item} cardWidth={'92%'} />
+      </View>
+    );
+  }, []);
 
- let recentFilter = {
-   ...recentMatchList.query.bool,
- };
+  const keyExtractor = useCallback((item, index) => index.toString(), []);
 
- if (location !== 'world') {
-  recentFilter = {
-    ...locationFilter.query.bool,
+  const handleDonePress = (date) => {
+    if (datePickerFor === 'from') {
+      console.log('From date:', new Date(date));
+      setFromDate(new Date(date));
+      setShowFrom(false);
+    } else {
+      setToDate(new Date(date));
+      setShowTo(false);
+    }
   };
-}
+  const handleCancelPress = () => {
+    if (datePickerFor === 'from') {
+      setShowFrom(false);
+    } else {
+      setShowTo(false);
+    }
+  };
 
-const recentQuery = bodybuilder()
-.size(pageSize)
-.from(pageFrom)
-  .andFilter('bool', recentFilter)
-  .build();
-
- // Recent match query
-
-    getGameIndex(recentQuery).then((games) => {
-      Utility.getGamesList(games).then((gamedata) => {
-        if (gamedata.length > 0) {
-          const fetchedData = [...recentMatch, ...gamedata];
-          setRecentMatch(fetchedData);
-          setPageFrom(pageFrom + pageSize);
-          stopFetchMore = true;
-        }
-      });
-    });
-  }
-  const handleLoadMore = () => {
-    console.log('handal called');
+  const onScrollHandler = () => {
     setLoadMore(true);
     if (!stopFetchMore) {
-      getRecentMatch();
+      getRecentGames(filters);
       stopFetchMore = true;
     }
     setLoadMore(false);
   };
+  const handleTagPress = ({ item }) => {
+    const tempFilter = filters;
+    Object.keys(tempFilter).forEach((key) => {
+      if (key === Object.keys(item)[0]) {
+        if (Object.keys(item)[0] === 'sport') {
+          tempFilter.sport = 'All';
+        }
+        if (Object.keys(item)[0] === 'location') {
+          tempFilter.location = 'world';
+        }
+        if (Object.keys(item)[0] === 'fromDate') {
+          setFromDate()
+          delete tempFilter.fromDate;
+        }
+        if (Object.keys(item)[0] === 'toDate') {
+          setToDate()
+          delete tempFilter.toDate;
+        }
+        // delete tempFilter[key];
+      }
+    });
+    console.log('Temp filter', tempFilter);
+    setFilters({ ...tempFilter });
+    // applyFilter();
+    setTimeout(() => {
+      setPageFrom(0);
+      setRecentMatch([]);
+      applyFilter(tempFilter);
+    }, 10);
+  };
 
-  const renderRecentMatchItems = useCallback(
-    ({ item }) => (
-      <View style={{ marginBottom: 15 }}>
-        <TCRecentMatchCard data={item} cardWidth={'92%'} />
-      </View>
-    ),
-    [],
-  );
+  const getLocation = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        console.log('Lat/long to position::=>', position);
+        // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
+        getLocationNameWithLatLong(
+          position.coords.latitude,
+          position.coords.longitude,
+          authContext,
+        ).then((res) => {
+          console.log(
+            'Lat/long to address::=>',
+            res.results[0].address_components,
+          );
+          let city;
+          res.results[0].address_components.map((e) => {
+            if (e.types.includes('administrative_area_level_2')) {
+              city = e.short_name;
+            }
+          });
+          console.log(
+            'Location:=>',
+            city.charAt(0).toUpperCase() + city.slice(1),
+          );
+          setLocation(city.charAt(0).toUpperCase() + city.slice(1));
+          // setFilters({
+          //   ...filters,
+          //   location: city.charAt(0).toUpperCase() + city.slice(1),
+          // });
+        });
+        console.log(position.coords.latitude);
+      },
+      (error) => {
+        // See error code charts below.
+        console.log(error.code, error.message);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+    );
+  };
 
-  const renderSports = ({ item }) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => {
-        setSelectedSport(item?.sport_name);
-        setVisibleSportsModal(false);
-      }}>
-      <View
+  const applyFilter = useCallback((fil) => {
+    getRecentGames(fil);
+  }, []);
+
+  const listEmptyComponent = () => (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text
         style={{
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
+          fontFamily: fonts.RRegular,
+          color: colors.grayColor,
+          fontSize: 26,
         }}>
-        <Text style={styles.languageList}>{item.sport_name}</Text>
-        <View style={styles.checkbox}>
-          {selectedSport === item?.sport_name ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
+        No Games
+      </Text>
+    </View>
+  );
+  const searchFilterFunction = (text) => {
+    const result = recentMatch.filter(
+      (x) => x.full_name.toLowerCase().includes(text.toLowerCase())
+        || x.city.toLowerCase().includes(text.toLowerCase()),
+    );
+    if (text.length > 0) {
+      setRecentMatch(result);
+    } else {
+      setRecentMatch(searchData);
+    }
+  };
+  return (
+    <View>
+      <View style={styles.searchView}>
+        <View style={styles.searchViewContainer}>
+          <TextInput
+            placeholder={strings.searchText}
+            style={styles.searchTxt}
+            onChangeText={(text) => {
+              searchFilterFunction(text);
+            }}
+            // value={search}
+          />
+          <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
+            <Image source={images.homeSetting} style={styles.settingImage} />
+          </TouchableWithoutFeedback>
         </View>
       </View>
-    </TouchableOpacity>
-  );
-
-  const onFromDone = (date) => {
-    setFrom(date.getTime());
-    if (new Date(to) < new Date(from)) {
-      setTo(date.getTime());
-    }
-
-    setFromPickerVisible(false);
-  };
-
-  const onToDone = (date) => {
-    console.log('To Date:=>', date);
-    setTo(date.getTime());
-    if (new Date(to) < new Date(from)) {
-      setFrom(date.getTime());
-    }
-
-    setToPickerVisible(false);
-  };
-
-  const handleCancelPress = () => {
-    setFromPickerVisible(false);
-    setToPickerVisible(false);
-  };
-
-  return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.searchView}>
-        <TouchableOpacity
-          style={styles.searchViewContainer}
-          onPress={() => setVisibleSportsModal(true)}>
-          <Text>{selectedSport}</Text>
-          <Image source={images.arrowDown} style={styles.arrowStyle} />
-        </TouchableOpacity>
-
-        <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
-          <Image source={images.homeSetting} style={styles.settingImage} />
-        </TouchableWithoutFeedback>
-      </View>
+      <TCTagsFilter
+        dataSource={Utility.getFiltersOpetions(filters)}
+        onTagCancelPress={handleTagPress}
+      />
       <FlatList
+        extraData={recentMatch}
         showsHorizontalScrollIndicator={false}
         data={recentMatch}
-        keyExtractor={(item, index) => index.toString()}
+
+        keyExtractor={keyExtractor}
         renderItem={renderRecentMatchItems}
-        style={styles.listViewStyle}
-        contentContainerStyle={{ flex: 1 }}
+        style={styles.listStyle}
+        contentContainerStyle={{ paddingBottom: 1 }}
+        onEndReached={onScrollHandler}
         onEndReachedThreshold={0.01}
-        onEndReached={handleLoadMore}
         onScrollBeginDrag={() => {
           stopFetchMore = false;
         }}
+        ListEmptyComponent={listEmptyComponent}
       />
-      {/* <SectionList
-        sections={[
-          {
-            title: 'Today',
-            data: upcomingMatch?.filter((obj) => {
-              const date = new Date();
-              date.setHours(0, 0, 0, 0);
-
-              const start = new Date(obj?._source?.start_datetime * 1000);
-              start.setHours(0, 0, 0, 0);
-
-              return start.getTime() === date.getTime();
-          }),
-
-            // upcomingMatch?.filter((obj) => obj._source.start_datetime === new Date().getTime() / 1000),
-            // [{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }],
-          },
-          {
-            title: 'Tomorrow',
-            data: upcomingMatch?.filter((obj) => {
-              const date = new Date();
-              date.setDate(date.getDate() + 1);
-              date.setHours(0, 0, 0, 0);
-
-              const tomorrow = new Date(obj?._source?.start_datetime * 1000);
-              tomorrow.setHours(0, 0, 0, 0);
-
-              return tomorrow.getTime() === date.getTime();
-          }),
-          },
-          {
-            title: 'Future',
-            data: upcomingMatch?.filter((obj) => {
-              const dt = new Date();
-              dt.setHours(0, 0, 0, 0);
-
-              const start = new Date(obj?._source?.start_datetime * 1000);
-              start.setHours(0, 0, 0, 0);
-
-              const date = new Date();
-              date.setDate(date.getDate() + 1);
-              date.setHours(0, 0, 0, 0);
-
-              const tomorrow = new Date(obj?._source?.start_datetime * 1000);
-              tomorrow.setHours(0, 0, 0, 0);
-
-              return start.getTime() !== dt.getTime() && tomorrow.getTime() !== date.getTime();
-          }),
-          },
-        ]}
-        renderItem={renderRecentMatchItems}
-        keyExtractor={(item, index) => index.toString()}
-        renderSectionHeader={({ section }) => (
-          section.data.length > 0 ? <Text style={styles.sectionHeader}>{section.title}</Text> : null
-        )}
-      /> */}
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
         backdropOpacity={1}
@@ -279,410 +397,470 @@ const recentQuery = bodybuilder()
             styles.bottomPopupContainer,
             { height: Dimensions.get('window').height - 100 },
           ]}>
-          <View style={styles.viewsContainer}>
-            <Text
-              onPress={() => setSettingPopup(false)}
-              style={styles.cancelText}>
-              Cancel
-            </Text>
-            <Text style={styles.locationText}>Filter</Text>
-            <Text
-              style={styles.doneText}
-              onPress={() => {
-                if (new Date(from).getTime() > new Date(to).getTime()) {
-                  Alert.alert('From date should be less than to date.')
-                } else {
-                  setSettingPopup(false);
-                  let recentMatchBody = ''
-                  if (locationFilterOpetion === 0) {
-                    recentMatchBody = bodybuilder()
-                    .size(pageSize)
-                    .query('match', 'sport', selectedSport)
-                    .query('match', 'status', 'ended')
-                    .query('range', 'start_datetime', {
-                      gt: parseFloat(new Date(from).getTime() / 1000).toFixed(0),
-                    })
-                    .query('range', 'start_datetime', {
-                      lt: parseFloat(new Date(to).getTime() / 1000).toFixed(0),
-                    })
-                    .sort('actual_enddatetime', 'desc')
-                    .build();
-                  } else {
-                    recentMatchBody = bodybuilder()
-                    .size(pageSize)
-                    .query('match', 'sport', selectedSport)
-                    .query('match', 'status', 'ended')
-                    .query('multi_match', {
-                      query: location,
-                      fields: ['city', 'country', 'state'],
-                    })
-                    .query('range', 'start_datetime', {
-                      gt: parseFloat(new Date(from).getTime() / 1000).toFixed(0),
-                    })
-                    .query('range', 'start_datetime', {
-                      lt: parseFloat(new Date(to).getTime() / 1000).toFixed(0),
-                    })
-                    .sort('actual_enddatetime', 'desc')
-                    .build();
-                  }
-
-                  // const recentMatchbody = `{"size": 5,"query":{"bool":{"must":[{"match":{"sport":"${selectedSport}"}},{"match":{"status":"ended"}},{"multi_match":{"query":"${location}","fields":["city","country","state"]}},{"range":{"start_datetime":{"lt":${parseFloat(new Date().getTime() / 1000).toFixed(0)}}}}]}},"sort":[{"actual_enddatetime":"desc"}]}`
-
-                  getGameIndex(recentMatchBody).then((games) => {
-                    Utility.getGamesList(games).then((gamedata) => {
-                      if (gamedata.length === 0) {
-                        setRecentMatch([]);
-                      } else {
-                        setRecentMatch(gamedata);
-                      }
-                    });
-                  });
-                }
-              }}>
-              {'Apply'}
-            </Text>
-          </View>
-          <TCThinDivider width={'100%'} marginBottom={15} />
-          <View>
-            <View style={{ flexDirection: 'row', margin: 15 }}>
-              <View style={{ flex: 0.2 }}>
-                <Text style={styles.filterTitle}>Location</Text>
-              </View>
-              <View style={{ marginLeft: 15, flex: 0.8 }}>
-                <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                  <TouchableWithoutFeedback
-                    onPress={() => setLocationFilterOpetion(0)}>
-                    <Image
-                      source={
-                        locationFilterOpetion === 0
-                          ? images.checkRoundOrange
-                          : images.radioUnselect
-                      }
-                      style={styles.radioButtonStyle}
-                    />
-                  </TouchableWithoutFeedback>
-
-                  <Text style={styles.filterTitle}>World</Text>
-                </View>
-                <View style={{ flexDirection: 'row' }}>
-                  <TouchableWithoutFeedback
-                    onPress={() => setLocationFilterOpetion(1)}
-                    style={{ alignSelf: 'center' }}>
-                    <Image
-                      source={
-                        locationFilterOpetion === 1
-                          ? images.checkRoundOrange
-                          : images.radioUnselect
-                      }
-                      style={styles.radioButtonStyle}
-                    />
-                  </TouchableWithoutFeedback>
-
-                  {/* <TCTextField
-                    value={location}
-                    style={{ marginLeft: 0, marginRight: 0 }}
-                    textStyle={styles.fieldTitle}
-                    placeholder={'Country, State or City '}
-                    editable={false}
-                    pointerEvents="none"
-                  /> */}
-                  <TouchableOpacity
-                    onPress={() => {
-                      console.log('OK');
-                      navigation.navigate('SearchCityScreen', {
-                        comeFrom: 'UpcomingMatchScreen',
-                      });
-                    }}
-                    style={[
-                      styles.textContainer,
-                      { marginLeft: 0, marginRight: 0, height: 40 },
-                    ]}>
-                    <TextInput
-                      style={[styles.textInput, styles.fieldTitle]}
-                      placeholder={'Country, State or City '}
-                      editable={false}
-                      pointerEvents="none"
-                    />
-                  </TouchableOpacity>
-
-                  {/* <TouchableOpacity
-                  style={{ marginLeft: 0, marginRight: 0 }}
-                  onPress={() => {
-                    setLocationPopup(false);
-                    navigation.navigate('SearchCityScreen', { comeFrom: 'LocalHomeScreen' });
-                  }}>
-                  <Text style={styles.fieldTitle}>{strings.searchTitle}</Text>
-                </TouchableOpacity> */}
-                </View>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'row', margin: 15 }}>
-              <View style={{ flex: 0.2 }}>
-                <Text style={styles.filterTitle}>Time</Text>
-              </View>
-              <View style={{ marginLeft: 15, flex: 0.8 }}>
-                <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                  <TouchableOpacity
-                    style={styles.fieldView}
-                    onPress={() => {
-                      setFromPickerVisible(true);
-                      setToPickerVisible(false);
-                    }}>
-                    <View
-                      style={{
-                        height: 35,
-                        justifyContent: 'center',
-                      }}>
-                      <Text style={styles.fieldTitle} numberOfLines={1}>
-                        From
-                      </Text>
-                    </View>
-                    <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                      <Text style={styles.fieldValue} numberOfLines={1}>
-                        {' '}
-                        {from
-                          ? moment(new Date(from)).format(
-                              'MMM DD, yyyy hh:mm a',
-                            )
-                          : ''}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-                <View style={{ flexDirection: 'row' }}>
-                  <TouchableOpacity
-                    style={styles.fieldView}
-                    onPress={() => {
-                      setFromPickerVisible(false);
-                      setToPickerVisible(true);
-                    }}>
-                    <View
-                      style={{
-                        height: 35,
-                        justifyContent: 'center',
-                      }}>
-                      <Text style={styles.fieldTitle} numberOfLines={1}>
-                        To
-                      </Text>
-                    </View>
-                    <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                      <Text style={styles.fieldValue} numberOfLines={1}>
-                        {to
-                          ? moment(new Date(to)).format('MMM DD, yyyy hh:mm a')
-                          : ''}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            keyboardVerticalOffset={keyboardVerticalOffset}
+            behavior={Platform.OS === 'ios' ? 'padding' : null}>
+            <ScrollView style={{ flex: 1 }}>
+              <View style={styles.viewsContainer}>
                 <Text
-                  style={{
-                    fontSize: 12,
-                    fontFamily: fonts.RLight,
-                    color: colors.lightBlackColor,
-                    textAlign: 'right',
-                    marginTop: 10,
+                  onPress={() => setSettingPopup(false)}
+                  style={styles.cancelText}>
+                  Cancel
+                </Text>
+                <Text style={styles.locationText}>Filter</Text>
+                <Text
+                  style={styles.doneText}
+                  onPress={() => {
+                    setSettingPopup(false);
+                    setTimeout(() => {
+                      const tempFilter = { ...filters };
+                      tempFilter.sport = selectedSport;
+                      tempFilter.location = location;
+
+                      if (fromDate) {
+                        tempFilter.fromDate = moment(fromDate).format(
+                          'MM/DD/YYYY hh:mm a',
+                        );
+                      } else {
+                        delete tempFilter.fromDate;
+                      }
+                      if (toDate) {
+                        tempFilter.toDate = moment(toDate).format(
+                          'MM/DD/YYYY hh:mm a',
+                        );
+                      } else {
+                        delete tempFilter.toDate;
+                      }
+                      setFilters({
+                        ...tempFilter,
+                      });
+
+                      setPageFrom(0);
+                      setRecentMatch([]);
+                      applyFilter(tempFilter);
+                    }, 10);
+                    console.log('DONE::');
                   }}>
-                  Time zone{' '}
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontFamily: fonts.RRegular,
-                      color: colors.lightBlackColor,
-                      textDecorationLine: 'underline',
-                    }}>
-                    Vancouver
-                  </Text>
+                  {'Apply'}
                 </Text>
               </View>
-            </View>
-          </View>
-          <View style={{ flex: 1 }} />
+              <TCThinDivider width={'100%'} marginBottom={15} />
+              <View>
+                <View style={{ flexDirection: 'column', margin: 15 }}>
+                  <View>
+                    <Text style={styles.filterTitle}>Location</Text>
+                  </View>
+                  <View style={{ marginTop: 10, marginLeft: 10 }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginBottom: 10,
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.filterTitle}>World</Text>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setLocationFilterOpetion(0);
+                          setLocation('world');
+                          // setFilters({
+                          //   ...filters,
+                          //   location: 'world',
+                          // });
+                        }}>
+                        <Image
+                          source={
+                            locationFilterOpetion === 0
+                              ? images.checkRoundOrange
+                              : images.radioUnselect
+                          }
+                          style={styles.radioButtonStyle}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginBottom: 10,
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.filterTitle}>Home City</Text>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setLocationFilterOpetion(1);
+                          setLocation(
+                            authContext?.entity?.obj?.city
+                              .charAt(0)
+                              .toUpperCase()
+                              + authContext?.entity?.obj?.city.slice(1),
+                          );
+                          // setFilters({
+                          //   ...filters,
+                          //   location:
+                          //     authContext?.entity?.obj?.city
+                          //       .charAt(0)
+                          //       .toUpperCase()
+                          //     + authContext?.entity?.obj?.city.slice(1),
+                          // });
+                        }}>
+                        <Image
+                          source={
+                            locationFilterOpetion === 1
+                              ? images.checkRoundOrange
+                              : images.radioUnselect
+                          }
+                          style={styles.radioButtonStyle}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginBottom: 10,
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.filterTitle}>Current City</Text>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setLocationFilterOpetion(2);
+                          getLocation();
+                        }}>
+                        <Image
+                          source={
+                            locationFilterOpetion === 2
+                              ? images.checkRoundOrange
+                              : images.radioUnselect
+                          }
+                          style={styles.radioButtonStyle}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        setLocationFilterOpetion(3);
+                        setSettingPopup(false);
+                        navigation.navigate('SearchCityScreen', {
+                          comeFrom: 'RecentMatchScreen',
+                        });
+                      }}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}>
+                        {/* <TCSearchCityView
+                     getCity={(value) => {
+                       console.log('Value:=>', value);
+                       setSelectedCity(value);
+                     }}
+                     // value={selectedCity}
+                   /> */}
+
+                        <View style={styles.searchCityContainer}>
+                          <Text style={styles.searchCityText}>
+                            {route?.params?.locationText || 'Search City'}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            alignSelf: 'center',
+                          }}>
+                          <Image
+                            source={
+                              locationFilterOpetion === 3
+                                ? images.checkRoundOrange
+                                : images.radioUnselect
+                            }
+                            style={styles.radioButtonStyle}
+                          />
+                        </View>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  </View>
+                </View>
+                <View>
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      margin: 15,
+                      justifyContent: 'space-between',
+                    }}>
+                    <View style={{}}>
+                      <Text style={styles.filterTitle}>Sport</Text>
+                    </View>
+                    <View style={{ marginTop: 10 }}>
+                      <TCPicker
+                        dataSource={sports}
+                        placeholder={'Select Sport'}
+                        onValueChange={(value) => {
+                          setSelectedSport(value);
+                          // setFilters({
+                          //   ...filters,
+                          //   sport: value,
+                          // });
+                        }}
+                        value={selectedSport}
+                      />
+                    </View>
+                  </View>
+                </View>
+                <View style={{ flexDirection: 'column', margin: 15 }}>
+                  <View>
+                    <Text style={styles.filterTitle}>Time</Text>
+                  </View>
+                  <View style={{ marginTop: 10 }}>
+                    <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+                      <View style={styles.fieldView}>
+                        <View
+                          style={{
+                            height: 35,
+                            justifyContent: 'center',
+                          }}>
+                          <Text style={styles.fieldTitle} numberOfLines={1}>
+                            From
+                          </Text>
+                        </View>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setDatePickerFor('from');
+                            setShowFrom(!showFrom);
+                          }}
+                          style={{ marginRight: 15, flexDirection: 'row' }}>
+                          <Text style={styles.fieldValue} numberOfLines={1}>
+                            {fromDate
+                              ? `${moment(fromDate).format(
+                                  'MMM DD, YYYY',
+                                )}      ${moment(fromDate).format('h:mm a')}`
+                              : 'Select Date'}
+                          </Text>
+                        </TouchableOpacity>
+                        {fromDate && (
+                          <TouchableOpacity
+                            onPress={() => {
+                              setFromDate();
+                            }}>
+                            <Image
+                              source={images.menuClose}
+                              style={{ height: 10, width: 10, marginRight: 15 }}
+                            />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+                    <View style={{ flexDirection: 'row' }}>
+                      <View style={styles.fieldView}>
+                        <View
+                          style={{
+                            height: 35,
+                            justifyContent: 'center',
+                          }}>
+                          <Text style={styles.fieldTitle} numberOfLines={1}>
+                            To
+                          </Text>
+                        </View>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setDatePickerFor('to');
+                            setShowTo(!showTo);
+                          }}
+                          style={{ marginRight: 15, flexDirection: 'row' }}>
+                          <Text style={styles.fieldValue} numberOfLines={1}>
+                            {toDate
+                              ? `${moment(toDate).format(
+                                  'MMM DD, YYYY',
+                                )}      ${moment(toDate).format('h:mm a')}`
+                              : 'Select Date'}
+                          </Text>
+                        </TouchableOpacity>
+                        {toDate && (
+                          <TouchableOpacity
+                            onPress={() => {
+                              setToDate();
+                            }}>
+                            <Image
+                              source={images.menuClose}
+                              style={{ height: 10, width: 10, marginRight: 15 }}
+                            />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontFamily: fonts.RLight,
+                        color: colors.lightBlackColor,
+                        textAlign: 'right',
+                        marginTop: 10,
+                      }}>
+                      Time zone{' '}
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontFamily: fonts.RRegular,
+                          color: colors.lightBlackColor,
+                          textDecorationLine: 'underline',
+                        }}>
+                        Vancouver
+                      </Text>
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              {/* Rate View */}
+              {/* <View>
+             <View
+               style={{
+                 flexDirection: 'row',
+                 margin: 15,
+                 marginTop: 0,
+                 justifyContent: 'space-between',
+               }}>
+               <View style={{ flex: 0.2 }}>
+                 <Text style={styles.filterTitle}>Rating</Text>
+               </View>
+               <View
+                 style={{
+                   marginLeft: 15,
+                   flex: 0.6,
+                   alignSelf: 'flex-end',
+                 }}>
+                 <View
+                   style={{
+                     flexDirection: 'row',
+                     marginBottom: 10,
+                     alignItems: 'center',
+                     justifyContent: 'space-between',
+                   }}>
+                   <Text style={styles.minMaxTitle}>Min</Text>
+                   <AirbnbRating
+                     count={5}
+                     fractions={1}
+                     showRating={false}
+                     defaultRating={0}
+                     size={20}
+                     isDisabled={false}
+                     selectedColor={'#f49c20'}
+                   />
+                   <Text style={styles.starCount}>2.0</Text>
+                 </View>
+                 <View
+                   style={{
+                     flexDirection: 'row',
+                     alignItems: 'center',
+                     justifyContent: 'space-between',
+                   }}>
+                   <Text style={styles.minMaxTitle}>Max</Text>
+                   <AirbnbRating
+                     count={5}
+                     fractions={1}
+                     showRating={false}
+                     defaultRating={0}
+                     size={20}
+                     isDisabled={false}
+                     selectedColor={'#f49c20'}
+                   />
+                   <Text style={styles.starCount}>2.0</Text>
+                 </View>
+               </View>
+             </View>
+
+           </View> */}
+              {/* Rate View */}
+
+              <View
+                style={{
+                  flexDirection: 'column',
+                  margin: 15,
+                  justifyContent: 'space-between',
+                }}>
+                <View style={{}}>
+                  <Text style={styles.filterTitle}>Team</Text>
+                </View>
+                <View style={{ marginTop: 10 }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <TextInput
+                      onChangeText={(text) => setTeamName(text)}
+                      value={teamName}
+                      style={styles.teamNameTextView}
+                      placeholder={'Team name'}
+                      autoCorrect={false}
+                      // clearButtonMode={'always'}
+                      keyboardType={'numeric'}
+                      placeholderTextColor={colors.userPostTimeColor}
+                    />
+                  </View>
+                </View>
+              </View>
+
+              <View style={{ flex: 1 }} />
+            </ScrollView>
+          </KeyboardAvoidingView>
+
           <TouchableOpacity style={styles.resetButton} onPress={() => {}}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>
         <DateTimePickerView
-          title={'Choose a Date & Time'}
-          date={new Date(from)}
-          visible={fromPickerVisible}
-          onDone={onFromDone}
+          date={ fromDate}
+          visible={showFrom}
+          onDone={handleDonePress}
           onCancel={handleCancelPress}
           onHide={handleCancelPress}
-
-           maximumDate={new Date()}
-          // minutesGap={5}
+          maximumDate={toDate || new Date()}
+          // minutesGap={30}
           mode={'datetime'}
-          style={{ zIndex: 100 }}
         />
         <DateTimePickerView
-          title={'Choose a Date & Time'}
-          date={new Date(to)}
-          visible={toPickerVisible}
-          onDone={onToDone}
+          date={ toDate}
+          visible={showTo}
+          onDone={handleDonePress}
           onCancel={handleCancelPress}
           onHide={handleCancelPress}
-            minimumDate={new Date(from)}
-           maximumDate={new Date()}
-          // minutesGap={5}
+          minimumDate={fromDate || null}
+          maximumDate={new Date()}
+          // minutesGap={30}
           mode={'datetime'}
         />
-      </Modal>
-
-      {/* Sports modal */}
-      <Modal
-        isVisible={visibleSportsModal}
-        backdropColor="black"
-        onBackdropPress={() => setVisibleSportsModal(false)}
-        onRequestClose={() => setVisibleSportsModal(false)}
-        backdropOpacity={0}
-        style={{
-          margin: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              Sports
-            </Text>
-
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-                color: colors.themeColor,
-              }}></Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={route?.params?.sports}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderSports}
-          />
-        </View>
       </Modal>
     </View>
   );
 }
 const styles = StyleSheet.create({
-  arrowStyle: {
-    height: 8.5,
-    width: 15,
-    resizeMode: 'contain',
-    // alignSelf: 'flex-end',
+  listStyle: {
+    padding: 15,
   },
+
   searchViewContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     height: 40,
-    width: widthPercentageToDP('85%'),
+    width: widthPercentageToDP('92%'),
     borderRadius: 20,
-    shadowColor: colors.googleColor,
+    shadowColor: colors.grayColor,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
     backgroundColor: colors.offwhite,
-    padding: 10,
-    paddingLeft: 15,
-    paddingRight: 15,
   },
   settingImage: {
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
+    height: 20,
+    width: 20,
+    resizeMode: 'cover',
     alignSelf: 'center',
+    marginRight: 15,
   },
   searchView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    margin: 15,
-  },
-  fieldView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flex: 1,
-    height: 40,
-    alignItems: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
-    elevation: 1,
-  },
-  fieldTitle: {
-    fontSize: 16,
-    color: colors.userPostTimeColor,
-    fontFamily: fonts.RLight,
-    marginLeft: 10,
-  },
-  fieldValue: {
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    textAlign: 'center',
-  },
-  resetButton: {
-    alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 5,
-    elevation: 5,
-    flexDirection: 'row',
-    height: 30,
-    width: 113,
-    shadowOpacity: 0.16,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
-    shadowRadius: 5,
-
+    backgroundColor: colors.grayBackgroundColor,
+    height: 55,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 15,
-  },
-  resetTitle: {
-    fontSize: 12,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    alignSelf: 'center',
-    // margin: 15,
   },
 
   radioButtonStyle: {
@@ -690,7 +868,6 @@ const styles = StyleSheet.create({
     width: 22,
     resizeMode: 'cover',
     alignSelf: 'center',
-    marginRight: 15,
   },
 
   filterTitle: {
@@ -698,6 +875,18 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
+  // minMaxTitle: {
+  //   fontSize: 16,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.userPostTimeColor,
+  //   marginRight: 15,
+  // },
+  // starCount: {
+  //   fontSize: 16,
+  //   fontFamily: fonts.RMedium,
+  //   color: colors.themeColor,
+  //   marginLeft: 15,
+  // },
   bottomPopupContainer: {
     flex: 1,
     paddingBottom: Platform.OS === 'ios' ? 34 : 0,
@@ -720,6 +909,7 @@ const styles = StyleSheet.create({
       },
     }),
   },
+
   doneText: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
@@ -743,62 +933,97 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-  // sectionHeader: {
-  //   fontSize: 20,
-  //   fontFamily: fonts.RRegular,
-  //   color: colors.lightBlackColor,
-  //   marginLeft: 15,
-  //   marginBottom: 8,
-  //   marginTop: 8,
-  // },
-  // headerLeftImg: {
-  //   tintColor: colors.lightBlackColor,
-  //   height: 22,
-  //   marginLeft: 15,
-  //   resizeMode: 'contain',
-  //   width: 12,
-  // },
-
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    marginLeft: 5,
-    resizeMode: 'contain',
-  },
-
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-  },
-  checkboxImg: {
-    width: 22,
-    height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-
-  textContainer: {
+  fieldView: {
     flexDirection: 'row',
-    alignSelf: 'stretch',
-    alignContent: 'center',
-    marginHorizontal: 15,
+    justifyContent: 'space-between',
+    flex: 1,
+    height: 40,
+    alignItems: 'center',
     backgroundColor: colors.offwhite,
-    borderRadius: 2,
+    borderRadius: 5,
     shadowColor: colors.grayColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
     shadowRadius: 1,
     elevation: 1,
-    flex: 1,
   },
-  textInput: {
-    height: '100%',
-    flex: 1,
+  fieldTitle: {
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RLight,
+    marginLeft: 10,
+    width: 100,
+  },
+  fieldValue: {
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    textAlign: 'right',
+  },
+  resetButton: {
+    alignSelf: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 5,
+    elevation: 5,
+    height: 30,
+    width: 113,
+    shadowOpacity: 0.16,
+    flexDirection: 'row',
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+  resetTitle: {
+    fontSize: 12,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+    // margin: 15,
+  },
+
+  searchCityContainer: {
+    backgroundColor: colors.offwhite,
+    borderRadius: 5,
+    height: 40,
+    paddingLeft: 15,
+    paddingRight: 15,
+    width: widthPercentageToDP('75%'),
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+    justifyContent: 'center',
+  },
+
+  searchCityText: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    paddingHorizontal: 10,
+    color: colors.lightBlackColor,
+  },
+  searchTxt: {
+    marginLeft: 15,
+    fontSize: widthPercentageToDP('3.8%'),
+    width: widthPercentageToDP('75%'),
+  },
+  teamNameTextView: {
+    backgroundColor: colors.offwhite,
+    borderRadius: 5,
+    height: 40,
+    paddingLeft: 15,
+    paddingRight: 15,
+    width: widthPercentageToDP('92%'),
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+    justifyContent: 'center',
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
 });

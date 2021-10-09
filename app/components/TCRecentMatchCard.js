@@ -140,9 +140,9 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
               </View>
             )}
 
-            <Text style={styles.scoreView}>{data?.home_team_goal}</Text>
+            <Text style={styles.scoreView}>{data?.home_team_goal ?? 0}</Text>
             <Text style={styles.vsView}>:</Text>
-            <Text style={styles.scoreView}>{data?.away_team_goal}</Text>
+            <Text style={styles.scoreView}>{data?.away_team_goal ?? 0}</Text>
 
             {data?.userChallenge || data?.user_challenge ? (
               <View style={styles.rightGameView}>

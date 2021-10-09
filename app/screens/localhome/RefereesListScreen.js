@@ -1,5 +1,6 @@
+/* eslint-disable array-callback-return */
 import React, {
- useCallback, useState, useEffect, useLayoutEffect,
+ useCallback, useState, useEffect, useContext,
  } from 'react';
 import {
   View,
@@ -12,100 +13,140 @@ import {
   Platform,
   Dimensions,
   Alert,
+  TextInput,
+  KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 
-// import AuthContext from '../../auth/context';
-
 import Modal from 'react-native-modal';
 import moment from 'moment';
-import { AirbnbRating } from 'react-native-ratings';
-import RNPickerSelect from 'react-native-picker-select';
-import bodybuilder from 'bodybuilder';
-import TCEntityView from '../../components/TCEntityView';
+import Geolocation from '@react-native-community/geolocation';
+import AuthContext from '../../auth/context';
+
+import { getLocationNameWithLatLong } from '../../api/External';
+import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import { getHitSlop, widthPercentageToDP } from '../../utils';
+import { widthPercentageToDP } from '../../utils';
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
-import TCTextField from '../../components/TCTextField';
 
 import strings from '../../Constants/String';
 import { getUserIndex } from '../../api/elasticSearch';
+import TCRefereeView from '../../components/TCRefereeView';
+import TCTagsFilter from '../../components/TCTagsFilter';
+import TCPicker from '../../components/TCPicker';
 
 let stopFetchMore = true;
+const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function RefereesListScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
+  const authContext = useContext(AuthContext);
+  const [filters, setFilters] = useState(route?.params?.filters);
+
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
-  const [location] = useState(route?.params?.location);
+
+  const [sports, setSports] = useState([]);
 
   const [datePickerFor, setDatePickerFor] = useState();
   const [show, setShow] = useState(false);
   const [fromDate, setFromDate] = useState();
   const [toDate, setToDate] = useState();
-  const [minAge, setMinAge] = useState(0);
-  const [maxAge, setMaxAge] = useState(0);
-  const [minAgeValue, setMinAgeValue] = React.useState([]);
-  const [maxAgeValue, setMaxAgeValue] = React.useState([]);
+  const [minFee, setMinFee] = useState(0);
+  const [maxFee, setMaxFee] = useState(0);
   const [referees, setReferees] = useState([]);
-  const [pageSize] = useState(1);
+  const [pageSize] = useState(10);
   const [pageFrom, setPageFrom] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
-  // const authContext = useContext(AuthContext);
-  const { sport } = route?.params ?? {};
+  const [searchData, setSearchData] = useState();
+  const [selectedSport, setSelectedSport] = useState(route?.params?.filters.sport);
+  const [location, setLocation] = useState(route?.params?.filters.location);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableWithoutFeedback
-          onPress={() => {
-            navigation.goBack();
-          }}
-          hitSlop={getHitSlop(15)}>
-          <Image source={images.navigationBack} style={styles.headerLeftImg} />
-        </TouchableWithoutFeedback>
-      ),
-    });
-  }, [navigation]);
+  const { sportsList } = route?.params ?? {};
 
-  const getReferees = () => {
-    const locationFilter = bodybuilder()
-      .filter('multi_match', {
-        query: location,
-        fields: ['city', 'country', 'state'],
-      })
-      .build();
-    // Referee query
-    const refefreeList = bodybuilder()
-      .filter('term', 'referee_data.sport_name.keyword', {
-        value: sport.toLowerCase(),
-        case_insensitive: true,
-      })
-      .filter('term', 'referee_data.is_published', {
-        value: true,
-      })
-      .build();
+  console.log('Referee Filter:=>', filters);
 
-    let refereeFilter = {
-      ...refefreeList.query.bool,
-    };
-
-    if (location !== 'world') {
-      refereeFilter = {
-        ...locationFilter.query.bool,
+  useEffect(() => {
+    if (route?.params?.locationText) {
+      setSettingPopup(true);
+      setTimeout(() => {
+        setLocation(route?.params?.locationText);
+        // setFilters({
+        //   ...filters,
+        //   location: route?.params?.locationText,
+        // });
+      }, 10);
+      // navigation.setParams({ locationText: null });
+    }
+  }, [route?.params?.locationText]);
+  useEffect(() => {
+    const list = [];
+    sportsList.map((obj) => {
+      const dataSource = {
+        label: obj.sport_name,
+        value: obj.sport_name,
       };
+      list.push(dataSource);
+    });
+
+    setSports(list);
+  }, [sportsList]);
+
+  const getReferees = useCallback((filerReferee) => {
+    const refereeQuery = {
+      size: pageSize,
+      from: pageFrom,
+      query: {
+        bool: {
+          must: [{ term: { 'referee_data.is_published': true } }],
+        },
+      },
+    };
+    if (filerReferee.location !== 'world') {
+      refereeQuery.query.bool.must.push({
+        multi_match: {
+          query: `${filerReferee.location.toLowerCase()}`,
+          fields: ['city', 'country', 'state'],
+        },
+      });
+    }
+    if (filerReferee.sport !== 'All') {
+      refereeQuery.query.bool.must.push({
+        term: {
+          'referee_data.sport_name.keyword': {
+            value: `${filerReferee.sport.toLowerCase()}`,
+            case_insensitive: true,
+          },
+        },
+      });
+    }
+    if (filerReferee.refereeFee) {
+      refereeQuery.query.bool.must.push({
+        range: {
+          'referee_data.setting.game_fee.fee': {
+            gte: Number(filerReferee.refereeFee.split('-')[0]),
+            lte: Number(filerReferee.refereeFee.split('-')[1]),
+             boost: 2.0,
+          },
+        },
+      });
     }
 
-    const refereeQuery = bodybuilder()
-      .size(pageSize)
-      .from(pageFrom)
-      .andFilter('bool', refereeFilter)
-      .build();
+    if (filerReferee.location !== 'world') {
+      refereeQuery.query.bool.must.push({
+        multi_match: {
+          query: `${filerReferee.location.toLowerCase()}`,
+          fields: ['city', 'country', 'state'],
+        },
+      });
+    }
+    console.log('refereeQuery:=>', JSON.stringify(refereeQuery));
 
     // Referee query
 
@@ -114,6 +155,7 @@ export default function RefereesListScreen({ navigation, route }) {
         if (res.length > 0) {
           const fetchedData = [...referees, ...res];
           setReferees(fetchedData);
+          setSearchData(fetchedData);
           setPageFrom(pageFrom + pageSize);
           stopFetchMore = true;
         }
@@ -123,53 +165,25 @@ export default function RefereesListScreen({ navigation, route }) {
           Alert.alert(strings.alertmessagetitle, e);
         }, 10);
       });
-  };
+  }, [pageFrom, pageSize, referees]);
 
   useEffect(() => {
-    getReferees();
+    getReferees(filters);
   }, []);
-
-  useEffect(() => {
-    const minAgeArray = [];
-    let maxAgeArray = [];
-    for (let i = 1; i <= 70; i++) {
-      const dataSource = {
-        label: `${i}`,
-        value: i,
-      };
-      minAgeArray.push(dataSource);
-    }
-    for (let i = minAge; i <= 70; i++) {
-      const dataSource = {
-        label: `${i}`,
-        value: i,
-      };
-      maxAgeArray.push(dataSource);
-    }
-    setMinAgeValue(minAgeArray);
-    setMaxAgeValue(maxAgeArray);
-    if (minAge === 0 || minAge === null) {
-      setMaxAge((maxAgeArray = []));
-    }
-  }, [minAge]);
 
   const renderRefereesScorekeeperListView = useCallback(
     ({ item }) => (
-      <View style={[styles.separator, { flex: 1 / 4, alignItems: 'center' }]}>
-        <TCEntityView data={item} showStar={true} />
+      <View style={[styles.separator, { flex: 1 }]}>
+        <TCRefereeView data={item} showStar={true} sport={selectedSport} />
       </View>
     ),
-    [],
+    [selectedSport],
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   const renderSeparator = () => (
-    <View
-      style={{
-        height: 10,
-      }}
-    />
+    <TCThinDivider marginTop={10} marginBottom={10} width={'100%'} />
   );
 
   const handleDonePress = (date) => {
@@ -179,7 +193,6 @@ export default function RefereesListScreen({ navigation, route }) {
       setToDate(new Date(date));
     }
     setShow(!show);
-    console.log('Date:=', date);
   };
   const handleCancelPress = () => {
     setShow(false);
@@ -188,35 +201,156 @@ export default function RefereesListScreen({ navigation, route }) {
   const onScrollHandler = () => {
     setLoadMore(true);
     if (!stopFetchMore) {
-      getReferees();
+      getReferees(filters);
       stopFetchMore = true;
     }
     setLoadMore(false);
   };
+  const handleTagPress = ({ item }) => {
+    const tempFilter = filters;
+    Object.keys(tempFilter).forEach((key) => {
+      if (key === Object.keys(item)[0]) {
+        if (Object.keys(item)[0] === 'sport') {
+          tempFilter.sport = 'All';
+        }
+        if (Object.keys(item)[0] === 'location') {
+          tempFilter.location = 'world';
+        }
+        if (Object.keys(item)[0] === 'refereeFee') {
+          delete tempFilter[key];
+        }
+
+        // delete tempFilter[key];
+      }
+    });
+    console.log('Temp filter', tempFilter);
+    setFilters({ ...tempFilter });
+    // applyFilter();
+    setTimeout(() => {
+      setPageFrom(0);
+      setReferees([]);
+      applyFilter(tempFilter);
+    }, 10);
+  };
+
+  const getLocation = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        console.log('Lat/long to position::=>', position);
+        // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
+        getLocationNameWithLatLong(
+          position.coords.latitude,
+          position.coords.longitude,
+          authContext,
+        ).then((res) => {
+          console.log(
+            'Lat/long to address::=>',
+            res.results[0].address_components,
+          );
+          let city;
+          res.results[0].address_components.map((e) => {
+            if (e.types.includes('administrative_area_level_2')) {
+              city = e.short_name;
+            }
+          });
+          console.log(
+            'Location:=>',
+            city.charAt(0).toUpperCase() + city.slice(1),
+          );
+          setLocation(city.charAt(0).toUpperCase() + city.slice(1));
+          // setFilters({
+          //   ...filters,
+          //   location: city.charAt(0).toUpperCase() + city.slice(1),
+          // });
+        });
+        console.log(position.coords.latitude);
+      },
+      (error) => {
+        // See error code charts below.
+        console.log(error.code, error.message);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+    );
+  };
+
+  const applyFilter = useCallback((fil) => {
+    getReferees(fil);
+  }, []);
+
+  const applyValidation = useCallback(() => {
+    if (Number(minFee) > 0 && Number(maxFee) <= 0) {
+     Alert.alert('Please enter correct referee max fee.')
+     return false;
+   }
+   if (Number(minFee) <= 0 && Number(maxFee) > 0) {
+     Alert.alert('Please enter correct referee min fee.')
+     return false;
+   }
+   if (Number(minFee) > Number(maxFee)) {
+     Alert.alert('Please enter correct referee fee.')
+     return false;
+   }
+   return true
+ }, [maxFee, minFee])
+  const listEmptyComponent = () => (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text
+        style={{
+          fontFamily: fonts.RRegular,
+          color: colors.grayColor,
+          fontSize: 26,
+        }}>
+        No Referees
+      </Text>
+    </View>
+  );
+  const searchFilterFunction = (text) => {
+    const result = referees.filter(
+      (x) => x.full_name.toLowerCase().includes(text.toLowerCase())
+        || x.city.toLowerCase().includes(text.toLowerCase()),
+    );
+    if (text.length > 0) {
+      setReferees(result);
+    } else {
+      setReferees(searchData);
+    }
+  };
   return (
-    <View style={{ flex: 1 }}>
+    <View>
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
-          <Image source={images.arrowDown} style={styles.arrowStyle} />
+          <TextInput
+            placeholder={strings.searchText}
+            style={styles.searchTxt}
+            onChangeText={(text) => {
+              searchFilterFunction(text)
+            }}
+            // value={search}
+          />
+          <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
+            <Image source={images.homeSetting} style={styles.settingImage} />
+          </TouchableWithoutFeedback>
         </View>
-        <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
-          <Image source={images.homeSetting} style={styles.settingImage} />
-        </TouchableWithoutFeedback>
       </View>
+      <TCTagsFilter
+        dataSource={Utility.getFiltersOpetions(filters)}
+        onTagCancelPress={handleTagPress}
+      />
       <FlatList
-        numColumns={4}
+        extraData={referees}
         showsHorizontalScrollIndicator={false}
         data={referees}
         ItemSeparatorComponent={renderSeparator}
         keyExtractor={keyExtractor}
         renderItem={renderRefereesScorekeeperListView}
         style={styles.listStyle}
-        contentContainerStyle={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 1 }}
         onEndReached={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
           stopFetchMore = false;
         }}
+        ListEmptyComponent={listEmptyComponent}
       />
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
@@ -234,146 +368,285 @@ export default function RefereesListScreen({ navigation, route }) {
             styles.bottomPopupContainer,
             { height: Dimensions.get('window').height - 100 },
           ]}>
-          <View style={styles.viewsContainer}>
-            <Text
-              onPress={() => setSettingPopup(false)}
-              style={styles.cancelText}>
-              Cancel
-            </Text>
-            <Text style={styles.locationText}>Filter</Text>
-            <Text
-              style={styles.doneText}
-              onPress={() => {
-                setSettingPopup(false);
-                console.log('DONE::');
-              }}>
-              {'Apply'}
-            </Text>
-          </View>
-          <TCThinDivider width={'100%'} marginBottom={15} />
-          <View>
-            <View style={{ flexDirection: 'row', margin: 15 }}>
-              <View style={{ flex: 0.2 }}>
-                <Text style={styles.filterTitle}>Location</Text>
-              </View>
-              <View style={{ marginLeft: 15, flex: 0.8 }}>
-                <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                  <TouchableWithoutFeedback
-                    onPress={() => setLocationFilterOpetion(0)}>
-                    <Image
-                      source={
-                        locationFilterOpetion === 0
-                          ? images.checkRoundOrange
-                          : images.radioUnselect
-                      }
-                      style={styles.radioButtonStyle}
-                    />
-                  </TouchableWithoutFeedback>
-
-                  <Text style={styles.filterTitle}>World</Text>
-                </View>
-                <View style={{ flexDirection: 'row' }}>
-                  <TouchableWithoutFeedback
-                    onPress={() => setLocationFilterOpetion(1)}
-                    style={{ alignSelf: 'center' }}>
-                    <Image
-                      source={
-                        locationFilterOpetion === 1
-                          ? images.checkRoundOrange
-                          : images.radioUnselect
-                      }
-                      style={styles.radioButtonStyle}
-                    />
-                  </TouchableWithoutFeedback>
-                  <TCTextField
-                    style={{ marginLeft: 0, marginRight: 0 }}
-                    textStyle={styles.fieldTitle}
-                    placeholder={'Country, State or City '}
-                  />
-                </View>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'row', margin: 15 }}>
-              <View style={{ flex: 0.2 }}>
-                <Text style={styles.filterTitle}>Time</Text>
-              </View>
-              <View style={{ marginLeft: 15, flex: 0.8 }}>
-                <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                  <TouchableOpacity
-                    style={styles.fieldView}
-                    onPress={() => {
-                      setDatePickerFor('from');
-                      setShow(!show);
-                    }}>
-                    <View
-                      style={{
-                        height: 35,
-                        justifyContent: 'center',
-                      }}>
-                      <Text style={styles.fieldTitle} numberOfLines={1}>
-                        From
-                      </Text>
-                    </View>
-                    <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                      <Text style={styles.fieldValue} numberOfLines={1}>
-                        {moment(fromDate).format('MMM DD, YYYY')} {'   '}
-                      </Text>
-                      <Text style={styles.fieldValue} numberOfLines={1}>
-                        {moment(fromDate).format('h:mm a')}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-                <View style={{ flexDirection: 'row' }}>
-                  <TouchableOpacity
-                    style={styles.fieldView}
-                    onPress={() => {
-                      setDatePickerFor('to');
-                      setShow(!show);
-                    }}>
-                    <View
-                      style={{
-                        height: 35,
-                        justifyContent: 'center',
-                      }}>
-                      <Text style={styles.fieldTitle} numberOfLines={1}>
-                        To
-                      </Text>
-                    </View>
-                    <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                      <Text style={styles.fieldValue} numberOfLines={1}>
-                        {moment(toDate).format('MMM DD, YYYY')} {'   '}
-                      </Text>
-                      <Text style={styles.fieldValue} numberOfLines={1}>
-                        {moment(toDate).format('h:mm a')}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            keyboardVerticalOffset={keyboardVerticalOffset}
+            behavior={Platform.OS === 'ios' ? 'padding' : null}>
+            <ScrollView style={{ flex: 1 }}>
+              <View style={styles.viewsContainer}>
                 <Text
-                  style={{
-                    fontSize: 12,
-                    fontFamily: fonts.RLight,
-                    color: colors.lightBlackColor,
-                    textAlign: 'right',
-                    marginTop: 10,
+                  onPress={() => setSettingPopup(false)}
+                  style={styles.cancelText}>
+                  Cancel
+                </Text>
+                <Text style={styles.locationText}>Filter</Text>
+                <Text
+                  style={styles.doneText}
+                  onPress={() => {
+                    if (applyValidation()) {
+                      setSettingPopup(false);
+                      setTimeout(() => {
+                        const tempFilter = { ...filters }
+                        tempFilter.sport = selectedSport;
+                        tempFilter.location = location;
+
+                        if (minFee && maxFee) {
+                          tempFilter.refereeFee = `${minFee}-${maxFee}`;
+                        }
+                        setFilters({
+                          ...tempFilter,
+                        })
+                        setPageFrom(0);
+                        setReferees([]);
+                        applyFilter(tempFilter);
+                      }, 10);
+                      console.log('DONE::');
+                    }
                   }}>
-                  Time zone{' '}
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontFamily: fonts.RRegular,
-                      color: colors.lightBlackColor,
-                      textDecorationLine: 'underline',
-                    }}>
-                    Vancouver
-                  </Text>
+                  {'Apply'}
                 </Text>
               </View>
-            </View>
-          </View>
-          {/* Rate View */}
-          <View>
+              <TCThinDivider width={'100%'} marginBottom={15} />
+              <View>
+                <View style={{ flexDirection: 'column', margin: 15 }}>
+                  <View>
+                    <Text style={styles.filterTitle}>Location</Text>
+                  </View>
+                  <View style={{ marginTop: 10, marginLeft: 10 }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginBottom: 10,
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.filterTitle}>World</Text>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setLocationFilterOpetion(0);
+                          setLocation('world');
+                          // setFilters({
+                          //   ...filters,
+                          //   location: 'world',
+                          // });
+                        }}>
+                        <Image
+                          source={
+                            locationFilterOpetion === 0
+                              ? images.checkRoundOrange
+                              : images.radioUnselect
+                          }
+                          style={styles.radioButtonStyle}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginBottom: 10,
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.filterTitle}>Home City</Text>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setLocationFilterOpetion(1);
+                          setLocation(
+                            authContext?.entity?.obj?.city
+                              .charAt(0)
+                              .toUpperCase()
+                              + authContext?.entity?.obj?.city.slice(1),
+                          );
+                          // setFilters({
+                          //   ...filters,
+                          //   location:
+                          //     authContext?.entity?.obj?.city
+                          //       .charAt(0)
+                          //       .toUpperCase()
+                          //     + authContext?.entity?.obj?.city.slice(1),
+                          // });
+                        }}>
+                        <Image
+                          source={
+                            locationFilterOpetion === 1
+                              ? images.checkRoundOrange
+                              : images.radioUnselect
+                          }
+                          style={styles.radioButtonStyle}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginBottom: 10,
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.filterTitle}>Current City</Text>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          setLocationFilterOpetion(2);
+                          getLocation();
+                        }}>
+                        <Image
+                          source={
+                            locationFilterOpetion === 2
+                              ? images.checkRoundOrange
+                              : images.radioUnselect
+                          }
+                          style={styles.radioButtonStyle}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        setLocationFilterOpetion(3);
+                        setSettingPopup(false);
+                        navigation.navigate('SearchCityScreen', {
+                          comeFrom: 'RefereesListScreen',
+                        });
+                      }}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}>
+                        {/* <TCSearchCityView
+                    getCity={(value) => {
+                      console.log('Value:=>', value);
+                      setSelectedCity(value);
+                    }}
+                    // value={selectedCity}
+                  /> */}
+
+                        <View style={styles.searchCityContainer}>
+                          <Text style={styles.searchCityText}>
+                            {route?.params?.locationText || 'Search City'}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            alignSelf: 'center',
+                          }}>
+                          <Image
+                            source={
+                              locationFilterOpetion === 3
+                                ? images.checkRoundOrange
+                                : images.radioUnselect
+                            }
+                            style={styles.radioButtonStyle}
+                          />
+                        </View>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  </View>
+                </View>
+                <View>
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      margin: 15,
+                      justifyContent: 'space-between',
+                    }}>
+                    <View style={{}}>
+                      <Text style={styles.filterTitle}>Sport</Text>
+                    </View>
+                    <View style={{ marginTop: 10 }}>
+                      <TCPicker
+                        dataSource={sports}
+                        placeholder={'Select Sport'}
+                        onValueChange={(value) => {
+                          setSelectedSport(value);
+                          // setFilters({
+                          //   ...filters,
+                          //   sport: value,
+                          // });
+                        }}
+                        value={selectedSport}
+                      />
+                    </View>
+                  </View>
+                </View>
+                <View style={{ flexDirection: 'column', margin: 15 }}>
+                  <View>
+                    <Text style={styles.filterTitle}>Available Time</Text>
+                  </View>
+                  <View style={{ marginTop: 10 }}>
+                    <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+                      <TouchableOpacity
+                        style={styles.fieldView}
+                        onPress={() => {
+                          setDatePickerFor('from');
+                          setShow(!show);
+                        }}>
+                        <View
+                          style={{
+                            height: 35,
+                            justifyContent: 'center',
+                          }}>
+                          <Text style={styles.fieldTitle} numberOfLines={1}>
+                            From
+                          </Text>
+                        </View>
+                        <View style={{ marginRight: 15, flexDirection: 'row' }}>
+                          <Text style={styles.fieldValue} numberOfLines={1}>
+                            {moment(fromDate).format('MMM DD, YYYY')} {'   '}
+                          </Text>
+                          <Text style={styles.fieldValue} numberOfLines={1}>
+                            {moment(fromDate).format('h:mm a')}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={{ flexDirection: 'row' }}>
+                      <TouchableOpacity
+                        style={styles.fieldView}
+                        onPress={() => {
+                          setDatePickerFor('to');
+                          setShow(!show);
+                        }}>
+                        <View
+                          style={{
+                            height: 35,
+                            justifyContent: 'center',
+                          }}>
+                          <Text style={styles.fieldTitle} numberOfLines={1}>
+                            To
+                          </Text>
+                        </View>
+                        <View style={{ marginRight: 15, flexDirection: 'row' }}>
+                          <Text style={styles.fieldValue} numberOfLines={1}>
+                            {moment(toDate).format('MMM DD, YYYY')} {'   '}
+                          </Text>
+                          <Text style={styles.fieldValue} numberOfLines={1}>
+                            {moment(toDate).format('h:mm a')}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontFamily: fonts.RLight,
+                        color: colors.lightBlackColor,
+                        textAlign: 'right',
+                        marginTop: 10,
+                      }}>
+                      Time zone{' '}
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontFamily: fonts.RRegular,
+                          color: colors.lightBlackColor,
+                          textDecorationLine: 'underline',
+                        }}>
+                        Vancouver
+                      </Text>
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              {/* Rate View */}
+              {/* <View>
             <View
               style={{
                 flexDirection: 'row',
@@ -429,81 +702,56 @@ export default function RefereesListScreen({ navigation, route }) {
                 </View>
               </View>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                margin: 15,
-                justifyContent: 'space-between',
-              }}>
-              <View style={{ flex: 0.2 }}>
-                <Text style={styles.filterTitle}>Referee fee</Text>
-              </View>
-              <View style={{ marginLeft: 15, flex: 0.6 }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    flex: 1,
-                  }}>
-                  <RNPickerSelect
-                    placeholder={{
-                      label: strings.minPlaceholder,
-                      value: 0,
-                    }}
-                    items={minAgeValue}
-                    onValueChange={(value) => {
-                      setMinAge(value);
-                    }}
-                    useNativeAndroidPickerStyle={false}
-                    style={{
-                      ...(Platform.OS === 'ios'
-                        ? styles.inputIOS
-                        : styles.inputAndroid),
-                      ...styles,
-                    }}
-                    value={minAge}
-                    Icon={() => (
-                      <Image
-                        source={images.dropDownArrow}
-                        style={styles.miniDownArrow}
-                      />
-                    )}
-                  />
-                  <RNPickerSelect
-                    placeholder={{
-                      label: strings.maxPlaceholder,
-                      value: 0,
-                    }}
-                    items={maxAgeValue}
-                    onValueChange={(value) => {
-                      setMaxAge(value);
-                    }}
-                    useNativeAndroidPickerStyle={false}
-                    style={{
-                      ...(Platform.OS === 'ios'
-                        ? styles.inputIOS
-                        : styles.inputAndroid),
-                      ...styles,
-                    }}
-                    value={maxAge}
-                    Icon={() => (
-                      <Image
-                        source={images.dropDownArrow}
-                        style={styles.miniDownArrow}
-                      />
-                    )}
-                  />
+
+          </View> */}
+              {/* Rate View */}
+
+              { selectedSport !== 'All' && <View
+                style={{
+                  flexDirection: 'column',
+                  margin: 15,
+                  justifyContent: 'space-between',
+                }}>
+                <View style={{}}>
+                  <Text style={styles.filterTitle}>Referee fee</Text>
                 </View>
-              </View>
-            </View>
-          </View>
-          {/* Rate View */}
-          <View style={{ flex: 1 }} />
+                <View style={{ marginTop: 10 }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <TextInput
+                      onChangeText={(text) => setMinFee(text)}
+                      value={minFee}
+                      style={styles.minFee}
+                      placeholder={'Min'}
+                      autoCorrect={false}
+                      // clearButtonMode={'always'}
+                      keyboardType={'numeric'}
+                      placeholderTextColor={colors.userPostTimeColor}
+                    />
+                    <TextInput
+                      onChangeText={(text) => setMaxFee(text)}
+                      value={maxFee}
+                      style={styles.minFee}
+                      placeholder={'Max'}
+                      autoCorrect={false}
+                      // clearButtonMode={'always'}
+                      keyboardType={'numeric'}
+                      placeholderTextColor={colors.userPostTimeColor}
+                    />
+                  </View>
+                </View>
+              </View>}
+              <View style={{ flex: 1 }} />
+            </ScrollView>
+          </KeyboardAvoidingView>
+
           <TouchableOpacity style={styles.resetButton} onPress={() => {}}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>
-
         <DateTimePickerView
           date={new Date()}
           visible={show}
@@ -518,23 +766,20 @@ export default function RefereesListScreen({ navigation, route }) {
   );
 }
 const styles = StyleSheet.create({
-  listStyle: { marginLeft: 15 },
+  listStyle: {
+    padding: 15,
+  },
 
   separator: {
     borderRightWidth: 20,
     borderColor: colors.whiteColor,
   },
-  arrowStyle: {
-    height: 26,
-    width: 14,
-    resizeMode: 'contain',
-    alignSelf: 'flex-end',
-    marginTop: 8,
-    marginRight: 15,
-  },
+
   searchViewContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     height: 40,
-    width: widthPercentageToDP('85%'),
+    width: widthPercentageToDP('92%'),
     borderRadius: 20,
     shadowColor: colors.grayColor,
     shadowOffset: { width: 0, height: 2 },
@@ -548,11 +793,13 @@ const styles = StyleSheet.create({
     width: 20,
     resizeMode: 'cover',
     alignSelf: 'center',
+    marginRight: 15,
   },
   searchView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    margin: 15,
+    backgroundColor: colors.grayBackgroundColor,
+    height: 55,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   radioButtonStyle: {
@@ -560,7 +807,6 @@ const styles = StyleSheet.create({
     width: 22,
     resizeMode: 'cover',
     alignSelf: 'center',
-    marginRight: 15,
   },
 
   filterTitle: {
@@ -568,18 +814,18 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  minMaxTitle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.userPostTimeColor,
-    marginRight: 15,
-  },
-  starCount: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.themeColor,
-    marginLeft: 15,
-  },
+  // minMaxTitle: {
+  //   fontSize: 16,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.userPostTimeColor,
+  //   marginRight: 15,
+  // },
+  // starCount: {
+  //   fontSize: 16,
+  //   fontFamily: fonts.RMedium,
+  //   color: colors.themeColor,
+  //   marginLeft: 15,
+  // },
   bottomPopupContainer: {
     flex: 1,
     paddingBottom: Platform.OS === 'ios' ? 34 : 0,
@@ -675,57 +921,47 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     // margin: 15,
   },
-  miniDownArrow: {
-    alignSelf: 'center',
-    height: 12,
-    resizeMode: 'contain',
 
-    right: 15,
-    tintColor: colors.grayColor,
-
-    top: 15,
-    width: 12,
-  },
-  inputIOS: {
-    height: 40,
-
-    fontSize: widthPercentageToDP('3.5%'),
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    width: widthPercentageToDP('26%'),
-    color: 'black',
-    paddingRight: 30,
+  searchCityContainer: {
     backgroundColor: colors.offwhite,
-
     borderRadius: 5,
+    height: 40,
+    paddingLeft: 15,
+    paddingRight: 15,
+    width: widthPercentageToDP('75%'),
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.2,
     shadowRadius: 1,
+    elevation: 2,
+    justifyContent: 'center',
   },
-  inputAndroid: {
-    height: 40,
-
-    fontSize: widthPercentageToDP('4%'),
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    width: widthPercentageToDP('26%'),
-    color: 'black',
-    paddingRight: 30,
+  minFee: {
     backgroundColor: colors.offwhite,
-
     borderRadius: 5,
+    height: 40,
+    paddingLeft: 15,
+    paddingRight: 15,
+    width: widthPercentageToDP('45%'),
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.2,
     shadowRadius: 1,
-
-    elevation: 3,
+    elevation: 2,
+    justifyContent: 'center',
+    textAlign: 'center',
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
-  headerLeftImg: {
-    height: 20,
-    marginLeft: 5,
-    resizeMode: 'contain',
-    // width: 10,
+  searchCityText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+  },
+  searchTxt: {
+    marginLeft: 15,
+    fontSize: widthPercentageToDP('3.8%'),
+    width: widthPercentageToDP('75%'),
   },
 });
