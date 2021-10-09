@@ -1,8 +1,23 @@
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable no-unused-vars */
-import React, {useState, useEffect, useContext, useCallback} from 'react';
-import {View, StyleSheet, FlatList, TouchableOpacity, Text} from 'react-native';
-import _ from 'lodash';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useMemo,
+} from 'react';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Text,
+  SafeAreaView,
+  TouchableWithoutFeedback,
+  Image,
+} from 'react-native';
+import _, {set} from 'lodash';
 import bodybuilder from 'bodybuilder';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import TCSearchBox from '../components/TCSearchBox';
@@ -28,14 +43,27 @@ export default function EntitySearchScreen({navigation}) {
   const [searchMember, setSearchMember] = useState();
   const [groups, setGroups] = useState();
   const [currentTab, setCurrentTab] = useState(0);
-  const [currentSubTab, setCurrentSubTab] = useState('General');
+  const [currentSubTab, setCurrentSubTab] = useState(0);
 
+  const [searchText, setSearchText] = useState('');
   const [playerList, setplayerList] = useState([]);
+  const [groupData, setGroupData] = useState([]);
   const [referees, setReferees] = useState([]);
+  const [scorekeepers, setScorekeepers] = useState([]);
+  const [filterData, setFilterData] = useState([]);
+
+  const [settingPopup, setSettingPopup] = useState(false);
 
   const TAB_ITEMS = ['People', 'Groups', 'Games', 'Posts'];
-  const SUB_TAB_ITEMS = ['General', 'Players', 'Referees', 'Scorekeeper'];
-  const GROUP_SUB_TAB_ITEMS = ['Team', 'clubs', 'Leagues'];
+  const PEOPLE_SUB_TAB_ITEMS = [
+    'General',
+    'Players',
+    'Referees',
+    'Scorekeepers',
+  ];
+  const GROUP_SUB_TAB_ITEMS = ['Teams', 'Clubs', 'Leagues'];
+  const GAMES_SUB_TAB_ITEMS = ['Completed', 'Upcoming'];
+  const POST_SUB_TAB_ITEMS = ['ALL', 'Videos', 'Photos'];
 
   const body = bodybuilder().query('match', 'entity_type', 'player').build();
   const defaultPageSize = 5;
@@ -43,6 +71,12 @@ export default function EntitySearchScreen({navigation}) {
   useEffect(() => {
     console.log('Query:=>', JSON.stringify(body));
     console.log('selected tab value', currentTab);
+    getPlayersList();
+    getRefereesList();
+    getScoreKeepersList();
+  }, []);
+
+  const getPlayersList = () => {
     getUserIndex(body)
       .then((res) => {
         console.log('Then s response', res);
@@ -51,11 +85,8 @@ export default function EntitySearchScreen({navigation}) {
       .catch((err) => {
         console.log(err.message);
       });
-
-    // Referee query
-
-    // eslint-disable-next-line vars-on-top
-
+  };
+  const getRefereesList = () => {
     // Referee query
     const refereeQuery = {
       size: defaultPageSize,
@@ -75,8 +106,8 @@ export default function EntitySearchScreen({navigation}) {
           // Alert.alert(strings.alertmessagetitle, e);
         }, 10);
       });
-    // Referee querygit status
-
+  };
+  const getScoreKeepersList = () => {
     // Score keeper query
     const scoreKeeperQuery = {
       size: defaultPageSize,
@@ -89,47 +120,166 @@ export default function EntitySearchScreen({navigation}) {
     getUserIndex(scoreKeeperQuery)
       .then((res) => {
         console.log('res score keeper list 2222:=>', res);
-        setReferees([...res]);
+        setScorekeepers([...res]);
       })
       .catch((e) => {
         setTimeout(() => {
           // Alert.alert(strings.alertmessagetitle, e);
         }, 10);
       });
-    //
-  }, []);
+  };
 
+  const renderSearchBox = useMemo(
+    () => (
+      <View style={styles.searchBarView}>
+        <TCSearchBox
+          editable={true}
+          onChangeText={(text) => searchFilterFunction(text)}
+        />
+      </View>
+    ),
+    [],
+  );
   const searchFilterFunction = (text) => {
-    const result = getSearchEntityData(
-      searchMember,
-      ['group_name', 'first_name', 'last_name', 'full_name'],
-      text,
-    );
-    setGroups([...result]);
+    setSearchText(text);
   };
 
-  const onProfilePress = (item) => {
-    navigation.navigate('HomeScreen', {
-      uid: ['user', 'player']?.includes(item?.entity_type)
-        ? item?.user_id
-        : item?.group_id,
-      role: ['user', 'player']?.includes(item?.entity_type)
-        ? 'user'
-        : item.entity_type,
-      backButtonVisible: true,
-      menuBtnVisible: false,
-    });
-  };
   const tabChangePress = (changeTab) => {
     setCurrentTab(changeTab.i);
     console.log('call tab change', currentTab);
   };
-  const renderTabsContainer = (keyTab) => {
-    console.log('Tab key -->', keyTab);
-  };
+  const renderTabContain = useMemo(() => (
+    <View
+      style={{
+        flexDirection: 'row',
+        borderBottomColor: colors.lightgrayColor,
+        borderBottomWidth: 1,
+        backgroundColor: '#FCFCFC',
+      }}>
+      {currentTab === 0 &&
+        PEOPLE_SUB_TAB_ITEMS.map((item, index) => (
+          <TouchableOpacity
+            key={item}
+            style={{padding: 10}}
+            onPress={() => onPressSubTabs(item, index)}>
+            <Text
+              style={{
+                color:
+                  item === currentSubTab
+                    ? colors.themeColor
+                    : colors.lightBlackColor,
+                fontFamily:
+                  item === currentSubTab ? fonts.RBold : fonts.RRegular,
+              }}>
+              {_.startCase(item)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      {currentTab === 1 &&
+        GROUP_SUB_TAB_ITEMS.map((item, index) => (
+          <TouchableOpacity
+            key={item}
+            style={{padding: 10}}
+            onPress={() => onPressSubTabs(item, index)}>
+            <Text
+              style={{
+                color:
+                  item === currentSubTab
+                    ? colors.themeColor
+                    : colors.lightBlackColor,
+                fontFamily:
+                  item === currentSubTab ? fonts.RBold : fonts.RRegular,
+              }}>
+              {_.startCase(item)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      {currentTab === 2 &&
+        POST_SUB_TAB_ITEMS.map((item, index) => (
+          <TouchableOpacity
+            key={item}
+            style={{padding: 10}}
+            onPress={() => onPressSubTabs(item, index)}>
+            <Text
+              style={{
+                color:
+                  item === currentSubTab
+                    ? colors.themeColor
+                    : colors.lightBlackColor,
+                fontFamily:
+                  item === currentSubTab ? fonts.RBold : fonts.RRegular,
+              }}>
+              {_.startCase(item)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      {currentTab === 3 &&
+        GAMES_SUB_TAB_ITEMS.map((item, index) => (
+          <TouchableOpacity
+            key={item}
+            style={{padding: 10}}
+            onPress={() => onPressSubTabs(item, index)}>
+            <Text
+              style={{
+                color:
+                  item === currentSubTab
+                    ? colors.themeColor
+                    : colors.lightBlackColor,
+                fontFamily:
+                  item === currentSubTab ? fonts.RBold : fonts.RRegular,
+              }}>
+              {_.startCase(item)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
+        <Image source={images.homeSetting} style={styles.settingImage} />
+      </TouchableWithoutFeedback>
+    </View>
 
-  const renderMenu = () => {
-    return <Text>{'test'}</Text>;
+    // <View style={{flex: 1}}>{renderSingleTab}</View>
+  ));
+  const renderSingleTab = useCallback(() => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          borderBottomColor: colors.lightgrayColor,
+          borderBottomWidth: 1,
+          backgroundColor: '#FCFCFC',
+        }}>
+        {PEOPLE_SUB_TAB_ITEMS.map((item, index) => (
+          <TouchableOpacity
+            key={item}
+            style={{padding: 10}}
+            onPress={() => onPressSubTabs(item, index)}>
+            <Text
+              style={{
+                color:
+                  item === currentSubTab
+                    ? colors.themeColor
+                    : colors.lightBlackColor,
+                fontFamily:
+                  item === currentSubTab ? fonts.RBold : fonts.RRegular,
+              }}>
+              {_.startCase(item)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  }, [PEOPLE_SUB_TAB_ITEMS, currentSubTab]);
+
+  const onPressSubTabs = (item, index) => {
+    console.log('item values -->', item, index);
+    if (index === 0 || index === 1) {
+      setFilterData(playerList);
+    } else if (index === 2) {
+      setFilterData(referees);
+    } else if (index === 2) {
+      setFilterData(scorekeepers);
+    }
+    setCurrentSubTab(item);
   };
 
   // const renderItem = ({item}) => {
@@ -175,50 +325,19 @@ export default function EntitySearchScreen({navigation}) {
 
   return (
     <View style={{flex: 1, backgroundColor: '#F2F2F2'}}>
-      <View style={styles.searchBarView}>
-        <TCSearchBox
-          editable={true}
-          onChangeText={(text) => searchFilterFunction(text)}
-        />
-      </View>
+      {renderSearchBox}
       <View style={{backgroundColor: '#FFFFFF'}}>
         <TCScrollableProfileTabs
           tabItem={TAB_ITEMS}
           tabVerticalScroll={false}
           onChangeTab={tabChangePress}
           currentTab={currentTab}
-          renderTabContain={renderTabsContainer}
         />
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          borderBottomColor: colors.lightgrayColor,
-          borderBottomWidth: 1,
-          backgroundColor: '#FCFCFC',
-        }}>
-        {SUB_TAB_ITEMS.map((item) => (
-          <TouchableOpacity
-            key={item}
-            style={{padding: 10}}
-            onPress={() => setCurrentSubTab(item)}>
-            <Text
-              style={{
-                color:
-                  item === currentSubTab
-                    ? colors.themeColor
-                    : colors.lightBlackColor,
-                fontFamily:
-                  item === currentSubTab ? fonts.RBold : fonts.RRegular,
-              }}>
-              {_.startCase(item)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      {renderTabContain}
       <FlatList
         style={{backgroundColor: '#FCFCFC'}}
-        data={playerList}
+        data={filterData}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ItemSeparatorComponent={() => <View style={styles.sperateLine} />}
@@ -246,4 +365,25 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     height: 70,
   },
+  settingImage: {
+    height: 20,
+    width: 20,
+    resizeMode: 'cover',
+    alignSelf: 'center',
+    position: 'absolute',
+    right: 10,
+  },
 });
+
+// const onProfilePress = (item) => {
+//   navigation.navigate('HomeScreen', {
+//     uid: ['user', 'player']?.includes(item?.entity_type)
+//       ? item?.user_id
+//       : item?.group_id,
+//     role: ['user', 'player']?.includes(item?.entity_type)
+//       ? 'user'
+//       : item.entity_type,
+//     backButtonVisible: true,
+//     menuBtnVisible: false,
+//   });
+// };
