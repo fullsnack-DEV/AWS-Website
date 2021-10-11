@@ -43,7 +43,7 @@ export default function EntitySearchScreen({navigation}) {
   const [searchMember, setSearchMember] = useState();
   const [groups, setGroups] = useState();
   const [currentTab, setCurrentTab] = useState(0);
-  const [currentSubTab, setCurrentSubTab] = useState(0);
+  const [currentSubTab, setCurrentSubTab] = useState('General');
 
   const [searchText, setSearchText] = useState('');
   const [playerList, setplayerList] = useState([]);
@@ -79,8 +79,9 @@ export default function EntitySearchScreen({navigation}) {
   const getPlayersList = () => {
     getUserIndex(body)
       .then((res) => {
-        console.log('Then s response', res);
+        console.log('player respone', res);
         setplayerList(res);
+        setFilterData(res);
       })
       .catch((err) => {
         console.log(err.message);
@@ -128,7 +129,7 @@ export default function EntitySearchScreen({navigation}) {
         }, 10);
       });
   };
-
+  const getGroupsList = () => {};
   const renderSearchBox = useMemo(
     () => (
       <View style={styles.searchBarView}>
@@ -140,6 +141,7 @@ export default function EntitySearchScreen({navigation}) {
     ),
     [],
   );
+
   const searchFilterFunction = (text) => {
     setSearchText(text);
   };
@@ -148,99 +150,8 @@ export default function EntitySearchScreen({navigation}) {
     setCurrentTab(changeTab.i);
     console.log('call tab change', currentTab);
   };
-  const renderTabContain = useMemo(() => (
-    <View
-      style={{
-        flexDirection: 'row',
-        borderBottomColor: colors.lightgrayColor,
-        borderBottomWidth: 1,
-        backgroundColor: '#FCFCFC',
-      }}>
-      {currentTab === 0 &&
-        PEOPLE_SUB_TAB_ITEMS.map((item, index) => (
-          <TouchableOpacity
-            key={item}
-            style={{padding: 10}}
-            onPress={() => onPressSubTabs(item, index)}>
-            <Text
-              style={{
-                color:
-                  item === currentSubTab
-                    ? colors.themeColor
-                    : colors.lightBlackColor,
-                fontFamily:
-                  item === currentSubTab ? fonts.RBold : fonts.RRegular,
-              }}>
-              {_.startCase(item)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      {currentTab === 1 &&
-        GROUP_SUB_TAB_ITEMS.map((item, index) => (
-          <TouchableOpacity
-            key={item}
-            style={{padding: 10}}
-            onPress={() => onPressSubTabs(item, index)}>
-            <Text
-              style={{
-                color:
-                  item === currentSubTab
-                    ? colors.themeColor
-                    : colors.lightBlackColor,
-                fontFamily:
-                  item === currentSubTab ? fonts.RBold : fonts.RRegular,
-              }}>
-              {_.startCase(item)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      {currentTab === 2 &&
-        POST_SUB_TAB_ITEMS.map((item, index) => (
-          <TouchableOpacity
-            key={item}
-            style={{padding: 10}}
-            onPress={() => onPressSubTabs(item, index)}>
-            <Text
-              style={{
-                color:
-                  item === currentSubTab
-                    ? colors.themeColor
-                    : colors.lightBlackColor,
-                fontFamily:
-                  item === currentSubTab ? fonts.RBold : fonts.RRegular,
-              }}>
-              {_.startCase(item)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      {currentTab === 3 &&
-        GAMES_SUB_TAB_ITEMS.map((item, index) => (
-          <TouchableOpacity
-            key={item}
-            style={{padding: 10}}
-            onPress={() => onPressSubTabs(item, index)}>
-            <Text
-              style={{
-                color:
-                  item === currentSubTab
-                    ? colors.themeColor
-                    : colors.lightBlackColor,
-                fontFamily:
-                  item === currentSubTab ? fonts.RBold : fonts.RRegular,
-              }}>
-              {_.startCase(item)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
-        <Image source={images.homeSetting} style={styles.settingImage} />
-      </TouchableWithoutFeedback>
-    </View>
-
-    // <View style={{flex: 1}}>{renderSingleTab}</View>
-  ));
-  const renderSingleTab = useCallback(() => {
-    return (
+  const renderTabContain = useMemo(
+    () => (
       <View
         style={{
           flexDirection: 'row',
@@ -248,58 +159,124 @@ export default function EntitySearchScreen({navigation}) {
           borderBottomWidth: 1,
           backgroundColor: '#FCFCFC',
         }}>
-        {PEOPLE_SUB_TAB_ITEMS.map((item, index) => (
-          <TouchableOpacity
-            key={item}
-            style={{padding: 10}}
-            onPress={() => onPressSubTabs(item, index)}>
-            <Text
-              style={{
-                color:
-                  item === currentSubTab
-                    ? colors.themeColor
-                    : colors.lightBlackColor,
-                fontFamily:
-                  item === currentSubTab ? fonts.RBold : fonts.RRegular,
-              }}>
-              {_.startCase(item)}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {currentTab === 0 &&
+          PEOPLE_SUB_TAB_ITEMS.map((item, index) => (
+            <TouchableOpacity
+              key={item}
+              style={{padding: 10}}
+              onPress={() => onPressSubTabs(item, index)}>
+              <Text
+                style={{
+                  color:
+                    item === currentSubTab
+                      ? colors.themeColor
+                      : colors.lightBlackColor,
+                  fontFamily:
+                    item === currentSubTab ? fonts.RBold : fonts.RRegular,
+                }}>
+                {_.startCase(item)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        {currentTab === 1 &&
+          GROUP_SUB_TAB_ITEMS.map((item, index) => (
+            <TouchableOpacity
+              key={item}
+              style={{padding: 10}}
+              onPress={() => onPressSubTabs(item, index)}>
+              <Text
+                style={{
+                  color:
+                    item === currentSubTab
+                      ? colors.themeColor
+                      : colors.lightBlackColor,
+                  fontFamily:
+                    item === currentSubTab ? fonts.RBold : fonts.RRegular,
+                }}>
+                {_.startCase(item)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        {currentTab === 2 &&
+          POST_SUB_TAB_ITEMS.map((item, index) => (
+            <TouchableOpacity
+              key={item}
+              style={{padding: 10}}
+              onPress={() => onPressSubTabs(item, index)}>
+              <Text
+                style={{
+                  color:
+                    item === currentSubTab
+                      ? colors.themeColor
+                      : colors.lightBlackColor,
+                  fontFamily:
+                    item === currentSubTab ? fonts.RBold : fonts.RRegular,
+                }}>
+                {_.startCase(item)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        {currentTab === 3 &&
+          GAMES_SUB_TAB_ITEMS.map((item, index) => (
+            <TouchableOpacity
+              key={item}
+              style={{padding: 10}}
+              onPress={() => onPressSubTabs(item, index)}>
+              <Text
+                style={{
+                  color:
+                    item === currentSubTab
+                      ? colors.themeColor
+                      : colors.lightBlackColor,
+                  fontFamily:
+                    item === currentSubTab ? fonts.RBold : fonts.RRegular,
+                }}>
+                {_.startCase(item)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        {currentSubTab !== 'General' && (
+          <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
+            <Image source={images.homeSetting} style={styles.settingImage} />
+          </TouchableWithoutFeedback>
+        )}
       </View>
-    );
-  }, [PEOPLE_SUB_TAB_ITEMS, currentSubTab]);
 
-  const onPressSubTabs = (item, index) => {
-    console.log('item values -->', item, index);
+      // <View style={{flex: 1}}>{renderSingleTab}</View>
+    ),
+    [
+      PEOPLE_SUB_TAB_ITEMS,
+      GROUP_SUB_TAB_ITEMS,
+      POST_SUB_TAB_ITEMS,
+      GAMES_SUB_TAB_ITEMS,
+      currentTab,
+      currentSubTab,
+    ],
+  );
+
+  // const onPressSubTabs = (item, index) => {
+  //   console.log('item values -->', item, index);
+  //   if (index === 0 || index === 1) {
+  //     setFilterData(playerList);
+  //   } else if (index === 2) {
+  //     setFilterData(referees);
+  //   } else if (index === 2) {
+  //     setFilterData(scorekeepers);
+  //   }
+  //   setCurrentSubTab(item);
+  // };
+  const onPressSubTabs = useCallback((item, index) => {
+    console.log('item values 66 -->', item, index);
     if (index === 0 || index === 1) {
       setFilterData(playerList);
     } else if (index === 2) {
       setFilterData(referees);
-    } else if (index === 2) {
+    } else if (index === 3) {
       setFilterData(scorekeepers);
     }
     setCurrentSubTab(item);
-  };
+  });
 
-  // const renderItem = ({item}) => {
-  //   return (
-  //     <>
-  //       <View style={{marginVertical: 10}}>
-  //         <TCProfileView
-  //           type={'medium'}
-  //           name={item.full_name}
-  //           image={
-  //             item.full_image
-  //               ? {uri: item.full_image}
-  //               : images.profilePlaceHolder
-  //           }
-  //           location={`${item?.city} , ${item?.country}`}
-  //         />
-  //       </View>
-  //     </>
-  //   );
-  // };
   const renderItem = ({item}) => {
     return (
       <>
