@@ -240,7 +240,14 @@ const Referees = ({
   );
 
   const handleBookReferee = useCallback(() => {
-    navigation.navigate('BookReferee', { gameData });
+    // navigation.navigate('BookReferee', { gameData });
+    navigation.navigate('BookReferee', {
+      filters: {
+        location: gameData.city,
+      },
+      sport: gameData.sport,
+      gameData,
+    });
   }, [gameData, navigation]);
 
   const handleSendOfferReferee = useCallback(() => {

@@ -86,7 +86,10 @@ export default function RefereesListScreen({ navigation, route }) {
     }
   }, [route?.params?.locationText]);
   useEffect(() => {
-    const list = [];
+    const list = [{
+      label: 'All',
+        value: 'All',
+    }];
     sportsList.map((obj) => {
       const dataSource = {
         label: obj.sport_name,
@@ -120,7 +123,7 @@ export default function RefereesListScreen({ navigation, route }) {
       refereeQuery.query.bool.must.push({
         term: {
           'referee_data.sport_name.keyword': {
-            value: `${filerReferee.sport.toLowerCase()}`,
+            value: `${filerReferee?.sport?.toLowerCase()}`,
             case_insensitive: true,
           },
         },
@@ -138,14 +141,6 @@ export default function RefereesListScreen({ navigation, route }) {
       });
     }
 
-    if (filerReferee.location !== 'world') {
-      refereeQuery.query.bool.must.push({
-        multi_match: {
-          query: `${filerReferee.location.toLowerCase()}`,
-          fields: ['city', 'country', 'state'],
-        },
-      });
-    }
     console.log('refereeQuery:=>', JSON.stringify(refereeQuery));
 
     // Referee query
@@ -174,10 +169,17 @@ export default function RefereesListScreen({ navigation, route }) {
   const renderRefereesScorekeeperListView = useCallback(
     ({ item }) => (
       <View style={[styles.separator, { flex: 1 }]}>
-        <TCRefereeView data={item} showStar={true} sport={selectedSport} />
+        <TCRefereeView data={item} showStar={true} sport={selectedSport} onPress={() => {
+          navigation.navigate('HomeScreen', {
+            uid: ['user', 'player']?.includes(item?.entity_type) ? item?.user_id : item?.group_id,
+            role: ['user', 'player']?.includes(item?.entity_type) ? 'user' : item.entity_type,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+          })
+        }}/>
       </View>
     ),
-    [selectedSport],
+    [navigation, selectedSport],
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
@@ -212,12 +214,16 @@ export default function RefereesListScreen({ navigation, route }) {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'sport') {
           tempFilter.sport = 'All';
+          delete tempFilter.refereeFee;
+          setSelectedSport('All')
+          setMinFee(0)
+          setMaxFee(0)
         }
         if (Object.keys(item)[0] === 'location') {
           tempFilter.location = 'world';
         }
         if (Object.keys(item)[0] === 'refereeFee') {
-          delete tempFilter[key];
+          delete tempFilter.refereeFee;
         }
 
         // delete tempFilter[key];
@@ -315,6 +321,16 @@ export default function RefereesListScreen({ navigation, route }) {
       setReferees(searchData);
     }
   };
+
+  const onPressReset = () => {
+   setFilters({
+     location: 'world',
+     sport: 'All',
+   })
+   setSelectedSport('All')
+   setMinFee(0)
+   setMaxFee(0)
+  };
   return (
     <View>
       <View style={styles.searchView}>
@@ -399,7 +415,7 @@ export default function RefereesListScreen({ navigation, route }) {
                         setPageFrom(0);
                         setReferees([]);
                         applyFilter(tempFilter);
-                      }, 10);
+                      }, 100);
                       console.log('DONE::');
                     }
                   }}>
@@ -556,6 +572,10 @@ export default function RefereesListScreen({ navigation, route }) {
                         placeholder={'Select Sport'}
                         onValueChange={(value) => {
                           setSelectedSport(value);
+                          if (value === 'All') {
+                            setMinFee(0)
+                            setMaxFee(0)
+                          }
                           // setFilters({
                           //   ...filters,
                           //   sport: value,
@@ -748,7 +768,25 @@ export default function RefereesListScreen({ navigation, route }) {
             </ScrollView>
           </KeyboardAvoidingView>
 
-          <TouchableOpacity style={styles.resetButton} onPress={() => {}}>
+          <TouchableOpacity style={styles.resetButton} onPress={() => {
+             Alert.alert(
+              'Are you sure want to reset filters?',
+              '',
+              [
+
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                {
+                  text: 'OK',
+                  onPress: () => onPressReset(),
+                },
+              ],
+              { cancelable: false },
+            );
+          }}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>

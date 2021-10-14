@@ -17,6 +17,11 @@ import ScorekeeperAgreementScreen from '../screens/challenge/createChallenge/Sco
 import RefereeAgreementScreen from '../screens/challenge/createChallenge/RefereeAgreementScreen';
 import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperInviteAgreementScreen';
 import RefereeInviteAgreementScreen from '../screens/challenge/createChallenge/RefereeInviteAgreementScreen';
+import HomeScreen from '../screens/home/HomeScreen';
+import SoccerHome from '../screens/game/soccer/SoccerHome';
+import TennisHome from '../screens/game/tennis/TennisHome';
+import SportSettingScreen from '../screens/localhome/SportSettingScreen';
+import AddOrDeleteSport from '../screens/localhome/AddOrDeleteSport';
 
 const Stack = createStackNavigator();
 
@@ -258,7 +263,72 @@ const LocalHomeNavigator = () => (
       }}
     />
     <Stack.Screen name={'FeedViewScreen'} component={FeedViewScreen} options={{ headerShown: false }} />
-
+    <Stack.Screen
+      name="HomeScreen"
+      component={HomeScreen}
+      options={{
+        title: 'Home',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="SportSettingScreen"
+      component={SportSettingScreen}
+      options={{
+        title: 'Sports',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="AddOrDeleteSport"
+      component={AddOrDeleteSport}
+      options={{
+        title: 'Sports',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="SoccerHome"
+      component={SoccerHome}
+      options={{
+        tabBarVisible: false,
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="TennisHome"
+      component={TennisHome}
+      options={{
+        headerShown: false,
+      }}
+    />
   </Stack.Navigator>
 );
 

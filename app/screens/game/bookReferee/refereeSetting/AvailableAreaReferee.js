@@ -186,7 +186,7 @@ export default function AvailableAreaReferee({ navigation, route }) {
       (obj) => obj.sport_name === sportName,
     )[0];
 
-    selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+    selectedSport.setting = { ...selectedSport?.setting, ...bodyParams };
     registerdRefereeData.push(selectedSport);
 
     const body = { ...authContext?.user, referee_data: registerdRefereeData };

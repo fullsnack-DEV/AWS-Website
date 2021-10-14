@@ -539,12 +539,21 @@ function NotificationNavigator() {
     />
       {/*  Book A Referee */}
       <Stack.Screen
-            name="BookReferee"
-            component={BookReferee}
-            options={{
-              headerShown: false,
-            }}
-        />
+      name="BookReferee"
+      component={BookReferee}
+      options={{
+        title: 'Book a referee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
       <Stack.Screen
             name="RefereeBookingDateAndTime"
             component={RefereeBookingDateAndTime}
@@ -589,12 +598,21 @@ function NotificationNavigator() {
         />
       {/*  Book A Scorekeeper */}
       <Stack.Screen
-            name="BookScorekeeper"
-            component={BookScorekeeper}
-            options={{
-              headerShown: false,
-            }}
-        />
+      name="BookScorekeeper"
+      component={BookScorekeeper}
+      options={{
+        title: 'Book a scorekeeper',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
       <Stack.Screen
       name="ScorekeeperBookingDateAndTime"
       component={ScorekeeperBookingDateAndTime}

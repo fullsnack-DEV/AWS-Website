@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { createStackNavigator } from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import FeedsScreen from '../screens/newsfeeds/FeedsScreen';
 import NewsFeedVideoPlayer from '../screens/newsfeeds/NewsFeedVideoPlayer';
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
@@ -89,7 +89,7 @@ const NewsFeedNavigator = () => (
     <Stack.Screen
       name="FeedsScreen"
       component={FeedsScreen}
-      options={{ headerShown: false }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="WritePostScreen"
@@ -609,16 +609,33 @@ const NewsFeedNavigator = () => (
       name="BookReferee"
       component={BookReferee}
       options={{
-        headerShown: false,
+        title: 'Book a referee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
-
     {/*  Book A Scorekeeper */}
     <Stack.Screen
       name="BookScorekeeper"
       component={BookScorekeeper}
       options={{
-        headerShown: false,
+        title: 'Book a scorekeeper',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -650,7 +667,7 @@ const NewsFeedNavigator = () => (
     <Stack.Screen
       name={'FeedViewScreen'}
       component={FeedViewScreen}
-      options={{ headerShown: false }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen
