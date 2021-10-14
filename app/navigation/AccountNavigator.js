@@ -620,11 +620,21 @@ const AccountNavigator = () => (
       }}
     />
     {/*  Book A Referee */}
+
     <Stack.Screen
       name="BookReferee"
       component={BookReferee}
       options={{
-        headerShown: false,
+        title: 'Book a referee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -669,11 +679,21 @@ const AccountNavigator = () => (
       }}
     />
     {/*  Book A Scorekeeper */}
+
     <Stack.Screen
       name="BookScorekeeper"
       component={BookScorekeeper}
       options={{
-        headerShown: false,
+        title: 'Book a scorekeeper',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen

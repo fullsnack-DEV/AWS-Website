@@ -211,6 +211,8 @@ const getTabBarVisibility = (route) => {
 || routeName === 'LookingForChallengeScreen'
 || routeName === 'HiringPlayerScreen'
 || routeName === 'LookingTeamScreen'
+|| routeName === 'SportSettingScreen'
+|| routeName === 'AddOrDeleteSport'
 
   ) {
     return false;

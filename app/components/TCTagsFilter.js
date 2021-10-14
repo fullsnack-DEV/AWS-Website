@@ -17,7 +17,7 @@ function TCTagsFilter({ dataSource, onTagCancelPress }) {
     console.log('Ttt:', Object.values(item));
     return (
       <>
-        {(Object.values(item)[0] !== 'All' && Object.values(item)[0] !== 'world') && <View
+        {(Object.values(item)[0] !== 'All' && Object.values(item)[0] !== 'world' && Object.keys(item)[0] !== 'entityID') && <View
           style={styles.textContainer}
           onPress={() => onTagCancelPress({ item, index })}>
           <Text style={styles.tagTitleText}>{

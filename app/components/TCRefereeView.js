@@ -47,7 +47,7 @@ function TCRefereeView({
           </Text>
           {showStar && (
             <Text style={styles.starPoints} numberOfLines={1}>
-              ★ 5 {sportObj.length === 1 && sportObj?.[0]?.setting ? ` · ${sportObj?.[0]?.setting?.game_fee?.fee} CAD` : ''}
+              ★ 5.0 {sportObj.length === 1 && sportObj?.[0]?.setting ? ` · ${sportObj?.[0]?.setting?.game_fee?.fee} CAD` : ''}
             </Text>
           )}
         </View>

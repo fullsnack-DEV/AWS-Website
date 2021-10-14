@@ -1,120 +1,151 @@
 import {
-  Text, TouchableOpacity, StyleSheet, View,
-} from 'react-native';
-import FastImage from 'react-native-fast-image';
-import LinearGradient from 'react-native-linear-gradient';
-import React from 'react';
-import images from '../../../../Constants/ImagePath';
-import TCStarRating from '../../../../components/TCStarRating';
-import colors from '../../../../Constants/Colors';
-import fonts from '../../../../Constants/Fonts';
+  Text, TouchableOpacity, StyleSheet, View, Image,
+  } from 'react-native';
+ import LinearGradient from 'react-native-linear-gradient';
+ import React from 'react';
+ import images from '../../../../Constants/ImagePath';
+ import colors from '../../../../Constants/Colors';
+ import fonts from '../../../../Constants/Fonts';
 
-const RenderScorekeeper = ({
-  profilePic,
-  name,
-  fees,
-  rating,
-  country,
-  isSelected,
-  onRadioClick,
-}) => (
-  <View style={styles.refereeContainer}>
+ const RenderScorekeeper = ({
+   showStar = false,
+   data,
+   sport,
+   isSelected,
+   onRadioClick,
+ }) => {
+   let sportObj = data?.scorekeeper_data?.filter(
+     (o) => o?.sport_name?.toLowerCase() === sport?.toLowerCase(),
+   );
+   if (sportObj.length === 1) {
+     sportObj = data?.scorekeeper_data?.filter(
+       (o) => o?.sport_name?.toLowerCase() === sport?.toLowerCase(),
+     );
+   } else {
+     sportObj = data?.scorekeeper_data;
+   }
+   console.log('Scorekeeper sport data:=>', sportObj);
+   return (
+     <View style={styles.scorekeeperContainer}>
+       <View style={styles.viewContainer}>
+         <View style={styles.backgroundView}>
+           <Image
+             source={
+               data?.thumbnail
+                 ? { uri: data?.thumbnail }
+                 : images.profilePlaceHolder
+             }
+             style={styles.profileImage}
+           />
+         </View>
+         <View style={{ flexDirection: 'column', marginLeft: 5 }}>
+           <Text style={styles.entityName} numberOfLines={2}>
+             {data?.full_name}
+           </Text>
+           <Text style={styles.locationText} numberOfLines={1}>
+             {data?.city}
+             {sportObj.length === 1 ? ` · ${sportObj?.[0]?.sport_name}` : ''}
+           </Text>
+           {showStar && (
+             <Text style={styles.starPoints} numberOfLines={1}>
+               ★ 5.0{' '}
+               {sportObj.length === 1 && sportObj?.[0]?.setting
+                 ? ` · ${sportObj?.[0]?.setting?.game_fee?.fee} CAD`
+                 : ''}
+             </Text>
+           )}
+         </View>
+       </View>
+       {/* Scorekeeper Filter */}
+       <View
+         style={{
+           flex: 0.1,
+           paddingHorizontal: 5,
+           justifyContent: 'center',
+           alignItems: 'center',
+         }}>
+         <TouchableOpacity
+           style={{
+             borderColor: colors.magnifyIconColor,
+             height: 22,
+             width: 22,
+             borderWidth: 2,
+             borderRadius: 50,
+             alignItems: 'center',
+             justifyContent: 'center',
+           }}
+           onPress={onRadioClick}>
+           {isSelected && (
+             <LinearGradient
+               colors={[colors.orangeColor, colors.yellowColor]}
+               end={{ x: 0.0, y: 0.25 }}
+               start={{ x: 1, y: 0.5 }}
+               style={{
+                 height: 13,
+                 width: 13,
+                 borderRadius: 50,
+               }}></LinearGradient>
+           )}
+         </TouchableOpacity>
+       </View>
+     </View>
+   );
+ };
 
-    {/* Profile Pic */}
-    <View style={{
-      flex: 0.15, paddingHorizontal: 5, justifyContent: 'center', alignItems: 'center',
-    }}>
-      <FastImage
-                resizeMode={'contain'}
-                source={profilePic ? { uri: profilePic } : images.profilePlaceHolder}
-                style={styles.profilePic}
-            />
-    </View>
+ const styles = StyleSheet.create({
+  scorekeeperContainer: {
+     flexDirection: 'row',
+     justifyContent: 'space-between',
+     flex: 1,
+     paddingVertical: 5,
+     borderBottomColor: colors.grayBackgroundColor,
+     borderBottomWidth: 2,
+   },
 
-    {/*  Refree Detail */}
-    <View style={{
-      flex: 0.5,
-      paddingHorizontal: 5,
-      justifyContent: 'center',
-    }}>
-      {/*   Player Name */}
-      <Text style={styles.refereeName}>{name}</Text>
+   backgroundView: {
+     backgroundColor: colors.whiteColor,
+     elevation: 5,
+     height: 40,
+     width: 40,
+     borderRadius: 80,
+     shadowColor: colors.googleColor,
+     shadowOffset: { width: 0, height: 5 },
+     shadowOpacity: 0.2,
+     shadowRadius: 5,
+     alignItems: 'center',
+     justifyContent: 'center',
+   },
+   viewContainer: {
+     flexDirection: 'row',
+     // alignItems: 'center',
+     // backgroundColor: 'red',
+     // height: 125,
+   },
+   profileImage: {
+     resizeMode: 'cover',
+     height: 36,
+     width: 36,
+     borderRadius: 80,
+     shadowColor: colors.googleColor,
+     shadowOffset: { width: 0, height: 5 },
+     shadowOpacity: 0.2,
+     shadowRadius: 5,
+   },
+   entityName: {
+     fontSize: 16,
+     fontFamily: fonts.RMedium,
+     color: colors.lightBlackColor,
+   },
+   locationText: {
+     fontSize: 14,
+     fontFamily: fonts.RRegular,
+     color: colors.lightBlackColor,
+   },
 
-      {/* Country */}
-      <Text style={styles.countryName}>{country}</Text>
-
-      {/* Rating */}
-      <View style={{ flex: 1, flexDirection: 'row' }}>
-        <TCStarRating rating={rating} />
-        <Text style={{
-          marginLeft: 5, color: colors.themeColor, fontFamily: fonts.RRegular, fontSize: 12,
-        }}>{rating?.toFixed(1)}</Text>
-      </View>
-    </View>
-
-    {/* Referee Fees */}
-    <View style={{
-      flex: 0.25,
-      paddingHorizontal: 5,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}>
-      <Text style={{ fontSize: 18, color: colors.lightBlackColor, fontFamily: fonts.RRegular }}>
-        ${fees}
-        <Text style={{ fontSize: 11 }}> CAD </Text>
-        <Text style={{ fontSize: 10 }}>(/h)</Text>
-      </Text>
-    </View>
-
-    {/* Referee Filter */}
-    <View style={{
-      flex: 0.1,
-      paddingHorizontal: 5,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}>
-      <TouchableOpacity style={{
-        borderColor: colors.magnifyIconColor, height: 22, width: 22, borderWidth: 2, borderRadius: 50, alignItems: 'center', justifyContent: 'center',
-      }}
-        onPress={onRadioClick}>
-        {isSelected && (
-          <LinearGradient
-                        colors={[colors.orangeColor, colors.yellowColor]}
-                        end={{ x: 0.0, y: 0.25 }}
-                        start={{ x: 1, y: 0.5 }}
-                        style={{ height: 13, width: 13, borderRadius: 50 }}>
-          </LinearGradient>
-        )}
-      </TouchableOpacity>
-    </View>
-
-  </View>
-)
-
-const styles = StyleSheet.create({
-  refereeContainer: {
-    flexDirection: 'row',
-    flex: 1,
-    paddingVertical: 5,
-    borderBottomColor: colors.grayBackgroundColor,
-    borderBottomWidth: 2,
-  },
-  profilePic: {
-    height: 40,
-    width: 40,
-    borderRadius: 50,
-  },
-  refereeName: {
-    marginVertical: 1,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-    fontSize: 14,
-  },
-  countryName: {
-    marginVertical: 1,
-    fontSize: 12,
-    fontFamily: fonts.RLight,
-    color: colors.lightBlackColor,
-  },
-})
-export default RenderScorekeeper;
+   starPoints: {
+     fontSize: 14,
+     fontFamily: fonts.RRegular,
+     color: colors.lightBlackColor,
+   },
+ });
+ export default RenderScorekeeper;
