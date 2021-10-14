@@ -217,7 +217,13 @@ const Scorekeepers = ({
   );
 
   const handleBookScorekeeper = useCallback(() => {
-    navigation.navigate('BookScorekeeper', { gameData });
+    navigation.navigate('BookScorekeeper', {
+      filters: {
+        location: gameData.city,
+      },
+      sport: gameData.sport,
+      gameData,
+    });
   }, [gameData, navigation]);
 
   const handleSendOfferScorekeeper = useCallback(() => {

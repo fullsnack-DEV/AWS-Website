@@ -52,7 +52,6 @@ export default function TCSearchCityView({
   );
   return (
     <View >
-
       <TextInput
       style={styles.sectionStyle}
       placeholder={strings.searchTitle}

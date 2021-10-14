@@ -35,10 +35,15 @@ import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 
 import strings from '../../Constants/String';
-import { getGameIndex } from '../../api/elasticSearch';
+import {
+  getGameIndex,
+  getGroupIndex,
+  getUserIndex,
+} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import TCPicker from '../../components/TCPicker';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
+import { getGameHomeScreen } from '../../utils/gameUtils';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
@@ -57,10 +62,18 @@ export default function RecentMatchScreen({ navigation, route }) {
   const [showFrom, setShowFrom] = useState(false);
   const [showTo, setShowTo] = useState(false);
 
-  const [fromDate, setFromDate] = useState(filters?.fromDate && new Date(filters?.fromDate));
-  const [toDate, setToDate] = useState(filters?.toDate && new Date(filters?.toDate));
+  const [fromDate, setFromDate] = useState(
+    filters?.fromDate && new Date(filters?.fromDate),
+  );
+  const [toDate, setToDate] = useState(
+    filters?.toDate && new Date(filters?.toDate),
+  );
 
-  const [teamName, setTeamName] = useState();
+  const [searchName, setSearchName] = useState();
+  const [isSelected, setIsSelected] = useState(false);
+  const [entityData, setEntityData] = useState([]);
+  const [selectedEntity, setSelectedEntity] = useState();
+
   const [recentMatch, setRecentMatch] = useState([]);
   const [pageSize] = useState(10);
   const [pageFrom, setPageFrom] = useState(0);
@@ -90,7 +103,10 @@ export default function RecentMatchScreen({ navigation, route }) {
     }
   }, [route?.params?.locationText]);
   useEffect(() => {
-    const list = [];
+    const list = [{
+      label: 'All',
+      value: 'All',
+    }];
     sportsList.map((obj) => {
       const dataSource = {
         label: obj.sport_name,
@@ -111,10 +127,7 @@ export default function RecentMatchScreen({ navigation, route }) {
         from: pageFrom,
         query: {
           bool: {
-            must: [
-              { match: { status: 'accepted' } },
-
-            ],
+            must: [{ match: { status: 'accepted' } }],
           },
         },
         sort: [{ actual_enddatetime: 'desc' }],
@@ -138,19 +151,40 @@ export default function RecentMatchScreen({ navigation, route }) {
           },
         });
       }
+
+      if (filerGames.entityName) {
+        recentMatchQuery.query.bool.must.push({
+          multi_match: {
+            query: filerGames.entityID,
+            fields: ['home_team', 'away_team'],
+          },
+        });
+      }
+
       if (filerGames.fromDate && filerGames.toDate) {
         recentMatchQuery.query.bool.must.push({
           range: {
             start_datetime: {
-              gt: Number(parseFloat(new Date(filerGames.fromDate).getTime() / 1000).toFixed(0)),
-              lt: Number(parseFloat(new Date(filerGames.toDate).getTime() / 1000).toFixed(0)),
+              gt: Number(
+                parseFloat(
+                  new Date(filerGames.fromDate).getTime() / 1000,
+                ).toFixed(0),
+              ),
+              lt: Number(
+                parseFloat(
+                  new Date(filerGames.toDate).getTime() / 1000,
+                ).toFixed(0),
+              ),
             },
           },
         });
       } else if (!filerGames.fromDate && !filerGames?.toDate) {
         console.log('from:::', filerGames.fromDate);
 
-        console.log('from:::', parseFloat(new Date(filerGames.fromDate).getTime() / 1000).toFixed(0));
+        console.log(
+          'from:::',
+          parseFloat(new Date(filerGames.fromDate).getTime() / 1000).toFixed(0),
+        );
         recentMatchQuery.query.bool.must.push({
           range: {
             start_datetime: {
@@ -161,12 +195,19 @@ export default function RecentMatchScreen({ navigation, route }) {
       } else if (filerGames.fromDate && !filerGames?.toDate) {
         console.log('from:::', filerGames.fromDate);
 
-        console.log('from:::', parseFloat(new Date(filerGames.fromDate).getTime() / 1000).toFixed(0));
+        console.log(
+          'from:::',
+          parseFloat(new Date(filerGames.fromDate).getTime() / 1000).toFixed(0),
+        );
         recentMatchQuery.query.bool.must.push({
           range: {
             start_datetime: {
-              gt: Number(parseFloat(new Date(filerGames.fromDate).getTime() / 1000).toFixed(0)),
-            lt: Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+              gt: Number(
+                parseFloat(
+                  new Date(filerGames.fromDate).getTime() / 1000,
+                ).toFixed(0),
+              ),
+              lt: Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
             },
           },
         });
@@ -174,7 +215,11 @@ export default function RecentMatchScreen({ navigation, route }) {
         recentMatchQuery.query.bool.must.push({
           range: {
             start_datetime: {
-              lt: Number(parseFloat(new Date(filerGames.toDate).getTime() / 1000).toFixed(0)),
+              lt: Number(
+                parseFloat(
+                  new Date(filerGames.toDate).getTime() / 1000,
+                ).toFixed(0),
+              ),
             },
           },
         });
@@ -188,11 +233,11 @@ export default function RecentMatchScreen({ navigation, route }) {
 
           if (games.length > 0) {
             Utility.getGamesList(games).then((gamedata) => {
-                const fetchedData = [...recentMatch, ...gamedata];
-                setRecentMatch(fetchedData);
-                setSearchData(fetchedData);
-                setPageFrom(pageFrom + pageSize);
-                stopFetchMore = true;
+              const fetchedData = [...recentMatch, ...gamedata];
+              setRecentMatch(fetchedData);
+              setSearchData(fetchedData);
+              setPageFrom(pageFrom + pageSize);
+              stopFetchMore = true;
             });
           }
         })
@@ -213,7 +258,20 @@ export default function RecentMatchScreen({ navigation, route }) {
     console.log('Recent Item:=>', item);
     return (
       <View style={{ marginBottom: 15 }}>
-        <TCRecentMatchCard data={item} cardWidth={'92%'} />
+        <TCRecentMatchCard
+          data={item}
+          cardWidth={'92%'}
+          onPress={() => {
+            const gameHome = getGameHomeScreen(item?.sport);
+            if (item?.game_id) {
+              navigation.navigate(gameHome, {
+                gameId: item?.game_id,
+              });
+            } else {
+              Alert.alert('Game ID does not exist.');
+            }
+          }}
+        />
       </View>
     );
   }, []);
@@ -257,12 +315,18 @@ export default function RecentMatchScreen({ navigation, route }) {
           tempFilter.location = 'world';
         }
         if (Object.keys(item)[0] === 'fromDate') {
-          setFromDate()
+          setFromDate();
           delete tempFilter.fromDate;
         }
         if (Object.keys(item)[0] === 'toDate') {
-          setToDate()
+          setToDate();
           delete tempFilter.toDate;
+        }
+        if (Object.keys(item)[0] === 'entityName') {
+          setSelectedEntity();
+          setIsSelected(false);
+          delete tempFilter.entityName;
+          delete tempFilter.entityID;
         }
         // delete tempFilter[key];
       }
@@ -344,6 +408,79 @@ export default function RecentMatchScreen({ navigation, route }) {
       setRecentMatch(searchData);
     }
   };
+
+  const searchEntityList = (text) => {
+    const groupQuery = {
+      size: 100,
+      query: {
+        query_string: { default_field: 'group_name', query: `*${text}*` },
+      },
+    };
+
+    const userQuery = {
+      size: 100,
+      query: {
+        query_string: { default_field: 'full_name', query: `*${text}*` },
+      },
+    };
+
+    console.log('Group query:=>', JSON.stringify(groupQuery));
+    console.log('User query:=>', JSON.stringify(userQuery));
+
+    if (selectedSport.toLowerCase() === 'tennis') {
+      getUserIndex(userQuery).then((res) => {
+        console.log('res entity list:=>', res);
+        setEntityData([...res]);
+      });
+    } else {
+      getGroupIndex(groupQuery).then((res) => {
+        console.log('res entity list:=>', res);
+        setEntityData([...res]);
+      });
+    }
+  };
+  const renderEntity = ({ item }) => {
+    console.log('ITEM:=>', item);
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          console.log('selected ITEM:=>', item);
+          setIsSelected(true);
+          setSelectedEntity(item);
+        }}
+        style={{ flexDirection: 'row', alignItems: 'center', margin: 5 }}
+        >
+        <Image
+          source={
+            item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder
+          }
+          style={{
+            height: 25,
+            width: 25,
+            resizeMode: 'contain',
+            borderRadius: 50,
+          }}
+        />
+
+        <Text style={styles.searchItem}>
+          {item?.group_name || item?.full_name}
+        </Text>
+
+        <Text style={styles.locationItem}>
+          {`${item?.city}, ${item.state_abbr}`}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+  const onPressReset = () => {
+    setFilters({
+      location: 'world',
+      sport: 'All',
+    })
+    setSelectedSport('All')
+    setFromDate()
+    setToDate()
+   };
   return (
     <View>
       <View style={styles.searchView}>
@@ -369,7 +506,6 @@ export default function RecentMatchScreen({ navigation, route }) {
         extraData={recentMatch}
         showsHorizontalScrollIndicator={false}
         data={recentMatch}
-
         keyExtractor={keyExtractor}
         renderItem={renderRecentMatchItems}
         style={styles.listStyle}
@@ -432,6 +568,14 @@ export default function RecentMatchScreen({ navigation, route }) {
                       } else {
                         delete tempFilter.toDate;
                       }
+                      if (selectedEntity && isSelected) {
+                        tempFilter.entityName = selectedEntity?.group_name
+                          ?? selectedEntity?.full_name;
+                        tempFilter.entityID = selectedEntity?.group_id ?? selectedEntity?.full_id;
+                      } else {
+                        delete tempFilter.entityName;
+                        delete tempFilter.entityID;
+                      }
                       setFilters({
                         ...tempFilter,
                       });
@@ -439,7 +583,7 @@ export default function RecentMatchScreen({ navigation, route }) {
                       setPageFrom(0);
                       setRecentMatch([]);
                       applyFilter(tempFilter);
-                    }, 10);
+                    }, 100);
                     console.log('DONE::');
                   }}>
                   {'Apply'}
@@ -595,6 +739,9 @@ export default function RecentMatchScreen({ navigation, route }) {
                         placeholder={'Select Sport'}
                         onValueChange={(value) => {
                           setSelectedSport(value);
+                          setSelectedEntity()
+                          setEntityData([]);
+
                           // setFilters({
                           //   ...filters,
                           //   sport: value,
@@ -769,45 +916,95 @@ export default function RecentMatchScreen({ navigation, route }) {
            </View> */}
               {/* Rate View */}
 
-              <View
-                style={{
-                  flexDirection: 'column',
-                  margin: 15,
-                  justifyContent: 'space-between',
-                }}>
-                <View style={{}}>
-                  <Text style={styles.filterTitle}>Team</Text>
-                </View>
-                <View style={{ marginTop: 10 }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                    }}>
-                    <TextInput
-                      onChangeText={(text) => setTeamName(text)}
-                      value={teamName}
-                      style={styles.teamNameTextView}
-                      placeholder={'Team name'}
-                      autoCorrect={false}
-                      // clearButtonMode={'always'}
-                      keyboardType={'numeric'}
-                      placeholderTextColor={colors.userPostTimeColor}
-                    />
+              {selectedSport !== 'All' && (
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    margin: 15,
+                    justifyContent: 'space-between',
+                  }}>
+                  <View style={{}}>
+                    <Text style={styles.filterTitle}>Team Or Player</Text>
+                  </View>
+                  <View style={{ marginTop: 10 }}>
+                    <View
+                      style={{
+                        flexDirection: 'column',
+                        // justifyContent: 'space-between',
+                      }}>
+                      <TextInput
+                        onChangeText={(text) => {
+                          setIsSelected(false);
+                          setSearchName(text);
+                          searchEntityList(text);
+                        }}
+                        value={
+                          isSelected
+                            ? selectedEntity?.group_name
+                              ?? selectedEntity?.full_name
+                            : searchName
+                        }
+                        style={styles.teamNameTextView}
+                        placeholder={'Team or player name'}
+                        autoCorrect={false}
+                        clearButtonMode={'always'}
+                        placeholderTextColor={colors.userPostTimeColor}
+                      />
+                      {!isSelected && (
+                        <View
+                          style={{
+                            marginTop: 15,
+                              height: 200,
+                            backgroundColor: colors.whiteColor,
+                            borderRadius: 5,
+                            shadowColor: colors.googleColor,
+                            shadowOffset: { width: 0, height: 1 },
+                            shadowOpacity: 0.3,
+                            shadowRadius: 5,
+                            elevation: 3,
+                          }}>
+                          <FlatList
+                            data={entityData}
+                            renderItem={renderEntity}
+                            keyExtractor={keyExtractor}
+                            // ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+
+                          />
+                        </View>
+                      )}
+                    </View>
                   </View>
                 </View>
-              </View>
+              )}
 
               <View style={{ flex: 1 }} />
             </ScrollView>
           </KeyboardAvoidingView>
 
-          <TouchableOpacity style={styles.resetButton} onPress={() => {}}>
+          <TouchableOpacity style={styles.resetButton} onPress={() => {
+             Alert.alert(
+              'Are you sure want to reset filters?',
+              '',
+              [
+
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                {
+                  text: 'OK',
+                  onPress: () => onPressReset(),
+                },
+              ],
+              { cancelable: false },
+            );
+          }}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>
         <DateTimePickerView
-          date={ fromDate}
+          date={fromDate}
           visible={showFrom}
           onDone={handleDonePress}
           onCancel={handleCancelPress}
@@ -817,7 +1014,7 @@ export default function RecentMatchScreen({ navigation, route }) {
           mode={'datetime'}
         />
         <DateTimePickerView
-          date={ toDate}
+          date={toDate}
           visible={showTo}
           onDone={handleDonePress}
           onCancel={handleCancelPress}
@@ -1025,5 +1222,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+  },
+  searchItem: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+    marginLeft: 10,
+  },
+  locationItem: {
+    fontSize: 16,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+    marginLeft: 10,
   },
 });

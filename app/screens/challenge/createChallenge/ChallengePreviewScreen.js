@@ -153,7 +153,12 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       setloading(false);
       console.log('manage challenge response:=>', response);
       setSettingObject(response);
-    });
+    }).catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        // Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    })
   }, [authContext, challengeData?.challengee, challengeData?.sport]);
 
   const checkSenderOrReceiver = (challengeObj) => {
