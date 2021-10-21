@@ -477,6 +477,7 @@ export default function RecentMatchScreen({ navigation, route }) {
       location: 'world',
       sport: 'All',
     })
+    setLocation('world');
     setSelectedSport('All')
     setFromDate()
     setToDate()

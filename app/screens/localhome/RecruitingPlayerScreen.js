@@ -21,8 +21,8 @@ import {
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 
 import Modal from 'react-native-modal';
-import moment from 'moment';
 import Geolocation from '@react-native-community/geolocation';
+import FastImage from 'react-native-fast-image';
 import AuthContext from '../../auth/context';
 
 import { getLocationNameWithLatLong } from '../../api/External';
@@ -30,7 +30,6 @@ import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import { widthPercentageToDP } from '../../utils';
-import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 
@@ -38,12 +37,13 @@ import strings from '../../Constants/String';
 import { getEntityIndex } from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import TCPicker from '../../components/TCPicker';
-import TCAvailableForChallenge from '../../components/TCAvailableForChallenge';
+import TCRecruitingPlayers from '../../components/TCRecruitingPlayers';
+import { groupsType } from '../../utils/constant';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
-export default function LookingForChallengeScreen({ navigation, route }) {
+export default function RecruitingPlayerScreen({ navigation, route }) {
   // const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
@@ -53,17 +53,13 @@ export default function LookingForChallengeScreen({ navigation, route }) {
 
   const [sports, setSports] = useState([]);
 
-  const [datePickerFor, setDatePickerFor] = useState();
-  const [show, setShow] = useState(false);
-  const [fromDate, setFromDate] = useState();
-  const [toDate, setToDate] = useState();
-  const [minFee, setMinFee] = useState(0);
-  const [maxFee, setMaxFee] = useState(0);
-  const [availableChallenge, setAvailableChallenge] = useState([]);
+  const [recruitingPlayer, setRecruitingPlayer] = useState([]);
   const [pageSize] = useState(10);
   const [pageFrom, setPageFrom] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
+  const [groups, setGroups] = useState(groupsType);
+
   const [searchData, setSearchData] = useState();
   const [selectedSport, setSelectedSport] = useState(
     route?.params?.filters.sport,
@@ -72,9 +68,19 @@ export default function LookingForChallengeScreen({ navigation, route }) {
 
   const { sportsList } = route?.params ?? {};
 
-  console.log('available Challenge Filter:=>', filters);
+  console.log('Recruiting Player Filter:=>', filters);
 
   useEffect(() => {
+    groups.forEach((x, i) => {
+      if (x.type === 'Teams') {
+        groups[i].isChecked = true;
+      } else if (x.type === 'Clubs') {
+        groups[i].isChecked = true;
+      } else if (x.type === 'Leagues') {
+        groups[i].isChecked = true;
+      }
+      setGroups([...groups]);
+    });
     if (route?.params?.locationText) {
       setSettingPopup(true);
       setTimeout(() => {
@@ -105,68 +111,29 @@ export default function LookingForChallengeScreen({ navigation, route }) {
     setSports(list);
   }, [sportsList]);
 
-  const getAvailableForChallenge = useCallback(
+  const getRecruitingPlayer = useCallback(
     (filerdata) => {
       // Looking Challengee query
-      const availableForchallengeQuery = {
+      const recruitingPlayersQuery = {
         size: pageSize,
         from: pageFrom,
         query: {
           bool: {
-            should: [
-              {
-                bool: {
-                  must: [
-                    { match: { 'setting.availibility': 'On' } },
-                    { term: { entity_type: 'team' } },
-                  ],
-                },
-              },
-              {
-                bool: {
-                  must: [
-                    { match: { entity_type: 'player' } },
-                    {
-                      nested: {
-                        path: 'registered_sports',
-                        query: {
-                          bool: {
-                            must: [
-                              {
-                                match: {
-                                  'registered_sports.setting.availibility':
-                                    'On',
-                                },
-                              },
-                            ],
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
+            must: [{ match: { hiringPlayers: true } }],
           },
         },
       };
 
       if (filerdata.location !== 'world') {
-        availableForchallengeQuery.query.bool.should[0].bool.must.push({
+        recruitingPlayersQuery.query.bool.must.push({
           multi_match: {
-            query: filerdata.sport,
-            fields: ['city', 'country', 'state', 'venue.address'],
-          },
-        });
-        availableForchallengeQuery.query.bool.should[1].bool.must.push({
-          multi_match: {
-            query: filerdata.location,
-            fields: ['city', 'country', 'state', 'venue.address'],
+            query: filerdata.location.toLowerCase(),
+            fields: ['city', 'country', 'state'],
           },
         });
       }
       if (filerdata.sport !== 'All') {
-        availableForchallengeQuery.query.bool.should[0].bool.must.push({
+        recruitingPlayersQuery.query.bool.must.push({
           term: {
             'sport.keyword': {
               value: filerdata.sport.toLowerCase(),
@@ -174,50 +141,36 @@ export default function LookingForChallengeScreen({ navigation, route }) {
             },
           },
         });
-        availableForchallengeQuery.query.bool.should[1].bool.must[1].nested.query.bool.must.push(
-          {
-            term: {
-              'registered_sports.sport_name.keyword': {
-                value: filerdata.sport.toLowerCase(),
-                case_insensitive: true,
-              },
-            },
-          },
-        );
       }
 
-      if (filerdata.gameFee) {
-        availableForchallengeQuery.query.bool.should[0].bool.must.push({
-          range: {
-            'setting.game_fee.fee': {
-              gte: Number(parseFloat(filerdata.gameFee.split('-')[0]).toFixed(2)),
-              lte: Number(parseFloat(filerdata.gameFee.split('-')[1]).toFixed(2)),
-               boost: 2.0,
-            },
-          },
-        });
-
-        availableForchallengeQuery.query.bool.should[1].bool.must.push({
-          range: {
-            'registered_sports.setting.game_fee.fee': {
-              gte: Number(parseFloat(filerdata.gameFee.split('-')[0]).toFixed(2)),
-              lte: Number(parseFloat(filerdata.gameFee.split('-')[1]).toFixed(2)),
-              boost: 2.0,
-            },
+      console.log('filters::1::=>', filerdata);
+      const types = [];
+      if (filerdata.groupTeam) {
+        types.push('team');
+      } if (filerdata.groupClub) {
+        types.push('club');
+      } if (filerdata.groupLeague) {
+        types.push('league');
+      }
+      if (types.length > 0) {
+        recruitingPlayersQuery.query.bool.must.push({
+          terms: {
+            entity_type: [...types],
           },
         });
       }
+
       console.log(
-        'Available For challengeQuery  match Query:=>',
-        JSON.stringify(availableForchallengeQuery),
+        'Recruiting player  match Query:=>',
+        JSON.stringify(recruitingPlayersQuery),
       );
       // Looking Challengee query
 
-      getEntityIndex(availableForchallengeQuery)
+      getEntityIndex(recruitingPlayersQuery)
         .then((entity) => {
           if (entity.length > 0) {
-            const fetchedData = [...availableChallenge, ...entity];
-            setAvailableChallenge(fetchedData);
+            const fetchedData = [...recruitingPlayer, ...entity];
+            setRecruitingPlayer(fetchedData);
             setSearchData(fetchedData);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
@@ -229,17 +182,17 @@ export default function LookingForChallengeScreen({ navigation, route }) {
           }, 10);
         });
     },
-    [pageFrom, pageSize, availableChallenge],
+    [pageFrom, pageSize, recruitingPlayer],
   );
 
   useEffect(() => {
-    getAvailableForChallenge(filters);
+    getRecruitingPlayer(filters);
   }, []);
 
-  const renderAvailableChallengeListView = useCallback(
+  const renderRecruitingPlayerListView = useCallback(
     ({ item }) => (
       <View style={[styles.separator, { flex: 1 }]}>
-        <TCAvailableForChallenge
+        <TCRecruitingPlayers
           data={item}
           entityType={item.entity_type}
           selectedSport={selectedSport}
@@ -267,22 +220,10 @@ export default function LookingForChallengeScreen({ navigation, route }) {
     <TCThinDivider marginTop={10} marginBottom={10} width={'100%'} />
   );
 
-  const handleDonePress = (date) => {
-    if (datePickerFor === 'from') {
-      setFromDate(new Date(date));
-    } else {
-      setToDate(new Date(date));
-    }
-    setShow(!show);
-  };
-  const handleCancelPress = () => {
-    setShow(false);
-  };
-
   const onScrollHandler = () => {
     setLoadMore(true);
     if (!stopFetchMore) {
-      getAvailableForChallenge(filters);
+      getRecruitingPlayer(filters);
       stopFetchMore = true;
     }
     setLoadMore(false);
@@ -295,25 +236,47 @@ export default function LookingForChallengeScreen({ navigation, route }) {
           tempFilter.sport = 'All';
           delete tempFilter.gameFee;
           setSelectedSport('All');
-          setMinFee(0);
-          setMaxFee(0);
         }
         if (Object.keys(item)[0] === 'location') {
           tempFilter.location = 'world';
         }
-        if (Object.keys(item)[0] === 'gameFee') {
-          delete tempFilter.gameFee;
+
+        if (Object.keys(item)[0] === 'groupTeam') {
+          delete tempFilter.groupTeam;
+        }
+        if (Object.keys(item)[0] === 'groupClub') {
+          delete tempFilter.groupClub;
+        }
+        if (Object.keys(item)[0] === 'groupLeague') {
+          delete tempFilter.groupLeague;
         }
 
         // delete tempFilter[key];
       }
     });
-    console.log('Temp filter', tempFilter);
-    setFilters({ ...tempFilter });
+
+    const temp = []
+    groups.forEach((x) => {
+      console.log('x.type === item.type', x.type, item.groupClub || item.groupTeam || item.groupLeague);
+      if (x.type === (item.groupClub || item.groupTeam || item.groupLeague)) {
+        const obj = {
+          type: x.type,
+          isChecked: false,
+        }
+      temp.push(obj)
+      } else {
+       temp.push(x)
+      }
+    });
+    setGroups([...temp]);
+
+    console.log('Groups::=>', temp);
     // applyFilter();
     setTimeout(() => {
+      setFilters({ ...tempFilter });
+
       setPageFrom(0);
-      setAvailableChallenge([]);
+      setRecruitingPlayer([]);
       applyFilter(tempFilter);
     }, 10);
   };
@@ -359,24 +322,9 @@ export default function LookingForChallengeScreen({ navigation, route }) {
   };
 
   const applyFilter = useCallback((fil) => {
-    getAvailableForChallenge(fil);
+    getRecruitingPlayer(fil);
   }, []);
 
-  const applyValidation = useCallback(() => {
-    if (Number(minFee) > 0 && Number(maxFee) <= 0) {
-      Alert.alert('Please enter correct game max fee.');
-      return false;
-    }
-    if (Number(minFee) <= 0 && Number(maxFee) > 0) {
-      Alert.alert('Please enter correct game min fee.');
-      return false;
-    }
-    if (Number(minFee) > Number(maxFee)) {
-      Alert.alert('Please enter correct game fee.');
-      return false;
-    }
-    return true;
-  }, [maxFee, minFee]);
   const listEmptyComponent = () => (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text
@@ -390,15 +338,15 @@ export default function LookingForChallengeScreen({ navigation, route }) {
     </View>
   );
   const searchFilterFunction = (text) => {
-    const result = availableChallenge.filter(
+    const result = recruitingPlayer.filter(
       (x) => x?.full_name?.toLowerCase().includes(text?.toLowerCase())
         || x?.city?.toLowerCase().includes(text?.toLowerCase())
         || x?.group_name?.toLowerCase().includes(text?.toLowerCase()),
     );
     if (text.length > 0) {
-      setAvailableChallenge(result);
+      setRecruitingPlayer(result);
     } else {
-      setAvailableChallenge(searchData);
+      setRecruitingPlayer(searchData);
     }
   };
 
@@ -408,9 +356,52 @@ export default function LookingForChallengeScreen({ navigation, route }) {
       sport: 'All',
     });
     setSelectedSport('All');
-    setMinFee(0);
-    setMaxFee(0);
   };
+  const isIconCheckedOrNot = useCallback(
+    ({ item, index }) => {
+      if (item.isChecked) {
+        groups[index].isChecked = false;
+      } else {
+        groups[index].isChecked = true;
+      }
+
+      setGroups([...groups]);
+      const selectedGroups = groups.filter((e) => e.isChecked);
+      console.log('selectedGroups', selectedGroups);
+    },
+    [groups],
+  );
+  const renderGroupsTypeItem = ({ item, index }) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => isIconCheckedOrNot({ item, index })}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginRight: 15,
+        }}>
+        <Text style={styles.sportList}>{item?.type}</Text>
+        <View style={styles.checkbox}>
+          {item?.isChecked ? (
+            <FastImage
+              resizeMode={'contain'}
+              source={images.orangeCheckBox}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <FastImage
+              resizeMode={'contain'}
+              source={images.uncheckWhite}
+              style={styles.unCheckboxImg}
+            />
+          )}
+        </View>
+      </View>
+      <TCThinDivider />
+    </TouchableOpacity>
+  );
+
   return (
     <View>
       <View style={styles.searchView}>
@@ -433,12 +424,12 @@ export default function LookingForChallengeScreen({ navigation, route }) {
         onTagCancelPress={handleTagPress}
       />
       <FlatList
-        extraData={availableChallenge}
+        extraData={recruitingPlayer}
         showsHorizontalScrollIndicator={false}
-        data={availableChallenge}
+        data={recruitingPlayer}
         ItemSeparatorComponent={renderSeparator}
         keyExtractor={keyExtractor}
-        renderItem={renderAvailableChallengeListView}
+        renderItem={renderRecruitingPlayerListView}
         style={styles.listStyle}
         contentContainerStyle={{ paddingBottom: 1 }}
         onEndReached={onScrollHandler}
@@ -479,25 +470,49 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                 <Text
                   style={styles.doneText}
                   onPress={() => {
-                    if (applyValidation()) {
                       setSettingPopup(false);
                       setTimeout(() => {
                         const tempFilter = { ...filters };
                         tempFilter.sport = selectedSport;
                         tempFilter.location = location;
 
-                        if (minFee && maxFee) {
-                          tempFilter.gameFee = `${minFee}-${maxFee}`;
+                        if (
+                          groups.filter(
+                            (obj) => obj.type === 'Teams' && obj.isChecked,
+                          ).length > 0
+                        ) {
+                          tempFilter.groupTeam = 'Teams';
+                        } else {
+                          delete tempFilter.groupTeam;
                         }
+                        if (
+                          groups.filter(
+                            (obj) => obj.type === 'Clubs' && obj.isChecked,
+                          ).length > 0
+                        ) {
+                          tempFilter.groupClub = 'Clubs';
+                        } else {
+                          delete tempFilter.groupClub;
+                        }
+                        if (
+                          groups.filter(
+                            (obj) => obj.type === 'Leagues' && obj.isChecked,
+                          ).length > 0
+                        ) {
+                          tempFilter.groupLeague = 'Leagues';
+                        } else {
+                          delete tempFilter.groupLeague;
+                        }
+                        console.log('tempFilter', tempFilter);
+
                         setFilters({
                           ...tempFilter,
                         });
                         setPageFrom(0);
-                        setAvailableChallenge([]);
+                        setRecruitingPlayer([]);
                         applyFilter(tempFilter);
                       }, 100);
                       console.log('DONE::');
-                    }
                   }}>
                   {'Apply'}
                 </Text>
@@ -520,10 +535,6 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                         onPress={() => {
                           setLocationFilterOpetion(0);
                           setLocation('world');
-                          // setFilters({
-                          //   ...filters,
-                          //   location: 'world',
-                          // });
                         }}>
                         <Image
                           source={
@@ -607,12 +618,12 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                           justifyContent: 'space-between',
                         }}>
                         {/* <TCSearchCityView
-                     getCity={(value) => {
-                       console.log('Value:=>', value);
-                       setSelectedCity(value);
-                     }}
-                     // value={selectedCity}
-                   /> */}
+                      getCity={(value) => {
+                        console.log('Value:=>', value);
+                        setSelectedCity(value);
+                      }}
+                      // value={selectedCity}
+                    /> */}
 
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
@@ -652,14 +663,6 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                         placeholder={'Select Sport'}
                         onValueChange={(value) => {
                           setSelectedSport(value);
-                          if (value === 'All') {
-                            setMinFee(0);
-                            setMaxFee(0);
-                          }
-                          // setFilters({
-                          //   ...filters,
-                          //   sport: value,
-                          // });
                         }}
                         value={selectedSport}
                       />
@@ -668,184 +671,20 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                 </View>
                 <View style={{ flexDirection: 'column', margin: 15 }}>
                   <View>
-                    <Text style={styles.filterTitle}>Available Time</Text>
+                    <Text style={styles.filterTitle}>Groups</Text>
                   </View>
                   <View style={{ marginTop: 10 }}>
                     <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                      <TouchableOpacity
-                        style={styles.fieldView}
-                        onPress={() => {
-                          setDatePickerFor('from');
-                          setShow(!show);
-                        }}>
-                        <View
-                          style={{
-                            height: 35,
-                            justifyContent: 'center',
-                          }}>
-                          <Text style={styles.fieldTitle} numberOfLines={1}>
-                            From
-                          </Text>
-                        </View>
-                        <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(fromDate).format('MMM DD, YYYY')} {'   '}
-                          </Text>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(fromDate).format('h:mm a')}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
+                      <FlatList
+                        data={groups}
+                        keyExtractor={keyExtractor}
+                        renderItem={renderGroupsTypeItem}
+                      />
                     </View>
-                    <View style={{ flexDirection: 'row' }}>
-                      <TouchableOpacity
-                        style={styles.fieldView}
-                        onPress={() => {
-                          setDatePickerFor('to');
-                          setShow(!show);
-                        }}>
-                        <View
-                          style={{
-                            height: 35,
-                            justifyContent: 'center',
-                          }}>
-                          <Text style={styles.fieldTitle} numberOfLines={1}>
-                            To
-                          </Text>
-                        </View>
-                        <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(toDate).format('MMM DD, YYYY')} {'   '}
-                          </Text>
-                          <Text style={styles.fieldValue} numberOfLines={1}>
-                            {moment(toDate).format('h:mm a')}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontFamily: fonts.RLight,
-                        color: colors.lightBlackColor,
-                        textAlign: 'right',
-                        marginTop: 10,
-                      }}>
-                      Time zone{' '}
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontFamily: fonts.RRegular,
-                          color: colors.lightBlackColor,
-                          textDecorationLine: 'underline',
-                        }}>
-                        Vancouver
-                      </Text>
-                    </Text>
                   </View>
                 </View>
               </View>
-              {/* Rate View */}
-              {/* <View>
-             <View
-               style={{
-                 flexDirection: 'row',
-                 margin: 15,
-                 marginTop: 0,
-                 justifyContent: 'space-between',
-               }}>
-               <View style={{ flex: 0.2 }}>
-                 <Text style={styles.filterTitle}>Rating</Text>
-               </View>
-               <View
-                 style={{
-                   marginLeft: 15,
-                   flex: 0.6,
-                   alignSelf: 'flex-end',
-                 }}>
-                 <View
-                   style={{
-                     flexDirection: 'row',
-                     marginBottom: 10,
-                     alignItems: 'center',
-                     justifyContent: 'space-between',
-                   }}>
-                   <Text style={styles.minMaxTitle}>Min</Text>
-                   <AirbnbRating
-                     count={5}
-                     fractions={1}
-                     showRating={false}
-                     defaultRating={0}
-                     size={20}
-                     isDisabled={false}
-                     selectedColor={'#f49c20'}
-                   />
-                   <Text style={styles.starCount}>2.0</Text>
-                 </View>
-                 <View
-                   style={{
-                     flexDirection: 'row',
-                     alignItems: 'center',
-                     justifyContent: 'space-between',
-                   }}>
-                   <Text style={styles.minMaxTitle}>Max</Text>
-                   <AirbnbRating
-                     count={5}
-                     fractions={1}
-                     showRating={false}
-                     defaultRating={0}
-                     size={20}
-                     isDisabled={false}
-                     selectedColor={'#f49c20'}
-                   />
-                   <Text style={styles.starCount}>2.0</Text>
-                 </View>
-               </View>
-             </View>
 
-           </View> */}
-              {/* Rate View */}
-
-              {selectedSport !== 'All' && (
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    margin: 15,
-                    justifyContent: 'space-between',
-                  }}>
-                  <View style={{}}>
-                    <Text style={styles.filterTitle}>Game fee</Text>
-                  </View>
-                  <View style={{ marginTop: 10 }}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
-                      <TextInput
-                        onChangeText={(text) => setMinFee(text)}
-                        value={minFee}
-                        style={styles.minFee}
-                        placeholder={'Min'}
-                        autoCorrect={false}
-                        // clearButtonMode={'always'}
-                        keyboardType={'numeric'}
-                        placeholderTextColor={colors.userPostTimeColor}
-                      />
-                      <TextInput
-                        onChangeText={(text) => setMaxFee(text)}
-                        value={maxFee}
-                        style={styles.minFee}
-                        placeholder={'Max'}
-                        autoCorrect={false}
-                        // clearButtonMode={'always'}
-                        keyboardType={'numeric'}
-                        placeholderTextColor={colors.userPostTimeColor}
-                      />
-                    </View>
-                  </View>
-                </View>
-              )}
               <View style={{ flex: 1 }} />
             </ScrollView>
           </KeyboardAvoidingView>
@@ -873,15 +712,6 @@ export default function LookingForChallengeScreen({ navigation, route }) {
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>
-        <DateTimePickerView
-          date={new Date()}
-          visible={show}
-          onDone={handleDonePress}
-          onCancel={handleCancelPress}
-          onHide={handleCancelPress}
-          // minutesGap={30}
-          mode={'datetime'}
-        />
       </Modal>
     </View>
   );
@@ -993,32 +823,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-  fieldView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flex: 1,
-    height: 40,
-    alignItems: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
-    elevation: 1,
-  },
-  fieldTitle: {
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
-    marginLeft: 10,
-  },
-  fieldValue: {
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    textAlign: 'center',
-  },
+
   resetButton: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
@@ -1057,24 +862,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     justifyContent: 'center',
   },
-  minFee: {
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    height: 40,
-    paddingLeft: 15,
-    paddingRight: 15,
-    width: widthPercentageToDP('45%'),
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
-    justifyContent: 'center',
-    textAlign: 'center',
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
+
   searchCityText: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
@@ -1084,5 +872,35 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontSize: widthPercentageToDP('3.8%'),
     width: widthPercentageToDP('75%'),
+  },
+
+  checkbox: {
+    alignSelf: 'center',
+    marginRight: 15,
+  },
+  unCheckboxImg: {
+    width: widthPercentageToDP('5.5%'),
+    height: widthPercentageToDP('5.5%'),
+    tintColor: colors.lightBlackColor,
+    alignSelf: 'center',
+  },
+  checkboxImg: {
+    width: widthPercentageToDP('5.5%'),
+    height: widthPercentageToDP('5.5%'),
+  },
+  listItem: {
+    alignSelf: 'center',
+    // marginLeft: wp('10%'),
+    width: widthPercentageToDP('90%'),
+    // backgroundColor: 'red',
+  },
+
+  sportList: {
+    color: colors.lightBlackColor,
+    fontSize: widthPercentageToDP('4%'),
+    textAlign: 'left',
+    fontFamily: fonts.RRegular,
+    margin: widthPercentageToDP('4%'),
+    textAlignVertical: 'center',
   },
 });

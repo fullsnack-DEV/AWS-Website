@@ -103,10 +103,12 @@ export default function UpcomingMatchScreen({ navigation, route }) {
     }
   }, [route?.params?.locationText]);
   useEffect(() => {
-    const list = [{
-      label: 'All',
-      value: 'All',
-    }];
+    const list = [
+      {
+        label: 'All',
+        value: 'All',
+      },
+    ];
     sportsList.map((obj) => {
       const dataSource = {
         label: obj.sport_name,
@@ -479,11 +481,12 @@ export default function UpcomingMatchScreen({ navigation, route }) {
     setFilters({
       location: 'world',
       sport: 'All',
-    })
-    setSelectedSport('All')
-    setFromDate()
-    setToDate()
-   };
+    });
+    setLocation('world');
+    setSelectedSport('All');
+    setFromDate();
+    setToDate();
+  };
   return (
     <View>
       <View style={styles.searchView}>
@@ -610,7 +613,6 @@ export default function UpcomingMatchScreen({ navigation, route }) {
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(0);
-                          setLocation('world');
                           // setFilters({
                           //   ...filters,
                           //   location: 'world',
@@ -743,7 +745,7 @@ export default function UpcomingMatchScreen({ navigation, route }) {
                         placeholder={'Select Sport'}
                         onValueChange={(value) => {
                           setSelectedSport(value);
-                          setSelectedEntity()
+                          setSelectedEntity();
                           setEntityData([]);
                           // setFilters({
                           //   ...filters,
@@ -983,25 +985,26 @@ export default function UpcomingMatchScreen({ navigation, route }) {
             </ScrollView>
           </KeyboardAvoidingView>
 
-          <TouchableOpacity style={styles.resetButton} onPress={() => {
-            Alert.alert(
-              'Are you sure want to reset filters?',
-              '',
-              [
-
-                {
-                  text: 'Cancel',
-                  onPress: () => console.log('Cancel Pressed'),
-                  style: 'cancel',
-                },
-                {
-                  text: 'OK',
-                  onPress: () => onPressReset(),
-                },
-              ],
-              { cancelable: false },
-            );
-          }}>
+          <TouchableOpacity
+            style={styles.resetButton}
+            onPress={() => {
+              Alert.alert(
+                'Are you sure want to reset filters?',
+                '',
+                [
+                  {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'OK',
+                    onPress: () => onPressReset(),
+                  },
+                ],
+                { cancelable: false },
+              );
+            }}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>

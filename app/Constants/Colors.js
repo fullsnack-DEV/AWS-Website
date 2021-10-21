@@ -46,6 +46,11 @@ const colors = {
   yellowColor: '#FFAE01',
   localHomeGradientStart: '#ffbb01',
   localHomeGradientEnd: '#ff5800',
+  localHomeGreenGradientStart: '#aad840',
+  localHomeGreenGradientEnd: '#00c168',
+  localHomeBlueGradientStart: '#00ceff',
+  localHomeBlueGradientEnd: '#003bff',
+
   themeColor2: '#FF4E00',
   darkGrayColor: '#565656',
   gameDetailColor: '#45C188',
