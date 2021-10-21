@@ -5,14 +5,11 @@ import {
  View, Text, StyleSheet, Image,
  } from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import LinearGradient from 'react-native-linear-gradient';
-
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
-const TCChallengerCard = ({ data, entityType, selectedSport }) => {
+const TCAvailableForChallenge = ({ data, entityType, selectedSport }) => {
   let entityName, sportText, gameFee, currency;
 
   if (entityType === 'player') {
@@ -62,33 +59,9 @@ const TCChallengerCard = ({ data, entityType, selectedSport }) => {
   console.log(data.sport);
 
   return (
-    <LinearGradient
-    colors={[colors.localHomeGradientStart, colors.localHomeGradientEnd]}
-      style={styles.gradientContainer}>
-      <Image
-        source={
-          data?.background_thumbnail ? { uri: data?.background_thumbnail } : null
-        }
-        style={styles.backgroundView}
-      />
-      <Image source={images.localhomeOverlay} style={styles.overlayView} />
-      <View
-        style={{
-          width: wp('40%'),
-          marginLeft: 10,
-          marginTop: 10,
-          position: 'absolute',
-        }}>
-        {/* <View style={styles.bottomView}>
-          <Text style={styles.levelText}>Lv.0</Text>
-          <Text style={styles.textSaperator}> | </Text>
-          <Text style={styles.pointView} numberOfLines={1}>
-            {data?.point} points
-          </Text>
-        </View> */}
 
-        <View style={{ flexDirection: 'row' }}>
-          <Image
+    <View style={{ flexDirection: 'row' }}>
+      <Image
             source={
               data?.thumbnail
                 ? { uri: data?.thumbnail }
@@ -96,52 +69,33 @@ const TCChallengerCard = ({ data, entityType, selectedSport }) => {
             }
             style={styles.profileImage}
           />
-          <View style={{ flexDirection: 'column', marginLeft: 10 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.entityTitle} numberOfLines={2}>
-                {entityName}
-              </Text>
-              {entityType === 'team' && (
-                <Image source={(entityType === 'team' && images.teamT) || (entityType === 'club' && images.clubC) || (entityType === 'league' && images.leagueL)} style={styles.teamTImage} />
+      <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={styles.entityTitle} numberOfLines={2}>
+            {entityName}
+          </Text>
+          {entityType === 'team' && (
+            <Image source={(entityType === 'team' && images.teamT) || (entityType === 'club' && images.clubC) || (entityType === 'league' && images.leagueL)} style={styles.teamTImage} />
               )}
-            </View>
-            <View>
-              <Text style={styles.smallTitle} numberOfLines={2}>
-                {data?.city} · {sportText}
-              </Text>
-            </View>
-            <View>
-              <Text style={styles.amountTitle} numberOfLines={2}>
-                {gameFee && `LV 13 · ${gameFee} ${currency}`}
-              </Text>
-            </View>
-          </View>
+        </View>
+        <View>
+          <Text style={styles.smallTitle} numberOfLines={2}>
+            {data?.city} · {sportText}
+          </Text>
+        </View>
+        <View>
+          <Text style={styles.amountTitle} numberOfLines={2}>
+            {gameFee && `LV 13 · ${gameFee} ${currency}`}
+          </Text>
         </View>
       </View>
-    </LinearGradient>
+    </View>
+
   );
 };
 
 const styles = StyleSheet.create({
-  gradientContainer: {
-    alignSelf: 'center',
-    width: '98%',
-    borderRadius: 6,
-    elevation: 5,
-    flexDirection: 'row',
-    height: 105,
 
-    // marginTop: 15,
-  },
-  backgroundView: {
-    height: 105,
-    width: '100%',
-  },
-  overlayView: {
-    position: 'absolute',
-    height: 105,
-    width: '100%',
-  },
   profileImage: {
     height: 40,
     width: 40,
@@ -150,17 +104,17 @@ const styles = StyleSheet.create({
   },
 
   entityTitle: {
-    color: colors.whiteColor,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     fontSize: 16,
   },
   smallTitle: {
-    color: colors.whiteColor,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     fontSize: 12,
   },
   amountTitle: {
-    color: colors.whiteColor,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     fontSize: 12,
   },
@@ -174,4 +128,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(TCChallengerCard);
+export default memo(TCAvailableForChallenge);

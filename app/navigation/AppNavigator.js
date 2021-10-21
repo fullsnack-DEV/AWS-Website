@@ -209,7 +209,7 @@ const getTabBarVisibility = (route) => {
 || routeName === 'ScorekeeperListScreen'
 || routeName === 'RefereesListScreen'
 || routeName === 'LookingForChallengeScreen'
-|| routeName === 'HiringPlayerScreen'
+|| routeName === 'RecruitingPlayerScreen'
 || routeName === 'LookingTeamScreen'
 || routeName === 'SportSettingScreen'
 || routeName === 'AddOrDeleteSport'
