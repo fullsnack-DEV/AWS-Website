@@ -1,123 +1,116 @@
 import React, { memo } from 'react';
 import {
-  View,
-  Text,
-
-  StyleSheet,
-  ImageBackground,
-} from 'react-native';
+ View, Text, StyleSheet, Image,
+ } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import LinearGradient from 'react-native-linear-gradient';
 
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
-import TCGradientButton from './TCGradientButton';
-import TCRoundChart from './TCRoundChart';
 
-const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData, data }) => (
-  <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
-    <View style={styles.eventText}>
-      <View
-            style={{
-              width: wp('20%'),
-              height: 102,
-              // backgroundColor: 'green',
-              borderBottomLeftRadius: 8,
-              borderTopLeftRadius: 8,
-            }}>
-        <TCRoundChart gameStatsData ={gameStatsData}/>
-      </View>
-      <View style={{ width: wp('40%'), marginLeft: 10, marginTop: 10 }}>
-        <View style={styles.bottomView}>
-          <Text style={styles.levelText}>Lv.0</Text>
-          <Text style={styles.textSaperator}> | </Text>
-          <Text style={styles.pointView} numberOfLines={1}>
-            {data?.point} points
-          </Text>
-        </View>
-        <Text style={styles.eventTitle} numberOfLines={3}>
-          {data?.group_name}
+const TCHiringPlayersCard = ({ data, entityType }) => (
+  <LinearGradient
+    colors={(entityType === 'team' && [colors.localHomeGradientStart, colors.localHomeGradientEnd]) || (entityType === 'club' && [colors.localHomeGreenGradientStart, colors.localHomeGreenGradientEnd]) || (entityType === 'league' && [colors.localHomeBlueGradientStart, colors.localHomeBlueGradientEnd])}
+    style={styles.gradientContainer}>
+    <Image
+      source={
+        data?.background_thumbnail ? { uri: data?.background_thumbnail } : null
+      }
+      style={styles.backgroundView}
+    />
+    <Image source={images.localhomeOverlay} style={styles.overlayView} />
+    <View
+      style={{
+        width: wp('40%'),
+        marginLeft: 10,
+        marginTop: 10,
+        position: 'absolute',
+      }}>
+      {/* <View style={styles.bottomView}>
+        <Text style={styles.levelText}>Lv.0</Text>
+        <Text style={styles.textSaperator}> | </Text>
+        <Text style={styles.pointView} numberOfLines={1}>
+          {data?.point} points
         </Text>
+      </View> */}
+
+      <View style={{ flexDirection: 'row' }}>
+        <Image source={data?.thumbnail ? { uri: data?.thumbnail } : images.profilePlaceHolder} style={styles.profileImage} />
+        <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.entityTitle} numberOfLines={2}>
+              {data?.group_name}
+            </Text>
+            <Image source={
+              (entityType === 'team' && images.teamT) || (entityType === 'club' && images.clubC) || (entityType === 'league' && images.leagueL)} style={styles.teamTImage} />
+          </View>
+          <View>
+            <Text style={styles.smallTitle} numberOfLines={2}>
+              {data?.city} · {data?.sport}
+            </Text>
+          </View>
+          <View>
+            <Text style={styles.amountTitle} numberOfLines={2}>
+              LV 13{data?.setting?.game_fee && ` · ${data?.setting?.game_fee?.fee} ${data?.setting?.game_fee?.currency_type}`}
+            </Text>
+          </View>
+        </View>
       </View>
     </View>
-    <ImageBackground
-          source={images.soccerBackground}
-          style={{
-            height: 102,
-            width: wp('32%'),
-            resizeMode: 'cover',
-            overflow: 'hidden',
-            borderBottomRightRadius: 6,
-            borderTopRightRadius: 6,
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-          }}>
-      <TCGradientButton
-            title={'Join'}
-            style={{
-              height: 25,
-              borderRadius: 6,
-              width: 75,
-              marginBottom: 15,
-              alignSelf: 'center',
-            }}
-            onPress={() => console.log('Join Press')}
-          />
-    </ImageBackground>
-  </View>
-
-  )
+  </LinearGradient>
+);
 
 const styles = StyleSheet.create({
-  backgroundView: {
+  gradientContainer: {
     alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
+    width: '98%',
     borderRadius: 6,
     elevation: 5,
     flexDirection: 'row',
-    height: 102,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    width: wp('86%'),
-    borderBottomRightRadius: 8,
-    borderTopRightRadius: 8,
+    height: 105,
+
     // marginTop: 15,
   },
-  bottomView: {
-    flexDirection: 'row',
+  backgroundView: {
+    height: 105,
+    width: '100%',
   },
-  eventText: {
-    flexDirection: 'row',
-    width: wp('60%'),
+  overlayView: {
+    position: 'absolute',
+    height: 105,
+    width: '100%',
   },
-  levelText: {
-    fontSize: 12,
-    fontFamily: fonts.RMedium,
-    color: colors.orangeColorCard,
+  profileImage: {
+    height: 40,
+    width: 40,
+    resizeMode: 'contain',
+    borderRadius: 80,
   },
-  eventTitle: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
+
+  entityTitle: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
     fontSize: 16,
-    marginBottom: 1,
-    width: wp('25%'),
   },
-
-  pointView: {
+  smallTitle: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
     fontSize: 12,
-    fontFamily: fonts.RMedium,
-    color: colors.orangeColorCard,
-
-    flex: 1,
   },
-  textSaperator: {
-    color: colors.orangeColorCard,
+  amountTitle: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 12,
+  },
+
+  teamTImage: {
+    resizeMode: 'contain',
     marginLeft: 5,
-    marginRight: 5,
-    opacity: 0.4,
+    // alignSelf: 'center',
+    height: 15,
+    width: 15,
   },
 });
 

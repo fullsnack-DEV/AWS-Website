@@ -17,6 +17,11 @@ export const invoiceMonthsSelectionData = [
   { label: 'For past 12 Months', value: 'For past 12 Months' },
 ]
 
+export const groupsType = [
+  { type: 'Teams' },
+  { type: 'Clubs' },
+  { type: 'Leagues' },
+]
 export const gameData = {
   challenge_referee: [{ is_chief: true, responsible_team_id: 'aCqH9ixc23SSPyrwzUbNDDw3YGG3' }, { is_chief: false, responsible_team_id: 'aLaV61nfhEfmVgDKy5MAnDOtLHu1' }],
   status: 'ended',

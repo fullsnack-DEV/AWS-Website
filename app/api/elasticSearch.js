@@ -47,3 +47,9 @@ export const getGamesListIndex = async () => makeElasticAPIRequest({
   method: 'get',
   url: `/${Config.GAME_INDEX}/_search`,
 })
+
+export const getEntityIndex = async (query) => makeElasticAPIRequest({
+  method: 'post',
+  url: `/${Config.GROUP_INDEX},${Config.USER_INDEX}/_search`,
+  data: query,
+})

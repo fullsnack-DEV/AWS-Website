@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
     marginLeft: 5,
     backgroundColor: colors.offwhite,
-    borderRadius: 13,
+    borderRadius: 5,
     shadowColor: colors.blackColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.16,
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     height: 8,
     resizeMode: 'contain',
     marginLeft: 5,
-    marginRight: 10,
+    marginRight: 7,
   },
   dividerImage: {
     alignSelf: 'center',

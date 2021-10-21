@@ -613,7 +613,7 @@ export default function AccountScreen({ navigation, route }) {
       const entity = authContext.entity;
       navigation.navigate('GroupMembersScreen', { groupID: entity.uid });
     } else if (section === 'Manage Challenge') {
-      setClickedUserType('user')
+      setClickedUserType('user');
       const entity = authContext.entity;
 
       if (entity.role === 'user') {
@@ -628,7 +628,7 @@ export default function AccountScreen({ navigation, route }) {
         });
       }
     } else if (section === 'Referee Reservation Settings') {
-      setClickedUserType('referee')
+      setClickedUserType('referee');
 
       const entity = authContext.entity;
 
@@ -644,7 +644,7 @@ export default function AccountScreen({ navigation, route }) {
         });
       }
     } else if (section === 'Scorekeeper Reservation Settings') {
-      setClickedUserType('scorekeeper')
+      setClickedUserType('scorekeeper');
 
       const entity = authContext.entity;
 
@@ -707,7 +707,10 @@ export default function AccountScreen({ navigation, route }) {
     [authContext.entity, navigation],
   );
 
-  console.log('authContext?.entity?.auth?.user', authContext?.entity?.auth?.user);
+  console.log(
+    'authContext?.entity?.auth?.user',
+    authContext?.entity?.auth?.user,
+  );
   const renderSportsList = useCallback(
     ({ item }) => (
       <View style={styles.listContainer}>
@@ -1901,7 +1904,14 @@ export default function AccountScreen({ navigation, route }) {
             <View style={styles.separatorLine} />
             <FlatList
               ItemSeparatorComponent={() => <TCThinDivider />}
-              data={(clickedUserType === 'user' && authContext?.entity?.obj?.registered_sports) || (clickedUserType === 'referee' && authContext?.entity?.obj?.referee_data) || (clickedUserType === 'scorekeeper' && authContext?.entity?.obj?.scorekeeper_data)}
+              data={
+                (clickedUserType === 'user'
+                  && authContext?.entity?.obj?.registered_sports)
+                || (clickedUserType === 'referee'
+                  && authContext?.entity?.obj?.referee_data)
+                || (clickedUserType === 'scorekeeper'
+                  && authContext?.entity?.obj?.scorekeeper_data)
+              }
               keyExtractor={(item, index) => index.toString()}
               renderItem={renderSports}
             />

@@ -65,7 +65,9 @@ export default function RefereesListScreen({ navigation, route }) {
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
   const [searchData, setSearchData] = useState();
-  const [selectedSport, setSelectedSport] = useState(route?.params?.filters.sport);
+  const [selectedSport, setSelectedSport] = useState(
+    route?.params?.filters.sport,
+  );
   const [location, setLocation] = useState(route?.params?.filters.location);
 
   const { sportsList } = route?.params ?? {};
@@ -86,10 +88,12 @@ export default function RefereesListScreen({ navigation, route }) {
     }
   }, [route?.params?.locationText]);
   useEffect(() => {
-    const list = [{
-      label: 'All',
+    const list = [
+      {
+        label: 'All',
         value: 'All',
-    }];
+      },
+    ];
     sportsList.map((obj) => {
       const dataSource = {
         label: obj.sport_name,
@@ -101,66 +105,69 @@ export default function RefereesListScreen({ navigation, route }) {
     setSports(list);
   }, [sportsList]);
 
-  const getReferees = useCallback((filerReferee) => {
-    const refereeQuery = {
-      size: pageSize,
-      from: pageFrom,
-      query: {
-        bool: {
-          must: [{ term: { 'referee_data.is_published': true } }],
-        },
-      },
-    };
-    if (filerReferee.location !== 'world') {
-      refereeQuery.query.bool.must.push({
-        multi_match: {
-          query: `${filerReferee.location.toLowerCase()}`,
-          fields: ['city', 'country', 'state'],
-        },
-      });
-    }
-    if (filerReferee.sport !== 'All') {
-      refereeQuery.query.bool.must.push({
-        term: {
-          'referee_data.sport_name.keyword': {
-            value: `${filerReferee?.sport?.toLowerCase()}`,
-            case_insensitive: true,
+  const getReferees = useCallback(
+    (filerReferee) => {
+      const refereeQuery = {
+        size: pageSize,
+        from: pageFrom,
+        query: {
+          bool: {
+            must: [{ term: { 'referee_data.is_published': true } }],
           },
         },
-      });
-    }
-    if (filerReferee.refereeFee) {
-      refereeQuery.query.bool.must.push({
-        range: {
-          'referee_data.setting.game_fee.fee': {
-            gte: Number(filerReferee.refereeFee.split('-')[0]),
-            lte: Number(filerReferee.refereeFee.split('-')[1]),
-             boost: 2.0,
+      };
+      if (filerReferee.location !== 'world') {
+        refereeQuery.query.bool.must.push({
+          multi_match: {
+            query: `${filerReferee.location.toLowerCase()}`,
+            fields: ['city', 'country', 'state'],
           },
-        },
-      });
-    }
+        });
+      }
+      if (filerReferee.sport !== 'All') {
+        refereeQuery.query.bool.must.push({
+          term: {
+            'referee_data.sport_name.keyword': {
+              value: `${filerReferee?.sport?.toLowerCase()}`,
+              case_insensitive: true,
+            },
+          },
+        });
+      }
+      if (filerReferee.refereeFee) {
+        refereeQuery.query.bool.must.push({
+          range: {
+            'referee_data.setting.game_fee.fee': {
+              gte: Number(filerReferee.refereeFee.split('-')[0]),
+              lte: Number(filerReferee.refereeFee.split('-')[1]),
+              boost: 2.0,
+            },
+          },
+        });
+      }
 
-    console.log('refereeQuery:=>', JSON.stringify(refereeQuery));
+      console.log('refereeQuery:=>', JSON.stringify(refereeQuery));
 
-    // Referee query
+      // Referee query
 
-    getUserIndex(refereeQuery)
-      .then((res) => {
-        if (res.length > 0) {
-          const fetchedData = [...referees, ...res];
-          setReferees(fetchedData);
-          setSearchData(fetchedData);
-          setPageFrom(pageFrom + pageSize);
-          stopFetchMore = true;
-        }
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
-        }, 10);
-      });
-  }, [pageFrom, pageSize, referees]);
+      getUserIndex(refereeQuery)
+        .then((res) => {
+          if (res.length > 0) {
+            const fetchedData = [...referees, ...res];
+            setReferees(fetchedData);
+            setSearchData(fetchedData);
+            setPageFrom(pageFrom + pageSize);
+            stopFetchMore = true;
+          }
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e);
+          }, 10);
+        });
+    },
+    [pageFrom, pageSize, referees],
+  );
 
   useEffect(() => {
     getReferees(filters);
@@ -169,14 +176,23 @@ export default function RefereesListScreen({ navigation, route }) {
   const renderRefereesScorekeeperListView = useCallback(
     ({ item }) => (
       <View style={[styles.separator, { flex: 1 }]}>
-        <TCRefereeView data={item} showStar={true} sport={selectedSport} onPress={() => {
-          navigation.navigate('HomeScreen', {
-            uid: ['user', 'player']?.includes(item?.entity_type) ? item?.user_id : item?.group_id,
-            role: ['user', 'player']?.includes(item?.entity_type) ? 'user' : item.entity_type,
-            backButtonVisible: true,
-            menuBtnVisible: false,
-          })
-        }}/>
+        <TCRefereeView
+          data={item}
+          showStar={true}
+          sport={selectedSport}
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
+        />
       </View>
     ),
     [navigation, selectedSport],
@@ -215,9 +231,9 @@ export default function RefereesListScreen({ navigation, route }) {
         if (Object.keys(item)[0] === 'sport') {
           tempFilter.sport = 'All';
           delete tempFilter.refereeFee;
-          setSelectedSport('All')
-          setMinFee(0)
-          setMaxFee(0)
+          setSelectedSport('All');
+          setMinFee(0);
+          setMaxFee(0);
         }
         if (Object.keys(item)[0] === 'location') {
           tempFilter.location = 'world';
@@ -285,19 +301,19 @@ export default function RefereesListScreen({ navigation, route }) {
 
   const applyValidation = useCallback(() => {
     if (Number(minFee) > 0 && Number(maxFee) <= 0) {
-     Alert.alert('Please enter correct referee max fee.')
-     return false;
-   }
-   if (Number(minFee) <= 0 && Number(maxFee) > 0) {
-     Alert.alert('Please enter correct referee min fee.')
-     return false;
-   }
-   if (Number(minFee) > Number(maxFee)) {
-     Alert.alert('Please enter correct referee fee.')
-     return false;
-   }
-   return true
- }, [maxFee, minFee])
+      Alert.alert('Please enter correct referee max fee.');
+      return false;
+    }
+    if (Number(minFee) <= 0 && Number(maxFee) > 0) {
+      Alert.alert('Please enter correct referee min fee.');
+      return false;
+    }
+    if (Number(minFee) > Number(maxFee)) {
+      Alert.alert('Please enter correct referee fee.');
+      return false;
+    }
+    return true;
+  }, [maxFee, minFee]);
   const listEmptyComponent = () => (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text
@@ -323,13 +339,13 @@ export default function RefereesListScreen({ navigation, route }) {
   };
 
   const onPressReset = () => {
-   setFilters({
-     location: 'world',
-     sport: 'All',
-   })
-   setSelectedSport('All')
-   setMinFee(0)
-   setMaxFee(0)
+    setFilters({
+      location: 'world',
+      sport: 'All',
+    });
+    setSelectedSport('All');
+    setMinFee(0);
+    setMaxFee(0);
   };
   return (
     <View>
@@ -339,7 +355,7 @@ export default function RefereesListScreen({ navigation, route }) {
             placeholder={strings.searchText}
             style={styles.searchTxt}
             onChangeText={(text) => {
-              searchFilterFunction(text)
+              searchFilterFunction(text);
             }}
             // value={search}
           />
@@ -402,7 +418,7 @@ export default function RefereesListScreen({ navigation, route }) {
                     if (applyValidation()) {
                       setSettingPopup(false);
                       setTimeout(() => {
-                        const tempFilter = { ...filters }
+                        const tempFilter = { ...filters };
                         tempFilter.sport = selectedSport;
                         tempFilter.location = location;
 
@@ -411,7 +427,7 @@ export default function RefereesListScreen({ navigation, route }) {
                         }
                         setFilters({
                           ...tempFilter,
-                        })
+                        });
                         setPageFrom(0);
                         setReferees([]);
                         applyFilter(tempFilter);
@@ -573,8 +589,8 @@ export default function RefereesListScreen({ navigation, route }) {
                         onValueChange={(value) => {
                           setSelectedSport(value);
                           if (value === 'All') {
-                            setMinFee(0)
-                            setMaxFee(0)
+                            setMinFee(0);
+                            setMaxFee(0);
                           }
                           // setFilters({
                           //   ...filters,
@@ -726,67 +742,70 @@ export default function RefereesListScreen({ navigation, route }) {
           </View> */}
               {/* Rate View */}
 
-              { selectedSport !== 'All' && <View
-                style={{
-                  flexDirection: 'column',
-                  margin: 15,
-                  justifyContent: 'space-between',
-                }}>
-                <View style={{}}>
-                  <Text style={styles.filterTitle}>Referee fee</Text>
-                </View>
-                <View style={{ marginTop: 10 }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                    }}>
-                    <TextInput
-                      onChangeText={(text) => setMinFee(text)}
-                      value={minFee}
-                      style={styles.minFee}
-                      placeholder={'Min'}
-                      autoCorrect={false}
-                      // clearButtonMode={'always'}
-                      keyboardType={'numeric'}
-                      placeholderTextColor={colors.userPostTimeColor}
-                    />
-                    <TextInput
-                      onChangeText={(text) => setMaxFee(text)}
-                      value={maxFee}
-                      style={styles.minFee}
-                      placeholder={'Max'}
-                      autoCorrect={false}
-                      // clearButtonMode={'always'}
-                      keyboardType={'numeric'}
-                      placeholderTextColor={colors.userPostTimeColor}
-                    />
+              {selectedSport !== 'All' && (
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    margin: 15,
+                    justifyContent: 'space-between',
+                  }}>
+                  <View style={{}}>
+                    <Text style={styles.filterTitle}>Referee fee</Text>
+                  </View>
+                  <View style={{ marginTop: 10 }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                      }}>
+                      <TextInput
+                        onChangeText={(text) => setMinFee(text)}
+                        value={minFee}
+                        style={styles.minFee}
+                        placeholder={'Min'}
+                        autoCorrect={false}
+                        // clearButtonMode={'always'}
+                        keyboardType={'numeric'}
+                        placeholderTextColor={colors.userPostTimeColor}
+                      />
+                      <TextInput
+                        onChangeText={(text) => setMaxFee(text)}
+                        value={maxFee}
+                        style={styles.minFee}
+                        placeholder={'Max'}
+                        autoCorrect={false}
+                        // clearButtonMode={'always'}
+                        keyboardType={'numeric'}
+                        placeholderTextColor={colors.userPostTimeColor}
+                      />
+                    </View>
                   </View>
                 </View>
-              </View>}
+              )}
               <View style={{ flex: 1 }} />
             </ScrollView>
           </KeyboardAvoidingView>
 
-          <TouchableOpacity style={styles.resetButton} onPress={() => {
-             Alert.alert(
-              'Are you sure want to reset filters?',
-              '',
-              [
-
-                {
-                  text: 'Cancel',
-                  onPress: () => console.log('Cancel Pressed'),
-                  style: 'cancel',
-                },
-                {
-                  text: 'OK',
-                  onPress: () => onPressReset(),
-                },
-              ],
-              { cancelable: false },
-            );
-          }}>
+          <TouchableOpacity
+            style={styles.resetButton}
+            onPress={() => {
+              Alert.alert(
+                'Are you sure want to reset filters?',
+                '',
+                [
+                  {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'OK',
+                    onPress: () => onPressReset(),
+                  },
+                ],
+                { cancelable: false },
+              );
+            }}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>

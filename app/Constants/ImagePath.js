@@ -206,6 +206,7 @@ const images = {
   arrowGraterthan: require('../assets/images/arrow_graterthan.png'),
   teamT: require('../assets/images/team_T.png'),
   clubC: require('../assets/images/club_C.png'),
+  leagueL: require('../assets/images/league_L.png'),
   editSection: require('../assets/images/ic_edit.png'),
   tagDivider: require('../assets/images/tag_divider.png'),
   chain: require('../assets/images/chain.png'),
@@ -390,6 +391,11 @@ arrowGT: require('../assets/images/arrow_gt.png'),
   reqIcon: require('../assets/images/req.png'),
   refIcon: require('../assets/images/ref.png'),
   reqeIcon: require('../assets/images/reqe.png'),
+
+  localhomeOverlay: require('../assets/images/opacitylayer_localhome.png'),
+  orangeGradiet: require('../assets/images/orange_gradient.png'),
+  greenGradient: require('../assets/images/green_gradient.png'),
+  blueGradient: require('../assets/images/blue_gradient.png'),
 
 };
 

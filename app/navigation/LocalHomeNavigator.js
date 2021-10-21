@@ -6,7 +6,6 @@ import LocalHomeScreen from '../screens/localhome/LocalHomeScreen';
 import RecentMatchScreen from '../screens/localhome/RecentMatchScreen';
 import UpcomingMatchScreen from '../screens/localhome/UpcomingMatchScreen';
 import LookingForChallengeScreen from '../screens/localhome/LookingForChallengeScreen';
-import HiringPlayerScreen from '../screens/localhome/HiringPlayerScreen';
 import LookingTeamScreen from '../screens/localhome/LookingTeamScreen';
 import RefereesListScreen from '../screens/localhome/RefereesListScreen';
 import ScorekeeperListScreen from '../screens/localhome/ScorekeeperListScreen';
@@ -22,6 +21,7 @@ import SoccerHome from '../screens/game/soccer/SoccerHome';
 import TennisHome from '../screens/game/tennis/TennisHome';
 import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 import AddOrDeleteSport from '../screens/localhome/AddOrDeleteSport';
+import RecruitingPlayerScreen from '../screens/localhome/RecruitingPlayerScreen';
 
 const Stack = createStackNavigator();
 
@@ -79,7 +79,7 @@ const LocalHomeNavigator = () => (
         name="LookingForChallengeScreen"
         component={LookingForChallengeScreen}
         options={{
-          title: 'Looking for a challenge',
+          title: 'Availble For Challenge',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
@@ -159,10 +159,10 @@ const LocalHomeNavigator = () => (
           }}
       />
     <Stack.Screen
-        name="HiringPlayerScreen"
-        component={HiringPlayerScreen}
+        name="RecruitingPlayerScreen"
+        component={RecruitingPlayerScreen}
         options={{
-          title: 'Hiring players',
+          title: 'Recruiting players',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
