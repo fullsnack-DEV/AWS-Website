@@ -2,14 +2,16 @@
 /* eslint-disable no-unused-expressions */
 import React, { memo } from 'react';
 import {
- View, Text, StyleSheet, Image,
+ View, Text, StyleSheet, Image, TouchableOpacity,
  } from 'react-native';
 
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
-const TCRecruitingPlayers = ({ data, entityType, selectedSport }) => {
+const TCRecruitingPlayers = ({
+ data, entityType, selectedSport, onPress,
+ }) => {
   let entityName, sportText, gameFee, currency;
 
   if (entityType === 'player') {
@@ -59,7 +61,7 @@ const TCRecruitingPlayers = ({ data, entityType, selectedSport }) => {
   console.log(entityType);
 
   return (
-    <View style={{ flexDirection: 'row' }}>
+    <TouchableOpacity style={{ flexDirection: 'row' }} onPress={onPress}>
       <Image
         source={
           data?.thumbnail ? { uri: data?.thumbnail } : images.profilePlaceHolder
@@ -91,7 +93,7 @@ const TCRecruitingPlayers = ({ data, entityType, selectedSport }) => {
           </Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

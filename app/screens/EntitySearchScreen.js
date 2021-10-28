@@ -10,19 +10,12 @@ import {
 
 import TCSearchBox from '../components/TCSearchBox';
 
-import {
-  getMyGroups,
-} from '../api/Groups';
-
-import {
-  getUserList,
-} from '../api/Users';
-
 import AuthContext from '../auth/context'
 import TCThinDivider from '../components/TCThinDivider';
 import UserListShimmer from '../components/shimmer/commonComponents/UserListShimmer';
 import { getSearchEntityData } from '../utils';
 import TCSearchProfileView from '../components/TCSearchProfileView';
+import { getGroupList, getUserList } from '../api/elasticSearch';
 
 export default function EntitySearchScreen({ navigation }) {
   const authContext = useContext(AuthContext)
@@ -35,9 +28,9 @@ export default function EntitySearchScreen({ navigation }) {
 
   useEffect(() => {
     list = [];
-    const promises = [getMyGroups(authContext), getUserList(authContext)]
+    const promises = [getGroupList(), getUserList()]
     Promise.all(promises).then(([res1, res2]) => {
-      list = [...res1.payload, ...res2.payload]
+      list = [...res1, ...res2]
       const modifiedList = list.filter((item) => (['player', 'user']?.includes(item?.entity_type)
             ? item?.user_id !== authContext?.entity?.obj?.user_id
             : item?.group_id !== authContext?.entity?.obj?.group_id))

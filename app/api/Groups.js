@@ -116,18 +116,18 @@ export const patchGroup = (groupID, params, authContext) => makeAPIRequest({
   authContext,
 })
 
-export const searchGroups = (params, authContext) => makeAPIRequest({
-  method: 'get',
-  url: `${Config.BASE_URL}groups/search/`,
-  params,
-  authContext,
-})
+// export const searchGroups = (params, authContext) => makeAPIRequest({
+//   method: 'get',
+//   url: `${Config.BASE_URL}groups/search/`,
+//   params,
+//   authContext,
+// })
 
-export const getMyGroups = (authContext) => makeAPIRequest({
-  method: 'get',
-  url: `${Config.BASE_URL}groups/`,
-  authContext,
-});
+// export const getMyGroups = (authContext) => makeAPIRequest({
+//   method: 'get',
+//   url: `${Config.BASE_URL}groups/`,
+//   authContext,
+// });
 
 export const patchMember = (groupID, memberID, params, authContext) => makeAPIRequest({
   method: 'patch',

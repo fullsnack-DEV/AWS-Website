@@ -1,18 +1,18 @@
 import React from 'react';
 import {
-  Text,
-  View,
-  StyleSheet,
-  Image, TouchableOpacity,
-} from 'react-native';
+ Text, View, StyleSheet, Image, TouchableOpacity,
+ } from 'react-native';
 import _ from 'lodash';
 import FastImage from 'react-native-fast-image';
+import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 
 export default function PlayInProfileViewSection({
+  isPatch = false,
+  patchType,
   profileImage,
   userName,
   cityName,
@@ -24,11 +24,24 @@ export default function PlayInProfileViewSection({
     <View style={styles.topViewContainer}>
       <View style={{ flexDirection: 'row' }}>
         <View style={styles.profileView}>
-          <Image source={profileImage} style={ styles.profileImage } />
+          <Image source={profileImage} style={styles.profileImage} />
         </View>
         <View style={styles.topTextContainer}>
-          <Text style={styles.userNameTextStyle}>{_.startCase(userName.toLowerCase())}</Text>
+          <Text style={styles.userNameTextStyle}>
+            {_.startCase(userName.toLowerCase())}
+          </Text>
           <Text style={styles.cityName}>{cityName}</Text>
+          {isPatch && (
+            <LinearGradient
+              colors={[colors.themeColor, colors.darkThemeColor]}
+              style={styles.patchStyle}>
+              <Text style={styles.patchText}>
+                {patchType === 'club'
+                  ? 'Looking for club!'
+                  : 'Looking for team!'}
+              </Text>
+            </LinearGradient>
+          )}
         </View>
         <View style={styles.settingButtonContainer}>
           {isAdmin ? (
@@ -37,11 +50,19 @@ export default function PlayInProfileViewSection({
                 resizeMode={'contain'}
                 source={images.SettingPrivacy}
                 style={{ width: 40, height: 40 }}
-            />
+              />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={styles.messageBtnStyle} onPress={onMessageButtonPress}>
-              <Text style={[styles.detailBtnTextStyle, { color: colors.lightBlackColor }]}>{strings.message}</Text>
+            <TouchableOpacity
+              style={styles.messageBtnStyle}
+              onPress={onMessageButtonPress}>
+              <Text
+                style={[
+                  styles.detailBtnTextStyle,
+                  { color: colors.lightBlackColor },
+                ]}>
+                {strings.message}
+              </Text>
             </TouchableOpacity>
           )}
         </View>
@@ -91,6 +112,11 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontFamily: fonts.RLight,
   },
+  patchText: {
+    color: colors.whiteColor,
+    fontSize: 12,
+    fontFamily: fonts.RMedium,
+  },
   settingButtonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -111,5 +137,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 10,
+  },
+  patchStyle: {
+    height: 16,
+    width: 110,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 5,
   },
 });

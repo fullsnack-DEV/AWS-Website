@@ -50,11 +50,11 @@ export const updateUserProfile = (params, authContext) => makeAPIRequest({
   authContext,
 })
 
-export const getUserList = (authContext) => makeAPIRequest({
-  method: 'get',
-  url: `${Config.BASE_URL}/users`,
-  authContext,
-})
+// export const getUserList = (authContext) => makeAPIRequest({
+//   method: 'get',
+//   url: `${Config.BASE_URL}/users`,
+//   authContext,
+// })
 
 export const sendInvitationInGroup = (params, authContext) => makeAPIRequest({
   method: 'post',

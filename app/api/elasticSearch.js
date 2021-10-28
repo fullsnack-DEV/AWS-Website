@@ -53,3 +53,13 @@ export const getEntityIndex = async (query) => makeElasticAPIRequest({
   url: `/${Config.GROUP_INDEX},${Config.USER_INDEX}/_search`,
   data: query,
 })
+
+export const getUserList = async () => makeElasticAPIRequest({
+  method: 'get',
+  url: `/${Config.USER_INDEX}/_search`,
+})
+
+export const getGroupList = async () => makeElasticAPIRequest({
+  method: 'get',
+  url: `/${Config.GROUP_INDEX}/_search`,
+})

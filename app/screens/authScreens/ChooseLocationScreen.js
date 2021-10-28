@@ -37,10 +37,10 @@ import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-import { searchGroups } from '../../api/Groups';
 import { updateUserProfile, getAppSettingsWithoutAuth } from '../../api/Users';
 import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import { getEntityIndex } from '../../api/elasticSearch';
 
 export default function ChooseLocationScreen({ navigation }) {
   const authContext = useContext(AuthContext);
@@ -153,12 +153,25 @@ export default function ChooseLocationScreen({ navigation }) {
   const getTeamsDataByCurrentLocation = async () => {
     setLoading(true);
     console.log('Curruent location data:=>', currentLocation);
+    // const queryParams = {
+    //   state: currentLocation.stateAbbr,
+    //   city: currentLocation.city,
+    // };
     const queryParams = {
-      state: currentLocation.stateAbbr,
-      city: currentLocation.city,
+      size: 50,
+      query: {
+        bool: {
+          must: [{
+            multi_match: {
+              query: currentLocation.city,
+              fields: ['city', 'country', 'state'],
+            },
+          }],
+        },
+      },
     };
 
-    searchGroups(queryParams, authContext)
+    getEntityIndex(queryParams)
       .then((response) => {
         const userData = {
           city: currentLocation.city,
@@ -166,13 +179,13 @@ export default function ChooseLocationScreen({ navigation }) {
           country: currentLocation.country,
         };
         updateProfile(userData, () => {
-          if (response.payload.length > 0) {
+          if (response.length > 0) {
             navigation.navigate('TotalTeamsScreen', {
               city: currentLocation?.city,
               state: currentLocation?.stateAbbr,
               country: currentLocation?.country,
-              totalTeams: response?.payload?.length,
-              teamData: response?.payload,
+              totalTeams: response?.length,
+              teamData: response,
             });
           } else {
             navigation.navigate('ChooseSportsScreen', {
@@ -213,11 +226,25 @@ export default function ChooseLocationScreen({ navigation }) {
     console.log('item location data:=>', item);
 
     setLoading(true);
+    // const queryParams = {
+    //   state: item?.terms?.[1]?.value,
+    //   city: item?.terms?.[0]?.value,
+    // };
     const queryParams = {
-      state: item?.terms?.[1]?.value,
-      city: item?.terms?.[0]?.value,
+      size: 50,
+      query: {
+        bool: {
+          must: [{
+            multi_match: {
+              query: item?.terms?.[0]?.value,
+              fields: ['city', 'country', 'state'],
+            },
+          }],
+        },
+      },
     };
-    searchGroups(queryParams, authContext)
+
+    getEntityIndex(queryParams)
       .then((response) => {
         setLoading(false);
 
@@ -227,13 +254,13 @@ export default function ChooseLocationScreen({ navigation }) {
           country: item?.terms?.[2]?.value,
         };
         updateProfile(userData, () => {
-          if (response.payload.length > 0) {
+          if (response.length > 0) {
             navigation.navigate('TotalTeamsScreen', {
               city: item?.terms?.[0]?.value,
               state: item?.terms?.[1]?.value,
               country: item?.terms?.[2]?.value,
-              totalTeams: response?.payload?.length,
-              teamData: response?.payload,
+              totalTeams: response?.length,
+              teamData: response,
             });
           } else {
             navigation.navigate('ChooseSportsScreen', {

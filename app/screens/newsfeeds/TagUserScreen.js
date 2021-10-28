@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -17,23 +17,20 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import images from '../../Constants/ImagePath';
-import { getUserList } from '../../api/Users';
-import { getMyGroups } from '../../api/Groups';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import AuthContext from '../../auth/context'
+import { getGroupList, getUserList } from '../../api/elasticSearch';
 
 export default function TagUserScreen({ backBtnPress, onItemPress }) {
   const [searchUser, setSearchUser] = useState('');
   const [userData, setUserData] = useState([]);
   const [groupData, setGroupData] = useState([]);
   const [filteredUserData, setFilteredUserData] = useState([]);
-  const authContext = useContext(AuthContext)
 
   useEffect(() => {
-    getUserList(authContext)
+    getUserList()
       .then((response) => {
-        setUserData(response.payload);
+        setUserData(response);
       })
       .catch((e) => {
         console.log('eeeee Get Users :-', e.response);
@@ -42,9 +39,9 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
   }, []);
 
   useEffect(() => {
-    getMyGroups(authContext)
+    getGroupList()
       .then((response) => {
-        setGroupData(response.payload);
+        setGroupData(response);
       })
       .catch((e) => {
         console.log('eeeee Get Group Users :-', e.response);

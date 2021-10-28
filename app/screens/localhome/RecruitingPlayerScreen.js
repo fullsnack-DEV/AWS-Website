@@ -16,6 +16,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -60,7 +61,6 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
   const [loadMore, setLoadMore] = useState(false);
   const [groups, setGroups] = useState(groupsType);
 
-  const [searchData, setSearchData] = useState();
   const [selectedSport, setSelectedSport] = useState(
     route?.params?.filters.sport,
   );
@@ -128,7 +128,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
         recruitingPlayersQuery.query.bool.must.push({
           multi_match: {
             query: filerdata.location.toLowerCase(),
-            fields: ['city', 'country', 'state'],
+            fields: ['city', 'country', 'state_abbr'],
           },
         });
       }
@@ -160,6 +160,14 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
         });
       }
 
+      if (filerdata?.searchText?.length > 0) {
+        recruitingPlayersQuery.query.bool.must.push({
+          query_string: {
+            query: `*${filerdata?.searchText}*`,
+            fields: ['group_name'],
+          },
+        });
+      }
       console.log(
         'Recruiting player  match Query:=>',
         JSON.stringify(recruitingPlayersQuery),
@@ -169,9 +177,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
       getEntityIndex(recruitingPlayersQuery)
         .then((entity) => {
           if (entity.length > 0) {
-            const fetchedData = [...recruitingPlayer, ...entity];
-            setRecruitingPlayer(fetchedData);
-            setSearchData(fetchedData);
+            setRecruitingPlayer([...recruitingPlayer, ...entity]);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }
@@ -198,12 +204,8 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
           selectedSport={selectedSport}
           onPress={() => {
             navigation.navigate('HomeScreen', {
-              uid: ['user', 'player']?.includes(item?.entity_type)
-                ? item?.user_id
-                : item?.group_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
-                : item.entity_type,
+              uid: item?.group_id,
+              role: item.entity_type,
               backButtonVisible: true,
               menuBtnVisible: false,
             });
@@ -337,18 +339,6 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
       </Text>
     </View>
   );
-  const searchFilterFunction = (text) => {
-    const result = recruitingPlayer.filter(
-      (x) => x?.full_name?.toLowerCase().includes(text?.toLowerCase())
-        || x?.city?.toLowerCase().includes(text?.toLowerCase())
-        || x?.group_name?.toLowerCase().includes(text?.toLowerCase()),
-    );
-    if (text.length > 0) {
-      setRecruitingPlayer(result);
-    } else {
-      setRecruitingPlayer(searchData);
-    }
-  };
 
   const onPressReset = () => {
     setFilters({
@@ -403,14 +393,28 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
   );
 
   return (
-    <View>
+    <SafeAreaView style={{ flex: 1 }}>
+
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
             placeholder={strings.searchText}
             style={styles.searchTxt}
+            autoCorrect={false}
             onChangeText={(text) => {
-              searchFilterFunction(text);
+              const tempFilter = { ...filters };
+
+              if (text?.length > 0) {
+                tempFilter.searchText = text;
+              } else {
+                delete tempFilter.searchText;
+              }
+              setFilters({
+                ...tempFilter,
+              });
+              setPageFrom(0);
+              setRecruitingPlayer([]);
+              applyFilter(tempFilter);
             }}
             // value={search}
           />
@@ -431,8 +435,8 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
         keyExtractor={keyExtractor}
         renderItem={renderRecruitingPlayerListView}
         style={styles.listStyle}
-        contentContainerStyle={{ paddingBottom: 1 }}
-        onEndReached={onScrollHandler}
+        // contentContainerStyle={{ paddingBottom: 1 }}
+        onScroll={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
           stopFetchMore = false;
@@ -617,13 +621,6 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                         }}>
-                        {/* <TCSearchCityView
-                      getCity={(value) => {
-                        console.log('Value:=>', value);
-                        setSelectedCity(value);
-                      }}
-                      // value={selectedCity}
-                    /> */}
 
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
@@ -713,7 +710,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
           </TouchableOpacity>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
