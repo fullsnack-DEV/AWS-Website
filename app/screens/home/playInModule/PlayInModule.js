@@ -344,11 +344,11 @@ const PlayInModule = ({
             {useMemo(
               () => (
                 <PlayInProfileViewSection
+                isPatch={!!playInObject?.lookingForTeamClub}
+                patchType={playInObject?.sport_name?.toLowerCase() === 'tennis' ? 'club' : 'team'}
                   onSettingPress={() => {
                     onClose();
-                    navigation.navigate('ManageChallengeScreen', {
-                      sportName: playInObject?.sport_name,
-                    });
+                    navigation.navigate('LookingForSettingScreen', { sportName });
                   }}
                   onMessageButtonPress={onMessageButtonPress}
                   isAdmin={isAdmin}

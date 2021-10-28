@@ -433,21 +433,49 @@ export default function LocalHomeScreen({ navigation, route }) {
          size: defaultPageSize,
         query: {
           bool: {
-            must: [{ match: { lookingForTeam: true } }],
+            must: [
+              {
+                nested: {
+                  path: 'registered_sports',
+                  query: {
+                    bool: {
+                      must: [
+                        {
+                          match: {
+                            'registered_sports.lookingForTeamClub': true,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            ],
           },
         },
 
       }
 
-      // bodybuilder()
-      //   .filter('term', 'registered_sports.sport_name.keyword', {
-      //     value: selectedSport.toLowerCase(),
-      //     case_insensitive: true,
-      //   })
-      //   .filter('term', 'lookingForTeam', {
-      //     value: true,
-      //   })
-      //   .build();
+      if (location !== 'world') {
+        lookingQuery.query.bool.must.push({
+          multi_match: {
+            query: `${location}`,
+            fields: ['city', 'country', 'state'],
+          },
+        });
+      }
+      if (selectedSport !== 'All') {
+        lookingQuery.query.bool.must[0].nested.query.bool.must.push({
+          term: {
+            'registered_sports.sport_name.keyword': {
+              value: selectedSport.toLowerCase(),
+              case_insensitive: true,
+            },
+          },
+        });
+      }
+
+      console.log('Looking for team/club query:', JSON.stringify(lookingQuery));
 
       // Looking team query
 
@@ -1047,9 +1075,8 @@ export default function LocalHomeScreen({ navigation, route }) {
                   showArrow={true}
                   viewStyle={{ marginTop: 20, marginBottom: 15 }}
                   onPress={() => navigation.navigate('LookingTeamScreen', {
-                      location,
-                      sport: selectedSport,
-                      sports,
+                    filters,
+                    sportsList: sports,
                     })
                   }
                 />

@@ -39,7 +39,7 @@ import * as Utility from '../../../utils';
 import { getQBAccountType, QBupdateUser } from '../../../utils/QuickBlox';
 import images from '../../../Constants/ImagePath';
 import TCImage from '../../../components/TCImage';
-import ToggleView from '../../../components/Schedule/ToggleView';
+// import ToggleView from '../../../components/Schedule/ToggleView';
 
 export default function EditPersonalProfileScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -425,7 +425,7 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
           />
           </View>
 
-          <View
+          {/* <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -442,7 +442,7 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
             offColor={colors.grayBackgroundColor}
 
           />
-          </View>
+          </View> */}
 
           <View>
             <TCLabel title= {strings.slogan}/>

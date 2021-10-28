@@ -10,10 +10,11 @@ import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 import TCSearchBox from '../../../components/TCSearchBox';
-import { getUserList, sendInvitationInGroup } from '../../../api/Users';
+import { sendInvitationInGroup } from '../../../api/Users';
 import AuthContext from '../../../auth/context'
 import ProfileCheckView from '../../../components/groupConnections/ProfileCheckView';
 import TCTags from '../../../components/TCTags';
+import { getUserList } from '../../../api/elasticSearch';
 
 export default function InviteMembersBySearchScreen({ navigation }) {
   const [loading, setloading] = useState(true);
@@ -56,9 +57,9 @@ export default function InviteMembersBySearchScreen({ navigation }) {
       });
   }
   const getUsers = async () => {
-    getUserList(authContext).then((response) => {
+    getUserList().then((response) => {
       setloading(false);
-      const result = response.payload.map((obj) => {
+      const result = response.map((obj) => {
         // eslint-disable-next-line no-param-reassign
         obj.isChecked = false;
         return obj;

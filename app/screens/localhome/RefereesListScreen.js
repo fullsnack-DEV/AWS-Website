@@ -16,6 +16,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -64,7 +65,6 @@ export default function RefereesListScreen({ navigation, route }) {
   const [pageFrom, setPageFrom] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
-  const [searchData, setSearchData] = useState();
   const [selectedSport, setSelectedSport] = useState(
     route?.params?.filters.sport,
   );
@@ -72,7 +72,7 @@ export default function RefereesListScreen({ navigation, route }) {
 
   const { sportsList } = route?.params ?? {};
 
-  console.log('Referee Filter:=>', filters);
+  // console.log('Referee Filter:=>', filters);
 
   useEffect(() => {
     if (route?.params?.locationText) {
@@ -107,6 +107,8 @@ export default function RefereesListScreen({ navigation, route }) {
 
   const getReferees = useCallback(
     (filerReferee) => {
+      console.log('get referee called');
+
       const refereeQuery = {
         size: pageSize,
         from: pageFrom,
@@ -120,7 +122,7 @@ export default function RefereesListScreen({ navigation, route }) {
         refereeQuery.query.bool.must.push({
           multi_match: {
             query: `${filerReferee.location.toLowerCase()}`,
-            fields: ['city', 'country', 'state'],
+            fields: ['city', 'country', 'state_abbr'],
           },
         });
       }
@@ -145,6 +147,14 @@ export default function RefereesListScreen({ navigation, route }) {
           },
         });
       }
+      if (filerReferee?.searchText?.length > 0) {
+        refereeQuery.query.bool.must.push({
+          query_string: {
+            query: `*${filerReferee?.searchText}*`,
+            fields: ['full_name'],
+          },
+        });
+      }
 
       console.log('refereeQuery:=>', JSON.stringify(refereeQuery));
 
@@ -153,9 +163,7 @@ export default function RefereesListScreen({ navigation, route }) {
       getUserIndex(refereeQuery)
         .then((res) => {
           if (res.length > 0) {
-            const fetchedData = [...referees, ...res];
-            setReferees(fetchedData);
-            setSearchData(fetchedData);
+            setReferees([...referees, ...res]);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }
@@ -166,7 +174,7 @@ export default function RefereesListScreen({ navigation, route }) {
           }, 10);
         });
     },
-    [pageFrom, pageSize, referees],
+    [filters?.searchText, pageFrom, pageSize, referees],
   );
 
   useEffect(() => {
@@ -326,17 +334,17 @@ export default function RefereesListScreen({ navigation, route }) {
       </Text>
     </View>
   );
-  const searchFilterFunction = (text) => {
-    const result = referees.filter(
-      (x) => x.full_name.toLowerCase().includes(text.toLowerCase())
-        || x.city.toLowerCase().includes(text.toLowerCase()),
-    );
-    if (text.length > 0) {
-      setReferees(result);
-    } else {
-      setReferees(searchData);
-    }
-  };
+  // const searchFilterFunction = (text) => {
+  //   const result = referees.filter(
+  //     (x) => x.full_name.toLowerCase().includes(text.toLowerCase())
+  //       || x.city.toLowerCase().includes(text.toLowerCase()),
+  //   );
+  //   if (text.length > 0) {
+  //     setReferees(result);
+  //   } else {
+  //     setReferees(searchData);
+  //   }
+  // };
 
   const onPressReset = () => {
     setFilters({
@@ -348,14 +356,28 @@ export default function RefereesListScreen({ navigation, route }) {
     setMaxFee(0);
   };
   return (
-    <View>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
             placeholder={strings.searchText}
             style={styles.searchTxt}
+            autoCorrect={false}
             onChangeText={(text) => {
-              searchFilterFunction(text);
+              // setSearchText(text);
+              const tempFilter = { ...filters };
+
+              if (text?.length > 0) {
+                tempFilter.searchText = text;
+              } else {
+                delete tempFilter.searchText;
+              }
+              setFilters({
+                ...tempFilter,
+              });
+              setPageFrom(0);
+              setReferees([]);
+              applyFilter(tempFilter);
             }}
             // value={search}
           />
@@ -370,14 +392,14 @@ export default function RefereesListScreen({ navigation, route }) {
       />
       <FlatList
         extraData={referees}
-        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         data={referees}
         ItemSeparatorComponent={renderSeparator}
         keyExtractor={keyExtractor}
         renderItem={renderRefereesScorekeeperListView}
         style={styles.listStyle}
-        contentContainerStyle={{ paddingBottom: 1 }}
-        onEndReached={onScrollHandler}
+        // contentContainerStyle={{ paddingBottom: 1 }}
+        onScroll={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
           stopFetchMore = false;
@@ -819,12 +841,13 @@ export default function RefereesListScreen({ navigation, route }) {
           mode={'datetime'}
         />
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   listStyle: {
-    padding: 15,
+    flex: 1,
+    margin: 15,
   },
 
   separator: {
