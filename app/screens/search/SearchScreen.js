@@ -1,16 +1,65 @@
-import React from 'react';
+/* eslint-disable array-callback-return */
+import React, {useState, useContext, useEffect} from 'react';
 import {View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
 import TCSearchBox from '../../components/TCSearchBox';
 import AllInOneGallery from '../home/AllInOneGallery';
+import AuthContext from '../../auth/context';
+import {getSportsList} from '../../api/Games';
 
 const SearchScreen = ({navigation, route}) => {
   console.log('route value --->');
   console.log(route.params);
+  const authContext = useContext(AuthContext);
 
   const {isAdmin, galleryRef, entityType, entityID} = route?.params;
+  const [sports, setSports] = useState([]);
+
+  useEffect(() => {
+    getSportsList(authContext).then((res) => {
+      const sport = [];
+      res.payload.map((item) =>
+        sport.push({
+          label: item?.sport_name,
+          value: item?.sport_name.toLowerCase(),
+        }),
+      );
+      setSports([...sport]);
+    });
+
+    // if (isFocused) {
+    //   setloading(true);
+    //   getSportsList(authContext)
+    //     .then((res) => {
+    //       setloading(false);
+    //       if (res.payload) {
+    //         const arr = [
+    //           {
+    //             isChecked: true,
+    //             sport_name: 'All',
+    //           },
+    //         ];
+    //         for (const tempData of res.payload) {
+    //           tempData.isChecked = false;
+    //           arr.push(tempData);
+    //         }
+    //         setSports(arr);
+    //         setTimeout(() => setloading(false), 1000);
+    //       }
+    //     })
+    //     .catch((e) => {
+    //       console.log('catch -> sports list api');
+    //       setloading(false);
+    //       setTimeout(() => {
+    //         Alert.alert(strings.alertmessagetitle, e.message);
+    //       }, 10);
+    //     });
+    // }
+  }, [authContext]);
 
   const onPressSearchScreen = () => {
-    navigation.navigate('EntitySearchScreen', {});
+    navigation.navigate('EntitySearchScreen', {
+      sportsList: sports,
+    });
   };
 
   return (
