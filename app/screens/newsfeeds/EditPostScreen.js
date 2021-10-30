@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-escape */
 
 import React, {
-  useState, useContext, useRef, useEffect, useMemo, useCallback,
+  useState, useRef, useEffect, useMemo, useCallback,
 } from 'react';
 import {
   View,
@@ -26,7 +26,6 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ParsedText from 'react-native-parsed-text';
 import _ from 'lodash';
 import UrlPreview from 'react-native-url-preview';
-import AuthContext from '../../auth/context'
 import ImageButton from '../../components/WritePost/ImageButton';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
@@ -34,11 +33,10 @@ import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import { getUserList } from '../../api/Users';
-import { getMyGroups } from '../../api/Groups';
 import { getSearchData, getTaggedEntityData } from '../../utils';
 import { getPickedData, MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 import TCGameCard from '../../components/TCGameCard';
+import { getGroupList, getUserList } from '../../api/elasticSearch';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
@@ -58,7 +56,6 @@ const EditPostScreen = ({
       postAttachments = JSON.parse(data.object).attachments;
     }
   }
-  const authContext = useContext(AuthContext)
   const [searchText, setSearchText] = useState(postText);
   const [selectImage, setSelectImage] = useState(postAttachments);
   const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
@@ -75,19 +72,19 @@ const EditPostScreen = ({
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    getUserList(authContext)
+    getUserList()
       .then((response) => {
-        setUsers([...response.payload]);
-        setSearchUsers([...response.payload])
+        setUsers([...response]);
+        setSearchUsers([...response])
       })
       .catch((e) => {
         Alert.alert('', e.messages)
       });
 
-    getMyGroups(authContext)
+      getGroupList()
       .then((response) => {
-        setGroups([...response.payload]);
-        setSearchGroups([...response.payload])
+        setGroups([...response]);
+        setSearchGroups([...response])
       })
       .catch((e) => {
         Alert.alert('', e.messages)

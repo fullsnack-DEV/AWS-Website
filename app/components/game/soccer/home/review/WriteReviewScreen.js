@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 import React, {
-  useState, useEffect, useContext, useRef, useMemo, useCallback,
+  useState, useEffect, useRef, useMemo, useCallback,
 } from 'react';
 import {
   View,
@@ -30,12 +30,10 @@ import ActivityLoader from '../../../../loader/ActivityLoader';
 import fonts from '../../../../../Constants/Fonts';
 import colors from '../../../../../Constants/Colors';
 import images from '../../../../../Constants/ImagePath';
-import { getUserList } from '../../../../../api/Users';
-import { getMyGroups } from '../../../../../api/Groups';
-import AuthContext from '../../../../../auth/context';
 import { getSearchData, getTaggedEntityData } from '../../../../../utils';
 import { getPickedData, MAX_UPLOAD_POST_ASSETS } from '../../../../../utils/imageAction';
 import TCGameCard from '../../../../TCGameCard';
+import { getGroupList, getUserList } from '../../../../../api/elasticSearch';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
@@ -45,7 +43,6 @@ export default function WriteReviewScreen({ navigation, route }) {
   const textInputRef = useRef();
   const [currentTextInputIndex, setCurrentTextInputIndex] = useState(0);
   const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
-  const authContext = useContext(AuthContext);
   const [searchFieldHeight, setSearchFieldHeight] = useState();
   const [tagsOfEntity, setTagsOfEntity] = useState(route.params.taggedData ?? []);
   const [searchTag, setSearchTag] = useState();
@@ -124,18 +121,18 @@ export default function WriteReviewScreen({ navigation, route }) {
   }, [letModalVisible, searchTag])
 
   useEffect(() => {
-    getUserList(authContext)
+    getUserList()
         .then((response) => {
-          setUsers([...response.payload]);
-          setSearchUsers([...response.payload])
+          setUsers([...response]);
+          setSearchUsers([...response])
         })
         .catch((e) => {
           Alert.alert('', e.messages)
         });
-    getMyGroups(authContext)
+        getGroupList()
         .then((response) => {
-          setGroups([...response.payload]);
-          setSearchGroups([...response.payload])
+          setGroups([...response]);
+          setSearchGroups([...response])
         })
         .catch((e) => {
           Alert.alert('', e.messages)

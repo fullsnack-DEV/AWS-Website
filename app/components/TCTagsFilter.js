@@ -15,9 +15,10 @@ import images from '../Constants/ImagePath';
 function TCTagsFilter({ dataSource, onTagCancelPress }) {
   const renderTags = ({ item, index }) => {
     console.log('Ttt:', Object.values(item));
+
     return (
       <>
-        {(Object.values(item)[0] !== 'All' && Object.values(item)[0] !== 'world' && Object.keys(item)[0] !== 'entityID') && <View
+        {(Object.values(item)[0] !== 'All' && Object.values(item)[0] !== 'world' && Object.keys(item)[0] !== 'entityID') && Object.keys(item)[0] !== 'searchText' && <View
           style={styles.textContainer}
           onPress={() => onTagCancelPress({ item, index })}>
           <Text style={styles.tagTitleText}>{

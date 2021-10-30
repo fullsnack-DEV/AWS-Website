@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,21 +11,18 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { getUserList } from '../../api/Users';
-import { getMyGroups } from '../../api/Groups';
-import AuthContext from '../../auth/context'
+import { getGroupList, getUserList } from '../../api/elasticSearch';
 
 export default function SearchModel({ searchText, onItemPress }) {
   const [searchUser, setSearchUser] = useState(searchText);
   const [userData, setUserData] = useState([]);
   const [groupData, setGroupData] = useState([]);
   const [filteredUserData, setFilteredUserData] = useState([]);
-  const authContext = useContext(AuthContext)
 
   useEffect(() => {
-    getUserList(authContext)
+    getUserList()
       .then((response) => {
-        setUserData(response.payload);
+        setUserData(response);
       })
       .catch((e) => {
         console.log('eeeee Get Users :-', e.response);
@@ -44,9 +41,9 @@ export default function SearchModel({ searchText, onItemPress }) {
   }, [searchText]);
 
   useEffect(() => {
-    getMyGroups(authContext)
+    getGroupList()
       .then((response) => {
-        setGroupData(response.payload);
+        setGroupData(response);
       })
       .catch((e) => {
         console.log('eeeee Get Group Users :-', e.response);

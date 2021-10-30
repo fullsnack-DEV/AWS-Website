@@ -179,6 +179,7 @@ import RefereeInviteAgreementScreen from '../screens/challenge/createChallenge/R
 import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperInviteAgreementScreen';
 import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
+import LookingForSettingScreen from '../screens/home/playInModule/LookingForSettingScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2222,6 +2223,23 @@ const HomeNavigator = () => (
       component={RespondToInviteScreen}
       options={{
         title: 'Respond to invite to create team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="LookingForSettingScreen"
+      component={LookingForSettingScreen}
+      options={{
+        title: 'Setting',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

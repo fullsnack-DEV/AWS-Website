@@ -16,6 +16,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -64,7 +65,6 @@ export default function ScorekeeperListScreen({ navigation, route }) {
   const [pageFrom, setPageFrom] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
-  const [searchData, setSearchData] = useState();
   const [selectedSport, setSelectedSport] = useState(
     route?.params?.filters.sport,
   );
@@ -72,7 +72,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
 
   const { sportsList } = route?.params ?? {};
 
-  console.log('Scorekeeper Filter:=>', filters);
+  // console.log('Scorekeeper Filter:=>', filters);
 
   useEffect(() => {
     if (route?.params?.locationText) {
@@ -118,7 +118,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
         scorekeeperQuery.query.bool.must.push({
           multi_match: {
             query: `${filerScorekeeper.location.toLowerCase()}`,
-            fields: ['city', 'country', 'state'],
+            fields: ['city', 'country', 'state_abbr'],
           },
         });
       }
@@ -144,6 +144,14 @@ export default function ScorekeeperListScreen({ navigation, route }) {
         });
       }
 
+      if (filerScorekeeper?.searchText?.length > 0) {
+        scorekeeperQuery.query.bool.must.push({
+          query_string: {
+            query: `*${filerScorekeeper?.searchText}*`,
+            fields: ['full_name'],
+          },
+        });
+      }
       console.log('ScorekeeperQuery:=>', JSON.stringify(scorekeeperQuery));
 
       // Scorekeeper query
@@ -151,9 +159,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
       getUserIndex(scorekeeperQuery)
         .then((res) => {
           if (res.length > 0) {
-            const fetchedData = [...scorekeepers, ...res];
-            setScorekeepers(fetchedData);
-            setSearchData(fetchedData);
+            setScorekeepers([...scorekeepers, ...res]);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }
@@ -324,17 +330,6 @@ export default function ScorekeeperListScreen({ navigation, route }) {
       </Text>
     </View>
   );
-  const searchFilterFunction = (text) => {
-    const result = scorekeepers.filter(
-      (x) => x.full_name.toLowerCase().includes(text.toLowerCase())
-        || x.city.toLowerCase().includes(text.toLowerCase()),
-    );
-    if (text.length > 0) {
-      setScorekeepers(result);
-    } else {
-      setScorekeepers(searchData);
-    }
-  };
 
   const onPressReset = () => {
     setFilters({
@@ -346,14 +341,27 @@ export default function ScorekeeperListScreen({ navigation, route }) {
     setMaxFee(0)
    };
   return (
-    <View>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
             placeholder={strings.searchText}
             style={styles.searchTxt}
+            autoCorrect={false}
             onChangeText={(text) => {
-              searchFilterFunction(text);
+              const tempFilter = { ...filters };
+
+              if (text?.length > 0) {
+                tempFilter.searchText = text;
+              } else {
+                delete tempFilter.searchText;
+              }
+              setFilters({
+                ...tempFilter,
+              });
+              setPageFrom(0);
+              setScorekeepers([]);
+              applyFilter(tempFilter);
             }}
             // value={search}
           />
@@ -374,8 +382,8 @@ export default function ScorekeeperListScreen({ navigation, route }) {
         keyExtractor={keyExtractor}
         renderItem={renderRefereesScorekeeperListView}
         style={styles.listStyle}
-        contentContainerStyle={{ paddingBottom: 1 }}
-        onEndReached={onScrollHandler}
+       // contentContainerStyle={{ paddingBottom: 1 }}
+        onScroll={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
           stopFetchMore = false;
@@ -811,11 +819,12 @@ export default function ScorekeeperListScreen({ navigation, route }) {
           mode={'datetime'}
         />
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   listStyle: {
+    flex: 1,
     padding: 15,
   },
 

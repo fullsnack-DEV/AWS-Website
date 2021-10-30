@@ -18,10 +18,10 @@ import {
   SafeAreaView,
 } from 'react-native';
 import _ from 'lodash';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {getUserList} from '../../api/Users';
-import {getMyGroups} from '../../api/Groups';
-import AuthContext from '../../auth/context';
+import {
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import AuthContext from '../../auth/context'
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -31,7 +31,8 @@ import TagItemView from '../../components/newsFeed/TagItemView';
 import SelectedTagList from '../../components/newsFeed/SelectedTagList';
 import ScrollableTabs from '../../components/ScrollableTabs';
 import TagMatches from './TagMatches';
-import {getAllGames} from '../../api/NewsFeeds';
+import { getAllGames } from '../../api/NewsFeeds';
+import { getGroupList, getUserList } from '../../api/elasticSearch';
 
 export default function UserTagSelectionListScreen({navigation, route}) {
   const [searchText, setSearchText] = useState('');
@@ -48,11 +49,11 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
   useEffect(() => {
     const userAddData = [];
-    getUserList(authContext)
+    getUserList()
       .then((response) => {
-        if (response.payload.length > 0) {
+        if (response.length > 0) {
           let fullName = '';
-          response.payload.map((userItem) => {
+          response.map((userItem) => {
             if (userItem.full_name) {
               fullName = userItem.full_name;
             } else if (userItem.first_name && userItem.last_name) {
@@ -85,11 +86,11 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
   useEffect(() => {
     const userAddData = [];
-    getMyGroups(authContext)
+    getGroupList()
       .then((response) => {
-        if (response.payload.length > 0) {
+        if (response.length > 0) {
           let fullName = '';
-          response.payload.map((groupItem) => {
+          response.map((groupItem) => {
             if (groupItem.group_name) {
               fullName = groupItem.group_name;
             }

@@ -16,6 +16,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -64,15 +65,12 @@ export default function LookingForChallengeScreen({ navigation, route }) {
   const [pageFrom, setPageFrom] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
-  const [searchData, setSearchData] = useState();
   const [selectedSport, setSelectedSport] = useState(
     route?.params?.filters.sport,
   );
   const [location, setLocation] = useState(route?.params?.filters.location);
 
   const { sportsList } = route?.params ?? {};
-
-  console.log('available Challenge Filter:=>', filters);
 
   useEffect(() => {
     if (route?.params?.locationText) {
@@ -155,16 +153,32 @@ export default function LookingForChallengeScreen({ navigation, route }) {
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
           multi_match: {
             query: filerdata.sport,
-            fields: ['city', 'country', 'state', 'venue.address'],
+            fields: ['city', 'country', 'state_abbr', 'venue.address'],
           },
         });
         availableForchallengeQuery.query.bool.should[1].bool.must.push({
           multi_match: {
             query: filerdata.location,
-            fields: ['city', 'country', 'state', 'venue.address'],
+            fields: ['city', 'country', 'state_abbr', 'venue.address'],
           },
         });
       }
+
+      if (filerdata?.searchText?.length > 0) {
+        availableForchallengeQuery.query.bool.should[0].bool.must.push({
+          query_string: {
+            query: `*${filerdata?.searchText}*`,
+            fields: ['group_name'],
+          },
+        });
+        availableForchallengeQuery.query.bool.should[1].bool.must.push({
+          query_string: {
+            query: `*${filerdata?.searchText}*`,
+            fields: ['full_name'],
+          },
+        });
+      }
+
       if (filerdata.sport !== 'All') {
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
           term: {
@@ -216,9 +230,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
       getEntityIndex(availableForchallengeQuery)
         .then((entity) => {
           if (entity.length > 0) {
-            const fetchedData = [...availableChallenge, ...entity];
-            setAvailableChallenge(fetchedData);
-            setSearchData(fetchedData);
+            setAvailableChallenge([...availableChallenge, ...entity]);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }
@@ -389,18 +401,6 @@ export default function LookingForChallengeScreen({ navigation, route }) {
       </Text>
     </View>
   );
-  const searchFilterFunction = (text) => {
-    const result = availableChallenge.filter(
-      (x) => x?.full_name?.toLowerCase().includes(text?.toLowerCase())
-        || x?.city?.toLowerCase().includes(text?.toLowerCase())
-        || x?.group_name?.toLowerCase().includes(text?.toLowerCase()),
-    );
-    if (text.length > 0) {
-      setAvailableChallenge(result);
-    } else {
-      setAvailableChallenge(searchData);
-    }
-  };
 
   const onPressReset = () => {
     setFilters({
@@ -412,14 +412,28 @@ export default function LookingForChallengeScreen({ navigation, route }) {
     setMaxFee(0);
   };
   return (
-    <View>
+    <SafeAreaView style={{ flex: 1 }}>
+
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
             placeholder={strings.searchText}
             style={styles.searchTxt}
+            autoCorrect={false}
             onChangeText={(text) => {
-              searchFilterFunction(text);
+              const tempFilter = { ...filters };
+
+              if (text?.length > 0) {
+                tempFilter.searchText = text;
+              } else {
+                delete tempFilter.searchText;
+              }
+              setFilters({
+                ...tempFilter,
+              });
+              setPageFrom(0);
+              setAvailableChallenge([]);
+              applyFilter(tempFilter);
             }}
             // value={search}
           />
@@ -440,8 +454,8 @@ export default function LookingForChallengeScreen({ navigation, route }) {
         keyExtractor={keyExtractor}
         renderItem={renderAvailableChallengeListView}
         style={styles.listStyle}
-        contentContainerStyle={{ paddingBottom: 1 }}
-        onEndReached={onScrollHandler}
+        // contentContainerStyle={{ paddingBottom: 1 }}
+        onScroll={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
           stopFetchMore = false;
@@ -606,13 +620,6 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                         }}>
-                        {/* <TCSearchCityView
-                     getCity={(value) => {
-                       console.log('Value:=>', value);
-                       setSelectedCity(value);
-                     }}
-                     // value={selectedCity}
-                   /> */}
 
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
@@ -883,7 +890,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
           mode={'datetime'}
         />
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
