@@ -430,7 +430,7 @@ export default function LocalHomeScreen({ navigation, route }) {
 
       // Looking team query
       const lookingQuery = {
-         size: defaultPageSize,
+        size: defaultPageSize,
         query: {
           bool: {
             must: [
@@ -453,8 +453,7 @@ export default function LocalHomeScreen({ navigation, route }) {
             ],
           },
         },
-
-      }
+      };
 
       if (location !== 'world') {
         lookingQuery.query.bool.must.push({
@@ -674,7 +673,11 @@ export default function LocalHomeScreen({ navigation, route }) {
   const renderChallengerItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15, flex: 1 }}>
-        <TCChallengerCard data={item} entityType={item.entity_type} selectedSport={selectedSport}/>
+        <TCChallengerCard
+          data={item}
+          entityType={item.entity_type}
+          selectedSport={selectedSport}
+        />
       </View>
     ),
     [selectedSport],
@@ -682,7 +685,11 @@ export default function LocalHomeScreen({ navigation, route }) {
   const renderHiringPlayersItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCHiringPlayersCard data={item} entityType={item.entity_type} selectedSport={selectedSport}/>
+        <TCHiringPlayersCard
+          data={item}
+          entityType={item.entity_type}
+          selectedSport={selectedSport}
+        />
       </View>
     ),
     [selectedSport],
@@ -1075,8 +1082,8 @@ export default function LocalHomeScreen({ navigation, route }) {
                   showArrow={true}
                   viewStyle={{ marginTop: 20, marginBottom: 15 }}
                   onPress={() => navigation.navigate('LookingTeamScreen', {
-                    filters,
-                    sportsList: sports,
+                      filters,
+                      sportsList: sports,
                     })
                   }
                 />

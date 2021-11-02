@@ -82,7 +82,6 @@ const VideoPost = memo(({
   }
 
   const onProgress = useCallback((curTimeData) => setCurrentTime(curTimeData?.currentTime), []);
-
   return (
     <View style={{ ...styles.mainContainer, height }}>
       <View
@@ -100,6 +99,7 @@ const VideoPost = memo(({
       <TouchableWithoutFeedback onPress={toggleModal}>
         <Video
             repeat={true}
+
             ref={videoPlayerRef}
             paused={!(isFocused && (currentParentIndex === parentIndex))}
             muted={mute}

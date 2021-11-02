@@ -62,8 +62,10 @@ const TCChallengerCard = ({ data, entityType, selectedSport }) => {
   console.log(data.sport);
 
   return (
+
     <LinearGradient
     colors={[colors.localHomeGradientStart, colors.localHomeGradientEnd]}
+
       style={styles.gradientContainer}>
       <Image
         source={
@@ -119,6 +121,7 @@ const TCChallengerCard = ({ data, entityType, selectedSport }) => {
         </View>
       </View>
     </LinearGradient>
+
   );
 };
 

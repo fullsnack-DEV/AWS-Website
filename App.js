@@ -12,7 +12,7 @@ import firebase from '@react-native-firebase/app';
 import Orientation from 'react-native-orientation';
 import AuthContext from './app/auth/context';
 
-import { QBinit, getQBSetting } from './app/utils/QuickBlox';
+import { getQBSetting } from './app/utils/QuickBlox';
 import NavigationMainContainer from './NavigationMainContainer';
 // import { firebaseConfig } from './app/utils/constant';
 import * as Utility from './app/utils';
@@ -28,8 +28,18 @@ console.disableYellowBox = true
 // }
 export default function App() {
   const [networkConnected, setNetworkConntected] = useState(true);
+  const [user, setUser] = useState(null);
+  const [role, setRole] = useState('user');
+  const [entity, setEntity] = useState(null);
+  const [tokenData, setToken] = useState(null);
+  const [alertData, setAlertData] = useState(null);
+  const setTokenData = useCallback(async (token) => {
+    setToken(token);
+    await Utility.setStorage('tokenData', token);
+  }, []);
+//   getQBSetting().then(console.log).catch(console.log)
 
-  getQBSetting();
+getQBSetting()
 
   if (!global.btoa) {
     global.btoa = encode;
@@ -67,16 +77,6 @@ if (!global.atob) {
     firebaseAppInitialize();
   }, []);
 
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState('user');
-  const [entity, setEntity] = useState(null);
-  const [tokenData, setToken] = useState(null);
-  const [alertData, setAlertData] = useState(null);
-  const setTokenData = useCallback(async (token) => {
-    setToken(token);
-    await Utility.setStorage('tokenData', token);
-  }, []);
-
   const updateAuth = useCallback((e) => {
     setEntity({ ...e })
   }, []);
@@ -102,7 +102,7 @@ if (!global.atob) {
     }),
     [role, user, entity, tokenData, setTokenData, updateAuth, networkConnected],
   );
-  QBinit();
+
   return (
     <AuthContext.Provider value={authValue}>
       {alertData?.visible && <CommonAlert alertData={alertData}/>}
