@@ -487,6 +487,11 @@ export const getSearchData = (data = [], field = [], searchString) => {
   return searchData;
 };
 
+export const getSearchTags = (data = [], searchString) => data.filter(
+    (x) => x.full_name?.toLowerCase().includes(searchString?.toLowerCase())
+      || x.group_name?.toLowerCase().includes(searchString?.toLowerCase()),
+  );
+
 export const getSearchEntityData = (data = [], field = [], searchString) => {
   const searchData = [];
   const searchStr = escapeRegExp(searchString).replace(' ', '');

@@ -275,7 +275,6 @@ const HomeNavigator = () => (
         headerTitleStyle: {
           fontWeight: '500',
         },
-        headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -306,10 +305,18 @@ const HomeNavigator = () => (
       name="UserTagSelectionListScreen"
       component={UserTagSelectionListScreen}
       options={{
-        headerShown: false,
+        title: 'Tag',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
-
     <Stack.Screen
       name="WriteCommentScreen"
       component={WriteCommentScreen}

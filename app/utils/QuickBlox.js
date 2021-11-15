@@ -1,10 +1,15 @@
+/* eslint-disable consistent-return */
 /* eslint-disable import/no-cycle */
+import Config from 'react-native-config';
 import QB from 'quickblox-react-native-sdk';
 import _ from 'lodash';
 import { Alert } from 'react-native';
+import axios from 'axios';
 import images from '../Constants/ImagePath';
 import qbApiCall from './qbApiCall';
 import * as Utility from './index';
+import strings from '../Constants/String';
+import { getAppSettingsWithoutAuth } from '../api/Users';
 
 let QUICKBLOX_BASE_URL;
 let QB_Auth_Password;
@@ -13,28 +18,141 @@ let MESSAGE_LIMIT;
 let DIALOG_LIST_LIMIT;
 let USERS_LIST_LIMIT;
 
-export const QB_MAX_ASSET_SIZE_UPLOAD = 104857600;
+// const QBSetting = {
+//   accountKey: 'S3jzJdhgvNjrHTT8VRMi',
+//   appId: '92185',
+//   authKey: 'NGpyPS265yy4QBS',
+//   authSecret: 'bdxqa7sDzbODJew',
+// };
+// QB.settings
+//   .init(QBSetting)
+//   .then(() => {})
+//   .catch(() => {
+//     // Some error occured, look at the exception message for more details
+//   });
 
 export const getQBSetting = () => {
-  Utility.getStorage('appSetting')
-    .then((setting) => {
-      console.log('setting fetched::=>', setting);
+  Utility.getStorage('appSetting').then(async (setting) => {
+    console.log('Setting utility:=>', setting);
+    let QBSettings = {};
+
+    if (setting !== null) {
+      console.log('Setting utility not null');
       QUICKBLOX_BASE_URL = setting.quickblox.QUICKBLOX_BASE_URL;
-      QB_Auth_Password = setting.quickblox.QB_Auth_Password;
-      MESSAGE_LIMIT = setting.quickblox.MESSAGE_LIMIT;
-      DIALOG_LIST_LIMIT = setting.quickblox.DIALOG_LIST_LIMIT;
-      USERS_LIST_LIMIT = setting.quickblox.USERS_LIST_LIMIT;
-      //  appSettings = {
-      //   accountKey: setting.quickblox.accountKey,
-      //   appId: setting.quickblox.appId,
-      //   authKey: setting.quickblox.authKey,
-      //   authSecret: setting.quickblox.authSecret,
-      // };
-    })
-    .catch((e) => {
-      Alert.Alert(e);
-    });
+        QB_Auth_Password = setting.quickblox.QB_Auth_Password;
+        MESSAGE_LIMIT = setting.quickblox.MESSAGE_LIMIT;
+        DIALOG_LIST_LIMIT = setting.quickblox.DIALOG_LIST_LIMIT;
+        USERS_LIST_LIMIT = setting.quickblox.USERS_LIST_LIMIT;
+
+        const QBSetup = {
+          accountKey: setting.quickblox.accountKey,
+          appId: setting.quickblox.appId,
+          authKey: setting.quickblox.authKey,
+          authSecret: setting.quickblox.authSecret,
+        };
+        QB.settings
+          .init(QBSetup)
+          .then(() => {})
+          .catch(() => {
+            // Some error occured, look at the exception message for more details
+          });
+        QB.settings.enableAutoReconnect({ enable: true });
+    } else {
+      console.log('Setting utility  null');
+
+      try {
+        const response = await axios({
+          method: 'get',
+          url: `${Config.BASE_URL}/app/settings`,
+          headers: {
+              setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
+            },
+        });
+        console.log('RESPONSE ::', response);
+
+        if (!response.data.status) {
+          console.log('ERROR RESPONSE ::', response.data);
+          throw (response.data.messages || response);
+        } else {
+          console.log('RESPONSE.DATA ::', response.data);
+          console.log('setting response:=>', response.data.payload.app);
+            QBSettings = {
+              accountKey: response.data.payload.app.quickblox.accountKey,
+              appId: response.data.payload.app.quickblox.appId,
+              authKey: response.data.payload.app.quickblox.authKey,
+              authSecret: response.data.payload.app.quickblox.authSecret,
+            };
+
+            QB.settings
+              .init(QBSettings)
+              .then(() => {})
+              .catch(() => {
+                // Some error occured, look at the exception message for more details
+              });
+            QB.settings.enableAutoReconnect({ enable: true });
+            await Utility.setStorage('appSetting', response.data.payload.app);
+        }
+      } catch (e) {
+        const error = {
+
+          error: e,
+        }
+        console.log('SERVER ERROR ::--->', error);
+        throw new Error(e);
+      }
+    }
+  })
+}
+
+export const QBinit = () => {
+  Utility.getStorage('appSetting').then((setting) => {
+    let QBSettings = {};
+    if (setting !== null) {
+      console.log('New setting:=>', setting);
+      QBSettings = {
+        accountKey: setting.quickblox.accountKey,
+        appId: setting.quickblox.appId,
+        authKey: setting.quickblox.authKey,
+        authSecret: setting.quickblox.authSecret,
+      };
+      QB.settings
+        .init(QBSettings)
+        .then(() => {})
+        .catch(() => {
+          // Some error occured, look at the exception message for more details
+        });
+      QB.settings.enableAutoReconnect({ enable: true });
+    } else {
+      console.log('Setting init called');
+      getAppSettingsWithoutAuth()
+        .then(async (response) => {
+          console.log('Settings:=>', response);
+          QBSettings = {
+            accountKey: response.payload.app.quickblox.accountKey,
+            appId: response.payload.app.quickblox.appId,
+            authKey: response.payload.app.quickblox.authKey,
+            authSecret: response.payload.app.quickblox.authSecret,
+          };
+          QB.settings
+            .init(QBSettings)
+            .then(() => {})
+            .catch(() => {
+              // Some error occured, look at the exception message for more details
+            });
+          QB.settings.enableAutoReconnect({ enable: true });
+          await Utility.setStorage('appSetting', response.payload.app);
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            console.log('catch -> location screen setting api');
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  });
 };
+
+export const QB_MAX_ASSET_SIZE_UPLOAD = 104857600;
 
 export const QB_UNREAD_MESSAGE_COUNT_API = `${QUICKBLOX_BASE_URL}/chat/Message/unread.json?token=`;
 const MESSAGES_SORT = {
@@ -90,24 +208,7 @@ export const getQBProfilePic = (dialogType, entityType, originalImage) => {
 export const QBChatDisconnect = () => QBChatConnected()
     .then(() => QB.chat.disconnect())
     .catch((e) => e);
-export const QBinit = () => {
-  Utility.getStorage('appSetting').then((setting) => {
-    console.log('New setting:=>', setting);
-    const QBSetting = {
-      accountKey: setting.quickblox.accountKey,
-      appId: setting.quickblox.appId,
-      authKey: setting.quickblox.authKey,
-      authSecret: setting.quickblox.authSecret,
-    };
-    QB.settings
-      .init(QBSetting)
-      .then(() => {})
-      .catch(() => {
-        // Some error occured, look at the exception message for more details
-      });
-    QB.settings.enableAutoReconnect({ enable: true });
-  });
-};
+
 export const QBlogin = (
   uniqueID,
   customData = {},

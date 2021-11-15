@@ -25,6 +25,7 @@ const NewsFeedList = ({
   navigation,
   postData,
   onEndReached = () => {},
+  onMomentumScrollBegin,
   footerLoading = false,
   scrollEnabled,
   ListHeaderComponent,
@@ -203,6 +204,7 @@ const NewsFeedList = ({
         showsVerticalScrollIndicator={false}
         renderItem={renderNewsFeed}
         onEndReached={onEndReached}
+        onMomentumScrollBegin={onMomentumScrollBegin}
         onEndReachedThreshold={0.5}
         refreshing={pullRefresh}
         onRefresh={newsFeedOnRefresh}
