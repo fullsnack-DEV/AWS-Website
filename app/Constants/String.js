@@ -808,5 +808,6 @@ const strings = {
     'Through “Invite to challenge”, you can invite another team to challenge your team.',
 
   teamExist: 'The team name in the sports already exists in the city.',
+  sportActivity: 'Sports Activities',
 };
 export default strings;

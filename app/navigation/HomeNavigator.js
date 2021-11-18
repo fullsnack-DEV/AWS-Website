@@ -180,6 +180,8 @@ import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallen
 import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 import LookingForSettingScreen from '../screens/home/playInModule/LookingForSettingScreen';
+import SportActivityScreen from '../screens/home/SportActivityScreen';
+import SportActivityTagScreen from '../screens/home/SportActivityTagScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2181,6 +2183,39 @@ const HomeNavigator = () => (
       component={ManageChallengeScreen}
       options={{
         title: 'Manage Challenge',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="SportActivityScreen"
+      component={SportActivityScreen}
+      options={{
+        title: 'Sports Activities',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="SportActivityTagScreen"
+      component={SportActivityTagScreen}
+      options={{
+        title: 'Sports Activity Tags Order',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

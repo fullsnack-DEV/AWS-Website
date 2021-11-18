@@ -3574,8 +3574,8 @@ const HomeScreen = ({ navigation, route }) => {
       />
       <ActionSheet
         ref={manageChallengeActionSheet}
-        options={[strings.manageChallengeShhetItem, strings.cancel]}
-        cancelButtonIndex={1}
+        options={[strings.manageChallengeShhetItem, strings.sportActivity, strings.cancel]}
+        cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
             // Add Playing
@@ -3594,6 +3594,8 @@ const HomeScreen = ({ navigation, route }) => {
                 sportName: currentUserData?.sport,
               });
             }
+          } else if (index === 1) {
+            navigation.navigate('SportActivityScreen');
           }
         }}
       />

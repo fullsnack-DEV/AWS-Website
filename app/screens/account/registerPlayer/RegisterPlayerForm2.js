@@ -103,6 +103,8 @@ const doneOnPress = () => {
     setloading(true);
     const bodyParams = { ...route?.params?.bodyParams };
     bodyParams.descriptions = description;
+    bodyParams.is_published = true;
+
     bodyParams.currency_type = authContext?.entity?.obj?.currency_type;
     bodyParams.language = selectedLanguages;
     const registerdPlayerData = authContext?.user?.registered_sports || [];
