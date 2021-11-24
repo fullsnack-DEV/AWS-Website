@@ -39,7 +39,7 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import strings from '../../Constants/String';
-import { getShortsList } from '../../api/Games'; // getRecentGameDetails
+import { getShortsList, getSportsList } from '../../api/Games'; // getRecentGameDetails
 import * as Utility from '../../utils';
 
 import {
@@ -169,34 +169,18 @@ export default function LocalHomeScreen({ navigation, route }) {
         Alert.alert('Can not fetch local sport setting.');
       });
 
-    // if (isFocused) {
-    //   setloading(true);
-    //   getSportsList(authContext)
-    //     .then((res) => {
-    //       setloading(false);
-    //       if (res.payload) {
-    //         const arr = [
-    //           {
-    //             isChecked: true,
-    //             sport_name: 'All',
-    //           },
-    //         ];
-    //         for (const tempData of res.payload) {
-    //           tempData.isChecked = false;
-    //           arr.push(tempData);
-    //         }
-    //         setSports(arr);
-    //         setTimeout(() => setloading(false), 1000);
-    //       }
-    //     })
-    //     .catch((e) => {
-    //       console.log('catch -> sports list api');
-    //       setloading(false);
-    //       setTimeout(() => {
-    //         Alert.alert(strings.alertmessagetitle, e.message);
-    //       }, 10);
-    //     });
-    // }
+    if (isFocused) {
+      getSportsList(authContext)
+        .then(async (response) => {
+          await Utility.setStorage('sportsList', response.payload)
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
   }, [authContext, isFocused]);
 
   useEffect(() => {

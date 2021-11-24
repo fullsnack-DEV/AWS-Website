@@ -2656,7 +2656,7 @@ const HomeScreen = ({ navigation, route }) => {
   const renderHeaderUserHomeTopSection = useMemo(
     () => isUserHome && (
       <UserHomeTopSection
-          userDetails={currentUserData}
+          userDetails={authContext?.entity?.obj}
           isAdmin={isAdmin}
           loggedInEntity={authContext.entity}
           onAddRolePress={onAddRolePress}
@@ -2666,17 +2666,7 @@ const HomeScreen = ({ navigation, route }) => {
           onAction={onUserAction}
         />
       ),
-    [
-      isUserHome,
-      currentUserData,
-      isAdmin,
-      authContext.entity,
-      onAddRolePress,
-      refereesInModal,
-      scorekeeperInModal,
-      playInModel,
-      onUserAction,
-    ],
+    [isUserHome, isAdmin, authContext.entity, onAddRolePress, refereesInModal, scorekeeperInModal, playInModel, onUserAction],
   );
 
   const renderHeaderClubHomeTopSection = useMemo(

@@ -1,4 +1,3 @@
-/* eslint-disable array-callback-return */
 import React, {
   useContext,
   useCallback,
@@ -21,7 +20,7 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 import ActionSheet from 'react-native-actionsheet';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
 import * as Utility from '../../utils';
- import ActivityLoader from '../../components/loader/ActivityLoader';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -30,30 +29,50 @@ import TCThinDivider from '../../components/TCThinDivider';
 import UserInfoAddRole from '../../components/Home/User/UserInfoAddRole';
 import { patchPlayer } from '../../api/Users';
 
+let image_url = '';
+let sportsData = [];
 export default function SportActivityTagScreen({ navigation }) {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
 
-  const [selectedRadio, setSelectedRadio] = useState(authContext?.entity?.obj?.sport_setting ? authContext.entity.obj.sport_setting.selectedOpetion : 0);
-  const [selectedCheck, setSelectedCheck] = useState(authContext?.entity?.obj?.sport_setting ? authContext.entity.obj.sport_setting.isChecked : false);
-  const [entitySource, setEntitySource] = useState(authContext?.entity?.obj?.sport_setting ? authContext?.entity?.obj?.sport_setting?.entity_order : [
-    'Player',
-    'Referee',
-    'Scorekeeper',
-  ]);
-  const [activityList, setActivityList] = useState(authContext?.entity?.obj?.sport_setting ? authContext.entity.obj.sport_setting.activity_order : [
-    ...authContext.entity.obj.registered_sports,
-    ...authContext.entity.obj.referee_data,
-    ...authContext.entity.obj.scorekeeper_data,
-  ]);
-
+  const [selectedRadio, setSelectedRadio] = useState(
+    authContext.entity.obj.sport_setting.selectedOpetion || 0,
+  );
+  const [selectedCheck, setSelectedCheck] = useState(
+    authContext.entity.obj.sport_setting.isChecked || false,
+  );
+  const [entitySource, setEntitySource] = useState(
+    authContext?.entity?.obj?.sport_setting?.entity_order || [
+      'Player',
+      'Referee',
+      'Scorekeeper',
+    ],
+  );
   console.log('authContext?.entity?.obj', authContext?.entity?.obj);
+
+  const [activityList, setActivityList] = useState(
+    authContext?.entity?.obj?.sport_setting?.activity_order || [
+      ...(authContext?.entity?.obj?.registered_sports || []),
+      ...(authContext?.entity?.obj?.referee_data || []),
+      ...(authContext?.entity?.obj?.scorekeeper_data || []),
+    ],
+  );
+
+  Utility.getStorage('sportsList').then((list) => {
+    console.log('list:=>>', list);
+    sportsData = list;
+  });
+  Utility.getStorage('appSetting').then((setting) => {
+    console.log('APPSETTING:=', setting);
+    image_url = setting.base_url_sporticon;
+  });
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Text
-        onPress={() => onSavePress()}
+          onPress={() => onSavePress()}
           style={{
             fontSize: 16,
             fontFamily: fonts.RLight,
@@ -66,10 +85,28 @@ export default function SportActivityTagScreen({ navigation }) {
     });
   }, [navigation, selectedCheck, selectedRadio, activityList, entitySource]);
 
+  const getSportImage = (sportName, type) => {
+    if (
+      sportsData.filter(
+        (obj) => obj.sport_name.toLowerCase() === sportName.toLowerCase(),
+      ).length > 0
+    ) {
+      const tempObj = sportsData.filter(
+        (obj) => obj.sport_name.toLowerCase() === sportName.toLowerCase(),
+      )[0];
+
+      if (type === 'player') return tempObj.player_image;
+      if (type === 'referee') return tempObj.referee_image;
+      if (type === 'scorekeeper') return tempObj.scorekeeper_image;
+    }
+    return null
+  };
+
   const keyExtractor = useCallback((item, index) => index.toString(), []);
-const onSavePress = () => {
-  setloading(true);
+  const onSavePress = () => {
+    setloading(true);
     const userObj = {
+      ...authContext?.entity?.obj,
       sport_setting: {
         entity_order: entitySource,
         selectedOpetion: selectedRadio,
@@ -78,11 +115,8 @@ const onSavePress = () => {
       },
     };
 
-     console.log('userObj::::=>', userObj);
-    patchPlayer(
-      userObj,
-      authContext,
-    )
+    console.log('userObj::::=>', userObj);
+    patchPlayer(userObj, authContext)
       .then(async (res) => {
         setloading(false);
         const entity = authContext.entity;
@@ -91,13 +125,13 @@ const onSavePress = () => {
         authContext.setEntity({ ...entity });
         await Utility.setStorage('authContextUser', res.payload);
         await Utility.setStorage('authContextEntity', { ...entity });
-        navigation.goBack()
+        navigation.goBack();
       })
       .catch((error) => {
         Alert.alert(error);
       })
       .finally(() => setloading(false));
-}
+  };
   const renderSportsView = useCallback(
     ({ item, drag }) => item.sport_name !== 'All' && (
       <View style={styles.sportsBackgroundView}>
@@ -117,8 +151,15 @@ const onSavePress = () => {
     ({ item, drag }) => item.sport_name !== 'All' && (
       <View style={styles.sportsBackgroundView}>
         <View style={{ flexDirection: 'row' }}>
-          <Image source={images.gameGoal} style={styles.sportsIcon} />
-          <Text style={styles.sportNameTitle}>{item.sport_name}</Text>
+          <Image
+              source={{
+                uri: `${image_url}${getSportImage(item.sport_name, item.type)}`,
+              }}
+              style={styles.sportsIcon}
+            />
+          <Text style={styles.sportNameTitle}>{`${item.sport_name} (${
+              item?.type?.charAt(0).toUpperCase() + item?.type?.slice(1)
+            })`}</Text>
         </View>
         <TouchableOpacity onLongPress={drag} style={{ alignSelf: 'center' }}>
           <Image source={images.moveIcon} style={styles.moveIconStyle} />
@@ -146,7 +187,16 @@ const onSavePress = () => {
         renderItem={({ item }) => (
           <UserInfoAddRole
             title={item.sport_name}
-            thumbURL={images.goalsImage}
+            thumbURL={
+              item?.type
+                ? {
+                    uri: `${image_url}${getSportImage(
+                      item.sport_name,
+                      item.type,
+                    )}`,
+                  }
+                : images.addRole
+            }
           />
         )}
         style={{ margin: 15 }}
@@ -213,17 +263,27 @@ const onSavePress = () => {
 
               data.forEach((element) => {
                 if (element === 'Player') {
-                  list = [...list, ...authContext.entity.obj.registered_sports];
+                  list = [
+                    ...list,
+                    ...authContext?.entity?.obj?.registered_sports ?? [],
+                  ];
+                  console.log('PLAYER LIST:=', list);
                 }
                 if (element === 'Referee') {
-                  list = [...list, ...authContext.entity.obj.referee_data];
+                  list = [...list, ...authContext?.entity?.obj?.referee_data ?? []];
+                  console.log('REFEREE LIST:=', list);
                 }
                 if (element === 'Scorekeeper') {
-                  list = [...list, ...authContext.entity.obj.scorekeeper_data];
+                  list = [
+                    ...list,
+                    ...authContext?.entity?.obj?.scorekeeper_data ?? [],
+                  ];
+                  console.log('SCOREKEEPER LIST:=', list);
                 }
               });
               setActivityList([...list]);
-              console.log('DATATATATATA:=', list);
+
+              console.log('DATATATATATA:=', [...list]);
             }}
           />
         </View>

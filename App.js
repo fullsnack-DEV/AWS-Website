@@ -1,15 +1,13 @@
 import React, {
-    useState, useEffect, useMemo, useCallback,
+ useState, useEffect, useMemo, useCallback,
 } from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import {
-  Alert,
-  StatusBar,
-} from 'react-native';
-import { decode, encode } from 'base-64'
+import { Alert, StatusBar } from 'react-native';
+import { decode, encode } from 'base-64';
 
 import firebase from '@react-native-firebase/app';
 import Orientation from 'react-native-orientation';
+import QB from 'quickblox-react-native-sdk';
 import AuthContext from './app/auth/context';
 
 import { getQBSetting } from './app/utils/QuickBlox';
@@ -20,7 +18,7 @@ import strings from './app/Constants/String';
 import { ImageUploadProvider } from './app/context/GetContexts';
 import CommonAlert from './app/screens/account/commonScreen/CommonAlert';
 
-console.disableYellowBox = true
+console.disableYellowBox = true;
 // if (__DEV__) {
 //     console.log = () => {}
 //     console.warn = () => {}
@@ -37,17 +35,16 @@ export default function App() {
     setToken(token);
     await Utility.setStorage('tokenData', token);
   }, []);
-//   getQBSetting().then(console.log).catch(console.log)
 
-getQBSetting()
+console.log('1::=>');
 
   if (!global.btoa) {
     global.btoa = encode;
-}
+  }
 
-if (!global.atob) {
+  if (!global.atob) {
     global.atob = decode;
-}
+  }
 
   useEffect(() => {
     if (!networkConnected) {
@@ -56,35 +53,71 @@ if (!global.atob) {
   }, [networkConnected]);
 
   const showNetworkAlert = () => {
-    Alert.alert(strings.alertmessagetitle, strings.networkConnectivityErrorMessage)
-  }
+    Alert.alert(
+      strings.alertmessagetitle,
+      strings.networkConnectivityErrorMessage,
+    );
+  };
   useEffect(() => {
     NetInfo.addEventListener((state) => {
-      console.log('Connection : ', state.isConnected)
+      console.log('Connection : ', state.isConnected);
       setNetworkConntected(state.isConnected);
     });
 
-    StatusBar.setBarStyle('dark-content')
-    StatusBar.setBackgroundColor('white')
+    StatusBar.setBarStyle('dark-content');
+    StatusBar.setBackgroundColor('white');
     Orientation.lockToPortrait();
-    const firebaseAppInitialize = () => {
-      if (firebase.apps.length === 0) {
-       Utility.getStorage('appSetting').then(async (setting) => {
-        await firebase.initializeApp(setting.firebaseConfig);
-       })
+
+    console.log('2::=>');
+
+    getQBSetting().then(async (setting) => {
+      console.log('App QB Setting:=>', setting);
+
+      if (setting) {
+        if (firebase.apps.length === 0) {
+          await firebase.initializeApp(setting.firebaseConfig);
+        }
+        QB.settings
+          .init({
+            appId: setting.quickblox.appId,
+            authKey: setting.quickblox.authKey,
+            authSecret: setting.quickblox.authSecret,
+            accountKey: setting.quickblox.accountKey,
+          })
+          .then(async () => {
+            QB.settings.enableAutoReconnect({ enable: true });
+          })
+          .catch((e) => {
+            console.log('QB ERROR:=>', e);
+            // Some error occured, look at the exception message for more details
+          });
       }
-    }
-    firebaseAppInitialize();
+      // else {
+      //   const QBSetting = {
+      //     accountKey: 'S3jzJdhgvNjrHTT8VRMi',
+      //     appId: '92185',
+      //     authKey: 'NGpyPS265yy4QBS',
+      //     authSecret: 'bdxqa7sDzbODJew',
+      //   };
+      //   QB.settings
+      //     .init(QBSetting)
+      //     .then(() => {})
+      //     .catch(() => {
+      //       // Some error occured, look at the exception message for more details
+      //     });
+      // }
+    });
   }, []);
 
   const updateAuth = useCallback((e) => {
-    setEntity({ ...e })
+    setEntity({ ...e });
   }, []);
 
   const showAlert = (alertStuff) => {
-      setAlertData(alertStuff)
-      setTimeout(() => setAlertData(null), 1000)
-  }
+    setAlertData(alertStuff);
+    setTimeout(() => setAlertData(null), 1000);
+  };
+
   const authValue = useMemo(
     () => ({
       role,
@@ -105,9 +138,9 @@ if (!global.atob) {
 
   return (
     <AuthContext.Provider value={authValue}>
-      {alertData?.visible && <CommonAlert alertData={alertData}/>}
+      {alertData?.visible && <CommonAlert alertData={alertData} />}
       <ImageUploadProvider>
-        <NavigationMainContainer/>
+        <NavigationMainContainer />
       </ImageUploadProvider>
     </AuthContext.Provider>
   );

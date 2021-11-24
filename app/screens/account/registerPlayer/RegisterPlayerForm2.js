@@ -104,12 +104,18 @@ const doneOnPress = () => {
     const bodyParams = { ...route?.params?.bodyParams };
     bodyParams.descriptions = description;
     bodyParams.is_published = true;
-
+    bodyParams.type = 'player';
     bodyParams.currency_type = authContext?.entity?.obj?.currency_type;
     bodyParams.language = selectedLanguages;
-    const registerdPlayerData = authContext?.user?.registered_sports || [];
+    const auth = {
+      ...authContext?.entity?.obj,
+      sport_setting: {},
+    };
+
+    const registerdPlayerData = authContext?.entity?.obj?.registered_sports || [];
     registerdPlayerData.push(bodyParams);
     const body = {
+      ...auth,
       registered_sports: registerdPlayerData,
     };
 
