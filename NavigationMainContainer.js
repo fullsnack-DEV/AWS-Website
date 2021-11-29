@@ -1,6 +1,8 @@
 import React, {
   useState, Fragment, useEffect, useContext, useCallback,
 } from 'react';
+import QB from 'quickblox-react-native-sdk';
+
 import { NavigationContainer } from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
 import jwtDecode from 'jwt-decode';
@@ -10,7 +12,7 @@ import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
 import navigationTheme from './app/navigation/navigationTheme';
 import * as Utility from './app/utils/index';
-import { QBconnectAndSubscribe, QBLogout } from './app/utils/QuickBlox';
+import { getQBSetting, QBconnectAndSubscribe, QBLogout } from './app/utils/QuickBlox';
 import ActivityLoader from './app/components/loader/ActivityLoader';
 
 export default function NavigationMainContainer() {
@@ -43,6 +45,45 @@ export default function NavigationMainContainer() {
   });
 
   const checkToken = useCallback(async () => {
+    getQBSetting().then(async (setting) => {
+      console.log('App QB Setting:=>', setting);
+
+      if (setting) {
+        if (firebase.apps.length === 0) {
+          await firebase.initializeApp(setting.firebaseConfig);
+        }
+        authContext.setQBCredential(setting)
+        QB.settings
+          .init({
+            appId: setting.quickblox.appId,
+            authKey: setting.quickblox.authKey,
+            authSecret: setting.quickblox.authSecret,
+            accountKey: setting.quickblox.accountKey,
+          })
+          .then(async () => {
+            QB.settings.enableAutoReconnect({ enable: true });
+          })
+          .catch((e) => {
+            console.log('QB ERROR:=>', e);
+            // Some error occured, look at the exception message for more details
+          });
+      }
+      // else {
+      //   const QBSetting = {
+      //     accountKey: 'S3jzJdhgvNjrHTT8VRMi',
+      //     appId: '92185',
+      //     authKey: 'NGpyPS265yy4QBS',
+      //     authSecret: 'bdxqa7sDzbODJew',
+      //   };
+      //   QB.settings
+      //     .init(QBSetting)
+      //     .then(() => {})
+      //     .catch(() => {
+      //       // Some error occured, look at the exception message for more details
+      //     });
+      // }
+    });
+
     const contextEntity = await Utility.getStorage('authContextEntity');
     const authContextUser = await Utility.getStorage('authContextUser');
     const tokenData = await Utility.getStorage('tokenData');

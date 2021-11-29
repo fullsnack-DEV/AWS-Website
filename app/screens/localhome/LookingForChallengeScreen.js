@@ -22,7 +22,7 @@ import {
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 
 import Modal from 'react-native-modal';
-import moment from 'moment';
+// import moment from 'moment';
 import Geolocation from '@react-native-community/geolocation';
 import AuthContext from '../../auth/context';
 
@@ -31,7 +31,7 @@ import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import { widthPercentageToDP } from '../../utils';
-import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
+// import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 
@@ -54,10 +54,10 @@ export default function LookingForChallengeScreen({ navigation, route }) {
 
   const [sports, setSports] = useState([]);
 
-  const [datePickerFor, setDatePickerFor] = useState();
-  const [show, setShow] = useState(false);
-  const [fromDate, setFromDate] = useState();
-  const [toDate, setToDate] = useState();
+  // const [datePickerFor, setDatePickerFor] = useState();
+  // const [show, setShow] = useState(false);
+  // const [fromDate, setFromDate] = useState();
+  // const [toDate, setToDate] = useState();
   const [minFee, setMinFee] = useState(0);
   const [maxFee, setMaxFee] = useState(0);
   const [availableChallenge, setAvailableChallenge] = useState([]);
@@ -279,17 +279,17 @@ export default function LookingForChallengeScreen({ navigation, route }) {
     <TCThinDivider marginTop={10} marginBottom={10} width={'100%'} />
   );
 
-  const handleDonePress = (date) => {
-    if (datePickerFor === 'from') {
-      setFromDate(new Date(date));
-    } else {
-      setToDate(new Date(date));
-    }
-    setShow(!show);
-  };
-  const handleCancelPress = () => {
-    setShow(false);
-  };
+  // const handleDonePress = (date) => {
+  //   if (datePickerFor === 'from') {
+  //     setFromDate(new Date(date));
+  //   } else {
+  //     setToDate(new Date(date));
+  //   }
+  //   setShow(!show);
+  // };
+  // const handleCancelPress = () => {
+  //   setShow(false);
+  // };
 
   const onScrollHandler = () => {
     setLoadMore(true);
@@ -673,7 +673,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                     </View>
                   </View>
                 </View>
-                <View style={{ flexDirection: 'column', margin: 15 }}>
+                {/* <View style={{ flexDirection: 'column', margin: 15 }}>
                   <View>
                     <Text style={styles.filterTitle}>Available Time</Text>
                   </View>
@@ -750,7 +750,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                       </Text>
                     </Text>
                   </View>
-                </View>
+                </View> */}
               </View>
               {/* Rate View */}
               {/* <View>
@@ -880,7 +880,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>
-        <DateTimePickerView
+        {/* <DateTimePickerView
           date={new Date()}
           visible={show}
           onDone={handleDonePress}
@@ -888,7 +888,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
           onHide={handleCancelPress}
           // minutesGap={30}
           mode={'datetime'}
-        />
+        /> */}
       </Modal>
     </SafeAreaView>
   );
@@ -1000,32 +1000,32 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-  fieldView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flex: 1,
-    height: 40,
-    alignItems: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
-    elevation: 1,
-  },
-  fieldTitle: {
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
-    marginLeft: 10,
-  },
-  fieldValue: {
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    textAlign: 'center',
-  },
+  // fieldView: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   flex: 1,
+  //   height: 40,
+  //   alignItems: 'center',
+  //   backgroundColor: colors.offwhite,
+  //   borderRadius: 5,
+  //   shadowColor: colors.grayColor,
+  //   shadowOffset: { width: 0, height: 1 },
+  //   shadowOpacity: 0.3,
+  //   shadowRadius: 1,
+  //   elevation: 1,
+  // },
+  // fieldTitle: {
+  //   fontSize: 16,
+  //   color: colors.lightBlackColor,
+  //   fontFamily: fonts.RLight,
+  //   marginLeft: 10,
+  // },
+  // fieldValue: {
+  //   fontSize: 16,
+  //   color: colors.lightBlackColor,
+  //   fontFamily: fonts.RRegular,
+  //   textAlign: 'center',
+  // },
   resetButton: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,

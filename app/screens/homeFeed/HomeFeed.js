@@ -17,6 +17,7 @@ import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import { ImageUploadContext } from '../../context/ImageUploadContext';
 
+let onEndReachedCalledDuringMomentum = true;
 const HomeFeed = ({
   onFeedScroll,
   refs,
@@ -35,19 +36,19 @@ const HomeFeed = ({
 
     const [postData, setPostData] = useState();
     const [totalUserPostCount, setTotalUserPostCount] = useState(0);
-    const [isNextDataLoading, setIsNextDataLoading] = useState(true);
+    const [isNextDataLoading, setIsNextDataLoading] = useState(false);
     const [footerLoading, setFooterLoading] = useState(false);
 
-    // useEffect(() => {
-    //     const params = { uid: userID };
-    //     getUserPosts(params, authContext).then((res) => {
-    //         setFeedCalled(true)
-    //         setTotalUserPostCount(res?.payload?.total_count)
-    //         setPostData([...res?.payload?.results])
-    //     }).catch((e) => {
-    //         console.log(e)
-    //     })
-    // }, [])
+    useEffect(() => {
+        const params = { uid: userID };
+        getUserPosts(params, authContext).then((res) => {
+            setFeedCalled(true)
+            setTotalUserPostCount(res?.payload?.total_count)
+            setPostData([...res?.payload?.results])
+        }).catch((e) => {
+            console.log(e)
+        })
+    }, [authContext, userID])
 
     useEffect(() => {
         if (postData?.length > 0 && totalUserPostCount > 0) {
@@ -206,19 +207,22 @@ const HomeFeed = ({
     }, [authContext, createPostAfterUpload, imageUploadContext])
 
     const onEndReached = () => {
-        setFooterLoading(true);
-        const id_lt = postData?.[postData.length - 1]?.id;
-        if (id_lt && isNextDataLoading) {
-            getUserPosts({ last_activity_id: id_lt }, authContext).then((response) => {
-                if (response) {
+        if (!onEndReachedCalledDuringMomentum) {
+            setFooterLoading(true);
+            const id_lt = postData?.[postData.length - 1]?.id;
+            if (id_lt && isNextDataLoading) {
+                getUserPosts({ last_activity_id: id_lt }, authContext).then((response) => {
+                    if (response) {
+                        setFooterLoading(false)
+                        setTotalUserPostCount(response?.payload?.total_count)
+                        setPostData([...postData, ...response.payload.results]);
+                    }
+                })
+                .catch(() => {
                     setFooterLoading(false)
-                    setTotalUserPostCount(response?.payload?.total_count)
-                    setPostData([...postData, ...response.payload.results]);
-                }
-            })
-            .catch(() => {
-                setFooterLoading(false)
-            })
+                })
+            }
+            onEndReachedCalledDuringMomentum = true;
         }
     }
 
@@ -270,6 +274,10 @@ const HomeFeed = ({
               onEditPressDone={editPostDoneCall}
               onLikePress={onLikePress}
               onEndReached={onEndReached}
+              onMomentumScrollBegin={() => {
+                onEndReachedCalledDuringMomentum = false
+              }}
+
               footerLoading={footerLoading && isNextDataLoading}
           />
       </View>

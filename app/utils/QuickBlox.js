@@ -1,10 +1,27 @@
+/* eslint-disable consistent-return */
 /* eslint-disable import/no-cycle */
-import QB from 'quickblox-react-native-sdk';
+import Config from 'react-native-config';
 import _ from 'lodash';
-import { Alert } from 'react-native';
+import axios from 'axios';
+import QB from 'quickblox-react-native-sdk';
 import images from '../Constants/ImagePath';
 import qbApiCall from './qbApiCall';
 import * as Utility from './index';
+
+// const QBSetting = {
+//   accountKey: 'S3jzJdhgvNjrHTT8VRMi',
+//   appId: '92185',
+//   authKey: 'NGpyPS265yy4QBS',
+//   authSecret: 'bdxqa7sDzbODJew',
+// };
+// QB.settings
+//   .init(QBSetting)
+//   .then(() => {})
+//   .catch(() => {
+//     // Some error occured, look at the exception message for more details
+//   });
+
+console.log('constant::=>');
 
 let QUICKBLOX_BASE_URL;
 let QB_Auth_Password;
@@ -13,28 +30,113 @@ let MESSAGE_LIMIT;
 let DIALOG_LIST_LIMIT;
 let USERS_LIST_LIMIT;
 
-export const QB_MAX_ASSET_SIZE_UPLOAD = 104857600;
+export const getQBSetting = async () => {
+   axios({
+      method: 'get',
+      url: `${Config.BASE_URL}/app/settings`,
+      withCredentials: true,
+      headers: {
+        Accept: 'application/json',
+        setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
+      },
+    }).then(async (response) => {
+      if (!response.data.status) {
+        console.log('ERROR RESPONSE ::', response.data);
+        throw response.data.messages || response;
+      } else {
+        console.log('setting response:=>', response.data.payload.app.quickblox);
+        QUICKBLOX_BASE_URL = response.data.payload.app.quickblox.QUICKBLOX_BASE_URL;
+        QB_Auth_Password = response.data.payload.app.quickblox.QB_Auth_Password;
+        MESSAGE_LIMIT = response.data.payload.app.quickblox.MESSAGE_LIMIT;
+        DIALOG_LIST_LIMIT = response.data.payload.app.quickblox.DIALOG_LIST_LIMIT;
+        USERS_LIST_LIMIT = response.data.payload.app.quickblox.USERS_LIST_LIMIT;
+        await Utility.setStorage('appSetting', response.data.payload.app);
 
-export const getQBSetting = () => {
-  Utility.getStorage('appSetting')
-    .then((setting) => {
-      console.log('setting fetched::=>', setting);
-      QUICKBLOX_BASE_URL = setting.quickblox.QUICKBLOX_BASE_URL;
-      QB_Auth_Password = setting.quickblox.QB_Auth_Password;
-      MESSAGE_LIMIT = setting.quickblox.MESSAGE_LIMIT;
-      DIALOG_LIST_LIMIT = setting.quickblox.DIALOG_LIST_LIMIT;
-      USERS_LIST_LIMIT = setting.quickblox.USERS_LIST_LIMIT;
-      //  appSettings = {
-      //   accountKey: setting.quickblox.accountKey,
-      //   appId: setting.quickblox.appId,
-      //   authKey: setting.quickblox.authKey,
-      //   authSecret: setting.quickblox.authSecret,
-      // };
-    })
-    .catch((e) => {
-      Alert.Alert(e);
+        return response.data.payload.app;
+      }
     });
-};
+}
+
+// export const getQBSetting = () => Utility.getStorage('appSetting').then(async (setting) => {
+//     console.log('Setting utility:=>', setting);
+
+//     if (setting !== null && setting.quickblox !== null) {
+//       console.log('setting is not null');
+
+//       QUICKBLOX_BASE_URL = setting.quickblox.QUICKBLOX_BASE_URL;
+//       QB_Auth_Password = setting.quickblox.QB_Auth_Password;
+//       MESSAGE_LIMIT = setting.quickblox.MESSAGE_LIMIT;
+//       DIALOG_LIST_LIMIT = setting.quickblox.DIALOG_LIST_LIMIT;
+//       USERS_LIST_LIMIT = setting.quickblox.USERS_LIST_LIMIT;
+//       return setting;
+//     }
+//     if (setting === null) {
+//       console.log('setting is  null');
+
+//       return {
+//         base_url_sporticon:
+//           'https://dev-townscup-gallery.s3.amazonaws.com/sporticon/',
+//         setting_id: '1d5db8a3-0334-4e4d-bdc5-70172438f221',
+
+//         publishableKey: 'pk_test_ArfgYsDvhFEnPImjf2QHH5YH00ozgvzrTO',
+
+//         quickblox: {
+//           authKey: 'NGpyPS265yy4QBS',
+//           DIALOG_LIST_LIMIT: 1000,
+//           authSecret: 'bdxqa7sDzbODJew',
+//           USERS_LIST_LIMIT: 1000,
+//           appId: '92185',
+//           QUICKBLOX_BASE_URL: 'https://api.quickblox.com',
+//           MESSAGE_LIMIT: 50,
+//           accountKey: 'S3jzJdhgvNjrHTT8VRMi',
+//           QB_Auth_Password: 'qbPassword',
+//         },
+//         elastic: {
+//           host: 'https://townscup.es.us-east-1.aws.found.io:9243',
+//           APIVersion: '7.x',
+//           username: 'elastic',
+//           password: 'tqRPhYFnjqGuh99bLp4F6jZZ',
+//         },
+//         firebaseConfig: {
+//           apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
+//           authDomain: 'townscup-fee6e.firebaseapp.com',
+//           databaseURL: 'https://townscup-fee6e.firebaseio.com',
+//           projectId: 'townscup-fee6e',
+//           storageBucket: 'townscup-fee6e.appspot.com',
+//           messagingSenderId: '1003329053001',
+//           appId: '1:1003329053001:web:f079b7ed53716fa8463a98',
+//           measurementId: 'G-N44NC0Z1Q7',
+//         },
+//       };
+
+//       // axios({
+//       //   method: 'get',
+//       //   url: `${Config.BASE_URL}/app/settings`,
+//       //   withCredentials: true,
+//       //   headers: {
+//       //     Accept: 'application/json',
+//       //     setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
+//       //   },
+//       // }).then(async (response) => {
+//       //   if (!response.data.status) {
+//       //     console.log('ERROR RESPONSE ::', response.data);
+//       //     throw response.data.messages || response;
+//       //   } else {
+//       //     console.log('setting response:=>', response.data.payload.app.quickblox);
+//       //     QUICKBLOX_BASE_URL = response.data.payload.app.quickblox.QUICKBLOX_BASE_URL;
+//       //     QB_Auth_Password = response.data.payload.app.quickblox.QB_Auth_Password;
+//       //     MESSAGE_LIMIT = response.data.payload.app.quickblox.MESSAGE_LIMIT;
+//       //     DIALOG_LIST_LIMIT = response.data.payload.app.quickblox.DIALOG_LIST_LIMIT;
+//       //     USERS_LIST_LIMIT = response.data.payload.app.quickblox.USERS_LIST_LIMIT;
+//       //     await Utility.setStorage('appSetting', response.data.payload.app);
+
+//       //     return response.data.payload.app;
+//       //   }
+//       // });
+//     }
+//   });
+
+export const QB_MAX_ASSET_SIZE_UPLOAD = 104857600;
 
 export const QB_UNREAD_MESSAGE_COUNT_API = `${QUICKBLOX_BASE_URL}/chat/Message/unread.json?token=`;
 const MESSAGES_SORT = {
@@ -90,24 +192,7 @@ export const getQBProfilePic = (dialogType, entityType, originalImage) => {
 export const QBChatDisconnect = () => QBChatConnected()
     .then(() => QB.chat.disconnect())
     .catch((e) => e);
-export const QBinit = () => {
-  Utility.getStorage('appSetting').then((setting) => {
-    console.log('New setting:=>', setting);
-    const QBSetting = {
-      accountKey: setting.quickblox.accountKey,
-      appId: setting.quickblox.appId,
-      authKey: setting.quickblox.authKey,
-      authSecret: setting.quickblox.authSecret,
-    };
-    QB.settings
-      .init(QBSetting)
-      .then(() => {})
-      .catch(() => {
-        // Some error occured, look at the exception message for more details
-      });
-    QB.settings.enableAutoReconnect({ enable: true });
-  });
-};
+
 export const QBlogin = (
   uniqueID,
   customData = {},

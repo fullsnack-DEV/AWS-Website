@@ -79,13 +79,21 @@ export default function RegisterRefereeForm2({ navigation, route }) {
   const registerRefereeCall = () => {
     const isValid = checkValidation();
     if (isValid) {
-       setloading(true);
+      setloading(true);
       if (route?.params?.bodyParams) {
         const bodyParams = { ...route?.params?.bodyParams };
         bodyParams.referee_data[0].certificates = certificate;
         bodyParams.referee_data[0].is_published = true;
+        bodyParams.referee_data[0].type = 'referee';
+
         bodyParams.referee_data[0].certificates.pop();
+        const auth = {
+          ...authContext?.entity?.obj,
+          sport_setting: {},
+        };
+
         const allData = {
+          ...auth,
           referee_data: [...bodyParams?.referee_data, ...currentRefereeData],
         };
         console.log('All data:=>', allData);
@@ -93,9 +101,12 @@ export default function RegisterRefereeForm2({ navigation, route }) {
         patchRegisterRefereeDetails(allData, authContext)
           .then(async (res) => {
             setloading(false);
+            console.log('User data:=>', res.payload);
             const entity = authContext.entity;
+
             entity.auth.user = res.payload;
             entity.obj = res.payload;
+
             authContext.setEntity({ ...entity });
             await Utility.setStorage('authContextUser', res.payload);
             await Utility.setStorage('authContextEntity', { ...entity });
@@ -121,7 +132,10 @@ export default function RegisterRefereeForm2({ navigation, route }) {
             style={{
               ...styles.certificateDescription,
               borderWidth: validationError?.certificate === index ? 1 : 0,
-              borderColor: validationError?.certificate === index ? colors.redDelColor : colors.whiteColor,
+              borderColor:
+                validationError?.certificate === index
+                  ? colors.redDelColor
+                  : colors.whiteColor,
             }}
             onChangeText={(text) => {
               const certi = certificate;

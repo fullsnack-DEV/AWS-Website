@@ -86,8 +86,9 @@ project.ext.react = [
 apply from: "../../node_modules/react-native/react.gradle"
 
 project.ext.envConfigFiles = [
+    debug: ".env.development",
     debugdev: ".env.development",
-    release: ".env.production",
+    releaseprod: ".env.production",
     releaseqa: ".env.qa",
     releasestaging: ".env.staging",
 ]
@@ -207,12 +208,15 @@ lintOptions {
 }
 
 dependencies {
+    implementation project(':react-native-config')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     compile project(':react-native-orientation')
     implementation "com.facebook.react:react-native:+"  // From node_modules
  implementation 'com.android.support:multidex:1.0.3'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+    
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'

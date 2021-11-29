@@ -76,7 +76,6 @@ import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallen
 import RefereeInviteAgreementScreen from '../screens/challenge/createChallenge/RefereeInviteAgreementScreen';
 import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
-import SearchScreen from '../screens/search/SearchScreen';
 
 const Stack = createStackNavigator();
 
@@ -100,7 +99,7 @@ const NewsFeedNavigator = () => (
         headerTitleStyle: {
           fontWeight: '500',
         },
-        headerShown: false,
+
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -112,7 +111,16 @@ const NewsFeedNavigator = () => (
       name="UserTagSelectionListScreen"
       component={UserTagSelectionListScreen}
       options={{
-        headerShown: false,
+        title: 'Tag',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -182,23 +190,6 @@ const NewsFeedNavigator = () => (
           fontWeight: '500',
         },
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-    <Stack.Screen
-      name="SearchScreen"
-      component={SearchScreen}
-      options={{
-        title: 'Search',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        // headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,

@@ -1,7 +1,7 @@
 const EntityStatus = {
-  playin: 'playin',
-  refereein: 'refereein',
-  scorekeeperin: 'scorekeeperin',
+  playin: 'player',
+  refereein: 'referee',
+  scorekeeperin: 'scorekeeper',
   addNew: 'add_new',
 
 };

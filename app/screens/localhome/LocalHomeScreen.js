@@ -39,7 +39,7 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import strings from '../../Constants/String';
-import { getShortsList } from '../../api/Games'; // getRecentGameDetails
+import { getShortsList, getSportsList } from '../../api/Games'; // getRecentGameDetails
 import * as Utility from '../../utils';
 
 import {
@@ -121,6 +121,7 @@ export default function LocalHomeScreen({ navigation, route }) {
       getAppSettings(authContext)
         .then(async (response) => {
           console.log('Settings:=>', response);
+
           await Utility.setStorage('appSetting', response.payload.app);
         })
         .catch((e) => {
@@ -169,34 +170,18 @@ export default function LocalHomeScreen({ navigation, route }) {
         Alert.alert('Can not fetch local sport setting.');
       });
 
-    // if (isFocused) {
-    //   setloading(true);
-    //   getSportsList(authContext)
-    //     .then((res) => {
-    //       setloading(false);
-    //       if (res.payload) {
-    //         const arr = [
-    //           {
-    //             isChecked: true,
-    //             sport_name: 'All',
-    //           },
-    //         ];
-    //         for (const tempData of res.payload) {
-    //           tempData.isChecked = false;
-    //           arr.push(tempData);
-    //         }
-    //         setSports(arr);
-    //         setTimeout(() => setloading(false), 1000);
-    //       }
-    //     })
-    //     .catch((e) => {
-    //       console.log('catch -> sports list api');
-    //       setloading(false);
-    //       setTimeout(() => {
-    //         Alert.alert(strings.alertmessagetitle, e.message);
-    //       }, 10);
-    //     });
-    // }
+    if (isFocused) {
+      getSportsList(authContext)
+        .then(async (response) => {
+          await Utility.setStorage('sportsList', response.payload)
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
   }, [authContext, isFocused]);
 
   useEffect(() => {
@@ -430,7 +415,7 @@ export default function LocalHomeScreen({ navigation, route }) {
 
       // Looking team query
       const lookingQuery = {
-         size: defaultPageSize,
+        size: defaultPageSize,
         query: {
           bool: {
             must: [
@@ -453,8 +438,7 @@ export default function LocalHomeScreen({ navigation, route }) {
             ],
           },
         },
-
-      }
+      };
 
       if (location !== 'world') {
         lookingQuery.query.bool.must.push({
@@ -674,7 +658,11 @@ export default function LocalHomeScreen({ navigation, route }) {
   const renderChallengerItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15, flex: 1 }}>
-        <TCChallengerCard data={item} entityType={item.entity_type} selectedSport={selectedSport}/>
+        <TCChallengerCard
+          data={item}
+          entityType={item.entity_type}
+          selectedSport={selectedSport}
+        />
       </View>
     ),
     [selectedSport],
@@ -682,7 +670,11 @@ export default function LocalHomeScreen({ navigation, route }) {
   const renderHiringPlayersItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
-        <TCHiringPlayersCard data={item} entityType={item.entity_type} selectedSport={selectedSport}/>
+        <TCHiringPlayersCard
+          data={item}
+          entityType={item.entity_type}
+          selectedSport={selectedSport}
+        />
       </View>
     ),
     [selectedSport],
@@ -1075,8 +1067,8 @@ export default function LocalHomeScreen({ navigation, route }) {
                   showArrow={true}
                   viewStyle={{ marginTop: 20, marginBottom: 15 }}
                   onPress={() => navigation.navigate('LookingTeamScreen', {
-                    filters,
-                    sportsList: sports,
+                      filters,
+                      sportsList: sports,
                     })
                   }
                 />

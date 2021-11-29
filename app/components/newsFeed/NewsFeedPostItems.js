@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
   useMemo,
-  useContext,
+ // useContext,
 } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -14,7 +14,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Text } from 'react-native-elements';
 import ActionSheet from 'react-native-actionsheet';
 import Share from 'react-native-share';
-import Clipboard from '@react-native-community/clipboard';
+// import Clipboard from '@react-native-community/clipboard';
 import Carousel from 'react-native-snap-carousel';
 import images from '../../Constants/ImagePath';
 import SingleImage from './SingleImage';
@@ -25,7 +25,7 @@ import NewsFeedDescription from './NewsFeedDescription';
 import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import AuthContext from '../../auth/context';
+// import AuthContext from '../../auth/context';
 import CommentModal from './CommentModal';
 import LikersModal from '../modals/LikersModal';
 import CustomURLPreview from '../account/CustomURLPreview';
@@ -46,7 +46,7 @@ const NewsFeedPostItems = memo(
   }) => {
     const likersModalRef = useRef(null);
     const commentModalRef = useRef(null);
-    const authContext = useContext(AuthContext);
+    // const authContext = useContext(AuthContext);
     const [childIndex, setChildIndex] = useState(0);
     const [like, setLike] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
@@ -224,10 +224,22 @@ const NewsFeedPostItems = memo(
 
     const onShareActionSheetItemPress = useCallback(
       (index) => {
-        if (index === 1) {
-          authContext.showAlert({ visible: true });
-          Clipboard.setString(descriptions);
-        } else if (index === 2) {
+        // if (index === 1) {
+        //   authContext.showAlert({ visible: true });
+        //   Clipboard.setString(descriptions);
+        // } else if (index === 2) {
+        //   const options = {
+        //     message: descriptions,
+        //   };
+        //   Share.open(options)
+        //     .then((res) => {
+        //       console.log('res :-', res);
+        //     })
+        //     .catch((err) => {
+        //       console.log('err :-', err);
+        //     });
+        // }
+        if (index === 0) {
           const options = {
             message: descriptions,
           };
@@ -240,7 +252,7 @@ const NewsFeedPostItems = memo(
             });
         }
       },
-      [authContext, descriptions],
+      [descriptions],
     );
 
     const renderProfileInfo = useMemo(
@@ -437,8 +449,8 @@ const NewsFeedPostItems = memo(
           <ActionSheet
             ref={shareActionSheet}
             title={'News Feed Post'}
-            options={['Repost', 'Copy Link', 'More', 'Cancel']}
-            cancelButtonIndex={3}
+            options={['More', 'Cancel']}// ['Repost', 'Copy Link', 'More', 'Cancel']
+            cancelButtonIndex={1}
             onPress={onShareActionSheetItemPress}
           />
         </View>

@@ -45,6 +45,7 @@ const strings = {
     'By continuing you agree to Towny\'s Terms of Service, We will manage information about you as described in our PrivacyPolicy and Cookie Policy.',
   resetText: 'Reset your password.',
   nextTitle: 'NEXT',
+  deactivateTitle: 'DEACTIVATE ACTIVITY',
   acceptTitle: 'ACCEPT',
   declineTitle: 'DECLINE',
   cancelRequestTitle: 'CANCEL REQUEST',
@@ -610,6 +611,7 @@ const strings = {
   gamePaused: 'Game is paused.',
   gameEnded: 'Game is ended.',
   selectTeam: 'Please Select Team',
+  deactiveConfirmationText: 'Are you sure you want to deactivate Tennis singles?',
   resetMatchRecord: 'Do you want to reset all the match records?',
   reviewForTeams: 'Review for Teams',
   reviewForPlayers: 'Review for Players',
@@ -808,5 +810,6 @@ const strings = {
     'Through “Invite to challenge”, you can invite another team to challenge your team.',
 
   teamExist: 'The team name in the sports already exists in the city.',
+  sportActivity: 'Sports Activities',
 };
 export default strings;
