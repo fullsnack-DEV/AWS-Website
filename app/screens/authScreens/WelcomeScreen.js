@@ -43,6 +43,7 @@ import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import * as Utility from '../../utils/index';
 import apiCall from '../../utils/apiCall';
+
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import AppleButton from '../../components/AppleButton';
 import { checkTownscupEmail, createUser } from '../../api/Users';
@@ -57,6 +58,7 @@ export default function WelcomeScreen({ navigation }) {
   const [currentBackground, setCurrentBackground] = useState(1);
 
   useEffect(() => {
+    console.log('QB credentials:=>', authContext);
     onLoad();
   }, [currentBackground]);
 

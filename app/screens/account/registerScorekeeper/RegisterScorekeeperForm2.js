@@ -82,16 +82,26 @@ export default function RegisterScorekeeperForm2({ navigation, route }) {
        setloading(true);
       if (route?.params?.bodyParams) {
         const bodyParams = { ...route?.params?.bodyParams };
+        console.log('route?.params?.bodyParams', route?.params?.bodyParams);
         bodyParams.scorekeeper_data[0].certificates = certificate;
         bodyParams.scorekeeper_data[0].is_published = true;
+        bodyParams.scorekeeper_data[0].type = 'scorekeeper';
+
         bodyParams.scorekeeper_data[0].certificates.pop();
+
+        const auth = {
+          ...authContext?.entity?.obj,
+          sport_setting: {},
+        };
         const allData = {
+          ...auth,
           scorekeeper_data: [...bodyParams?.scorekeeper_data, ...currentScorekeeperData],
         };
         console.log('All data:=>', allData);
 
         patchRegisterScorekeeperDetails(allData, authContext)
           .then(async (res) => {
+            console.log('scorekeeper Data:=>', res.payload);
             setloading(false);
             const entity = authContext.entity;
             entity.auth.user = res.payload;

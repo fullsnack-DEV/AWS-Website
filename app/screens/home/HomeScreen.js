@@ -2656,7 +2656,7 @@ const HomeScreen = ({ navigation, route }) => {
   const renderHeaderUserHomeTopSection = useMemo(
     () => isUserHome && (
       <UserHomeTopSection
-          userDetails={currentUserData}
+          userDetails={authContext?.entity?.obj}
           isAdmin={isAdmin}
           loggedInEntity={authContext.entity}
           onAddRolePress={onAddRolePress}
@@ -2666,17 +2666,7 @@ const HomeScreen = ({ navigation, route }) => {
           onAction={onUserAction}
         />
       ),
-    [
-      isUserHome,
-      currentUserData,
-      isAdmin,
-      authContext.entity,
-      onAddRolePress,
-      refereesInModal,
-      scorekeeperInModal,
-      playInModel,
-      onUserAction,
-    ],
+    [isUserHome, isAdmin, authContext.entity, onAddRolePress, refereesInModal, scorekeeperInModal, playInModel, onUserAction],
   );
 
   const renderHeaderClubHomeTopSection = useMemo(
@@ -3574,8 +3564,8 @@ const HomeScreen = ({ navigation, route }) => {
       />
       <ActionSheet
         ref={manageChallengeActionSheet}
-        options={[strings.manageChallengeShhetItem, strings.cancel]}
-        cancelButtonIndex={1}
+        options={[strings.manageChallengeShhetItem, strings.sportActivity, strings.cancel]}
+        cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
             // Add Playing
@@ -3594,6 +3584,8 @@ const HomeScreen = ({ navigation, route }) => {
                 sportName: currentUserData?.sport,
               });
             }
+          } else if (index === 1) {
+            navigation.navigate('SportActivityScreen');
           }
         }}
       />
@@ -3800,9 +3792,13 @@ const HomeScreen = ({ navigation, route }) => {
               <TCGradientDivider width={'100%'} height={3} />
               <RefereesProfileSection
                 isReferee={true}
+                isAdmin={isAdmin}
+                navigation={navigation}
+                sport_name={sportName}
                 bookRefereeButtonVisible={
                   authContext?.entity?.uid !== currentUserData?.user_id
                 }
+                onModalClose={(value) => setRefereesInModalVisible(value)}
                 profileImage={
                   userThumbnail
                     ? { uri: userThumbnail }
@@ -4339,9 +4335,14 @@ const HomeScreen = ({ navigation, route }) => {
               />
               <RefereesProfileSection
                 isReferee={false}
+                isAdmin={isAdmin}
+                navigation={navigation}
+                sport_name={sportName}
                 bookRefereeButtonVisible={
                   authContext?.entity?.uid !== currentUserData?.user_id
                 }
+                onModalClose={(value) => setScorekeeperInModalVisible(value)}
+
                 profileImage={
                   userThumbnail
                     ? { uri: userThumbnail }
@@ -4931,9 +4932,11 @@ const HomeScreen = ({ navigation, route }) => {
               style={styles.goToProfileButton}
               onPress={() => {
                 confirmationRef.current.close();
-                navigation.navigate('ManageChallengeScreen', {
-                  sportName: route?.params?.entityObj?.sport,
-                });
+                if (route?.params?.role !== 'club') {
+                  navigation.navigate('ManageChallengeScreen', {
+                    sportName: route?.params?.entityObj?.sport,
+                  });
+                }
               }}>
               <Text style={styles.goToProfileTitle}>
                 {route?.params?.role === 'club'

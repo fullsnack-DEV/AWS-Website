@@ -1,31 +1,61 @@
-import React from 'react';
+import React, {
+  useCallback,
+  useRef,
+} from 'react';
 import {
   Text, View, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
+import ActionSheet from 'react-native-actionsheet';
+
+import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 
 export default function RefereesProfileSection({
   isReferee,
+  isAdmin,
+  sport_name,
   feesCount,
   profileImage,
   userName,
   location,
+  navigation,
   onBookRefereePress,
+  onModalClose = () => {},
   bookRefereeButtonVisible = true,
 }) {
+  const actionSheetSettingRef = useRef();
+
+  const onClose = useCallback(() => {
+    setTimeout(() => onModalClose(), 0);
+  }, [onModalClose]);
+
   return (
     <View style={styles.topViewContainer}>
-      <View style={{ flexDirection: 'row' }}>
-        <View style={styles.profileView}>
-          <Image source={profileImage} style={styles.profileImage} />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={styles.profileView}>
+            <Image source={profileImage} style={styles.profileImage} />
+          </View>
+          <View style={styles.topTextContainer}>
+            <Text style={styles.userNameTextStyle}>{userName}</Text>
+            <Text style={styles.locationTextStyle}>{location}</Text>
+          </View>
         </View>
-        <View style={styles.topTextContainer}>
-          <Text style={styles.userNameTextStyle}>{userName}</Text>
-          <Text style={styles.locationTextStyle}>{location}</Text>
-        </View>
+        {isAdmin && <View>
+          <TouchableOpacity onPress={() => {
+            actionSheetSettingRef.current.show();
+          }}>
+            <FastImage
+                resizeMode={'contain'}
+                source={images.SettingPrivacy}
+                style={{ width: 40, height: 40 }}
+              />
+          </TouchableOpacity>
+        </View>}
       </View>
       {bookRefereeButtonVisible && (
         <TouchableOpacity
@@ -42,6 +72,26 @@ export default function RefereesProfileSection({
           </LinearGradient>
         </TouchableOpacity>
       )}
+
+      <ActionSheet
+        ref={actionSheetSettingRef}
+        options={['Deactivate This Activity', 'Cancel']}
+        cancelButtonIndex={1}
+        // destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            onClose(true)
+            if (isReferee) {
+              navigation.navigate('DeactivateSportScreen', { sport_name, type: (isReferee === true && 'referee') || (isReferee === false && 'scorekeeper') || 'player' });
+
+              console.log('setting for referee');
+            } else {
+              navigation.navigate('DeactivateSportScreen', { sport_name, type: (isReferee === true && 'referee') || (isReferee === false && 'scorekeeper') || 'player' });
+              console.log('setting for scorekeeper');
+            }
+          }
+        }}
+      />
     </View>
   );
 }

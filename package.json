@@ -48,7 +48,7 @@
     "native-base": "^2.15.2",
     "patch-package": "^6.2.2",
     "prop-types": "^15.7.2",
-    "quickblox-react-native-sdk": "^0.5.5-beta",
+    "quickblox-react-native-sdk": "^0.5.15-beta",
     "react": "16.13.1",
     "react-native": "0.63.2",
     "react-native-24h-timepicker": "^1.1.0",

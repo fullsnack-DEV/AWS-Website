@@ -180,6 +180,9 @@ import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallen
 import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 import LookingForSettingScreen from '../screens/home/playInModule/LookingForSettingScreen';
+import SportActivityScreen from '../screens/home/SportActivityScreen';
+import SportActivityTagScreen from '../screens/home/SportActivityTagScreen';
+import DeactivateSportScreen from '../components/Home/DeactivateSportScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2194,6 +2197,39 @@ const HomeNavigator = () => (
     />
 
     <Stack.Screen
+      name="SportActivityScreen"
+      component={SportActivityScreen}
+      options={{
+        title: 'Sports Activities',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="SportActivityTagScreen"
+      component={SportActivityTagScreen}
+      options={{
+        title: 'Sports Activity Tags Order',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
       name="RefereeReservationSetting"
       component={RefereeReservationSetting}
       options={{
@@ -2247,6 +2283,22 @@ const HomeNavigator = () => (
       component={LookingForSettingScreen}
       options={{
         title: 'Setting',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="DeactivateSportScreen"
+      component={DeactivateSportScreen}
+      options={{
+        title: 'Deactivate Activity',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

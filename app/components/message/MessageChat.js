@@ -117,6 +117,7 @@ const MessageChat = ({
     if (uid) {
       setLoading(true);
       QBgetUserDetail(
+
         QB.users.USERS_FILTER.FIELD.LOGIN,
         QB.users.USERS_FILTER.TYPE.STRING,
         [uid].join(),

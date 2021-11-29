@@ -54,6 +54,7 @@ const PlayInModule = ({
 }) => {
   console.log('playInObject', playInObject);
   const actionSheetRef = useRef();
+  const actionSheetSettingRef = useRef();
   const [sportName, setSportName] = useState('');
   const [singlePlayerGame, setSinglePlayerGame] = useState(true);
   const [mainTitle, setMainTitle] = useState();
@@ -321,7 +322,6 @@ const PlayInModule = ({
   return (
     <>
       <ActivityLoader visible={loading} />
-
       <Modal
         isVisible={visible}
         backdropColor="black"
@@ -347,8 +347,7 @@ const PlayInModule = ({
                 isPatch={!!playInObject?.lookingForTeamClub}
                 patchType={playInObject?.sport_name?.toLowerCase() === 'tennis' ? 'club' : 'team'}
                   onSettingPress={() => {
-                    onClose();
-                    navigation.navigate('LookingForSettingScreen', { sportName });
+                    actionSheetSettingRef.current.show();
                   }}
                   onMessageButtonPress={onMessageButtonPress}
                   isAdmin={isAdmin}
@@ -361,16 +360,7 @@ const PlayInModule = ({
                   cityName={currentUserData?.city ?? ''}
                 />
               ),
-              [
-                currentUserData?.city,
-                currentUserData?.full_name,
-                currentUserData?.thumbnail,
-                isAdmin,
-                navigation,
-                onClose,
-                onMessageButtonPress,
-                playInObject?.sport_name,
-              ],
+              [currentUserData?.city, currentUserData?.full_name, currentUserData?.thumbnail, isAdmin, onMessageButtonPress, playInObject?.lookingForTeamClub, playInObject?.sport_name],
             )}
 
             {/* Tabs */}
@@ -491,6 +481,22 @@ const PlayInModule = ({
                 Alert.alert(strings.alertmessagetitle, e.message);
               }, 10);
             });
+          }
+        }}
+      />
+      <ActionSheet
+        ref={actionSheetSettingRef}
+        options={['Looking for club', 'Deactivate This Activity', 'Cancel']}
+        cancelButtonIndex={2}
+        // destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            onClose();
+            navigation.navigate('LookingForSettingScreen', { sportName });
+          }
+          if (index === 1) {
+             onClose();
+             navigation.navigate('DeactivateSportScreen', { sport_name: playInObject?.sport_name, type: 'player' });
           }
         }}
       />
