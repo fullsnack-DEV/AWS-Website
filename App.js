@@ -5,12 +5,12 @@ import NetInfo from '@react-native-community/netinfo';
 import { Alert, StatusBar } from 'react-native';
 import { decode, encode } from 'base-64';
 
-import firebase from '@react-native-firebase/app';
+// import firebase from '@react-native-firebase/app';
 import Orientation from 'react-native-orientation';
 import QB from 'quickblox-react-native-sdk';
 import AuthContext from './app/auth/context';
 
-import { getQBSetting } from './app/utils/QuickBlox';
+// import { getQBSetting } from './app/utils/QuickBlox';
 import NavigationMainContainer from './NavigationMainContainer';
 // import { firebaseConfig } from './app/utils/constant';
 import * as Utility from './app/utils';
@@ -30,6 +30,7 @@ export default function App() {
   const [role, setRole] = useState('user');
   const [entity, setEntity] = useState(null);
   const [tokenData, setToken] = useState(null);
+  const [QBCredential, setQBCredential] = useState({});
   const [alertData, setAlertData] = useState(null);
   const setTokenData = useCallback(async (token) => {
     setToken(token);
@@ -37,6 +38,28 @@ export default function App() {
   }, []);
 
 console.log('1::=>');
+
+// useEffect(() => {
+//   axios({
+//     method: 'get',
+//     url: `${Config.BASE_URL}/app/settings`,
+//     withCredentials: true,
+//     headers: {
+//       Accept: 'application/json',
+//       setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
+//     },
+//   }).then((setting) => {
+//     console.log('response:=>', setting);
+//     setQBCredential(setting.data.payload.app)
+//         QB.settings
+//           .init({
+//             appId: setting.data.payload.app.quickblox.appId,
+//             authKey: setting.data.payload.app.quickblox.authKey,
+//             authSecret: setting.data.payload.app.quickblox.authSecret,
+//             accountKey: setting.data.payload.app.quickblox.accountKey,
+//           })
+//   });
+// }, []);
 
   if (!global.btoa) {
     global.btoa = encode;
@@ -70,43 +93,60 @@ console.log('1::=>');
 
     console.log('2::=>');
 
-    getQBSetting().then(async (setting) => {
-      console.log('App QB Setting:=>', setting);
+    const QBSetting = {
+            accountKey: 'aaaaa',
+            appId: '1111111',
+            authKey: 'sdsdsdsdsdsd',
+            authSecret: 'sfdfdfd',
+          };
 
-      if (setting) {
-        if (firebase.apps.length === 0) {
-          await firebase.initializeApp(setting.firebaseConfig);
-        }
-        QB.settings
-          .init({
-            appId: setting.quickblox.appId,
-            authKey: setting.quickblox.authKey,
-            authSecret: setting.quickblox.authSecret,
-            accountKey: setting.quickblox.accountKey,
-          })
-          .then(async () => {
-            QB.settings.enableAutoReconnect({ enable: true });
-          })
-          .catch((e) => {
-            console.log('QB ERROR:=>', e);
-            // Some error occured, look at the exception message for more details
-          });
-      }
-      // else {
-      //   const QBSetting = {
-      //     accountKey: 'S3jzJdhgvNjrHTT8VRMi',
-      //     appId: '92185',
-      //     authKey: 'NGpyPS265yy4QBS',
-      //     authSecret: 'bdxqa7sDzbODJew',
-      //   };
-      //   QB.settings
-      //     .init(QBSetting)
-      //     .then(() => {})
-      //     .catch(() => {
-      //       // Some error occured, look at the exception message for more details
-      //     });
-      // }
-    });
+          QB.settings
+            .init(QBSetting)
+            .then(() => {})
+            .catch(() => {
+              // Some error occured, look at the exception message for more details
+            });
+
+    // getQBSetting().then(async (setting) => {
+    //   console.log('App QB Setting:=>', setting);
+
+    //   if (setting) {
+    //     setQBCredential(setting)
+    //     if (firebase.apps.length === 0) {
+    //       await firebase.initializeApp(setting.firebaseConfig);
+    //     }
+    //     QB.settings
+    //       .init({
+    //         appId: setting.quickblox.appId,
+    //         authKey: setting.quickblox.authKey,
+    //         authSecret: setting.quickblox.authSecret,
+    //         accountKey: setting.quickblox.accountKey,
+    //       })
+    //       .then(async () => {
+    //         QB.settings.enableAutoReconnect({ enable: true });
+    //       })
+    //       .catch((e) => {
+    //         console.log('QB ERROR:=>', e);
+    //         // Some error occured, look at the exception message for more details
+    //       });
+    //   } else {
+    //     const QBSetting = {
+    //       accountKey: 'S3jzJdhgvNjrHTT8VRMi',
+    //       appId: '92185',
+    //       authKey: 'NGpyPS265yy4QBS',
+    //       authSecret: 'bdxqa7sDzbODJew',
+    //     };
+    //     if (QBSetting) {
+    //       setQBCredential(QBSetting)
+    //     }
+    //     QB.settings
+    //       .init(QBSetting)
+    //       .then(() => {})
+    //       .catch(() => {
+    //         // Some error occured, look at the exception message for more details
+    //       });
+    //   }
+    // });
   }, []);
 
   const updateAuth = useCallback((e) => {
@@ -126,6 +166,8 @@ console.log('1::=>');
       setUser,
       entity,
       setEntity,
+      setQBCredential,
+      QBCredential,
       tokenData,
       setTokenData,
       updateAuth,
@@ -133,7 +175,7 @@ console.log('1::=>');
       showNetworkAlert,
       showAlert,
     }),
-    [role, user, entity, tokenData, setTokenData, updateAuth, networkConnected],
+    [role, user, entity, QBCredential, tokenData, setTokenData, updateAuth, networkConnected],
   );
 
   return (

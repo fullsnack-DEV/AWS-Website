@@ -121,7 +121,6 @@ const UserHomeTopSection = ({
     if (item.item_type) {
       return renderAddPlayInRole({ item });
     }
-
     return (
       <UserInfoPlaysInItem
         title={item.sport_name}

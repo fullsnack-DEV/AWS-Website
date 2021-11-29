@@ -40,7 +40,7 @@ const MatchRecordsList = ({
         scrollEnabled={false}
         keyExtractor={(item, index) => index?.toString()}
         bounces={false}
-        data={matchRecords.slice(0, MIN_MATCH_RECORD_TO_DISPLAY)}
+        data={matchRecords?.slice(0, MIN_MATCH_RECORD_TO_DISPLAY) ?? []}
         renderItem={({ item, index }) => {
           const isHomeTeam = item?.game?.home_team === item.team_id;
           const isGameState = item.verb in soccerGameStats;

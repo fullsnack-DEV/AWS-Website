@@ -221,6 +221,7 @@ import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprova
 import LookingForSettingScreen from '../screens/home/playInModule/LookingForSettingScreen';
 import SportActivityScreen from '../screens/home/SportActivityScreen';
 import SportActivityTagScreen from '../screens/home/SportActivityTagScreen';
+import DeactivateSportScreen from '../components/Home/DeactivateSportScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2980,7 +2981,22 @@ const AccountNavigator = () => (
            headerShown: false,
          }}
         />
-
+    <Stack.Screen
+      name="DeactivateSportScreen"
+      component={DeactivateSportScreen}
+      options={{
+        title: 'Deactivate Activity',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
   </Stack.Navigator>
 );
 

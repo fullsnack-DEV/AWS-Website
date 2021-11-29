@@ -23,7 +23,6 @@ import Modal from 'react-native-modal';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import { getSportsList } from '../../../../api/Games';
 import { getUserDoubleTeamFollower } from '../../../../api/Users';
-import { getGroupName } from '../../../../api/Groups';
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
@@ -35,6 +34,7 @@ import TCLabel from '../../../../components/TCLabel';
 import TCFormProgress from '../../../../components/TCFormProgress';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
+import { getGroupIndex } from '../../../../api/elasticSearch';
 
 export default function CreateTeamForm1({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -157,73 +157,75 @@ export default function CreateTeamForm1({ navigation, route }) {
   };
 
   const nextOnPress = () => {
-    getGroupName(teamName, city, authContext)
-      .then((response) => {
-        setloading(false);
-
-        if (!response.payload) {
-          const obj = {
-            sport: sports,
-            group_name: teamName,
-            city,
-            state_abbr: state,
-            country,
-            currency_type: authContext?.entity?.obj?.currency_type,
-          };
-          if (parentGroupID) {
-            obj.parent_group_id = parentGroupID;
-          }
-          console.log('Form1 Object:=>', obj);
-
-          if (
-            sports.toLowerCase() === 'Tennis Double'.toLowerCase()
-            && authContext?.entity?.role === ('user' || 'player')
-          ) {
-            if (followersData?.length > 0) {
-              navigation.navigate('CreateTeamForm2', {
-                followersList: followersData,
-                createTeamForm1: {
-                  ...obj,
+    const query = {
+      _source: ['group_id'],
+      query: {
+        bool: {
+          must: [
+            {
+              term: {
+                'group_name.keyword': {
+                  value: teamName,
+                  case_insensitive: true,
                 },
-              });
-            } else {
-              Alert.alert(strings.noFollowersTocreateTeam);
-            }
-          } else {
+              },
+
+            },
+            { term: { entity_type: 'team' } },
+            {
+              term: {
+                'city.keyword': {
+                  value: city,
+                  case_insensitive: true,
+                },
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    getGroupIndex(query).then((teams) => {
+      console.log('hiringPlayers::=>', teams);
+      if (teams.length === 0) {
+        const obj = {
+          sport: sports,
+          group_name: teamName,
+          city,
+          state_abbr: state,
+          country,
+          currency_type: authContext?.entity?.obj?.currency_type,
+        };
+        if (parentGroupID) {
+          obj.parent_group_id = parentGroupID;
+        }
+        console.log('Form1 Object:=>', obj);
+
+        if (
+          sports.toLowerCase() === 'Tennis Double'.toLowerCase()
+          && authContext?.entity?.role === ('user' || 'player')
+        ) {
+          if (followersData?.length > 0) {
             navigation.navigate('CreateTeamForm2', {
+              followersList: followersData,
               createTeamForm1: {
                 ...obj,
               },
             });
+          } else {
+            Alert.alert(strings.noFollowersTocreateTeam);
           }
         } else {
-          Alert.alert(strings.teamExist);
+          navigation.navigate('CreateTeamForm2', {
+            createTeamForm1: {
+              ...obj,
+            },
+          });
         }
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-
-    // if (sports.toLowerCase() === 'tennis') {
-    //   navigation.navigate('CreateTeamForm2', {
-    //     createTeamForm1: {
-    //       ...obj,
-    //       parent_group_id: parentGroupID,
-    //       player1: player1ID,
-    //       player2: player2ID,
-    //     },
-    //   });
-    // } else {
-    //   navigation.navigate('CreateTeamForm2', {
-    //     createTeamForm1: {
-    //       ...obj,
-    //       parent_group_id: parentGroupID,
-    //     },
-    //   });
-    // }
+      } else {
+        Alert.alert(strings.teamExist);
+      }
+    });
   };
 
   return (

@@ -42,6 +42,9 @@ const MatchRecordsList = ({
         })
       }
       getGameMatchRecords(gameId).then((matchRes) => {
+        console.log('gameId', gameId);
+
+        console.log('matchRes.payload', matchRes.payload);
         setMatchRecords(matchRes.payload);
       }).finally(() => setLoading(false));
     }
@@ -115,7 +118,7 @@ const MatchRecordsList = ({
                 scrollEnabled={false}
                 keyExtractor={matchRecordsKeyExtractor}
                 bounces={false}
-                data={matchRecords.slice(0, MIN_MATCH_RECORD_TO_DISPLAY)}
+                data={matchRecords.slice(0, MIN_MATCH_RECORD_TO_DISPLAY) ?? []}
                 renderItem={renderGameRecords}
                 ListEmptyComponent={ListEmptyComponent}/>
       )}

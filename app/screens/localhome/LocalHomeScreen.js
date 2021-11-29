@@ -121,6 +121,7 @@ export default function LocalHomeScreen({ navigation, route }) {
       getAppSettings(authContext)
         .then(async (response) => {
           console.log('Settings:=>', response);
+
           await Utility.setStorage('appSetting', response.payload.app);
         })
         .catch((e) => {

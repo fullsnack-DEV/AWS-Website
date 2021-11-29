@@ -7639,10 +7639,10 @@
   "resolved" "https://registry.npmjs.org/querystring/-/querystring-0.2.0.tgz"
   "version" "0.2.0"
 
-"quickblox-react-native-sdk@^0.5.5-beta":
-  "integrity" "sha512-Mx48kWkq6eEs6fQiR3zcCP2If8iovKFiryGjB2JTNTRjKdImjhJBzZRjFOq/fLnMARNqRVWufu3OZnQCPeWjMw=="
-  "resolved" "https://registry.npmjs.org/quickblox-react-native-sdk/-/quickblox-react-native-sdk-0.5.5-beta.tgz"
-  "version" "0.5.5-beta"
+"quickblox-react-native-sdk@^0.5.15-beta":
+  "integrity" "sha512-0DAFBR0xnpCCokS4bud8grTztL3LM2DcfwEeHn5n1ZFDzsGnJiyx0M8R13xc288z6cM+fIUhY7ReK9uwF/vpPg=="
+  "resolved" "https://registry.npmjs.org/quickblox-react-native-sdk/-/quickblox-react-native-sdk-0.5.15-beta.tgz"
+  "version" "0.5.15-beta"
 
 "raf@^3.1.0":
   "integrity" "sha512-Sq4CW4QhwOHE8ucn6J34MqtZCeWFP2aQSmrlroYgqAV1PjStIhJXxYuTgUIfkEk7zTLjmIjLmU5q+fbD1NnOJA=="

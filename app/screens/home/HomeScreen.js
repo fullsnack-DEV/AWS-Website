@@ -3792,9 +3792,13 @@ const HomeScreen = ({ navigation, route }) => {
               <TCGradientDivider width={'100%'} height={3} />
               <RefereesProfileSection
                 isReferee={true}
+                isAdmin={isAdmin}
+                navigation={navigation}
+                sport_name={sportName}
                 bookRefereeButtonVisible={
                   authContext?.entity?.uid !== currentUserData?.user_id
                 }
+                onModalClose={(value) => setRefereesInModalVisible(value)}
                 profileImage={
                   userThumbnail
                     ? { uri: userThumbnail }
@@ -4331,9 +4335,14 @@ const HomeScreen = ({ navigation, route }) => {
               />
               <RefereesProfileSection
                 isReferee={false}
+                isAdmin={isAdmin}
+                navigation={navigation}
+                sport_name={sportName}
                 bookRefereeButtonVisible={
                   authContext?.entity?.uid !== currentUserData?.user_id
                 }
+                onModalClose={(value) => setScorekeeperInModalVisible(value)}
+
                 profileImage={
                   userThumbnail
                     ? { uri: userThumbnail }
@@ -4923,9 +4932,11 @@ const HomeScreen = ({ navigation, route }) => {
               style={styles.goToProfileButton}
               onPress={() => {
                 confirmationRef.current.close();
-                navigation.navigate('ManageChallengeScreen', {
-                  sportName: route?.params?.entityObj?.sport,
-                });
+                if (route?.params?.role !== 'club') {
+                  navigation.navigate('ManageChallengeScreen', {
+                    sportName: route?.params?.entityObj?.sport,
+                  });
+                }
               }}>
               <Text style={styles.goToProfileTitle}>
                 {route?.params?.role === 'club'
