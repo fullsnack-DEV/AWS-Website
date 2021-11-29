@@ -287,13 +287,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
   },
-  groupsImg: {
-    height: 75,
-    resizeMode: 'contain',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 75,
-  },
+
   foundText: {
     color: colors.whiteColor,
     fontSize: 25,
