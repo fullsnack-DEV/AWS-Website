@@ -33,8 +33,6 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {func} from 'prop-types';
 import Geolocation from '@react-native-community/geolocation';
 import TCSearchBox from '../components/TCSearchBox';
-import {getMyGroups} from '../api/Groups';
-import {getUserList} from '../api/Users';
 import AuthContext from '../auth/context';
 // import UserListShimmer from '../components/shimmer/commonComponents/UserListShimmer';
 import {widthPercentageToDP} from '../utils';
