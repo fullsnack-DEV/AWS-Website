@@ -20,7 +20,7 @@ import {
   // Platform,
 } from 'react-native';
 
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
 import QB from 'quickblox-react-native-sdk';
 import NewsFeedNavigator from './NewsFeedNavigator';
@@ -29,9 +29,9 @@ import images from '../Constants/ImagePath';
 import MessageNavigator from './MessageNavigator';
 // import NotificationNavigator from './NotificationNavigator';
 // import AccountDrawerNavigator from './AccountDrawerNavigator';
-import { QB_UNREAD_MESSAGE_COUNT_API } from '../utils/QuickBlox';
+import {QB_UNREAD_MESSAGE_COUNT_API} from '../utils/QuickBlox';
 import AuthContext from '../auth/context';
-import { getUnreadCount } from '../api/Notificaitons';
+import {getUnreadCount} from '../api/Notificaitons';
 import AccountNavigator from './AccountNavigator';
 import LocalHomeNavigator from './LocalHomeNavigator';
 import strings from '../Constants/String';
@@ -70,154 +70,152 @@ const getTabBarVisibility = (route) => {
   //   routeName = route?.state?.routes?.[route?.state?.index]?.name ?? '';
   // }
   if (
-    routeName === 'SoccerRecording'
-    || routeName === 'GameDetailRecord'
-    || routeName === 'TennisRecordList'
-    || routeName === 'TennisDeletedRecordScreen'
-    || routeName === 'NewsFeedVideoPlayer'
-    || routeName === 'RegisterPlayer'
-    || routeName === 'RegisterPlayerForm2'
-    || routeName === 'RegisterReferee'
-    || routeName === 'RegisterRefereeForm2'
-    || routeName === 'CreateTeamForm1'
-    || routeName === 'CreateTeamForm2'
-    || routeName === 'CreateTeamForm3'
-    || routeName === 'CreateTeamForm4'
-    || routeName === 'CreateClubForm1'
-    || routeName === 'CreateClubForm2'
-    || routeName === 'CreateClubForm3'
-    || routeName === 'TeamCreatedScreen'
-    || routeName === 'WritePostScreen'
-    || routeName === 'EditPostScreen'
-    || routeName === 'WriteCommentScreen'
-    || routeName === 'SearchLocationScreen'
-    || routeName === 'SearchPlayerScreen'
-    || routeName === 'ClubCreatedScreen'
-    || routeName === 'ChangePasswordScreen'
-    || routeName === 'PersonalInformationScreen'
-    || routeName === 'FullVideoScreen'
-    || routeName === 'ReservationDetailScreen'
-    || routeName === 'MembersProfileScreen'
-    || routeName === 'TagUserScreen'
-    || routeName === 'UserTagSelectionListScreen'
-    || routeName === 'InvitationSentScreen'
-    || routeName === 'UserFoundScreen'
-    || routeName === 'UserNotFoundScreen'
-    || routeName === 'MemberProfileCreatedScreen'
-    || routeName === 'ConnectionReqSentScreen'
-    || routeName === 'EventScreen'
-    || routeName === 'EditEventScreen'
+    routeName === 'SoccerRecording' ||
+    routeName === 'GameDetailRecord' ||
+    routeName === 'TennisRecordList' ||
+    routeName === 'TennisDeletedRecordScreen' ||
+    routeName === 'NewsFeedVideoPlayer' ||
+    routeName === 'RegisterPlayer' ||
+    routeName === 'RegisterPlayerForm2' ||
+    routeName === 'RegisterReferee' ||
+    routeName === 'RegisterRefereeForm2' ||
+    routeName === 'CreateTeamForm1' ||
+    routeName === 'CreateTeamForm2' ||
+    routeName === 'CreateTeamForm3' ||
+    routeName === 'CreateTeamForm4' ||
+    routeName === 'CreateClubForm1' ||
+    routeName === 'CreateClubForm2' ||
+    routeName === 'CreateClubForm3' ||
+    routeName === 'TeamCreatedScreen' ||
+    routeName === 'WritePostScreen' ||
+    routeName === 'EditPostScreen' ||
+    routeName === 'WriteCommentScreen' ||
+    routeName === 'SearchLocationScreen' ||
+    routeName === 'SearchPlayerScreen' ||
+    routeName === 'ClubCreatedScreen' ||
+    routeName === 'ChangePasswordScreen' ||
+    routeName === 'PersonalInformationScreen' ||
+    routeName === 'FullVideoScreen' ||
+    routeName === 'ReservationDetailScreen' ||
+    routeName === 'MembersProfileScreen' ||
+    routeName === 'TagUserScreen' ||
+    routeName === 'UserTagSelectionListScreen' ||
+    routeName === 'InvitationSentScreen' ||
+    routeName === 'UserFoundScreen' ||
+    routeName === 'UserNotFoundScreen' ||
+    routeName === 'MemberProfileCreatedScreen' ||
+    routeName === 'ConnectionReqSentScreen' ||
+    routeName === 'EventScreen' ||
+    routeName === 'EditEventScreen' ||
     // || routeName === 'CreateEventScreen'
-    || routeName === 'EditChallengeAvailability'
-    || routeName === 'MessageChat'
-    || routeName === 'MessageInviteScreen'
-    || routeName === 'MessageNewGroupScreen'
-    || routeName === 'MessageEditGroupScreen'
-    || routeName === 'MessageSearchScreen'
-    || routeName === 'MessageEditInviteeScreen'
-    || routeName === 'DefaultColorScreen'
-    || routeName === 'GroupEventScreen'
-    || routeName === 'ViewPrivacy'
-    || routeName === 'UserFoundScreen'
-    || routeName === 'UserNotFoundScreen'
-    || routeName === 'MemberProfileCreatedScreen'
-    || routeName === 'InvitationSentScreen'
-    || routeName === 'ConnectionReqSentScreen'
-    || routeName === 'TennisRecording'
-    || routeName === 'RegisterRefereeSuccess'
-    || routeName === 'RegisterScorekeeperSuccess'
-    || routeName === 'RegisterPlayerSuccess'
-    || routeName === 'BookRefereeSuccess'
-    || routeName === 'RefereeRequestSent'
-    || routeName === 'BookScorekeeperSuccess'
-    || routeName === 'ChallengeSentScreen'
-    || routeName === 'ChallengeAcceptedDeclinedScreen'
-    || routeName === 'AlterRequestSent'
-    || routeName === 'ReservationAcceptDeclineScreen'
-    || routeName === 'AlterRequestAccept'
-    || routeName === 'RegisterScorekeeper'
-    || routeName === 'RegisterScorekeeperForm2'
-    || routeName === 'ScorekeeperRequestSent'
-    || routeName === 'ScorekeeperAcceptDeclineScreen'
-    || routeName === 'ShortsPlayScreen'
-    || routeName === 'FeedViewScreen'
-    || routeName === 'SingleNotificationScreen'
-    || routeName === 'ManageChallengeScreen'
-    || routeName === 'GameType'
-    || routeName === 'RefundPolicy'
-    || routeName === 'GameFee'
-    || routeName === 'GameRules'
-    || routeName === 'Venue'
-    || routeName === 'HomeAway'
-    || routeName === 'Availibility'
-    || routeName === 'RefereesSetting'
-    || routeName === 'ScorekeepersSetting'
-    || routeName === 'GameDuration'
-    || routeName === 'ChallengeScreen'
-    || routeName === 'InviteChallengeScreen'
-    || routeName === 'ChooseVenueScreen'
-    || routeName === 'ChallengePreviewScreen'
-    || routeName === 'ChallengePaymentScreen'
-    || routeName === 'ChooseTimeSlotScreen'
-    || routeName === 'InviteToChallengeSentScreen'
-    || routeName === 'ChangeReservationInfoScreen'
-    || routeName === 'EditChallenge'
-    || routeName === 'RespondToInviteScreen'
-    || routeName === 'InvoiceScreen'
-    || routeName === 'MembersDetailScreen'
-    || routeName === 'InviteToMemberScreen'
-    || routeName === 'UserInvoiceScreen'
-    || routeName === 'InvoiceDetailScreen'
-    || routeName === 'LogDetailScreen'
-    || routeName === 'BatchDetailScreen'
-    || routeName === 'TeamInvoiceDetailScreen'
-    || routeName === 'AddLogScreen'
-    || routeName === 'CanceledInvoicesScreen'
-    || routeName === 'RefereeReservationSetting'
-    || routeName === 'ScorekeeperReservationSetting'
-    || routeName === 'AvailibilityReferee'
-    || routeName === 'RefereeFee'
-    || routeName === 'AvailableAreaReferee'
-    || routeName === 'AvailibilityScorekeeper'
-    || routeName === 'ScorekeeperFee'
-    || routeName === 'AvailableAreaScorekeeper'
-    || routeName === 'RefundPolicyScorekeeper'
-    || routeName === 'RefundPolicyReferee'
-    || routeName === 'RefereeBookingDateAndTime'
-
-    || routeName === 'BookReferee'
-    || routeName === 'AlterRefereeScreen'
-    || routeName === 'EditRefereeReservation'
-    || routeName === 'BookScorekeeper'
-    || routeName === 'AlterScorekeeperScreen'
-    || routeName === 'EditScorekeeperReservation'
-    || routeName === 'ScorekeeperBookingDateAndTime'
-    || routeName === 'ReservationNavigator'
-    || routeName === 'ScorekeeperReservationScreen'
-    || routeName === 'RefereeReservationScreen'
-    || routeName === 'AlterChallengeScreen'
-    || routeName === 'RefereeAgreementScreen'
-    || routeName === 'ScorekeeperAgreementScreen'
-    || routeName === 'ScorekeeperInviteAgreementScreen'
-|| routeName === 'RefereeInviteAgreementScreen'
-|| routeName === 'RefereeApprovalScreen'
-|| routeName === 'ScorekeeperApprovalScreen'
-|| routeName === 'RefereeSelectMatch'
-|| routeName === 'ScorekeeperSelectMatch'
-|| routeName === 'UpcomingMatchScreen'
-|| routeName === 'RecentMatchScreen'
-|| routeName === 'ScorekeeperListScreen'
-|| routeName === 'RefereesListScreen'
-|| routeName === 'LookingForChallengeScreen'
-|| routeName === 'RecruitingPlayerScreen'
-|| routeName === 'LookingTeamScreen'
-|| routeName === 'SportSettingScreen'
-|| routeName === 'AddOrDeleteSport'
-|| routeName === 'LookingForSettingScreen'
-|| routeName === 'SportActivityScreen'
-|| routeName === 'SportActivityTagScreen'
-|| routeName === 'DeactivateSportScreen'
-
+    routeName === 'EditChallengeAvailability' ||
+    routeName === 'MessageChat' ||
+    routeName === 'MessageInviteScreen' ||
+    routeName === 'MessageNewGroupScreen' ||
+    routeName === 'MessageEditGroupScreen' ||
+    routeName === 'MessageSearchScreen' ||
+    routeName === 'MessageEditInviteeScreen' ||
+    routeName === 'DefaultColorScreen' ||
+    routeName === 'GroupEventScreen' ||
+    routeName === 'ViewPrivacy' ||
+    routeName === 'UserFoundScreen' ||
+    routeName === 'UserNotFoundScreen' ||
+    routeName === 'MemberProfileCreatedScreen' ||
+    routeName === 'InvitationSentScreen' ||
+    routeName === 'ConnectionReqSentScreen' ||
+    routeName === 'TennisRecording' ||
+    routeName === 'RegisterRefereeSuccess' ||
+    routeName === 'RegisterScorekeeperSuccess' ||
+    routeName === 'RegisterPlayerSuccess' ||
+    routeName === 'BookRefereeSuccess' ||
+    routeName === 'RefereeRequestSent' ||
+    routeName === 'BookScorekeeperSuccess' ||
+    routeName === 'ChallengeSentScreen' ||
+    routeName === 'ChallengeAcceptedDeclinedScreen' ||
+    routeName === 'AlterRequestSent' ||
+    routeName === 'ReservationAcceptDeclineScreen' ||
+    routeName === 'AlterRequestAccept' ||
+    routeName === 'RegisterScorekeeper' ||
+    routeName === 'RegisterScorekeeperForm2' ||
+    routeName === 'ScorekeeperRequestSent' ||
+    routeName === 'ScorekeeperAcceptDeclineScreen' ||
+    routeName === 'ShortsPlayScreen' ||
+    routeName === 'FeedViewScreen' ||
+    routeName === 'SingleNotificationScreen' ||
+    routeName === 'ManageChallengeScreen' ||
+    routeName === 'GameType' ||
+    routeName === 'RefundPolicy' ||
+    routeName === 'GameFee' ||
+    routeName === 'GameRules' ||
+    routeName === 'Venue' ||
+    routeName === 'HomeAway' ||
+    routeName === 'Availibility' ||
+    routeName === 'RefereesSetting' ||
+    routeName === 'ScorekeepersSetting' ||
+    routeName === 'GameDuration' ||
+    routeName === 'ChallengeScreen' ||
+    routeName === 'InviteChallengeScreen' ||
+    routeName === 'ChooseVenueScreen' ||
+    routeName === 'ChallengePreviewScreen' ||
+    routeName === 'ChallengePaymentScreen' ||
+    routeName === 'ChooseTimeSlotScreen' ||
+    routeName === 'InviteToChallengeSentScreen' ||
+    routeName === 'ChangeReservationInfoScreen' ||
+    routeName === 'EditChallenge' ||
+    routeName === 'RespondToInviteScreen' ||
+    routeName === 'InvoiceScreen' ||
+    routeName === 'MembersDetailScreen' ||
+    routeName === 'InviteToMemberScreen' ||
+    routeName === 'UserInvoiceScreen' ||
+    routeName === 'InvoiceDetailScreen' ||
+    routeName === 'LogDetailScreen' ||
+    routeName === 'BatchDetailScreen' ||
+    routeName === 'TeamInvoiceDetailScreen' ||
+    routeName === 'AddLogScreen' ||
+    routeName === 'CanceledInvoicesScreen' ||
+    routeName === 'RefereeReservationSetting' ||
+    routeName === 'ScorekeeperReservationSetting' ||
+    routeName === 'AvailibilityReferee' ||
+    routeName === 'RefereeFee' ||
+    routeName === 'AvailableAreaReferee' ||
+    routeName === 'AvailibilityScorekeeper' ||
+    routeName === 'ScorekeeperFee' ||
+    routeName === 'AvailableAreaScorekeeper' ||
+    routeName === 'RefundPolicyScorekeeper' ||
+    routeName === 'RefundPolicyReferee' ||
+    routeName === 'RefereeBookingDateAndTime' ||
+    routeName === 'BookReferee' ||
+    routeName === 'AlterRefereeScreen' ||
+    routeName === 'EditRefereeReservation' ||
+    routeName === 'BookScorekeeper' ||
+    routeName === 'AlterScorekeeperScreen' ||
+    routeName === 'EditScorekeeperReservation' ||
+    routeName === 'ScorekeeperBookingDateAndTime' ||
+    routeName === 'ReservationNavigator' ||
+    routeName === 'ScorekeeperReservationScreen' ||
+    routeName === 'RefereeReservationScreen' ||
+    routeName === 'AlterChallengeScreen' ||
+    routeName === 'RefereeAgreementScreen' ||
+    routeName === 'ScorekeeperAgreementScreen' ||
+    routeName === 'ScorekeeperInviteAgreementScreen' ||
+    routeName === 'RefereeInviteAgreementScreen' ||
+    routeName === 'RefereeApprovalScreen' ||
+    routeName === 'ScorekeeperApprovalScreen' ||
+    routeName === 'RefereeSelectMatch' ||
+    routeName === 'ScorekeeperSelectMatch' ||
+    routeName === 'UpcomingMatchScreen' ||
+    routeName === 'RecentMatchScreen' ||
+    routeName === 'ScorekeeperListScreen' ||
+    routeName === 'RefereesListScreen' ||
+    routeName === 'LookingForChallengeScreen' ||
+    routeName === 'RecruitingPlayerScreen' ||
+    routeName === 'LookingTeamScreen' ||
+    routeName === 'SportSettingScreen' ||
+    routeName === 'AddOrDeleteSport' ||
+    routeName === 'LookingForSettingScreen' ||
+    routeName === 'SportActivityScreen' ||
+    routeName === 'SportActivityTagScreen' ||
+    routeName === 'DeactivateSportScreen'
   ) {
     return false;
   }
@@ -226,7 +224,7 @@ const getTabBarVisibility = (route) => {
 };
 const QbMessageEmitter = new NativeEventEmitter(QB.chat);
 
-const AppNavigator = ({ navigation }) => {
+const AppNavigator = ({navigation}) => {
   const authContext = useContext(AuthContext);
   const count = useRef(0);
   const [role, setRole] = useState('user');
@@ -269,8 +267,8 @@ const AppNavigator = ({ navigation }) => {
     getUnreadCount(authContext)
       .then((response) => {
         if (response.status === true) {
-          const { teams } = response.payload;
-          const { clubs } = response.payload;
+          const {teams} = response.payload;
+          const {clubs} = response.payload;
           const groups = [authContext.entity.auth.user, ...clubs, ...teams];
           let notificationCount = 0;
           (groups || []).map((e) => {
@@ -310,7 +308,7 @@ const AppNavigator = ({ navigation }) => {
   }, [getUnReadMessageHandler, getUnReadNotificationHandler]);
 
   const renderTabIcon = useCallback(
-    ({ focused }) => {
+    ({focused}) => {
       if (role === 'user') {
         if (authContext?.entity?.obj?.thumbnail) {
           if (focused) {
@@ -320,7 +318,7 @@ const AppNavigator = ({ navigation }) => {
                 style={styles.profileTabBorder}>
                 <View style={styles.profileImageCover}>
                   <Image
-                    source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                    source={{uri: authContext?.entity?.obj?.thumbnail}}
                     style={styles.profileTabImg}
                   />
                 </View>
@@ -331,11 +329,11 @@ const AppNavigator = ({ navigation }) => {
             <View
               style={[
                 styles.profileTabBorder,
-                { backgroundColor: colors.whiteColor },
+                {backgroundColor: colors.whiteColor},
               ]}>
               <Image
-                source={{ uri: authContext?.entity?.obj?.thumbnail }}
-                style={[styles.profileTabImg, { height: 27, width: 27 }]}
+                source={{uri: authContext?.entity?.obj?.thumbnail}}
+                style={[styles.profileTabImg, {height: 27, width: 27}]}
               />
             </View>
           );
@@ -356,7 +354,7 @@ const AppNavigator = ({ navigation }) => {
                 style={styles.profileTabBorder}>
                 <View style={styles.profileImageCover}>
                   <Image
-                    source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                    source={{uri: authContext?.entity?.obj?.thumbnail}}
                     style={styles.profileTabImg}
                   />
                 </View>
@@ -367,10 +365,10 @@ const AppNavigator = ({ navigation }) => {
             <View
               style={[
                 styles.profileTabBorder,
-                { backgroundColor: colors.whiteColor },
+                {backgroundColor: colors.whiteColor},
               ]}>
               <Image
-                source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                source={{uri: authContext?.entity?.obj?.thumbnail}}
                 style={styles.profileTabImg}
               />
             </View>
@@ -397,7 +395,7 @@ const AppNavigator = ({ navigation }) => {
                 style={styles.profileTabBorder}>
                 <View style={styles.profileImageCover}>
                   <Image
-                    source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                    source={{uri: authContext?.entity?.obj?.thumbnail}}
                     style={styles.profileTabImg}
                   />
                 </View>
@@ -408,10 +406,10 @@ const AppNavigator = ({ navigation }) => {
             <View
               style={[
                 styles.profileTabBorder,
-                { backgroundColor: colors.whiteColor },
+                {backgroundColor: colors.whiteColor},
               ]}>
               <Image
-                source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                source={{uri: authContext?.entity?.obj?.thumbnail}}
                 style={styles.profileTabImg}
               />
             </View>
@@ -445,7 +443,7 @@ const AppNavigator = ({ navigation }) => {
         style: {
           backgroundColor: colors.offwhite,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: -10 },
+          shadowOffset: {width: 0, height: -10},
           shadowOpacity: 0.15,
           shadowRadius: 50,
           elevation: 50,
@@ -465,9 +463,9 @@ const AppNavigator = ({ navigation }) => {
       <Tab.Screen
         name="Local Home"
         component={LocalHomeNavigator}
-        options={({ route }) => ({
+        options={({route}) => ({
           tabBarVisible: getTabBarVisibility(route),
-          tabBarIcon: ({ focused }) => {
+          tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
             return (
               <Image
@@ -481,9 +479,9 @@ const AppNavigator = ({ navigation }) => {
       <Tab.Screen
         name="News Feed"
         component={NewsFeedNavigator}
-        options={({ route }) => ({
+        options={({route}) => ({
           tabBarVisible: getTabBarVisibility(route),
-          tabBarIcon: ({ focused }) => {
+          tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
             return (
               <Image
@@ -497,13 +495,13 @@ const AppNavigator = ({ navigation }) => {
       <Tab.Screen
         name="Message"
         component={MessageNavigator}
-        options={({ route }) => ({
+        options={({route}) => ({
           unmountOnBlur: true,
           ...(unreadCount > 0 && {
             tabBarBadge: unreadCount > 300 ? '300+' : unreadCount,
           }),
           tabBarVisible: getTabBarVisibility(route),
-          tabBarIcon: ({ focused }) => {
+          tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
             return (
               <Image
@@ -519,9 +517,9 @@ const AppNavigator = ({ navigation }) => {
       <Tab.Screen
         name="Schedule"
         component={ScheduleNavigator}
-        options={({ route }) => ({
+        options={({route}) => ({
           tabBarVisible: getTabBarVisibility(route),
-          tabBarIcon: ({ focused }) => {
+          tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
             return (
               <Image
@@ -541,12 +539,12 @@ const AppNavigator = ({ navigation }) => {
         name="Account"
         navigation={navigation}
         component={AccountNavigator}
-        options={({ route }) => ({
+        options={({route}) => ({
           ...(unreadNotificationCount > 0 && {
             tabBarBadge:
               unreadNotificationCount > 300 ? '300+' : unreadNotificationCount,
           }),
-          tabBarBadgeStyle: { zIndex: 10, fontSize: 12 },
+          tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: renderTabIcon,
         })}
@@ -595,7 +593,7 @@ const styles = StyleSheet.create({
     width: 30,
     borderRadius: 60,
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 2,

@@ -56,59 +56,65 @@ const TennisHome = ({ navigation, route }) => {
 
   useEffect(() => {
     if (isFocused) {
-      getGameDetails().then(() => {
-        setFirstTimeLoad(false);
-      }).catch(() => {
-        setFirstTimeLoad(false);
-      });
+      getGameDetails()
+        .then(() => {
+          setFirstTimeLoad(false);
+        })
+        .catch(() => {
+          setFirstTimeLoad(false);
+        });
     }
   }, [navigation, isFocused]);
 
   const getTennisGameData = useCallback(
-
     (gameId = tennisGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext),
     [authContext, tennisGameId],
   );
 
-  const getGameDetails = useCallback(() => new Promise((resolve, reject) => {
-    getTennisGameData(tennisGameId)
-      .then(async (res) => {
-        console.log('GET GAME DETAIL::', res.payload);
-        if (res.status) {
-          const entity = authContext.entity;
-          setUserRole(entity?.role);
-          setUserId(entity?.uid);
-          const homeTeamId = res?.payload?.user_challenge
-            ? res?.payload?.home_team?.user_id
-            : res?.payload?.home_team?.group_id;
-          const awayTeamId = res?.payload?.user_challenge
-            ? res?.payload?.away_team?.user_id
-            : res?.payload?.away_team?.group_id;
-          let refereeIds = [];
-          refereeIds = res?.payload?.referees?.map((e) => e.referee_id);
-          const teamIds = [homeTeamId, awayTeamId];
-          const checkIsAdmin = teamIds?.includes(entity?.uid);
-          const checkIsRefereeAdmin = refereeIds?.includes(entity?.uid);
+  const getGameDetails = useCallback(
+    () => new Promise((resolve, reject) => {
+        getTennisGameData(tennisGameId)
+          .then(async (res) => {
+            console.log('GET GAME DETAIL::', res.payload);
+            if (res.status) {
+              const entity = authContext.entity;
+              setUserRole(entity?.role);
+              setUserId(entity?.uid);
+              const homeTeamId = res?.payload?.user_challenge
+                ? res?.payload?.home_team?.user_id
+                : res?.payload?.home_team?.group_id;
+              const awayTeamId = res?.payload?.user_challenge
+                ? res?.payload?.away_team?.user_id
+                : res?.payload?.away_team?.group_id;
+              let refereeIds = [];
+              refereeIds = res?.payload?.referees?.map((e) => e.referee_id);
+              const teamIds = [homeTeamId, awayTeamId];
+              const checkIsAdmin = teamIds?.includes(entity?.uid);
+              const checkIsRefereeAdmin = refereeIds?.includes(entity?.uid);
 
-          let scorekeeperIds = [];
-          scorekeeperIds = res?.payload?.scorekeepers?.map(
-            (e) => e.scorekeeper_id,
-          );
-          const checkIsScorekeeperAdmin = scorekeeperIds?.includes(entity?.uid);
+              let scorekeeperIds = [];
+              scorekeeperIds = res?.payload?.scorekeepers?.map(
+                (e) => e.scorekeeper_id,
+              );
+              const checkIsScorekeeperAdmin = scorekeeperIds?.includes(
+                entity?.uid,
+              );
 
-          setIsAdmin(checkIsAdmin);
-          setIsRefereeAdmin(checkIsRefereeAdmin);
-          setIsScorekeeperAdmin(checkIsScorekeeperAdmin);
+              setIsAdmin(checkIsAdmin);
+              setIsRefereeAdmin(checkIsRefereeAdmin);
+              setIsScorekeeperAdmin(checkIsScorekeeperAdmin);
 
-          setGameData({ ...res.payload });
-        }
-        resolve(true);
-      })
-      .catch((error) => {
-        console.log(error);
-        reject(new Error(error));
-      })
-  }), [authContext.entity, getTennisGameData, tennisGameId]);
+              setGameData({ ...res.payload });
+            }
+            resolve(true);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(new Error(error));
+          });
+      }),
+    [authContext.entity, getTennisGameData, tennisGameId],
+  );
 
   const getSoccerGameStats = useCallback(
     (gameId) => getGameStats(gameId, authContext),
@@ -135,9 +141,10 @@ const TennisHome = ({ navigation, route }) => {
     (gameId) => getGameGallery(gameId, authContext),
     [authContext],
   );
-  const getGameSportsList = useCallback(() => getSportsList(authContext), [
-    authContext,
-  ]);
+  const getGameSportsList = useCallback(
+    () => getSportsList(authContext),
+    [authContext],
+  );
   const getRefereeReservation = useCallback(
     (gameId) => getGameRefereeReservation(gameId, true, false, authContext),
     [authContext],
@@ -181,6 +188,7 @@ const TennisHome = ({ navigation, route }) => {
         isScorekeeperAdmin={isScorekeeperAdmin}
         userRole={userRole}
         userId={userId}
+        getGameDetails={getGameDetails}
       />
     ),
     [
@@ -202,6 +210,7 @@ const TennisHome = ({ navigation, route }) => {
       unFollowTennisUser,
       userId,
       userRole,
+      getGameDetails,
     ],
   );
 
@@ -240,8 +249,8 @@ const TennisHome = ({ navigation, route }) => {
     resetGame(gameData?.game_id, authContext)
       .then(() => {
         getGameDetails()
-            .then(() => setLoading(false))
-            .catch(() => setLoading(false));
+          .then(() => setLoading(false))
+          .catch(() => setLoading(false));
       })
       .catch((e) => {
         setLoading(false);
@@ -252,8 +261,12 @@ const TennisHome = ({ navigation, route }) => {
   }, [authContext, gameData?.game_id, getGameDetails]);
 
   const onEndReached = useCallback(() => {
-    if (currentTab === 0 && gameFeedFlatListRef?.current?.onEndReached) { gameFeedFlatListRef.current.onEndReached(); }
-    if (currentTab === 3 && galleryRef?.current?.onEndReached) { galleryRef.current.onEndReached(); }
+    if (currentTab === 0 && gameFeedFlatListRef?.current?.onEndReached) {
+      gameFeedFlatListRef.current.onEndReached();
+    }
+    if (currentTab === 3 && galleryRef?.current?.onEndReached) {
+      galleryRef.current.onEndReached();
+    }
   }, [currentTab]);
 
   const renderTopHeaderWithTabContain = useMemo(
@@ -292,9 +305,11 @@ const TennisHome = ({ navigation, route }) => {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      {fistTimeLoad
-          ? <GameHomeShimer navigation={navigation}/>
-          : renderTopHeaderWithTabContain}
+      {fistTimeLoad ? (
+        <GameHomeShimer navigation={navigation} />
+      ) : (
+        renderTopHeaderWithTabContain
+      )}
       {renderImageProgress}
     </View>
   );

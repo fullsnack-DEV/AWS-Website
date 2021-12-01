@@ -1,15 +1,7 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Image,
-  TextInput,
-} from 'react-native';
+import {StyleSheet, View, Image, TextInput} from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import images from '../Constants/ImagePath';
 import strings from '../Constants/String';
@@ -17,24 +9,29 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 export default function TCSearchBox({
-  onChangeText, style, value, placeholderText = strings.searchHereText, editable = true, ...props
+  onChangeText,
+  style,
+  value,
+  placeholderText = strings.searchHereText,
+  editable = true,
+  ...props
 }) {
   return (
-    <View style={{ ...styles.sectionStyle, ...style } } {...props}>
-      <Image source={ images.searchLocation } style={ styles.searchImg } />
+    <View style={{...styles.sectionStyle, ...style}} {...props}>
+      <Image source={images.searchLocation} style={styles.searchImg} />
       <TextInput
-          editable={editable}
-          autoCapitalize={'none'}
-          autoCompleteType={'off'}
-          textContentType={'none'}
-          autoCorrect={false}
-          value={value}
-            style={ styles.textInput }
-            placeholder={ placeholderText }
-            clearButtonMode="always"
-            placeholderTextColor={ colors.userPostTimeColor }
-            onChangeText={onChangeText}
-           />
+        editable={editable}
+        autoCapitalize={'none'}
+        autoCompleteType={'off'}
+        textContentType={'none'}
+        autoCorrect={false}
+        value={value}
+        style={styles.textInput}
+        placeholder={placeholderText}
+        clearButtonMode="always"
+        placeholderTextColor={colors.userPostTimeColor}
+        onChangeText={onChangeText}
+      />
     </View>
   );
 }
@@ -50,12 +47,11 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     width: wp('90%'),
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.3,
     shadowRadius: 3,
 
     elevation: 2,
-
   },
   searchImg: {
     alignSelf: 'center',

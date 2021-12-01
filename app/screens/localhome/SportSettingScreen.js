@@ -1,6 +1,4 @@
-import React, {
- useCallback, useState, useEffect, useLayoutEffect,
- } from 'react';
+import React, {useCallback, useState, useEffect, useLayoutEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -12,11 +10,12 @@ import {
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
+// eslint-disable-next-line import/no-unresolved
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import Modal from 'react-native-modal';
 import * as Utility from '../../utils';
 
-import { widthPercentageToDP } from '../../utils';
+import {widthPercentageToDP} from '../../utils';
 import colors from '../../Constants/Colors';
 import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
@@ -25,8 +24,8 @@ import SportsListView from '../../components/localHome/SportsListView';
 
 let selectedSports = [];
 
-export default function SportSettingScreen({ navigation, route }) {
-  const { sports } = route?.params ?? {};
+export default function SportSettingScreen({navigation, route}) {
+  const {sports} = route?.params ?? {};
   const [systemSports, setSystemSports] = useState([]);
 
   const [sportsListPopup, setSportsListPopup] = useState(false);
@@ -55,22 +54,23 @@ export default function SportSettingScreen({ navigation, route }) {
   };
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const renderSportsView = useCallback(
-    ({ item, drag }) => item.sport_name !== 'All' && (
-      <View style={styles.sportsBackgroundView}>
-        <View style={{ flexDirection: 'row' }}>
-          <Image source={images.gameGoal} style={styles.sportsIcon} />
-          <Text style={styles.sportNameTitle}>{item.sport_name}</Text>
+    ({item, drag}) =>
+      item.sport_name !== 'All' && (
+        <View style={styles.sportsBackgroundView}>
+          <View style={{flexDirection: 'row'}}>
+            <Image source={images.gameGoal} style={styles.sportsIcon} />
+            <Text style={styles.sportNameTitle}>{item.sport_name}</Text>
+          </View>
+          <TouchableOpacity onLongPress={drag} style={{alignSelf: 'center'}}>
+            <Image source={images.moveIcon} style={styles.moveIconStyle} />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onLongPress={drag} style={{ alignSelf: 'center' }}>
-          <Image source={images.moveIcon} style={styles.moveIconStyle} />
-        </TouchableOpacity>
-      </View>
       ),
     [],
   );
 
   const isIconCheckedOrNot = useCallback(
-    ({ item, index }) => {
+    ({item, index}) => {
       if (item.sport_name === 'All') {
         if (item.isChecked) {
           systemSports[index].isChecked = false;
@@ -104,7 +104,7 @@ export default function SportSettingScreen({ navigation, route }) {
     [systemSports],
   );
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <DraggableFlatList
         showsHorizontalScrollIndicator={false}
         data={sportsSource}
@@ -122,7 +122,7 @@ export default function SportSettingScreen({ navigation, route }) {
           left: 15,
           right: 15,
         }}
-        onDragEnd={({ data }) => {
+        onDragEnd={({data}) => {
           setSportsSource([...data]);
           console.log('DATATATATATA:=', data);
         }}
@@ -134,7 +134,6 @@ export default function SportSettingScreen({ navigation, route }) {
             // setSportsListPopup(true);
             navigation.navigate('AddOrDeleteSport', {
               defaultSports: sportsSource,
-
             });
           }}>
           <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
@@ -151,7 +150,7 @@ export default function SportSettingScreen({ navigation, route }) {
           backgroundColor: colors.blackOpacityColor,
         }}
         visible={sportsListPopup}>
-        <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+        <View style={[styles.bottomPopupContainer, {height: '80%'}]}>
           <View style={styles.viewsContainer}>
             <Text
               onPress={() => setSportsListPopup(false)}
@@ -226,7 +225,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 40,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.2,
     shadowRadius: 5,
     width: widthPercentageToDP('86%'),
@@ -242,7 +241,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 25,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.2,
     shadowRadius: 5,
     // width: widthPercentageToDP('86%'),
@@ -262,7 +261,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },

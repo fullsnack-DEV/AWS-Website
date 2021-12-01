@@ -19,6 +19,7 @@ import {
 import moment from 'moment';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
+import { useIsFocused } from '@react-navigation/native';
 import { heightPercentageToDP as hp } from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
@@ -78,6 +79,7 @@ const Summary = ({
   getGameNextFeedData,
   getGameData,
   isMember = true,
+  getGameDetails,
 }) => {
   console.log('GAME DATA:=>', gameData);
   const imageUploadContext = useContext(ImageUploadContext);
@@ -101,25 +103,22 @@ const Summary = ({
 
   const [starAttributesForPlayer, setStarAttributesForPlayer] = useState([]);
 
-  const [
-    sliderAttributesForScorekeeper,
-    setSliderAttributesForScorekeeper,
-  ] = useState([]);
-  const [
-    starAttributesForScorekeeper,
-    setStarAttributesForScorekeeper,
-  ] = useState([]);
+  const [sliderAttributesForScorekeeper, setSliderAttributesForScorekeeper] = useState([]);
+  const [starAttributesForScorekeeper, setStarAttributesForScorekeeper] = useState([]);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (gameData) {
-      if (gameData?.sport?.toLowerCase() === 'tennis') {
-        leaveReviewButtonConfigTennis();
-      } else {
-        leaveReviewButtonConfigDoubleTennis();
+    if (isFocused) {
+      if (gameData) {
+        if (gameData?.sport?.toLowerCase() === 'tennis') {
+          leaveReviewButtonConfigTennis();
+        } else {
+          leaveReviewButtonConfigDoubleTennis();
+        }
+        recordGameConfiguration();
       }
-      recordGameConfiguration();
     }
-  }, [gameData]);
+  }, [isFocused, gameData]);
 
   const recordGameConfiguration = () => {
     setLoading(true);
@@ -224,11 +223,10 @@ const Summary = ({
 
   const renderApproveDisapproveSection = useMemo(
     () => gameData?.status === 'ended'
-      && isAdmin
-      // && !gameData?.approval?.home_team?.approved
-      // && !gameData?.approval?.away_team?.approved
-       && (
-         <ApproveDisapprove
+      && isAdmin && (
+        // && !gameData?.approval?.home_team?.approved
+        // && !gameData?.approval?.away_team?.approved
+        <ApproveDisapprove
           getGameData={getGameData}
           navigation={navigation}
           gameId={gameData?.game_id}
@@ -420,6 +418,7 @@ const Summary = ({
           .then(() => {
             setLoading(false);
             getGameData();
+            getGameDetails();
             // navigation.goBack();
           })
           .catch((error) => {
@@ -441,7 +440,9 @@ const Summary = ({
         )
           .then(() => {
             setLoading(false);
+            getGameDetails();
             getGameData();
+
             // navigation.goBack();
           })
           .catch((error) => {
@@ -457,52 +458,60 @@ const Summary = ({
     [authContext, gameData?.game_id, getAwayID, getGameData, getHomeID],
   );
 
-  const patchOrAddReviewTeam = useCallback(({ isAlreadyReviewed, currentForm, reviewsData }) => {
-    if (isAlreadyReviewed) {
-      setLoading(true);
-      const teamReview = reviewsData
-      delete teamReview.created_at;
-      delete teamReview.entity_type;
-      const team1ID = teamReview.entity_id
-      delete teamReview.entity_id;
-      teamReview.team_id = team1ID
-      delete teamReview.game_id;
-      const reviewID = teamReview.review_id;
-      delete teamReview.review_id;
-      delete teamReview.reviewer_id;
-      delete teamReview.sport;
+  const patchOrAddReviewTeam = useCallback(
+    ({ isAlreadyReviewed, currentForm, reviewsData }) => {
+      if (isAlreadyReviewed) {
+        setLoading(true);
+        const teamReview = reviewsData;
+        delete teamReview.created_at;
+        delete teamReview.entity_type;
+        const team1ID = teamReview.entity_id;
+        delete teamReview.entity_id;
+        teamReview.team_id = team1ID;
+        delete teamReview.game_id;
+        const reviewID = teamReview.review_id;
+        delete teamReview.review_id;
+        delete teamReview.reviewer_id;
+        delete teamReview.sport;
 
-      const reviewObj = {
+        const reviewObj = {
+          ...teamReview,
+        };
 
-        ...teamReview,
-
-      };
-
-      console.log('Edited Review Object patchOrAddReviewTeam::=>', reviewObj);
-      patchGameReview(gameData?.game_id, reviewID, reviewObj, authContext)
-        .then(() => {
-          setLoading(false);
-          getGameData();
-        })
-        .catch((error) => {
-          setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
-        });
-    } else {
-      console.log('New Review Object::=>', reviewsData);
-
-      setLoading(true);
-      addGameReview(gameData?.game_id, reviewsData, authContext)
-        .then(() => {
-          setLoading(false);
-          getGameData();
-        })
-        .catch((error) => {
-          setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
-        });
-    }
-  }, [authContext, gameData?.game_id, getGameData])
+        console.log('Edited Review Object patchOrAddReviewTeam::=>', reviewObj);
+        patchGameReview(gameData?.game_id, reviewID, reviewObj, authContext)
+          .then(() => {
+            setLoading(false);
+            getGameData();
+            getGameDetails();
+          })
+          .catch((error) => {
+            setLoading(false);
+            setTimeout(
+              () => Alert.alert(strings.alertmessagetitle, error?.message),
+              100,
+            );
+          });
+      } else {
+        console.log('New Review Object::=>', reviewsData);
+        setLoading(true);
+        addGameReview(gameData?.game_id, reviewsData, authContext)
+          .then(() => {
+            setLoading(false);
+            getGameData();
+            getGameDetails();
+          })
+          .catch((error) => {
+            setLoading(false);
+            setTimeout(
+              () => Alert.alert(strings.alertmessagetitle, error?.message),
+              100,
+            );
+          });
+      }
+    },
+    [authContext, gameData?.game_id, getGameData],
+  );
 
   const onPressReviewDone = useCallback(
     (currentForm, isAlreadyReviewed, reviewsData) => {
@@ -530,15 +539,17 @@ const Summary = ({
           authContext,
           reviewData,
           imageArray,
-          reviewsData?.team_id ? (dataParams) => patchOrAddReviewTeam({
-            isAlreadyReviewed,
-              currentForm,
-              reviewsData: dataParams,
-            }) : (dataParams) => patchOrAddReview({
-            isAlreadyReviewed,
-              currentForm,
-              reviewsData: dataParams,
-            }),
+          reviewsData?.team_id
+            ? (dataParams) => patchOrAddReviewTeam({
+                  isAlreadyReviewed,
+                  currentForm,
+                  reviewsData: dataParams,
+                })
+            : (dataParams) => patchOrAddReview({
+                  isAlreadyReviewed,
+                  currentForm,
+                  reviewsData: dataParams,
+                }),
         );
       } else {
         if (reviewsData?.team_id) {
@@ -650,7 +661,13 @@ const Summary = ({
       return isAdmin || isRefereeAdmin || isScorekeeperAdmin;
     }
     return lineUpUser || isRefereeAdmin || isScorekeeperAdmin;
-  }, [gameData?.sport, isAdmin, isRefereeAdmin, isScorekeeperAdmin, lineUpUser])
+  }, [
+    gameData?.sport,
+    isAdmin,
+    isRefereeAdmin,
+    isScorekeeperAdmin,
+    lineUpUser,
+  ]);
 
   const getRefereeReviewsData = useCallback(
     (item) => {
@@ -713,7 +730,7 @@ const Summary = ({
 
   const renderLeaveAReviewButtonForDouble = useMemo(
     () => !loading
-    && gameData?.status === 'ended'
+      && gameData?.status === 'ended'
       && !checkReviewExpired(gameData?.actual_enddatetime)
       && !isAdmin
       && gameData?.approval?.home_team?.approved
@@ -775,7 +792,6 @@ const Summary = ({
         {!loading
           && gameData?.status === 'ended'
           && !checkReviewExpired(gameData?.actual_enddatetime)
-
           && showLeaveReviewButton() && (
             <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
               <View>
@@ -924,12 +940,7 @@ const Summary = ({
   );
 
   const renderSpecialRulesSection = useMemo(
-    () => (
-      <SpecialRules
-        gameData={gameData}
-
-      />
-    ),
+    () => <SpecialRules gameData={gameData} />,
     [gameData],
   );
 
@@ -1038,7 +1049,7 @@ const Summary = ({
   const patchOrAddRefereeReview = useCallback(
     ({
  currentForm, isAlreadyReviewed, reviewsData, referee_id,
- }) => {
+}) => {
       if (isAlreadyReviewed) {
         setLoading(true);
 
@@ -1103,7 +1114,7 @@ const Summary = ({
   const patchOrAddScorekeeperReview = useCallback(
     ({
  currentForm, isAlreadyReviewed, reviewsData, scorekeeper_id,
- }) => {
+}) => {
       if (isAlreadyReviewed) {
         setLoading(true);
 

@@ -38,9 +38,9 @@ import Modal from 'react-native-modal';
 import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
-import { useIsFocused } from '@react-navigation/native';
-import { Portal } from 'react-native-portalize';
-import { Modalize } from 'react-native-modalize';
+import {useIsFocused} from '@react-navigation/native';
+import {Portal} from 'react-native-portalize';
+import {Modalize} from 'react-native-modalize';
 import BackgroundProfile from '../../components/Home/BackgroundProfile';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
@@ -65,7 +65,7 @@ import {
   patchRegisterRefereeDetails,
   patchRegisterScorekeeperDetails,
 } from '../../api/Users';
-import { createPost, createReaction } from '../../api/NewsFeeds';
+import {createPost, createReaction} from '../../api/NewsFeeds';
 import {
   getGroupDetails,
   getGroups,
@@ -123,9 +123,9 @@ import {
 } from '../../utils/QuickBlox';
 
 import RefereeReservationItem from '../../components/Schedule/RefereeReservationItem';
-import { getRefereeReservationDetails } from '../../api/Reservations';
+import {getRefereeReservationDetails} from '../../api/Reservations';
 import TCSearchBox from '../../components/TCSearchBox';
-import { getGameHomeScreen } from '../../utils/gameUtils';
+import {getGameHomeScreen} from '../../utils/gameUtils';
 import TCInnerLoader from '../../components/TCInnerLoader';
 import TCThinDivider from '../../components/TCThinDivider';
 import ScorekeeperInfoSection from '../../components/Home/User/ScorekeeperInfoSection';
@@ -136,7 +136,7 @@ import RefereeFeedPostItems from '../../components/game/soccer/home/review/revie
 import ScorekeeperFeedPostItems from '../../components/game/soccer/home/review/reviewForScorekeeper/ScorekeeperFeedPostItems';
 import ScrollableTabs from '../../components/ScrollableTabs';
 import ProfileScreenShimmer from '../../components/shimmer/account/ProfileScreenShimmer';
-import { ImageUploadContext } from '../../context/GetContexts';
+import {ImageUploadContext} from '../../context/GetContexts';
 import GameStatus from '../../Constants/GameStatus';
 import AllInOneGallery from './AllInOneGallery';
 import UserHomeHeader from '../../components/Home/UserHomeHeader';
@@ -144,13 +144,13 @@ import TCProfileButton from '../../components/TCProfileButton';
 import UserProfileScreenShimmer from '../../components/shimmer/account/UserProfileScreenShimmer';
 import TCGameCard from '../../components/TCGameCard';
 import * as settingUtils from '../challenge/manageChallenge/settingUtility';
-import { getCalendarIndex, getGameIndex } from '../../api/elasticSearch';
+import {getCalendarIndex, getGameIndex} from '../../api/elasticSearch';
 // import { getSetting } from '../challenge/manageChallenge/settingUtility';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews'];
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews'];
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 const league_Data = [
   {
@@ -186,7 +186,7 @@ const history_Data = [
   },
 ];
 
-const HomeScreen = ({ navigation, route }) => {
+const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const galleryRef = useRef();
   const gameListRefereeModalRef = useRef(null);
@@ -203,32 +203,24 @@ const HomeScreen = ({ navigation, route }) => {
   const [isTeamHome, setIsTeamHome] = useState(false);
   const [playsInModalVisible, setPlaysInModalVisible] = useState(false);
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false);
-  const [scorekeeperInModalVisible, setScorekeeperInModalVisible] = useState(
-    false,
-  );
-  const [reviewDetailModalVisible, setReviewDetailModalVisible] = useState(
-    false,
-  );
+  const [scorekeeperInModalVisible, setScorekeeperInModalVisible] =
+    useState(false);
+  const [reviewDetailModalVisible, setReviewDetailModalVisible] =
+    useState(false);
   const [feedDataIndex, setFeedDataIndex] = useState(0);
   const [feedDetailIndex, setFeedDetailIndex] = useState(0);
   const [orangeFeed, setOrangeFeed] = useState(false);
   const [reviewGameData, setReviewGameData] = useState();
   const [refereeInfoModalVisible, setRefereeInfoModalVisible] = useState(false);
-  const [
-    scorekeeperInfoModalVisible,
-    setScorekeeperInfoModalVisible,
-  ] = useState(false);
-  const [refereeMatchModalVisible, setRefereeMatchModalVisible] = useState(
-    false,
-  );
-  const [
-    scorekeeperMatchModalVisible,
-    setScorekeeperMatchModalVisible,
-  ] = useState(false);
+  const [scorekeeperInfoModalVisible, setScorekeeperInfoModalVisible] =
+    useState(false);
+  const [refereeMatchModalVisible, setRefereeMatchModalVisible] =
+    useState(false);
+  const [scorekeeperMatchModalVisible, setScorekeeperMatchModalVisible] =
+    useState(false);
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false);
-  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(
-    false,
-  );
+  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] =
+    useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserData, setCurrentUserData] = useState({});
   const [loading, setloading] = useState(false);
@@ -282,22 +274,17 @@ const HomeScreen = ({ navigation, route }) => {
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
   const [refereeOfferModalVisible, setRefereeOfferModalVisible] = useState();
-  const [
-    scorekeeperOfferModalVisible,
-    setScorekeeperOfferModalVisible,
-  ] = useState();
+  const [scorekeeperOfferModalVisible, setScorekeeperOfferModalVisible] =
+    useState();
 
-  const [
-    isDoubleSportTeamCreatedVisible,
-    setIsDoubleSportTeamCreatedVisible,
-  ] = useState(false);
+  const [isDoubleSportTeamCreatedVisible, setIsDoubleSportTeamCreatedVisible] =
+    useState(false);
 
   // const [reviewsData] = useState(reviews_data);
 
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
-  const timeTableSelectionDate = moment(timetableSelectDate).format(
-    'YYYY-MM-DD',
-  );
+  const timeTableSelectionDate =
+    moment(timetableSelectDate).format('YYYY-MM-DD');
 
   const [sportsSelection, setSportsSelection] = useState();
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
@@ -326,8 +313,9 @@ const HomeScreen = ({ navigation, route }) => {
     if (isFocused) {
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = authContext.entity;
-      const entityRole = (route?.params?.role === 'user' ? 'users' : 'groups')
-        || (entity.role === 'user' ? 'users' : 'groups');
+      const entityRole =
+        (route?.params?.role === 'user' ? 'users' : 'groups') ||
+        (entity.role === 'user' ? 'users' : 'groups');
 
       const uid = route?.params?.uid || entity.uid || entity.auth.user_id;
       const eventdata = [];
@@ -457,7 +445,9 @@ const HomeScreen = ({ navigation, route }) => {
             setTeamReviewData();
           }
         })
-        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+        .catch((error) =>
+          Alert.alert(strings.alertmessagetitle, error.message),
+        );
     }
   }, [authContext, isTeamHome, route?.params?.uid]);
 
@@ -477,8 +467,9 @@ const HomeScreen = ({ navigation, route }) => {
         }
 
         let count = 0;
-        count = userDetails.games
-          && userDetails.games.length + userDetails.referee_data.length;
+        count =
+          userDetails.games &&
+          userDetails.games.length + userDetails.referee_data.length;
 
         if (count < 5) {
           const userRoles = [...userDetails.games, ...userDetails.referee_data];
@@ -496,7 +487,7 @@ const HomeScreen = ({ navigation, route }) => {
           userDetails.joined_teams = res2.payload.teams;
           userDetails.joined_clubs = res2.payload.clubs;
         }
-        setCurrentUserData({ ...userDetails });
+        setCurrentUserData({...userDetails});
         setIsClubHome(false);
         setIsTeamHome(false);
         setIsUserHome(true);
@@ -519,7 +510,7 @@ const HomeScreen = ({ navigation, route }) => {
       headerTitle: '',
       headerLeft: () => (
         <TouchableOpacity
-          style={{ flexDirection: 'row', alignItems: 'center' }}
+          style={{flexDirection: 'row', alignItems: 'center'}}
           disabled={!route?.params?.backButtonVisible}
           onPress={() => navigation.goBack()}>
           {route?.params?.backButtonVisible === true && (
@@ -641,7 +632,7 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const createPostAfterUpload = (dataParams) => {
-    createPost({ ...dataParams, is_gallery: true }, authContext)
+    createPost({...dataParams, is_gallery: true}, authContext)
       .then(() => {
         if (galleryRef?.current?.refreshGallery) {
           galleryRef.current.refreshGallery();
@@ -705,7 +696,7 @@ const HomeScreen = ({ navigation, route }) => {
   const callFollowUser = async () => {
     currentUserData.is_following = true;
     currentUserData.follower_count += 1;
-    setCurrentUserData({ ...currentUserData });
+    setCurrentUserData({...currentUserData});
 
     const params = {
       entity_type: 'player',
@@ -718,7 +709,7 @@ const HomeScreen = ({ navigation, route }) => {
         console.log('callFollowUser error with userID', error, userID);
         currentUserData.is_following = false;
         currentUserData.follower_count -= 1;
-        setCurrentUserData({ ...currentUserData });
+        setCurrentUserData({...currentUserData});
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -730,7 +721,7 @@ const HomeScreen = ({ navigation, route }) => {
     if (currentUserData.follower_count > 0) {
       currentUserData.follower_count -= 1;
     }
-    setCurrentUserData({ ...currentUserData });
+    setCurrentUserData({...currentUserData});
 
     const params = {
       entity_type: 'player',
@@ -743,7 +734,7 @@ const HomeScreen = ({ navigation, route }) => {
         console.log('callUnfollowUser error with userID', error, userID);
         currentUserData.is_following = true;
         currentUserData.follower_count += 1;
-        setCurrentUserData({ ...currentUserData });
+        setCurrentUserData({...currentUserData});
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -775,7 +766,7 @@ const HomeScreen = ({ navigation, route }) => {
   const callFollowGroup = async (silentlyCall = false) => {
     currentUserData.is_following = true;
     currentUserData.follower_count += 1;
-    setCurrentUserData({ ...currentUserData });
+    setCurrentUserData({...currentUserData});
 
     const params = {
       entity_type: currentUserData.entity_type,
@@ -788,7 +779,7 @@ const HomeScreen = ({ navigation, route }) => {
         console.log('callFollowGroup error with userID', error, userID);
         currentUserData.is_following = false;
         currentUserData.follower_count -= 1;
-        setCurrentUserData({ ...currentUserData });
+        setCurrentUserData({...currentUserData});
         if (silentlyCall === false) {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, error.message);
@@ -802,7 +793,7 @@ const HomeScreen = ({ navigation, route }) => {
     if (currentUserData.follower_count > 0) {
       currentUserData.follower_count -= 1;
     }
-    setCurrentUserData({ ...currentUserData });
+    setCurrentUserData({...currentUserData});
 
     const params = {
       entity_type: currentUserData.entity_type,
@@ -815,7 +806,7 @@ const HomeScreen = ({ navigation, route }) => {
         console.log('callUnfollowGroup error with userID', error, userID);
         currentUserData.is_following = true;
         currentUserData.follower_count += 1;
-        setCurrentUserData({ ...currentUserData });
+        setCurrentUserData({...currentUserData});
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -828,7 +819,7 @@ const HomeScreen = ({ navigation, route }) => {
     if (currentUserData.is_following === false) {
       callFollowGroup(true);
     }
-    setCurrentUserData({ ...currentUserData });
+    setCurrentUserData({...currentUserData});
     const params = {};
     joinTeam(params, userID, authContext)
       .then(() => {
@@ -838,7 +829,7 @@ const HomeScreen = ({ navigation, route }) => {
         console.log('userJoinGroup error with userID', error, userID);
         currentUserData.is_joined = false;
         currentUserData.member_count -= 1;
-        setCurrentUserData({ ...currentUserData });
+        setCurrentUserData({...currentUserData});
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -850,7 +841,7 @@ const HomeScreen = ({ navigation, route }) => {
     if (currentUserData.member_count > 0) {
       currentUserData.member_count -= 1;
     }
-    setCurrentUserData({ ...currentUserData });
+    setCurrentUserData({...currentUserData});
     const params = {};
     leaveTeam(params, userID, authContext)
       .then(() => {
@@ -860,7 +851,7 @@ const HomeScreen = ({ navigation, route }) => {
         console.log('userLeaveGroup error with userID', error, userID);
         currentUserData.is_joined = true;
         currentUserData.member_count += 1;
-        setCurrentUserData({ ...currentUserData });
+        setCurrentUserData({...currentUserData});
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -898,7 +889,7 @@ const HomeScreen = ({ navigation, route }) => {
     } else {
       currentUserData.joined_teams = [e.obj];
     }
-    setCurrentUserData({ ...currentUserData });
+    setCurrentUserData({...currentUserData});
     joinTeam({}, userID, authContext)
       .then(() => {
         console.log('club join');
@@ -916,9 +907,9 @@ const HomeScreen = ({ navigation, route }) => {
         }, 10);
       })
       .finally(() => {
-        authContext.setEntity({ ...e });
-        Utility.setStorage('authContextEntity', { ...e });
-        setCurrentUserData({ ...currentUserData });
+        authContext.setEntity({...e});
+        Utility.setStorage('authContextEntity', {...e});
+        setCurrentUserData({...currentUserData});
       });
   };
 
@@ -933,14 +924,14 @@ const HomeScreen = ({ navigation, route }) => {
         console.log('QB Res:=>', response);
         navigation.navigate('MessageChat', {
           screen: 'MessageChatRoom',
-          params: { userId: uid },
+          params: {userId: uid},
         });
         setloading(false);
       })
       .catch(() => {
         navigation.navigate('MessageChat', {
           screen: 'MessageChatRoom',
-          params: { userId: uid },
+          params: {userId: uid},
         });
         setloading(false);
       });
@@ -948,14 +939,14 @@ const HomeScreen = ({ navigation, route }) => {
   const clubLeaveTeam = async () => {
     const e = authContext.entity;
     e.obj.parent_group_id = '';
-    authContext.setEntity({ ...e });
-    Utility.setStorage('authContextEntity', { ...e });
+    authContext.setEntity({...e});
+    Utility.setStorage('authContextEntity', {...e});
     if (currentUserData.joined_teams) {
       currentUserData.joined_teams = currentUserData.joined_teams.filter(
         (team) => team.group_id !== e.uid,
       );
     }
-    setCurrentUserData({ ...currentUserData });
+    setCurrentUserData({...currentUserData});
     const params = {};
     leaveTeam(params, userID, authContext)
       .then(() => {
@@ -964,14 +955,14 @@ const HomeScreen = ({ navigation, route }) => {
       .catch((error) => {
         console.log('clubLeaveTeam error with userID', error, userID);
         e.obj.parent_group_id = userID;
-        authContext.setEntity({ ...e });
-        Utility.setStorage('authContextEntity', { ...e });
+        authContext.setEntity({...e});
+        Utility.setStorage('authContextEntity', {...e});
         if (currentUserData.joined_teams) {
           currentUserData.joined_teams.push(e.obj);
         } else {
           currentUserData.joined_teams = [e.obj];
         }
-        setCurrentUserData({ ...currentUserData });
+        setCurrentUserData({...currentUserData});
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -1144,8 +1135,8 @@ const HomeScreen = ({ navigation, route }) => {
 
   const onChallengePress = async () => {
     if (
-      authContext.entity.obj.sport.toLowerCase()
-      === currentUserData.sport.toLowerCase()
+      authContext.entity.obj.sport.toLowerCase() ===
+      currentUserData.sport.toLowerCase()
     ) {
       setChallengePopup(true);
     } else {
@@ -1176,7 +1167,8 @@ const HomeScreen = ({ navigation, route }) => {
         }
         if (languagesListName.length > 0) {
           languagesListName.map((langItem, index) => {
-            language_string = language_string + (index ? ', ' : '') + langItem.language_name;
+            language_string =
+              language_string + (index ? ', ' : '') + langItem.language_name;
             return null;
           });
           console.log('Language string::=>', language_string);
@@ -1215,7 +1207,9 @@ const HomeScreen = ({ navigation, route }) => {
               setScorekeeperRecentMatch([]);
             }
           })
-          .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+          .catch((error) =>
+            Alert.alert(strings.alertmessagetitle, error.message),
+          );
 
         getScorekeeperReviewData(
           route?.params?.uid || entity.uid,
@@ -1246,7 +1240,9 @@ const HomeScreen = ({ navigation, route }) => {
               setScorekeeperReviewData();
             }
           })
-          .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+          .catch((error) =>
+            Alert.alert(strings.alertmessagetitle, error.message),
+          );
 
         settingUtils
           .getSetting(
@@ -1289,7 +1285,8 @@ const HomeScreen = ({ navigation, route }) => {
         }
         if (languagesListName.length > 0) {
           languagesListName.map((langItem, index) => {
-            language_string = language_string + (index ? ', ' : '') + langItem.language_name;
+            language_string =
+              language_string + (index ? ', ' : '') + langItem.language_name;
             return null;
           });
           setLanguagesName(language_string);
@@ -1326,7 +1323,9 @@ const HomeScreen = ({ navigation, route }) => {
               setRefereeRecentMatch([]);
             }
           })
-          .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+          .catch((error) =>
+            Alert.alert(strings.alertmessagetitle, error.message),
+          );
 
         getRefereeReviewData(
           route?.params?.uid || entity.uid,
@@ -1357,7 +1356,9 @@ const HomeScreen = ({ navigation, route }) => {
               setRefereeReviewData();
             }
           })
-          .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+          .catch((error) =>
+            Alert.alert(strings.alertmessagetitle, error.message),
+          );
 
         settingUtils
           .getSetting(
@@ -1389,7 +1390,8 @@ const HomeScreen = ({ navigation, route }) => {
   }, [addRoleActionSheet]);
 
   const refereeFound = useCallback(
-    (data) => (data?.game?.referees || []).some(
+    (data) =>
+      (data?.game?.referees || []).some(
         (e) => authContext.entity.uid === e.referee_id,
       ),
     [authContext.entity.uid],
@@ -1448,7 +1450,7 @@ const HomeScreen = ({ navigation, route }) => {
     (playInObject) => {
       if (playInObject) {
         setSportName(playInObject?.sport_name);
-        setCurrentPlayInObject({ ...playInObject });
+        setCurrentPlayInObject({...playInObject});
         setPlaysInModalVisible(!playsInModalVisible);
       } else {
         navigation.navigate('RegisterPlayer');
@@ -1472,9 +1474,9 @@ const HomeScreen = ({ navigation, route }) => {
       if (route?.params?.role) entity_type = route?.params?.role;
       if (route?.params?.uid) user_id = route?.params?.uid;
       if (tab !== 'members') {
-        navigation.navigate('UserConnections', { tab, entity_type, user_id });
+        navigation.navigate('UserConnections', {tab, entity_type, user_id});
       } else {
-        navigation.navigate('GroupMembersScreen', { groupID: user_id });
+        navigation.navigate('GroupMembersScreen', {groupID: user_id});
       }
     },
     [
@@ -1502,7 +1504,7 @@ const HomeScreen = ({ navigation, route }) => {
   }, [refereeFound, selectedEventItem]);
 
   const renderRefereesTabContainer = (tabKey) => (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       {/* Referee Info */}
       {tabKey === 0 && (
         <RefereeInfoSection
@@ -1532,9 +1534,10 @@ const HomeScreen = ({ navigation, route }) => {
                 }
                 if (languagesListName.length > 0) {
                   languagesListName.map((langItem, index) => {
-                    language_string = language_string
-                      + (index ? ', ' : '')
-                      + langItem.language_name;
+                    language_string =
+                      language_string +
+                      (index ? ', ' : '') +
+                      langItem.language_name;
                     return null;
                   });
                   setLanguagesName(language_string);
@@ -1555,7 +1558,7 @@ const HomeScreen = ({ navigation, route }) => {
             firstTabTitle={`Completed (${refereeRecentMatch.length})`}
             secondTabTitle={`Upcoming (${refereeUpcomingMatch.length})`}
             indexCounter={scoreboardTabNumber}
-            eventPrivacyContianer={{ width: wp('70%') }}
+            eventPrivacyContianer={{width: wp('70%')}}
             onFirstTabPress={() => setScroboardTabNumber(0)}
             onSecondTabPress={() => setScroboardTabNumber(1)}
           />
@@ -1603,7 +1606,7 @@ const HomeScreen = ({ navigation, route }) => {
   );
 
   const renderScorekeeperTabContainer = (tabKey) => (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       {/* scorekeeper Info */}
       {tabKey === 0 && (
         <ScorekeeperInfoSection
@@ -1633,9 +1636,10 @@ const HomeScreen = ({ navigation, route }) => {
                 }
                 if (languagesListName.length > 0) {
                   languagesListName.map((langItem, index) => {
-                    language_string = language_string
-                      + (index ? ', ' : '')
-                      + langItem.language_name;
+                    language_string =
+                      language_string +
+                      (index ? ', ' : '') +
+                      langItem.language_name;
                     return null;
                   });
                   setLanguagesName(language_string);
@@ -1656,7 +1660,7 @@ const HomeScreen = ({ navigation, route }) => {
             firstTabTitle={`Completed (${refereeRecentMatch.length})`}
             secondTabTitle={`Upcoming (${refereeUpcomingMatch.length})`}
             indexCounter={scoreboardTabNumber}
-            eventPrivacyContianer={{ width: wp('70%') }}
+            eventPrivacyContianer={{width: wp('70%')}}
             onFirstTabPress={() => setScroboardTabNumber(0)}
             onSecondTabPress={() => setScroboardTabNumber(1)}
           />
@@ -1708,8 +1712,9 @@ const HomeScreen = ({ navigation, route }) => {
     (text) => {
       setScoreboardSearchText(text);
       const result = scoreboardGameData.filter(
-        (x) => (x.sport && x.sport.toLowerCase().includes(text.toLowerCase()))
-          || (x.sport && x.sport.toLowerCase().includes(text.toLowerCase())),
+        (x) =>
+          (x.sport && x.sport.toLowerCase().includes(text.toLowerCase())) ||
+          (x.sport && x.sport.toLowerCase().includes(text.toLowerCase())),
       );
       setFilterScoreboardGameData(result);
     },
@@ -1767,7 +1772,7 @@ const HomeScreen = ({ navigation, route }) => {
   );
 
   const renderChildCalender = useCallback(
-    ({ item: itemValue }) => {
+    ({item: itemValue}) => {
       const entity = authContext.entity;
       return (
         itemValue.cal_type === 'event' && (
@@ -1800,9 +1805,9 @@ const HomeScreen = ({ navigation, route }) => {
             }}
             eventBetweenSection={itemValue.game}
             eventOfSection={
-              itemValue.game
-              && itemValue.game.referees
-              && itemValue.game.referees.length > 0
+              itemValue.game &&
+              itemValue.game.referees &&
+              itemValue.game.referees.length > 0
             }
             onThreeDotPress={() => setSelectedEventItem(itemValue)}
             data={itemValue}
@@ -1816,7 +1821,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderCalenderHeaderComponent = useMemo(
     () => (
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{flexDirection: 'row'}}>
         <Text style={styles.filterHeaderText}>
           {moment(selectionDate).format('ddd, DD MMM')}
         </Text>
@@ -1847,7 +1852,7 @@ const HomeScreen = ({ navigation, route }) => {
             renderItem={renderChildCalender}
             ListHeaderComponent={renderCalenderHeaderComponent}
             bounces={false}
-            style={{ flex: 1 }}
+            style={{flex: 1}}
             keyExtractor={calenderKeyExtractor}
           />
         );
@@ -1915,7 +1920,7 @@ const HomeScreen = ({ navigation, route }) => {
               eventDesc2 = event.game.away_team.group_name;
             }
             return (
-              <View style={{ flex: 1 }}>
+              <View style={{flex: 1}}>
                 {event.cal_type === 'event' && (
                   <CalendarTimeTableView
                     title={eventTitle}
@@ -1924,7 +1929,7 @@ const HomeScreen = ({ navigation, route }) => {
                       borderLeftColor: event_color,
                       width: event.width,
                     }}
-                    eventTitleStyle={{ color: event_color }}
+                    eventTitleStyle={{color: event_color}}
                   />
                 )}
                 {event.cal_type === 'blocked' && (
@@ -1943,7 +1948,7 @@ const HomeScreen = ({ navigation, route }) => {
           }}
           styles={{
             event: styles.eventViewStyle,
-            line: { backgroundColor: colors.lightgrayColor },
+            line: {backgroundColor: colors.lightgrayColor},
           }}
         />
         {item.length > 0 && (
@@ -1951,7 +1956,7 @@ const HomeScreen = ({ navigation, route }) => {
             data={item}
             scrollEnabled={false}
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item: blockItem }) => {
+            renderItem={({item: blockItem}) => {
               if (blockItem.cal_type === 'blocked') {
                 return (
                   <EventBlockTimeTableView
@@ -1964,8 +1969,8 @@ const HomeScreen = ({ navigation, route }) => {
               }
               return <View />;
             }}
-            ItemSeparatorComponent={() => <View style={{ height: wp('3%') }} />}
-            style={{ marginVertical: wp('4%') }}
+            ItemSeparatorComponent={() => <View style={{height: wp('3%')}} />}
+            style={{marginVertical: wp('4%')}}
             keyExtractor={(itemValue, index) => index.toString()}
           />
         )}
@@ -1975,7 +1980,7 @@ const HomeScreen = ({ navigation, route }) => {
   );
 
   const renderRefereeReservation = useCallback(
-    ({ item }) => (
+    ({item}) => (
       <RefereeReservationItem
         data={item}
         onPressButton={() => {
@@ -1989,7 +1994,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderMainInfoTab = useMemo(
     () => (
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         {isUserHome && (
           <UserInfo
             navigation={navigation}
@@ -2029,7 +2034,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderMainScoreboardTab = useMemo(
     () => (
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         <TCSearchBox
           onChangeText={onScoreboardSearchTextChange}
           marginTop={20}
@@ -2066,7 +2071,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderMainScheduleTab = useMemo(
     () => (
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         <View
           style={{
             flexDirection: 'row',
@@ -2083,7 +2088,7 @@ const HomeScreen = ({ navigation, route }) => {
         </View>
         {!eventData && <TCInnerLoader visible={true} />}
         {eventData && scheduleIndexCounter === 0 && (
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             <EventScheduleScreen
               eventData={eventData}
               navigation={navigation}
@@ -2097,7 +2102,7 @@ const HomeScreen = ({ navigation, route }) => {
         )}
 
         {eventData && scheduleIndexCounter === 1 && (
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             <View style={styles.shceduleCalenderView}>
               <BackForwardView
                 textValue={moment(selectionDate).format('MMMM YYYY')}
@@ -2115,7 +2120,7 @@ const HomeScreen = ({ navigation, route }) => {
 
             {calenderInnerIndexCounter === 0 && (
               <EventAgendaSection
-                items={{ [selectionDate.toString()]: [filterEventData] }}
+                items={{[selectionDate.toString()]: [filterEventData]}}
                 selected={selectionDate}
                 onDayPress={onCalenderDayPress}
                 renderItem={renderMainCalender}
@@ -2124,7 +2129,7 @@ const HomeScreen = ({ navigation, route }) => {
 
             {calenderInnerIndexCounter === 1 && (
               <EventAgendaSection
-                items={{ [timeTableSelectionDate.toString()]: [filterTimeTable] }}
+                items={{[timeTableSelectionDate.toString()]: [filterTimeTable]}}
                 onDayPress={onInnerCalenderDayPress}
                 renderItem={renderInnerCalender}
               />
@@ -2136,7 +2141,7 @@ const HomeScreen = ({ navigation, route }) => {
           <Modal
             isVisible={isRefereeModal}
             backdropColor="black"
-            style={{ margin: 0, justifyContent: 'flex-end' }}
+            style={{margin: 0, justifyContent: 'flex-end'}}
             hasBackdrop
             onBackdropPress={() => setIsRefereeModal(false)}
             backdropOpacity={0}>
@@ -2149,7 +2154,7 @@ const HomeScreen = ({ navigation, route }) => {
                       source={images.cancelImage}
                       style={[
                         styles.cancelImageStyle,
-                        { tintColor: colors.blackColor },
+                        {tintColor: colors.blackColor},
                       ]}
                       resizeMode={'contain'}
                     />
@@ -2170,7 +2175,7 @@ const HomeScreen = ({ navigation, route }) => {
                   <View
                     style={[
                       styles.refereeSepratorStyle,
-                      { marginHorizontal: 15 },
+                      {marginHorizontal: 15},
                     ]}
                   />
                 )}
@@ -2217,7 +2222,7 @@ const HomeScreen = ({ navigation, route }) => {
                         onPress: async () => {},
                       },
                     ],
-                    { cancelable: false },
+                    {cancelable: false},
                   );
                 } else {
                   setloading(true);
@@ -2252,7 +2257,7 @@ const HomeScreen = ({ navigation, route }) => {
                                 onPress: async () => {},
                               },
                             ],
-                            { cancelable: false },
+                            {cancelable: false},
                           );
                         }, 0);
                       }
@@ -2273,7 +2278,8 @@ const HomeScreen = ({ navigation, route }) => {
                         setloading(true);
                         const entity = authContext.entity;
                         const uid = entity.uid || entity.auth.user_id;
-                        const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                        const entityRole =
+                          entity.role === 'user' ? 'users' : 'groups';
                         deleteEvent(
                           entityRole,
                           uid,
@@ -2297,7 +2303,7 @@ const HomeScreen = ({ navigation, route }) => {
                       style: 'cancel',
                     },
                   ],
-                  { cancelable: false },
+                  {cancelable: false},
                 );
               }
             }
@@ -2315,7 +2321,7 @@ const HomeScreen = ({ navigation, route }) => {
                         onPress: async () => {},
                       },
                     ],
-                    { cancelable: false },
+                    {cancelable: false},
                   );
                 }
               }
@@ -2395,7 +2401,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderHomeMainTabContain = useMemo(
     () => (
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         {currentTab === 1 && renderMainInfoTab}
         {currentTab === 2 && renderMainScoreboardTab}
         {currentTab === 3 && renderMainScheduleTab}
@@ -2442,7 +2448,7 @@ const HomeScreen = ({ navigation, route }) => {
   );
 
   const handleMainRefOnScroll = Animated.event([
-    { nativeEvent: { contentOffset: { y: mainFlatListFromTop } } },
+    {nativeEvent: {contentOffset: {y: mainFlatListFromTop}}},
   ]);
 
   const onBackPress = useCallback(() => {
@@ -2491,7 +2497,7 @@ const HomeScreen = ({ navigation, route }) => {
               onPress={onBackPress}>
               <Image
                 source={images.backArrow}
-                style={{ height: 15, width: 15, tintColor: colors.whiteColor }}
+                style={{height: 15, width: 15, tintColor: colors.whiteColor}}
               />
             </TouchableOpacity>
             {!isClubHome && (
@@ -2506,8 +2512,8 @@ const HomeScreen = ({ navigation, route }) => {
                 }}
                 onPress={() => {
                   if (
-                    authContext.entity.uid === currentUserData?.user_id
-                    || authContext.entity.uid === currentUserData?.group_id
+                    authContext.entity.uid === currentUserData?.user_id ||
+                    authContext.entity.uid === currentUserData?.group_id
                   ) {
                     onThreeDotPressed();
                   } else {
@@ -2594,10 +2600,12 @@ const HomeScreen = ({ navigation, route }) => {
     console.log('Auth:=>', authContext.entity);
     console.log('Team data:::::=>', currentUserData);
     a = authContext?.entity?.obj?.referee_data?.filter(
-      (obj) => obj.sport_name.toLowerCase() === currentUserData?.sport?.toLowerCase(),
+      (obj) =>
+        obj.sport_name.toLowerCase() === currentUserData?.sport?.toLowerCase(),
     );
     b = authContext?.entity?.obj?.scorekeeper_data?.filter(
-      (obj) => obj.sport_name.toLowerCase() === currentUserData?.sport?.toLowerCase(),
+      (obj) =>
+        obj.sport_name.toLowerCase() === currentUserData?.sport?.toLowerCase(),
     );
 
     if (a?.length > 0) {
@@ -2612,15 +2620,16 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const renderBackground = useMemo(
-    () => (bgImage ? (
-      <FastImage
-          source={{ uri: bgImage }}
+    () =>
+      bgImage ? (
+        <FastImage
+          source={{uri: bgImage}}
           resizeMode={'cover'}
           style={styles.bgImageStyle}
         />
       ) : (
         <View style={styles.bgImageStyle} />
-      )),
+      ),
     [bgImage],
   );
 
@@ -2670,8 +2679,9 @@ const HomeScreen = ({ navigation, route }) => {
   );
 
   const renderHeaderClubHomeTopSection = useMemo(
-    () => isClubHome && (
-      <ClubHomeTopSection
+    () =>
+      isClubHome && (
+        <ClubHomeTopSection
           clubDetails={currentUserData}
           isAdmin={isAdmin}
           loggedInEntity={authContext.entity}
@@ -2682,8 +2692,9 @@ const HomeScreen = ({ navigation, route }) => {
   );
 
   const renderHeaderTeamHomeTopSection = useMemo(
-    () => isTeamHome && (
-      <TeamHomeTopSection
+    () =>
+      isTeamHome && (
+        <TeamHomeTopSection
           teamDetails={currentUserData}
           isAdmin={isAdmin}
           loggedInEntity={authContext.entity}
@@ -2695,12 +2706,12 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderMainHeaderComponent = useMemo(
     () => (
-      <View style={{ zIndex: 1 }}>
+      <View style={{zIndex: 1}}>
         {isUserHome
           ? renderHeaderBackgroundUserProfile
           : renderHeaderBackgroundProfile}
 
-        <View style={{ flex: 1 }}>
+        <View style={{flex: 1}}>
           {renderHeaderUserHomeTopSection}
           {renderHeaderTeamHomeTopSection}
           {renderHeaderClubHomeTopSection}
@@ -2720,9 +2731,9 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderMainFlatList = useMemo(
     () => (
-      <View style={{ flex: 1, margin: 15 }}>
+      <View style={{flex: 1, margin: 15}}>
         {isUserHome ? (
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             <Text
               style={{
                 fontSize: 20,
@@ -2739,7 +2750,7 @@ const HomeScreen = ({ navigation, route }) => {
               }}>
               <TCProfileButton
                 title={'Gallery'}
-                style={{ marginRight: 15, alignItems: 'center' }}
+                style={{marginRight: 15, alignItems: 'center'}}
                 showArrow={false}
                 textStyle={styles.buttonTextStyle}
                 onPressProfile={() => {
@@ -2866,7 +2877,7 @@ const HomeScreen = ({ navigation, route }) => {
   //   }
   // }, [])
   const renderNewsFeed = useCallback(
-    ({ item }) => {
+    ({item}) => {
       console.log('Render feed:=>', item);
       // const onDeleteButtonPress = () => onDeletePost(item)
       // const onProfileButtonPress = () => onProfilePress(item)
@@ -2898,7 +2909,7 @@ const HomeScreen = ({ navigation, route }) => {
   );
 
   const renderScorekeeperFeed = useCallback(
-    ({ item }) => {
+    ({item}) => {
       console.log('Profile Object::=>', currentUserData);
       console.log('Render feed:=>', item);
       // const onDeleteButtonPress = () => onDeletePost(item)
@@ -2985,7 +2996,7 @@ const HomeScreen = ({ navigation, route }) => {
           }),
         }}>
         <ImageBackground
-          source={{ uri: bgImage }}
+          source={{uri: bgImage}}
           resizeMode={'cover'}
           blurRadius={10}
           style={styles.stickyImageStyle}>
@@ -3001,12 +3012,13 @@ const HomeScreen = ({ navigation, route }) => {
   console.log('currentUserData', currentUserData);
 
   const renderChallengeButton = useMemo(
-    () => !loading
-      && isTeamHome
-      && authContext.entity.role === 'team' && (
+    () =>
+      !loading &&
+      isTeamHome &&
+      authContext.entity.role === 'team' && (
         <View style={styles.challengeButtonStyle}>
           {authContext.entity.obj.group_id !== currentUserData.group_id && (
-            <View styles={[styles.outerContainerStyle, { height: 50 }]}>
+            <View styles={[styles.outerContainerStyle, {height: 50}]}>
               <TouchableOpacity onPress={onChallengePress}>
                 <LinearGradient
                   colors={[colors.darkThemeColor, colors.themeColor]}
@@ -3019,7 +3031,7 @@ const HomeScreen = ({ navigation, route }) => {
                     },
                   ]}>
                   {settingObject?.game_fee?.fee ? (
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
                       <Text style={styles.buttonLeftText}>{`$${
                         settingObject?.game_fee?.fee
                       } ${currentUserData?.currency_type ?? 'CAD'}`}</Text>
@@ -3029,7 +3041,7 @@ const HomeScreen = ({ navigation, route }) => {
                       </Text>
                     </View>
                   ) : (
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
                       {/* <Text style={styles.buttonLeftText}>{'Game fee not Configured'}</Text> */}
                     </View>
                   )}
@@ -3083,9 +3095,7 @@ const HomeScreen = ({ navigation, route }) => {
     const uid = entityType === 'player' ? 'user_id' : 'group_id';
     QBLogout()
       .then(() => {
-        const {
- USER, CLUB, LEAGUE, TEAM,
- } = QB_ACCOUNT_TYPE;
+        const {USER, CLUB, LEAGUE, TEAM} = QB_ACCOUNT_TYPE;
         let accountType = USER;
         if (entityType === 'club') accountType = CLUB;
         else if (entityType === 'team') accountType = TEAM;
@@ -3102,10 +3112,10 @@ const HomeScreen = ({ navigation, route }) => {
             console.log('QB LOGIN:=>', res);
             currentEntity = {
               ...currentEntity,
-              QB: { ...res.user, connected: true, token: res?.session?.token },
+              QB: {...res.user, connected: true, token: res?.session?.token},
             };
-            authContext.setEntity({ ...currentEntity });
-            await Utility.setStorage('authContextEntity', { ...currentEntity });
+            authContext.setEntity({...currentEntity});
+            await Utility.setStorage('authContextEntity', {...currentEntity});
             QBconnectAndSubscribe(currentEntity)
               .then((qbRes) => {
                 setloading(false);
@@ -3163,13 +3173,13 @@ const HomeScreen = ({ navigation, route }) => {
         obj: item,
       };
     }
-    authContext.setEntity({ ...currentEntity });
-    await Utility.setStorage('authContextEntity', { ...currentEntity });
+    authContext.setEntity({...currentEntity});
+    await Utility.setStorage('authContextEntity', {...currentEntity});
 
     return currentEntity;
   };
 
-  const renderSports = ({ item }) => (
+  const renderSports = ({item}) => (
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
@@ -3236,7 +3246,7 @@ const HomeScreen = ({ navigation, route }) => {
   );
 
   const renderRefereeGames = useCallback(
-    ({ item }) => (
+    ({item}) => (
       <TCGameCard
         data={item}
         cardWidth={'88%'}
@@ -3287,7 +3297,7 @@ const HomeScreen = ({ navigation, route }) => {
   );
 
   const renderScorekeeperGames = useCallback(
-    ({ item }) => (
+    ({item}) => (
       <TCGameCard
         data={item}
         cardWidth={'88%'}
@@ -3323,7 +3333,7 @@ const HomeScreen = ({ navigation, route }) => {
     renderItem: renderRefereeGames,
     keyExtractor: (index) => index.toString(),
     ListEmptyComponent: listEmptyComponent,
-    style: { marginTop: 15 },
+    style: {marginTop: 15},
   };
 
   const flatListScorekeeperProps = {
@@ -3335,7 +3345,7 @@ const HomeScreen = ({ navigation, route }) => {
     renderItem: renderScorekeeperGames,
     keyExtractor: (index) => index.toString(),
     ListEmptyComponent: listEmptyComponent,
-    style: { marginTop: 15 },
+    style: {marginTop: 15},
   };
 
   const getGamesForReferee = async (refereeId, teamId) => {
@@ -3346,8 +3356,8 @@ const HomeScreen = ({ navigation, route }) => {
             {
               bool: {
                 should: [
-                  { term: { 'home_team.keyword': teamId } },
-                  { term: { 'away_team.keyword': teamId } },
+                  {term: {'home_team.keyword': teamId}},
+                  {term: {'away_team.keyword': teamId}},
                 ],
               },
             },
@@ -3358,14 +3368,17 @@ const HomeScreen = ({ navigation, route }) => {
                 },
               },
             },
-            { term: { 'status.keyword': 'accepted' } },
-            { term: { 'challenge_referee.who_secure.responsible_team_id.keyword': teamId } },
+            {term: {'status.keyword': 'accepted'}},
+            {
+              term: {
+                'challenge_referee.who_secure.responsible_team_id.keyword':
+                  teamId,
+              },
+            },
           ],
         },
       },
-      sort: [
-        { start_datetime: 'asc' },
-      ],
+      sort: [{start_datetime: 'asc'}],
     };
 
     console.log('Json string:=>', JSON.stringify(gameListWithFilter));
@@ -3373,7 +3386,7 @@ const HomeScreen = ({ navigation, route }) => {
       query: {
         bool: {
           must: [
-            { term: { 'participants.entity_id.keyword': refereeId } },
+            {term: {'participants.entity_id.keyword': refereeId}},
             {
               range: {
                 end_datetime: {
@@ -3381,8 +3394,8 @@ const HomeScreen = ({ navigation, route }) => {
                 },
               },
             },
-            { term: { 'cal_type.keyword': 'event' } },
-            { match: { blocked: true } },
+            {term: {'cal_type.keyword': 'event'}},
+            {match: {blocked: true}},
           ],
         },
       },
@@ -3404,31 +3417,31 @@ const HomeScreen = ({ navigation, route }) => {
           eventList.forEach((slot) => {
             // check if slot start time comes between the game time
             if (
-              game.start_datetime <= slot.start_datetime
-              && game.end_datetime >= slot.start_datetime
+              game.start_datetime <= slot.start_datetime &&
+              game.end_datetime >= slot.start_datetime
             ) {
               game.isAvailable = false;
             }
 
             // check if slot end time comes between the game time
             if (
-              game.start_datetime <= slot.end_datetime
-              && game.end_datetime >= slot.end_datetime
+              game.start_datetime <= slot.end_datetime &&
+              game.end_datetime >= slot.end_datetime
             ) {
               game.isAvailable = false;
             }
 
             // Check if game is under the blocked time
             if (
-              slot.start_datetime <= game.start_datetime
-              && slot.end_datetime >= game.start_datetime
+              slot.start_datetime <= game.start_datetime &&
+              slot.end_datetime >= game.start_datetime
             ) {
               game.isAvailable = false;
             }
           });
         }
 
-       return Utility.getGamesList(gameList).then((gamedata) => gamedata)
+        return Utility.getGamesList(gameList).then((gamedata) => gamedata);
       })
       .catch((e) => {
         setloading(false);
@@ -3446,8 +3459,8 @@ const HomeScreen = ({ navigation, route }) => {
             {
               bool: {
                 should: [
-                  { term: { 'home_team.keyword': teamId } },
-                  { term: { 'away_team.keyword': teamId } },
+                  {term: {'home_team.keyword': teamId}},
+                  {term: {'away_team.keyword': teamId}},
                 ],
               },
             },
@@ -3458,14 +3471,17 @@ const HomeScreen = ({ navigation, route }) => {
                 },
               },
             },
-            { term: { 'status.keyword': 'accepted' } },
-            { term: { 'challenge_scorekeepers.who_secure.responsible_team_id.keyword': teamId } },
+            {term: {'status.keyword': 'accepted'}},
+            {
+              term: {
+                'challenge_scorekeepers.who_secure.responsible_team_id.keyword':
+                  teamId,
+              },
+            },
           ],
         },
       },
-      sort: [
-        { start_datetime: 'asc' },
-      ],
+      sort: [{start_datetime: 'asc'}],
     };
 
     console.log('Json string:=>', JSON.stringify(gameListWithFilter));
@@ -3473,7 +3489,7 @@ const HomeScreen = ({ navigation, route }) => {
       query: {
         bool: {
           must: [
-            { term: { 'participants.entity_id.keyword': scorekeeperId } },
+            {term: {'participants.entity_id.keyword': scorekeeperId}},
             {
               range: {
                 end_datetime: {
@@ -3481,8 +3497,8 @@ const HomeScreen = ({ navigation, route }) => {
                 },
               },
             },
-            { term: { 'cal_type.keyword': 'event' } },
-            { match: { blocked: true } },
+            {term: {'cal_type.keyword': 'event'}},
+            {match: {blocked: true}},
           ],
         },
       },
@@ -3504,31 +3520,31 @@ const HomeScreen = ({ navigation, route }) => {
           eventList.forEach((slot) => {
             // check if slot start time comes between the game time
             if (
-              game.start_datetime <= slot.start_datetime
-              && game.end_datetime >= slot.start_datetime
+              game.start_datetime <= slot.start_datetime &&
+              game.end_datetime >= slot.start_datetime
             ) {
               game.isAvailable = false;
             }
 
             // check if slot end time comes between the game time
             if (
-              game.start_datetime <= slot.end_datetime
-              && game.end_datetime >= slot.end_datetime
+              game.start_datetime <= slot.end_datetime &&
+              game.end_datetime >= slot.end_datetime
             ) {
               game.isAvailable = false;
             }
 
             // Check if game is under the blocked time
             if (
-              slot.start_datetime <= game.start_datetime
-              && slot.end_datetime >= game.start_datetime
+              slot.start_datetime <= game.start_datetime &&
+              slot.end_datetime >= game.start_datetime
             ) {
               game.isAvailable = false;
             }
           });
         }
 
-       return Utility.getGamesList(gameList).then((gamedata) => gamedata)
+        return Utility.getGamesList(gameList).then((gamedata) => gamedata);
       })
       .catch((e) => {
         setloading(false);
@@ -3552,7 +3568,7 @@ const HomeScreen = ({ navigation, route }) => {
         onPress={(index) => {
           if (index === 0) {
             // Add Playing
-            navigation.navigate('RegisterPlayer', { comeFrom: 'HomeScreen' });
+            navigation.navigate('RegisterPlayer', {comeFrom: 'HomeScreen'});
           } else if (index === 1) {
             // Add Refereeing
             navigation.navigate('RegisterReferee');
@@ -3627,10 +3643,10 @@ const HomeScreen = ({ navigation, route }) => {
                 setMatchData([...gameList]);
               }
               if (
-                refereeSetting?.refereeAvailibility
-                && refereeSetting?.game_fee
-                && refereeSetting?.refund_policy
-                && refereeSetting?.available_area
+                refereeSetting?.refereeAvailibility &&
+                refereeSetting?.game_fee &&
+                refereeSetting?.refund_policy &&
+                refereeSetting?.available_area
               ) {
                 gameListRefereeModalRef.current.open();
                 setRefereeSettingObject(refereeSetting);
@@ -3673,10 +3689,10 @@ const HomeScreen = ({ navigation, route }) => {
                 setMatchData([...gameList]);
               }
               if (
-                scorekeeperSetting?.scorekeeperAvailibility
-                && scorekeeperSetting?.game_fee
-                && scorekeeperSetting?.refund_policy
-                && scorekeeperSetting?.available_area
+                scorekeeperSetting?.scorekeeperAvailibility &&
+                scorekeeperSetting?.game_fee &&
+                scorekeeperSetting?.refund_policy &&
+                scorekeeperSetting?.available_area
               ) {
                 gameListScorekeeperModalRef.current.open();
                 setScorekeeperSettingObject(scorekeeperSetting);
@@ -3693,18 +3709,18 @@ const HomeScreen = ({ navigation, route }) => {
       {renderChallengeButton}
       <ActivityLoader visible={loading} />
 
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         {/* renderUserTopFixedButtons */}
         {!isUserHome && renderTopFixedButtons}
         {!isUserHome && fixedHeader}
-        {firstTimeLoading
-          && (route?.params?.role === 'user'
-            ?? authContext?.entity?.role === 'user') && (
+        {firstTimeLoading &&
+          (route?.params?.role === 'user' ??
+            authContext?.entity?.role === 'user') && (
               <UserProfileScreenShimmer />
           )}
-        {firstTimeLoading
-          && (route?.params?.role !== 'user'
-            ?? authContext?.entity?.role !== 'user') && <ProfileScreenShimmer />}
+        {firstTimeLoading &&
+          (route?.params?.role !== 'user' ??
+            authContext?.entity?.role !== 'user') && <ProfileScreenShimmer />}
         {!firstTimeLoading && (
           <HomeFeed
             onFeedScroll={handleMainRefOnScroll}
@@ -3721,8 +3737,9 @@ const HomeScreen = ({ navigation, route }) => {
       </View>
 
       {useMemo(
-        () => playsInModalVisible && (
-          <PlayInModule
+        () =>
+          playsInModalVisible && (
+            <PlayInModule
               visible={playsInModalVisible}
               openPlayInModal={openPlayInModal}
               onModalClose={onPlayInModalClose}
@@ -3758,7 +3775,7 @@ const HomeScreen = ({ navigation, route }) => {
           backdropOpacity={0}>
           <View style={styles.modalContainerViewStyle}>
             {/* <Image style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]} source={images.orangeLayer} /> */}
-            <SafeAreaView style={{ flex: 1 }}>
+            <SafeAreaView style={{flex: 1}}>
               <Header
                 mainContainerStyle={styles.headerMainContainerStyle}
                 centerComponent={
@@ -3779,7 +3796,7 @@ const HomeScreen = ({ navigation, route }) => {
                       setRefereesInModalVisible(false);
                       setRefereeCurrentTab(0);
                     }}
-                    style={{ padding: 10 }}>
+                    style={{padding: 10}}>
                     <Image
                       source={images.cancelWhite}
                       style={styles.cancelImageStyle}
@@ -3801,7 +3818,7 @@ const HomeScreen = ({ navigation, route }) => {
                 onModalClose={(value) => setRefereesInModalVisible(value)}
                 profileImage={
                   userThumbnail
-                    ? { uri: userThumbnail }
+                    ? {uri: userThumbnail}
                     : images.profilePlaceHolder
                 }
                 userName={fullName}
@@ -3813,10 +3830,10 @@ const HomeScreen = ({ navigation, route }) => {
                 }
                 onBookRefereePress={() => {
                   if (
-                    refereeSettingObject?.refereeAvailibility
-                    && refereeSettingObject?.game_fee
-                    && refereeSettingObject?.refund_policy
-                    && refereeSettingObject?.available_area
+                    refereeSettingObject?.refereeAvailibility &&
+                    refereeSettingObject?.game_fee &&
+                    refereeSettingObject?.refund_policy &&
+                    refereeSettingObject?.available_area
                   ) {
                     setRefereesInModalVisible(false);
                     navigation.navigate('RefereeBookingDateAndTime', {
@@ -3858,7 +3875,7 @@ const HomeScreen = ({ navigation, route }) => {
               <SafeAreaView
                 style={[
                   styles.modalContainerViewStyle,
-                  { backgroundColor: colors.whiteColor },
+                  {backgroundColor: colors.whiteColor},
                 ]}>
                 <Header
                   mainContainerStyle={styles.headerMainContainerStyle}
@@ -3947,12 +3964,12 @@ const HomeScreen = ({ navigation, route }) => {
               <SafeAreaView
                 style={[
                   styles.modalContainerViewStyle,
-                  { backgroundColor: colors.whiteColor },
+                  {backgroundColor: colors.whiteColor},
                 ]}>
                 <LinearGradient
                   colors={[colors.orangeColor, colors.yellowColor]}
-                  end={{ x: 0.0, y: 0.25 }}
-                  start={{ x: 1, y: 0.5 }}
+                  end={{x: 0.0, y: 0.25}}
+                  start={{x: 1, y: 0.5}}
                   style={styles.gradiantHeaderViewStyle}></LinearGradient>
                 <Header
                   mainContainerStyle={styles.headerMainContainerStyle}
@@ -4014,9 +4031,10 @@ const HomeScreen = ({ navigation, route }) => {
                         }
                         if (languagesListName.length > 0) {
                           languagesListName.map((langItem, index) => {
-                            language_string = language_string
-                              + (index ? ', ' : '')
-                              + langItem.language_name;
+                            language_string =
+                              language_string +
+                              (index ? ', ' : '') +
+                              langItem.language_name;
                             return null;
                           });
                           setLanguagesName(language_string);
@@ -4047,13 +4065,13 @@ const HomeScreen = ({ navigation, route }) => {
               <SafeAreaView
                 style={[
                   styles.modalContainerViewStyle,
-                  { backgroundColor: colors.whiteColor },
+                  {backgroundColor: colors.whiteColor},
                 ]}>
                 <View>
                   <LinearGradient
                     colors={[colors.orangeColor, colors.yellowColor]}
-                    end={{ x: 0.0, y: 0.25 }}
-                    start={{ x: 1, y: 0.5 }}
+                    end={{x: 0.0, y: 0.25}}
+                    start={{x: 1, y: 0.5}}
                     style={styles.gradiantHeaderViewStyle}></LinearGradient>
                   <Header
                     mainContainerStyle={styles.headerMainContainerStyle}
@@ -4095,7 +4113,7 @@ const HomeScreen = ({ navigation, route }) => {
                   firstTabTitle={`Completed (${refereeRecentMatch.length})`}
                   secondTabTitle={`Upcoming (${refereeUpcomingMatch.length})`}
                   indexCounter={scoreboardTabNumber}
-                  eventPrivacyContianer={{ width: wp('70%') }}
+                  eventPrivacyContianer={{width: wp('70%')}}
                   onFirstTabPress={() => setScroboardTabNumber(0)}
                   onSecondTabPress={() => setScroboardTabNumber(1)}
                 />
@@ -4140,13 +4158,13 @@ const HomeScreen = ({ navigation, route }) => {
               <SafeAreaView
                 style={[
                   styles.modalContainerViewStyle,
-                  { backgroundColor: colors.whiteColor },
+                  {backgroundColor: colors.whiteColor},
                 ]}>
                 <View>
                   <LinearGradient
                     colors={[colors.orangeColor, colors.yellowColor]}
-                    end={{ x: 0.0, y: 0.25 }}
-                    start={{ x: 1, y: 0.5 }}
+                    end={{x: 0.0, y: 0.25}}
+                    start={{x: 1, y: 0.5}}
                     style={styles.gradiantHeaderViewStyle}></LinearGradient>
                   <Header
                     mainContainerStyle={styles.headerMainContainerStyle}
@@ -4207,19 +4225,20 @@ const HomeScreen = ({ navigation, route }) => {
                   <SafeAreaView
                     style={[
                       styles.modalContainerViewStyle,
-                      { backgroundColor: colors.whiteColor },
+                      {backgroundColor: colors.whiteColor},
                     ]}>
                     <View>
                       <LinearGradient
                         colors={[colors.orangeColor, colors.yellowColor]}
-                        end={{ x: 0.0, y: 0.25 }}
-                        start={{ x: 1, y: 0.5 }}
+                        end={{x: 0.0, y: 0.25}}
+                        start={{x: 1, y: 0.5}}
                         style={styles.gradiantHeaderViewStyle}></LinearGradient>
                       <Header
                         mainContainerStyle={styles.headerMainContainerStyle}
                         leftComponent={
                           <TouchableOpacity
-                            onPress={() => setReviewerDetailModalVisible(false)
+                            onPress={() =>
+                              setReviewerDetailModalVisible(false)
                             }>
                             <Image
                               source={images.backArrow}
@@ -4242,7 +4261,8 @@ const HomeScreen = ({ navigation, route }) => {
                         }
                         rightComponent={
                           <TouchableOpacity
-                            onPress={() => setReviewerDetailModalVisible(false)
+                            onPress={() =>
+                              setReviewerDetailModalVisible(false)
                             }>
                             <Image
                               source={images.cancelWhite}
@@ -4298,7 +4318,7 @@ const HomeScreen = ({ navigation, route }) => {
           backdropOpacity={0}>
           <View style={styles.modalContainerViewStyle}>
             {/* <Image style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]} source={images.orangeLayer} /> */}
-            <SafeAreaView style={{ flex: 1 }}>
+            <SafeAreaView style={{flex: 1}}>
               <Header
                 mainContainerStyle={styles.headerMainContainerStyle}
                 centerComponent={
@@ -4319,7 +4339,7 @@ const HomeScreen = ({ navigation, route }) => {
                       setScorekeeperInModalVisible(false);
                       setScorekeeperCurrentTab(0);
                     }}
-                    style={{ padding: 10 }}>
+                    style={{padding: 10}}>
                     <Image
                       source={images.cancelWhite}
                       style={styles.cancelImageStyle}
@@ -4345,7 +4365,7 @@ const HomeScreen = ({ navigation, route }) => {
 
                 profileImage={
                   userThumbnail
-                    ? { uri: userThumbnail }
+                    ? {uri: userThumbnail}
                     : images.profilePlaceHolder
                 }
                 userName={fullName}
@@ -4357,10 +4377,10 @@ const HomeScreen = ({ navigation, route }) => {
                 }
                 onBookRefereePress={() => {
                   if (
-                    scorekeeperSettingObject?.scorekeeperAvailibility
-                    && scorekeeperSettingObject?.game_fee
-                    && scorekeeperSettingObject?.refund_policy
-                    && scorekeeperSettingObject?.available_area
+                    scorekeeperSettingObject?.scorekeeperAvailibility &&
+                    scorekeeperSettingObject?.game_fee &&
+                    scorekeeperSettingObject?.refund_policy &&
+                    scorekeeperSettingObject?.available_area
                   ) {
                     setScorekeeperInModalVisible(false);
                     navigation.navigate('ScorekeeperBookingDateAndTime', {
@@ -4378,10 +4398,12 @@ const HomeScreen = ({ navigation, route }) => {
 
               <TCScrollableProfileTabs
                 tabItem={TAB_ITEMS_SCOREKEEPER}
-                onChangeTab={(ChangeTab) => setScorekeeperCurrentTab(ChangeTab.i)
+                onChangeTab={(ChangeTab) =>
+                  setScorekeeperCurrentTab(ChangeTab.i)
                 }
                 currentTab={currentScorekeeperTab}
-                renderTabContain={(tabKey) => renderScorekeeperTabContainer(tabKey)
+                renderTabContain={(tabKey) =>
+                  renderScorekeeperTabContainer(tabKey)
                 }
                 tabVerticalScroll={false}
               />
@@ -4403,7 +4425,7 @@ const HomeScreen = ({ navigation, route }) => {
               <SafeAreaView
                 style={[
                   styles.modalContainerViewStyle,
-                  { backgroundColor: colors.whiteColor },
+                  {backgroundColor: colors.whiteColor},
                 ]}>
                 <Header
                   mainContainerStyle={styles.headerMainContainerStyle}
@@ -4492,12 +4514,12 @@ const HomeScreen = ({ navigation, route }) => {
               <SafeAreaView
                 style={[
                   styles.modalContainerViewStyle,
-                  { backgroundColor: colors.whiteColor },
+                  {backgroundColor: colors.whiteColor},
                 ]}>
                 <LinearGradient
                   colors={[colors.orangeColor, colors.yellowColor]}
-                  end={{ x: 0.0, y: 0.25 }}
-                  start={{ x: 1, y: 0.5 }}
+                  end={{x: 0.0, y: 0.25}}
+                  start={{x: 1, y: 0.5}}
                   style={styles.gradiantHeaderViewStyle}></LinearGradient>
                 <Header
                   mainContainerStyle={styles.headerMainContainerStyle}
@@ -4542,7 +4564,8 @@ const HomeScreen = ({ navigation, route }) => {
                     patchRegisterScorekeeperDetails(params, authContext)
                       .then((res) => {
                         const changedata = currentUserData;
-                        changedata.scorekeeper_data = res.payload.scorekeeper_data;
+                        changedata.scorekeeper_data =
+                          res.payload.scorekeeper_data;
                         changedata.gender = res.payload.gender;
                         changedata.birthday = res.payload.birthday;
                         setCurrentUserData(changedata);
@@ -4560,9 +4583,10 @@ const HomeScreen = ({ navigation, route }) => {
                         }
                         if (languagesListName.length > 0) {
                           languagesListName.map((langItem, index) => {
-                            language_string = language_string
-                              + (index ? ', ' : '')
-                              + langItem.language_name;
+                            language_string =
+                              language_string +
+                              (index ? ', ' : '') +
+                              langItem.language_name;
                             return null;
                           });
                           setLanguagesName(language_string);
@@ -4593,13 +4617,13 @@ const HomeScreen = ({ navigation, route }) => {
               <SafeAreaView
                 style={[
                   styles.modalContainerViewStyle,
-                  { backgroundColor: colors.whiteColor },
+                  {backgroundColor: colors.whiteColor},
                 ]}>
                 <View>
                   <LinearGradient
                     colors={[colors.orangeColor, colors.yellowColor]}
-                    end={{ x: 0.0, y: 0.25 }}
-                    start={{ x: 1, y: 0.5 }}
+                    end={{x: 0.0, y: 0.25}}
+                    start={{x: 1, y: 0.5}}
                     style={styles.gradiantHeaderViewStyle}></LinearGradient>
                   <Header
                     mainContainerStyle={styles.headerMainContainerStyle}
@@ -4641,7 +4665,7 @@ const HomeScreen = ({ navigation, route }) => {
                   firstTabTitle={`Completed (${scorekeeperRecentMatch.length})`}
                   secondTabTitle={`Upcoming (${scorekeeperUpcomingMatch.length})`}
                   indexCounter={scoreboardTabNumber}
-                  eventPrivacyContianer={{ width: wp('70%') }}
+                  eventPrivacyContianer={{width: wp('70%')}}
                   onFirstTabPress={() => setScroboardTabNumber(0)}
                   onSecondTabPress={() => setScroboardTabNumber(1)}
                 />
@@ -4686,13 +4710,13 @@ const HomeScreen = ({ navigation, route }) => {
               <SafeAreaView
                 style={[
                   styles.modalContainerViewStyle,
-                  { backgroundColor: colors.whiteColor },
+                  {backgroundColor: colors.whiteColor},
                 ]}>
                 <View>
                   <LinearGradient
                     colors={[colors.orangeColor, colors.yellowColor]}
-                    end={{ x: 0.0, y: 0.25 }}
-                    start={{ x: 1, y: 0.5 }}
+                    end={{x: 0.0, y: 0.25}}
+                    start={{x: 1, y: 0.5}}
                     style={styles.gradiantHeaderViewStyle}></LinearGradient>
                   <Header
                     mainContainerStyle={styles.headerMainContainerStyle}
@@ -4753,19 +4777,20 @@ const HomeScreen = ({ navigation, route }) => {
                   <SafeAreaView
                     style={[
                       styles.modalContainerViewStyle,
-                      { backgroundColor: colors.whiteColor },
+                      {backgroundColor: colors.whiteColor},
                     ]}>
                     <View>
                       <LinearGradient
                         colors={[colors.orangeColor, colors.yellowColor]}
-                        end={{ x: 0.0, y: 0.25 }}
-                        start={{ x: 1, y: 0.5 }}
+                        end={{x: 0.0, y: 0.25}}
+                        start={{x: 1, y: 0.5}}
                         style={styles.gradiantHeaderViewStyle}></LinearGradient>
                       <Header
                         mainContainerStyle={styles.headerMainContainerStyle}
                         leftComponent={
                           <TouchableOpacity
-                            onPress={() => setReviewerDetailModalVisible(false)
+                            onPress={() =>
+                              setReviewerDetailModalVisible(false)
                             }>
                             <Image
                               source={images.backArrow}
@@ -4788,7 +4813,8 @@ const HomeScreen = ({ navigation, route }) => {
                         }
                         rightComponent={
                           <TouchableOpacity
-                            onPress={() => setReviewerDetailModalVisible(false)
+                            onPress={() =>
+                              setReviewerDetailModalVisible(false)
                             }>
                             <Image
                               source={images.cancelWhite}
@@ -4846,7 +4872,7 @@ const HomeScreen = ({ navigation, route }) => {
             <Image style={styles.background} source={images.entityCreatedBG} />
             <TouchableOpacity
               onPress={() => confirmationRef.current.close()}
-              style={{ alignSelf: 'flex-end' }}>
+              style={{alignSelf: 'flex-end'}}>
               <Image
                 source={images.cancelWhite}
                 style={{
@@ -4870,8 +4896,8 @@ const HomeScreen = ({ navigation, route }) => {
                 source={
                   (route?.params?.entityObj?.thumbnail && {
                     uri: route?.params?.entityObj?.thumbnail,
-                  })
-                  || route?.params?.role === 'club'
+                  }) ||
+                  route?.params?.role === 'club'
                     ? images.clubPlaceholder
                     : images.teamGreenPH
                 }
@@ -4891,7 +4917,7 @@ const HomeScreen = ({ navigation, route }) => {
                   flexDirection: 'row',
                   alignItems: 'center',
                 }}>
-                <Text style={[styles.foundText, { fontFamily: fonts.RBold }]}>
+                <Text style={[styles.foundText, {fontFamily: fonts.RBold}]}>
                   {`${route?.params?.groupName}`}
                 </Text>
                 <View
@@ -4915,10 +4941,10 @@ const HomeScreen = ({ navigation, route }) => {
                   />
                 </View>
               </View>
-              <Text style={[styles.foundText, { fontFamily: fonts.RRegular }]}>
+              <Text style={[styles.foundText, {fontFamily: fonts.RRegular}]}>
                 {'has been created.'}
               </Text>
-              <Text style={[styles.manageChallengeDetailTitle, { margin: 15 }]}>
+              <Text style={[styles.manageChallengeDetailTitle, {margin: 15}]}>
                 {`Your account has been switched to the ${route?.params?.groupName} account.`}
               </Text>
             </View>
@@ -4953,12 +4979,12 @@ const HomeScreen = ({ navigation, route }) => {
           onOpen={() => setRefereeOfferModalVisible(true)}
           snapPoint={hp(50)}
           withHandle={false}
-          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+          overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
           modalStyle={{
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
@@ -4982,12 +5008,12 @@ const HomeScreen = ({ navigation, route }) => {
           onOpen={() => setScorekeeperOfferModalVisible(true)}
           snapPoint={hp(50)}
           withHandle={false}
-          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+          overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
           modalStyle={{
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
@@ -5029,7 +5055,7 @@ const HomeScreen = ({ navigation, route }) => {
                 setIsDoubleSportTeamCreatedVisible(false);
               }, 10);
             }}
-            style={{ alignSelf: 'flex-end' }}>
+            style={{alignSelf: 'flex-end'}}>
             <Image
               source={images.cancelWhite}
               style={{
@@ -5052,14 +5078,14 @@ const HomeScreen = ({ navigation, route }) => {
             <Text
               style={[
                 styles.doubleSportCreatedText,
-                { fontFamily: fonts.RRegular },
+                {fontFamily: fonts.RRegular},
               ]}>
               {`You have completed all the process to create a team at your end. An invite will be sent to ${route?.params?.name}.`}
             </Text>
 
             <Text style={styles.inviteText}>
               When
-              <Text style={{ fontFamily: fonts.RBold }}>
+              <Text style={{fontFamily: fonts.RBold}}>
                 {' '}
                 {route?.params?.name}{' '}
               </Text>
@@ -5112,17 +5138,17 @@ const HomeScreen = ({ navigation, route }) => {
               setSelectedChallengeOption(0);
               const obj = settingObject;
               if (
-                obj?.game_duration
-                && obj?.availibility
-                && obj?.special_rules !== undefined
-                && obj?.general_rules !== undefined
-                && obj?.responsible_for_referee
-                && obj?.responsible_for_scorekeeper
-                && obj?.game_fee
-                && obj?.venue
-                && obj?.refund_policy
-                && obj?.home_away
-                && obj?.game_type
+                obj?.game_duration &&
+                obj?.availibility &&
+                obj?.special_rules !== undefined &&
+                obj?.general_rules !== undefined &&
+                obj?.responsible_for_referee &&
+                obj?.responsible_for_scorekeeper &&
+                obj?.game_fee &&
+                obj?.venue &&
+                obj?.refund_policy &&
+                obj?.home_away &&
+                obj?.game_type
               ) {
                 setChallengePopup(false);
                 navigation.navigate('ChallengeScreen', {
@@ -5149,7 +5175,7 @@ const HomeScreen = ({ navigation, route }) => {
                 <Text
                   style={[
                     styles.curruentLocationText,
-                    { color: colors.whiteColor },
+                    {color: colors.whiteColor},
                   ]}>
                   Continue to Challenge
                 </Text>
@@ -5178,17 +5204,17 @@ const HomeScreen = ({ navigation, route }) => {
                   setloading(false);
                   const obj = response;
                   if (
-                    obj?.game_duration
-                    && obj?.availibility
-                    && obj?.special_rules !== undefined
-                    && obj?.general_rules !== undefined
-                    && obj?.responsible_for_referee
-                    && obj?.responsible_for_scorekeeper
-                    && obj?.game_fee
-                    && obj?.venue
-                    && obj?.refund_policy
-                    && obj?.home_away
-                    && obj?.game_type
+                    obj?.game_duration &&
+                    obj?.availibility &&
+                    obj?.special_rules !== undefined &&
+                    obj?.general_rules !== undefined &&
+                    obj?.responsible_for_referee &&
+                    obj?.responsible_for_scorekeeper &&
+                    obj?.game_fee &&
+                    obj?.venue &&
+                    obj?.refund_policy &&
+                    obj?.home_away &&
+                    obj?.game_type
                   ) {
                     setChallengePopup(false);
                     navigation.navigate('InviteChallengeScreen', {
@@ -5223,7 +5249,7 @@ const HomeScreen = ({ navigation, route }) => {
               <LinearGradient
                 colors={[colors.yellowColor, colors.orangeGradientColor]}
                 style={styles.backgroundView}>
-                <Text style={[styles.myCityText, { color: colors.whiteColor }]}>
+                <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
                   Invite to Challenge
                 </Text>
               </LinearGradient>
@@ -5259,7 +5285,7 @@ const HomeScreen = ({ navigation, route }) => {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: {width: 0, height: 1},
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
@@ -5354,7 +5380,7 @@ const styles = StyleSheet.create({
     height: 45,
     width: '100%',
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 10 },
+    shadowOffset: {width: 0, height: 10},
     shadowOpacity: 1.0,
     shadowRadius: 4,
     elevation: 2,
@@ -5587,7 +5613,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },
@@ -5604,7 +5630,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 50,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.2,
     shadowRadius: 5,
     width: '86%',
