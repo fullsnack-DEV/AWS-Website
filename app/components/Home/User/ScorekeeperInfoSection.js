@@ -53,6 +53,7 @@ import TCThinDivider from '../../TCThinDivider';
 import colors from '../../../Constants/Colors';
 import DataSource from '../../../Constants/DataSource';
 import MapPinWithRadious from '../../Schedule/MapPinWithRadious';
+import { getSportName } from '../../../utils';
 
 const privacy_Data = [
   {
@@ -448,14 +449,14 @@ function ScorekeeperInfoSection({
       fee: refereeFeeCount,
       is_published: true,
       language: langParams,
-      sport_name: selectScorekeeperData.sport_name,
+      sport_name: getSportName(selectScorekeeperData, authContext),
       certificates: certiData ?? certificatesData,
     };
     const newDataList = [];
     data.scorekeeper_data.forEach((item) => {
       if (
-        item.sport_name?.toLowerCase()
-        === selectScorekeeperData.sport_name?.toLowerCase()
+        item.sport
+        === selectScorekeeperData.sport
       ) {
         newDataList.push(refereeEditParams);
       } else {

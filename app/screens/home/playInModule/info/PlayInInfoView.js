@@ -15,6 +15,7 @@ const PlayInInfoView = ({
   isAdmin = false,
   closePlayInModal,
   sportName,
+  sportType,
   onSave,
   navigation,
   openPlayInModal,
@@ -38,20 +39,19 @@ const PlayInInfoView = ({
     <TCThickDivider />
 
     {/*  NTRP */}
-    {['tennis', 'tennis double']?.includes(sportName.toLowerCase())
-          ? <>
-            <PlaysInNTRP
+    {sportName === 'tennis' && (sportType === 'double' || sportType === 'single') ? <>
+      <PlaysInNTRP
                   onSave={onSave}
                   sportName={sportName}
                   isAdmin={isAdmin}
                   currentUserData={currentUserData}
               />
-            <TCThickDivider/>
-          </>
+      <TCThickDivider/>
+    </>
         : null}
 
     {/*  Home Place */}
-    {sportName.toLowerCase() === 'tennis' ? (
+    {sportName === 'tennis' ? (
       <>
         <PlaysInHomePlace
                   onSave={onSave}

@@ -63,18 +63,21 @@ export default function RefereeFee({ navigation, route }) {
           },
         };
         setloading(true);
-        const registerdRefereeData = authContext?.user?.referee_data?.filter(
-          (obj) => obj.sport_name !== sportName,
+        const registerdRefereeData = authContext?.entity?.obj?.referee_data?.filter(
+          (obj) => obj?.sport !== sportName,
         );
 
-        const selectedSport = authContext?.user?.referee_data?.filter(
-          (obj) => obj.sport_name === sportName,
+        let selectedSport = authContext?.entity?.obj?.referee_data?.filter(
+          (obj) => obj?.sport === sportName,
         )[0];
 
-        selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+        selectedSport = {
+          ...selectedSport,
+          setting: { ...selectedSport?.setting, ...bodyParams },
+        }
         registerdRefereeData.push(selectedSport);
 
-        const body = { ...authContext?.user, referee_data: registerdRefereeData };
+        const body = { ...authContext?.entity?.obj, referee_data: registerdRefereeData };
         console.log('Body::::--->', body);
 
         patchPlayer(body, authContext)
@@ -91,7 +94,7 @@ export default function RefereeFee({ navigation, route }) {
               await Utility.setStorage('authContextEntity', { ...entity });
               navigation.navigate(comeFrom, {
                 settingObj: response.payload.referee_data.filter(
-                  (obj) => obj.sport_name === sportName,
+                  (obj) => obj.sport === sportName,
                 )[0].setting,
               });
             } else {

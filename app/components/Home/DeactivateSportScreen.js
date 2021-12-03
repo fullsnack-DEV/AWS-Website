@@ -25,13 +25,13 @@ import {
 import images from '../../Constants/ImagePath';
 
 export default function DeactivateSportScreen({ navigation, route }) {
-  const { sport_name, type } = route?.params ?? {};
+  const { sportName, type } = route?.params ?? {};
   const authContext = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
 
   const [loading, setloading] = useState(false);
 
-  console.log('Entity sport_name: => ', sport_name);
+  console.log('Entity SportName: => ', sportName);
 
   const patchPlayerIn = () => {
     setloading(true);
@@ -40,7 +40,7 @@ export default function DeactivateSportScreen({ navigation, route }) {
       authContext?.entity?.obj?.sport_setting?.activity_order
       || authContext?.entity?.obj?.registered_sports
     )?.filter(
-      (obj) => obj.sport_name.toLowerCase() === sport_name.toLowerCase(),
+      (obj) => obj.sport === sportName,
     )[0];
 
     const modifiedObj = {
@@ -50,7 +50,7 @@ export default function DeactivateSportScreen({ navigation, route }) {
     const players = (
       authContext?.entity?.obj?.sport_setting?.activity_order
       || authContext?.entity?.obj?.registered_sports
-    ).map((u) => (u.sport_name !== modifiedObj.sport_name ? u : modifiedObj));
+    ).map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
 
     patchPlayer({ registered_sports: players }, authContext)
       .then(async (res) => {
@@ -72,13 +72,13 @@ export default function DeactivateSportScreen({ navigation, route }) {
   const patchScorekeeper = () => {
     setloading(true);
     const selectedScorekeeperSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
-      (obj) => obj.sport_name.toLowerCase() === sport_name.toLowerCase(),
+      (obj) => obj.sport === sportName,
     )[0];
     const modifiedObj = {
       ...selectedScorekeeperSport,
       is_published: false, //! item.is_published,
     };
-    const scorekeepers = authContext?.entity?.obj?.scorekeeper_data.map((u) => (u.sport_name !== modifiedObj.sport_name ? u : modifiedObj));
+    const scorekeepers = authContext?.entity?.obj?.scorekeeper_data.map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
 
     patchRegisterScorekeeperDetails(
       { scorekeeper_data: scorekeepers },
@@ -104,14 +104,14 @@ export default function DeactivateSportScreen({ navigation, route }) {
   const patchReferee = () => {
     setloading(true);
     const selectedRefereeSport = authContext?.entity?.obj?.referee_data?.filter(
-      (obj) => obj.sport_name.toLowerCase() === sport_name.toLowerCase(),
+      (obj) => obj.sport === sportName,
     )[0];
 
     const modifiedObj = {
       ...selectedRefereeSport,
       is_published: false, //! item.is_published,
     };
-    const referees = authContext?.entity?.obj?.referee_data.map((u) => (u.sport_name !== modifiedObj.sport_name ? u : modifiedObj));
+    const referees = authContext?.entity?.obj?.referee_data.map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
     patchRegisterRefereeDetails({ referee_data: referees }, authContext)
       .then(async (res) => {
         setloading(false);
@@ -132,13 +132,13 @@ export default function DeactivateSportScreen({ navigation, route }) {
 
   const getSpportText = () => {
     if (type === 'referee') {
-      return `${sport_name} in Referee deactivated`;
+      return `${sportName} in Referee deactivated`;
     }
     if (type === 'scorekeeper') {
-      return `${sport_name} in Scorekeeper deactivated`;
+      return `${sportName} in Scorekeeper deactivated`;
     }
     if (type === 'player') {
-      return `${sport_name} in Playing deactivated`;
+      return `${sportName} in Playing deactivated`;
     }
     return null;
   };
@@ -168,7 +168,7 @@ export default function DeactivateSportScreen({ navigation, route }) {
             // Alert.alert('',
             //   'Please leave all clubs, leagues and seasons before you deactivate Tennis Singles.');
             Alert.alert(
-              `Are you sure you want to deactivate ${sport_name}?`,
+              `Are you sure you want to deactivate ${sportName}?`,
               '',
               [
                 {

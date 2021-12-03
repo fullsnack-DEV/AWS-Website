@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import React, {
  useState, useEffect, useContext, useCallback,
- } from 'react';
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -26,25 +26,31 @@ export default function ManageChallengeScreen({ navigation, route }) {
   const [showBottomNotes, setShowBottomNotes] = useState(true);
   const authContext = useContext(AuthContext);
 
-  const { sportName } = route?.params;
+  const { sportName, sportType } = route?.params;
 
   const getSettings = useCallback(() => {
     if (authContext.entity.role === 'team') {
       console.log('Au:::=>', authContext);
       setSettingObject(authContext?.entity?.obj?.setting);
     }
-    if (authContext.entity.role === 'player' || authContext.entity.role === 'user') {
-      console.log('Au1212121212:::=>', (authContext?.user?.registered_sports ?? []).filter(
-        (obj) => obj.sport_name === sportName,
-      )?.[0].setting);
+    if (
+      authContext.entity.role === 'player'
+      || authContext.entity.role === 'user'
+    ) {
+      console.log(
+        'Au1212121212:::=>',
+        (authContext?.entity?.obj?.registered_sports ?? []).filter(
+          (obj) => obj.sport === sportName && obj.sport_type === sportType,
+        )?.[0]?.setting,
+      );
 
       setSettingObject(
-        (authContext?.user?.registered_sports ?? []).filter(
-          (obj) => obj.sport_name === sportName,
-        )?.[0].setting,
+        (authContext?.entity?.obj?.registered_sports ?? []).filter(
+          (obj) => obj.sport === sportName && obj.sport_type === sportType,
+        )?.[0]?.setting,
       );
     }
-  }, [authContext, sportName]);
+  }, [authContext, sportName, sportType]);
 
   useEffect(() => {
     if (route?.params?.settingObj) {
@@ -73,11 +79,13 @@ export default function ManageChallengeScreen({ navigation, route }) {
           settingObj: settingObject,
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       } else {
         navigation.navigate('Availibility', {
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       }
     } else if (opetions === 'Game Type') {
@@ -86,11 +94,13 @@ export default function ManageChallengeScreen({ navigation, route }) {
           settingObj: settingObject,
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       } else {
         navigation.navigate('GameType', {
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       }
     } else if (opetions === 'Game Fee') {
@@ -99,11 +109,13 @@ export default function ManageChallengeScreen({ navigation, route }) {
           settingObj: settingObject,
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       } else {
         navigation.navigate('GameFee', {
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       }
     } else if (opetions === 'Refund Policy') {
@@ -112,11 +124,13 @@ export default function ManageChallengeScreen({ navigation, route }) {
           settingObj: settingObject,
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       } else {
         navigation.navigate('RefundPolicy', {
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       }
     } else if (opetions === 'Home & Away') {
@@ -125,11 +139,13 @@ export default function ManageChallengeScreen({ navigation, route }) {
           settingObj: settingObject,
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       } else {
         navigation.navigate('HomeAway', {
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       }
     } else if (opetions === 'Game Duration') {
@@ -139,11 +155,13 @@ export default function ManageChallengeScreen({ navigation, route }) {
           settingObj: settingObject,
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       } else {
         navigation.navigate('GameDuration', {
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       }
     } else if (opetions === 'Venue') {
@@ -152,11 +170,13 @@ export default function ManageChallengeScreen({ navigation, route }) {
           settingObj: settingObject,
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       } else {
         navigation.navigate('Venue', {
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       }
     } else if (opetions === 'Game Rules') {
@@ -165,11 +185,13 @@ export default function ManageChallengeScreen({ navigation, route }) {
           settingObj: settingObject,
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       } else {
         navigation.navigate('GameRules', {
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       }
     } else if (opetions === 'Referees') {
@@ -178,11 +200,13 @@ export default function ManageChallengeScreen({ navigation, route }) {
           settingObj: settingObject,
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       } else {
         navigation.navigate('RefereesSetting', {
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       }
     } else if (opetions === 'Scorekeepers') {
@@ -191,11 +215,13 @@ export default function ManageChallengeScreen({ navigation, route }) {
           settingObj: settingObject,
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       } else {
         navigation.navigate('ScorekeepersSetting', {
           comeFrom: 'ManageChallengeScreen',
           sportName,
+          sportType,
         });
       }
     }

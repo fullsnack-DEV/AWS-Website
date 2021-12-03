@@ -51,18 +51,21 @@ import React, {
         console.log('data::=>', bodyParams);
 
         setloading(true);
-        const registerdScorekeeperData = authContext?.user?.scorekeeper_data?.filter(
-          (obj) => obj.sport_name !== sportName,
+        const registerdScorekeeperData = authContext?.entity?.obj?.scorekeeper_data?.filter(
+          (obj) => obj?.sport !== sportName,
         );
 
-        const selectedSport = authContext?.user?.scorekeeper_data?.filter(
-          (obj) => obj.sport_name === sportName,
+        let selectedSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
+          (obj) => obj?.sport === sportName,
         )[0];
 
-        selectedSport.setting = { ...selectedSport?.setting, ...bodyParams };
+        selectedSport = {
+          ...selectedSport,
+          setting: { ...selectedSport?.setting, ...bodyParams },
+        }
         registerdScorekeeperData.push(selectedSport);
 
-        const body = { ...authContext?.user, scorekeeper_data: registerdScorekeeperData };
+        const body = { ...authContext?.entity?.obj, scorekeeper_data: registerdScorekeeperData };
         console.log('Body::::--->', body);
 
         patchPlayer(body, authContext)
@@ -79,7 +82,7 @@ import React, {
               await Utility.setStorage('authContextEntity', { ...entity });
               navigation.navigate(comeFrom, {
                 settingObj: response.payload.scorekeeper_data.filter(
-                  (obj) => obj.sport_name === sportName,
+                  (obj) => obj.sport === sportName,
                 )[0].setting,
               });
             } else {

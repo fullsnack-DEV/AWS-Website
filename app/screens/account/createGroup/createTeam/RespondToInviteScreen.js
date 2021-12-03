@@ -21,7 +21,7 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import TCPlayerImageInfo from '../../../../components/TCPlayerImageInfo';
 import TCSmallButton from '../../../../components/TCSmallButton';
-import { widthPercentageToDP } from '../../../../utils';
+import { getSportName, widthPercentageToDP } from '../../../../utils';
 import TeamStatus from './TeamStatus';
 
 export default function RespondToInviteScreen({ navigation, route }) {
@@ -52,19 +52,19 @@ export default function RespondToInviteScreen({ navigation, route }) {
         // } else {
 
         console.log('Team created res:=>', response.payload);
-          if (type === 'accept') {
-            navigation.push('HomeScreen', {
-              uid: response.payload.group_id,
-              role: response.payload.entity_type,
-              backButtonVisible: false,
-              menuBtnVisible: false,
-              isEntityCreated: true,
-              groupName: response.payload.group_name,
-              entityObj: response.payload,
-            });
-          } else {
-            navigation.goBack()
-          }
+        if (type === 'accept') {
+          navigation.push('HomeScreen', {
+            uid: response.payload.group_id,
+            role: response.payload.entity_type,
+            backButtonVisible: false,
+            menuBtnVisible: false,
+            isEntityCreated: true,
+            groupName: response.payload.group_name,
+            entityObj: response.payload,
+          });
+        } else {
+          navigation.goBack();
+        }
 
         // }
       })
@@ -104,7 +104,7 @@ export default function RespondToInviteScreen({ navigation, route }) {
 
         <TCInfoField
           title={'Sport'}
-          value={teamObject?.sport}
+          value={getSportName(teamObject, authContext)}
           marginLeft={25}
           marginTop={30}
         />
@@ -154,7 +154,9 @@ export default function RespondToInviteScreen({ navigation, route }) {
 
             <TCInfoField
               title={'Members’ ages'}
-              value={`Min ${teamObject?.min_age} Max ${teamObject?.max_age}`}
+              value={`Min ${teamObject?.min_age ?? 'N/A'} Max ${
+                teamObject?.max_age ?? 'N/A'
+              }`}
               marginLeft={25}
             />
             <TCThinDivider marginTop={5} marginBottom={3} />
@@ -177,7 +179,7 @@ export default function RespondToInviteScreen({ navigation, route }) {
 
         <View style={{ flex: 1 }} />
       </ScrollView>
-      {teamObject?.status ? (
+      {teamObject?.status !== TeamStatus.new ? (
         <Text
           style={{
             marginBottom: 50,

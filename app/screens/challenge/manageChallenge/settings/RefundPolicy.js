@@ -31,7 +31,7 @@ export default function RefundPolicy({ navigation, route }) {
     { key: strings.moderateText, id: 2 },
     { key: strings.flexibleText, id: 3 },
   ];
-  const { comeFrom, sportName } = route?.params;
+  const { comeFrom, sportName, sportType } = route?.params;
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -83,22 +83,31 @@ export default function RefundPolicy({ navigation, route }) {
   const saveUser = () => {
     const bodyParams = {
       sport: sportName,
+      sport_type: sportType,
       entity_type: 'player',
       refund_policy: typeSelection.key,
     };
     setloading(true);
-    const registerdPlayerData = authContext?.user?.registered_sports?.filter(
-      (obj) => obj.sport_name !== sportName,
-    );
+    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => {
+        if (obj.sport === sportName && obj.sport_type === sportType) {
+          return null
+        }
+        return obj
+      },
+  );
 
-    const selectedSport = authContext?.user?.registered_sports?.filter(
-      (obj) => obj.sport_name === sportName,
+    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
     )[0];
 
-    selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+    selectedSport = {
+      ...selectedSport,
+      setting: { ...selectedSport?.setting, ...bodyParams },
+    }
     registerdPlayerData.push(selectedSport);
 
-    const body = { ...authContext?.user, registered_sports: registerdPlayerData };
+    const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
@@ -115,8 +124,8 @@ export default function RefundPolicy({ navigation, route }) {
           await Utility.setStorage('authContextEntity', { ...entity });
           navigation.navigate(comeFrom, {
             settingObj: response.payload.registered_sports.filter(
-              (obj) => obj.sport_name === sportName,
-            )[0].setting,
+              (obj) => obj.sport === sportName && obj.sport_type === sportType,
+              )[0].setting,
           });
         } else {
           Alert.alert('Towns Cup', response.messages);
@@ -135,6 +144,7 @@ export default function RefundPolicy({ navigation, route }) {
   const saveTeam = () => {
     const bodyParams = {
       sport: sportName,
+      sport_type: sportType,
       entity_type: 'team',
       refund_policy: typeSelection.key,
     };

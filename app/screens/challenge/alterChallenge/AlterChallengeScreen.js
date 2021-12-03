@@ -22,7 +22,7 @@ import Modal from 'react-native-modal';
 import * as Utility from '../../../utils';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import {
- acceptDeclineAlterChallenge, acceptDeclineChallenge, getFeesEstimation, updateChallenge,
+ acceptDeclineAlterChallenge, acceptDeclineChallenge, getFeesEstimation,
 } from '../../../api/Challenge';
 import { paymentMethods } from '../../../api/Users';
 
@@ -97,6 +97,7 @@ export default function AlterChallengeScreen({ navigation, route }) {
       authContext.entity.role === 'user' ? 'player' : 'team',
       bodyParams?.sport,
       authContext,
+      bodyParams?.sport_type,
     ).then((response) => {
       setloading(false);
       console.log('manage challenge response:=>', response);
@@ -267,6 +268,7 @@ export default function AlterChallengeScreen({ navigation, route }) {
       authContext.entity.role === 'user' ? 'player' : 'team',
       sportName,
       authContext,
+
     )
       .then((response) => {
         setloading(false);

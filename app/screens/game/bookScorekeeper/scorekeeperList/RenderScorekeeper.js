@@ -15,11 +15,11 @@ import {
    onRadioClick,
  }) => {
    let sportObj = data?.scorekeeper_data?.filter(
-     (o) => o?.sport_name?.toLowerCase() === sport?.toLowerCase(),
+     (o) => o?.sport === sport,
    );
    if (sportObj.length === 1) {
      sportObj = data?.scorekeeper_data?.filter(
-       (o) => o?.sport_name?.toLowerCase() === sport?.toLowerCase(),
+       (o) => o?.sport === sport,
      );
    } else {
      sportObj = data?.scorekeeper_data;

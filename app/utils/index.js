@@ -1,3 +1,5 @@
+/* eslint-disable space-before-blocks */
+/* eslint-disable no-else-return */
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
 /* eslint-disable no-underscore-dangle */
@@ -22,7 +24,9 @@ import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 // eslint-disable-next-line import/no-cycle
 import {
- getCalendarIndex, getGroupIndex, getUserIndex,
+  getCalendarIndex,
+  getGroupIndex,
+  getUserIndex,
 } from '../api/elasticSearch';
 
 export const deviceHeight = Dimensions.get('window').height;
@@ -534,7 +538,9 @@ export const getHitSlop = (slopValue) => {
       right: slopValue,
       left: slopValue,
     };
-  } else if (typeof slopValue === 'object') { hitSlop = { ...hitSlop, ...slopValue }; }
+  } else if (typeof slopValue === 'object') {
+    hitSlop = { ...hitSlop, ...slopValue };
+  }
   return hitSlop;
 };
 
@@ -604,14 +610,18 @@ export const getTaggedText = (format_tagged_data) => {
     matchLengthText = '';
   if (entityTagsListLength > 0) entityLengthText = `${entityTagsListLength} `;
   if (gameTagsListLength > 0) matchLengthText = `${gameTagsListLength} `;
-  if (gameTagsListLength > 0) { matchText = gameTagsListLength > 1 ? 'matches ' : 'match '; }
-  if (entityTagsListLength > 0) { entityText = entityTagsListLength > 1 ? 'people  ' : 'person '; }
+  if (gameTagsListLength > 0) {
+    matchText = gameTagsListLength > 1 ? 'matches ' : 'match ';
+  }
+  if (entityTagsListLength > 0) {
+    entityText = entityTagsListLength > 1 ? 'people  ' : 'person ';
+  }
   if (gameTagsListLength > 0 && entityTagsListLength > 0) betweenText = 'and ';
   if (entityTagsListLength + gameTagsListLength > 0) {
- lastText = entityTagsListLength + gameTagsListLength > 1
+    lastText = entityTagsListLength + gameTagsListLength > 1
         ? 'were tagged'
         : 'was tagged';
-}
+  }
   return `${entityLengthText}${entityText}${betweenText}${matchLengthText}${matchText}${lastText}`;
 };
 
@@ -652,7 +662,7 @@ export const stringContainValidURL = (str) => new RegExp(
   ).test(str);
 
 export const getSportIcon = (sport) => {
-  switch (sport.toLowerCase()) {
+  switch (sport) {
     case 'soccer':
       return images.soccerIcon;
     case 'tennis':
@@ -667,15 +677,21 @@ export const roundValue = (value, decimals) => (value ? parseFloat(+value.toFixe
 export const getFiltersOpetions = (opetions) => {
   const arr = [];
   Object.keys(opetions).forEach((key) => {
-    const obj = {}
-    obj[key] = opetions[key]
+    const obj = {};
+    obj[key] = opetions[key];
     arr.push(obj);
   });
 
   return arr;
 };
 
-export const getCalendar = async (participantId, fromDate, toDate, type, blocked) => {
+export const getCalendar = async (
+  participantId,
+  fromDate,
+  toDate,
+  type,
+  blocked,
+) => {
   const body = {
     query: {
       bool: {
@@ -721,11 +737,66 @@ export const getCalendar = async (participantId, fromDate, toDate, type, blocked
     });
   }
 
-   return getCalendarIndex(body).then((response) => {
+  return getCalendarIndex(body).then((response) => {
     console.log('elastic search :=>', response);
 
-     return response
-   });
+    return response;
+  });
+};
+
+export const getSportName = (object, authContext) => {
+  if (object?.sport_type && object?.sport_type !== '') {
+    let sportArr = [];
+    authContext?.sports?.map((item) => {
+      sportArr = [...sportArr, ...item.format];
+      return null;
+    });
+    const filterFormat = sportArr?.filter(
+      (item) => item?.sport_type === object?.sport_type
+        && item?.sport === object?.sport,
+    )[0];
+    return filterFormat?.sport_name;
+  }
+  const filterFormat = authContext?.sports?.filter(
+    (obj) => obj?.sport === object?.sport,
+  )[0];
+
+  return filterFormat?.sport_name;
+};
+
+export const getSportObjectByName = (sportName, authContext) => {
+  let sportArr = [];
+  authContext?.sports?.map((item) => {
+    sportArr = [...sportArr, ...item.format];
+    return null;
+  });
+
+  const filterObject = sportArr?.filter(
+    (item) => item?.sport_name === sportName,
+  )[0];
+  return filterObject;
+};
+
+export const getSportImage = (sportName, type, authContext) => {
+  if (type === 'player') {
+    const tempObj = authContext.sports.filter(
+      (obj) => obj.sport === sportName,
+    )[0];
+    return tempObj.player_image;
+  } else {
+    let sportArr = [];
+    authContext.sports.map((item) => {
+      sportArr = [...sportArr, ...item.format];
+      return null;
+    });
+    const filterFormat = sportArr?.filter((obj) => obj.sport === sportName)[0];
+    if (type === 'referee') {
+      return filterFormat.referee_image;
+    }
+    if (type === 'scorekeeper') {
+      return filterFormat.scorekeeper_image;
+    }
+  }
 };
 
 export const getGamesList = async (games) => {
@@ -768,59 +839,52 @@ export const getGamesList = async (games) => {
   }
 
   if (promiseArr.length > 0) {
-   return Promise.all(promiseArr)
-      .then(([data1, data2]) => {
-        let userData, groupData;
-        if (userIDs.length > 0 && groupIDs.length > 0) {
-          userData = data1;
-          groupData = data2;
-        } else if (userIDs.length > 0) {
-          userData = data1;
-        } else {
-          groupData = data1;
-        }
+    return Promise.all(promiseArr).then(([data1, data2]) => {
+      let userData, groupData;
+      if (userIDs.length > 0 && groupIDs.length > 0) {
+        userData = data1;
+        groupData = data2;
+      } else if (userIDs.length > 0) {
+        userData = data1;
+      } else {
+        groupData = data1;
+      }
 
-        if (userData) {
-          const userGames = (games || []).filter(
-            (game) => game.user_challenge,
+      if (userData) {
+        const userGames = (games || []).filter((game) => game.user_challenge);
+        for (const game of userGames) {
+          let userObj = userData.find(
+            (user) => user.user_id === game.home_team,
           );
-          for (const game of userGames) {
-            let userObj = userData.find(
-              (user) => user.user_id === game.home_team,
-            );
-            if (userObj) {
-              game.home_team = userObj;
-            }
+          if (userObj) {
+            game.home_team = userObj;
+          }
 
-            userObj = userData.find(
-              (user) => user.user_id === game.away_team,
-            );
-            if (userObj) {
-              game.away_team = userObj;
-            }
+          userObj = userData.find((user) => user.user_id === game.away_team);
+          if (userObj) {
+            game.away_team = userObj;
           }
         }
-        if (groupData) {
-          const groupGames = (games || []).filter(
-            (game) => !game.user_challenge,
+      }
+      if (groupData) {
+        const groupGames = (games || []).filter((game) => !game.user_challenge);
+        for (const game of groupGames) {
+          let groupObj = groupData.find(
+            (group) => group.group_id === game.home_team,
           );
-          for (const game of groupGames) {
-            let groupObj = groupData.find(
-              (group) => group.group_id === game.home_team,
-            );
-            if (groupObj) {
-              game.home_team = groupObj;
-            }
+          if (groupObj) {
+            game.home_team = groupObj;
+          }
 
-            groupObj = groupData.find(
-              (group) => group.group_id === game.away_team,
-            );
-            if (groupObj) {
-              game.away_team = groupObj;
-            }
+          groupObj = groupData.find(
+            (group) => group.group_id === game.away_team,
+          );
+          if (groupObj) {
+            game.away_team = groupObj;
           }
         }
-        return games
-      })
-    }
-}
+      }
+      return games;
+    });
+  }
+};

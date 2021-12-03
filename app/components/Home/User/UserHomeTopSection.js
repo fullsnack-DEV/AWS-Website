@@ -3,13 +3,11 @@ import React, {
   memo,
   useCallback,
   useEffect,
-  useMemo,
   useContext,
   // useState,
 } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import strings from '../../../Constants/String';
-import TCEditHeader from '../../TCEditHeader';
 import AuthContext from '../../../auth/context';
 import * as Utility from '../../../utils';
 
@@ -23,7 +21,6 @@ import UserInfoScorekeeperInItem from './UserInfoScorekeeperInItem';
 import EntityStatus from '../../../Constants/GeneralConstants';
 
 let image_url = '';
-let sportsData = [];
 const UserHomeTopSection = ({
   userDetails,
   isAdmin,
@@ -43,10 +40,6 @@ const UserHomeTopSection = ({
   //   ],
   // );
 
-  Utility.getStorage('sportsList').then((list) => {
-    console.log('list:=>>', list);
-    sportsData = list;
-  });
   Utility.getStorage('appSetting').then((setting) => {
     console.log('APPSETTING:=', setting);
     image_url = setting.base_url_sporticon;
@@ -123,12 +116,12 @@ const UserHomeTopSection = ({
     }
     return (
       <UserInfoPlaysInItem
-        title={item.sport_name}
+        title={Utility.getSportName(item, authContext)}
         totalGames={item.totalGames}
         thumbURL={
           item?.type
             ? {
-                uri: `${image_url}${getSportImage(item.sport_name, item.type)}`,
+                uri: `${image_url}${Utility.getSportImage(item.sport, item.type, authContext)}`,
               }
             : images.addRole
         }
@@ -147,13 +140,14 @@ const UserHomeTopSection = ({
 
       return (
         <UserInfoRefereesInItem
-          title={item.sport_name}
+          title={Utility.getSportName(item, authContext)}
           thumbURL={
             item?.type
               ? {
-                  uri: `${image_url}${getSportImage(
-                    item.sport_name,
+                  uri: `${image_url}${Utility.getSportImage(
+                    item.sport,
                     item.type,
+                    authContext,
                   )}`,
                 }
               : images.addRole
@@ -175,13 +169,14 @@ const UserHomeTopSection = ({
 
       return (
         <UserInfoScorekeeperInItem
-          title={item.sport_name}
+          title={Utility.getSportName(item, authContext)}
           thumbURL={
             item?.type
               ? {
-                  uri: `${image_url}${getSportImage(
-                    item.sport_name,
+                  uri: `${image_url}${Utility.getSportImage(
+                    item.sport,
                     item.type,
+                    authContext,
                   )}`,
                 }
               : images.addRole
@@ -200,7 +195,7 @@ const UserHomeTopSection = ({
       if (isAdmin) {
         return (
           <UserInfoAddRole
-            title={item.sport_name}
+            title={Utility.getSportName(item, authContext)}
             thumbURL={images.addRole}
             onPress={() => {
               if (onRefereesInPress) onRefereesInPress();
@@ -210,7 +205,7 @@ const UserHomeTopSection = ({
       }
       return null;
     },
-    [isAdmin, onRefereesInPress],
+    [authContext, isAdmin, onRefereesInPress],
   );
 
   const renderAddScorekeeperRole = useCallback(
@@ -218,7 +213,7 @@ const UserHomeTopSection = ({
       if (isAdmin) {
         return (
           <UserInfoAddRole
-            title={item.sport_name}
+            title={Utility.getSportName(item, authContext)}
             thumbURL={images.addRole}
             onPress={() => {
               if (onScorekeeperInPress) {
@@ -230,7 +225,7 @@ const UserHomeTopSection = ({
       }
       return null;
     },
-    [isAdmin, onScorekeeperInPress],
+    [authContext, isAdmin, onScorekeeperInPress],
   );
 
   const renderAddPlayInRole = useCallback(
@@ -238,7 +233,7 @@ const UserHomeTopSection = ({
       if (isAdmin) {
         return (
           <UserInfoAddRole
-            title={item.sport_name}
+            title={Utility.getSportName(item, authContext)}
             thumbURL={images.addRole}
             onPress={() => {
               if (onPlayInPress) {
@@ -250,56 +245,11 @@ const UserHomeTopSection = ({
       }
       return null;
     },
-    [isAdmin, onPlayInPress],
+    [authContext, isAdmin, onPlayInPress],
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
-  // eslint-disable-next-line no-unused-vars
-  const renderPlayInGames = useMemo(
-    () => userDetails?.games?.length > 0 && (
-      <View>
-        <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
-          <TCEditHeader
-              containerStyle={{ marginHorizontal: 15 }}
-              title={strings.playin}
-            />
-          <FlatList
-              style={{ marginTop: 10, marginBottom: 0 }}
-              data={[
-                ...userDetails.games,
-                {
-                  sport_name: strings.addPlaying,
-                  item_type: EntityStatus.addNew,
-                },
-              ]}
-              horizontal
-              renderItem={renderPlayIn}
-              keyExtractor={(item, index) => index.toString()}
-              showsHorizontalScrollIndicator={false}
-            />
-        </View>
-      </View>
-      ),
-    [userDetails.games],
-  );
-
-  const getSportImage = (sportName, type) => {
-    if (
-      sportsData.filter(
-        (obj) => obj.sport_name.toLowerCase() === sportName.toLowerCase(),
-      ).length > 0
-    ) {
-      const tempObj = sportsData.filter(
-        (obj) => obj.sport_name.toLowerCase() === sportName.toLowerCase(),
-      )[0];
-
-      if (type === 'player') return tempObj.player_image;
-      if (type === 'referee') return tempObj.referee_image;
-      if (type === 'scorekeeper') return tempObj.scorekeeper_image;
-    }
-    return null;
-  };
   return (
     <View style={{ paddingTop: 20, paddingBottom: 20 }}>
       <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>

@@ -1,4 +1,6 @@
-import React, {useCallback, useState, useEffect, useLayoutEffect} from 'react';
+import React, {
+ useCallback, useState, useEffect, useLayoutEffect, useContext,
+ } from 'react';
 import {
   View,
   StyleSheet,
@@ -21,15 +23,16 @@ import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import SportsListView from '../../components/localHome/SportsListView';
+import AuthContext from '../../auth/context';
 
 let selectedSports = [];
 
-export default function SportSettingScreen({navigation, route}) {
-  const {sports} = route?.params ?? {};
+export default function SportSettingScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext);
   const [systemSports, setSystemSports] = useState([]);
 
   const [sportsListPopup, setSportsListPopup] = useState(false);
-  const [sportsSource, setSportsSource] = useState(sports);
+  const [sportsSource, setSportsSource] = useState(route?.params?.sports);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -43,7 +46,7 @@ export default function SportSettingScreen({navigation, route}) {
 
   useEffect(() => {
     if (route?.params?.sports) {
-      setSportsSource([...route?.params?.sports]);
+      setSportsSource(route?.params?.sports);
     }
   }, [route?.params?.sports]);
   const onPressSave = () => {
@@ -54,24 +57,20 @@ export default function SportSettingScreen({navigation, route}) {
   };
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const renderSportsView = useCallback(
-    ({item, drag}) =>
-      item.sport_name !== 'All' && (
-        <View style={styles.sportsBackgroundView}>
-          <View style={{flexDirection: 'row'}}>
-            <Image source={images.gameGoal} style={styles.sportsIcon} />
-            <Text style={styles.sportNameTitle}>{item.sport_name}</Text>
-          </View>
-          <TouchableOpacity onLongPress={drag} style={{alignSelf: 'center'}}>
-            <Image source={images.moveIcon} style={styles.moveIconStyle} />
-          </TouchableOpacity>
+    ({ item }) => item.sport !== 'All' && (
+      <View style={styles.sportsBackgroundView}>
+        <View style={{ flexDirection: 'row' }}>
+          <Image source={images.gameGoal} style={styles.sportsIcon} />
+          <Text style={styles.sportNameTitle}>{Utility.getSportName(item, authContext)}</Text>
         </View>
+      </View>
       ),
     [],
   );
 
-  const isIconCheckedOrNot = useCallback(
-    ({item, index}) => {
-      if (item.sport_name === 'All') {
+  const isIconCheckedOrNot = useCallback(({ item, index }) => {
+      if (item.sport === 'All') {
+
         if (item.isChecked) {
           systemSports[index].isChecked = false;
           systemSports.forEach((x, i) => {
@@ -97,7 +96,7 @@ export default function SportSettingScreen({navigation, route}) {
       }
       setSystemSports([...systemSports]);
       selectedSports = systemSports.filter(
-        (e) => e.isChecked && e.sport_name !== 'All',
+        (e) => e.isChecked && e.sport !== 'All',
       );
       console.log('Slected sports', selectedSports);
     },
@@ -165,7 +164,7 @@ export default function SportSettingScreen({navigation, route}) {
                   ...[
                     {
                       isChecked: true,
-                      sport_name: 'All',
+                      sport: 'All',
                     },
                   ],
                   ...selectedSports,
@@ -195,13 +194,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
   },
-  moveIconStyle: {
-    resizeMode: 'cover',
-    height: 13,
-    width: 15,
-    alignSelf: 'center',
-    marginRight: 15,
-  },
+ 
   sportNameTitle: {
     fontSize: 16,
     fontFamily: fonts.RRegular,

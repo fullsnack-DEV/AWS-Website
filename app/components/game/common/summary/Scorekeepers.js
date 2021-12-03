@@ -284,7 +284,7 @@ const Scorekeepers = ({
     if (
       authContext.entity.role === 'user'
       && authContext?.entity?.auth?.user?.scorekeeper_data.filter(
-        (obj) => obj?.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase(),
+        (obj) => obj?.sport === gameData?.sport,
       ).length > 0
       && scorekeeper.filter((obj) => obj.scorekeeper_id === authContext.entity.uid)
         .length === 0

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable array-callback-return */
 /* eslint-disable no-empty */
 /* eslint-disable no-console */
@@ -608,6 +609,7 @@ const HomeScreen = ({navigation, route}) => {
               authContext.entity.role,
               groupDetails.sport,
               authContext,
+              authContext.entity.role === ('user' || 'player') ? groupDetails.sport_type : '',
             )
             .then((res3) => {
               setSettingObject(res3);
@@ -1158,7 +1160,7 @@ const HomeScreen = ({navigation, route}) => {
         let languagesListName = [];
         if (currentUserData) {
           currentUserData.scorekeeper_data.map((scorekeeperItem) => {
-            if (scorekeeperItem.sport_name === scorekeeperInObject.sport_name) {
+            if (scorekeeperItem.sport === scorekeeperInObject.sport) {
               setSelectScorekeeperData(scorekeeperItem);
               languagesListName = scorekeeperItem.language;
             }
@@ -1175,11 +1177,11 @@ const HomeScreen = ({navigation, route}) => {
           setLanguagesName(language_string);
         }
         setScorekeeperInModalVisible(!scorekeeperInModalVisible);
-        setSportName(scorekeeperInObject.sport_name);
+        setSportName(scorekeeperInObject.sport);
 
         getScorekeeperMatch(
           entity.uid || entity.auth.user_id,
-          scorekeeperInObject.sport_name,
+          scorekeeperInObject.sport,
           authContext,
         )
           .then((res) => {
@@ -1213,7 +1215,7 @@ const HomeScreen = ({navigation, route}) => {
 
         getScorekeeperReviewData(
           route?.params?.uid || entity.uid,
-          scorekeeperInObject.sport_name,
+          scorekeeperInObject.sport,
           authContext,
         )
           .then((res) => {
@@ -1248,7 +1250,7 @@ const HomeScreen = ({navigation, route}) => {
           .getSetting(
             route?.params?.uid || entity.uid,
             'scorekeeper',
-            scorekeeperInObject.sport_name,
+            scorekeeperInObject.sport,
             authContext,
           )
           .then((response) => {
@@ -1276,7 +1278,7 @@ const HomeScreen = ({navigation, route}) => {
         let languagesListName = [];
         if (currentUserData) {
           currentUserData.referee_data.map((refereeItem) => {
-            if (refereeItem.sport_name === refereeInObject.sport_name) {
+            if (refereeItem.sport === refereeInObject.sport) {
               setSelectRefereeData(refereeItem);
               languagesListName = refereeItem.language;
             }
@@ -1292,11 +1294,11 @@ const HomeScreen = ({navigation, route}) => {
           setLanguagesName(language_string);
         }
         setRefereesInModalVisible(!refereesInModalVisible);
-        setSportName(refereeInObject.sport_name);
+        setSportName(refereeInObject.sport);
 
         getRefereedMatch(
           entity.uid || entity.auth.user_id,
-          refereeInObject.sport_name,
+          refereeInObject.sport,
           authContext,
         )
           .then((res) => {
@@ -1329,7 +1331,7 @@ const HomeScreen = ({navigation, route}) => {
 
         getRefereeReviewData(
           route?.params?.uid || entity.uid,
-          refereeInObject.sport_name,
+          refereeInObject.sport,
           authContext,
         )
           .then((res) => {
@@ -1364,7 +1366,7 @@ const HomeScreen = ({navigation, route}) => {
           .getSetting(
             route?.params?.uid || entity.uid,
             'referee',
-            refereeInObject.sport_name,
+            refereeInObject.sport,
             authContext,
           )
           .then((response) => {
@@ -1525,7 +1527,7 @@ const HomeScreen = ({navigation, route}) => {
 
                 if (res.payload.referee_data) {
                   res.payload.referee_data.map((refereeItem) => {
-                    if (refereeItem.sport_name === sportName) {
+                    if (refereeItem.sport === sportName) {
                       setSelectRefereeData(refereeItem);
                       languagesListName = refereeItem.language;
                     }
@@ -1627,7 +1629,7 @@ const HomeScreen = ({navigation, route}) => {
 
                 if (res.payload.scorekeeper_data) {
                   res.payload.scorekeeper_data.map((scorekeeperItem) => {
-                    if (scorekeeperItem.sport_name === sportName) {
+                    if (scorekeeperItem.sport === sportName) {
                       setSelectRefereeData(scorekeeperItem);
                       languagesListName = scorekeeperItem.language;
                     }
@@ -2600,12 +2602,10 @@ const HomeScreen = ({navigation, route}) => {
     console.log('Auth:=>', authContext.entity);
     console.log('Team data:::::=>', currentUserData);
     a = authContext?.entity?.obj?.referee_data?.filter(
-      (obj) =>
-        obj.sport_name.toLowerCase() === currentUserData?.sport?.toLowerCase(),
+      (obj) => obj.sport === currentUserData?.sport,
     );
     b = authContext?.entity?.obj?.scorekeeper_data?.filter(
-      (obj) =>
-        obj.sport_name.toLowerCase() === currentUserData?.sport?.toLowerCase(),
+      (obj) => obj.sport === currentUserData?.sport,
     );
 
     if (a?.length > 0) {
@@ -3183,13 +3183,13 @@ const HomeScreen = ({navigation, route}) => {
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-        setSportsSelection(item?.sport_name);
+        setSportsSelection(item);
         setVisibleSportsModal(false);
 
         setTimeout(() => {
-          console.log('Sport name:=>', item?.sport_name);
+          console.log('Sport name:=>', item.sport);
           navigation.navigate('ManageChallengeScreen', {
-            sportName: item?.sport_name,
+            sportName: item.sport,
           });
         }, 300);
       }}>
@@ -3200,9 +3200,9 @@ const HomeScreen = ({navigation, route}) => {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item.sport_name}</Text>
+        <Text style={styles.languageList}>{Utility.getSportName(item, authContext)}</Text>
         <View style={styles.checkbox}>
-          {sportsSelection === item?.sport_name ? (
+          {sportsSelection.sport === item?.sport ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -4022,7 +4022,7 @@ const HomeScreen = ({navigation, route}) => {
 
                         if (res.payload.referee_data) {
                           res.payload.referee_data.map((refereeItem) => {
-                            if (refereeItem.sport_name === sportName) {
+                            if (refereeItem.sport === sportName) {
                               setSelectRefereeData(refereeItem);
                               languagesListName = refereeItem.language;
                             }
@@ -4573,7 +4573,7 @@ const HomeScreen = ({navigation, route}) => {
                         if (res.payload.scorekeeper_data) {
                           res.payload.scorekeeper_data.map(
                             (scorekeeperItem) => {
-                              if (scorekeeperItem.sport_name === sportName) {
+                              if (scorekeeperItem.sport === sportName) {
                                 setSelectScorekeeperData(scorekeeperItem);
                                 languagesListName = scorekeeperItem.language;
                               }
@@ -5196,9 +5196,10 @@ const HomeScreen = ({navigation, route}) => {
               settingUtils
                 .getSetting(
                   authContext?.entity?.uid,
-                  authContext.entity.role === 'user' ? 'player' : 'team',
+                  authContext.entity.role === ('user' || 'player') ? 'player' : 'team',
                   currentUserData.sport,
                   authContext,
+                  currentUserData.sport_type,
                 )
                 .then((response) => {
                   setloading(false);

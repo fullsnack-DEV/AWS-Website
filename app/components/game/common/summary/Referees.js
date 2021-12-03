@@ -308,7 +308,7 @@ const Referees = ({
       if (
         authContext.entity.role === 'user'
         && authContext?.entity?.auth?.user?.referee_data.filter(
-          (obj) => obj?.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase(),
+          (obj) => obj?.sport === gameData?.sport,
         ).length > 0
         && refree.filter((obj) => obj.referee_id === authContext.entity.uid)
           .length === 0

@@ -34,7 +34,7 @@ export default function RefereesSetting({ navigation, route }) {
     'route?.params?.settingObj?.responsible_for_referee',
     route?.params?.settingObj?.responsible_for_referee,
   );
-  const { comeFrom, sportName } = route?.params;
+  const { comeFrom, sportName, sportType } = route?.params;
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -283,6 +283,7 @@ export default function RefereesSetting({ navigation, route }) {
     if (selection === 'None') {
       bodyParams = {
         sport: sportName,
+        sport_type: sportType,
         entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
         responsible_for_referee: {
           who_secure: 'None',
@@ -299,6 +300,7 @@ export default function RefereesSetting({ navigation, route }) {
 
       bodyParams = {
         sport: sportName,
+        sport_type: sportType,
         entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
         responsible_for_referee: {
           who_secure: referee.map((e) => {
@@ -313,18 +315,26 @@ export default function RefereesSetting({ navigation, route }) {
     console.log('Referee secure:=>', bodyParams);
 
     setloading(true);
-    const registerdPlayerData = authContext?.user?.registered_sports?.filter(
-      (obj) => obj.sport_name !== sportName,
-    );
+    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => {
+        if (obj.sport === sportName && obj.sport_type === sportType) {
+          return null
+        }
+        return obj
+      },
+  );
 
-    const selectedSport = authContext?.user?.registered_sports?.filter(
-      (obj) => obj.sport_name === sportName,
+    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
     )[0];
 
-    selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+    selectedSport = {
+      ...selectedSport,
+      setting: { ...selectedSport?.setting, ...bodyParams },
+    }
     registerdPlayerData.push(selectedSport);
 
-    const body = { ...authContext?.user, registered_sports: registerdPlayerData };
+    const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
@@ -341,8 +351,8 @@ export default function RefereesSetting({ navigation, route }) {
           await Utility.setStorage('authContextEntity', { ...entity });
           navigation.navigate(comeFrom, {
             settingObj: response.payload.registered_sports.filter(
-              (obj) => obj.sport_name === sportName,
-            )[0].setting,
+              (obj) => obj.sport === sportName && obj.sport_type === sportType,
+              )[0].setting,
           });
         } else {
           Alert.alert('Towns Cup', response.messages);
@@ -363,6 +373,7 @@ export default function RefereesSetting({ navigation, route }) {
     if (selection === 'None') {
       bodyParams = {
         sport: sportName,
+        sport_type: sportType,
         entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
         responsible_for_referee: {
           who_secure: 'None',
@@ -378,6 +389,7 @@ export default function RefereesSetting({ navigation, route }) {
       setReferee(ref);
       bodyParams = {
         sport: sportName,
+        sport_type: sportType,
         entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
         responsible_for_referee: {
           who_secure: referee.map((e) => {

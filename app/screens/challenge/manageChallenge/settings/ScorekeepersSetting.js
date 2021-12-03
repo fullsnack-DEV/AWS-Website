@@ -30,7 +30,7 @@ import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 export default function ScorekeepersSetting({ navigation, route }) {
   console.log('route?.params?.settingObj?.responsible_for_scorekeeper', route?.params?.settingObj?.responsible_for_scorekeeper);
-  const { comeFrom, sportName } = route?.params;
+  const { comeFrom, sportName, sportType } = route?.params;
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -264,6 +264,7 @@ const saveUser = () => {
   if (selection === 'None') {
     bodyParams = {
       sport: sportName,
+      sport_type: sportType,
       entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
       responsible_for_scorekeeper: {
         who_secure: 'None',
@@ -279,6 +280,7 @@ const saveUser = () => {
     setScorekeeper(score);
      bodyParams = {
       sport: sportName,
+      sport_type: sportType,
       entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
       responsible_for_scorekeeper: {
         who_secure: scorekeeper.map((e) => {
@@ -293,18 +295,26 @@ const saveUser = () => {
     console.log('scorekeeper secure:=>', bodyParams);
 
     setloading(true);
-    const registerdPlayerData = authContext?.user?.registered_sports?.filter(
-      (obj) => obj.sport_name !== sportName,
-    );
+    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => {
+        if (obj.sport === sportName && obj.sport_type === sportType) {
+          return null
+        }
+        return obj
+      },
+  );
 
-    const selectedSport = authContext?.user?.registered_sports?.filter(
-      (obj) => obj.sport_name === sportName,
+    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
     )[0];
 
-    selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+    selectedSport = {
+      ...selectedSport,
+      setting: { ...selectedSport?.setting, ...bodyParams },
+    }
     registerdPlayerData.push(selectedSport);
 
-    const body = { ...authContext?.user, registered_sports: registerdPlayerData };
+    const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
@@ -321,8 +331,8 @@ const saveUser = () => {
           await Utility.setStorage('authContextEntity', { ...entity });
           navigation.navigate(comeFrom, {
             settingObj: response.payload.registered_sports.filter(
-              (obj) => obj.sport_name === sportName,
-            )[0].setting,
+              (obj) => obj.sport === sportName && obj.sport_type === sportType,
+              )[0].setting,
           });
         } else {
           Alert.alert('Towns Cup', response.messages);
@@ -343,6 +353,7 @@ const saveTeam = () => {
   if (selection === 'None') {
     bodyParams = {
       sport: sportName,
+      sport_type: sportType,
       entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
       responsible_for_scorekeeper: {
         who_secure: 'None',
@@ -359,6 +370,7 @@ const saveTeam = () => {
 
      bodyParams = {
       sport: sportName,
+      sport_type: sportType,
       entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
       responsible_for_scorekeeper: {
         who_secure: scorekeeper.map((e) => {

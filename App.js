@@ -27,6 +27,8 @@ console.disableYellowBox = true;
 export default function App() {
   const [networkConnected, setNetworkConntected] = useState(true);
   const [user, setUser] = useState(null);
+  const [sports, setSports] = useState([]);
+
   const [role, setRole] = useState('user');
   const [entity, setEntity] = useState(null);
   const [tokenData, setToken] = useState(null);
@@ -168,6 +170,8 @@ console.log('1::=>');
       setEntity,
       setQBCredential,
       QBCredential,
+      setSports,
+      sports,
       tokenData,
       setTokenData,
       updateAuth,
@@ -175,7 +179,7 @@ console.log('1::=>');
       showNetworkAlert,
       showAlert,
     }),
-    [role, user, entity, QBCredential, tokenData, setTokenData, updateAuth, networkConnected],
+    [role, user, entity, QBCredential, sports, tokenData, setTokenData, updateAuth, networkConnected],
   );
 
   return (

@@ -131,7 +131,7 @@ const doneOnPress = () => {
           authContext.setUser(response.payload);
           await Utility.setStorage('authContextUser', response.payload)
           await Utility.setStorage('authContextEntity', { ...entity })
-          navigation.navigate('AccountScreen', { createdSportName: route?.params?.bodyParams?.sport_name });
+          navigation.navigate('AccountScreen', { createdSportName: route?.params?.bodyParams?.sport, sportType: route?.params?.bodyParams?.sport_type });
         } else {
           Alert.alert('Towns Cup', response.messages);
         }

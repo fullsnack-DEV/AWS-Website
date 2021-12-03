@@ -23,7 +23,6 @@ import {
   getGameReviews,
   getGameScorekeeperReservation,
   getGameStats,
-  getSportsList,
   getAllLineUp, getGameNextFeed,
   resetGame,
 } from '../../../api/Games';
@@ -107,7 +106,7 @@ const SoccerHome = ({ navigation, route }) => {
   const getSoccerGameStats = useCallback((gameId) => getGameStats(gameId, authContext), [authContext]);
   const getSoccerGameReview = useCallback((gameId) => getGameReviews(gameId, authContext), [authContext]);
   const getSoccerGalleryData = useCallback((gameId) => getGameGallery(gameId, authContext), [authContext]);
-  const getGameSportsList = useCallback(() => getSportsList(authContext), [authContext]);
+  const getGameSportsList = authContext?.sports;
   const getRefereeReservation = useCallback((gameId = soccerGameId) => getGameRefereeReservation(gameId, true, false, authContext), [authContext]);
   const getScorekeeperReservation = useCallback((gameId = soccerGameId) => getGameScorekeeperReservation(gameId, authContext), [authContext]);
   const getGameFeedData = useCallback(() => getGameFeed(gameData?.game_id, authContext), [authContext, gameData?.game_id]);

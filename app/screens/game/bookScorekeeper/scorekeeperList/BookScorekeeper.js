@@ -418,6 +418,7 @@ import React, {
     setFilters({
       location: 'world',
       sport: 'All',
+      sport_type: 'All',
     });
 
     setMinFee(0);
@@ -443,6 +444,8 @@ import React, {
          </View>
        </View>
        <TCTagsFilter
+       filter={filters}
+       authContext={authContext}
          dataSource={Utility.getFiltersOpetions(filters)}
          onTagCancelPress={handleTagPress}
        />

@@ -11,18 +11,21 @@ import {
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
+import { getSportName } from '../utils';
 
-function TCTagsFilter({ dataSource, onTagCancelPress }) {
+function TCTagsFilter({
+ dataSource, onTagCancelPress, filter, authContext,
+}) {
   const renderTags = ({ item, index }) => {
     console.log('Ttt:', Object.values(item));
 
     return (
       <>
-        {(Object.values(item)[0] !== 'All' && Object.values(item)[0] !== 'world' && Object.keys(item)[0] !== 'entityID') && Object.keys(item)[0] !== 'searchText' && <View
+        {(Object.values(item)[0] !== 'All' && Object.values(item)[0] !== 'world' && Object.keys(item)[0] !== 'entityID') && Object.keys(item)[0] !== 'searchText' && Object.keys(item)[0] !== 'sport_type' && <View
           style={styles.textContainer}
           onPress={() => onTagCancelPress({ item, index })}>
           <Text style={styles.tagTitleText}>{
-         Object.values(item)
+         Object.keys(item)[0] === 'sport' ? getSportName(filter, authContext) : Object.values(item)
           }</Text>
           <Image source={images.tagDivider} style={styles.dividerImage} />
           <TouchableOpacity

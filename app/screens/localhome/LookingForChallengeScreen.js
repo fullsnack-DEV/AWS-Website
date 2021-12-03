@@ -66,11 +66,12 @@ export default function LookingForChallengeScreen({ navigation, route }) {
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
   const [selectedSport, setSelectedSport] = useState(
-    route?.params?.filters.sport,
+    {
+      sport: route?.params?.filters.sport,
+      sport_type: route?.params?.filters.sport_type,
+    },
   );
   const [location, setLocation] = useState(route?.params?.filters.location);
-
-  const { sportsList } = route?.params ?? {};
 
   useEffect(() => {
     if (route?.params?.locationText) {
@@ -92,16 +93,23 @@ export default function LookingForChallengeScreen({ navigation, route }) {
         value: 'All',
       },
     ];
-    sportsList.map((obj) => {
+
+    let sportArr = [];
+
+    authContext.sports.map((item) => {
+      sportArr = [...sportArr, ...item.format];
+      return null;
+    });
+    sportArr.map((obj) => {
       const dataSource = {
-        label: obj.sport_name,
-        value: obj.sport_name,
+        label: Utility.getSportName(obj, authContext),
+        value: Utility.getSportName(obj, authContext),
       };
       list.push(dataSource);
     });
 
     setSports(list);
-  }, [sportsList]);
+  }, [authContext, authContext.sports]);
 
   const getAvailableForChallenge = useCallback(
     (filerdata) => {
@@ -152,12 +160,6 @@ export default function LookingForChallengeScreen({ navigation, route }) {
       if (filerdata.location !== 'world') {
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
           multi_match: {
-            query: filerdata.sport,
-            fields: ['city', 'country', 'state_abbr', 'venue.address'],
-          },
-        });
-        availableForchallengeQuery.query.bool.should[1].bool.must.push({
-          multi_match: {
             query: filerdata.location,
             fields: ['city', 'country', 'state_abbr', 'venue.address'],
           },
@@ -183,17 +185,34 @@ export default function LookingForChallengeScreen({ navigation, route }) {
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
           term: {
             'sport.keyword': {
-              value: filerdata.sport.toLowerCase(),
-              case_insensitive: true,
+              value: filerdata.sport,
             },
           },
         });
+
+        availableForchallengeQuery.query.bool.should[0].bool.must.push({
+          term: {
+            'sport_type.keyword': {
+              value: filerdata.sport_type,
+            },
+          },
+        });
+
         availableForchallengeQuery.query.bool.should[1].bool.must[1].nested.query.bool.must.push(
           {
             term: {
-              'registered_sports.sport_name.keyword': {
-                value: filerdata.sport.toLowerCase(),
-                case_insensitive: true,
+              'registered_sports.sport.keyword': {
+                value: filerdata.sport,
+              },
+            },
+          },
+        );
+
+        availableForchallengeQuery.query.bool.should[1].bool.must[1].nested.query.bool.must.push(
+          {
+            term: {
+              'registered_sports.sport_type.keyword': {
+                value: filerdata.sport_type,
               },
             },
           },
@@ -305,8 +324,12 @@ export default function LookingForChallengeScreen({ navigation, route }) {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'sport') {
           tempFilter.sport = 'All';
+          tempFilter.sport_type = 'All';
           delete tempFilter.gameFee;
-          setSelectedSport('All');
+         setSelectedSport({
+            sort: 'All',
+            sport_type: 'All',
+          });
           setMinFee(0);
           setMaxFee(0);
         }
@@ -406,8 +429,12 @@ export default function LookingForChallengeScreen({ navigation, route }) {
     setFilters({
       location: 'world',
       sport: 'All',
+      sport_type: 'All',
     });
-    setSelectedSport('All');
+    setSelectedSport({
+      sort: 'All',
+      sport_type: 'All',
+    });
     setMinFee(0);
     setMaxFee(0);
   };
@@ -443,6 +470,8 @@ export default function LookingForChallengeScreen({ navigation, route }) {
         </View>
       </View>
       <TCTagsFilter
+        filter={filters}
+        authContext={authContext}
         dataSource={Utility.getFiltersOpetions(filters)}
         onTagCancelPress={handleTagPress}
       />
@@ -497,7 +526,8 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                       setSettingPopup(false);
                       setTimeout(() => {
                         const tempFilter = { ...filters };
-                        tempFilter.sport = selectedSport;
+                        tempFilter.sport = selectedSport.sport;
+                        tempFilter.sport_type = selectedSport.sport_type;
                         tempFilter.location = location;
 
                         if (minFee && maxFee) {
@@ -658,17 +688,20 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                         dataSource={sports}
                         placeholder={'Select Sport'}
                         onValueChange={(value) => {
-                          setSelectedSport(value);
+                          console.log('VALUE:=>', value);
+
                           if (value === 'All') {
+                            setSelectedSport({
+                              sport: 'All',
+                              sport_type: 'All',
+                            })
                             setMinFee(0);
                             setMaxFee(0);
+                          } else {
+                            setSelectedSport(Utility.getSportObjectByName(value, authContext))
                           }
-                          // setFilters({
-                          //   ...filters,
-                          //   sport: value,
-                          // });
                         }}
-                        value={selectedSport}
+                        value={Utility.getSportName(selectedSport, authContext)}
                       />
                     </View>
                   </View>
@@ -813,7 +846,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
            </View> */}
               {/* Rate View */}
 
-              {selectedSport !== 'All' && (
+              {selectedSport.sport !== 'All' && (
                 <View
                   style={{
                     flexDirection: 'column',

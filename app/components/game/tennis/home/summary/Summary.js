@@ -122,14 +122,13 @@ const Summary = ({
 
   const recordGameConfiguration = () => {
     setLoading(true);
-    getSportsList()
-      .then((sports) => {
-        const soccerSportData = sports?.payload?.length
-          && sports?.payload?.filter(
-            (item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase(),
+
+        const soccerSportData = authContext?.sports?.length
+          && authContext?.sports?.filter(
+            (item) => item.sport === gameData?.sport,
           )[0];
 
-        console.log('soccerSportData', sports);
+        console.log('soccerSportData', authContext?.sports);
 
         const teamReviewProp = soccerSportData?.team_review_properties ?? [];
         const playerReviewProp = soccerSportData?.player_review_properties ?? [];
@@ -203,8 +202,6 @@ const Summary = ({
           ]);
           setStarAttributesForScorekeeper([...starReviewPropForScorekeeper]);
         }
-      })
-      .finally(() => setLoading(false));
   };
 
   const getHomeID = () => {

@@ -150,18 +150,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
   const onSavePress = () => {
     if (checkValidation()) {
       const bodyParams = {};
-      // let registered_sports= [];
 
-      // bodyParams.sport_name = sports;
-      // bodyParams.Tennis = 'single-multiplayer';
-      // bodyParams.descriptions = description;
-      // bodyParams.language=selectedLanguages;
-
-      // registered_sports[0]=bodyParams;
-      // bodyParams={registered_sports};
-      // console.log('bodyPARAMS:: ', JSON.stringify(bodyParams));
-
-      // navigation.navigate('RegisterPlayerForm2',{bodyParams: bodyParams})
       bodyParams.first_name = userInfo.first_name;
       bodyParams.last_name = userInfo.last_name;
       bodyParams.full_name = `${userInfo.first_name} ${userInfo.last_name}`;

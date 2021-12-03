@@ -24,52 +24,38 @@ import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import { getSportsList } from '../../../api/Games';
 import AuthContext from '../../../auth/context';
-import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCGradientButton from '../../../components/TCGradientButton';
+import { getSportName } from '../../../utils';
 
 export default function RegisterPlayer({ navigation }) {
   const authContext = useContext(AuthContext);
   const [sportsSelection, setSportsSelection] = useState();
-  const [sports, setSports] = useState('');
-  const [loading, setloading] = useState(false);
+
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [sportsData, setSportsData] = useState([]);
 
   useEffect(() => {
-    setloading(true);
+    let sportArr = [];
 
-    getSportsList(authContext)
-      .then((res) => {
-        const sportArr = [];
-        res.payload.map((item) => {
-          sportArr.push({ label: item?.sport_name, value: item?.sport_name });
-          return null;
-        });
-        setSportsData([...sportArr]);
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      })
-      .finally(() => {
-        setloading(false);
-      });
-  }, []);
+    authContext.sports.map((item) => {
+      sportArr = [...sportArr, ...item.format];
+      return null;
+    });
+    setSportsData([...sportArr]);
+  }, [authContext.sports]);
 
   const renderSports = ({ item }) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-        setSportsSelection(item?.value)
+        setSportsSelection(item);
+        console.log('selected sport:=>', item);
         setTimeout(() => {
-          setSports(item?.value);
           setVisibleSportsModal(false);
-        }, 300)
+        }, 300);
       }}>
       <View
         style={{
@@ -78,9 +64,9 @@ export default function RegisterPlayer({ navigation }) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item.value}</Text>
+        <Text style={styles.languageList}>{getSportName(item, authContext)}</Text>
         <View style={styles.checkbox}>
-          {sportsSelection === item?.value ? (
+          {sportsSelection?.sport === item?.sport && sportsSelection?.sport_type === item?.sport_type ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -94,36 +80,31 @@ export default function RegisterPlayer({ navigation }) {
   );
 
   const nextOnPress = () => {
-    console.log('authContext?.entity?.auth?.user', authContext?.entity?.auth?.user);
-    if (sports !== '') {
+    console.log(
+      'authContext?.entity?.obj',
+      authContext?.entity?.obj,
+    );
+    if (sportsSelection.sport !== '') {
       if (
-        authContext?.entity?.auth?.user?.registered_sports?.some(
-          (e) => e.sport_name?.toLowerCase() === sports?.toLowerCase(),
+        authContext?.entity?.obj?.registered_sports?.some(
+          (e) => e.sport === sportsSelection.sport && e.sport_type === sportsSelection.sport_type,
         )
       ) {
-        Alert.alert(
-          strings.alertmessagetitle,
-          strings.sportAlreadyRegisterd,
-        );
+        Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd);
       } else {
         const bodyParams = {};
-        bodyParams.sport_name = sports;
+        bodyParams.sport_type = sportsSelection.sport_type;
+        bodyParams.sport = sportsSelection.sport;
         navigation.navigate('RegisterPlayerForm2', {
           bodyParams,
         });
-        // const registerdPlayerData = authContext?.user?.registered_sports || []
-        // registerdPlayerData.push(bodyParams);
-        // const body = {
-        //   registered_sports: registerdPlayerData,
-        // }
       }
     }
-  }
+  };
   return (
     <View style={{ flex: 1 }}>
       <TCFormProgress totalSteps={2} curruentStep={1} />
 
-      <ActivityLoader visible={loading} />
       <Text style={styles.LocationText}>{strings.sportsText}</Text>
 
       <TouchableOpacity onPress={() => setVisibleSportsModal(true)}>
@@ -131,7 +112,7 @@ export default function RegisterPlayer({ navigation }) {
           <TextInput
             style={styles.searchTextField}
             placeholder={strings.selectSportPlaceholder}
-            value={sports}
+            value={getSportName(sportsSelection, authContext)}
             editable={false}
             pointerEvents="none"
           />
@@ -188,16 +169,13 @@ export default function RegisterPlayer({ navigation }) {
             </Text>
 
             <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.themeColor,
-                }}>
-
-            </Text>
-
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.themeColor,
+              }}></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList
@@ -209,7 +187,7 @@ export default function RegisterPlayer({ navigation }) {
         </View>
       </Modal>
       <TCGradientButton
-        isDisabled={!sports}
+        isDisabled={!sportsSelection}
         title={strings.nextTitle}
         style={{ marginBottom: 30 }}
         onPress={nextOnPress}

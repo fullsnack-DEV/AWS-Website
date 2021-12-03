@@ -76,8 +76,8 @@ const PlayInModule = ({
   }, [userData]);
 
   useEffect(() => {
-    if (playInObject?.sport_name) setSportName(playInObject?.sport_name);
-    if (playInObject?.sport_name?.toLowerCase() !== 'tennis') {
+    if (playInObject?.sport) setSportName(playInObject?.sport);
+    if (playInObject?.sport !== 'tennis') {
       TAB_ITEMS = ['Info', 'Scoreboard', 'Stats'];
       setSinglePlayerGame(false);
     } else TAB_ITEMS = ['Info', 'Scoreboard', 'Stats', 'Reviews'];
@@ -160,7 +160,8 @@ const PlayInModule = ({
         <PlayInInfoView
           openPlayInModal={openPlayInModal}
           onSave={onSave}
-          sportName={playInObject?.sport_name}
+          sportName={playInObject?.sport}
+          sportType={playInObject?.sport_type}
           closePlayInModal={onClose}
           currentUserData={currentUserData}
           isAdmin={isAdmin}
@@ -168,15 +169,7 @@ const PlayInModule = ({
         />
       </ScrollView>
     ),
-    [
-      currentUserData,
-      isAdmin,
-      navigation,
-      onClose,
-      onSave,
-      openPlayInModal,
-      playInObject?.sport_name,
-    ],
+    [currentUserData, isAdmin, navigation, onClose, onSave, openPlayInModal, playInObject?.sport, playInObject?.sport_type],
   );
 
   const renderScoreboardTab = useMemo(
@@ -185,10 +178,10 @@ const PlayInModule = ({
         openPlayInModal={openPlayInModal}
         closePlayInModal={onClose}
         navigation={navigation}
-        sportName={playInObject?.sport_name}
+        sportName={playInObject?.sport}
       />
     ),
-    [navigation, onClose, openPlayInModal, playInObject?.sport_name],
+    [navigation, onClose, openPlayInModal, playInObject?.sport],
   );
 
   const renderStatsViewTab = useMemo(
@@ -197,7 +190,7 @@ const PlayInModule = ({
         <PlayInStatsView
           currentUserData={currentUserData}
           playInObject={playInObject}
-          sportName={playInObject?.sport_name}
+          sportName={playInObject?.sport}
         />
       </ScrollView>
     ),
@@ -209,7 +202,7 @@ const PlayInModule = ({
       <PlayInReviewsView
         currentUserData={currentUserData}
         playInObject={playInObject}
-        sportName={playInObject?.sport_name}
+        sportName={playInObject?.sport}
       />
     ),
     [currentUserData, playInObject],
@@ -238,14 +231,14 @@ const PlayInModule = ({
       && (authContext?.entity?.role === 'user' && 'player')
         === currentUserData?.entity_type
       && !['soccer', 'tennis double'].includes(
-        playInObject?.sport_name?.toLowerCase(),
+        playInObject?.sport,
       ) && (
         <TouchableOpacity
           onPress={() => {
             console.log('auth123:=>', authContext);
             if (
               authContext?.entity?.obj?.registered_sports?.some(
-                (item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase(),
+                (item) => item?.sport === sportName,
               )
             ) {
               actionSheetRef.current.show();
@@ -345,7 +338,7 @@ const PlayInModule = ({
               () => (
                 <PlayInProfileViewSection
                 isPatch={!!playInObject?.lookingForTeamClub}
-                patchType={playInObject?.sport_name?.toLowerCase() === 'tennis' ? 'club' : 'team'}
+                patchType={playInObject?.sport === 'tennis' ? 'club' : 'team'}
                   onSettingPress={() => {
                     actionSheetSettingRef.current.show();
                   }}
@@ -360,7 +353,7 @@ const PlayInModule = ({
                   cityName={currentUserData?.city ?? ''}
                 />
               ),
-              [currentUserData?.city, currentUserData?.full_name, currentUserData?.thumbnail, isAdmin, onMessageButtonPress, playInObject?.lookingForTeamClub, playInObject?.sport_name],
+              [currentUserData?.city, currentUserData?.full_name, currentUserData?.thumbnail, isAdmin, onMessageButtonPress, playInObject?.lookingForTeamClub, playInObject?.sport],
             )}
 
             {/* Tabs */}
@@ -388,15 +381,16 @@ const PlayInModule = ({
               setloading(true);
             }, 10);
             // navigation.navigate('ChallengeScreen', {
-            //   sportName: playInObject?.sport_name,
+            //   sportName: playInObject?.sport,
             //   groupObj: currentUserData,
             // });
 
             Utils.getSetting(
               currentUserData?.user_id,
               'user',
-              playInObject?.sport_name,
+              playInObject?.sport,
               authContext,
+              playInObject?.sport_type,
             )
               .then((obj) => {
                 setloading(false);
@@ -442,8 +436,9 @@ const PlayInModule = ({
            Utils.getSetting(
               authContext?.entity.uid,
               'user',
-              playInObject?.sport_name,
+              playInObject?.sport,
               authContext,
+              playInObject?.sport_type,
             ).then((obj) => {
               setloading(false);
               console.log('challenge setting:::::=>', obj);
@@ -496,7 +491,7 @@ const PlayInModule = ({
           }
           if (index === 1) {
              onClose();
-             navigation.navigate('DeactivateSportScreen', { sport_name: playInObject?.sport_name, type: 'player' });
+             navigation.navigate('DeactivateSportScreen', { sportName: playInObject?.sport, type: 'player' });
           }
         }}
       />

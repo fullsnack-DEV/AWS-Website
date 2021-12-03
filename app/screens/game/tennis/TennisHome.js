@@ -25,7 +25,6 @@ import {
   getGameRefereeReservation,
   getGameScorekeeperReservation,
   getGameStats,
-  getSportsList,
   resetGame,
 } from '../../../api/Games';
 import { followUser, unfollowUser } from '../../../api/Users';
@@ -141,10 +140,7 @@ const TennisHome = ({ navigation, route }) => {
     (gameId) => getGameGallery(gameId, authContext),
     [authContext],
   );
-  const getGameSportsList = useCallback(
-    () => getSportsList(authContext),
-    [authContext],
-  );
+  const getGameSportsList = authContext?.sports;
   const getRefereeReservation = useCallback(
     (gameId) => getGameRefereeReservation(gameId, true, false, authContext),
     [authContext],

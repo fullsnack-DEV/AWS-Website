@@ -122,6 +122,7 @@ export default function EditChallenge({ navigation, route }) {
       authContext.entity.role === 'user' ? 'player' : 'team',
       sportName,
       authContext,
+
     )
       .then((response) => {
         setloading(false);

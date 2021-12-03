@@ -22,7 +22,7 @@ const PlaysInBio = ({
   const [registerSport, setRegisterSport] = useState();
   useEffect(() => {
     if (currentUserData) {
-      const sportData = currentUserData?.registered_sports?.find((item) => item?.sport_name?.toLowerCase() === sportName?.toLowerCase());
+      const sportData = currentUserData?.registered_sports?.find((item) => item?.sport === sportName);
       setRegisterSport(sportData ? { ...sportData } : null);
     }
   }, [currentUserData]);
