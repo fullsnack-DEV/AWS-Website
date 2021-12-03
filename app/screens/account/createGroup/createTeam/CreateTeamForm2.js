@@ -232,7 +232,7 @@ export default function CreateTeamForm2({ navigation, route }) {
 
   const nextOnPress = () => {
     if (
-      createTeamForm1.sport.toLowerCase() === 'Tennis Double'.toLowerCase()
+      createTeamForm1.sport === 'tennis' && createTeamForm1.sport_type === 'double'
       && authContext?.entity?.role === ('user' || 'player')
     ) {
       const obj = {

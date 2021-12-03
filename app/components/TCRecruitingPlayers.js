@@ -1,17 +1,22 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-expressions */
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 import {
  View, Text, StyleSheet, Image, TouchableOpacity,
  } from 'react-native';
 
+ import AuthContext from '../auth/context';
+
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
+import { getSportName } from '../utils';
 
 const TCRecruitingPlayers = ({
  data, entityType, selectedSport, onPress,
  }) => {
+  const authContext = useContext(AuthContext);
+
   let entityName, sportText, gameFee, currency;
 
   if (entityType === 'player') {
@@ -21,14 +26,14 @@ const TCRecruitingPlayers = ({
   }
 
   if (entityType === 'player') {
-    if (selectedSport !== 'All') {
+    if (selectedSport.sport !== 'All') {
       const filterdData = (data?.registered_sports || []).filter(
-        (obj) => obj.sport_name.toLowerCase() === selectedSport.toLowerCase()
+        (obj) => obj.sport === selectedSport.sport && obj.sport_type === selectedSport.sport_type
           && obj?.setting?.availibility === 'On',
       );
       console.log('filterdData', filterdData);
       if (filterdData.length > 0) {
-        sportText = `${filterdData[0].sport_name}`;
+        sportText = `${getSportName(filterdData[0], authContext)}`;
         gameFee = filterdData?.[0]?.setting?.game_fee?.fee;
         currency = filterdData?.[0].setting?.game_fee?.currency_type;
       }
@@ -39,15 +44,15 @@ const TCRecruitingPlayers = ({
       console.log('filterdData', filterdData);
 
       if (filterdData.length === 1) {
-        sportText = filterdData?.[0]?.sport_name;
+        sportText = getSportName(filterdData[0], authContext);
         gameFee = filterdData?.[0]?.setting?.game_fee?.fee;
         currency = filterdData?.[0].setting?.game_fee?.currency_type;
       }
       if (filterdData.length === 2) {
-        sportText = `${filterdData?.[0]?.sport_name} and  ${filterdData?.[1]?.sport_name}`;
+        sportText = `${getSportName(filterdData[0], authContext)} and  ${getSportName(filterdData[1], authContext)}`;
       }
       if (filterdData.length > 2) {
-        sportText = `${filterdData?.[0]?.sport_name} and  ${
+        sportText = `${getSportName(filterdData[0], authContext)} and  ${
           filterdData.length - 1
         } more`;
       }

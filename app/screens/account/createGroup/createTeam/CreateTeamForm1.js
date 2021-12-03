@@ -21,10 +21,8 @@ import { useIsFocused } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 
 import TCGradientButton from '../../../../components/TCGradientButton';
-import { getSportsList } from '../../../../api/Games';
 import { getUserDoubleTeamFollower } from '../../../../api/Users';
 import AuthContext from '../../../../auth/context';
-import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
@@ -40,7 +38,6 @@ export default function CreateTeamForm1({ navigation, route }) {
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
-  const [loading, setloading] = useState(false);
   const [sportsSelection, setSportsSelection] = useState();
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
@@ -84,15 +81,15 @@ export default function CreateTeamForm1({ navigation, route }) {
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-        setSportsSelection(item?.value);
+        setSportsSelection(item);
         setTimeout(() => {
-          setSports(item?.value);
+          setSports(item?.sport_name);
           setVisibleSportsModal(false);
           if (
-            item?.value?.toLowerCase() === 'Tennis Double'.toLowerCase()
+            item?.sport === 'tennis' && item?.sport_type === 'double'
             && authContext?.entity?.role === ('user' || 'player')
           ) {
-            getUserDoubleTeamFollower(item?.value, authContext)
+            getUserDoubleTeamFollower(item?.sport, item?.sport_type, authContext)
               .then((res) => {
                 setFollowersData(res?.payload);
               })
@@ -109,9 +106,9 @@ export default function CreateTeamForm1({ navigation, route }) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item.value}</Text>
+        <Text style={styles.languageList}>{item.sport_name}</Text>
         <View style={styles.checkbox}>
-          {sportsSelection === item?.value ? (
+          {sportsSelection?.sport === item?.sport ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -125,35 +122,14 @@ export default function CreateTeamForm1({ navigation, route }) {
   );
 
   const getSports = () => {
-    getSportsList(authContext)
-      .then((response) => {
-        const arr = [];
-        for (const tempData of response.payload) {
-          if (authContext?.entity?.role === 'club') {
-            if (tempData.sport_type === 'multiplayer') {
-              const obj = {};
-              obj.label = tempData.sport_name;
-              obj.value = tempData.sport_name;
-              obj.type = tempData.sport_type;
-              arr.push(obj);
-            }
-          } else if (tempData.sport_type === 'double') {
-            const obj = {};
-            obj.label = tempData.sport_name;
-            obj.value = tempData.sport_name;
-            obj.type = tempData.sport_type;
-            arr.push(obj);
-          }
-        }
-        setSportsData(arr);
-        setTimeout(() => setloading(false), 1000);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+    let sportArr = [];
+
+    authContext.sports.map((item) => {
+      const filterFormat = item.format.filter((obj) => obj.entity_type === 'team')
+      sportArr = [...sportArr, ...filterFormat];
+      return null;
+    });
+    setSportsData([...sportArr]);
   };
 
   const nextOnPress = () => {
@@ -169,7 +145,6 @@ export default function CreateTeamForm1({ navigation, route }) {
                   case_insensitive: true,
                 },
               },
-
             },
             { term: { entity_type: 'team' } },
             {
@@ -189,7 +164,8 @@ export default function CreateTeamForm1({ navigation, route }) {
       console.log('hiringPlayers::=>', teams);
       if (teams.length === 0) {
         const obj = {
-          sport: sports,
+          sport: sportsSelection.sport,
+          sport_type: sportsSelection.sport_type,
           group_name: teamName,
           city,
           state_abbr: state,
@@ -202,7 +178,7 @@ export default function CreateTeamForm1({ navigation, route }) {
         console.log('Form1 Object:=>', obj);
 
         if (
-          sports.toLowerCase() === 'Tennis Double'.toLowerCase()
+          sportsSelection.sport === 'tennis' && sportsSelection.sport_type === 'double'
           && authContext?.entity?.role === ('user' || 'player')
         ) {
           if (followersData?.length > 0) {
@@ -234,7 +210,6 @@ export default function CreateTeamForm1({ navigation, route }) {
       <ScrollView
         style={styles.mainContainer}
         showsVerticalScrollIndicator={false}>
-        <ActivityLoader visible={loading} />
         <View>
           <TCLabel title={strings.SportsTextFieldTitle} required={false} />
           <TouchableOpacity onPress={() => setVisibleSportsModal(true)}>

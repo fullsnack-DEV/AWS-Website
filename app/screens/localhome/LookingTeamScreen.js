@@ -321,6 +321,7 @@ export default function LookingTeamScreen({ navigation, route }) {
     setFilters({
       location: 'world',
       sport: 'All',
+      sport_type: 'All',
     });
     setSelectedSport('All');
   };
@@ -355,6 +356,8 @@ export default function LookingTeamScreen({ navigation, route }) {
         </View>
       </View>
       <TCTagsFilter
+      filter={filters}
+      authContext={authContext}
         dataSource={Utility.getFiltersOpetions(filters)}
         onTagCancelPress={handleTagPress}
       />

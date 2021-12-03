@@ -31,21 +31,21 @@ export default function LookingForSettingScreen({ navigation, route }) {
   }, [navigation, lookingFor]);
 
   useEffect(() => {
-    const selectedSport = authContext?.user?.registered_sports?.filter(
-      (obj) => obj?.sport_name?.toLowerCase() === sportName?.toLowerCase(),
+    const selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => obj?.sport === sportName,
     )[0];
     setLookingFor(selectedSport?.lookingForTeamClub);
-  }, [authContext?.user?.registered_sports, sportName]);
+  }, [authContext?.entity?.obj?.registered_sports, sportName]);
   const updateProfile = () => {
     setloading(true);
 
-    const registerdPlayerData = authContext?.user?.registered_sports?.filter(
+    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj.sport_name !== sportName && obj.sport_name,
     );
 
     console.log('registerdPlayerData:', registerdPlayerData);
-    let selectedSport = authContext?.user?.registered_sports?.filter(
-      (obj) => obj?.sport_name?.toLowerCase() === sportName?.toLowerCase(),
+    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => obj?.sport === sportName,
     )[0];
 
     selectedSport = { ...selectedSport, lookingForTeamClub: lookingFor };
@@ -54,7 +54,7 @@ export default function LookingForSettingScreen({ navigation, route }) {
     registerdPlayerData.push(selectedSport);
     console.log('Final data:', registerdPlayerData);
 
-    const body = { ...authContext?.user, registered_sports: registerdPlayerData };
+    const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)

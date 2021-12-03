@@ -104,13 +104,11 @@ const Summary = ({
   useEffect(() => {
     if (isFocused && gameData) {
       leaveReviewButtonConfig();
-      setLoading(true);
-      getSportsList()
-        .then((sports) => {
-          const soccerSportData = sports?.payload?.length
-            && sports?.payload?.filter(
-              (item) => item.sport_name?.toLowerCase()
-                === gameData?.sport?.toLowerCase(),
+
+          const soccerSportData = authContext?.sports?.length
+            && authContext?.sports?.filter(
+              (item) => item.sport
+                === gameData?.sport,
             )[0];
 
           console.log('soccerSportData', soccerSportData);
@@ -184,8 +182,6 @@ const Summary = ({
             ]);
             setStarAttributesForScorekeeper([...starReviewPropForScorekeeper]);
           }
-        })
-        .finally(() => setLoading(false));
     }
   }, [gameData, isFocused]);
 
@@ -966,7 +962,7 @@ const Summary = ({
   );
   return (
     <View style={styles.mainContainer}>
-      <TCInnerLoader visible={loading} />
+      {/* <TCInnerLoader visible={loading} /> */}
 
       <View
         style={{

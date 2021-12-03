@@ -24,6 +24,8 @@ const TCTextInputClear = ({
           style={styles.detailsText}
           placeholder={placeholder}
           multiline={multiline}
+          autoCorrect={false}
+          autoCapitalize={false}
           numberOfLines={4}
           textAlignVertical={'top'}
           onChangeText={onChangeText}
@@ -47,6 +49,8 @@ const TCTextInputClear = ({
         <TextInput
           style={styles.detailsSingleText}
           placeholder={placeholder}
+          autoCorrect={false}
+          autoCapitalize={false}
           onChangeText={onChangeText}
           value={value}
         />

@@ -1,4 +1,4 @@
-import React, { useCallback, memo } from 'react';
+import React, { useCallback, memo, useContext } from 'react';
 import {
  StyleSheet, View, Text, FlatList, TouchableOpacity,
  } from 'react-native';
@@ -10,15 +10,19 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../TCThinDivider';
+import { getSportName } from '../../utils';
+import AuthContext from '../../auth/context';
 
 const SportsListView = ({ sports, onSelect, defaultSport }) => {
+  const authContext = useContext(AuthContext);
+
   const renderItem = ({ item, index }) => {
     console.log('Default sport', defaultSport);
     return (
       <TouchableOpacity
         disabled={
           !!defaultSport?.filter(
-            (obj) => obj.sport_name.toLowerCase() === item.sport_name.toLowerCase(),
+            (obj) => obj.sport === item.sport,
           ).length > 0
         }
         style={styles.listItem}
@@ -28,9 +32,9 @@ const SportsListView = ({ sports, onSelect, defaultSport }) => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             marginRight: 15,
-            opacity: defaultSport?.filter((obj) => obj.sport_name.toLowerCase() === item.sport_name.toLowerCase()).length > 0 ? 0.5 : 1,
+            opacity: defaultSport?.filter((obj) => obj.sport === item.sport).length > 0 ? 0.5 : 1,
           }}>
-          <Text style={styles.sportList}>{item.sport_name}</Text>
+          <Text style={styles.sportList}>{getSportName(item, authContext)}</Text>
           <View style={styles.checkbox}>
             {sports[index].isChecked ? (
               <FastImage

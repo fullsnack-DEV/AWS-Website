@@ -149,6 +149,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       authContext.entity.role === 'user' ? 'player' : 'team',
       challengeData?.sport,
       authContext,
+      challengeData?.sport_type,
     ).then((response) => {
       setloading(false);
       console.log('manage challenge response:=>', response);

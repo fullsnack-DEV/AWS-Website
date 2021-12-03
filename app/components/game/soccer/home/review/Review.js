@@ -55,8 +55,8 @@ const Review = ({
       }).catch((error) => {
         console.log(error);
       });
-      getSportsList(authContext).then((sports) => {
-        const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase())[0]
+
+        const soccerSportData = authContext?.sports?.length && authContext?.sports?.filter((item) => item.sport === gameData?.sport)[0]
         const teamReviewProp = soccerSportData?.team_review_properties ?? []
         const playerReviewProp = soccerSportData?.player_review_properties ?? [];
         const refereeReviewProp = soccerSportData?.referee_review_properties ?? [];
@@ -91,7 +91,6 @@ const Review = ({
           setSliderAttributesForReferee([...sliderReviewPropForReferee]);
           setStarAttributesForReferee([...starReviewPropForReferee]);
         }
-      }).finally(() => setLoading(false));
     }
   }, [isFocused])
 

@@ -175,8 +175,8 @@ export const getUserFollowerFollowing = (userId, entity_type, type, authContext)
   authContext,
 })
 
-export const getUserDoubleTeamFollower = (sportName, authContext) => makeAPIRequest({
+export const getUserDoubleTeamFollower = (sportName, sportType, authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/groups/doubleteam/member?sport=${sportName}`,
+  url: `${Config.BASE_URL}/groups/doubleteam/member?sport=${sportName}&sport_type=${sportType}`,
   authContext,
 })

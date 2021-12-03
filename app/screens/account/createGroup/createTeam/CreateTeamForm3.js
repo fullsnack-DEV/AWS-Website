@@ -36,10 +36,12 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import TCPlayerImageInfo from '../../../../components/TCPlayerImageInfo';
+import { getSportName } from '../../../../utils';
 
 export default function CreateTeamForm3({ navigation, route }) {
   const { createTeamForm2 } = route?.params;
 
+  console.log('createTeamForm2:=>', createTeamForm2);
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
   const authContext = useContext(AuthContext);
@@ -164,29 +166,13 @@ export default function CreateTeamForm3({ navigation, route }) {
   });
   };
 
-  const userNextPressed = () => {
+  const doubleNextPressed = () => {
     let player1 = {};
     let player2 = {};
     setloading(true);
     const bodyParams = {
       ...createTeamForm2,
       entity_type: 'team',
-    //   is_admin: true,
-    //  invite_required: true,
-    //  privacy_profile: 'members',
-    //  createdAt: 0.0,
-    //  unread: 0,
-    //  homefield_address_longitude: 0.0,
-    //  homefield_address_latitude: 0.0,
-    //  office_address_latitude: 0.0,
-    //  office_address_longitude: 0.0,
-    //  privacy_members: 'everyone',
-    //  approval_required: false,
-    //  is_following: false,
-    //  privacy_events: 'everyone',
-    //  is_joined: false,
-    //  privacy_followers: 'everyone',
-    //  should_hide: false,
     };
 
   if (bodyParams?.player1) {
@@ -302,39 +288,12 @@ export default function CreateTeamForm3({ navigation, route }) {
     }
   };
 
-  const clubNextPressed = () => {
-    let player1 = {};
-    let player2 = {};
+  const singleNextPressed = () => {
     setloading(true);
     const bodyParams = {
       ...createTeamForm2,
       entity_type: 'team',
-    //   is_admin: true,
-    //  invite_required: true,
-    //  privacy_profile: 'members',
-    //  createdAt: 0.0,
-    //  unread: 0,
-    //  homefield_address_longitude: 0.0,
-    //  homefield_address_latitude: 0.0,
-    //  office_address_latitude: 0.0,
-    //  office_address_longitude: 0.0,
-    //  privacy_members: 'everyone',
-    //  approval_required: false,
-    //  is_following: false,
-    //  privacy_events: 'everyone',
-    //  is_joined: false,
-    //  privacy_followers: 'everyone',
-    //  should_hide: false,
     };
-
-  if (bodyParams?.player1) {
-     player1 = bodyParams?.player1;
-    player2 = bodyParams?.player2;
-    delete bodyParams.player1;
-    delete bodyParams.player2;
-    bodyParams.player1 = player1.user_id;
-    bodyParams.player2 = player2.user_id;
-  }
 
     if (thumbnail) {
       bodyParams.thumbnail = thumbnail;
@@ -377,7 +336,7 @@ export default function CreateTeamForm3({ navigation, route }) {
           createGroup(
             bodyParams,
             entity.uid,
-            'club',
+            entity.obj.role,
             authContext,
           )
           // createGroupRequest(
@@ -415,7 +374,7 @@ export default function CreateTeamForm3({ navigation, route }) {
       createGroup(
         bodyParams,
         entity.uid,
-        'club',
+        entity.obj.role,
         authContext,
       )
       // createGroupRequest(
@@ -465,7 +424,7 @@ export default function CreateTeamForm3({ navigation, route }) {
         />
         <TCInfoField
           title={'Sport'}
-          value={createTeamForm2?.sport}
+          value={getSportName(createTeamForm2, authContext)}
           marginLeft={25}
           marginTop={30}
         />
@@ -510,7 +469,7 @@ export default function CreateTeamForm3({ navigation, route }) {
 
           <TCInfoField
           title={'Members’ ages'}
-          value={`Min ${createTeamForm2?.min_age} Max ${createTeamForm2?.max_age}`}
+          value={`Min ${createTeamForm2?.min_age ?? 'N/A'} Max ${createTeamForm2?.max_age ?? 'N/A'}`}
           marginLeft={25}
         />
           <TCThinDivider marginTop={5} marginBottom={3} />
@@ -536,7 +495,10 @@ export default function CreateTeamForm3({ navigation, route }) {
         isDisabled={false}
         title={strings.doneTitle}
         style={{ marginBottom: 30, marginTop: 20 }}
-        onPress={entity.role === 'club' ? clubNextPressed : userNextPressed}
+        onPress={
+          createTeamForm2?.sport === 'tennis' && createTeamForm2?.sport_type === 'double' ? doubleNextPressed : singleNextPressed
+         // entity.role === 'club' ? clubNextPressed : userNextPressed
+        }
 
       />
       <ActionSheet

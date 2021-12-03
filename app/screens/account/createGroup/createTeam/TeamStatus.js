@@ -1,6 +1,6 @@
 const TeamStatus = {
     // Invite Notification
-
+    new: 'new',
     accepted: 'accepted',
     declined: 'declined',
     cancelled: 'cancelled',

@@ -23,12 +23,11 @@ import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import { getSportsList } from '../../../api/Games';
 import AuthContext from '../../../auth/context';
 import { getUserDetails } from '../../../api/Users';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThinDivider from '../../../components/TCThinDivider';
-import { languageList } from '../../../utils';
+import { getSportName, languageList } from '../../../utils';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCLabel from '../../../components/TCLabel';
 import TCGradientButton from '../../../components/TCGradientButton';
@@ -49,14 +48,8 @@ export default function RegisterReferee({ navigation }) {
 
   const selectedLanguage = [];
   useEffect(() => {
-    getSportsList(authContext).then((res) => {
-      const sport = [];
-      res.payload.map((item) => sport.push({
-          label: item?.sport_name,
-          value: item?.sport_name.toLowerCase(),
-        }));
-      setSportList([...sport]);
-    });
+      setSportList(authContext.sports);
+
     getUserDetails(authContext?.entity?.uid, authContext).then((res) => {
       setRefereesData(res?.payload?.referee_data);
     });
@@ -126,8 +119,12 @@ export default function RegisterReferee({ navigation }) {
       return false;
     }
 
+    console.log('refereesData', refereesData);
+
+    console.log('sports', sports);
+
     const isExist = refereesData?.filter(
-      (item) => item?.sport_name?.toLowerCase() === sports?.toLowerCase(),
+      (item) => item?.sport === sports,
     );
     if (isExist?.length) {
       Alert.alert(
@@ -141,7 +138,7 @@ export default function RegisterReferee({ navigation }) {
   const renderSports = ({ item }) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
-      onPress={() => setSportsSelection(item?.value)}>
+      onPress={() => setSportsSelection(item)}>
       <View
         style={{
           padding: 20,
@@ -149,9 +146,9 @@ export default function RegisterReferee({ navigation }) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item.value}</Text>
+        <Text style={styles.languageList}>{getSportName(item, authContext)}</Text>
         <View style={styles.checkbox}>
-          {sportsSelection === item?.value ? (
+          {sportsSelection?.sport === item?.sport ? (
             <Image
               source={images.radioSelectYellow}
               style={styles.checkboxImg}
@@ -168,7 +165,8 @@ export default function RegisterReferee({ navigation }) {
     if (isValid) {
       let bodyParams = {};
       const referee_data = [];
-      bodyParams.sport_name = sports.charAt(0).toUpperCase() + sports.slice(1);
+      bodyParams.sport = sportsSelection.sport;
+
       bodyParams.descriptions = description;
       const languageData = [];
       if (selectedLanguages?.length) {
@@ -200,7 +198,7 @@ export default function RegisterReferee({ navigation }) {
                 <TextInput
                 style={styles.searchTextField}
                 placeholder={strings.selectSportPlaceholder}
-                value={sports}
+                value={getSportName(sportsSelection, authContext)}
                 editable={false}
                 pointerEvents="none"
               />
@@ -381,7 +379,7 @@ export default function RegisterReferee({ navigation }) {
             </Text>
             <TouchableOpacity
               onPress={() => {
-                setSports(sportsSelection);
+                setSports(sportsSelection?.sport);
                 setVisibleSportsModal(false);
               }}>
               <Text

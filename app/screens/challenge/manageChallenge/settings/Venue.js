@@ -30,7 +30,7 @@ import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTextInputClear from '../../../../components/TCTextInputClear';
 
 export default function Venue({ navigation, route }) {
-  const { comeFrom, sportName } = route?.params;
+  const { comeFrom, sportName, sportType } = route?.params;
 
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
@@ -254,6 +254,7 @@ pointerEvents="none"
 const saveUser = () => {
   const bodyParams = {
     sport: sportName,
+    sport_type: sportType,
     entity_type: 'player',
     venue: venue.map((e) => {
       delete e.id;
@@ -261,18 +262,26 @@ const saveUser = () => {
     }),
   };
   setloading(true);
-  const registerdPlayerData = authContext?.user?.registered_sports?.filter(
-    (obj) => obj.sport_name !== sportName,
-  );
+  const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
+    (obj) => {
+      if (obj.sport === sportName && obj.sport_type === sportType) {
+        return null
+      }
+      return obj
+    },
+);
 
-  const selectedSport = authContext?.user?.registered_sports?.filter(
-    (obj) => obj.sport_name === sportName,
+  let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+    (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
   )[0];
 
-  selectedSport.setting = { ...selectedSport.setting, ...bodyParams };
+  selectedSport = {
+    ...selectedSport,
+    setting: { ...selectedSport?.setting, ...bodyParams },
+  }
   registerdPlayerData.push(selectedSport);
 
-  const body = { ...authContext?.user, registered_sports: registerdPlayerData };
+  const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
   console.log('Body::::--->', body);
 
   patchPlayer(body, authContext)
@@ -289,7 +298,7 @@ const saveUser = () => {
         await Utility.setStorage('authContextEntity', { ...entity });
         navigation.navigate(comeFrom, {
           settingObj: response.payload.registered_sports.filter(
-            (obj) => obj.sport_name === sportName,
+            (obj) => obj.sport === sportName && obj.sport_type === sportType,
           )[0].setting,
         });
       } else {
@@ -309,6 +318,7 @@ const saveUser = () => {
 const saveTeam = () => {
   const bodyParams = {
     sport: sportName,
+    sport_type: sportType,
     entity_type: 'team',
     venue: venue.map((e) => {
       delete e.id;

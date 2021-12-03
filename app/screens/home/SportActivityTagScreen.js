@@ -30,7 +30,7 @@ import UserInfoAddRole from '../../components/Home/User/UserInfoAddRole';
 import { patchPlayer } from '../../api/Users';
 
 let image_url = '';
-let sportsData = [];
+
 export default function SportActivityTagScreen({ navigation }) {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
@@ -59,10 +59,6 @@ export default function SportActivityTagScreen({ navigation }) {
     ],
   );
 
-  Utility.getStorage('sportsList').then((list) => {
-    console.log('list:=>>', list);
-    sportsData = list;
-  });
   Utility.getStorage('appSetting').then((setting) => {
     console.log('APPSETTING:=', setting);
     image_url = setting.base_url_sporticon;
@@ -84,23 +80,6 @@ export default function SportActivityTagScreen({ navigation }) {
       ),
     });
   }, [navigation, selectedCheck, selectedRadio, activityList, entitySource]);
-
-  const getSportImage = (sportName, type) => {
-    if (
-      sportsData.filter(
-        (obj) => obj.sport_name.toLowerCase() === sportName.toLowerCase(),
-      ).length > 0
-    ) {
-      const tempObj = sportsData.filter(
-        (obj) => obj.sport_name.toLowerCase() === sportName.toLowerCase(),
-      )[0];
-
-      if (type === 'player') return tempObj.player_image;
-      if (type === 'referee') return tempObj.referee_image;
-      if (type === 'scorekeeper') return tempObj.scorekeeper_image;
-    }
-    return null
-  };
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const onSavePress = () => {
@@ -148,16 +127,16 @@ export default function SportActivityTagScreen({ navigation }) {
   );
 
   const renderSportsActivityView = useCallback(
-    ({ item, drag }) => item.sport_name !== 'All' && (
+    ({ item, drag }) => item.sport !== 'All' && (
       <View style={styles.sportsBackgroundView}>
         <View style={{ flexDirection: 'row' }}>
           <Image
               source={{
-                uri: `${image_url}${getSportImage(item.sport_name, item.type)}`,
+                uri: `${image_url}${Utility.getSportImage(item.sport, item.type, authContext)}`,
               }}
               style={styles.sportsIcon}
             />
-          <Text style={styles.sportNameTitle}>{`${item.sport_name} (${
+          <Text style={styles.sportNameTitle}>{`${Utility.getSportName(item, authContext)} (${
               item?.type?.charAt(0).toUpperCase() + item?.type?.slice(1)
             })`}</Text>
         </View>
@@ -186,13 +165,14 @@ export default function SportActivityTagScreen({ navigation }) {
         keyExtractor={keyExtractor}
         renderItem={({ item }) => (
           <UserInfoAddRole
-            title={item.sport_name}
+            title={Utility.getSportName(item, authContext)}
             thumbURL={
               item?.type
                 ? {
-                    uri: `${image_url}${getSportImage(
-                      item.sport_name,
+                    uri: `${image_url}${Utility.getSportImage(
+                      item.sport,
                       item.type,
+                      authContext,
                     )}`,
                   }
                 : images.addRole

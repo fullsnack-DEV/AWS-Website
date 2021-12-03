@@ -413,6 +413,7 @@ export default function BookReferee({ navigation, route }) {
     setFilters({
       location: 'world',
       sport: 'All',
+      sport_type: 'All',
     });
 
     setMinFee(0);
@@ -438,6 +439,8 @@ export default function BookReferee({ navigation, route }) {
         </View>
       </View>
       <TCTagsFilter
+      filter={filters}
+      authContext={authContext}
         dataSource={Utility.getFiltersOpetions(filters)}
         onTagCancelPress={handleTagPress}
       />

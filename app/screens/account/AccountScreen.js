@@ -20,8 +20,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import _ from 'lodash';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+  import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
 
 // import ActionSheet from 'react-native-actionsheet';
@@ -89,6 +88,8 @@ export default function AccountScreen({ navigation, route }) {
   const [clickedUserType, setClickedUserType] = useState('user');
 
   console.log(sports);
+  console.log('authSports::=>', authContext.sports);
+
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
   // for set/get clubs
@@ -354,6 +355,7 @@ export default function AccountScreen({ navigation, route }) {
 
       Promise.all(promises)
         .then(([res1, res2]) => {
+          setloading(false);
           resolve(true);
           setTeamList([...res1.payload, ...res2.payload]);
         })
@@ -625,6 +627,7 @@ export default function AccountScreen({ navigation, route }) {
       } else {
         navigation.navigate('ManageChallengeScreen', {
           sportName: entity?.obj?.sport,
+          sportType: entity?.obj?.sport_type,
         });
       }
     } else if (section === 'Referee Reservation Settings') {
@@ -708,18 +711,19 @@ export default function AccountScreen({ navigation, route }) {
   );
 
   console.log(
-    'authContext?.entity?.auth?.user',
-    authContext?.entity?.auth?.user,
+    'authContext?.entity?.obj',
+    authContext?.entity?.obj,
   );
+
   const renderSportsList = useCallback(
     ({ item }) => (
       <View style={styles.listContainer}>
         <View style={styles.entityTextContainer}>
           <Image
-            source={getSportIcon(item.sport_name)}
+            source={getSportIcon(item.sport)}
             style={styles.accountSportIcon}
           />
-          <Text style={styles.entityName}>{item.sport_name}</Text>
+          <Text style={styles.entityName}>{Utility.getSportName(item, authContext)}</Text>
         </View>
         <Image source={images.nextArrow} style={styles.nextArrow} />
       </View>
@@ -732,10 +736,10 @@ export default function AccountScreen({ navigation, route }) {
       <View style={styles.listContainer}>
         <View style={styles.entityTextContainer}>
           <Image
-            source={getSportIcon(item.sport_name)}
+            source={getSportIcon(item.sport)}
             style={styles.accountSportIcon}
           />
-          <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
+          <Text style={styles.entityName}>{Utility.getSportName(item, authContext)}</Text>
         </View>
         <Image source={images.nextArrow} style={styles.nextArrow} />
       </View>
@@ -748,10 +752,10 @@ export default function AccountScreen({ navigation, route }) {
       <View style={styles.listContainer}>
         <View style={styles.entityTextContainer}>
           <Image
-            source={getSportIcon(item.sport_name)}
+            source={getSportIcon(item.sport)}
             style={styles.accountSportIcon}
           />
-          <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
+          <Text style={styles.entityName}>{Utility.getSportName(item, authContext)}</Text>
         </View>
         <Image source={images.nextArrow} style={styles.nextArrow} />
       </View>
@@ -939,7 +943,7 @@ export default function AccountScreen({ navigation, route }) {
               numberOfLines={1}>
               {item?.group_name}
             </Text>
-            <Text style={styles.teamSportView}> {item.sport}</Text>
+            <Text style={styles.teamSportView}> {Utility.getSportName(item, authContext)}</Text>
           </View>
           {/* <Image source={images.nextArrow} style={styles.nextArrow} /> */}
         </TouchableWithoutFeedback>
@@ -997,7 +1001,7 @@ export default function AccountScreen({ navigation, route }) {
         {authContext.entity.role === 'user' && sectionId === 4 && (
           <FlatList
             style={{ marginVertical: 10 }}
-            data={authContext?.entity?.auth?.user?.registered_sports}
+            data={authContext?.entity?.obj?.registered_sports}
             keyExtractor={keyExtractorID}
             renderItem={renderSportsList}
             ItemSeparatorComponent={() => (
@@ -1009,7 +1013,7 @@ export default function AccountScreen({ navigation, route }) {
         {authContext.entity.role === 'user' && sectionId === 5 && (
           <FlatList
             style={{ marginVertical: 10 }}
-            data={authContext?.entity?.auth?.user?.referee_data}
+            data={authContext?.entity?.obj?.referee_data}
             keyExtractor={keyExtractorID}
             renderItem={renderRefereesList}
             ItemSeparatorComponent={() => (
@@ -1021,7 +1025,7 @@ export default function AccountScreen({ navigation, route }) {
         {authContext.entity.role === 'user' && sectionId === 6 && (
           <FlatList
             style={{ marginVertical: 10 }}
-            data={authContext?.entity?.auth?.user?.scorekeeper_data}
+            data={authContext?.entity?.obj?.scorekeeper_data}
             keyExtractor={keyExtractorID}
             renderItem={renderScorekeepersList}
             ItemSeparatorComponent={() => (
@@ -1190,24 +1194,25 @@ export default function AccountScreen({ navigation, route }) {
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-        setSportsSelection(item?.sport_name);
+        setSportsSelection(item);
         setVisibleSportsModal(false);
-        setSports(item?.sport_name);
+        setSports(item?.sport);
         setTimeout(() => {
-          console.log('Sport name:=>', item?.sport_name);
+          console.log('Sport name:=>', item?.sport, item?.sport_type);
           if (clickedUserType === 'user') {
             navigation.navigate('ManageChallengeScreen', {
-              sportName: item?.sport_name,
+              sportName: item.sport,
+              sportType: item.sport_type,
             });
           }
           if (clickedUserType === 'referee') {
             navigation.navigate('RefereeReservationSetting', {
-              sportName: item?.sport_name,
+              sportName: item.sport,
             });
           }
           if (clickedUserType === 'scorekeeper') {
             navigation.navigate('ScorekeeperReservationSetting', {
-              sportName: item?.sport_name,
+              sportName: item.sport,
             });
           }
         }, 300);
@@ -1219,9 +1224,9 @@ export default function AccountScreen({ navigation, route }) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item.sport_name}</Text>
+        <Text style={styles.languageList}>{Utility.getSportName(item, authContext)}</Text>
         <View style={styles.checkbox}>
-          {sportsSelection === item?.sport_name ? (
+          {sportsSelection?.sport === item?.sport && sportsSelection?.sport_type === item?.sport_type ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -1761,6 +1766,7 @@ export default function AccountScreen({ navigation, route }) {
                 setIsSportCreateModalVisible(false);
                 navigation.navigate('ManageChallengeScreen', {
                   sportName: route?.params?.createdSportName,
+                  sportType: route?.params?.sportType,
                 });
               }}>
               <Text style={styles.goToProfileTitle}>

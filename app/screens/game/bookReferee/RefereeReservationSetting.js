@@ -29,7 +29,7 @@ import React, {
      const { sportName } = route?.params;
 
      const getSettings = useCallback(() => {
-      setSettingObject((authContext?.user?.referee_data ?? []).filter((obj) => obj.sport_name === sportName)?.[0]?.setting);
+      setSettingObject((authContext?.entity?.obj?.referee_data ?? []).filter((obj) => obj.sport === sportName)?.[0]?.setting);
      }, [authContext, sportName]);
 
      useEffect(() => {

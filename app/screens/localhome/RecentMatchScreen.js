@@ -81,11 +81,12 @@ export default function RecentMatchScreen({ navigation, route }) {
   const [loadMore, setLoadMore] = useState(false);
   const [searchData, setSearchData] = useState();
   const [selectedSport, setSelectedSport] = useState(
-    route?.params?.filters.sport,
+    {
+      sport: route?.params?.filters.sport,
+      sport_type: route?.params?.filters.sport_type,
+    },
   );
   const [location, setLocation] = useState(route?.params?.filters.location);
-
-  const { sportsList } = route?.params ?? {};
 
   console.log('Recent Match Filter:=>', filters);
 
@@ -107,16 +108,22 @@ export default function RecentMatchScreen({ navigation, route }) {
       label: 'All',
       value: 'All',
     }];
-    sportsList.map((obj) => {
+    let sportArr = [];
+
+    authContext.sports.map((item) => {
+      sportArr = [...sportArr, ...item.format];
+      return null;
+    });
+    sportArr.map((obj) => {
       const dataSource = {
-        label: obj.sport_name,
-        value: obj.sport_name,
+        label: Utility.getSportName(obj, authContext),
+        value: Utility.getSportName(obj, authContext),
       };
       list.push(dataSource);
     });
 
     setSports(list);
-  }, [sportsList]);
+  }, [authContext]);
 
   const getRecentGames = useCallback(
     (filerGames) => {
@@ -145,8 +152,16 @@ export default function RecentMatchScreen({ navigation, route }) {
         recentMatchQuery.query.bool.must.push({
           term: {
             'sport.keyword': {
-              value: filerGames.sport.toLowerCase(),
-              case_insensitive: true,
+              value: filerGames.sport,
+
+            },
+          },
+        });
+        recentMatchQuery.query.bool.must.push({
+          term: {
+            'sport_type.keyword': {
+              value: filerGames.sport_type,
+
             },
           },
         });
@@ -427,7 +442,7 @@ export default function RecentMatchScreen({ navigation, route }) {
     console.log('Group query:=>', JSON.stringify(groupQuery));
     console.log('User query:=>', JSON.stringify(userQuery));
 
-    if (selectedSport.toLowerCase() === 'tennis') {
+    if (selectedSport.sport === 'tennis' && selectedSport.sport_type === 'single') {
       getUserIndex(userQuery).then((res) => {
         console.log('res entity list:=>', res);
         setEntityData([...res]);
@@ -476,9 +491,13 @@ export default function RecentMatchScreen({ navigation, route }) {
     setFilters({
       location: 'world',
       sport: 'All',
+      sport_type: 'All',
     })
     setLocation('world');
-    setSelectedSport('All')
+    setSelectedSport({
+      sort: 'All',
+      sport_type: 'All',
+    });
     setFromDate()
     setToDate()
    };
@@ -500,6 +519,8 @@ export default function RecentMatchScreen({ navigation, route }) {
         </View>
       </View>
       <TCTagsFilter
+      filter={filters}
+      authContext={authContext}
         dataSource={Utility.getFiltersOpetions(filters)}
         onTagCancelPress={handleTagPress}
       />
@@ -552,7 +573,9 @@ export default function RecentMatchScreen({ navigation, route }) {
                     setSettingPopup(false);
                     setTimeout(() => {
                       const tempFilter = { ...filters };
-                      tempFilter.sport = selectedSport;
+                      tempFilter.sport = selectedSport.sport;
+                      tempFilter.sport_type = selectedSport.sport_type;
+
                       tempFilter.location = location;
 
                       if (fromDate) {
@@ -739,16 +762,20 @@ export default function RecentMatchScreen({ navigation, route }) {
                         dataSource={sports}
                         placeholder={'Select Sport'}
                         onValueChange={(value) => {
-                          setSelectedSport(value);
-                          setSelectedEntity()
-                          setEntityData([]);
-
-                          // setFilters({
-                          //   ...filters,
-                          //   sport: value,
-                          // });
+                          if (value === 'All') {
+                            setSelectedSport({
+                              sport: 'All',
+                              sport_type: 'All',
+                            })
+                            setSelectedEntity();
+                            setEntityData([]);
+                          } else {
+                            setSelectedSport(Utility.getSportObjectByName(value, authContext))
+                            setSelectedEntity();
+                            setEntityData([]);
+                          }
                         }}
-                        value={selectedSport}
+                        value={Utility.getSportName(selectedSport, authContext)}
                       />
                     </View>
                   </View>
@@ -917,7 +944,7 @@ export default function RecentMatchScreen({ navigation, route }) {
            </View> */}
               {/* Rate View */}
 
-              {selectedSport !== 'All' && (
+              {selectedSport.sport !== 'All' && (
                 <View
                   style={{
                     flexDirection: 'column',

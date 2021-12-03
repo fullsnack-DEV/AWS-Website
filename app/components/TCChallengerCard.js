@@ -1,18 +1,24 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-expressions */
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 import {
  View, Text, StyleSheet, Image,
- } from 'react-native';
+} from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
+import AuthContext from '../auth/context';
 
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
+import { getSportName } from '../utils';
 
-const TCChallengerCard = ({ data, entityType, selectedSport }) => {
+const TCChallengerCard = ({
+ data, entityType, selectedSport, sportType,
+}) => {
+  const authContext = useContext(AuthContext);
+
   let entityName, sportText, gameFee, currency;
 
   if (entityType === 'player') {
@@ -24,12 +30,11 @@ const TCChallengerCard = ({ data, entityType, selectedSport }) => {
   if (entityType === 'player') {
     if (selectedSport !== 'All') {
       const filterdData = (data?.registered_sports || []).filter(
-        (obj) => obj.sport_name.toLowerCase() === selectedSport.toLowerCase()
-          && obj?.setting?.availibility === 'On',
+        (obj) => obj.sport === selectedSport && obj.sport_type === sportType && obj?.setting?.availibility === 'On',
       );
       console.log('filterdData', filterdData);
       if (filterdData.length > 0) {
-        sportText = `${filterdData[0].sport_name}`;
+        sportText = getSportName(filterdData[0], authContext);
         gameFee = filterdData?.[0]?.setting?.game_fee?.fee;
         currency = filterdData?.[0].setting?.game_fee?.currency_type;
       }
@@ -40,32 +45,31 @@ const TCChallengerCard = ({ data, entityType, selectedSport }) => {
       console.log('filterdData', filterdData);
 
       if (filterdData.length === 1) {
-        sportText = filterdData?.[0]?.sport_name;
+        sportText = getSportName(filterdData[0], authContext);
         gameFee = filterdData?.[0]?.setting?.game_fee?.fee;
         currency = filterdData?.[0].setting?.game_fee?.currency_type;
       }
       if (filterdData.length === 2) {
-        sportText = `${filterdData?.[0]?.sport_name} and  ${filterdData?.[1]?.sport_name}`;
+        sportText = `${getSportName(
+          filterdData[0],
+          authContext,
+        )} and  ${getSportName(filterdData[1], authContext)}`;
       }
       if (filterdData.length > 2) {
-        sportText = `${filterdData?.[0]?.sport_name} and  ${
+        sportText = `${getSportName(filterdData[0], authContext)} and  ${
           filterdData.length - 1
         } more`;
       }
     }
   } else {
-    sportText = data.sport;
+    sportText = getSportName(data, authContext);
     gameFee = data?.setting?.game_fee?.fee;
     currency = data?.setting?.game_fee?.currency_type;
   }
 
-  console.log(data.sport);
-
   return (
-
     <LinearGradient
-    colors={[colors.localHomeGradientStart, colors.localHomeGradientEnd]}
-
+      colors={[colors.localHomeGradientStart, colors.localHomeGradientEnd]}
       style={styles.gradientContainer}>
       <Image
         source={
@@ -104,7 +108,14 @@ const TCChallengerCard = ({ data, entityType, selectedSport }) => {
                 {entityName}
               </Text>
               {entityType === 'team' && (
-                <Image source={(entityType === 'team' && images.teamT) || (entityType === 'club' && images.clubC) || (entityType === 'league' && images.leagueL)} style={styles.teamTImage} />
+                <Image
+                  source={
+                    (entityType === 'team' && images.teamT)
+                    || (entityType === 'club' && images.clubC)
+                    || (entityType === 'league' && images.leagueL)
+                  }
+                  style={styles.teamTImage}
+                />
               )}
             </View>
             <View>
@@ -121,7 +132,6 @@ const TCChallengerCard = ({ data, entityType, selectedSport }) => {
         </View>
       </View>
     </LinearGradient>
-
   );
 };
 

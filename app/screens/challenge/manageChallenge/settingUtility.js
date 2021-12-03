@@ -6,7 +6,7 @@ import strings from '../../../Constants/String';
 import { getUserDetails } from '../../../api/Users';
 import { getGroupDetails } from '../../../api/Groups';
 
-export const getSetting = async (entityID, entityType, sportName, authContext) => {
+export const getSetting = async (entityID, entityType, sportName, authContext, sportType = '') => {
   let obj = {};
   console.log('1');
 
@@ -14,15 +14,15 @@ export const getSetting = async (entityID, entityType, sportName, authContext) =
     console.log('user11');
 
     if (entityID === authContext.entity.uid) {
-      obj = (authContext?.user?.registered_sports ?? []).filter(
-          (o) => o.sport_name.toLowerCase() === sportName.toLowerCase(),
+      obj = (authContext?.entity?.obj?.registered_sports ?? []).filter(
+          (o) => o.sport === sportName && o.sport_type === sportType,
         )[0]?.setting ?? {};
         return obj
     }
       return getUserDetails(entityID, authContext)
         .then((response) => {
           obj = (response?.payload?.registered_sports ?? []).filter(
-            (o) => o.sport_name.toLowerCase() === sportName.toLowerCase(),
+            (o) => o.sport === sportName && o.sport_type === sportType,
           )[0]?.setting ?? {}
           return obj
         })
@@ -53,15 +53,15 @@ export const getSetting = async (entityID, entityType, sportName, authContext) =
   }
   if (entityType === 'referee') {
     if (entityID === authContext.entity.uid) {
-      obj = (authContext?.user?.referee_data ?? []).filter(
-          (o) => o?.sport_name?.toLowerCase() === sportName?.toLowerCase(),
+      obj = (authContext?.entity?.obj?.referee_data ?? []).filter(
+          (o) => o?.sport === sportName,
         )[0]?.setting ?? {};
         return obj
     }
        return getUserDetails(entityID, authContext)
         .then((response) => {
           obj = (response?.payload?.referee_data ?? []).filter(
-            (o) => o?.sport_name?.toLowerCase() === sportName?.toLowerCase(),
+            (o) => o?.sport === sportName,
           )[0]?.setting ?? {}
           return obj
         })
@@ -73,15 +73,15 @@ export const getSetting = async (entityID, entityType, sportName, authContext) =
   }
   if (entityType === 'scorekeeper') {
     if (entityID === authContext.entity.uid) {
-      obj = (authContext?.user?.scorekeeper_data ?? []).filter(
-          (o) => o.sport_name.toLowerCase() === sportName.toLowerCase(),
+      obj = (authContext?.entity?.obj?.scorekeeper_data ?? []).filter(
+          (o) => o.sport === sportName,
         )[0]?.setting ?? {};
         return obj
     }
         return getUserDetails(entityID, authContext)
         .then((response) => {
           obj = (response?.payload?.scorekeeper_data ?? []).filter(
-            (o) => o.sport_name.toLowerCase() === sportName.toLowerCase(),
+            (o) => o.sport === sportName,
           )[0]?.setting ?? {}
           return obj
         })

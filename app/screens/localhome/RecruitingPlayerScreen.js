@@ -62,11 +62,12 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
   const [groups, setGroups] = useState(groupsType);
 
   const [selectedSport, setSelectedSport] = useState(
-    route?.params?.filters.sport,
+    {
+      sport: route?.params?.filters.sport,
+      sport_type: route?.params?.filters.sport_type,
+    },
   );
   const [location, setLocation] = useState(route?.params?.filters.location);
-
-  const { sportsList } = route?.params ?? {};
 
   console.log('Recruiting Player Filter:=>', filters);
 
@@ -100,16 +101,22 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
         value: 'All',
       },
     ];
-    sportsList.map((obj) => {
+    let sportArr = [];
+
+    authContext.sports.map((item) => {
+      sportArr = [...sportArr, ...item.format];
+      return null;
+    });
+    sportArr.map((obj) => {
       const dataSource = {
-        label: obj.sport_name,
-        value: obj.sport_name,
+        label: Utility.getSportName(obj, authContext),
+        value: Utility.getSportName(obj, authContext),
       };
       list.push(dataSource);
     });
 
     setSports(list);
-  }, [sportsList]);
+  }, [authContext]);
 
   const getRecruitingPlayer = useCallback(
     (filerdata) => {
@@ -136,8 +143,16 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
         recruitingPlayersQuery.query.bool.must.push({
           term: {
             'sport.keyword': {
-              value: filerdata.sport.toLowerCase(),
-              case_insensitive: true,
+              value: filerdata.sport,
+
+            },
+          },
+        });
+        recruitingPlayersQuery.query.bool.must.push({
+          term: {
+            'sport_type.keyword': {
+              value: filerdata.sport_type,
+
             },
           },
         });
@@ -237,7 +252,10 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
         if (Object.keys(item)[0] === 'sport') {
           tempFilter.sport = 'All';
           delete tempFilter.gameFee;
-          setSelectedSport('All');
+          setSelectedSport({
+            sort: 'All',
+            sport_type: 'All',
+          });
         }
         if (Object.keys(item)[0] === 'location') {
           tempFilter.location = 'world';
@@ -344,8 +362,12 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
     setFilters({
       location: 'world',
       sport: 'All',
+      sport_type: 'All',
     });
-    setSelectedSport('All');
+    setSelectedSport({
+      sort: 'All',
+      sport_type: 'All',
+    });
   };
   const isIconCheckedOrNot = useCallback(
     ({ item, index }) => {
@@ -424,6 +446,8 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
         </View>
       </View>
       <TCTagsFilter
+      filter={filters}
+      authContext={authContext}
         dataSource={Utility.getFiltersOpetions(filters)}
         onTagCancelPress={handleTagPress}
       />
@@ -477,7 +501,9 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
                       setSettingPopup(false);
                       setTimeout(() => {
                         const tempFilter = { ...filters };
-                        tempFilter.sport = selectedSport;
+                        tempFilter.sport = selectedSport.sport;
+                        tempFilter.sport_type = selectedSport.sport_type;
+
                         tempFilter.location = location;
 
                         if (
@@ -659,9 +685,16 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
                         dataSource={sports}
                         placeholder={'Select Sport'}
                         onValueChange={(value) => {
-                          setSelectedSport(value);
+                          if (value === 'All') {
+                            setSelectedSport({
+                              sport: 'All',
+                              sport_type: 'All',
+                            })
+                          } else {
+                            setSelectedSport(Utility.getSportObjectByName(value, authContext))
+                          }
                         }}
-                        value={selectedSport}
+                        value={Utility.getSportName(selectedSport, authContext)}
                       />
                     </View>
                   </View>

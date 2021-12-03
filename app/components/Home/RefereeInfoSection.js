@@ -53,6 +53,7 @@ import TCKeyboardView from '../TCKeyboardView';
 import TCThinDivider from '../TCThinDivider';
 import DataSource from '../../Constants/DataSource';
 import MapPinWithRadious from '../Schedule/MapPinWithRadious';
+import { getSportName } from '../../utils';
 
 const privacy_Data = [
   {
@@ -445,13 +446,13 @@ function RefereeInfoSection({
       fee: refereeFeeCount,
       is_published: true,
       language: langParams,
-      sport_name: selectRefereeData.sport_name,
+      sport_name: getSportName(selectRefereeData, authContext),
     };
     const newDataList = [];
     data.referee_data.forEach((item) => {
       if (
-        item.sport_name?.toLowerCase()
-        === selectRefereeData.sport_name?.toLowerCase()
+        item.sport
+        === selectRefereeData.sport
       ) {
         newDataList.push(refereeEditParams);
       } else {

@@ -5,7 +5,6 @@ import React, {
   useLayoutEffect,
   useRef,
   useState,
-  useEffect,
 } from 'react';
 import {
   View,
@@ -34,30 +33,21 @@ import {
   patchRegisterScorekeeperDetails,
 } from '../../api/Users';
 import strings from '../../Constants/String';
-import { getSportsList } from '../../api/Games';
 
 let image_url = '';
-let sportsData = [];
+
 export default function SportActivityScreen({ navigation }) {
   const actionSheet = useRef();
   const addRoleActionSheet = useRef();
 
-  const [sportList, setSportList] = useState([]);
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   console.log('authContext', authContext.entity.obj);
 
-  Utility.getStorage('sportsList').then((list) => {
-    console.log('list:=>>', list);
-    sportsData = list;
-  });
   Utility.getStorage('appSetting').then((setting) => {
     console.log('APPSETTING:=', setting);
     image_url = setting.base_url_sporticon;
   });
-  useEffect(() => {
-    getSports();
-  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -72,23 +62,6 @@ export default function SportActivityScreen({ navigation }) {
     });
   }, [navigation]);
 
-  const getSportImage = (sportName, type) => {
-    if (
-      sportsData.filter(
-        (obj) => obj.sport_name.toLowerCase() === sportName.toLowerCase(),
-      ).length > 0
-    ) {
-      const tempObj = sportsData.filter(
-        (obj) => obj.sport_name.toLowerCase() === sportName.toLowerCase(),
-      )[0];
-
-      if (type === 'player') return tempObj.player_image;
-      if (type === 'referee') return tempObj.referee_image;
-      if (type === 'scorekeeper') return tempObj.scorekeeper_image;
-    }
-    return null
-  };
-
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const sportsView = useCallback(
     ({ item }) => (
@@ -100,12 +73,12 @@ export default function SportActivityScreen({ navigation }) {
           <View style={styles.viewContainer}>
             <Image
               source={{
-                uri: `${image_url}${getSportImage(item.sport_name, item.type)}`,
+                uri: `${image_url}${Utility.getSportImage(item.sport, item.type, authContext)}`,
               }}
               style={styles.sportIcon}
             />
             <View>
-              <Text style={styles.sportName}>{item.sport_name}</Text>
+              <Text style={styles.sportName}>{Utility.getSportName(item, authContext)}</Text>
               <Text style={styles.matchCount}>0 match</Text>
             </View>
           </View>
@@ -131,10 +104,10 @@ export default function SportActivityScreen({ navigation }) {
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
             <Image source={{
-                uri: `${image_url}${getSportImage(item.sport_name, item.type)}`,
+                uri: `${image_url}${Utility.getSportImage(item.sport, item.type, authContext)}`,
             }} style={styles.sportIcon} />
             <View>
-              <Text style={styles.sportName}>{item.sport_name}</Text>
+              <Text style={styles.sportName}>{Utility.getSportName(item, authContext)}</Text>
               <Text style={styles.matchCount}>0 match</Text>
             </View>
           </View>
@@ -160,10 +133,10 @@ export default function SportActivityScreen({ navigation }) {
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
             <Image source={{
-                uri: `${image_url}${getSportImage(item.sport_name, item.type)}`,
+                uri: `${image_url}${Utility.getSportImage(item.sport, item.type, authContext)}`,
             }} style={styles.sportIcon} />
             <View>
-              <Text style={styles.sportName}>{item.sport_name}</Text>
+              <Text style={styles.sportName}>{Utility.getSportName(item, authContext)}</Text>
               <Text style={styles.matchCount}>0 match</Text>
             </View>
           </View>
@@ -180,23 +153,6 @@ export default function SportActivityScreen({ navigation }) {
     [],
   );
 
-  const getSports = () => {
-    setloading(true);
-    getSportsList(authContext)
-      .then((response) => {
-        setSportList(response.payload);
-
-        console.log('Sport list:', sportList);
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
   // eslint-disable-next-line no-unused-vars
   const patchPlayerIn = ({ item }) => {
     setloading(true);
@@ -204,7 +160,7 @@ export default function SportActivityScreen({ navigation }) {
     const selectedSport = (
       authContext?.entity?.obj?.sport_setting?.activity_order
       || authContext?.entity?.obj?.registered_sports
-    )?.filter((obj) => obj.sport_name === item.sport_name)[0];
+    )?.filter((obj) => obj.sport === item.sport)[0];
 
     const modifiedObj = {
       ...selectedSport,
@@ -213,7 +169,7 @@ export default function SportActivityScreen({ navigation }) {
     const players = (
       authContext?.entity?.obj?.sport_setting?.activity_order
       || authContext?.entity?.obj?.registered_sports
-    ).map((u) => (u.sport_name !== modifiedObj.sport_name ? u : modifiedObj));
+    ).map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
 
     patchPlayer({ registered_sports: players }, authContext)
       .then(async (res) => {
@@ -235,13 +191,13 @@ export default function SportActivityScreen({ navigation }) {
   const patchScorekeeper = ({ item }) => {
     setloading(true);
     const selectedScorekeeperSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
-      (obj) => obj.sport_name === item.sport_name,
+      (obj) => obj.sport === item.sport,
     )[0];
     const modifiedObj = {
       ...selectedScorekeeperSport,
       is_published: !item.is_published,
     };
-    const scorekeepers = authContext?.entity?.obj?.scorekeeper_data.map((u) => (u.sport_name !== modifiedObj.sport_name ? u : modifiedObj));
+    const scorekeepers = authContext?.entity?.obj?.scorekeeper_data.map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
 
     patchRegisterScorekeeperDetails(
       { scorekeeper_data: scorekeepers },
@@ -267,14 +223,14 @@ export default function SportActivityScreen({ navigation }) {
     setloading(true);
 
     const selectedRefereeSport = authContext?.entity?.obj?.referee_data?.filter(
-      (obj) => obj.sport_name === item.sport_name,
+      (obj) => obj.sport === item.sport,
     )[0];
 
     const modifiedObj = {
       ...selectedRefereeSport,
       is_published: !item.is_published,
     };
-    const referees = authContext?.entity?.obj?.referee_data.map((u) => (u.sport_name !== modifiedObj.sport_name ? u : modifiedObj));
+    const referees = authContext?.entity?.obj?.referee_data.map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
     patchRegisterRefereeDetails({ referee_data: referees }, authContext)
       .then(async (res) => {
         setloading(false);

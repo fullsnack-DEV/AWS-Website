@@ -84,6 +84,8 @@ export default function LocalHomeScreen({ navigation, route }) {
   );
 
   const [selectedSport, setSelectedSport] = useState('All');
+  const [sportType, setSportType] = useState('');
+
   const [settingPopup, setSettingPopup] = useState(false);
 
   const [shortsList, setShortsList] = useState([]);
@@ -99,10 +101,21 @@ export default function LocalHomeScreen({ navigation, route }) {
 
   const [filters, setFilters] = useState({
     sport: selectedSport,
+    sport_type: sportType,
     location,
   });
 
   console.log('authContext', authContext);
+
+  useEffect(() => {
+    if (isFocused) {
+      getSportsList(authContext).then(async (res) => {
+        await authContext.setSports([...res.payload]);
+        await Utility.setStorage('sportsList', res.payload);
+      });
+    }
+  }, []);
+
   useEffect(() => {
     if (route?.params?.locationText) {
       setTimeout(() => {
@@ -140,24 +153,23 @@ export default function LocalHomeScreen({ navigation, route }) {
         if (setting === null) {
           const arr = [];
 
-          const refereeSport = authContext?.entity?.auth?.user?.referee_data || [];
-          const scorekeeperSport = authContext?.entity?.auth?.user?.scorekeeper_data || [];
+          // const refereeSport = authContext?.entity?.auth?.user?.referee_data || [];
+          // const scorekeeperSport = authContext?.entity?.auth?.user?.scorekeeper_data || [];
           const playerSport = authContext?.entity?.auth?.user?.registered_sports || [];
 
           const allSports = [
             ...arr,
-            ...refereeSport,
-            ...scorekeeperSport,
+            // ...refereeSport,
+            // ...scorekeeperSport,
             ...playerSport,
           ];
           const uniqSports = {};
           const uniqueSports = allSports.filter(
-            (obj) => !uniqSports[obj.sport_name.toLowerCase()]
-              && (uniqSports[obj.sport_name.toLowerCase()] = true),
+            (obj) => !uniqSports[obj.sport] && (uniqSports[obj.sport] = true),
           );
 
           const result = uniqueSports.map((obj) => ({
-            sport_name: obj.sport_name,
+            sport: obj.sport,
           }));
           setSports(result);
           console.log('Unique sport:=>', result);
@@ -169,19 +181,6 @@ export default function LocalHomeScreen({ navigation, route }) {
       .catch((e) => {
         Alert.alert('Can not fetch local sport setting.');
       });
-
-    if (isFocused) {
-      getSportsList(authContext)
-        .then(async (response) => {
-          await Utility.setStorage('sportsList', response.payload)
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    }
   }, [authContext, isFocused]);
 
   useEffect(() => {
@@ -239,8 +238,14 @@ export default function LocalHomeScreen({ navigation, route }) {
         recentMatchQuery.query.bool.must.push({
           term: {
             'sport.keyword': {
-              value: selectedSport.toLowerCase(),
-              case_insensitive: true,
+              value: selectedSport,
+            },
+          },
+        });
+        recentMatchQuery.query.bool.must.push({
+          term: {
+            'sport_type.keyword': {
+              value: sportType,
             },
           },
         });
@@ -280,8 +285,14 @@ export default function LocalHomeScreen({ navigation, route }) {
         upcomingMatchQuery.query.bool.must.push({
           term: {
             'sport.keyword': {
-              value: selectedSport.toLowerCase(),
-              case_insensitive: true,
+              value: selectedSport,
+            },
+          },
+        });
+        upcomingMatchQuery.query.bool.must.push({
+          term: {
+            'sport_type.keyword': {
+              value: sportType,
             },
           },
         });
@@ -337,12 +348,6 @@ export default function LocalHomeScreen({ navigation, route }) {
       };
 
       if (location !== 'world') {
-        availableForchallengeQuery.query.bool.should[0].bool.must.push({
-          multi_match: {
-            query: location,
-            fields: ['city', 'country', 'state', 'venue.address'],
-          },
-        });
         availableForchallengeQuery.query.bool.should[1].bool.must.push({
           multi_match: {
             query: location,
@@ -354,17 +359,31 @@ export default function LocalHomeScreen({ navigation, route }) {
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
           term: {
             'sport.keyword': {
-              value: selectedSport.toLowerCase(),
-              case_insensitive: true,
+              value: selectedSport,
+            },
+          },
+        });
+        availableForchallengeQuery.query.bool.should[0].bool.must.push({
+          term: {
+            'sport_type.keyword': {
+              value: sportType,
             },
           },
         });
         availableForchallengeQuery.query.bool.should[1].bool.must[1].nested.query.bool.must.push(
           {
             term: {
-              'registered_sports.sport_name.keyword': {
-                value: selectedSport.toLowerCase(),
-                case_insensitive: true,
+              'registered_sports.sport.keyword': {
+                value: selectedSport,
+              },
+            },
+          },
+        );
+        availableForchallengeQuery.query.bool.should[1].bool.must[1].nested.query.bool.must.push(
+          {
+            term: {
+              'registered_sports.sport_type.keyword': {
+                value: sportType,
               },
             },
           },
@@ -399,8 +418,14 @@ export default function LocalHomeScreen({ navigation, route }) {
         recruitingPlayersQuery.query.bool.must.push({
           term: {
             'sport.keyword': {
-              value: selectedSport.toLowerCase(),
-              case_insensitive: true,
+              value: selectedSport,
+            },
+          },
+        });
+        recruitingPlayersQuery.query.bool.must.push({
+          term: {
+            'sport_type.keyword': {
+              value: sportType,
             },
           },
         });
@@ -451,9 +476,15 @@ export default function LocalHomeScreen({ navigation, route }) {
       if (selectedSport !== 'All') {
         lookingQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
-            'registered_sports.sport_name.keyword': {
-              value: selectedSport.toLowerCase(),
-              case_insensitive: true,
+            'registered_sports.sport.keyword': {
+              value: selectedSport,
+            },
+          },
+        });
+        lookingQuery.query.bool.must[0].nested.query.bool.must.push({
+          term: {
+            'registered_sports.sport_type.keyword': {
+              value: sportType,
             },
           },
         });
@@ -483,9 +514,8 @@ export default function LocalHomeScreen({ navigation, route }) {
       if (selectedSport !== 'All') {
         refereeQuery.query.bool.must.push({
           term: {
-            'referee_data.sport_name.keyword': {
-              value: `${selectedSport.toLowerCase()}`,
-              case_insensitive: true,
+            'referee_data.sport.keyword': {
+              value: selectedSport,
             },
           },
         });
@@ -512,9 +542,8 @@ export default function LocalHomeScreen({ navigation, route }) {
       if (selectedSport !== 'All') {
         scorekeeperQuery.query.bool.must.push({
           term: {
-            'scorekeeper_data.sport_name.keyword': {
-              value: `${selectedSport.toLowerCase()}`,
-              case_insensitive: true,
+            'scorekeeper_data.sport.keyword': {
+              value: selectedSport,
             },
           },
         });
@@ -584,13 +613,13 @@ export default function LocalHomeScreen({ navigation, route }) {
 
       // });
     }
-  }, [authContext, isFocused, location, selectedSport]);
+  }, [authContext, isFocused, location, selectedSport, sportType]);
 
   const sportsListView = useCallback(
     ({ item, index }) => (
       <Text
         style={
-          selectedSport === item.sport_name
+          selectedSport === item.sport && sportType === item.sport_type
             ? [
                 styles.sportName,
                 { color: colors.themeColor, fontFamily: fonts.RBlack },
@@ -603,14 +632,19 @@ export default function LocalHomeScreen({ navigation, route }) {
             index,
             viewPosition: 0.5,
           });
-          console.log('selected sport::=>', item.sport_name);
-          setSelectedSport(item.sport_name);
-          setFilters({ ...filters, sport: item.sport_name });
+          console.log('selected sport::=>', item.sport);
+          setSelectedSport(item.sport);
+          setSportType(item.sport_type);
+          setFilters({
+            ...filters,
+            sport: item.sport,
+            sport_type: item.sport_type,
+          });
         }}>
-        {item.sport_name}
+        {item.sport === 'All' ? 'All' : Utility.getSportName(item, authContext)}
       </Text>
     ),
-    [filters, selectedSport],
+    [authContext, filters, selectedSport, sportType],
   );
 
   const onShortPress = useCallback(
@@ -662,10 +696,11 @@ export default function LocalHomeScreen({ navigation, route }) {
           data={item}
           entityType={item.entity_type}
           selectedSport={selectedSport}
+          sportType={sportType}
         />
       </View>
     ),
-    [selectedSport],
+    [selectedSport, sportType],
   );
   const renderHiringPlayersItems = useCallback(
     ({ item }) => (
@@ -674,10 +709,11 @@ export default function LocalHomeScreen({ navigation, route }) {
           data={item}
           entityType={item.entity_type}
           selectedSport={selectedSport}
+          sportType={sportType}
         />
       </View>
     ),
-    [selectedSport],
+    [selectedSport, sportType],
   );
 
   const renderEntityListView = useCallback(
@@ -813,7 +849,7 @@ export default function LocalHomeScreen({ navigation, route }) {
               data={[
                 ...[
                   {
-                    sport_name: 'All',
+                    sport: 'All',
                   },
                 ],
                 ...sports,
@@ -869,7 +905,6 @@ export default function LocalHomeScreen({ navigation, route }) {
                   viewStyle={{ marginTop: 20, marginBottom: 15 }}
                   onPress={() => navigation.navigate('RecentMatchScreen', {
                       filters,
-                      sportsList: sports,
                     })
                   }
                 />
@@ -904,7 +939,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                   onPress={() => {
                     navigation.navigate('UpcomingMatchScreen', {
                       filters,
-                      sportsList: sports,
+
                     });
 
                     // navigation.navigate('AddLogScreen')
@@ -956,7 +991,6 @@ export default function LocalHomeScreen({ navigation, route }) {
                   onPress={() => {
                     navigation.navigate('LookingForChallengeScreen', {
                       filters,
-                      sportsList: sports,
                     });
                   }}
                 />
@@ -997,11 +1031,7 @@ export default function LocalHomeScreen({ navigation, route }) {
 
                         const body = bodybuilder()
                           .query('match', 'entity_type', 'player')
-                          .query(
-                            'match',
-                            'registered_sports.sport_name',
-                            'Tennis',
-                          )
+                          .query('match', 'registered_sports.sport', 'Tennis')
                           .query('multi_match', {
                             query: 'india',
                             fields: ['city', 'country', 'state'],
@@ -1037,7 +1067,6 @@ export default function LocalHomeScreen({ navigation, route }) {
                         groupClub: 'Clubs',
                         groupLeague: 'Leagues',
                       },
-                      sportsList: sports,
                     });
                   }}
                 />
@@ -1100,7 +1129,6 @@ export default function LocalHomeScreen({ navigation, route }) {
                     console.log('Applicable filter::=>', filters);
                     navigation.navigate('RefereesListScreen', {
                       filters,
-                      sportsList: sports,
                     });
                   }}
                 />
@@ -1130,7 +1158,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                   viewStyle={{ marginTop: 20, marginBottom: 15 }}
                   onPress={() => navigation.navigate('ScorekeeperListScreen', {
                       filters,
-                      sportsList: sports,
+
                     })
                   }
                 />

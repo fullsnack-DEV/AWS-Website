@@ -66,11 +66,12 @@ export default function ScorekeeperListScreen({ navigation, route }) {
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
   const [selectedSport, setSelectedSport] = useState(
-    route?.params?.filters.sport,
+    {
+      sport: route?.params?.filters.sport,
+      sport_type: route?.params?.filters.sport_type,
+    },
   );
   const [location, setLocation] = useState(route?.params?.filters.location);
-
-  const { sportsList } = route?.params ?? {};
 
   // console.log('Scorekeeper Filter:=>', filters);
 
@@ -92,16 +93,16 @@ export default function ScorekeeperListScreen({ navigation, route }) {
       label: 'All',
         value: 'All',
     }];
-    sportsList.map((obj) => {
+    authContext.sports.map((obj) => {
       const dataSource = {
-        label: obj.sport_name,
-        value: obj.sport_name,
+        label: Utility.getSportName(obj, authContext),
+        value: Utility.getSportName(obj, authContext),
       };
       list.push(dataSource);
     });
 
     setSports(list);
-  }, [sportsList]);
+  }, [authContext]);
 
   const getScorekeepers = useCallback(
     (filerScorekeeper) => {
@@ -125,9 +126,9 @@ export default function ScorekeeperListScreen({ navigation, route }) {
       if (filerScorekeeper.sport !== 'All') {
         scorekeeperQuery.query.bool.must.push({
           term: {
-            'scorekeeper_data.sport_name.keyword': {
-              value: `${filerScorekeeper.sport.toLowerCase()}`,
-              case_insensitive: true,
+            'scorekeeper_data.sport.keyword': {
+              value: filerScorekeeper.sport,
+
             },
           },
         });
@@ -235,7 +236,10 @@ export default function ScorekeeperListScreen({ navigation, route }) {
         if (Object.keys(item)[0] === 'sport') {
           tempFilter.sport = 'All';
           delete tempFilter.refereeFee;
-          setSelectedSport('All');
+          setSelectedSport({
+            sort: 'All',
+            sport_type: 'All',
+          });
           setMinFee(0);
           setMaxFee(0);
         }
@@ -335,8 +339,12 @@ export default function ScorekeeperListScreen({ navigation, route }) {
     setFilters({
       location: 'world',
       sport: 'All',
+      sport_type: 'All',
     })
-    setSelectedSport('All')
+    setSelectedSport({
+      sort: 'All',
+      sport_type: 'All',
+    });
     setMinFee(0)
     setMaxFee(0)
    };
@@ -371,6 +379,8 @@ export default function ScorekeeperListScreen({ navigation, route }) {
         </View>
       </View>
       <TCTagsFilter
+      filter={filters}
+      authContext={authContext}
         dataSource={Utility.getFiltersOpetions(filters)}
         onTagCancelPress={handleTagPress}
       />
@@ -425,7 +435,9 @@ export default function ScorekeeperListScreen({ navigation, route }) {
                       setSettingPopup(false);
                       setTimeout(() => {
                         const tempFilter = { ...filters };
-                        tempFilter.sport = selectedSport;
+                        tempFilter.sport = selectedSport.sport;
+                        tempFilter.sport_type = selectedSport.sport_type;
+
                         tempFilter.location = location;
 
                         if (minFee && maxFee) {
@@ -592,13 +604,18 @@ export default function ScorekeeperListScreen({ navigation, route }) {
                         dataSource={sports}
                         placeholder={'Select Sport'}
                         onValueChange={(value) => {
-                          setSelectedSport(value);
                           if (value === 'All') {
+                            setSelectedSport({
+                              sport: 'All',
+                              sport_type: 'All',
+                            })
                             setMinFee(0);
                             setMaxFee(0);
+                          } else {
+                            setSelectedSport(Utility.getSportObjectByName(value, authContext))
                           }
                         }}
-                        value={selectedSport}
+                        value={Utility.getSportName(selectedSport, authContext)}
                       />
                     </View>
                   </View>
@@ -743,7 +760,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
            </View> */}
               {/* Rate View */}
 
-              {selectedSport !== 'All' && (
+              {selectedSport.sport !== 'All' && (
                 <View
                   style={{
                     flexDirection: 'column',

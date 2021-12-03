@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View, Text, StyleSheet, FlatList,
 } from 'react-native';
@@ -13,10 +13,13 @@ import * as Utility from '../../../utils';
 import UserInfoGroupItem from './UserInfoGroupItem';
 import UserInfoPlaysInItem from './UserInfoPlaysInItem';
 import UserInfoRefereesInItem from './UserInfoRefereesInItem';
+import AuthContext from '../../../auth/context';
 
 export default function UserInfo({
   navigation, userDetails, isAdmin, onGroupPress, onRefereesInPress, onPlayInPress, onGroupListPress,
 }) {
+  const authContext = useContext(AuthContext);
+
     console.log('RK ', userDetails)
   const playin = userDetails.games && userDetails.games.length > 0
   const refereesIn = userDetails.referee_data && userDetails.referee_data.length > 0
@@ -45,7 +48,7 @@ export default function UserInfo({
   );
 
   const renderPlayIn = ({ item }) => (
-    <UserInfoPlaysInItem title={item.sport_name}
+    <UserInfoPlaysInItem title={Utility.getSportName(item, authContext)}
     totalGames={item.totalGames}
     thumbURL={item.thumbnail ? { uri: item.thumbnail } : undefined}
     onPlayInPress={() => {
@@ -57,7 +60,7 @@ export default function UserInfo({
   );
 
   const renderRefereesIn = ({ item }) => (
-    <UserInfoRefereesInItem title={item.sport_name}
+    <UserInfoRefereesInItem title={Utility.getSportName(item, authContext)}
     thumbURL={images.gameGoal}
     onRefereesInPress= {() => {
       console.log('renderPlayIn', navigation)

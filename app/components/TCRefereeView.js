@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 import {
  View, Text, TouchableOpacity, StyleSheet, Image,
  } from 'react-native';
@@ -6,16 +6,20 @@ import {
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
+import { getSportName } from '../utils';
+import AuthContext from '../auth/context';
 
 function TCRefereeView({
  onPress, showStar = false, data, sport,
  }) {
+  const authContext = useContext(AuthContext);
+
   let sportObj = data?.referee_data?.filter(
-    (o) => o?.sport_name?.toLowerCase() === sport?.toLowerCase(),
+    (o) => o?.sport === sport?.sport,
   );
   if (sportObj.length === 1) {
     sportObj = data?.referee_data?.filter(
-      (o) => o?.sport_name?.toLowerCase() === sport?.toLowerCase(),
+      (o) => o?.sport === sport?.sport,
     );
   } else {
     sportObj = data?.referee_data;
@@ -42,7 +46,7 @@ function TCRefereeView({
           <Text style={styles.locationText} numberOfLines={1}>
             {data?.city}
             {sportObj.length === 1
-              ? ` · ${sportObj?.[0]?.sport_name}`
+              ? ` · ${getSportName(sportObj?.[0], authContext)}`
               : ''}
           </Text>
           {showStar && (

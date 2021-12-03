@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,8 @@ import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import ReservationStatus from '../Constants/ReservationStatus';
+import { getSportName } from '../utils';
+import AuthContext from '../auth/context';
 
 function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
   const months = [
@@ -31,6 +33,8 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
     'Nov',
     'Dec',
   ];
+
+  const authContext = useContext(AuthContext);
 
   const formatAMPM = (date) => {
     let hours = date.getHours();
@@ -92,7 +96,7 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
           </View>
         </LinearGradient>
         <View style={styles.eventText}>
-          <Text style={styles.eventTitle}>{data?.sport}</Text>
+          <Text style={styles.eventTitle}>{getSportName(data, authContext)}</Text>
           <View style={styles.bottomView}>
             <Text style={styles.eventTimeLocation}>
               {formatAMPM(new Date(data?.start_datetime * 1000))} -{' '}
