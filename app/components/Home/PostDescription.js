@@ -12,7 +12,7 @@ function PostDescription({
   const [readMore] = useState();
 
   return (
-    <View style={[styles.containerStyle, containerStyle]}>
+    <View style={containerStyle}>
       {descriptions.length > 0 && (
         <Text style={[styles.descriptionTxt, descriptionTxt]} onReadMorePress={onReadMorePress}>
           {readMore ? descriptions : descriptions.substring(0, character)}
@@ -29,9 +29,7 @@ function PostDescription({
 }
 
 const styles = StyleSheet.create({
-  containerStyle: {
-    marginHorizontal: 18,
-  },
+ 
   descText: {
     color: 'gray',
     fontSize: 12,

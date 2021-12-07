@@ -241,14 +241,14 @@ const getGameRoster = (gameId, authContext) => makeAPIRequest({
   authContext,
 })
 
-const getRefereeReviewData = async (userID, sport, authContext) => makeAPIRequest({
+const getRefereeReviewData = async (userID, sport, groupBy,authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/users/${userID}/reviews?sport=${sport}&role=referee`,
+  url: `${Config.BASE_URL}/users/${userID}/reviews?sport=${sport}&role=referee&groupby_game=${groupBy}`,
   authContext,
 })
-const getScorekeeperReviewData = async (userID, sport, authContext) => makeAPIRequest({
+const getScorekeeperReviewData = async (userID, sport, groupBy,authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/users/${userID}/reviews?sport=${sport}&role=scorekeeper`,
+  url: `${Config.BASE_URL}/users/${userID}/reviews?sport=${sport}&role=scorekeeper&groupby_game=${groupBy}`,
   authContext,
 })
 

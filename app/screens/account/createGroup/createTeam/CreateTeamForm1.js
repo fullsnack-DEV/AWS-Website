@@ -33,6 +33,7 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
 import { getGroupIndex } from '../../../../api/elasticSearch';
+import { getSportName } from '../../../../utils';
 
 export default function CreateTeamForm1({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -41,7 +42,6 @@ export default function CreateTeamForm1({ navigation, route }) {
   const [sportsSelection, setSportsSelection] = useState();
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
-  const [sports, setSports] = useState('');
   const [sportsData, setSportsData] = useState([]);
 
   const [followersData, setFollowersData] = useState();
@@ -83,7 +83,7 @@ export default function CreateTeamForm1({ navigation, route }) {
       onPress={() => {
         setSportsSelection(item);
         setTimeout(() => {
-          setSports(item?.sport_name);
+          
           setVisibleSportsModal(false);
           if (
             item?.sport === 'tennis' && item?.sport_type === 'double'
@@ -106,7 +106,7 @@ export default function CreateTeamForm1({ navigation, route }) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item.sport_name}</Text>
+        <Text style={styles.languageList}>{getSportName(item,authContext)}</Text>
         <View style={styles.checkbox}>
           {sportsSelection?.sport === item?.sport ? (
             <Image
@@ -217,7 +217,7 @@ export default function CreateTeamForm1({ navigation, route }) {
               <TextInput
                 style={styles.searchTextField}
                 placeholder={strings.selectSportPlaceholder}
-                value={sports}
+                value={getSportName(sportsSelection,authContext)}
                 editable={false}
                 pointerEvents="none"
               />
@@ -251,7 +251,7 @@ export default function CreateTeamForm1({ navigation, route }) {
       </ScrollView>
       <SafeAreaView>
         <TCGradientButton
-          isDisabled={sports === '' || teamName === '' || location === ''}
+          isDisabled={!sportsSelection || teamName === '' || location === ''}
           title={strings.nextTitle}
           style={{ marginBottom: 5 }}
           onPress={nextOnPress}

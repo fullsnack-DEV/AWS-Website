@@ -55,7 +55,6 @@ const PlayInModule = ({
   console.log('playInObject', playInObject);
   const actionSheetRef = useRef();
   const actionSheetSettingRef = useRef();
-  const [sportName, setSportName] = useState('');
   const [singlePlayerGame, setSinglePlayerGame] = useState(true);
   const [mainTitle, setMainTitle] = useState();
   const authContext = useContext(AuthContext);
@@ -76,28 +75,28 @@ const PlayInModule = ({
   }, [userData]);
 
   useEffect(() => {
-    if (playInObject?.sport) setSportName(playInObject?.sport);
-    if (playInObject?.sport !== 'tennis') {
+    
+    if (playInObject?.sport !== 'tennis' && playInObject?.sport_type !== 'single') {
       TAB_ITEMS = ['Info', 'Scoreboard', 'Stats'];
       setSinglePlayerGame(false);
     } else TAB_ITEMS = ['Info', 'Scoreboard', 'Stats', 'Reviews'];
   }, [playInObject]);
 
   useEffect(() => {
-    if (sportName) {
-      if (sportName.toLowerCase() === 'tennis') {
+    if (playInObject.sport) {
+      if (playInObject.sport === 'tennis' && playInObject.sport_type === 'single') {
         setMainTitle({
-          title: `Player in ${sportName}`,
+          title: `Player in ${Utility.getSportName(playInObject,authContext)}`,
           titleIcon: images.tennisSingleHeaderIcon,
         });
       } else {
         setMainTitle({
-          title: `Play in ${sportName}`,
+          title: `Play in ${Utility.getSportName(playInObject,authContext)}`,
           titleIcon: images.soccerImage,
         });
       }
     }
-  }, [sportName, singlePlayerGame]);
+  }, [singlePlayerGame, playInObject, authContext]);
   const onSave = useCallback(
     (params) => new Promise((resolve, reject) => {
         patchPlayer(params, authContext)
@@ -238,7 +237,7 @@ const PlayInModule = ({
             console.log('auth123:=>', authContext);
             if (
               authContext?.entity?.obj?.registered_sports?.some(
-                (item) => item?.sport === sportName,
+                (item) => item?.sport === playInObject?.sport && item?.sport_type === playInObject?.sport_type,
               )
             ) {
               actionSheetRef.current.show();
@@ -281,15 +280,7 @@ const PlayInModule = ({
           </LinearGradient>
         </TouchableOpacity>
       ),
-    [
-      authContext,
-      currentTab,
-      currentUserData?.entity_type,
-      currentUserData?.user_id,
-      playInObject?.fee,
-      playInObject?.sport_type,
-      sportName,
-    ],
+    [authContext, currentTab, currentUserData?.entity_type, currentUserData?.user_id, playInObject?.sport, playInObject?.sport_type],
   );
 
   const onMessageButtonPress = useCallback(() => {
@@ -487,7 +478,7 @@ const PlayInModule = ({
         onPress={(index) => {
           if (index === 0) {
             onClose();
-            navigation.navigate('LookingForSettingScreen', { sportName });
+            navigation.navigate('LookingForSettingScreen', { sportName: playInObject.sport,sportType: playInObject?.sport_type });
           }
           if (index === 1) {
              onClose();

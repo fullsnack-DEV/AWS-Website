@@ -1,57 +1,66 @@
-import {
-  View, Alert,
-} from 'react-native';
-import React, { useEffect, useContext, useState } from 'react';
+import {View, Alert} from 'react-native';
+import React, {useEffect, useContext, useState} from 'react';
 import AuthContext from '../../../../auth/context';
 
 import strings from '../../../../Constants/String';
 
-import {
-
-  getUserReviews,
-
-} from '../../../../api/Games';
+import {getUserReviews} from '../../../../api/Games';
 import UserReviewSection from '../../../../components/Home/UserReviewSection';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
-const PlayInReviewsView = ({
-  currentUserData,
-}) => {
+const PlayInReviewsView = ({currentUserData}) => {
   console.log('currentUserData:=>', currentUserData);
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
-  const [userReviewData, setUserReviewData] = useState()
-  const [averageUserReview, setAverageUserReview] = useState()
+  const [userReviewData, setUserReviewData] = useState();
+  const [averageUserReview, setAverageUserReview] = useState();
 
   useEffect(() => {
-    setLoading(true)
-      getUserReviews(currentUserData.user_id, authContext).then((res) => {
+    setLoading(true);
+    getUserReviews(currentUserData.user_id, authContext)
+      .then((res) => {
         console.log('Get user Review Data Res ::--', res?.payload);
-        setLoading(false)
+        setLoading(false);
 
-        if (res?.payload?.averageReviews?.[0]) {
-          let array = Object.keys(res?.payload?.averageReviews?.[0]?.avg_review);
-          array = array.filter((e) => e !== 'total_avg');
-          const userProperty = []
-
-          for (let i = 0; i < array.length; i++) {
-            const obj = {
-              [array[i]]: res?.payload?.averageReviews?.[0]?.avg_review[array[i]],
-            }
-            userProperty.push(obj)
-          }
-          setAverageUserReview(userProperty)
-          setUserReviewData(res?.payload)
+        if (res?.payload) {
+          setUserReviewData(res?.payload);
         } else {
-          setAverageUserReview([])
-          setUserReviewData()
+          setUserReviewData();
+        }
+
+        if (currentUserData) {
+          const playerSport = currentUserData.registered_sports.filter(
+            (playerItem) =>
+              playerItem.sport === 'tennis' &&
+              playerItem.sport_type === 'single',
+          )[0];
+
+          console.log('playerSport::=>', playerSport);
+
+          if (playerSport?.avg_review) {
+            let array = Object.keys(playerSport.avg_review);
+            array = array.filter((e) => e !== 'total_avg');
+            const playerProperty = [];
+            console.log('array player Review Data Res ::--', array);
+
+            for (let i = 0; i < array.length; i++) {
+              const obj = {
+                [array[i]]: playerSport.avg_review[array[i]],
+              };
+              playerProperty.push(obj);
+            }
+
+            setAverageUserReview(playerProperty);
+          } else {
+            setAverageUserReview();
+          }
         }
       })
-          .catch((error) => {
-            Alert.alert(strings.alertmessagetitle, error.message)
-          })
-  }, [authContext, currentUserData.user_id])
+      .catch((error) => {
+        Alert.alert(strings.alertmessagetitle, error.message);
+      });
+  }, [authContext, currentUserData.user_id]);
   return (
     // <View style={{ flex: 1 }}>
     //   <EventItemRender
@@ -86,17 +95,17 @@ const PlayInReviewsView = ({
       <ActivityLoader visible={loading} />
 
       <UserReviewSection
-          isTeamReviewSection={true}
-          loading={loading}
-          reviewsData={averageUserReview}
-          reviewsFeed={userReviewData}
-          onFeedPress={() => Alert.alert(5)}
-          onReadMorePress={() => {
-            // reviewerDetailModal();
-          }}
+        isTeamReviewSection={true}
+        loading={loading}
+        reviewsData={averageUserReview}
+        reviewsFeed={userReviewData}
+        onFeedPress={() => Alert.alert(5)}
+        onReadMorePress={() => {
+          // reviewerDetailModal();
+        }}
       />
     </View>
-      )
-}
+  );
+};
 
 export default PlayInReviewsView;

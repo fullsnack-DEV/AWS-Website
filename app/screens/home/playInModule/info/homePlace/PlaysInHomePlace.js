@@ -17,6 +17,7 @@ const PlaysInHomePlace = ({
   isAdmin,
   currentUserData,
   sportName,
+  sportType,
   onSave,
 }) => {
   const actionSheet = useRef();
@@ -25,7 +26,7 @@ const PlaysInHomePlace = ({
   const [registerSport, setRegisterSport] = useState();
   useEffect(() => {
     if (currentUserData) {
-      const sportData = currentUserData?.registered_sports?.find((item) => item?.sport_name?.toLowerCase() === sportName?.toLowerCase());
+      const sportData = currentUserData?.registered_sports?.find((item) => item?.sport === sportName && item?.sport_type === sportType);
       setRegisterSport(sportData ? { ...sportData } : null);
     }
   }, [currentUserData]);
@@ -98,7 +99,7 @@ const EditPlaysInModal = ({
   const onSavePress = () => {
     if (editModalType === strings.homePlaceTitle) {
       const registered_sports = _.cloneDeep(currentUserData?.registered_sports);
-      const editSportIndex = registered_sports?.findIndex((item) => item?.sport_name?.toLowerCase() === registerSport?.sport_name?.toLowerCase());
+      const editSportIndex = registered_sports?.findIndex((item) => item?.sport === registerSport?.sport && item?.sport_type === registerSport?.sport_type);
       if (editSportIndex !== -1) {
         setLoading(true);
         registered_sports[editSportIndex].homePlace = homePlace ?? '';

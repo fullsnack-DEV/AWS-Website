@@ -49,8 +49,8 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
 
   console.log(
-    'route?.params?.starAttributesForPlayer',
-    route?.params?.starAttributesForPlayer,
+    'route?.params?.starAttributes',
+    route?.params?.starAttributes,
   );
   console.log(
     'route?.params?.isRefereeAvailable',
@@ -132,13 +132,13 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   ]);
 
   useEffect(() => {
-    setStarAttributes([...route?.params?.starAttributesForPlayer]);
+    setStarAttributes([...route?.params?.starAttributes]);
 
     // console.log('Edit review Data::=>', JSON.stringify(route?.params?.gameReviewData?.results));
     if (!route?.params?.gameReviewData) {
-      loadStarAttributes(route?.params?.starAttributesForPlayer || []);
+      loadStarAttributes(route?.params?.starAttributes || []);
     }
-  }, [route?.params?.gameReviewData, route?.params?.starAttributesForPlayer]);
+  }, [route?.params?.gameReviewData, route?.params?.starAttributes]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

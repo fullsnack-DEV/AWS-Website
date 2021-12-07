@@ -118,9 +118,9 @@ import React, {
        if (route?.params?.sport) {
         scorekeeperQuery.query.bool.must.push({
            term: {
-             'scorekeeper_data.sport_name.keyword': {
-               value: `${route?.params?.sport?.toLowerCase()}`,
-               case_insensitive: true,
+             'scorekeeper_data.sport.keyword': {
+               value: route?.params?.sport,
+               
              },
            },
          });
@@ -267,8 +267,8 @@ import React, {
    const renderScorekeeperData = ({ item }) => {
      const scorekeeper = item;
      const scorekeeperObject = scorekeeper?.scorekeeper_data?.filter(
-       (scorekeeperItem) => scorekeeperItem?.sport_name?.toLowerCase()
-         === gameData?.sport?.toLowerCase(),
+       (scorekeeperItem) => scorekeeperItem?.sport
+         === gameData?.sport,
      );
 
      console.log('setting1:=>', scorekeeperObject);

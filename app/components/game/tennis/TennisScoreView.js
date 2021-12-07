@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-param-reassign */
 /* eslint-disable array-callback-return */
 import React, { useEffect, useCallback } from 'react';
@@ -224,13 +225,13 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
         />
       </View>
       <View style={styles.centerScoreContainer}>
-        <Text style={styles.centerTitle}>Player</Text>
+        <Text style={styles.centerTitle}>{scoreDataSource.sport_type === 'single' ? 'Player' : 'Team'}</Text>
         <View style={styles.centerScoreView}>
           <Image
             source={
               scoreDataSource?.home_team?.thumbnail
                 ? { uri: scoreDataSource?.home_team?.thumbnail }
-                : images.profilePlaceHolder
+                : scoreDataSource.sport_type === 'single' ? images.profilePlaceHolder : images.teamPlaceholder
             }
             style={styles.player1Image}
           />
@@ -238,7 +239,7 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
             source={
               scoreDataSource?.away_team?.thumbnail
                 ? { uri: scoreDataSource?.away_team?.thumbnail }
-                : images.profilePlaceHolder
+                : scoreDataSource.sport_type === 'single' ? images.profilePlaceHolder : images.teamPlaceholder
             }
             style={styles.player2Image}
           />

@@ -112,7 +112,7 @@ export default function SportActivityTagScreen({ navigation }) {
       .finally(() => setloading(false));
   };
   const renderSportsView = useCallback(
-    ({ item, drag }) => item.sport_name !== 'All' && (
+    ({ item, drag }) => item.sport !== 'All' && (
       <View style={styles.sportsBackgroundView}>
         <View style={{ flexDirection: 'row' }}>
           <Image source={images.gameGoal} style={styles.sportsIcon} />

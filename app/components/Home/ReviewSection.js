@@ -28,6 +28,11 @@ function ReviewSection({
   const [teamPropertyList, setTeamPropertyList] = useState([]);
   const [teamKeyValueList, setTeamKeyValueList] = useState([]);
 
+
+  console.log('reviewsData',reviewsData);
+  console.log('reviewsFeed',reviewsFeed);
+
+
   useEffect(() => {
     if (isTeamReviewSection) {
       const teamProperty = [];
@@ -42,19 +47,20 @@ function ReviewSection({
     }
   }, [isTeamReviewSection, reviewsData]);
   return (
-    <ScrollView>
-      {isTeamReviewSection && (
-        <TCRadarChart
+    <>
+      <ScrollView>
+        {isTeamReviewSection && (
+          <TCRadarChart
           radarChartAttributes={teamPropertyList}
           radarChartData={teamKeyValueList}
         />
       )}
-      <EventItemRender
+        <EventItemRender
         title={`Rating for teams (${
           Object.keys(reviewsFeed?.reviews?.results)?.length || 0
         })`}>
-        {reviewsData && (
-          <FlatList
+          {reviewsData && (
+            <FlatList
             data={reviewsData}
             bounces={false}
             showsHorizontalScrollIndicator={false}
@@ -82,18 +88,18 @@ function ReviewSection({
             keyExtractor={(item, index) => index.toString()}
           />
         )}
-        <Text style={styles.detailRatingTextStyle} onPress={onAboutRatingPress}>
-          {strings.aboutRatingTitle}
-        </Text>
-      </EventItemRender>
-      <View style={styles.sepratorViewStyle} />
-      <EventItemRender
+          <Text style={styles.detailRatingTextStyle} onPress={onAboutRatingPress}>
+            {strings.aboutRatingTitle}
+          </Text>
+        </EventItemRender>
+        <View style={styles.sepratorViewStyle} />
+        <EventItemRender
         title={`Reviews (${Object.keys(reviewsFeed?.reviews?.results).length || 0})`}
         containerStyle={{ width: wp('100%'), padding: 0 }}
         headerTextStyle={{ paddingLeft: 12 }}>
-        {/* review_all_data */}
-        {/* reviewsFeed?.reviews?.results || []  */}
-        <FlatList
+          {/* review_all_data */}
+          {/* reviewsFeed?.reviews?.results || []  */}
+          <FlatList
           data={Object.values(reviewsFeed?.reviews?.results) || []}
           bounces={false}
           showsHorizontalScrollIndicator={false}
@@ -159,8 +165,9 @@ function ReviewSection({
           }}
           keyExtractor={(item, index) => index.toString()}
         />
-      </EventItemRender>
-    </ScrollView>
+        </EventItemRender>
+      </ScrollView>
+    </>
   );
 }
 

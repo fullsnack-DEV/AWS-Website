@@ -388,7 +388,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
                 {/* Questions */}
                 {route?.params?.starAttributesForReferee.map((item, index) => (
                   <View style={{ marginVertical: 5 }} key={index}>
-                    <Text style={styles.questionText}>{item.description}</Text>
+                    <Text style={styles.questionText}>{item.title}</Text>
                     <TCRatingStarSlider
                       currentRating={reviewsData[item.name]}
                       onPress={(star) => {

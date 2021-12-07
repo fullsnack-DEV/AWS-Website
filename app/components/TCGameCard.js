@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo,useContext } from 'react';
 import {
  View, Text, TouchableOpacity, StyleSheet, Image,
  } from 'react-native';
@@ -7,10 +7,12 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
+import AuthContext from '../auth/context';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import ReservationStatus from '../Constants/ReservationStatus';
+import { getSportName } from '../utils';
 
 function GameCard({
   data,
@@ -33,6 +35,8 @@ function GameCard({
     'Nov',
     'Dec',
   ];
+
+  const authContext = useContext(AuthContext);
 
   const formatAMPM = (date) => {
     let hours = date.getHours();
@@ -73,7 +77,7 @@ function GameCard({
         </LinearGradient>
         <View style={styles.eventText}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={styles.eventTitle}>{data?.sport}</Text>
+            <Text style={styles.eventTitle}>{getSportName(data,authContext)}</Text>
             <View style={{ marginRight: 7, marginBottom: 5 }}>
               {/* eslint-disable-next-line no-nested-ternary */}
               {showSelectionCheckBox ? (

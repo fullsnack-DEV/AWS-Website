@@ -65,15 +65,15 @@ import TCGradientButton from '../../components/TCGradientButton';
 import TCThinDivider from '../../components/TCThinDivider';
 import { getSportIcon } from '../../utils/index';
 
-export default function AccountScreen({ navigation, route }) {
+export default function AccountScreen({ navigation }) {
   const scrollRef = useRef();
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
 
-  const [isSportCreateModalVisible, setIsSportCreateModalVisible] = useState(
-    false,
-  );
+  // const [isSportCreateModalVisible, setIsSportCreateModalVisible] = useState(
+  //   false,
+  // );
   const [group, setGroup] = useState({});
   const [parentGroup, setParentGroup] = useState();
   const [groupList, setGroupList] = useState([]);
@@ -228,11 +228,11 @@ export default function AccountScreen({ navigation, route }) {
     }
   }, [authContext, isFocused]);
 
-  useEffect(() => {
-    if (route?.params?.createdSportName) {
-      setIsSportCreateModalVisible(true);
-    }
-  }, [route?.params?.createdSportName]);
+  // useEffect(() => {
+  //   if (route?.params?.createdSportName) {
+  //     setIsSportCreateModalVisible(true);
+  //   }
+  // }, [route?.params?.createdSportName]);
 
   const getParentClub = useCallback(
     async (item) => {
@@ -387,7 +387,6 @@ export default function AccountScreen({ navigation, route }) {
     getGroupRequest(type, requestID, authContext)
       .then((response) => {
         setloading(false);
-
         if (response.status) {
           setTimeout(() => {
             Alert.alert('Your team request cancelled.');
@@ -397,7 +396,6 @@ export default function AccountScreen({ navigation, route }) {
             Alert.alert('Something wrong with your request, please try again.');
           }, 10);
         }
-
         getTeamsList(authContext.entity);
 
         // }
@@ -1686,16 +1684,10 @@ export default function AccountScreen({ navigation, route }) {
           scrollEnabled={false}
         />
         <View style={styles.separatorView} />
-        {/* <TouchableWithoutFeedback */}
-        {/*  style={styles.listContainer} */}
-        {/*  onPress={handleLogOut}> */}
-        {/*  <Image source={images.logoutIcon} style={styles.switchAccountIcon} /> */}
-        {/*  <Text style={styles.listItems}>Log out</Text> */}
-        {/*  <Image source={images.nextArrow} style={styles.nextArrow} /> */}
-        {/* </TouchableWithoutFeedback> */}
+       
 
         {/* Sport created modal */}
-        <Modal
+        {/* <Modal
           isVisible={isSportCreateModalVisible}
           backdropColor="black"
           style={{
@@ -1707,6 +1699,7 @@ export default function AccountScreen({ navigation, route }) {
           hasBackdrop
           onBackdropPress={() => setIsSportCreateModalVisible(false)}
           backdropOpacity={0}>
+            
           <View style={styles.modalContainerViewStyle}>
             <Image style={styles.background} source={images.orangeLayer} />
             <Image style={styles.background} source={images.entityCreatedBG} />
@@ -1774,7 +1767,7 @@ export default function AccountScreen({ navigation, route }) {
               </Text>
             </TouchableOpacity>
           </View>
-        </Modal>
+        </Modal> */}
 
         {/* Sport created modal */}
 
@@ -2265,60 +2258,60 @@ const styles = StyleSheet.create({
     width: wp(100),
   },
 
-  background: {
-    height: '100%',
-    position: 'absolute',
-    resizeMode: 'stretch',
-    width: '100%',
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-  },
-  foundText: {
-    color: colors.whiteColor,
-    fontSize: 25,
-    fontFamily: fonts.RRegular,
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  groupsImg: {
-    height: 75,
-    resizeMode: 'contain',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 75,
-  },
+  // background: {
+  //   height: '100%',
+  //   position: 'absolute',
+  //   resizeMode: 'stretch',
+  //   width: '100%',
+  //   borderTopLeftRadius: 15,
+  //   borderTopRightRadius: 15,
+  // },
+  // foundText: {
+  //   color: colors.whiteColor,
+  //   fontSize: 25,
+  //   fontFamily: fonts.RRegular,
+  //   textAlign: 'center',
+  //   marginTop: 20,
+  // },
+  // groupsImg: {
+  //   height: 75,
+  //   resizeMode: 'contain',
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   width: 75,
+  // },
 
-  goToProfileButton: {
-    alignSelf: 'center',
-    borderColor: colors.whiteColor,
-    borderRadius: 40,
-    borderWidth: 1,
-    height: 45,
-    marginBottom: wp('15%'),
-    width: '92%',
-  },
-  manageChallengeDetailTitle: {
-    alignSelf: 'center',
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.whiteColor,
-    textAlign: 'center',
-    marginBottom: 15,
-  },
-  goToProfileTitle: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 15,
-    height: 50,
-    padding: 12,
-    textAlign: 'center',
-  },
-  modalContainerViewStyle: {
-    height: '94%',
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-  },
+  // goToProfileButton: {
+  //   alignSelf: 'center',
+  //   borderColor: colors.whiteColor,
+  //   borderRadius: 40,
+  //   borderWidth: 1,
+  //   height: 45,
+  //   marginBottom: wp('15%'),
+  //   width: '92%',
+  // },
+  // manageChallengeDetailTitle: {
+  //   alignSelf: 'center',
+  //   fontSize: 16,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.whiteColor,
+  //   textAlign: 'center',
+  //   marginBottom: 15,
+  // },
+  // goToProfileTitle: {
+  //   color: colors.whiteColor,
+  //   fontFamily: fonts.RBold,
+  //   fontSize: 15,
+  //   height: 50,
+  //   padding: 12,
+  //   textAlign: 'center',
+  // },
+  // modalContainerViewStyle: {
+  //   height: '94%',
+  //   backgroundColor: colors.whiteColor,
+  //   borderTopLeftRadius: 15,
+  //   borderTopRightRadius: 15,
+  // },
 
   rulesText: {
     fontFamily: fonts.RRegular,

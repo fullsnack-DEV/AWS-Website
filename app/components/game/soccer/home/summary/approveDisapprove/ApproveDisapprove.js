@@ -33,6 +33,8 @@ const ApproveDisapprove = ({
   const [loadingTeam, setLoadingTeam] = useState(null);
   const [showWarningPopup, setShowWarningPopup] = useState(false);
 
+
+  console.log('GAME DATA:::::::::=>',gameData);
   useEffect(() => {
     getApprovalData(gameData);
   }, [gameData])
@@ -178,14 +180,14 @@ const ApproveDisapprove = ({
                 />
                 </View>
                 <Text style={styles.teamNameText}>
-                  {approvalGameData?.home_team?.group_name ?? ''}
+                  {approvalGameData?.home_team?.group_name ?? approvalGameData?.home_team?.full_name ??''}
                 </Text>
               </View>
               {/* Home Team */}
               <ApproveDisapproveSection
                   teamLoading={loadingTeam === 1}
                   isApproved={[true, false].includes(approvalGameData?.approval?.home_team?.approved) ?? false}
-                  isButtonShown={!isApprovingPeriodExpired && approvalGameData?.home_team?.group_id === myTeamId}
+                  isButtonShown={!isApprovingPeriodExpired && ((approvalGameData?.home_team?.group_id === myTeamId || approvalGameData?.home_team?.user_id === myTeamId))}
                   status={getTeamApprovalStatus(1)}
               />
 
@@ -200,14 +202,14 @@ const ApproveDisapprove = ({
                   />
                 </View>
                 <Text style={styles.teamNameText}>
-                  {approvalGameData?.away_team?.group_name ?? ''}
+                  {approvalGameData?.away_team?.group_name ?? approvalGameData?.away_team?.full_name ?? ''}
                 </Text>
               </View>
               {/* Away Team */}
               <ApproveDisapproveSection
                   teamLoading={loadingTeam === 2}
                   isApproved={[true, false].includes(approvalGameData?.approval?.away_team?.approved) ?? false}
-                  isButtonShown={!isApprovingPeriodExpired && approvalGameData?.away_team?.group_id === myTeamId}
+                  isButtonShown={!isApprovingPeriodExpired && (approvalGameData?.away_team?.group_id === myTeamId || approvalGameData?.away_team?.user_id === myTeamId)}
                   status={getTeamApprovalStatus(2)}
               />
             </View>

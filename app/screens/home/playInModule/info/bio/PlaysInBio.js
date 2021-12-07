@@ -78,7 +78,7 @@ const EditPlaysInModal = ({
   const onSavePress = () => {
     if (editModalType === strings.bio) {
       const registered_sports = _.cloneDeep(currentUserData?.registered_sports);
-      const editSportIndex = registered_sports?.findIndex((item) => item?.sport_name?.toLowerCase() === registerSport?.sport_name?.toLowerCase());
+      const editSportIndex = registered_sports?.findIndex((item) => item?.sport === registerSport?.sport && item?.sport_type === registerSport?.sport_type);
       if (editSportIndex !== -1) {
         setLoading(true);
         registered_sports[editSportIndex].descriptions = bio;
