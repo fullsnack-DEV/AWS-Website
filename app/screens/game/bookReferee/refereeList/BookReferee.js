@@ -122,9 +122,9 @@ export default function BookReferee({ navigation, route }) {
       if (route?.params?.sport) {
         refereeQuery.query.bool.must.push({
           term: {
-            'referee_data.sport_name.keyword': {
-              value: `${route?.params?.sport?.toLowerCase()}`,
-              case_insensitive: true,
+            'referee_data.sport.keyword': {
+              value: route?.params?.sport,
+              
             },
           },
         });
@@ -262,8 +262,8 @@ export default function BookReferee({ navigation, route }) {
   const renderRefereeData = ({ item }) => {
     const referee = item;
     const refereeObject = referee?.referee_data?.filter(
-      (refereeItem) => refereeItem?.sport_name?.toLowerCase()
-        === gameData?.sport?.toLowerCase(),
+      (refereeItem) => refereeItem?.sport
+        === gameData?.sport,
     );
 
     console.log('setting1:=>', refereeObject);

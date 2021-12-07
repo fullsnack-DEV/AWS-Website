@@ -191,7 +191,7 @@ const Scorekeepers = ({
           is_following={reservationDetail?.scorekeeper?.is_following}
           onFollowUnfollowPress={onFollowPress}
           profileImage={reservationDetail?.scorekeeper?.thumbnail}
-          isShowThreeDots={item?.initiated_by === entity?.uid}
+          isShowThreeDots={item?.initiated_by === entity?.uid && !isAdmin}
           onThreeDotPress={() => {
             selectedScorekeeperData = item;
             actionSheet.current.show();
@@ -283,10 +283,10 @@ const Scorekeepers = ({
   const scorekeeperOfferValidation = useCallback(() => {
     if (
       authContext.entity.role === 'user'
-      && authContext?.entity?.auth?.user?.scorekeeper_data.filter(
+      && authContext?.entity?.auth?.user?.scorekeeper_data?.filter(
         (obj) => obj?.sport === gameData?.sport,
       ).length > 0
-      && scorekeeper.filter((obj) => obj.scorekeeper_id === authContext.entity.uid)
+      && scorekeeper?.filter((obj) => obj?.scorekeeper_id === authContext?.entity?.uid)
         .length === 0
     ) {
       return true;

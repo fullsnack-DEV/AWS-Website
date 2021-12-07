@@ -104,8 +104,12 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
           setChallengeObject(body);
           setLoading(false);
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log('Estimate Error::=>',error);
           setLoading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, error);
+            }, 10);
         });
     } else {
       setLoading(false);

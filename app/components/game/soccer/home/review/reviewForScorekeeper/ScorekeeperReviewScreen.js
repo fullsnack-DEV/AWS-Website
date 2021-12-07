@@ -47,6 +47,9 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
   const [reviewsData, setReviewsData] = useState({});
 
+
+
+  console.log('route?.params?.starAttributesForScorekeeper',route?.params?.starAttributesForScorekeeper);
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = authContext.entity;
@@ -144,7 +147,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
   };
 
   const isValidReview = () => {
-    const exceptKey = ['comment', 'attachments', 'tagged'];
+    const exceptKey = ['comment', 'attachments', 'tagged','format_tagged_data'];
     let isValid = true;
     console.log('reviewsData ::=>', reviewsData);
     const reviews = _.cloneDeep(reviewsData);
@@ -392,7 +395,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                   (item, index) => (
                     <View style={{ marginVertical: 5 }} key={index}>
                       <Text style={styles.questionText}>
-                        {item.description}
+                        {item.title}
                       </Text>
                       <TCRatingStarSlider
                         currentRating={reviewsData[item.name]}

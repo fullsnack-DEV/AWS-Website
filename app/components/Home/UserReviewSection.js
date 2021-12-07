@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import React, { useEffect } from 'react';
+import React, { useEffect,useContext } from 'react';
 import {
  StyleSheet, View, FlatList, ScrollView, Text,
  } from 'react-native';
@@ -14,6 +14,9 @@ import EventItemRender from '../Schedule/EventItemRender';
 import ReviewerItemView from './ReviewerItemView';
 import ReviewRatingView from './ReviewRatingView';
 import ReviewRecentMatch from './ReviewRecentMatch';
+import { getSportName } from '../../utils';
+import AuthContext from '../../auth/context';
+
 
 function UserReviewSection({
   isTeamReviewSection = false,
@@ -25,6 +28,7 @@ function UserReviewSection({
   onFeedPress = () => {},
 }) {
   // const [reviewAllData] = useState(review_all_data);
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     if (isTeamReviewSection) {
@@ -125,7 +129,7 @@ function UserReviewSection({
                 startDate2={moment(
                   new Date(item?.game?.data?.start_time * 1000),
                 ).format('DD')}
-                title={item?.game?.data?.sport}
+                title={getSportName(item?.game?.data,authContext)}
                 startTime={moment(
                   new Date(item?.game?.data?.start_time * 1000),
                 ).format('hh:mm a')}

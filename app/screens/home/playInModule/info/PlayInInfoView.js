@@ -43,6 +43,7 @@ const PlayInInfoView = ({
       <PlaysInNTRP
                   onSave={onSave}
                   sportName={sportName}
+                  sportType={sportType}
                   isAdmin={isAdmin}
                   currentUserData={currentUserData}
               />
@@ -56,6 +57,7 @@ const PlayInInfoView = ({
         <PlaysInHomePlace
                   onSave={onSave}
                   sportName={sportName}
+                  sportType={sportType}
                   isAdmin={isAdmin}
                   currentUserData={currentUserData}
               />

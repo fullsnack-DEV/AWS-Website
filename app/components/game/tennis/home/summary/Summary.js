@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-lonely-if */
 /* eslint-disable no-unused-vars */
 import React, {
@@ -19,8 +20,8 @@ import {
 import moment from 'moment';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
-import { useIsFocused } from '@react-navigation/native';
-import { heightPercentageToDP as hp } from '../../../../../utils';
+import {useIsFocused} from '@react-navigation/native';
+import {heightPercentageToDP as hp} from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
 import Referees from '../../../common/summary/Referees';
@@ -54,7 +55,7 @@ import {
 } from '../../../../../api/Games';
 import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
-import { ImageUploadContext } from '../../../../../context/ImageUploadContext';
+import {ImageUploadContext} from '../../../../../context/ImageUploadContext';
 import ApproveDisapprove from '../../../soccer/home/summary/approveDisapprove/ApproveDisapprove';
 
 // import GameStatus from '../../../../../Constants/GameStatus';
@@ -92,9 +93,10 @@ const Summary = ({
   const [leaveReviewText, setLeaveReviewText] = useState('');
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [sliderAttributes, setSliderAttributes] = useState([]);
-  const [starAttributes, setStarAttributes] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const [sliderAttributesForTeam, setSliderAttributesForTeam] = useState([]);
+  const [starAttributesForTeam, setStarAttributesForTeam] = useState([]);
 
   const [sliderAttributesForReferee, setSliderAttributesForReferee] = useState(
     [],
@@ -102,15 +104,24 @@ const Summary = ({
   const [starAttributesForReferee, setStarAttributesForReferee] = useState([]);
 
   const [starAttributesForPlayer, setStarAttributesForPlayer] = useState([]);
+  const [sliderAttributesForPLayer, setSliderAttributesForPLayer] = useState(
+    [],
+  );
 
-  const [sliderAttributesForScorekeeper, setSliderAttributesForScorekeeper] = useState([]);
-  const [starAttributesForScorekeeper, setStarAttributesForScorekeeper] = useState([]);
+  const [
+    sliderAttributesForScorekeeper,
+    setSliderAttributesForScorekeeper,
+  ] = useState([]);
+  const [
+    starAttributesForScorekeeper,
+    setStarAttributesForScorekeeper,
+  ] = useState([]);
   const isFocused = useIsFocused();
 
   useEffect(() => {
     if (isFocused) {
       if (gameData) {
-        if (gameData?.sport?.toLowerCase() === 'tennis') {
+        if (gameData?.sport_type === 'single') {
           leaveReviewButtonConfigTennis();
         } else {
           leaveReviewButtonConfigDoubleTennis();
@@ -123,85 +134,76 @@ const Summary = ({
   const recordGameConfiguration = () => {
     setLoading(true);
 
-        const soccerSportData = authContext?.sports?.length
-          && authContext?.sports?.filter(
-            (item) => item.sport === gameData?.sport,
-          )[0];
+    const tennisSportData = authContext?.sports?.filter(
+      (item) => item.sport === gameData?.sport,
+    )[0];
 
-        console.log('soccerSportData', authContext?.sports);
+    console.log('tennisSportData', authContext?.sports);
 
-        const teamReviewProp = soccerSportData?.team_review_properties ?? [];
-        const playerReviewProp = soccerSportData?.player_review_properties ?? [];
-        const refereeReviewProp = soccerSportData?.referee_review_properties ?? [];
-        const scorekeeperReviewProp = soccerSportData?.scorekeeper_review_properties ?? [];
-        const sliderReviewProp = [];
-        const starReviewProp = [];
-        const sliderReviewPropForPlayer = [];
-        const starReviewPropForPlayer = [];
-        const sliderReviewPropForReferee = [];
-        const starReviewPropForReferee = [];
+    const teamReviewProp = tennisSportData?.team_review_properties ?? [];
+    const playerReviewProp = tennisSportData?.player_review_properties ?? [];
+    const refereeReviewProp = tennisSportData?.referee_review_properties ?? [];
+    const scorekeeperReviewProp =
+      tennisSportData?.scorekeeper_review_properties ?? [];
 
-        const sliderReviewPropForScorekeeper = [];
-        const starReviewPropForScorekeeper = [];
+    const sliderReviewPropForTeam = [];
+    const starReviewPropForTeam = [];
+    const sliderReviewPropForPlayer = [];
+    const starReviewPropForPlayer = [];
+    const sliderReviewPropForReferee = [];
+    const starReviewPropForReferee = [];
+    const sliderReviewPropForScorekeeper = [];
+    const starReviewPropForScorekeeper = [];
 
-        if (teamReviewProp?.length) {
-          teamReviewProp.filter((item) => {
-            if (item.type === 'slider') {
-              sliderReviewProp.push(item?.name?.toLowerCase());
-            } else if (item.type === 'star') {
-              starReviewProp.push(item);
-            }
-            return true;
-          });
-          setSliderAttributes([...sliderReviewProp]);
-          setStarAttributes([...starReviewProp]);
+    if (teamReviewProp?.length) {
+      teamReviewProp.filter((item) => {
+        if (item.type === 'slider') {
+          sliderReviewPropForTeam.push(item?.name?.toLowerCase());
+        } else if (item.type === 'star') {
+          starReviewPropForTeam.push(item);
         }
-        if (playerReviewProp?.length) {
-          playerReviewProp.filter((item) => {
-            if (item.type === 'slider') {
-              sliderReviewPropForPlayer.push(item);
-            } else if (item.type === 'star') {
-              starReviewPropForPlayer.push(item);
-            }
-            return true;
-          });
+        return true;
+      });
+      setSliderAttributesForTeam([...sliderReviewPropForTeam]);
+      setStarAttributesForTeam([...starReviewPropForTeam]);
+    }
+    if (playerReviewProp?.length) {
+      playerReviewProp.filter((item) => {
+        if (item.type === 'slider') {
+          sliderReviewPropForPlayer.push(item);
+        } else if (item.type === 'star') {
+          starReviewPropForPlayer.push(item);
+        }
+        return true;
+      });
 
-          setStarAttributesForPlayer([...starReviewPropForPlayer]);
+      setStarAttributesForPlayer([...starReviewPropForPlayer]);
+      setSliderAttributesForPLayer([...sliderReviewPropForPlayer]);
+    }
+    if (refereeReviewProp?.length) {
+      refereeReviewProp.filter((item) => {
+        if (item.type === 'topstar') {
+          sliderReviewPropForReferee.push(item?.name?.toLowerCase());
+        } else if (item.type === 'star') {
+          starReviewPropForReferee.push(item);
         }
-        if (refereeReviewProp?.length) {
-          refereeReviewProp.filter((item) => {
-            if (item.type === 'topstar') {
-              sliderReviewPropForReferee.push(item?.name?.toLowerCase());
-            } else if (item.type === 'star') {
-              starReviewPropForReferee.push(item);
-            }
-            return true;
-          });
-          setSliderAttributesForReferee([...sliderReviewPropForReferee]);
-          setStarAttributesForReferee([...starReviewPropForReferee]);
+        return true;
+      });
+      setSliderAttributesForReferee([...sliderReviewPropForReferee]);
+      setStarAttributesForReferee([...starReviewPropForReferee]);
+    }
+    if (scorekeeperReviewProp?.length) {
+      scorekeeperReviewProp.filter((item) => {
+        if (item.type === 'topstar') {
+          sliderReviewPropForScorekeeper.push(item?.name?.toLowerCase());
+        } else if (item.type === 'star') {
+          starReviewPropForScorekeeper.push(item);
         }
-        if (scorekeeperReviewProp?.length) {
-          scorekeeperReviewProp.filter((item) => {
-            if (item.type === 'topstar') {
-              sliderReviewPropForScorekeeper.push(item?.name?.toLowerCase());
-            } else if (item.type === 'star') {
-              starReviewPropForScorekeeper.push(item);
-            }
-            return true;
-          });
-          console.log(
-            'sliderReviewPropForScorekeeper',
-            sliderReviewPropForScorekeeper,
-          );
-          console.log(
-            'starReviewPropForScorekeeper',
-            starReviewPropForScorekeeper,
-          );
-          setSliderAttributesForScorekeeper([
-            ...sliderReviewPropForScorekeeper,
-          ]);
-          setStarAttributesForScorekeeper([...starReviewPropForScorekeeper]);
-        }
+        return true;
+      });
+      setSliderAttributesForScorekeeper([...sliderReviewPropForScorekeeper]);
+      setStarAttributesForScorekeeper([...starReviewPropForScorekeeper]);
+    }
   };
 
   const getHomeID = () => {
@@ -219,8 +221,9 @@ const Summary = ({
   };
 
   const renderApproveDisapproveSection = useMemo(
-    () => gameData?.status === 'ended'
-      && isAdmin && (
+    () =>
+      gameData?.status === 'ended' &&
+      isAdmin && (
         // && !gameData?.approval?.home_team?.approved
         // && !gameData?.approval?.away_team?.approved
         <ApproveDisapprove
@@ -240,7 +243,8 @@ const Summary = ({
 
     if (getHomeID() === authContext.entity.uid) {
       found = true;
-      teamName = gameData?.away_team?.full_name ?? gameData?.away_team?.group_name;
+      teamName =
+        gameData?.away_team?.full_name ?? gameData?.away_team?.group_name;
       console.log('Team name Data:=>', teamName);
       if (gameData?.home_review_id || gameData?.away_review_id) {
         // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
@@ -263,7 +267,8 @@ const Summary = ({
     if (!found) {
       if (getAwayID() === authContext.entity.uid) {
         found = true;
-        teamName = gameData?.home_team?.full_name ?? gameData?.home_team?.group_name;
+        teamName =
+          gameData?.home_team?.full_name ?? gameData?.home_team?.group_name;
         if (gameData?.away_review_id || gameData?.home_review_id) {
           // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
           if (gameData?.home_team?.group_name) {
@@ -288,8 +293,9 @@ const Summary = ({
       ];
       if (
         data.some(
-          (obj) => obj?.referee_id === authContext.entity.uid
-            || obj?.scorekeeper_id === authContext.entity.uid,
+          (obj) =>
+            obj?.referee_id === authContext.entity.uid ||
+            obj?.scorekeeper_id === authContext.entity.uid,
         )
       ) {
         setLeaveReviewText(strings.leaveOrEditReviewPlayerText);
@@ -370,8 +376,9 @@ const Summary = ({
           ];
           if (
             data.some(
-              (obj) => obj?.referee_id === authContext.entity.uid
-                || obj?.scorekeeper_id === authContext.entity.uid,
+              (obj) =>
+                obj?.referee_id === authContext.entity.uid ||
+                obj?.scorekeeper_id === authContext.entity.uid,
             )
           ) {
             setLeaveReviewText(strings.leaveOrEditReviewText);
@@ -385,7 +392,7 @@ const Summary = ({
   };
 
   const patchOrAddReview = useCallback(
-    ({ isAlreadyReviewed, currentForm, reviewsData }) => {
+    ({isAlreadyReviewed, currentForm, reviewsData}) => {
       if (isAlreadyReviewed) {
         setLoading(true);
         const teamReview = reviewsData;
@@ -456,7 +463,7 @@ const Summary = ({
   );
 
   const patchOrAddReviewTeam = useCallback(
-    ({ isAlreadyReviewed, currentForm, reviewsData }) => {
+    ({isAlreadyReviewed, currentForm, reviewsData}) => {
       if (isAlreadyReviewed) {
         setLoading(true);
         const teamReview = reviewsData;
@@ -512,7 +519,7 @@ const Summary = ({
 
   const onPressReviewDone = useCallback(
     (currentForm, isAlreadyReviewed, reviewsData) => {
-      const reviewData = { ...reviewsData };
+      const reviewData = {...reviewsData};
       const alreadyUrlDone = [];
       const createUrlData = [];
 
@@ -537,12 +544,14 @@ const Summary = ({
           reviewData,
           imageArray,
           reviewsData?.team_id
-            ? (dataParams) => patchOrAddReviewTeam({
+            ? (dataParams) =>
+                patchOrAddReviewTeam({
                   isAlreadyReviewed,
                   currentForm,
                   reviewsData: dataParams,
                 })
-            : (dataParams) => patchOrAddReview({
+            : (dataParams) =>
+                patchOrAddReview({
                   isAlreadyReviewed,
                   currentForm,
                   reviewsData: dataParams,
@@ -550,9 +559,9 @@ const Summary = ({
         );
       } else {
         if (reviewsData?.team_id) {
-          patchOrAddReviewTeam({ isAlreadyReviewed, currentForm, reviewsData });
+          patchOrAddReviewTeam({isAlreadyReviewed, currentForm, reviewsData});
         } else {
-          patchOrAddReview({ isAlreadyReviewed, currentForm, reviewsData });
+          patchOrAddReview({isAlreadyReviewed, currentForm, reviewsData});
         }
       }
     },
@@ -566,7 +575,7 @@ const Summary = ({
         .then((response) => {
           console.log('starAttributesForPlayer', starAttributesForPlayer);
           console.log('isRefereeAvailable', gameData?.referees?.length > 0);
-
+          setLoading(false);
           navigation.navigate('LeaveReviewTennis', {
             gameData,
             gameReviewData: response.payload,
@@ -574,11 +583,10 @@ const Summary = ({
               selectedTeamForReview ?? getHomeID() === authContext?.entity?.uid
                 ? 'away'
                 : 'home',
-            starAttributesForPlayer,
+            starAttributes: starAttributesForPlayer,
             isRefereeAvailable: gameData?.referees?.length > 0,
             onPressReviewDone,
           });
-          setLoading(false);
         })
         .catch((error) => {
           setLoading(false);
@@ -601,16 +609,15 @@ const Summary = ({
       setLoading(true);
       getGameReview(gameData?.game_id, reviewID, authContext)
         .then((response) => {
+          setLoading(false);
           navigation.navigate('LeaveReviewTennis', {
             gameData,
             gameReviewData: response.payload,
             selectedTeam: playerFrom === 'home' ? 'away' : 'home',
-            starAttributesForPlayer: starAttributes,
+            starAttributes: starAttributesForTeam,
             isRefereeAvailable: gameData?.referees?.length > 0,
             onPressReviewDone,
           });
-
-          setLoading(false);
         })
         .catch((error) => {
           setLoading(false);
@@ -624,13 +631,14 @@ const Summary = ({
       navigation,
       onPressReviewDone,
       playerFrom,
-      starAttributes,
+      starAttributesForTeam,
     ],
   );
 
   const renderRecordButton = useMemo(
-    () => (gameData?.status !== 'ended'
-      && (isAdmin || isScorekeeperAdmin || isRefereeAdmin) ? (
+    () =>
+      gameData?.status !== 'ended' &&
+      (isAdmin || isScorekeeperAdmin || isRefereeAdmin) ? (
         <TCGradientButton
           onPress={() => {
             navigation.navigate('TennisRecording', {
@@ -650,16 +658,16 @@ const Summary = ({
             marginBottom: 0,
           }}
         />
-      ) : null),
+      ) : null,
     [gameData, isAdmin, isRefereeAdmin, isScorekeeperAdmin, navigation],
   );
   const showLeaveReviewButton = useCallback(() => {
-    if (gameData?.sport?.toLowerCase() === 'tennis') {
+    if (gameData?.sport_type === 'single' ) {
       return isAdmin || isRefereeAdmin || isScorekeeperAdmin;
     }
     return lineUpUser || isRefereeAdmin || isScorekeeperAdmin;
   }, [
-    gameData?.sport,
+    gameData?.sport_type,
     isAdmin,
     isRefereeAdmin,
     isScorekeeperAdmin,
@@ -672,6 +680,7 @@ const Summary = ({
       getGameReview(gameData?.game_id, item?.review_id, authContext)
         .then((response) => {
           console.log('Get review of referee::=>', response.payload);
+          setLoading(false);
           navigation.navigate('RefereeReviewScreen', {
             gameReviewData: response.payload,
             gameData,
@@ -680,7 +689,6 @@ const Summary = ({
             starAttributesForReferee,
             onPressRefereeReviewDone,
           });
-          setLoading(false);
         })
         .catch((error) => {
           setLoading(false);
@@ -701,6 +709,7 @@ const Summary = ({
       getGameReview(gameData?.game_id, item?.review_id, authContext)
         .then((response) => {
           console.log('Get review of scorekeeper::=>', response.payload);
+          setLoading(false);
           navigation.navigate('ScorekeeperReviewScreen', {
             gameReviewData: response.payload,
             gameData,
@@ -709,7 +718,6 @@ const Summary = ({
             starAttributesForScorekeeper,
             onPressScorekeeperReviewDone,
           });
-          setLoading(false);
         })
         .catch((error) => {
           setLoading(false);
@@ -726,14 +734,14 @@ const Summary = ({
   );
 
   const renderLeaveAReviewButtonForDouble = useMemo(
-    () => !loading
-      && gameData?.status === 'ended'
-      && !checkReviewExpired(gameData?.actual_enddatetime)
-      && !isAdmin
-      && gameData?.approval?.home_team?.approved
-      && gameData?.approval?.away_team?.approved
-      && showLeaveReviewButton() && (
-        <View style={{ backgroundColor: colors.whiteColor, marginTop: 5 }}>
+    () =>
+      gameData?.status === 'ended' &&
+      !checkReviewExpired(gameData?.actual_enddatetime) &&
+      !isAdmin &&
+      gameData?.approval?.home_team?.approved &&
+      gameData?.approval?.away_team?.approved &&
+      showLeaveReviewButton() && (
+        <View style={{backgroundColor: colors.whiteColor, marginTop: 5}}>
           <View>
             <TCGradientButton
               onPress={() => {
@@ -746,7 +754,7 @@ const Summary = ({
                     navigation.navigate('LeaveReviewTennis', {
                       gameData,
                       selectedTeam: playerFrom === 'home' ? 'away' : 'home',
-                      starAttributesForPlayer: starAttributes,
+                      starAttributes: starAttributesForTeam,
                       isRefereeAvailable: gameData?.referees?.length > 0,
                       onPressReviewDone,
                     });
@@ -772,25 +780,25 @@ const Summary = ({
       ),
     [
       gameData,
-      getGameReviewsData,
+      getGameReviewsDataDouble,
+      isAdmin,
       leaveReviewText,
       navigation,
       onPressReviewDone,
       playerFrom,
       showLeaveReviewButton,
-      sliderAttributes,
-      starAttributes,
+      starAttributesForTeam,
     ],
   );
 
   const renderLeaveAReviewButton = useMemo(
     () => (
       <>
-        {!loading
-          && gameData?.status === 'ended'
-          && !checkReviewExpired(gameData?.actual_enddatetime)
-          && showLeaveReviewButton() && (
-            <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
+        {
+          gameData?.status === 'ended' &&
+          !checkReviewExpired(gameData?.actual_enddatetime) &&
+          showLeaveReviewButton() && (
+            <View style={{backgroundColor: colors.whiteColor, padding: 10}}>
               <View>
                 <TCGradientButton
                   onPress={() => {
@@ -807,10 +815,10 @@ const Summary = ({
                         navigation.navigate('LeaveReviewTennis', {
                           gameData,
                           selectedTeam: playerFrom === 'home' ? 'away' : 'home',
-                          starAttributesForPlayer:
-                            gameData?.sport?.toLowerCase() === 'tennis'
+                          starAttributes:
+                            gameData?.sport_type === 'single'
                               ? starAttributesForPlayer
-                              : starAttributes,
+                              : starAttributesForTeam,
                           isRefereeAvailable: gameData?.referees?.length > 0,
                           onPressReviewDone,
                         });
@@ -844,7 +852,7 @@ const Summary = ({
             {!checkReviewExpired(gameData?.actual_enddatetime) ? (
               <Text style={styles.reviewPeriod}>
                 The review period will be expired within
-                <Text style={{ fontFamily: fonts.RBold }}>
+                <Text style={{fontFamily: fonts.RBold}}>
                   {getGameDateTimeInDHMformat(
                     moment(gameData?.actual_enddatetime * 1000).add(
                       REVIEW_EXPIRY_DAYS,
@@ -860,7 +868,7 @@ const Summary = ({
                   marginVertical: 10,
                 }}>
                 The review period is{' '}
-                <Text style={{ fontFamily: fonts.RBold }}>expired</Text>
+                <Text style={{fontFamily: fonts.RBold}}>expired</Text>
               </Text>
             )}
           </View>
@@ -877,27 +885,28 @@ const Summary = ({
       onPressReviewDone,
       playerFrom,
       showLeaveReviewButton,
-      starAttributes,
+      starAttributesForTeam,
       starAttributesForPlayer,
     ],
   );
 
   const renderTopButtons = useMemo(
-    () => (isAdmin || isMember || isRefereeAdmin) && (
-      <View
+    () =>
+      (isAdmin || isMember || isRefereeAdmin) && (
+        <View
           style={{
             marginBottom: hp(1),
             backgroundColor: colors.whiteColor,
             padding: 10,
           }}>
-        {renderRecordButton}
-        {gameData?.sport?.toLowerCase() === 'tennis'
+          {renderRecordButton}
+          {gameData?.sport_type === 'single'
             ? renderLeaveAReviewButton
             : renderLeaveAReviewButtonForDouble}
-      </View>
+        </View>
       ),
     [
-      gameData?.sport,
+      gameData?.sport_type,
       isAdmin,
       isMember,
       isRefereeAdmin,
@@ -913,7 +922,7 @@ const Summary = ({
         style={{
           backgroundColor: colors.whiteColor,
         }}>
-        <Text style={[styles.title, { marginLeft: 15, marginBottom: 0 }]}>
+        <Text style={[styles.title, {marginLeft: 15, marginBottom: 0}]}>
           Scores
         </Text>
         <TennisScoreView scoreDataSource={gameData} />
@@ -1044,13 +1053,11 @@ const Summary = ({
   );
 
   const patchOrAddRefereeReview = useCallback(
-    ({
- currentForm, isAlreadyReviewed, reviewsData, referee_id,
-}) => {
+    ({currentForm, isAlreadyReviewed, reviewsData, referee_id}) => {
       if (isAlreadyReviewed) {
         setLoading(true);
 
-        const teamReview = { ...reviewsData };
+        const teamReview = {...reviewsData};
         delete teamReview.created_at;
         delete teamReview.entity_type;
         delete teamReview.entity_id;
@@ -1109,13 +1116,11 @@ const Summary = ({
   );
 
   const patchOrAddScorekeeperReview = useCallback(
-    ({
- currentForm, isAlreadyReviewed, reviewsData, scorekeeper_id,
-}) => {
+    ({currentForm, isAlreadyReviewed, reviewsData, scorekeeper_id}) => {
       if (isAlreadyReviewed) {
         setLoading(true);
 
-        const teamReview = { ...reviewsData };
+        const teamReview = {...reviewsData};
         delete teamReview.created_at;
         delete teamReview.entity_type;
         delete teamReview.entity_id;
@@ -1174,7 +1179,7 @@ const Summary = ({
   );
   const onPressRefereeReviewDone = useCallback(
     (currentForm, isAlreadyReviewed, reviewsData, referee_id) => {
-      const reviewData = { ...reviewsData };
+      const reviewData = {...reviewsData};
       const alreadyUrlDone = [];
       const createUrlData = [];
 
@@ -1196,7 +1201,8 @@ const Summary = ({
           authContext,
           reviewData,
           imageArray,
-          (dataParams) => patchOrAddRefereeReview({
+          (dataParams) =>
+            patchOrAddRefereeReview({
               currentForm,
               isAlreadyReviewed,
               reviewsData: dataParams,
@@ -1216,7 +1222,7 @@ const Summary = ({
   );
   const onPressScorekeeperReviewDone = useCallback(
     (currentForm, isAlreadyReviewed, reviewsData, scorekeeper_id) => {
-      const reviewData = { ...reviewsData };
+      const reviewData = {...reviewsData};
       const alreadyUrlDone = [];
       const createUrlData = [];
 
@@ -1238,7 +1244,8 @@ const Summary = ({
           authContext,
           reviewData,
           imageArray,
-          (dataParams) => patchOrAddScorekeeperReview({
+          (dataParams) =>
+            patchOrAddScorekeeperReview({
               currentForm,
               isAlreadyReviewed,
               reviewsData: dataParams,
@@ -1258,7 +1265,7 @@ const Summary = ({
   );
   return (
     <View style={styles.mainContainer}>
-      <TCInnerLoader visible={loading} />
+      {/* <TCInnerLoader visible={loading} /> */}
       {renderTopButtons}
       {renderApproveDisapproveSection}
       {renderScoresSection}
@@ -1292,7 +1299,11 @@ const Summary = ({
                 }}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableWithoutFeedback>
-              <Text style={styles.startTime}>Leave a player review</Text>
+              <Text style={styles.startTime}>
+                {gameData?.sport_type === 'single'
+                  ? 'Leave a player review'
+                  : 'Leave a team review'}
+              </Text>
               <Text
                 style={styles.doneText}
                 onPress={() => {
@@ -1309,7 +1320,7 @@ const Summary = ({
                         navigation.navigate('LeaveReviewTennis', {
                           gameData,
                           selectedTeam: selectedTeamForReview,
-                          starAttributesForPlayer,
+                          starAttributes: starAttributesForPlayer,
                           isRefereeAvailable: gameData?.referees?.length > 0,
                           onPressReviewDone,
                         });
@@ -1322,7 +1333,7 @@ const Summary = ({
                         navigation.navigate('LeaveReviewTennis', {
                           gameData,
                           selectedTeam: selectedTeamForReview,
-                          starAttributesForPlayer,
+                          starAttributes: starAttributesForPlayer,
                           isRefereeAvailable: gameData?.referees?.length > 0,
                           onPressReviewDone,
                         });
@@ -1348,7 +1359,9 @@ const Summary = ({
                   fontSize: 20,
                   color: colors.lightBlackColor,
                 }}>
-                Choose a player to leave a review for.
+                {gameData?.sport_type === 'single'
+                  ? 'Choose a player to leave a review for.'
+                  : 'Choose a team to leave a review for.'}
               </Text>
               <View style={styles.entityView}>
                 <TouchableWithoutFeedback
@@ -1361,12 +1374,15 @@ const Summary = ({
                         source={
                           gameData?.home_team?.thumbnail
                             ? gameData?.home_team?.thumbnail
-                            : images.profilePlaceHolder
+                            : gameData?.sport_type === 'single'
+                            ? images.profilePlaceHolder
+                            : images.teamPlaceholder
                         }
                         style={styles.teamProfileView}
                       />
                       <Text style={styles.teamNameText} numberOfLines={2}>
-                        {gameData?.home_team?.full_name}
+                        {gameData?.home_team?.full_name ??
+                          gameData?.home_team?.group_name}
                       </Text>
                     </LinearGradient>
                   ) : (
@@ -1375,12 +1391,15 @@ const Summary = ({
                         source={
                           gameData?.home_team?.thumbnail
                             ? gameData?.home_team?.thumbnail
-                            : images.profilePlaceHolder
+                            : gameData?.sport_type === 'single'
+                            ? images.profilePlaceHolder
+                            : images.teamPlaceholder
                         }
                         style={styles.teamProfileView}
                       />
                       <Text style={styles.teamNameTextBlack} numberOfLines={2}>
-                        {gameData?.home_team?.full_name}
+                        {gameData?.home_team?.full_name ??
+                          gameData?.home_team?.group_name}
                       </Text>
                     </View>
                   )}
@@ -1397,12 +1416,15 @@ const Summary = ({
                         source={
                           gameData?.away_team?.thumbnail
                             ? gameData?.away_team?.thumbnail
-                            : images.profilePlaceHolder
+                            : gameData?.sport_type === 'single'
+                            ? images.profilePlaceHolder
+                            : images.teamPlaceholder
                         }
                         style={styles.teamProfileView}
                       />
                       <Text style={styles.teamNameText} numberOfLines={2}>
-                        {gameData?.away_team?.full_name}
+                        {gameData?.away_team?.full_name ??
+                          gameData?.away_team?.group_name}
                       </Text>
                     </LinearGradient>
                   ) : (
@@ -1411,12 +1433,15 @@ const Summary = ({
                         source={
                           gameData?.away_team?.thumbnail
                             ? gameData?.away_team?.thumbnail
-                            : images.profilePlaceHolder
+                            : gameData?.sport_type === 'single'
+                            ? images.profilePlaceHolder
+                            : images.teamPlaceholder
                         }
                         style={styles.teamProfileView}
                       />
                       <Text style={styles.teamNameTextBlack} numberOfLines={2}>
-                        {gameData?.away_team?.full_name}
+                        {gameData?.away_team?.full_name ??
+                          gameData?.away_team?.group_name}
                       </Text>
                     </View>
                   )}
@@ -1472,7 +1497,7 @@ const styles = StyleSheet.create({
     height: 100,
     marginLeft: '6%',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: '37%',
@@ -1499,7 +1524,7 @@ const styles = StyleSheet.create({
     height: 100,
     marginRight: '6%',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: '37%',
@@ -1547,7 +1572,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },

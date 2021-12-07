@@ -202,6 +202,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   useEffect(() => {
     getAllGames(authContext.entity.uid, authContext)
       .then((res) => {
+        console.log('All games:=>',res);
         setGamesData([...res?.payload]);
         console.log(res);
       })

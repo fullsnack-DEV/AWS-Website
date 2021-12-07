@@ -2,10 +2,12 @@ import {
   Text, TouchableOpacity, StyleSheet, View, Image,
   } from 'react-native';
  import LinearGradient from 'react-native-linear-gradient';
- import React from 'react';
+ import React,{useContext} from 'react';
  import images from '../../../../Constants/ImagePath';
  import colors from '../../../../Constants/Colors';
  import fonts from '../../../../Constants/Fonts';
+import { getSportName } from '../../../../utils';
+import AuthContext from '../../../../auth/context';
 
  const RenderScorekeeper = ({
    showStar = false,
@@ -14,6 +16,8 @@ import {
    isSelected,
    onRadioClick,
  }) => {
+  const authContext = useContext(AuthContext);
+
    let sportObj = data?.scorekeeper_data?.filter(
      (o) => o?.sport === sport,
    );
@@ -44,7 +48,7 @@ import {
            </Text>
            <Text style={styles.locationText} numberOfLines={1}>
              {data?.city}
-             {sportObj.length === 1 ? ` · ${sportObj?.[0]?.sport_name}` : ''}
+             {sportObj.length === 1 ? ` · ${getSportName(sportObj[0],authContext)}` : ''}
            </Text>
            {showStar && (
              <Text style={styles.starPoints} numberOfLines={1}>

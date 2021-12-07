@@ -19,7 +19,7 @@ export default function LookingForSettingScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [lookingFor, setLookingFor] = useState(false);
-  const { sportName } = route?.params ?? {};
+  const { sportName,sportType } = route?.params ?? {};
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -32,20 +32,20 @@ export default function LookingForSettingScreen({ navigation, route }) {
 
   useEffect(() => {
     const selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => obj?.sport === sportName,
+      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
     )[0];
     setLookingFor(selectedSport?.lookingForTeamClub);
-  }, [authContext?.entity?.obj?.registered_sports, sportName]);
+  }, [authContext?.entity?.obj?.registered_sports, sportName, sportType]);
   const updateProfile = () => {
     setloading(true);
 
     const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => obj.sport_name !== sportName && obj.sport_name,
+      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
     );
 
     console.log('registerdPlayerData:', registerdPlayerData);
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => obj?.sport === sportName,
+      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
     )[0];
 
     selectedSport = { ...selectedSport, lookingForTeamClub: lookingFor };

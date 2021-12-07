@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -17,7 +17,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
@@ -27,9 +27,9 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCLabel from '../../../../components/TCLabel';
 import TCThinDivider from '../../../../components/TCThinDivider';
-import { getSportName } from '../../../../utils';
+import {getSportName} from '../../../../utils';
 
-export default function CreateClubForm1({ navigation, route }) {
+export default function CreateClubForm1({navigation, route}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
 
@@ -43,8 +43,6 @@ export default function CreateClubForm1({ navigation, route }) {
 
   const [selectedSports, setSelectedSports] = useState([]);
   const [sportsName, setSportsName] = useState('');
-
-  const selectedSport = [];
 
   useEffect(() => {
     getSports();
@@ -63,18 +61,6 @@ export default function CreateClubForm1({ navigation, route }) {
     }
   }, [isFocused, route.params]);
 
-  //  const getSports = () => {
-  //      const arr = [];
-  //      for (const tempData of authContext.sports) {
-  //        const obj = {};
-  //        obj.label = tempData.sport_name;
-  //        obj.value = tempData.sport_name;
-  //        obj.isChecked = false;
-  //        arr.push(obj);
-  //      }
-  //      setSportList(arr);
-  //  }
-
   const getSports = () => {
     let sportArr = [];
 
@@ -86,7 +72,6 @@ export default function CreateClubForm1({ navigation, route }) {
     const arr = [];
     for (const tempData of sportArr) {
       const obj = {};
-      obj.sport_name = tempData.sport_name;
       obj.entity_type = tempData.entity_type;
       obj.sport = tempData.sport;
       obj.sport_type = tempData.sport_type;
@@ -102,23 +87,26 @@ export default function CreateClubForm1({ navigation, route }) {
     console.log('selectedSports:=>', selectedSports);
     if (selectedSports.length > 0) {
       selectedSports.map((sportItem, index) => {
-        sportText = sportText + (index ? ', ' : '') + sportItem;
+        sportText =
+          sportText +
+          (index ? ', ' : '') +
+          getSportName(sportItem, authContext);
         return null;
       });
       setSportsName(sportText);
     }
-  }, [selectedSports]);
+  }, [authContext, selectedSports]);
 
-  const isIconCheckedOrNot = ({ item, index }) => {
+  const isIconCheckedOrNot = ({item, index}) => {
     sportList[index].isChecked = !item.isChecked;
     setSportList([...sportList]);
   };
 
-  const renderSports = ({ item, index }) => (
+  const renderSports = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-        isIconCheckedOrNot({ item, index });
+        isIconCheckedOrNot({item, index});
       }}>
       <View
         style={{
@@ -127,7 +115,9 @@ export default function CreateClubForm1({ navigation, route }) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{getSportName(item, authContext)}</Text>
+        <Text style={styles.languageList}>
+          {getSportName(item, authContext)}
+        </Text>
         <View style={styles.checkbox}>
           {sportList[index].isChecked ? (
             <Image source={images.orangeCheckBox} style={styles.checkboxImg} />
@@ -144,8 +134,10 @@ export default function CreateClubForm1({ navigation, route }) {
   };
 
   const onNextPressed = () => {
+    console.log('selectedSports', selectedSports);
     const obj = {
-      sport: selectedSports.toString(), // 'Soccer',
+      sport: selectedSports, // Object of sport
+      sports_string: sportsName,
       group_name: clubName,
       city,
       state_abbr: state,
@@ -176,7 +168,8 @@ export default function CreateClubForm1({ navigation, route }) {
           <View style={styles.fieldView}>
             <TCLabel title={strings.locationClubTitle} />
             <TouchableOpacity
-              onPress={() => navigation.navigate('SearchLocationScreen', {
+              onPress={() =>
+                navigation.navigate('SearchLocationScreen', {
                   comeFrom: 'CreateClubForm1',
                 })
               }>
@@ -206,16 +199,16 @@ export default function CreateClubForm1({ navigation, route }) {
           </TouchableOpacity>
         </View>
 
-        <View style={{ marginLeft: 15 }}>
+        <View style={{marginLeft: 15}}>
           <Text style={styles.smallTxt}>{strings.createClubNotes}</Text>
         </View>
 
-        <View style={{ flex: 1 }} />
+        <View style={{flex: 1}} />
       </ScrollView>
       <TCGradientButton
         isDisabled={clubName === '' || location === '' || sportsName === ''}
         title={strings.nextTitle}
-        style={{ marginBottom: 30 }}
+        style={{marginBottom: 30}}
         onPress={onNextPressed}
       />
 
@@ -242,7 +235,7 @@ export default function CreateClubForm1({ navigation, route }) {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: {width: 0, height: 1},
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
@@ -271,12 +264,8 @@ export default function CreateClubForm1({ navigation, route }) {
             </Text>
             <TouchableOpacity
               onPress={() => {
-                for (const temp of sportList) {
-                  if (temp.isChecked) {
-                    selectedSport.push(temp.sport_name);
-                  }
-                }
-                setSelectedSports(selectedSport);
+                const filterChecked = sportList.filter((obj) => obj.isChecked);
+                setSelectedSports(filterChecked);
                 toggleModal();
               }}>
               <Text
@@ -338,7 +327,7 @@ const styles = StyleSheet.create({
 
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('92%'),
@@ -365,7 +354,7 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
 
@@ -418,7 +407,7 @@ const styles = StyleSheet.create({
 
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('92%'),

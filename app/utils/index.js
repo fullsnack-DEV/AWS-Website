@@ -782,7 +782,7 @@ export const getSportImage = (sportName, type, authContext) => {
     const tempObj = authContext.sports.filter(
       (obj) => obj.sport === sportName,
     )[0];
-    return tempObj.player_image;
+    return tempObj?.player_image;
   } else {
     let sportArr = [];
     authContext.sports.map((item) => {
@@ -791,10 +791,10 @@ export const getSportImage = (sportName, type, authContext) => {
     });
     const filterFormat = sportArr?.filter((obj) => obj.sport === sportName)[0];
     if (type === 'referee') {
-      return filterFormat.referee_image;
+      return filterFormat?.referee_image;
     }
     if (type === 'scorekeeper') {
-      return filterFormat.scorekeeper_image;
+      return filterFormat?.scorekeeper_image;
     }
   }
 };

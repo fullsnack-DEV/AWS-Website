@@ -204,24 +204,32 @@ const HomeScreen = ({navigation, route}) => {
   const [isTeamHome, setIsTeamHome] = useState(false);
   const [playsInModalVisible, setPlaysInModalVisible] = useState(false);
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false);
-  const [scorekeeperInModalVisible, setScorekeeperInModalVisible] =
-    useState(false);
-  const [reviewDetailModalVisible, setReviewDetailModalVisible] =
-    useState(false);
+  const [scorekeeperInModalVisible, setScorekeeperInModalVisible] = useState(
+    false,
+  );
+  const [reviewDetailModalVisible, setReviewDetailModalVisible] = useState(
+    false,
+  );
   const [feedDataIndex, setFeedDataIndex] = useState(0);
   const [feedDetailIndex, setFeedDetailIndex] = useState(0);
   const [orangeFeed, setOrangeFeed] = useState(false);
   const [reviewGameData, setReviewGameData] = useState();
   const [refereeInfoModalVisible, setRefereeInfoModalVisible] = useState(false);
-  const [scorekeeperInfoModalVisible, setScorekeeperInfoModalVisible] =
-    useState(false);
-  const [refereeMatchModalVisible, setRefereeMatchModalVisible] =
-    useState(false);
-  const [scorekeeperMatchModalVisible, setScorekeeperMatchModalVisible] =
-    useState(false);
+  const [
+    scorekeeperInfoModalVisible,
+    setScorekeeperInfoModalVisible,
+  ] = useState(false);
+  const [refereeMatchModalVisible, setRefereeMatchModalVisible] = useState(
+    false,
+  );
+  const [
+    scorekeeperMatchModalVisible,
+    setScorekeeperMatchModalVisible,
+  ] = useState(false);
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false);
-  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] =
-    useState(false);
+  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(
+    false,
+  );
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserData, setCurrentUserData] = useState({});
   const [loading, setloading] = useState(false);
@@ -275,17 +283,22 @@ const HomeScreen = ({navigation, route}) => {
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
   const [refereeOfferModalVisible, setRefereeOfferModalVisible] = useState();
-  const [scorekeeperOfferModalVisible, setScorekeeperOfferModalVisible] =
-    useState();
+  const [
+    scorekeeperOfferModalVisible,
+    setScorekeeperOfferModalVisible,
+  ] = useState();
 
-  const [isDoubleSportTeamCreatedVisible, setIsDoubleSportTeamCreatedVisible] =
-    useState(false);
+  const [
+    isDoubleSportTeamCreatedVisible,
+    setIsDoubleSportTeamCreatedVisible,
+  ] = useState(false);
 
   // const [reviewsData] = useState(reviews_data);
 
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
-  const timeTableSelectionDate =
-    moment(timetableSelectDate).format('YYYY-MM-DD');
+  const timeTableSelectionDate = moment(timetableSelectDate).format(
+    'YYYY-MM-DD',
+  );
 
   const [sportsSelection, setSportsSelection] = useState();
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
@@ -424,22 +437,8 @@ const HomeScreen = ({navigation, route}) => {
         .then((res) => {
           console.log('Get team Review Data Res ::--', res?.payload);
 
-          if (res?.payload?.averageReviews?.[0]) {
-            let array = Object.keys(
-              res?.payload?.averageReviews?.[0]?.avg_review,
-            );
-            array = array.filter((e) => e !== 'total_avg');
-            const teamProperty = [];
-            console.log('array Review Data Res ::--', array);
-
-            for (let i = 0; i < array.length; i++) {
-              const obj = {
-                [array[i]]:
-                  res?.payload?.averageReviews?.[0]?.avg_review[array[i]],
-              };
-              teamProperty.push(obj);
-            }
-            setAverageTeamReview(teamProperty);
+          if (res?.payload) {
+            // setAverageTeamReview(teamProperty);
             setTeamReviewData(res?.payload);
           } else {
             setAverageTeamReview([]);
@@ -589,6 +588,19 @@ const HomeScreen = ({navigation, route}) => {
           console.log('res1:::=>', res1.payload);
           console.log('res2:::=>', res2.payload);
 
+          let array = Object.keys(res1.payload.avg_review);
+          array = array.filter((e) => e !== 'total_avg');
+          const teamProperty = [];
+          console.log('array Review Data Res ::--', array);
+
+          for (let i = 0; i < array.length; i++) {
+            const obj = {
+              [array[i]]: res1.payload.avg_review[array[i]],
+            };
+            teamProperty.push(obj);
+          }
+
+          setAverageTeamReview(teamProperty);
           groupDetails.joined_leagues = league_Data;
           groupDetails.history = history_Data;
           groupDetails.joined_members = res2.payload;
@@ -609,7 +621,9 @@ const HomeScreen = ({navigation, route}) => {
               authContext.entity.role,
               groupDetails.sport,
               authContext,
-              authContext.entity.role === ('user' || 'player') ? groupDetails.sport_type : '',
+              authContext.entity.role === ('user' || 'player')
+                ? groupDetails.sport_type
+                : '',
             )
             .then((res3) => {
               setSettingObject(res3);
@@ -1153,19 +1167,37 @@ const HomeScreen = ({navigation, route}) => {
 
   const scorekeeperInModal = useCallback(
     (scorekeeperInObject) => {
-      console.log('ScorekeeperInObject', scorekeeperInObject);
+      console.log('ScorekeeperInObject', currentUserData);
 
       if (scorekeeperInObject) {
         const entity = authContext.entity;
         let languagesListName = [];
-        if (currentUserData) {
-          currentUserData.scorekeeper_data.map((scorekeeperItem) => {
-            if (scorekeeperItem.sport === scorekeeperInObject.sport) {
-              setSelectScorekeeperData(scorekeeperItem);
-              languagesListName = scorekeeperItem.language;
-            }
-            return null;
-          });
+        
+        const scorekeeperSport = currentUserData.scorekeeper_data.filter(
+          (scorekeeperItem) => scorekeeperItem.sport === scorekeeperInObject.sport,
+        )[0];
+
+        setSelectScorekeeperData(scorekeeperSport);
+        languagesListName = scorekeeperSport.language;
+
+        console.log('scorekeeperITEM::=>', scorekeeperSport);
+
+        if (scorekeeperSport?.avg_review) {
+          let array = Object.keys(scorekeeperSport.avg_review);
+          array = array.filter((e) => e !== 'total_avg');
+          const scorekeeperProperty = [];
+          
+
+          for (let i = 0; i < array.length; i++) {
+            const obj = {
+              [array[i]]: scorekeeperSport.avg_review[array[i]],
+            };
+            scorekeeperProperty.push(obj);
+          }
+          console.log('scorekeeperProperty ::--', scorekeeperProperty);
+          setAverageScorekeeperReview(scorekeeperProperty);
+        } else {
+          setAverageScorekeeperReview();
         }
         if (languagesListName.length > 0) {
           languagesListName.map((langItem, index) => {
@@ -1177,7 +1209,7 @@ const HomeScreen = ({navigation, route}) => {
           setLanguagesName(language_string);
         }
         setScorekeeperInModalVisible(!scorekeeperInModalVisible);
-        setSportName(scorekeeperInObject.sport);
+        setSportName(Utility.getSportName(scorekeeperInObject, authContext));
 
         getScorekeeperMatch(
           entity.uid || entity.auth.user_id,
@@ -1216,29 +1248,15 @@ const HomeScreen = ({navigation, route}) => {
         getScorekeeperReviewData(
           route?.params?.uid || entity.uid,
           scorekeeperInObject.sport,
+          true,
           authContext,
         )
           .then((res) => {
-            console.log('Get Referee Review Data Res ::--', res?.payload);
+            console.log('Get scorekeeper Review Data Res ::--', res?.payload);
 
-            if (res?.payload?.averageReviews?.[0]) {
-              let array = Object.keys(
-                res?.payload?.averageReviews?.[0]?.avg_review,
-              );
-              array = array.filter((e) => e !== 'total_avg');
-              const scorekeeperProperty = [];
-
-              for (let i = 0; i < array.length; i++) {
-                const obj = {
-                  [array[i]]:
-                    res?.payload?.averageReviews?.[0]?.avg_review[array[i]],
-                };
-                scorekeeperProperty.push(obj);
-              }
-              setAverageScorekeeperReview(scorekeeperProperty);
+            if (res?.payload) {
               setScorekeeperReviewData(res?.payload);
             } else {
-              setAverageRefereeReview([]);
               setScorekeeperReviewData();
             }
           })
@@ -1277,13 +1295,32 @@ const HomeScreen = ({navigation, route}) => {
         const entity = authContext.entity;
         let languagesListName = [];
         if (currentUserData) {
-          currentUserData.referee_data.map((refereeItem) => {
-            if (refereeItem.sport === refereeInObject.sport) {
-              setSelectRefereeData(refereeItem);
-              languagesListName = refereeItem.language;
+          const refereeSport = currentUserData.referee_data.filter(
+            (refereeItem) => refereeItem.sport === refereeInObject.sport,
+          )[0];
+
+          setSelectRefereeData(refereeSport);
+          languagesListName = refereeSport.language;
+
+          console.log('refereeITEM::=>', refereeSport);
+
+          if (refereeSport?.avg_review) {
+            let array = Object.keys(refereeSport.avg_review);
+            array = array.filter((e) => e !== 'total_avg');
+            const refereeProperty = [];
+            console.log('array referee Review Data Res ::--', array);
+
+            for (let i = 0; i < array.length; i++) {
+              const obj = {
+                [array[i]]: refereeSport.avg_review[array[i]],
+              };
+              refereeProperty.push(obj);
             }
-            return null;
-          });
+
+            setAverageRefereeReview(refereeProperty);
+          } else {
+            setAverageRefereeReview();
+          }
         }
         if (languagesListName.length > 0) {
           languagesListName.map((langItem, index) => {
@@ -1294,7 +1331,7 @@ const HomeScreen = ({navigation, route}) => {
           setLanguagesName(language_string);
         }
         setRefereesInModalVisible(!refereesInModalVisible);
-        setSportName(refereeInObject.sport);
+        setSportName(Utility.getSportName(refereeInObject, authContext));
 
         getRefereedMatch(
           entity.uid || entity.auth.user_id,
@@ -1332,29 +1369,15 @@ const HomeScreen = ({navigation, route}) => {
         getRefereeReviewData(
           route?.params?.uid || entity.uid,
           refereeInObject.sport,
+          true,
           authContext,
         )
           .then((res) => {
             console.log('Get Referee Review Data Res ::--', res?.payload);
 
-            if (res?.payload?.averageReviews?.[0]) {
-              let array = Object.keys(
-                res?.payload?.averageReviews?.[0]?.avg_review,
-              );
-              array = array.filter((e) => e !== 'total_avg');
-              const refereeProperty = [];
-
-              for (let i = 0; i < array.length; i++) {
-                const obj = {
-                  [array[i]]:
-                    res?.payload?.averageReviews?.[0]?.avg_review[array[i]],
-                };
-                refereeProperty.push(obj);
-              }
-              setAverageRefereeReview(refereeProperty);
+            if (res?.payload) {
               setRefereeReviewData(res?.payload);
             } else {
-              setAverageRefereeReview([]);
               setRefereeReviewData();
             }
           })
@@ -1451,7 +1474,7 @@ const HomeScreen = ({navigation, route}) => {
   const playInModel = useCallback(
     (playInObject) => {
       if (playInObject) {
-        setSportName(playInObject?.sport_name);
+        setSportName(Utility.getSportName(playInObject, authContext));
         setCurrentPlayInObject({...playInObject});
         setPlaysInModalVisible(!playsInModalVisible);
       } else {
@@ -2663,8 +2686,9 @@ const HomeScreen = ({navigation, route}) => {
   );
 
   const renderHeaderUserHomeTopSection = useMemo(
-    () => isUserHome && (
-      <UserHomeTopSection
+    () =>
+      isUserHome && (
+        <UserHomeTopSection
           userDetails={authContext?.entity?.obj}
           isAdmin={isAdmin}
           loggedInEntity={authContext.entity}
@@ -2675,7 +2699,16 @@ const HomeScreen = ({navigation, route}) => {
           onAction={onUserAction}
         />
       ),
-    [isUserHome, isAdmin, authContext.entity, onAddRolePress, refereesInModal, scorekeeperInModal, playInModel, onUserAction],
+    [
+      isUserHome,
+      isAdmin,
+      authContext.entity,
+      onAddRolePress,
+      refereesInModal,
+      scorekeeperInModal,
+      playInModel,
+      onUserAction,
+    ],
   );
 
   const renderHeaderClubHomeTopSection = useMemo(
@@ -3200,7 +3233,9 @@ const HomeScreen = ({navigation, route}) => {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{Utility.getSportName(item, authContext)}</Text>
+        <Text style={styles.languageList}>
+          {Utility.getSportName(item, authContext)}
+        </Text>
         <View style={styles.checkbox}>
           {sportsSelection.sport === item?.sport ? (
             <Image
@@ -3371,8 +3406,7 @@ const HomeScreen = ({navigation, route}) => {
             {term: {'status.keyword': 'accepted'}},
             {
               term: {
-                'challenge_referee.who_secure.responsible_team_id.keyword':
-                  teamId,
+                'challenge_referee.who_secure.responsible_team_id.keyword': teamId,
               },
             },
           ],
@@ -3474,8 +3508,7 @@ const HomeScreen = ({navigation, route}) => {
             {term: {'status.keyword': 'accepted'}},
             {
               term: {
-                'challenge_scorekeepers.who_secure.responsible_team_id.keyword':
-                  teamId,
+                'challenge_scorekeepers.who_secure.responsible_team_id.keyword': teamId,
               },
             },
           ],
@@ -3580,7 +3613,11 @@ const HomeScreen = ({navigation, route}) => {
       />
       <ActionSheet
         ref={manageChallengeActionSheet}
-        options={[strings.manageChallengeShhetItem, strings.sportActivity, strings.cancel]}
+        options={[
+          strings.manageChallengeShhetItem,
+          strings.sportActivity,
+          strings.cancel,
+        ]}
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
@@ -4362,7 +4399,6 @@ const HomeScreen = ({navigation, route}) => {
                   authContext?.entity?.uid !== currentUserData?.user_id
                 }
                 onModalClose={(value) => setScorekeeperInModalVisible(value)}
-
                 profileImage={
                   userThumbnail
                     ? {uri: userThumbnail}
@@ -5196,7 +5232,9 @@ const HomeScreen = ({navigation, route}) => {
               settingUtils
                 .getSetting(
                   authContext?.entity?.uid,
-                  authContext.entity.role === ('user' || 'player') ? 'player' : 'team',
+                  authContext.entity.role === ('user' || 'player')
+                    ? 'player'
+                    : 'team',
                   currentUserData.sport,
                   authContext,
                   currentUserData.sport_type,

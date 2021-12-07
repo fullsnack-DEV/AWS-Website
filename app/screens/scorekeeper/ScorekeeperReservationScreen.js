@@ -46,6 +46,7 @@ import TCChallengeTitle from '../../components/TCChallengeTitle';
 import { heightPercentageToDP, widthPercentageToDP } from '../../utils';
 import TCTouchableLabel from '../../components/TCTouchableLabel';
 import ScorekeeperReservationTitle from '../../components/reservations/ScorekeeperReservationTitle';
+import { paymentMethods } from '../../api/Users';
 
 let entity = {};
 
@@ -79,8 +80,33 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
     }
     if (route?.params?.paymentMethod) {
       setDefaultCard(route?.params?.paymentMethod);
+    }else{
+      getPaymentMethods(reservationObj?.source)
     }
   }, [authContext.entity, awayTeam, route.params]);
+
+
+  const getPaymentMethods = (source) => {
+    setloading(true);
+    paymentMethods(authContext)
+      .then((response) => {
+        console.log('Payment api called', response.payload);
+        const matchCard = response.payload.find((card) => card.id === source);
+        if (matchCard) {
+          console.log('default payment method', matchCard);
+          setDefaultCard(matchCard);
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        console.log('error in payment method', e);
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: getNavigationTitle(),

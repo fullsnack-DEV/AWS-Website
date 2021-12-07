@@ -17,9 +17,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
-import { Portal } from 'react-native-portalize';
-import { Modalize } from 'react-native-modalize';
-import { useIsFocused } from '@react-navigation/native';
+import {Portal} from 'react-native-portalize';
+import {Modalize} from 'react-native-modalize';
+import {useIsFocused} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
@@ -42,7 +42,7 @@ import {
 } from '../../../../utils/gameUtils';
 import strings from '../../../../Constants/String';
 import images from '../../../../Constants/ImagePath';
-import { getSetting } from '../../../../screens/challenge/manageChallenge/settingUtility';
+import {getSetting} from '../../../../screens/challenge/manageChallenge/settingUtility';
 
 let selectedRefereeData;
 const Referees = ({
@@ -74,16 +74,18 @@ const Referees = ({
     if (isFocused) {
       getRefereeReservation(gameData?.game_id).then((res) => {
         const refData = res?.payload?.filter(
-          (item) => ![RefereeReservationStatus.cancelled].includes(item?.status),
+          (item) =>
+            ![RefereeReservationStatus.cancelled].includes(item?.status),
         );
         const cloneRefData = [];
         refData.map((item) => {
-          const isExpired = new Date(item?.expiry_datetime * 1000).getTime()
-            < new Date().getTime();
+          const isExpired =
+            new Date(item?.expiry_datetime * 1000).getTime() <
+            new Date().getTime();
           if (
-            item?.status === RefereeReservationStatus.offered
-            && !isExpired
-            && item?.initiated_by === authContext?.entity?.uid
+            item?.status === RefereeReservationStatus.offered &&
+            !isExpired &&
+            item?.initiated_by === authContext?.entity?.uid
           ) {
             cloneRefData.push(item);
           } else if (item?.status !== RefereeReservationStatus.offered) {
@@ -133,33 +135,34 @@ const Referees = ({
     console.log('Referee status::=>', item);
     const status = item?.status;
     let statusData = '';
-    const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime();
+    const isExpired =
+      new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime();
     switch (status) {
       case RefereeReservationStatus.accepted:
-        statusData = { status: 'Confirmed', color: colors.greeColor };
+        statusData = {status: 'Confirmed', color: colors.greeColor};
         break;
       case RefereeReservationStatus.restored:
-        statusData = { status: 'Restored', color: colors.greeColor };
+        statusData = {status: 'Restored', color: colors.greeColor};
         break;
       case RefereeReservationStatus.cancelled:
-        statusData = { status: 'Cancelled', color: colors.greeColor };
+        statusData = {status: 'Cancelled', color: colors.greeColor};
         break;
       case RefereeReservationStatus.declined:
-        statusData = { status: 'Declined', color: colors.grayColor };
+        statusData = {status: 'Declined', color: colors.grayColor};
         break;
       case RefereeReservationStatus.pendingpayment:
-        statusData = { status: 'Pending payment', color: colors.yellowColor };
+        statusData = {status: 'Pending payment', color: colors.yellowColor};
         break;
       case RefereeReservationStatus.offered:
         if (isExpired) {
-          statusData = { status: 'Expired', color: colors.userPostTimeColor };
-        } else statusData = { status: 'Sent', color: colors.yellowColor };
+          statusData = {status: 'Expired', color: colors.userPostTimeColor};
+        } else statusData = {status: 'Sent', color: colors.yellowColor};
         break;
       case RefereeReservationStatus.changeRequest:
-        statusData = { status: 'Change requested', color: colors.yellowColor };
+        statusData = {status: 'Change requested', color: colors.yellowColor};
         break;
       default:
-        statusData = { status: '' };
+        statusData = {status: ''};
     }
     return statusData[type];
   }, []);
@@ -167,14 +170,14 @@ const Referees = ({
   const isCheckReviewButton = useCallback(
     (reservationDetail) => {
       if (
-        gameData?.status === GameStatus.ended
-        && ![
+        gameData?.status === GameStatus.ended &&
+        ![
           RefereeReservationStatus.offered,
           RefereeReservationStatus.cancelled,
           RefereeReservationStatus.declined,
-        ].includes(reservationDetail?.status)
-        && !checkReviewExpired(gameData?.actual_enddatetime)
-        && isAdmin
+        ].includes(reservationDetail?.status) &&
+        !checkReviewExpired(gameData?.actual_enddatetime) &&
+        isAdmin
       ) {
         return true;
       }
@@ -184,22 +187,8 @@ const Referees = ({
     [gameData?.actual_enddatetime, gameData?.status, isAdmin],
   );
 
-  const isCheckThreeDotButtonShown = useCallback(
-    (item) => {
-      // if (isCheckReviewButton(reservationDetail)) {
-      //   return false;
-      // }
-      const entity = authContext?.entity;
-      if (item?.initiated_by === entity?.uid) {
-        return true;
-      }
-
-      return false;
-    },
-    [authContext?.entity],
-  );
   const renderReferees = useCallback(
-    ({ item }) => {
+    ({item}) => {
       const reservationDetail = item; // item?.reservation
       return (
         <TCUserFollowUnfollowList
@@ -216,7 +205,7 @@ const Referees = ({
           is_following={reservationDetail?.referee?.is_following}
           onFollowUnfollowPress={onFollowPress}
           profileImage={reservationDetail?.referee?.thumbnail}
-          isShowThreeDots={isCheckThreeDotButtonShown(item)}
+          isShowThreeDots={item?.initiated_by === authContext?.entity?.uid && !isAdmin}
           onThreeDotPress={() => {
             selectedRefereeData = item;
             actionSheet.current.show();
@@ -229,8 +218,8 @@ const Referees = ({
     [
       followUser,
       getRefereeStatusMessage,
+      isAdmin,
       isCheckReviewButton,
-      isCheckThreeDotButtonShown,
       myUserId,
       onFollowPress,
       onReviewPress,
@@ -252,22 +241,17 @@ const Referees = ({
 
   const handleSendOfferReferee = useCallback(() => {
     setloading(true);
-    getSetting(
-      authContext.entity.uid,
-      'referee',
-      gameData?.sport,
-      authContext,
-    )
+    getSetting(authContext.entity.uid, 'referee', gameData?.sport, authContext)
       .then((response) => {
         setloading(false);
 
         setRefereeSetting(response);
 
         if (
-          response?.refereeAvailibility
-          && response?.game_fee
-          && response?.refund_policy
-          && response?.available_area
+          response?.refereeAvailibility &&
+          response?.game_fee &&
+          response?.refund_policy &&
+          response?.available_area
         ) {
           teamListModalRef.current.open();
 
@@ -303,29 +287,32 @@ const Referees = ({
     [],
   );
 
-  const refereeOfferValidation = useCallback(
-    () => {
-      if (
-        authContext.entity.role === 'user'
-        && authContext?.entity?.auth?.user?.referee_data.filter(
-          (obj) => obj?.sport === gameData?.sport,
-        ).length > 0
-        && refree.filter((obj) => obj.referee_id === authContext.entity.uid)
-          .length === 0
-      ) {
-        return true;
-      }
-      return false;
-    },
-    [authContext.entity?.auth?.user?.referee_data, authContext.entity.role, authContext.entity.uid, gameData?.sport, refree],
-  );
+  const refereeOfferValidation = useCallback(() => {
+    if (
+      authContext.entity.role === 'user' &&
+      authContext?.entity?.auth?.user?.referee_data?.filter(
+        (obj) => obj?.sport === gameData?.sport,
+      ).length > 0 &&
+      refree?.filter((obj) => obj?.referee_id === authContext?.entity?.uid)
+        .length === 0
+    ) {
+      return true;
+    }
+    return false;
+  }, [
+    authContext.entity?.auth?.user?.referee_data,
+    authContext.entity.role,
+    authContext.entity.uid,
+    gameData?.sport,
+    refree,
+  ]);
 
   const renderBookRefereeButton = useMemo(() => {
     console.log('Book referee,', gameData);
     if (
-        gameData.invited_to === authContext.entity.uid
-       // isAdmin
-      && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status)
+      gameData.invited_to === authContext.entity.uid &&
+      // isAdmin
+      [GameStatus.accepted, GameStatus.reset].includes(gameData?.status)
     ) {
       return (
         <TCGradientButton
@@ -339,7 +326,7 @@ const Referees = ({
             borderColor: colors.greeColor,
             height: 28.5,
           }}
-          textStyle={{ color: colors.greeColor, fontSize: 12 }}
+          textStyle={{color: colors.greeColor, fontSize: 12}}
           outerContainerStyle={{
             marginHorizontal: 5,
             marginTop: 5,
@@ -398,8 +385,9 @@ const Referees = ({
   );
 
   const renderTeams = useCallback(
-    ({ item }) => (selectedTeam === item ? (
-      <TouchableOpacity
+    ({item}) =>
+      selectedTeam === item ? (
+        <TouchableOpacity
           style={styles.teamMainContainer}
           onPress={() => {
             setSelectedTeam(item);
@@ -415,33 +403,33 @@ const Referees = ({
               });
             }, 500);
           }}>
-        <LinearGradient
+          <LinearGradient
             colors={[colors.yellowColor, colors.orangeColor]}
             style={styles.teamContainer}>
-          <View style={styles.profileView}>
-            <Image
+            <View style={styles.profileView}>
+              <Image
                 source={
                   item?.thumbnail
-                    ? { uri: item?.thumbnail }
+                    ? {uri: item?.thumbnail}
                     : images.teamPlaceholder
                 }
                 style={styles.profileImage}
               />
-          </View>
-          <View style={styles.topTextContainer}>
-            <Text
-                style={[styles.nameText, { color: colors.whiteColor }]}
+            </View>
+            <View style={styles.topTextContainer}>
+              <Text
+                style={[styles.nameText, {color: colors.whiteColor}]}
                 numberOfLines={1}>
-              {item?.group_name}
-            </Text>
-            <Text
-                style={[styles.locationText, { color: colors.whiteColor }]}
+                {item?.group_name}
+              </Text>
+              <Text
+                style={[styles.locationText, {color: colors.whiteColor}]}
                 numberOfLines={1}>
-              {item?.city}
-            </Text>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
+                {item?.city}
+              </Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
       ) : (
         <TouchableOpacity
           style={styles.teamMainContainer}
@@ -466,7 +454,7 @@ const Referees = ({
               <Image
                 source={
                   item?.thumbnail
-                    ? { uri: item?.thumbnail }
+                    ? {uri: item?.thumbnail}
                     : images.teamPlaceholder
                 }
                 style={styles.profileImage}
@@ -482,7 +470,7 @@ const Referees = ({
             </View>
           </View>
         </TouchableOpacity>
-      )),
+      ),
     [gameData, navigation, refereeSetting, selectedTeam],
   );
   const listEmptyComponent = () => (
@@ -500,7 +488,7 @@ const Referees = ({
     renderItem: renderTeams,
     keyExtractor: (index) => index.toString(),
     ListEmptyComponent: listEmptyComponent,
-    style: { marginTop: 15 },
+    style: {marginTop: 15},
   };
 
   return (
@@ -533,12 +521,12 @@ const Referees = ({
           onOpen={() => setTeamModalVisible(true)}
           snapPoint={hp(50)}
           withHandle={false}
-          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+          overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
           modalStyle={{
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
@@ -616,7 +604,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,
@@ -636,7 +624,7 @@ const styles = StyleSheet.create({
     width: '90%',
     backgroundColor: colors.whiteColor,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 5,
     borderRadius: 8,

@@ -105,7 +105,7 @@ export default function LocalHomeScreen({ navigation, route }) {
     location,
   });
 
-  console.log('authContext', authContext);
+  console.log('authContextttt::=>', authContext.entity.role);
 
   useEffect(() => {
     if (isFocused) {
@@ -971,6 +971,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                   title={strings.shortsTitle}
                   showArrow={true}
                   viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                  onPress={() => onShortPress(0, shortsList[0])}
                 />
                 <FlatList
                   horizontal={true}

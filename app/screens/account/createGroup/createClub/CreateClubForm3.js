@@ -544,7 +544,7 @@ export default function CreateClubForm3({ navigation, route }) {
   };
 
   const nextOnPress = () => {
-    setloading(true);
+   setloading(true);
     const bodyParams = {
       ...createClubForm2,
       entity_type: 'club',
@@ -569,6 +569,7 @@ export default function CreateClubForm3({ navigation, route }) {
 
     console.log('bodyPARAMS:: ', bodyParams);
 
+    
     const entity = authContext.entity;
     if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
       const imageArray = [];
@@ -684,7 +685,7 @@ export default function CreateClubForm3({ navigation, route }) {
         <TCInfoField
           title={'Sports'}
           // value={createClubForm2?.sport?.join(' ,')}
-          value={createClubForm2?.sport}
+          value={createClubForm2.sports_string}
           marginLeft={25}
           marginTop={30}
         />
