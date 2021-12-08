@@ -120,15 +120,18 @@ const Scorekeepers = ({
 
   const onFollowPress = useCallback(
     (userID, status) => {
-      const sKeeper = _.cloneDeep(gameData?.scorekeeper_reservations);
+      const sKeeper = _.cloneDeep(scorekeeper);
+      console.log('sKeeper:=>',sKeeper);
       const index = sKeeper.findIndex(
         (item) => item?.scorekeeper?.user_id === userID,
       );
       if (index > -1) sKeeper[index].scorekeeper.is_following = status;
+      setScorekeeper(sKeeper);
     },
-    [gameData?.scorekeeper_reservations],
+    [scorekeeper],
   );
 
+  
   const getScorekeeperStatusMessage = useCallback((item, type) => {
     const status = item?.status;
     let statusData = '';

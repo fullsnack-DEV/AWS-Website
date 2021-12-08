@@ -51,7 +51,7 @@ function GameCard({
 
   return (
     <TouchableOpacity
-      onPress={onPress}
+      
       activeOpacity={0.7}
       style={[styles.mainContainer, { width: wp(cardWidth) }]}>
       <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
@@ -78,7 +78,7 @@ function GameCard({
         <View style={styles.eventText}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={styles.eventTitle}>{getSportName(data,authContext)}</Text>
-            <View style={{ marginRight: 7, marginBottom: 5 }}>
+            <TouchableOpacity style={{ marginRight: 7, marginBottom: 5 }} onPress={onPress}>
               {/* eslint-disable-next-line no-nested-ternary */}
               {showSelectionCheckBox ? (
                 isSelected ? (
@@ -95,7 +95,7 @@ function GameCard({
                   />
                 )
               ) : null}
-            </View>
+            </TouchableOpacity>
           </View>
           <View style={styles.bottomView}>
             <Text style={styles.eventTimeLocation}>
@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     borderRadius: 8,
     marginBottom: 15,
+    
     elevation: 2,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1.5 },

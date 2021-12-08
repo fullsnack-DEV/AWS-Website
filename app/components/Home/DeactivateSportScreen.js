@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext,useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -23,16 +23,32 @@ import {
   patchRegisterScorekeeperDetails,
 } from '../../api/Users';
 import images from '../../Constants/ImagePath';
+import { getGroups } from '../../api/Groups';
 
 export default function DeactivateSportScreen({ navigation, route }) {
   const { sportName, type } = route?.params ?? {};
   const authContext = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
+  const [showLeaveMsg, setShowLeaveMsg] = useState(false);
 
   const [loading, setloading] = useState(false);
 
   console.log('Entity SportName: => ', sportName);
 
+
+  useEffect(() => {
+    
+    getGroups(authContext)
+      .then((response) => {
+        console.log('Get user groups Data Res ::--', response);
+        if(response.payload.clubs.length > 0 || response.payload.teams.length > 0){
+          setShowLeaveMsg(true)
+        }
+      })
+      .catch((error) => {
+        Alert.alert(strings.alertmessagetitle, error.message);
+      });
+  }, [authContext]);
   const patchPlayerIn = () => {
     setloading(true);
 
@@ -167,32 +183,39 @@ export default function DeactivateSportScreen({ navigation, route }) {
           onPress={() => {
             // Alert.alert('',
             //   'Please leave all clubs, leagues and seasons before you deactivate Tennis Singles.');
-            Alert.alert(
-              `Are you sure you want to deactivate ${sportName}?`,
-              '',
-              [
-                {
-                  text: 'Cancel',
-                  style: 'cancel',
-                },
-                {
-                  text: 'Deactivate',
-                  style: 'destructive',
-                  onPress: () => {
-                    if (type === 'referee') {
-                      patchReferee();
-                    }
-                    if (type === 'scorekeeper') {
-                      patchScorekeeper();
-                    }
-                    if (type === 'player') {
-                      patchPlayerIn();
-                    }
+            
+            if(showLeaveMsg){
+              Alert.alert('',`Please leave all teams, clubs and leagues before you deactivate ${sportName}.`);
+            }else{
+              Alert.alert(
+                `Are you sure you want to deactivate ${sportName}?`,
+                '',
+                [
+                  {
+                    text: 'Cancel',
+                    style: 'cancel',
                   },
-                },
-              ],
-              { cancelable: false },
-            );
+                  {
+                    text: 'Deactivate',
+                    style: 'destructive',
+                    onPress: () => {
+                      if (type === 'referee') {
+                        patchReferee();
+                      }
+                      if (type === 'scorekeeper') {
+                        patchScorekeeper();
+                      }
+                      if (type === 'player') {
+                        patchPlayerIn();
+                      }
+                    },
+                  },
+                ],
+                { cancelable: false },
+              );
+            }
+            
+            
           }}
         />
         <Modal

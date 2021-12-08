@@ -421,7 +421,7 @@ const Summary = ({
 
   const renderScoreRecordingButton = useMemo(
     () => (isAdmin || isRefereeAdmin || isScorekeeperAdmin)
-      && gameData.status !== GameStatus.ended && (
+      && gameData?.status !== GameStatus.ended && (
         <TCGradientButton
           onPress={() => navigation.navigate('SoccerRecording', { gameId: gameData?.game_id })
           }

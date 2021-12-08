@@ -105,6 +105,8 @@ export default function LocalHomeScreen({ navigation, route }) {
     location,
   });
 
+  console.log('route?.params?.locationText::=>',route?.params?.locationText);
+
   console.log('authContextttt::=>', authContext.entity.role);
 
   useEffect(() => {
@@ -118,14 +120,11 @@ export default function LocalHomeScreen({ navigation, route }) {
 
   useEffect(() => {
     if (route?.params?.locationText) {
-      setTimeout(() => {
         setLocation(route?.params?.locationText);
-        // setFilters({
-        //   ...filters,
-        //   location: route?.params?.locationText,
-        // });
-      }, 10);
-      // navigation.setParams({ locationText: null });
+        setFilters({
+          ...filters,
+          location: route?.params?.locationText,
+        }); 
     }
   }, [route?.params?.locationText]);
 
@@ -150,13 +149,11 @@ export default function LocalHomeScreen({ navigation, route }) {
     Utility.getStorage('sportSetting')
       .then((setting) => {
         console.log('Setting::1::=>', setting);
-        if (setting === null) {
+        if (setting === null){
           const arr = [];
-
           // const refereeSport = authContext?.entity?.auth?.user?.referee_data || [];
           // const scorekeeperSport = authContext?.entity?.auth?.user?.scorekeeper_data || [];
           const playerSport = authContext?.entity?.auth?.user?.registered_sports || [];
-
           const allSports = [
             ...arr,
             // ...refereeSport,
@@ -1207,6 +1204,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                     // Geolocation.getCurrentPosition((info) => console.log('Location info:=>', info));
 
                     setSelectedLocationOption(0);
+                    navigation.setParams({locationText: null});
                     getLocation();
                     // setLocation('India');
 
@@ -1252,7 +1250,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                         authContext?.entity?.obj?.city.charAt(0).toUpperCase()
                         + authContext?.entity?.obj?.city.slice(1),
                     });
-
+                    navigation.setParams({locationText: null});
                     setTimeout(() => {
                       setLocationPopup(false);
                     }, 300);
@@ -1275,6 +1273,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                 <TouchableWithoutFeedback
                   onPress={() => {
                     setSelectedLocationOption(2);
+                    navigation.setParams({locationText: null});
                     setLocation('world');
                     setFilters({
                       ...filters,

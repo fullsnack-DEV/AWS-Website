@@ -93,12 +93,7 @@ import TeamHomeTopSection from '../../components/Home/Team/TeamHomeTopSection';
 import strings from '../../Constants/String';
 import ScoreboardSportsScreen from './ScoreboardSportsScreen';
 import UpcomingMatchScreen from './UpcomingMatchScreen';
-import {
-  deleteEvent,
-  getEventById,
-  getEvents,
-  getSlots,
-} from '../../api/Schedule';
+import {deleteEvent, getEventById} from '../../api/Schedule';
 import BackForwardView from '../../components/Schedule/BackForwardView';
 import TwoTabView from '../../components/Schedule/TowTabView';
 import EventAgendaSection from '../../components/Schedule/EventAgendaSection';
@@ -327,47 +322,45 @@ const HomeScreen = ({navigation, route}) => {
     if (isFocused) {
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = authContext.entity;
-      const entityRole =
-        (route?.params?.role === 'user' ? 'users' : 'groups') ||
-        (entity.role === 'user' ? 'users' : 'groups');
 
       const uid = route?.params?.uid || entity.uid || entity.auth.user_id;
       const eventdata = [];
       const timetabledata = [];
       let eventTimeTableData = [];
-      getEvents(entityRole, uid, authContext)
+
+      Utility.getCalendar(uid, new Date().getTime() / 1000)
         .then((response) => {
-          getSlots(entityRole, uid, authContext).then((res) => {
-            eventTimeTableData = [...response.payload, ...res.payload];
-            setEventData(eventTimeTableData);
-            setTimeTable(eventTimeTableData);
-            eventTimeTableData.filter((event_item) => {
-              const startDate = new Date(event_item.start_datetime * 1000);
-              const eventDate = moment(startDate).format('YYYY-MM-DD');
-              if (eventDate === date) {
-                eventdata.push(event_item);
-              }
-              return null;
-            });
-            setFilterEventData(eventdata);
-            eventTimeTableData.filter((timetable_item) => {
-              const timetable_date = new Date(
-                timetable_item.start_datetime * 1000,
-              );
-              const endDate = new Date(timetable_item.end_datetime * 1000);
-              const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
-              if (timetabledate === date) {
-                const obj = {
-                  ...timetable_item,
-                  start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
-                  end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-                };
-                timetabledata.push(obj);
-              }
-              return null;
-            });
-            setFilterTimeTable(timetabledata);
+          console.log('Events response:=>', response);
+
+          eventTimeTableData = response;
+          setEventData(eventTimeTableData);
+          setTimeTable(eventTimeTableData);
+          eventTimeTableData.filter((event_item) => {
+            const startDate = new Date(event_item.start_datetime * 1000);
+            const eventDate = moment(startDate).format('YYYY-MM-DD');
+            if (eventDate === date) {
+              eventdata.push(event_item);
+            }
+            return null;
           });
+          setFilterEventData(eventdata);
+          eventTimeTableData.filter((timetable_item) => {
+            const timetable_date = new Date(
+              timetable_item.start_datetime * 1000,
+            );
+            const endDate = new Date(timetable_item.end_datetime * 1000);
+            const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
+            if (timetabledate === date) {
+              const obj = {
+                ...timetable_item,
+                start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
+                end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+              };
+              timetabledata.push(obj);
+            }
+            return null;
+          });
+          setFilterTimeTable(timetabledata);
         })
         .catch((e) => {
           setTimeout(() => {
@@ -587,20 +580,23 @@ const HomeScreen = ({navigation, route}) => {
 
           console.log('res1:::=>', res1.payload);
           console.log('res2:::=>', res2.payload);
+          if (res1?.payload?.avg_review) {
+            let array = Object.keys(res1?.payload?.avg_review);
+            array = array.filter((e) => e !== 'total_avg');
+            const teamProperty = [];
+            console.log('array Review Data Res ::--', array);
 
-          let array = Object.keys(res1.payload.avg_review);
-          array = array.filter((e) => e !== 'total_avg');
-          const teamProperty = [];
-          console.log('array Review Data Res ::--', array);
+            for (let i = 0; i < array.length; i++) {
+              const obj = {
+                [array[i]]: res1?.payload?.avg_review[array[i]],
+              };
+              teamProperty.push(obj);
+            }
 
-          for (let i = 0; i < array.length; i++) {
-            const obj = {
-              [array[i]]: res1.payload.avg_review[array[i]],
-            };
-            teamProperty.push(obj);
+            setAverageTeamReview(teamProperty);
+          } else {
+            setAverageTeamReview();
           }
-
-          setAverageTeamReview(teamProperty);
           groupDetails.joined_leagues = league_Data;
           groupDetails.history = history_Data;
           groupDetails.joined_members = res2.payload;
@@ -1172,9 +1168,10 @@ const HomeScreen = ({navigation, route}) => {
       if (scorekeeperInObject) {
         const entity = authContext.entity;
         let languagesListName = [];
-        
+
         const scorekeeperSport = currentUserData.scorekeeper_data.filter(
-          (scorekeeperItem) => scorekeeperItem.sport === scorekeeperInObject.sport,
+          (scorekeeperItem) =>
+            scorekeeperItem.sport === scorekeeperInObject.sport,
         )[0];
 
         setSelectScorekeeperData(scorekeeperSport);
@@ -1186,7 +1183,6 @@ const HomeScreen = ({navigation, route}) => {
           let array = Object.keys(scorekeeperSport.avg_review);
           array = array.filter((e) => e !== 'total_avg');
           const scorekeeperProperty = [];
-          
 
           for (let i = 0; i < array.length; i++) {
             const obj = {
@@ -2311,11 +2307,15 @@ const HomeScreen = ({navigation, route}) => {
                           selectedEventItem.cal_id,
                           authContext,
                         )
-                          .then(() => getEvents(entityRole, uid, authContext))
+                          .then(() =>
+                            Utility.getCalendar(
+                              uid,
+                              new Date().getTime() / 1000,
+                            ),
+                          )
                           .then((response) => {
-                            setloading(false);
-                            setEventData(response.payload);
-                            setTimeTable(response.payload);
+                            setEventData(response);
+                            setTimeTable(response);
                           })
                           .catch((e) => {
                             setloading(false);
