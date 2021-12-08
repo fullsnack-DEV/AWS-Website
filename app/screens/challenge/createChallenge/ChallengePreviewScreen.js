@@ -890,7 +890,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
           {topButtons()}
 
-          {challengeData?.game_id && (
+          {challengeData?.game_id && challengeData?.status !== ReservationStatus.cancelled && (
             <TCArrowView
               title={'Game Home '}
               onPress={() => {

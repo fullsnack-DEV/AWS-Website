@@ -126,6 +126,8 @@ const Referees = ({
         (item) => item?.referee?.user_id === userID,
       );
       if (index > -1) refre[index].referee.is_following = status;
+
+      
       setRefree(refre);
     },
     [refree],
@@ -190,6 +192,7 @@ const Referees = ({
   const renderReferees = useCallback(
     ({item}) => {
       const reservationDetail = item; // item?.reservation
+      console.log('reservation detail::=>>>',reservationDetail);
       return (
         <TCUserFollowUnfollowList
           statusColor={getRefereeStatusMessage(reservationDetail, 'color')}

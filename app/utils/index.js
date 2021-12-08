@@ -729,14 +729,14 @@ export const getCalendar = async (
     body.query.bool.must.push({ range: { start_datetime: { lt: toDate } } });
   }
 
-  if (blocked === true || blocked === false) {
-    body.query.bool.must.push({
-      match: {
-        blocked,
-      },
-    });
-  }
-
+  // if (blocked === true || blocked === false) {
+  //   body.query.bool.must.push({
+  //     match: {
+  //       blocked,
+  //     },
+  //   });
+  // }
+  console.log('calender elastic search :=>', body);
   return getCalendarIndex(body).then((response) => {
     console.log('elastic search :=>', response);
 

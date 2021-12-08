@@ -38,10 +38,10 @@
 		8D0AE550C857B0B283637E65 /* libPods-townscup_reactnative-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580AE42D1FD400616C2A8F5C /* libPods-townscup_reactnative-tvOSTests.a */; };
 		C9916F96BC5FAEB70B109A49 /* libPods-townscup_reactnative-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 12C0E4D0BEDB2D087F0B8B64 /* libPods-townscup_reactnative-tvOS.a */; };
 		DAC0E4382705DBB20006A40D /* GoogleService-Info-stage.plist in Resources */ = {isa = PBXBuildFile; fileRef = DAC0E4342705DBB20006A40D /* GoogleService-Info-stage.plist */; };
-		DAC0E4392705DBB20006A40D /* GoogleService-Info-prod.plist in Resources */ = {isa = PBXBuildFile; fileRef = DAC0E4352705DBB20006A40D /* GoogleService-Info-prod.plist */; };
 		DAC0E43A2705DBB20006A40D /* GoogleService-Info-dev.plist in Resources */ = {isa = PBXBuildFile; fileRef = DAC0E4362705DBB20006A40D /* GoogleService-Info-dev.plist */; };
 		DAC0E43B2705DBB20006A40D /* GoogleService-Info-qa.plist in Resources */ = {isa = PBXBuildFile; fileRef = DAC0E4372705DBB20006A40D /* GoogleService-Info-qa.plist */; };
 		DAC0E4402705E6C90006A40D /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 008F07F21AC5B25A0029DE68 /* main.jsbundle */; };
+		E323882C2760A9CB00DBC1C9 /* GoogleService-Info-prod.plist in Resources */ = {isa = PBXBuildFile; fileRef = E323882B2760A9CB00DBC1C9 /* GoogleService-Info-prod.plist */; };
 		F3B472B8B52588B9085F8F53 /* libPods-townscup_reactnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C542A4AB449CBFD49B44A978 /* libPods-townscup_reactnative.a */; };
 /* End PBXBuildFile section */
 
@@ -143,9 +143,9 @@
 		C542A4AB449CBFD49B44A978 /* libPods-townscup_reactnative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-townscup_reactnative.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9155AC71DDBEB8F3C03A200 /* Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOSTests/Pods-townscup_reactnative-tvOSTests.debug_development.xcconfig"; sourceTree = "<group>"; };
 		DAC0E4342705DBB20006A40D /* GoogleService-Info-stage.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-stage.plist"; path = "townscup_reactnative/Firebase/GoogleService-Info-stage.plist"; sourceTree = "<group>"; };
-		DAC0E4352705DBB20006A40D /* GoogleService-Info-prod.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-prod.plist"; path = "townscup_reactnative/Firebase/GoogleService-Info-prod.plist"; sourceTree = "<group>"; };
 		DAC0E4362705DBB20006A40D /* GoogleService-Info-dev.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-dev.plist"; path = "townscup_reactnative/Firebase/GoogleService-Info-dev.plist"; sourceTree = "<group>"; };
 		DAC0E4372705DBB20006A40D /* GoogleService-Info-qa.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-qa.plist"; path = "townscup_reactnative/Firebase/GoogleService-Info-qa.plist"; sourceTree = "<group>"; };
+		E323882B2760A9CB00DBC1C9 /* GoogleService-Info-prod.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-prod.plist"; path = "../../../../Users/kishanmakani/Desktop/GoogleService-Info-prod.plist"; sourceTree = "<group>"; };
 		E776A54AD126B3D8A52CB89B /* Pods-townscup_reactnative-tvOS.release_staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative-tvOS.release_staging.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative-tvOS/Pods-townscup_reactnative-tvOS.release_staging.xcconfig"; sourceTree = "<group>"; };
 		E90E3DB15991A7D09DB7F402 /* Pods-townscup_reactnative.release_production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.release_production.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.release_production.xcconfig"; sourceTree = "<group>"; };
 		EACD657D2BD9F76D7E9B6CF3 /* Pods-townscup_reactnative.qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-townscup_reactnative.qa.xcconfig"; path = "Target Support Files/Pods-townscup_reactnative/Pods-townscup_reactnative.qa.xcconfig"; sourceTree = "<group>"; };
@@ -358,7 +358,7 @@
 			isa = PBXGroup;
 			children = (
 				DAC0E4362705DBB20006A40D /* GoogleService-Info-dev.plist */,
-				DAC0E4352705DBB20006A40D /* GoogleService-Info-prod.plist */,
+				E323882B2760A9CB00DBC1C9 /* GoogleService-Info-prod.plist */,
 				DAC0E4372705DBB20006A40D /* GoogleService-Info-qa.plist */,
 				DAC0E4342705DBB20006A40D /* GoogleService-Info-stage.plist */,
 			);
@@ -515,6 +515,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E323882C2760A9CB00DBC1C9 /* GoogleService-Info-prod.plist in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				DAC0E43A2705DBB20006A40D /* GoogleService-Info-dev.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
@@ -525,7 +526,6 @@
 				046ACE64251CA906009CBADE /* Lato-Regular.ttf in Resources */,
 				046ACE65251CA906009CBADE /* Lato-Light.ttf in Resources */,
 				DAC0E43B2705DBB20006A40D /* GoogleService-Info-qa.plist in Resources */,
-				DAC0E4392705DBB20006A40D /* GoogleService-Info-prod.plist in Resources */,
 				046ACE66251CA906009CBADE /* Roboto-Light.ttf in Resources */,
 				DAC0E4382705DBB20006A40D /* GoogleService-Info-stage.plist in Resources */,
 				046ACE67251CA906009CBADE /* Roboto-ThinItalic.ttf in Resources */,

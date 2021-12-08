@@ -8,17 +8,17 @@ export const blockedSlots = async (entityType, entityID, authContext) => makeAPI
   authContext,
 });
 
-export const getEvents = async (entity_type, entity_id, authContext) => makeAPIRequest({
-  method: 'get',
-  url: `${Config.BASE_URL}/${entity_type}/${entity_id}/events`,
-  authContext,
-});
+// export const getEvents = async (entity_type, entity_id, authContext) => makeAPIRequest({
+//   method: 'get',
+//   url: `${Config.BASE_URL}/${entity_type}/${entity_id}/events`,
+//   authContext,
+// });
 
-export const getSlots = async (entity_type, entity_id, authContext) => makeAPIRequest({
-  method: 'get',
-  url: `${Config.BASE_URL}/${entity_type}/${entity_id}/slots`,
-  authContext,
-});
+// export const getSlots = async (entity_type, entity_id, authContext) => makeAPIRequest({
+//   method: 'get',
+//   url: `${Config.BASE_URL}/${entity_type}/${entity_id}/slots`,
+//   authContext,
+// });
 
 export const editSlots = async (entity_type, entity_id, data, authContext) => makeAPIRequest({
   method: 'post',

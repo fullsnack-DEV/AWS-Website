@@ -95,13 +95,15 @@ const NewsFeedDescription = ({
   }, [])
 
   const renderSelectedGame = useCallback(({ item }) => (
-    <View>
+    <View style={{marginLeft:15,}}>
       <TCGameCard
           data={item?.entity_data}
           onPress={() => {
             const routeName = getGameHomeScreen(item?.entity_data?.sport);
             navigation.push(routeName, { gameId: item?.entity_id })
           }}
+          
+          // cardWidth={'92%'}
       />
     </View>
   ), [navigation]);

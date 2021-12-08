@@ -38,16 +38,25 @@ const TCUserFollowUnfollowList = ({
     };
     if (!is_following) {
       followUser(params, userID).then(() => {
+        setLoading(false);
         onFollowUnfollowPress(userID, true)
       }).catch((error) => {
-        setTimeout(() => {
+        setLoading(false);
+        console.log('Follow ERROR:=>',error);
           Alert.alert('Towns Cup', error.messages);
-        }, 0.1)
-      }).finally(() => setLoading(false));
+       
+      });
     } else {
       unFollowUser(params, userID).then(() => {
+        setLoading(false);
         onFollowUnfollowPress(userID, false);
-      }).finally(() => setLoading(false));
+      }).catch((error) => {
+        setLoading(false);
+        console.log('UnFollow ERROR:=>',error);
+
+          Alert.alert('Towns Cup', error.messages);
+       
+      });
     }
   }, [followUser, is_following, onFollowUnfollowPress, unFollowUser, userID]);
 
@@ -70,7 +79,7 @@ const TCUserFollowUnfollowList = ({
     }
     return (
       <>
-        {!loading && userRole === 'user' && (<TCGradientButton
+        {!loading && userRole === 'user' && myUserId !== userID && (<TCGradientButton
                     onPress={onFollowPress}
                     title={is_following ? 'Following' : 'Follow'}
                     startGradientColor={!is_following ? colors.yellowColor : colors.whiteColor}
