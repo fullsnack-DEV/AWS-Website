@@ -23,7 +23,7 @@ import TCTouchableLabel from '../../components/TCTouchableLabel';
 import TCTextField from '../../components/TCTextField';
 import TCLabel from '../../components/TCLabel';
 import TCProfileImageControl from '../../components/TCProfileImageControl';
-import { updateGroupProfile, getGroupSearch } from '../../api/Groups';
+import { patchGroup } from '../../api/Groups';
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
@@ -68,7 +68,8 @@ export default function EditGroupProfileScreen({ navigation, route }) {
             color: colors.lightBlackColor,
           }}
           onPress={() => {
-            nextOnPress();
+             
+             onSaveButtonClicked()
           }}>
           {strings.save}
         </Text>
@@ -121,25 +122,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
     });
   };
 
-  const nextOnPress = () => {
-    setloading(true)
-    getGroupSearch(groupProfile?.group_name, groupProfile?.city, groupProfile?.group_id, authContext).then((response) => {
-      setloading(false);
-      if (!response.payload) {
-        onSaveButtonClicked()
-      } else {
-        setTimeout(() => {
-          Alert.alert(strings.teamExist);
-        }, 10);
-      }
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
-  };
+  
 
   const onSaveButtonClicked = () => {
     Keyboard.dismiss();
@@ -204,7 +187,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
 
   const callUpdateUserAPI = (userProfile, paramGroupID) => {
     setloading(true);
-    updateGroupProfile(userProfile, paramGroupID, authContext)
+    patchGroup(paramGroupID,userProfile, authContext)
       .then(async (response) => {
         const entity = authContext.entity;
         entity.obj = response.payload;

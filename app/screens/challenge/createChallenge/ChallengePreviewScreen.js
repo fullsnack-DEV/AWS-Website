@@ -142,7 +142,6 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   }, [oldVersion, route?.params?.challengeObj]);
 
   useEffect(() => {
-    setloading(true);
     console.log('challenge data11:=>', challengeData?.challengee);
     Utils.getSetting(
       challengeData?.challengee,

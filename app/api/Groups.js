@@ -109,12 +109,7 @@ export const createMemberProfile = (groupID, params, authContext) => makeAPIRequ
   authContext,
 })
 
-export const patchGroup = (groupID, params, authContext) => makeAPIRequest({
-  method: 'patch',
-  url: `${Config.BASE_URL}groups/${groupID}`,
-  data: params,
-  authContext,
-})
+
 
 // export const searchGroups = (params, authContext) => makeAPIRequest({
 //   method: 'get',
@@ -177,9 +172,10 @@ export const inviteTeam = (params, groupID, authContext) => makeAPIRequest({
   authContext,
 });
 
-export const updateGroupProfile = (params, groupID, authContext) => makeAPIRequest({
+
+export const patchGroup = (groupID, params, authContext) => makeAPIRequest({
   method: 'patch',
-  url: `${Config.BASE_URL}/groups/${groupID}`,
+  url: `${Config.BASE_URL}groups/${groupID}`,
   data: params,
   authContext,
 })

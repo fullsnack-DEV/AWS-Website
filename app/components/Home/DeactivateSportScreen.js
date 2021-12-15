@@ -42,7 +42,11 @@ export default function DeactivateSportScreen({ navigation, route }) {
       .then((response) => {
         console.log('Get user groups Data Res ::--', response);
         if(response.payload.clubs.length > 0 || response.payload.teams.length > 0){
-          setShowLeaveMsg(true)
+
+          if(response.payload.clubs.filter((obj)=> obj.sport === sportName && obj.sport_type === type).length > 0 || response.payload.teams.filter((obj)=> obj.sport === sportName && obj.sport_type === type).length > 0){
+            setShowLeaveMsg(true)
+          }
+          
         }
       })
       .catch((error) => {
@@ -165,7 +169,6 @@ export default function DeactivateSportScreen({ navigation, route }) {
         <ActivityLoader visible={loading} />
         <View style={styles.mailContainer}>
           <Text style={styles.titleText}>When you terminate the team:</Text>
-
           <Text style={styles.descText}>
             • You can cancel terminating the team (recover the club) up to 14
             days after you terminate it.{'\n'}

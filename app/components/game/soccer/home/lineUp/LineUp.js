@@ -171,6 +171,7 @@ export default function LineUp({ navigation, gameData }) {
             });
         }
         if (bType === 'message') {
+          console.log('item?.profile?.user_id',item?.profile);
           navigation.navigate('MessageChat', {
             screen: 'MessageChatRoom',
             params: { userId: item?.profile?.user_id },

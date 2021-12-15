@@ -513,6 +513,7 @@ const saveTeam = () => {
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
               <TouchableOpacity
+               hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
                 onPress={() => setVisibleModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />

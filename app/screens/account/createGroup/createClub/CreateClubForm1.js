@@ -27,7 +27,7 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCLabel from '../../../../components/TCLabel';
 import TCThinDivider from '../../../../components/TCThinDivider';
-import {getSportName} from '../../../../utils';
+import {getHitSlop, getSportName} from '../../../../utils';
 
 export default function CreateClubForm1({navigation, route}) {
   const isFocused = useIsFocused();
@@ -248,6 +248,7 @@ export default function CreateClubForm1({navigation, route}) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
+             hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />

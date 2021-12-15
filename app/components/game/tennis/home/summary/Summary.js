@@ -21,7 +21,7 @@ import moment from 'moment';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import {useIsFocused} from '@react-navigation/native';
-import {heightPercentageToDP as hp} from '../../../../../utils';
+import {getHitSlop, heightPercentageToDP as hp} from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
 import Referees from '../../../common/summary/Referees';
@@ -1294,6 +1294,7 @@ const Summary = ({
           <View style={styles.bottomPopupContainer}>
             <View style={styles.titlePopup}>
               <TouchableWithoutFeedback
+               hitSlop={getHitSlop(15)}
                 onPress={() => {
                   setIsPopupVisible(false);
                 }}>

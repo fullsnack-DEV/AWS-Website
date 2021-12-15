@@ -1615,7 +1615,7 @@ const HomeScreen = ({navigation, route}) => {
         <View>
           <ReviewSection
             onFeedPress={onFeedPress}
-            reviewsData={averageRefereeReview}
+            reviewsData={averageRefereeReview }
             reviewsFeed={refereeReviewData}
             onReadMorePress={() => {
               reviewerDetailModal();
@@ -2170,7 +2170,9 @@ const HomeScreen = ({navigation, route}) => {
               <Header
                 mainContainerStyle={styles.refereeHeaderMainStyle}
                 leftComponent={
-                  <TouchableOpacity onPress={() => setIsRefereeModal(false)}>
+                  <TouchableOpacity 
+                  hitSlop={Utility.getHitSlop(15)}
+                  onPress={() => setIsRefereeModal(false)}>
                     <Image
                       source={images.cancelImage}
                       style={[
@@ -3223,7 +3225,9 @@ const HomeScreen = ({navigation, route}) => {
           console.log('Sport name:=>', item.sport);
           navigation.navigate('ManageChallengeScreen', {
             sportName: item.sport,
+            sportType: currentUserData?.sport_type,
           });
+          
         }, 300);
       }}>
       <View
@@ -3300,7 +3304,7 @@ const HomeScreen = ({navigation, route}) => {
           // const assistantCnt = game?.referees?.filter(
           //   (chal_ref) => !chal_ref?.chief_referee,
           // )?.length;
-          const message = '';
+          
           // if (isSameReferee) {
           //   message = 'This referee is already booked for this game.';
           // } else if (!game.isAvailable) {
@@ -3312,6 +3316,7 @@ const HomeScreen = ({navigation, route}) => {
           // } else if (!isCheif && assistantCnt >= 2) {
           //   message = 'There is no available slot of an assistant referee who you can book in this game.';
           // }
+          const message = '';
           if (message === '') {
             gameListRefereeModalRef.current.close();
             navigation.navigate('RefereeBookingDateAndTime', {
@@ -3635,6 +3640,7 @@ const HomeScreen = ({navigation, route}) => {
             if (entity.role === 'team') {
               navigation.navigate('ManageChallengeScreen', {
                 sportName: currentUserData?.sport,
+                sportType: currentUserData?.sport_type,
               });
             }
           } else if (index === 1) {
@@ -4997,6 +5003,7 @@ const HomeScreen = ({navigation, route}) => {
                 if (route?.params?.role !== 'club') {
                   navigation.navigate('ManageChallengeScreen', {
                     sportName: route?.params?.entityObj?.sport,
+                    sportType: currentUserData?.sport_type,
                   });
                 }
               }}>
@@ -5337,6 +5344,7 @@ const HomeScreen = ({navigation, route}) => {
               alignItems: 'center',
             }}>
             <TouchableOpacity
+             hitSlop={Utility.getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />

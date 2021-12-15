@@ -25,12 +25,44 @@ export default function UserFoundScreen({ navigation, route }) {
  } = route?.params
   const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(false);
+const entity = authContext?.entity?.obj
+
+
+const getLocation=(entityType)=>{
+  let locationString = ''
+
+ if(entityType === 'team'){
+  locationString = entity?.city
+  if(entity?.state_abbr){
+    locationString = `${locationString  }, ${  entity?.state_abbr}`
+  }
+  if(entity?.country){
+    locationString = `${locationString  }, ${  entity?.country}`
+  }
+ }else{
+  locationString = signUpObj?.city
+  if(signUpObj?.state_abbr){
+    locationString = `${locationString  }, ${  signUpObj?.state_abbr}`
+  }
+  if(signUpObj?.country){
+    locationString = `${locationString  }, ${  signUpObj?.country}`
+  }
+ }
+return locationString
+}
+  console.log('signup:=>',signUpObj);
+  console.log('member:=>',memberObj);
 
   const connectMemberProfile = () => {
     setloading(true)
     connectProfile(groupID, memberObj?.user_id, authContext).then((response) => {
-      setloading(false)
-      Alert.alert('Towns Cup', response.messages)
+      
+
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, response.messages);
+      }, 10);
+
       navigation.goBack();
     })
       .catch((e) => {
@@ -54,17 +86,17 @@ export default function UserFoundScreen({ navigation, route }) {
               <Text style={styles.foundUserText}>We found a user whose e-mail account is</Text>
 
               {/* <Image source={ memberObj.thumbnail ? { uri: memberObj.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage } /> */}
-              <TCProfileView image={signUpObj?.thumbnail ? { uri: signUpObj?.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage} name={`${signUpObj?.full_name}`} location={`${signUpObj?.city}, ${signUpObj?.state_abbr}, ${signUpObj?.country}`} color={colors.whiteColor}/>
+              <TCProfileView image={signUpObj?.thumbnail ? { uri: signUpObj?.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage} name={`${signUpObj?.first_name} ${signUpObj?.last_name}`} location={getLocation('user')} color={colors.whiteColor}/>
               <Text style={styles.emailText}>{memberObj.email}</Text>
             </View>
             <View style={styles.deviderView}></View>
             <View style={styles.topContainer}>
               <Text style={styles.connectProfileText}>Would you like to connect this user’s account to {`${signUpObj.first_name}'s`} profile in your team?</Text>
-              <TCProfileView image={signUpObj?.thumbnail ? { uri: signUpObj?.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage} name={`${signUpObj?.full_name}`} location={`${signUpObj?.city}, ${signUpObj?.state_abbr}, ${signUpObj?.country}`} color={colors.whiteColor}/>
+              <TCProfileView image={entity?.thumbnail ? { uri: entity?.thumbnail } : images.teamPH } style={ styles.profileImage} name={`${entity?.group_name}`} location={getLocation('team')} color={colors.whiteColor}/>
 
               <Image source={images.chain} style={styles.fileButton}></Image>
 
-              <TCProfileView image={memberObj?.thumbnail ? { uri: memberObj.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage} name={`${memberObj?.first_name} ${memberObj?.last_name}`} location={`${memberObj?.city ?? ''}, ${memberObj?.state_abbr ?? ''}, ${memberObj?.country ?? ''}`} color={colors.whiteColor}/>
+              <TCProfileView image={memberObj?.thumbnail ? { uri: memberObj.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage} name={`${memberObj?.first_name} ${memberObj?.last_name}`} location={getLocation('user')} color={colors.whiteColor}/>
 
               {/* <Text style={styles.userEmail}>{memberObj.email}</Text> */}
 

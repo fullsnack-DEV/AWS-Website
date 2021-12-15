@@ -59,7 +59,10 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
         response.payload.map((e) => {
           e.isSelect = false;
         });
+        console.log('getGroupMembers',response.payload);
         const data = response.payload.filter((obj) => obj.group_member_detail.connected === false && obj.group_member_detail.canConnect === true)
+       
+       console.log('getGroupMembers',data);
         setMembers(data)
         setSearchMember(data)
         setloading(false);

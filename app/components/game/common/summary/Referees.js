@@ -61,7 +61,7 @@ const Referees = ({
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
-  const [refree, setRefree] = useState([]);
+  const [referee, setReferee] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState();
   const [refereeSetting, setRefereeSetting] = useState();
   const [myUserId, setMyUserId] = useState(null);
@@ -94,7 +94,7 @@ const Referees = ({
           return false;
         });
         console.log('referee reservation:=>', cloneRefData);
-        setRefree([...cloneRefData]);
+        setReferee([...cloneRefData]);
       });
     }
   }, [authContext?.entity?.uid, gameData, getRefereeReservation, isFocused]);
@@ -121,16 +121,13 @@ const Referees = ({
 
   const onFollowPress = useCallback(
     (userID, status) => {
-      const refre = _.cloneDeep(refree);
-      const index = refre.findIndex(
+      const index = referee.findIndex(
         (item) => item?.referee?.user_id === userID,
       );
-      if (index > -1) refre[index].referee.is_following = status;
-
-      
-      setRefree(refre);
+      if (index > -1) referee[index].referee.is_following = status;
+      setReferee([...referee]);
     },
-    [refree],
+    [referee],
   );
 
   const getRefereeStatusMessage = useCallback((item, type) => {
@@ -296,7 +293,7 @@ const Referees = ({
       authContext?.entity?.auth?.user?.referee_data?.filter(
         (obj) => obj?.sport === gameData?.sport,
       ).length > 0 &&
-      refree?.filter((obj) => obj?.referee_id === authContext?.entity?.uid)
+      referee?.filter((obj) => obj?.referee_id === authContext?.entity?.uid)
         .length === 0
     ) {
       return true;
@@ -307,7 +304,7 @@ const Referees = ({
     authContext.entity.role,
     authContext.entity.uid,
     gameData?.sport,
-    refree,
+    referee,
   ]);
 
   const renderBookRefereeButton = useMemo(() => {
@@ -502,7 +499,7 @@ const Referees = ({
         <FlatList
           keyExtractor={(item) => item?.user_id}
           bounces={false}
-          data={refree} // gameData?.referees
+          data={referee} // gameData?.referees
           renderItem={renderReferees}
           ListEmptyComponent={ListEmptyComponent}
         />

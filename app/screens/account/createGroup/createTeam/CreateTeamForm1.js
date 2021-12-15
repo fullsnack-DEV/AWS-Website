@@ -33,7 +33,7 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
 import { getGroupIndex } from '../../../../api/elasticSearch';
-import { getSportName } from '../../../../utils';
+import { getHitSlop, getSportName } from '../../../../utils';
 
 export default function CreateTeamForm1({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -291,6 +291,7 @@ export default function CreateTeamForm1({ navigation, route }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
+            hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />

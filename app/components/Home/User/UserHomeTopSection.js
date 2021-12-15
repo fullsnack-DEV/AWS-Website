@@ -64,7 +64,7 @@ const UserHomeTopSection = ({
   ]);
 
   const oneLineSection = () => {
-    console.log('authContext::=>>', authContext.entity.obj.sport_setting);
+    console.log('authContext::=>>', authContext.entity.obj);
     if (authContext?.entity?.obj?.sport_setting?.activity_order?.length > 0) {
       return [
         ...(authContext?.entity?.obj?.sport_setting?.activity_order ?? []),
@@ -72,9 +72,9 @@ const UserHomeTopSection = ({
       ];
     }
     return [
-      ...(authContext?.entity?.obj?.registered_sports ?? []),
-      ...(authContext?.entity?.obj?.referee_data ?? []),
-      ...(authContext?.entity?.obj?.scorekeeper_data ?? []),
+      ...(authContext?.entity?.obj?.registered_sports?.filter((obj) => obj.is_published) ?? []),
+      ...(authContext?.entity?.obj?.referee_data?.filter((obj) => obj.is_published) ?? []),
+      ...(authContext?.entity?.obj?.scorekeeper_data?.filter((obj) => obj.is_published) ?? []),
       { sport_name: strings.addrole, item_type: EntityStatus.addNew },
     ];
   };

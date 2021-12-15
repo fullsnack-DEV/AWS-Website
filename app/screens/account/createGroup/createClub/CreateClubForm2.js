@@ -267,7 +267,7 @@ import React, {
  import strings from '../../../../Constants/String';
  import fonts from '../../../../Constants/Fonts';
  import colors from '../../../../Constants/Colors';
- import { languageList } from '../../../../utils';
+ import { getHitSlop, languageList } from '../../../../utils';
  import TCFormProgress from '../../../../components/TCFormProgress';
 
  import TCThinDivider from '../../../../components/TCThinDivider';
@@ -444,6 +444,7 @@ import React, {
                alignItems: 'center',
              }}>
              <TouchableOpacity
+              hitSlop={getHitSlop(15)}
                style={styles.closeButton}
                onPress={() => setModalVisible(false)}>
                <Image source={images.cancelImage} style={styles.closeButton} />

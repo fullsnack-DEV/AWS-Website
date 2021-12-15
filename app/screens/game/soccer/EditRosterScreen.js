@@ -10,6 +10,7 @@ import {
   Image,
   FlatList,
   Alert,
+  SafeAreaView
 } from 'react-native';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -139,7 +140,7 @@ export default function EditRosterScreen({ navigation, route }) {
             const index = nonRoster.findIndex(
               (obj) => obj === item,
             );
-            console.log('ITEM INDEX::', index);
+            console.log('ITEM INDEX::', [...roster]);
             const tempNonRoster = item
             tempNonRoster.modified = true;
             tempNonRoster.lineup = 'subs';
@@ -253,6 +254,7 @@ export default function EditRosterScreen({ navigation, route }) {
   const saveButtonPress = () => {
     setLoading(true);
     const modifiedData = roster.filter((e) => e.modified === true);
+    console.log('modified:=>',modifiedData);
     const tempArray = [];
     // eslint-disable-next-line array-callback-return
     modifiedData.map((e) => {
@@ -346,7 +348,7 @@ export default function EditRosterScreen({ navigation, route }) {
     setNonRoster(resultNonRoster);
   };
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <ActivityLoader visible={loading} />
       <View style={styles.mainContainer}>
         <TCSearchBox
@@ -493,7 +495,7 @@ export default function EditRosterScreen({ navigation, route }) {
         )}
       </View>
 
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

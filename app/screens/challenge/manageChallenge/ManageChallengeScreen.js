@@ -28,6 +28,10 @@ export default function ManageChallengeScreen({ navigation, route }) {
 
   const { sportName, sportType } = route?.params;
 
+  console.log('sportName:::=>', sportName);
+  console.log('sportType:::=>', sportType);
+
+
   const getSettings = useCallback(() => {
     if (authContext.entity.role === 'team') {
       console.log('Au:::=>', authContext);

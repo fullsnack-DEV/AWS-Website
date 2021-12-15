@@ -623,6 +623,7 @@ export default function AccountScreen({ navigation }) {
           Alert.alert('There is no registerd sports.');
         }
       } else {
+        console.log('entity?.obj?.sport1:=>',entity?.obj);
         navigation.navigate('ManageChallengeScreen', {
           sportName: entity?.obj?.sport,
           sportType: entity?.obj?.sport_type,
@@ -1876,6 +1877,7 @@ export default function AccountScreen({ navigation }) {
                 alignItems: 'center',
               }}>
               <TouchableOpacity
+               hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
                 onPress={() => setVisibleSportsModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />

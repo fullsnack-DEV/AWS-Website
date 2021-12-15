@@ -549,6 +549,7 @@ export default function CreateTeamForm2({ navigation, route }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
+             hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setModalVisible(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -629,6 +630,7 @@ export default function CreateTeamForm2({ navigation, route }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
+             hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleGendersModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -696,6 +698,7 @@ export default function CreateTeamForm2({ navigation, route }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
+             hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleFollowersModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />

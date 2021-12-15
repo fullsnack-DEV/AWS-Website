@@ -33,6 +33,7 @@ import { ImageUploadContext } from '../../context/GetContexts';
 import Header from '../../components/Home/Header';
 import fonts from '../../Constants/Fonts';
 import { widthPercentageToDP as wp } from '../../utils';
+import strings from '../../Constants/String';
 
 const FeedsScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext);
@@ -157,7 +158,8 @@ const FeedsScreen = ({ navigation }) => {
           setPostData([...pData]);
         })
         .catch((e) => {
-          Alert.alert('', e.messages);
+      
+          Alert.alert(strings.alertmessagetitle, e.messages);
         });
     },
     [authContext, postData],
@@ -167,7 +169,7 @@ const FeedsScreen = ({ navigation }) => {
     (data, postDesc, selectEditItem, tagData, format_tagged_data) => {
       const alreadyUrlDone = [];
       const createUrlData = [];
-
+console.log('editPostDoneCall',editPostDoneCall);
       if (postDesc.trim().length > 0 && data?.length === 0) {
         const dataParams = {
           activity_id: selectEditItem.id,
