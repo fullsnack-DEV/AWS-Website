@@ -9,6 +9,7 @@ import {
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
+import { getHitSlop } from '../../utils';
 
 function CreateEventBtnModal({
   visible = false,
@@ -37,7 +38,9 @@ function CreateEventBtnModal({
               <Image source={images.createEventImage} style={styles.imageStyle} resizeMode={'contain'} />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.cancelBtnStyle} onPress={onCancelPress}>
+          <TouchableOpacity 
+           hitSlop={getHitSlop(15)}
+          style={styles.cancelBtnStyle} onPress={onCancelPress}>
             <Image source={images.cancelImage} style={styles.cancelImageStyle} />
           </TouchableOpacity>
         </View>

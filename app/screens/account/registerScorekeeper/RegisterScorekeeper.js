@@ -27,7 +27,7 @@ import AuthContext from '../../../auth/context';
 import { getUserDetails } from '../../../api/Users';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThinDivider from '../../../components/TCThinDivider';
-import { getSportName, languageList } from '../../../utils';
+import { getHitSlop, getSportName, languageList } from '../../../utils';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCLabel from '../../../components/TCLabel';
 import TCGradientButton from '../../../components/TCGradientButton';
@@ -275,6 +275,7 @@ export default function RegisterScorekeeper({ navigation }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
+             hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setModalVisible(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -357,6 +358,7 @@ export default function RegisterScorekeeper({ navigation }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
+             hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -20,22 +20,22 @@ import {
 } from 'react-native-responsive-screen';
 
 import Modal from 'react-native-modal';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
-import { patchPlayer } from '../../../api/Users';
+import {patchPlayer} from '../../../api/Users';
 import * as Utility from '../../../utils';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCGradientButton from '../../../components/TCGradientButton';
-import { languageList } from '../../../utils';
+import {languageList} from '../../../utils';
 
-export default function RegisterPlayerForm2({ navigation, route }) {
+export default function RegisterPlayerForm2({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [description, setDescription] = useState('');
@@ -57,7 +57,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
     setModalVisible(!isModalVisible);
   };
 
-  const isIconCheckedOrNot = ({ item, index }) => {
+  const isIconCheckedOrNot = ({item, index}) => {
     languages[index].isChecked = !item.isChecked;
 
     setLanguages([...languages]);
@@ -74,11 +74,11 @@ export default function RegisterPlayerForm2({ navigation, route }) {
     }
   }, [selectedLanguages]);
 
-  const renderLanguage = ({ item, index }) => (
+  const renderLanguage = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-        isIconCheckedOrNot({ item, index });
+        isIconCheckedOrNot({item, index});
       }}>
       <View
         style={{
@@ -99,9 +99,9 @@ export default function RegisterPlayerForm2({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 
-const doneOnPress = () => {
+  const doneOnPress = () => {
     setloading(true);
-    const bodyParams = { ...route?.params?.bodyParams };
+    const bodyParams = {...route?.params?.bodyParams};
     bodyParams.descriptions = description;
     bodyParams.is_published = true;
     bodyParams.type = 'player';
@@ -112,8 +112,30 @@ const doneOnPress = () => {
       sport_setting: {},
     };
 
-    const registerdPlayerData = authContext?.entity?.obj?.registered_sports || [];
-    registerdPlayerData.push(bodyParams);
+    let registerdPlayerData = authContext?.entity?.obj?.registered_sports || [];
+
+    if (
+      authContext?.entity?.obj?.registered_sports?.some(
+        (obj) =>
+          obj.sport === bodyParams.sport &&
+          obj.sport_type === bodyParams.sport_type,
+      )
+    ) {
+      registerdPlayerData = authContext?.entity?.obj?.registered_sports.map(
+        (item) => {
+          return item.sport === bodyParams.sport &&
+            item.sport_type === bodyParams.sport_type
+            ? {
+                ...item,
+                is_published: true,
+              }
+            : item;
+        },
+      );
+    } else {
+      registerdPlayerData.push(bodyParams);
+    }
+
     const body = {
       ...auth,
       registered_sports: registerdPlayerData,
@@ -127,11 +149,14 @@ const doneOnPress = () => {
           console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
           authContext.setUser(response.payload);
-          await Utility.setStorage('authContextUser', response.payload)
-          await Utility.setStorage('authContextEntity', { ...entity })
-          navigation.navigate('AccountScreen', { createdSportName: route?.params?.bodyParams?.sport, sportType: route?.params?.bodyParams?.sport_type });
+          await Utility.setStorage('authContextUser', response.payload);
+          await Utility.setStorage('authContextEntity', {...entity});
+          navigation.navigate('AccountScreen', {
+            createdSportName: route?.params?.bodyParams?.sport,
+            sportType: route?.params?.bodyParams?.sport_type,
+          });
         } else {
           Alert.alert('Towns Cup', response.messages);
         }
@@ -139,10 +164,10 @@ const doneOnPress = () => {
         setloading(false);
       })
       .catch(() => setloading(false));
-}
+  };
 
   return (
-    <View style={{ flex: 1 }} keyboardShouldPersistTaps="never">
+    <View style={{flex: 1}} keyboardShouldPersistTaps="never">
       <TCFormProgress totalSteps={2} curruentStep={2} />
       <KeyboardAwareScrollView>
         <ScrollView>
@@ -152,33 +177,33 @@ const doneOnPress = () => {
           <TouchableOpacity onPress={toggleModal}>
             <View style={styles.searchView}>
               <TextInput
-            style={styles.searchTextField}
-            placeholder={strings.languagePlaceholder}
-            value={languagesName}
-            editable={false}
-            pointerEvents="none"
-          />
+                style={styles.searchTextField}
+                placeholder={strings.languagePlaceholder}
+                value={languagesName}
+                editable={false}
+                pointerEvents="none"
+              />
             </View>
           </TouchableOpacity>
           <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}>
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
             <Text style={styles.LocationText}>
               {strings.descriptionTextDetails}
             </Text>
           </View>
           <TextInput
-        style={styles.descriptionTxt}
-        onChangeText={(text) => setDescription(text)}
-        value={description}
-        multiline
-        textAlignVertical={'top'}
-        numberOfLines={4}
-        placeholder={strings.descriptionTextDetails}
-      />
-          <View style={{ flex: 1 }} />
+            style={styles.descriptionTxt}
+            onChangeText={(text) => setDescription(text)}
+            value={description}
+            multiline
+            textAlignVertical={'top'}
+            numberOfLines={4}
+            placeholder={strings.descriptionTextDetails}
+          />
+          <View style={{flex: 1}} />
         </ScrollView>
       </KeyboardAwareScrollView>
       <Modal
@@ -204,7 +229,7 @@ const doneOnPress = () => {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: {width: 0, height: 1},
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
@@ -217,6 +242,7 @@ const doneOnPress = () => {
               alignItems: 'center',
             }}>
             <TouchableOpacity
+              hitSlop={Utility.getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setModalVisible(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -265,10 +291,9 @@ const doneOnPress = () => {
       <TCGradientButton
         isDisabled={languagesName === ''}
         title={strings.nextTitle}
-        style={{ marginBottom: 30 }}
+        style={{marginBottom: 30}}
         onPress={doneOnPress}
       />
-
     </View>
   );
 }
@@ -303,7 +328,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,
@@ -326,7 +351,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'ios' ? 12 : 0,
     paddingLeft: 15,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('92%'),

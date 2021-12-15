@@ -30,7 +30,7 @@ import {
   addScorekeeperReview,
   getGameMemberDetails,
 } from '../../../../../api/Games';
-import { heightPercentageToDP as hp } from '../../../../../utils';
+import { getHitSlop, heightPercentageToDP as hp } from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
 import AuthContext from '../../../../../auth/context';
@@ -1004,6 +1004,7 @@ const Summary = ({
             <View style={styles.bottomPopupContainer}>
               <View style={styles.titlePopup}>
                 <TouchableWithoutFeedback
+                 hitSlop={getHitSlop(15)}
                   onPress={() => {
                     setIsPopupVisible(false);
                     setSelectedTeamForReview();

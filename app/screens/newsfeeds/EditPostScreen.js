@@ -388,6 +388,7 @@ const EditPostScreen = ({
                 Alert.alert('Please write some text or select any image.');
               } else {
                 setloading(false);
+                
                 const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
                 const format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity));
                 format_tagged_data.map(async (item, index) => {
@@ -398,6 +399,13 @@ const EditPostScreen = ({
                 // eslint-disable-next-line no-param-reassign
                 tagData.forEach((tData) => delete tData.entity_data);
                 navigation.goBack();
+                console.log('select image', selectImage);
+                console.log('searchText', searchText);
+                console.log('data', data);
+                console.log('tagData', tagData);
+                console.log('format_tagged_data', format_tagged_data);
+
+
                 onPressDone(selectImage, searchText, data, tagData, format_tagged_data);
               }
             }}

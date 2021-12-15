@@ -22,6 +22,7 @@ import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import { searchLocationPlaceDetail, searchLocations } from '../../api/External'
+import { getHitSlop } from '../../utils';
 
 export default function ModalLocationSearch({ visible, onSelect, onClose }) {
   const authContext = useContext(AuthContext)
@@ -85,7 +86,9 @@ export default function ModalLocationSearch({ visible, onSelect, onClose }) {
     >
       <FastImage style={ styles.background } resizeMode={'stretch'} source={ images.orangeLayer } />
       <FastImage style={ styles.background } resizeMode={'stretch'} source={ images.bgImage } />
-      <TouchableOpacity onPress={onClose} style={{
+      <TouchableOpacity 
+       hitSlop={getHitSlop(15)}
+      onPress={onClose} style={{
         position: 'absolute', right: wp(5), top: hp(8),
       }}>
         <FastImage source={images.cancelImage} resizeMode={'contain'} tintColor={colors.whiteColor} style={styles.closeButton}/>

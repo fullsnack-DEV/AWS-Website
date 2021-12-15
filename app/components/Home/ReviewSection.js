@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import React, { useState, useEffect } from 'react';
 import {
- StyleSheet, View, FlatList, ScrollView, Text,
+ StyleSheet, View, FlatList, ScrollView, 
  } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import moment from 'moment';
@@ -9,7 +9,7 @@ import Carousel from 'react-native-snap-carousel';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 // import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+// import strings from '../../Constants/String';
 import EventItemRender from '../Schedule/EventItemRender';
 import TCRadarChart from '../TCRadarChart';
 import ReviewerItemView from './ReviewerItemView';
@@ -19,7 +19,7 @@ import ReviewRecentMatch from './ReviewRecentMatch';
 function ReviewSection({
   isTeamReviewSection = false,
   reviewsData,
-  onAboutRatingPress,
+  // onAboutRatingPress,
   onReadMorePress,
   reviewsFeed,
   onFeedPress = () => {},
@@ -49,7 +49,7 @@ function ReviewSection({
   return (
     <>
       <ScrollView>
-        {isTeamReviewSection && (
+        {isTeamReviewSection && reviewsFeed?.reviews?.results &&(
           <TCRadarChart
           radarChartAttributes={teamPropertyList}
           radarChartData={teamKeyValueList}
@@ -57,7 +57,7 @@ function ReviewSection({
       )}
         <EventItemRender
         title={`Rating for teams (${
-          Object.keys(reviewsFeed?.reviews?.results)?.length || 0
+          Object?.keys(reviewsFeed?.reviews?.results ?? {})?.length ?? 0 
         })`}>
           {reviewsData && (
             <FlatList
@@ -88,19 +88,19 @@ function ReviewSection({
             keyExtractor={(item, index) => index.toString()}
           />
         )}
-          <Text style={styles.detailRatingTextStyle} onPress={onAboutRatingPress}>
+          {/* <Text style={styles.detailRatingTextStyle} onPress={onAboutRatingPress}>
             {strings.aboutRatingTitle}
-          </Text>
+          </Text> */}
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
         <EventItemRender
-        title={`Reviews (${Object.keys(reviewsFeed?.reviews?.results).length || 0})`}
+        title={`Reviews (${Object?.keys(reviewsFeed?.reviews?.results ?? {}).length || 0})`}
         containerStyle={{ width: wp('100%'), padding: 0 }}
         headerTextStyle={{ paddingLeft: 12 }}>
           {/* review_all_data */}
           {/* reviewsFeed?.reviews?.results || []  */}
           <FlatList
-          data={Object.values(reviewsFeed?.reviews?.results) || []}
+          data={Object.values(reviewsFeed?.reviews?.results ?? {}) || []}
           bounces={false}
           showsHorizontalScrollIndicator={false}
           ItemSeparatorComponent={() => (
@@ -172,13 +172,13 @@ function ReviewSection({
 }
 
 const styles = StyleSheet.create({
-  detailRatingTextStyle: {
-    fontSize: 12,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    textDecorationLine: 'underline',
-    alignSelf: 'flex-end',
-  },
+  // detailRatingTextStyle: {
+  //   fontSize: 12,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.lightBlackColor,
+  //   textDecorationLine: 'underline',
+  //   alignSelf: 'flex-end',
+  // },
   sepratorViewStyle: {
     marginTop: 20,
     marginBottom: 10,

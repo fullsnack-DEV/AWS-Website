@@ -16,9 +16,9 @@ import {
   Platform,
 } from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
 import DatePicker from 'react-native-date-picker';
@@ -38,14 +38,14 @@ import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import strings from '../../../Constants/String';
-import { getHitSlop } from '../../../utils';
+import {getHitSlop} from '../../../utils';
 
 let entity = {};
 let timer, timerForTimeline;
 let lastTimeStamp;
 let lastVerb;
 let date;
-export default function SoccerRecording({ navigation, route }) {
+export default function SoccerRecording({navigation, route}) {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
 
@@ -61,7 +61,7 @@ export default function SoccerRecording({ navigation, route }) {
   useEffect(() => {
     entity = authContext.entity;
 
-    const { gameId } = route.params ?? {};
+    const {gameId} = route.params ?? {};
 
     getGameDetail(gameId, true);
     console.log('GAME IDD::', gameId);
@@ -78,8 +78,8 @@ export default function SoccerRecording({ navigation, route }) {
         ),
       );
     } else if (
-      obj?.status === GameStatus.accepted
-      || obj?.status === GameStatus.reset
+      obj?.status === GameStatus.accepted ||
+      obj?.status === GameStatus.reset
     ) {
       // getTimeDifferent(new Date().getTime(), new Date().getTime()),
       setTimelineTimer('00 : 00 : 00');
@@ -121,8 +121,8 @@ export default function SoccerRecording({ navigation, route }) {
   console.log('TIMER :=> ', timelineTimer);
   const validate = () => {
     if (
-      gameObj.status === GameStatus.accepted
-      || gameObj.status === GameStatus.reset
+      gameObj.status === GameStatus.accepted ||
+      gameObj.status === GameStatus.reset
     ) {
       Alert.alert('Please, start the game first.');
       return false;
@@ -242,7 +242,8 @@ export default function SoccerRecording({ navigation, route }) {
     }
     const tempDate = new Date(eDate);
     tempDate.setMinutes(tempDate.getMinutes() + breakTime);
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(tempDate).getTime()) / 1000;
+    let delta =
+      Math.abs(new Date(sDate).getTime() - new Date(tempDate).getTime()) / 1000;
 
     const hours = Math.floor(delta / 3600) % 24;
     delta -= hours * 3600;
@@ -406,7 +407,7 @@ export default function SoccerRecording({ navigation, route }) {
           });
           startStopTimerTimeline(gameObj);
         } else if (lastVerb === GameVerb.Resume) {
-          setGameObj({ ...gameObj, status: GameStatus.resume });
+          setGameObj({...gameObj, status: GameStatus.resume});
           startStopTimerTimeline(gameObj);
         } else if (lastVerb === GameVerb.End) {
           setGameObj({
@@ -437,6 +438,18 @@ export default function SoccerRecording({ navigation, route }) {
   console.log('gameObj?.home_team_goal', gameObj?.home_team_goal);
   console.log('gameObj?.away_team_goal', gameObj?.away_team_goal);
 
+  const getOpetions = () => {
+    if (
+      gameObj?.home_team?.group_id === authContext.entity.uid ||
+      gameObj?.home_team?.user_id === authContext.entity.uid ||
+      gameObj?.away_team?.group_id === authContext.entity.uid ||
+      gameObj?.away_team?.user_id === authContext.entity.uid
+    ) {
+      return ['Edit Roster and Non-roster', 'Reset Match Records', 'Cancel'];
+    }
+    return ['Reset Match Records', 'Cancel'];
+  };
+
   return (
     <>
       {gameObj && (
@@ -454,7 +467,7 @@ export default function SoccerRecording({ navigation, route }) {
                   <Image
                     source={
                       gameObj?.home_team?.thumbnail
-                        ? { uri: gameObj?.home_team?.thumbnail }
+                        ? {uri: gameObj?.home_team?.thumbnail}
                         : images.teamPlaceholder
                     }
                     style={styles.profileImg}
@@ -464,7 +477,7 @@ export default function SoccerRecording({ navigation, route }) {
                   style={
                     gameObj?.home_team_goal <= gameObj?.away_team_goal
                       ? styles.leftText
-                      : [styles.leftText, { color: colors.themeColor }]
+                      : [styles.leftText, {color: colors.themeColor}]
                   }
                   numberOfLines={2}>
                   {gameObj?.home_team?.group_name}
@@ -510,7 +523,7 @@ export default function SoccerRecording({ navigation, route }) {
                   style={
                     gameObj?.away_team_goal <= gameObj?.home_team_goal
                       ? styles.rightText
-                      : [styles.rightText, { color: colors.themeColor }]
+                      : [styles.rightText, {color: colors.themeColor}]
                   }
                   numberOfLines={2}>
                   {gameObj?.away_team?.group_name}
@@ -520,7 +533,7 @@ export default function SoccerRecording({ navigation, route }) {
                   <Image
                     source={
                       gameObj?.away_team?.thumbnail
-                        ? { uri: gameObj?.away_team?.thumbnail }
+                        ? {uri: gameObj?.away_team?.thumbnail}
                         : images.teamPlaceholder
                     }
                     style={styles.profileImg}
@@ -551,12 +564,12 @@ export default function SoccerRecording({ navigation, route }) {
                 onPress={() => {
                   setPickerShow(!pickerShow);
                 }}>
-                {(gameObj
-                  && gameObj.status
-                  && gameObj.status === GameStatus.accepted)
-                || (gameObj
-                  && gameObj.status
-                  && gameObj.status === GameStatus.reset)
+                {(gameObj &&
+                  gameObj.status &&
+                  gameObj.status === GameStatus.accepted) ||
+                (gameObj &&
+                  gameObj.status &&
+                  gameObj.status === GameStatus.reset)
                   ? 'Game start at now'
                   : getDateFormat(date ? new Date(date.getTime()) : new Date())}
               </Text>
@@ -582,8 +595,8 @@ export default function SoccerRecording({ navigation, route }) {
                     onChange(dt);
                   }}
                   minimumDate={
-                    gameObj.status === GameStatus.accepted
-                    || gameObj.status === GameStatus.reset
+                    gameObj.status === GameStatus.accepted ||
+                    gameObj.status === GameStatus.reset
                       ? new Date(1950, 0, 1)
                       : new Date(gameObj.actual_startdatetime * 1000)
                   }
@@ -607,7 +620,7 @@ export default function SoccerRecording({ navigation, route }) {
                 style={
                   pickerShow
                     ? styles.entityView
-                    : [styles.entityView, { marginBottom: 30 }]
+                    : [styles.entityView, {marginBottom: 30}]
                 }>
                 <TouchableOpacity
                   onPress={() => setSelectedTeam(gameObj?.home_team?.group_id)}>
@@ -621,10 +634,10 @@ export default function SoccerRecording({ navigation, route }) {
                       style={styles.leftEntityView}>
                       <Image
                         source={
-                          gameObj
-                          && gameObj?.home_team
-                          && gameObj?.home_team?.thumbnail
-                            ? { uri: gameObj?.home_team?.thumbnail }
+                          gameObj &&
+                          gameObj?.home_team &&
+                          gameObj?.home_team?.thumbnail
+                            ? {uri: gameObj?.home_team?.thumbnail}
                             : images.teamPlaceholder
                         }
                         style={styles.teamProfileView}
@@ -637,10 +650,10 @@ export default function SoccerRecording({ navigation, route }) {
                     <View style={styles.leftEntityView}>
                       <Image
                         source={
-                          gameObj
-                          && gameObj?.home_team
-                          && gameObj?.home_team?.thumbnail
-                            ? { uri: gameObj?.home_team?.thumbnail }
+                          gameObj &&
+                          gameObj?.home_team &&
+                          gameObj?.home_team?.thumbnail
+                            ? {uri: gameObj?.home_team?.thumbnail}
                             : images.teamPlaceholder
                         }
                         style={styles.teamProfileView}
@@ -666,10 +679,10 @@ export default function SoccerRecording({ navigation, route }) {
                       style={styles.rightEntityView}>
                       <Image
                         source={
-                          gameObj
-                          && gameObj?.away_team
-                          && gameObj?.away_team?.thumbnail
-                            ? { uri: gameObj?.away_team?.thumbnail }
+                          gameObj &&
+                          gameObj?.away_team &&
+                          gameObj?.away_team?.thumbnail
+                            ? {uri: gameObj?.away_team?.thumbnail}
                             : images.teamPlaceholder
                         }
                         style={styles.teamProfileView}
@@ -682,10 +695,10 @@ export default function SoccerRecording({ navigation, route }) {
                     <View style={styles.rightEntityView}>
                       <Image
                         source={
-                          gameObj
-                          && gameObj?.away_team
-                          && gameObj?.away_team?.thumbnail
-                            ? { uri: gameObj?.away_team?.thumbnail }
+                          gameObj &&
+                          gameObj?.away_team &&
+                          gameObj?.away_team?.thumbnail
+                            ? {uri: gameObj?.away_team?.thumbnail}
                             : images.teamPlaceholder
                         }
                         style={styles.teamProfileView}
@@ -703,8 +716,8 @@ export default function SoccerRecording({ navigation, route }) {
                     onPress={() => {
                       if (validate()) {
                         if (
-                          gameObj.status === GameStatus.accepted
-                          || gameObj.status === GameStatus.reset
+                          gameObj.status === GameStatus.accepted ||
+                          gameObj.status === GameStatus.reset
                         ) {
                           Alert.alert('Game not started yet.');
                         } else if (gameObj.status === GameStatus.ended) {
@@ -746,13 +759,13 @@ export default function SoccerRecording({ navigation, route }) {
                     onPress={() => {
                       if (validate()) {
                         if (
-                          selectedTeam === gameObj?.home_team?.group_id
-                          && gameObj.home_team_goal <= 0
+                          selectedTeam === gameObj?.home_team?.group_id &&
+                          gameObj.home_team_goal <= 0
                         ) {
                           Alert.alert('Goal not added yet.');
                         } else if (
-                          selectedTeam === gameObj?.away_team?.group_id
-                          && gameObj?.away_team_goal <= 0
+                          selectedTeam === gameObj?.away_team?.group_id &&
+                          gameObj?.away_team_goal <= 0
                         ) {
                           Alert.alert('Goal not added yet.');
                         } else {
@@ -775,7 +788,7 @@ export default function SoccerRecording({ navigation, route }) {
                                 },
                               },
                             ],
-                            { cancelable: false },
+                            {cancelable: false},
                           );
                         }
                       }
@@ -790,7 +803,7 @@ export default function SoccerRecording({ navigation, route }) {
             </View>
           </TouchableOpacity>
           <View>
-            <View style={{ flex: 1 }} />
+            <View style={{flex: 1}} />
             <View style={styles.bottomLine}></View>
             <View style={styles.gameRecordButtonView}>
               {gameObj.status === GameStatus.accepted && (
@@ -798,9 +811,9 @@ export default function SoccerRecording({ navigation, route }) {
                   title="Start"
                   onPress={() => {
                     if (
-                      gameObj?.challenge_status
-                      === (ReservationStatus.pendingrequestpayment
-                        || ReservationStatus.pendingpayment)
+                      gameObj?.challenge_status ===
+                      (ReservationStatus.pendingrequestpayment ||
+                        ReservationStatus.pendingpayment)
                     ) {
                       Alert.alert(
                         'Game cannot be start unless the payment goes through',
@@ -851,8 +864,8 @@ export default function SoccerRecording({ navigation, route }) {
                   imageSize={16}
                 />
               )}
-              {(gameObj.status === GameStatus.playing
-                || gameObj.status === GameStatus.resume) && (
+              {(gameObj.status === GameStatus.playing ||
+                gameObj.status === GameStatus.resume) && (
                   <TCGameButton
                   title="Pause"
                   onPress={() => {
@@ -875,9 +888,9 @@ export default function SoccerRecording({ navigation, route }) {
                   imageSize={15}
                 />
               )}
-              {(gameObj.status === GameStatus.playing
-                || gameObj.status === GameStatus.paused
-                || gameObj.status === GameStatus.resume) && (
+              {(gameObj.status === GameStatus.playing ||
+                gameObj.status === GameStatus.paused ||
+                gameObj.status === GameStatus.resume) && (
                   <TCGameButton
                   title="Match End"
                   onPress={() => {
@@ -909,7 +922,7 @@ export default function SoccerRecording({ navigation, route }) {
                           },
                         },
                       ],
-                      { cancelable: false },
+                      {cancelable: false},
                     );
                   }}
                   gradientColor={[colors.yellowColor, colors.themeColor]}
@@ -919,11 +932,11 @@ export default function SoccerRecording({ navigation, route }) {
                   imageSize={15}
                 />
               )}
-              {(gameObj.status === GameStatus.accepted
-                || gameObj.status === GameStatus.playing
-                || gameObj.status === GameStatus.paused
-                || gameObj.status === GameStatus.ended
-                || gameObj.status === GameStatus.resume) && (
+              {(gameObj.status === GameStatus.accepted ||
+                gameObj.status === GameStatus.playing ||
+                gameObj.status === GameStatus.paused ||
+                gameObj.status === GameStatus.ended ||
+                gameObj.status === GameStatus.resume) && (
                   <TCGameButton
                   title="Records"
                   onPress={() => {
@@ -938,11 +951,11 @@ export default function SoccerRecording({ navigation, route }) {
                   imageSize={25}
                 />
               )}
-              {(gameObj.status === GameStatus.accepted
-                || gameObj.status === GameStatus.playing
-                || gameObj.status === GameStatus.paused
-                || gameObj.status === GameStatus.ended
-                || gameObj.status === GameStatus.resume) && (
+              {(gameObj.status === GameStatus.accepted ||
+                gameObj.status === GameStatus.playing ||
+                gameObj.status === GameStatus.paused ||
+                gameObj.status === GameStatus.ended ||
+                gameObj.status === GameStatus.resume) && (
                   <TCGameButton
                   title="Details"
                   onPress={() => {
@@ -966,20 +979,21 @@ export default function SoccerRecording({ navigation, route }) {
           <ActionSheet
             ref={actionSheet}
             // title={'News Feed Post'}
-            options={[
-              'Edit Roster and Non-roster',
-              'Reset Match Records',
-              'Cancel',
-            ]}
+            options={getOpetions()}
             cancelButtonIndex={2}
             destructiveButtonIndex={1}
             onPress={(index) => {
-              if (index === 0) {
+              const opetions = getOpetions()
+              if (opetions[index] === 'Edit Roster and Non-roster') {
                 navigation.navigate('EditRosterScreen', {
                   gameObj,
-                  selectedTeam: 'home',
+                  selectedTeam:
+                    gameObj?.home_team?.group_id === authContext.entity.uid ||
+                    gameObj?.home_team?.user_id === authContext.entity.uid
+                      ? 'home'
+                      : 'away',
                 });
-              } else if (index === 1) {
+              } else if (opetions[index] === 'Reset Match Records') {
                 Alert.alert(
                   strings.resetMatchRecord,
                   '',
@@ -993,8 +1007,8 @@ export default function SoccerRecording({ navigation, route }) {
                       style: 'destructive',
                       onPress: () => {
                         if (
-                          gameObj.status === GameStatus.accepted
-                          || gameObj.status === GameStatus.reset
+                          gameObj.status === GameStatus.accepted ||
+                          gameObj.status === GameStatus.reset
                         ) {
                           Alert.alert(strings.gameNotStarted);
                         } else if (gameObj.status === GameStatus.ended) {
@@ -1005,7 +1019,7 @@ export default function SoccerRecording({ navigation, route }) {
                       },
                     },
                   ],
-                  { cancelable: false },
+                  {cancelable: false},
                 );
               }
             }}
@@ -1049,7 +1063,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
     shadowColor: colors.googleColor,
 
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: 30,
@@ -1099,7 +1113,7 @@ const styles = StyleSheet.create({
     height: 70,
     justifyContent: 'space-between',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: '100%',
@@ -1111,7 +1125,7 @@ const styles = StyleSheet.create({
     height: 183,
     marginLeft: wp('6%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('37%'),
@@ -1149,7 +1163,7 @@ const styles = StyleSheet.create({
     marginLeft: 60,
     marginRight: 30,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 20 },
+    shadowOffset: {width: 0, height: 20},
     shadowOpacity: 0.5,
     shadowRadius: 20,
     width: 80,
@@ -1179,7 +1193,7 @@ const styles = StyleSheet.create({
   profileShadow: {
     elevation: 10,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 3,
   },
@@ -1190,7 +1204,7 @@ const styles = StyleSheet.create({
     height: 183,
     marginRight: wp('6%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('37%'),

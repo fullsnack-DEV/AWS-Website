@@ -17,11 +17,10 @@ import {
   Alert,
   FlatList,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 
 import ActionSheet from 'react-native-actionsheet';
-import { getGroupMembersInfo, deleteMember } from '../../../api/Groups';
-import { getUsersByEmail } from '../../../api/Users';
+import {getGroupMembersInfo, deleteMember} from '../../../api/Groups';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
@@ -38,9 +37,10 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import GroupMembership from '../../../components/groupConnections/GroupMembership';
 import TCInnerLoader from '../../../components/TCInnerLoader';
 import TCMemberProfile from '../../../components/TCMemberProfile';
+import {getUserIndex} from '../../../api/elasticSearch';
 
 let entity = {};
-export default function MembersProfileScreen({ navigation, route }) {
+export default function MembersProfileScreen({navigation, route}) {
   const monthNames = [
     'Jan',
     'Feb',
@@ -75,13 +75,14 @@ export default function MembersProfileScreen({ navigation, route }) {
   }, [isFocused]);
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => route?.params?.whoSeeID === entity.uid && (
-        <TouchableWithoutFeedback onPress={() => actionSheet.current.show()}>
-          <Image
+      headerRight: () =>
+        route?.params?.whoSeeID === entity.uid && (
+          <TouchableWithoutFeedback onPress={() => actionSheet.current.show()}>
+            <Image
               source={images.horizontal3Dot}
               style={styles.navigationRightItem}
             />
-        </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>
         ),
     });
   }, [
@@ -185,15 +186,15 @@ export default function MembersProfileScreen({ navigation, route }) {
               <TCMemberProfile
                 image={
                   memberDetail?.thumbnail
-                    ? { uri: memberDetail?.thumbnail }
+                    ? {uri: memberDetail?.thumbnail}
                     : images.profilePlaceHolder
                 }
                 name={`${memberDetail?.first_name} ${memberDetail?.last_name}`}
                 location={
-                  memberDetail?.city
-                  && memberDetail?.state_abbr
-                  && memberDetail?.country
-                  && `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
+                  memberDetail?.city &&
+                  memberDetail?.state_abbr &&
+                  memberDetail?.country &&
+                  `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
                 }
               />
               {/* {editProfile && (
@@ -235,28 +236,39 @@ export default function MembersProfileScreen({ navigation, route }) {
                 onPress={() => {
                   setloading(true);
 
-                  getUsersByEmail(memberDetail.email, authContext)
-                    .then((response) => {
-                      setloading(false);
-                      console.log('Email api : ', response);
+                  const getUserByEmailQuery = {
+                    query: {
+                      bool: {
+                        must: [
+                          {
+                            term: {
+                              'email.keyword': {
+                                value: memberDetail.email,
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  };
 
-                      if (response.payload.length > 0) {
-                         const signUpUser = response.payload.filter((e) => e.signedup_user)
-                        navigation.navigate('UserFoundScreen', {
-                          signUpObj: signUpUser[0],
-                          memberObj: memberDetail,
-                          groupID: route?.params?.groupID,
-                        });
-                      } else {
-                        navigation.navigate('UserNotFoundScreen', {
-                          memberObj: memberDetail,
-                          groupID: route?.params?.groupID,
-                        });
-                      }
-                    })
-                    .catch(() => {
-                      setloading(false);
-                    });
+                  getUserIndex(getUserByEmailQuery).then((players) => {
+                    console.log('getUserByEmailQuery', players);
+                    setloading(false);
+                    if (players.length > 0) {
+                      // const signUpUser = players.filter((e) => e.signedup_user)
+                      navigation.navigate('UserFoundScreen', {
+                        signUpObj: players[0],
+                        memberObj: memberDetail,
+                        groupID: route?.params?.groupID,
+                      });
+                    } else {
+                      navigation.navigate('UserNotFoundScreen', {
+                        memberObj: memberDetail,
+                        groupID: route?.params?.groupID,
+                      });
+                    }
+                  });
                 }}
               />
             )}
@@ -267,7 +279,8 @@ export default function MembersProfileScreen({ navigation, route }) {
               <Text style={styles.basicInfoTitle}>Basic Info</Text>
               {editBasicInfo && (
                 <TouchableWithoutFeedback
-                  onPress={() => navigation.navigate('EditMemberBasicInfoScreen', {
+                  onPress={() =>
+                    navigation.navigate('EditMemberBasicInfoScreen', {
                       memberInfo: memberDetail,
                     })
                   }>
@@ -285,24 +298,31 @@ export default function MembersProfileScreen({ navigation, route }) {
               value={
                 memberDetail.street_address
                   ? `${memberDetail?.street_address}, ${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
-                  : memberDetail?.city && memberDetail?.state_abbr && memberDetail?.country ? `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}` : 'N/A'
+                  : memberDetail?.city &&
+                    memberDetail?.state_abbr &&
+                    memberDetail?.country
+                  ? `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
+                  : 'N/A'
               }
             />
             <TCInfoField
               title={'Age'}
               value={
-                memberDetail?.birthday ? getAge(new Date(memberDetail?.birthday)) : 'N/A'
+                memberDetail?.birthday
+                  ? getAge(new Date(memberDetail?.birthday))
+                  : 'N/A'
               }
             />
             <TCInfoField
               title={'Birthday'}
               value={
                 memberDetail.birthday
-                ? `${
-                  monthNames[new Date(memberDetail?.birthday).getMonth()]
-                } ${new Date(memberDetail?.birthday).getDate()} ,${new Date(
-                  memberDetail?.birthday,
-                ).getFullYear()}` : 'N/A'
+                  ? `${
+                      monthNames[new Date(memberDetail?.birthday).getMonth()]
+                    } ${new Date(memberDetail?.birthday).getDate()} ,${new Date(
+                      memberDetail?.birthday,
+                    ).getFullYear()}`
+                  : 'N/A'
               }
             />
             <TCInfoField
@@ -345,7 +365,8 @@ export default function MembersProfileScreen({ navigation, route }) {
               <Text style={styles.basicInfoTitle}>Membership</Text>
               {editMembership && (
                 <TouchableWithoutFeedback
-                  onPress={() => navigation.navigate('EditClubNotesScreen', {
+                  onPress={() =>
+                    navigation.navigate('EditClubNotesScreen', {
                       memberInfo: memberDetail.group,
                     })
                   }>
@@ -358,7 +379,8 @@ export default function MembersProfileScreen({ navigation, route }) {
                 groupData={memberDetail.group}
                 switchID={entity.uid}
                 edit={editTeam}
-                onEditPressed={() => navigation.navigate('EditMemberClubInfoScreen', {
+                onEditPressed={() =>
+                  navigation.navigate('EditMemberClubInfoScreen', {
                     groupMemberDetail: memberDetail.group,
                   })
                 }
@@ -366,7 +388,7 @@ export default function MembersProfileScreen({ navigation, route }) {
             )}
             <FlatList
               data={memberDetail.teams}
-              renderItem={({ item }) => (
+              renderItem={({item}) => (
                 <GroupMembership
                   groupData={item}
                   switchID={entity.uid}
@@ -411,7 +433,7 @@ export default function MembersProfileScreen({ navigation, route }) {
                       style: 'cancel',
                     },
                   ],
-                  { cancelable: false },
+                  {cancelable: false},
                 );
               } else if (index === 1) {
                 // Alert.alert('ok')
@@ -426,13 +448,14 @@ export default function MembersProfileScreen({ navigation, route }) {
                     },
                     {
                       text: 'Ok',
-                      onPress: () => deleteMemberProfile(
+                      onPress: () =>
+                        deleteMemberProfile(
                           switchUser.uid,
                           memberDetail.user_id,
                         ),
                     },
                   ],
-                  { cancelable: false },
+                  {cancelable: false},
                 );
               }
             }}

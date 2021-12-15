@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import _ from 'lodash';
+
 // import { useIsFocused } from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import { Portal } from 'react-native-portalize';
@@ -120,13 +120,12 @@ const Scorekeepers = ({
 
   const onFollowPress = useCallback(
     (userID, status) => {
-      const sKeeper = _.cloneDeep(scorekeeper);
-      console.log('sKeeper:=>',sKeeper);
-      const index = sKeeper.findIndex(
+     
+      const index = scorekeeper.findIndex(
         (item) => item?.scorekeeper?.user_id === userID,
       );
-      if (index > -1) sKeeper[index].scorekeeper.is_following = status;
-      setScorekeeper(sKeeper);
+      if (index > -1) scorekeeper[index].scorekeeper.is_following = status;
+      setScorekeeper([...scorekeeper]);
     },
     [scorekeeper],
   );

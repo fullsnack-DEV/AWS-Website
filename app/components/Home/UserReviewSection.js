@@ -9,7 +9,7 @@ import Carousel from 'react-native-snap-carousel';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 // import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+// import strings from '../../Constants/String';
 import EventItemRender from '../Schedule/EventItemRender';
 import ReviewerItemView from './ReviewerItemView';
 import ReviewRatingView from './ReviewRatingView';
@@ -22,7 +22,7 @@ function UserReviewSection({
   isTeamReviewSection = false,
   reviewsData,
   loading,
-  onAboutRatingPress,
+  // onAboutRatingPress,
   onReadMorePress,
   reviewsFeed,
   onFeedPress = () => {},
@@ -82,13 +82,13 @@ function UserReviewSection({
               )}
               keyExtractor={(item, index) => index.toString()}
             />
-            {reviewsData.length > 0 && (
+            {/* {reviewsData.length > 0 && (
               <Text
                 style={styles.detailRatingTextStyle}
                 onPress={onAboutRatingPress}>
                 {strings.aboutRatingTitle}
               </Text>
-            )}
+            )} */}
           </View>
         )}
       </EventItemRender>
@@ -173,13 +173,13 @@ function UserReviewSection({
 }
 
 const styles = StyleSheet.create({
-  detailRatingTextStyle: {
-    fontSize: 12,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    textDecorationLine: 'underline',
-    alignSelf: 'flex-end',
-  },
+  // detailRatingTextStyle: {
+  //   fontSize: 12,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.lightBlackColor,
+  //   textDecorationLine: 'underline',
+  //   alignSelf: 'flex-end',
+  // },
   sepratorViewStyle: {
     marginTop: 20,
     marginBottom: 10,

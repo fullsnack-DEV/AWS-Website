@@ -1446,6 +1446,7 @@ export default function ScheduleScreen({ navigation }) {
                   setIsScorekeeperModal(false);
                 }}>
                 <Image
+                 hitSlop={getHitSlop(15)}
                   source={images.cancelImage}
                   style={styles.cancelImageStyle}
                   resizeMode={'contain'}

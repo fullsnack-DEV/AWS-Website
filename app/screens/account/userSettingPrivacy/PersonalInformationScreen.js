@@ -432,7 +432,9 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 <Text style={styles.headerCenterStyle}>{'Languages'}</Text>
               }
               rightComponent={
-                <TouchableOpacity onPress={() => {
+                <TouchableOpacity 
+                hitSlop={Utility.getHitSlop(15)}
+                onPress={() => {
                   setModalVisible(false)
                 }}>
                   <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />

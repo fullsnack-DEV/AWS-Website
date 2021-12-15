@@ -28,7 +28,7 @@ import AuthContext from '../../../auth/context';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCGradientButton from '../../../components/TCGradientButton';
-import { getSportName } from '../../../utils';
+import { getHitSlop, getSportName } from '../../../utils';
 
 export default function RegisterPlayer({ navigation }) {
   const authContext = useContext(AuthContext);
@@ -87,7 +87,7 @@ export default function RegisterPlayer({ navigation }) {
     if (sportsSelection.sport !== '') {
       if (
         authContext?.entity?.obj?.registered_sports?.some(
-          (e) => e.sport === sportsSelection.sport && e.sport_type === sportsSelection.sport_type,
+          (e) => e.sport === sportsSelection.sport && e.sport_type === sportsSelection.sport_type && e.is_published,
         )
       ) {
         Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd);
@@ -153,6 +153,7 @@ export default function RegisterPlayer({ navigation }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
+             hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />

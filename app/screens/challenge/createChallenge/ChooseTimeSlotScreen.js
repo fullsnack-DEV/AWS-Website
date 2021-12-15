@@ -60,6 +60,10 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     // };
     // console.log('temp mark:', selectedDayMarking);
     // setMarkingDays(selectedDayMarking);
+    const dateObject = {
+      dateString: moment(new Date()).format('YYYY-MM-DD')
+    }
+    onDayPress(dateObject)
     getBlockedSlots();
   }, []);
 
@@ -218,6 +222,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
   }, []);
 
   const onDayPress = (dateObj) => {
+    console.log('dateObj onDayPress',dateObj);
     setFrom();
     setTo();
     getFreeslot(
@@ -372,14 +377,23 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     return dt;
   };
 
-  const maxToDate = () => {
-    const dt = new Date(selectedSlot?.starttime * 1000);
+  const minToDate = () => {
+    const dt = new Date();
     dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
     dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
 
-    console.log('Date max:=>', dt);
+    console.log('Date min to:=>', dt);
     return dt;
   };
+
+  // const maxToDate = () => {
+  //   const dt = new Date(selectedSlot?.starttime * 1000);
+  //   dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
+  //   dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
+
+  //   console.log('Date max:=>', dt);
+  //   return dt;
+  // };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -433,6 +447,8 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
               onPress={() => {
                 if (from) {
                   setFromPickerVisible(!fromPickerVisible);
+                }else{
+                  Alert.alert('Please choose available time zone first.')
                 }
               }}>
               <View
@@ -460,6 +476,8 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
               onPress={() => {
                 if (to) {
                   setToPickerVisible(!toPickerVisible);
+                }else{
+                  Alert.alert('Please choose available time zone first.')
                 }
               }}>
               <View
@@ -508,8 +526,8 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
             onDone={onFromDone}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={new Date(selectedSlot?.starttime * 1000)}
-            maximumDate={maxFromDate}
+            minimumDate={new Date()}// 
+            maximumDate={maxFromDate()}
             // minutesGap={5}
             mode={'time'}
           />
@@ -520,8 +538,8 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
             onDone={onToDone}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={maxToDate}
-            maximumDate={new Date(selectedSlot?.endtime * 1000)}
+            minimumDate={minToDate()}
+             maximumDate={new Date(selectedSlot?.endtime * 1000)}
             // minutesGap={5}
             mode={'time'}
           />
