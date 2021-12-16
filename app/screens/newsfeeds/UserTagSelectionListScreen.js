@@ -10,8 +10,7 @@ import React, {
 import {
   View,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
+
   Alert,
   TouchableOpacity,
   Text,
@@ -486,9 +485,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   }, []);
 
   return (
-    <KeyboardAvoidingView
-      style={{flex: 1, backgroundColor: 'white'}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}>
+    <SafeAreaView style={{flex: 1,}}>
+     
       {renderSearchBox}
       {renderSelectedEntity}
       <ScrollableTabs
@@ -497,7 +495,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         currentTab={currentTab}
       />
       {renderTabContain}
-    </KeyboardAvoidingView>
+     
+    </SafeAreaView>
   );
 }
 

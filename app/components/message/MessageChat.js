@@ -115,9 +115,9 @@ const MessageChat = ({
     }
 
     if (uid) {
+      console.log('QB Error UID : ', uid);
       setLoading(true);
       QBgetUserDetail(
-
         QB.users.USERS_FILTER.FIELD.LOGIN,
         QB.users.USERS_FILTER.TYPE.STRING,
         [uid].join(),
@@ -130,7 +130,7 @@ const MessageChat = ({
           console.log(error);
         })
       }).catch((error) => {
-        console.log('QB Error : ', error);
+        console.log('QB Error123321 : ', error);
         setLoading(false)
       })
     }

@@ -540,11 +540,11 @@ const Summary = ({
   const renderSpecialRulesSection = useMemo(
     () => (
       <SpecialRules
-        specialRulesData={gameData?.special_rule ?? ''}
-        isAdmin={isAdmin}
+        specialRulesData={gameData}
+        
       />
     ),
-    [gameData?.special_rule, isAdmin],
+    [gameData],
   );
 
   const renderRefereesSection = useMemo(
@@ -573,18 +573,7 @@ const Summary = ({
         }}
       />
     ),
-    [
-      followSoccerUser,
-      gameData,
-      getRefereeReservation,
-      getRefereeReviewsData,
-      isAdmin,
-      navigation,
-      sliderAttributesForReferee,
-      starAttributesForReferee,
-      unFollowSoccerUser,
-      userRole,
-    ],
+    [followSoccerUser, gameData, getRefereeReservation, getRefereeReviewsData, isAdmin, navigation, sliderAttributesForReferee, starAttributesForReferee, unFollowSoccerUser, userRole],
   );
 
   const renderScorekeeperSection = useMemo(
