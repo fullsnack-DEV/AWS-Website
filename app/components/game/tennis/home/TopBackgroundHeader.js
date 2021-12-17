@@ -187,7 +187,7 @@ const TopBackgroundHeader = ({
 
   const goToChallengeDetail = useCallback(
     (data) => {
-      if (data?.responsible_to_secure_venue) {
+      
         setloading(true);
         getChallengeDetail(data?.challenge_id, authContext)
           .then((obj) => {
@@ -197,7 +197,7 @@ const TopBackgroundHeader = ({
             });
           })
           .catch(() => setloading(false));
-      }
+      
     },
     [authContext, navigation],
   );
@@ -437,6 +437,7 @@ const TopBackgroundHeader = ({
           const onItemPress = (index) => {
             const item = options[index];
             if (item === 'Game Reservation Details') {
+              console.log('Game Reservation Details',gameData);
               goToChallengeDetail(gameData);
             } else if (item === 'Winner & Stats') {
               alert('Winner & Stats');

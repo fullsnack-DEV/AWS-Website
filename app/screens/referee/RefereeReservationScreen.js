@@ -469,7 +469,7 @@ const renderBottomBurron = () => (<SafeAreaView>
               );
             } else {
               Alert.alert(
-                'Reservation can not be change after game has been started.',
+                'Reservation can not be cancel after game has been started.',
               );
             }
           }}

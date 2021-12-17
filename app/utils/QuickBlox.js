@@ -505,8 +505,10 @@ export const QBgetAllUsers = () => QBChatConnected().then((connected) => {
   });
 
 export const QBgetUserDetail = (field, fieldType, value) => QBChatConnected().then((connected) => {
-    if (connected) {
+  console.log('connected:',connected);  
+  if (connected) {
       Utility.getStorage('appSetting').then(async (setting) => {
+        console.log('SETTTTTTING:',setting);
         const filter = {
           field,
           type: fieldType,

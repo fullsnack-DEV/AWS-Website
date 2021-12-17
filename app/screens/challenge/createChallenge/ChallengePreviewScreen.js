@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-raw-text */
 /* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
@@ -871,7 +872,6 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             ]}>
             Request No.{`${challengeData?.challenge_id}`}
           </Text>
-
           <ChallengeStatusView
             challengeObj={challengeData}
             isSender={checkSenderOrReceiver(challengeData) === 'sender'}

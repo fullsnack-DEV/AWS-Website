@@ -950,7 +950,7 @@ const Summary = ({
     [gameData],
   );
 
-  const renderRefereesSection = useMemo(
+  const renderRefereesSection = useCallback(
     () => (
       <Referees
         getRefereeReservation={getRefereeReservation}
@@ -989,7 +989,7 @@ const Summary = ({
     ],
   );
 
-  const renderScorekeepersSection = useMemo(
+  const renderScorekeepersSection = useCallback(
     () => (
       <Scorekeepers
         getScorekeeperReservation={getScorekeeperReservation}
@@ -1271,8 +1271,8 @@ const Summary = ({
       {renderScoresSection}
       {renderMatchRecordsSection}
       {renderSpecialRulesSection}
-      {renderRefereesSection}
-      {renderScorekeepersSection}
+      {renderRefereesSection()}
+      {renderScorekeepersSection()}
       {renderGameFeedSection}
 
       <Modal
