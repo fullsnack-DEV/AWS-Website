@@ -421,7 +421,7 @@ const Summary = ({
 
   const renderScoreRecordingButton = useMemo(
     () => (isAdmin || isRefereeAdmin || isScorekeeperAdmin)
-      && gameData?.status !== GameStatus.ended && (
+      && gameData?.status !== GameStatus.ended ? (
         <TCGradientButton
           onPress={() => navigation.navigate('SoccerRecording', { gameId: gameData?.game_id })
           }
@@ -437,10 +437,10 @@ const Summary = ({
             marginBottom: 0,
           }}
         />
-      ),
+      ) : (<View/>),
     [
       gameData?.game_id,
-      gameData.status,
+      gameData?.status,
       isAdmin,
       isRefereeAdmin,
       isScorekeeperAdmin,
@@ -449,8 +449,8 @@ const Summary = ({
   );
 
   const renderLeaveAReviewButton = useMemo(
-    () => !loading
-      && gameData?.status === 'ended'
+    () => 
+       gameData?.status === 'ended'
       && !checkReviewExpired(gameData?.actual_enddatetime)
       && !isAdmin
       && gameData?.approval?.home_team?.approved

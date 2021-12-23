@@ -1,222 +1,225 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import {
   View,
   StyleSheet,
-  TouchableOpacity,
-  Image,
   Text,
   SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
   Alert,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import { getUserDetails, patchPlayer } from '../../../api/Users';
+import {FlatList} from 'react-native-gesture-handler';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import * as Utility from '../../../utils/index';
-import AuthContext from '../../../auth/context'
-import Header from '../../../components/Home/Header';
+import {getUserSettings, saveUserSettings} from '../../../api/Users';
+import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import EventItemRender from '../../../components/Schedule/EventItemRender';
-import GroupEventHeaderItem from '../../../components/Schedule/GroupEvent/GroupEventHeaderItem';
 import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
+import { getUnreadCount } from '../../../api/Notificaitons';
 
-const eventGroups = [
-  {
-    id: 0,
-    groupEvent: images.myTeams,
-    eventImage: images.commentReport,
-    value: 'Vancouver starts',
-    isSelected: false,
-  },
-  {
-    id: 1,
-    groupEvent: images.myTeams,
-    eventImage: images.commentReport,
-    value: 'Vancouver Whitecaps FC',
-    isSelected: false,
-  },
-  {
-    id: 2,
-    groupEvent: images.myTeams,
-    eventImage: images.usaImage,
-    value: 'New York City FC',
-    isSelected: false,
-  },
-  {
-    id: 3,
-    groupEvent: images.myClubs,
-    eventImage: images.clubPlaceholderSmall,
-    value: 'Vancouver starts',
-    isSelected: false,
-  },
-  {
-    id: 4,
-    groupEvent: images.myClubs,
-    eventImage: images.commentReport,
-    value: 'Vancouver Whitecapse',
-    isSelected: false,
-  },
-  {
-    id: 5,
-    groupEvent: images.myLeagues,
-    eventImage: images.usaImage,
-    value: 'New York City FC',
-    isSelected: false,
-  },
-  {
-    id: 6,
-    groupEvent: images.myLeagues,
-    eventImage: images.teamPlaceholderSmall,
-    value: 'Uefa',
-    isSelected: false,
-  },
-];
+export default function GroupEventScreen({navigation}) {
+  const authContext = useContext(AuthContext);
+  const [groupsList, setGroupsList] = useState([]);
+  const [isAll, setIsAll] = useState(false);
 
-export default function GroupEventScreen({ navigation }) {
-  const authContext = useContext(AuthContext)
-  const [eventGroupsData, setEventGroupsData] = useState(eventGroups);
-  const [checkBoxSelect, setCheckBoxSelect] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
-      const allSelectValue = await Utility.getStorage('groupEventValue');
-      setCheckBoxSelect(allSelectValue);
-      eventGroupsData.filter(async (event_item) => {
-        const event_data = event_item;
-        if (allSelectValue) {
-          event_data.isSelected = true;
-          setCheckBoxSelect(true);
-        } else {
-          event_data.isSelected = false;
-          setCheckBoxSelect(false);
-        }
-        return null;
-      })
-      setEventGroupsData([...eventGroupsData]);
+  const onDonePress = useCallback(() => {
+    setLoading(true);
+
+    const checkedGroup = groupsList.filter((obj) => obj.isSelected);
+    const resultOfIds = checkedGroup.map((obj) => obj.group_id);
+    console.log('resultOfIds', resultOfIds);
+
+    if (checkedGroup.length > 0) {
+      const params = {
+        schedule_group: resultOfIds,
+      };
+      saveUserSettings(params, authContext)
+        .then(async(response) => {
+          console.log('After save setting', response);
+          await Utility.setStorage('scheduleSetting', response.payload.schedule_group)
+          navigation.goBack()
+          setLoading(false);
+        })
+        .catch((e) => {
+          setLoading(false);
+          Alert.alert('', e.messages);
+        });
+    } else {
+      Alert.alert('Please select any of the group.');
+    }
+  }, [authContext, groupsList, navigation]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Text style={styles.doneButtonStyle} onPress={() => onDonePress()}>
+          Done
+        </Text>
+      ),
     });
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  }, [navigation, onDonePress]);
+
+  useEffect(() => {
+    setLoading(true);
+    // getGroups(authContext)
+    getUnreadCount(authContext)
+      .then((response) => {
+        const {teams, clubs} = response.payload;
+
+        // const groups = [...teams, ...clubs].map((obj) => ({
+        //   ...obj,
+        //   isSelected: false,
+        // }));
+
+        getUserSettings(authContext).then((setting) => {
+          setLoading(false);
+          console.log('Settings:=>', setting);
+          if (setting?.payload?.user?.schedule_group) {
+            const groups = [...teams, ...clubs].map((obj) =>
+              setting?.payload?.user?.schedule_group.includes(obj.group_id)
+                ? {
+                    ...obj,
+                    isSelected: true,
+                  }
+                : {
+                    ...obj,
+                    isSelected: false,
+                  },
+            );
+            setGroupsList([...groups]);
+          }
+          // await Utility.setStorage('appSetting', response.payload.app);
+        });
+      })
+      .catch((e) => {
+        setLoading(false);
+        Alert.alert('', e.messages);
+      });
+  }, [authContext]);
+
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', async () => {
+  //     const allSelectValue = await Utility.getStorage('groupEventValue');
+  //     setCheckBoxSelect(allSelectValue);
+  //     eventGroupsData.filter(async (event_item) => {
+  //       const event_data = event_item;
+  //       if (allSelectValue) {
+  //         event_data.isSelected = true;
+  //         setCheckBoxSelect(true);
+  //       } else {
+  //         event_data.isSelected = false;
+  //         setCheckBoxSelect(false);
+  //       }
+  //       return null;
+  //     });
+  //     setEventGroupsData([...eventGroupsData]);
+  //   });
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, []);
+
+  const renderGroups = ({item, index}) => {
+    return (
+      <GroupEventItems
+        eventImageSource={item.eventImage}
+        eventText={item.group_name}
+        groupImageSource={item.thumbnail}
+        checkBoxImage={
+          item.isSelected ? images.checkWhiteLanguage : images.uncheckWhite
+        }
+        onCheckBoxPress={() => {
+          groupsList[index].isSelected = !groupsList[index].isSelected;
+          setGroupsList([...groupsList]);
+          setIsAll(false);
+        }}
+      />
+    );
+  };
 
   return (
-    <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
+    <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
-      <Header
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image source={images.backArrow} style={styles.backImageStyle} />
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text style={styles.eventTextStyle}>Group Events</Text>
-        }
-        rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={async () => {
-            setLoading(true);
-            const entity = authContext.entity
-            const uid = entity.uid || entity.auth.user_id;
-            const params = {
-              group_events: checkBoxSelect,
-            }
-            patchPlayer(params, authContext)
-              .then(() => getUserDetails(uid, authContext))
-              .then(() => {
-                setLoading(false);
-                navigation.goBack();
-              })
-              .catch((e) => {
-                setLoading(false);
-                Alert.alert('', e.messages)
-              });
+      <Text style={styles.headerTextStyle}>{strings.groupEventTitle}</Text>
+      <View style={styles.allStyle}>
+        <Text style={styles.titleTextStyle}>{strings.all}</Text>
+        <TouchableOpacity
+          onPress={() => {
+            setIsAll(!isAll);
+            const groups = groupsList.map((obj) => ({
+              ...obj,
+              isSelected: !isAll,
+            }));
+            setGroupsList([...groups]);
           }}>
-            <Text>Done</Text>
-          </TouchableOpacity>
-        }
-      />
-      <View style={ styles.sperateLine } />
-      <SafeAreaView>
-        <EventItemRender
-          title={strings.groupEventTitle}
-        >
-          <FlatList
-            data={['0', ...eventGroupsData]}
-            bounces={false}
-            style={{ paddingVertical: hp('1.5%') }}
-            ItemSeparatorComponent={() => <View style={{ height: wp('4%') }} />}
-            renderItem={ ({ item, index }) => {
-              if (index === 0) {
-                return (
-                  <GroupEventHeaderItem
-                    title={strings.all}
-                    source={checkBoxSelect ? images.checkWhiteLanguage : images.uncheckWhite}
-                    onHeaderItemPress={() => {
-                      eventGroupsData.filter((event_item) => {
-                        const event_data = event_item;
-                        if (checkBoxSelect) {
-                          event_data.isSelected = false;
-                          Utility.setStorage('groupEventValue', false);
-                          setCheckBoxSelect(false);
-                        } else {
-                          event_data.isSelected = true;
-                          Utility.setStorage('groupEventValue', true);
-                          setCheckBoxSelect(true);
-                        }
-                        return null;
-                      })
-                      setEventGroupsData([...eventGroupsData]);
-                    }}
-                  />
-                );
-              }
-              return (
-                <GroupEventItems
-                  eventImageSource={item.eventImage}
-                  eventText={item.value}
-                  groupImageSource={item.groupEvent}
-                  checkBoxImage={item.isSelected ? images.checkWhiteLanguage : images.uncheckWhite}
-                  onCheckBoxPress={() => {
-                    eventGroupsData[index - 1].isSelected = !eventGroupsData[index - 1].isSelected;
-                    setEventGroupsData([...eventGroupsData]);
-                  }}
-                />
-              );
-            }}
-            keyExtractor={ (item, index) => index.toString() }
+          <Image
+            source={isAll ? images.checkWhiteLanguage : images.uncheckWhite}
+            style={styles.imageStyle}
           />
-        </EventItemRender>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+        </TouchableOpacity>
+      </View>
+      <FlatList
+        data={[...groupsList]}
+        showsVerticalScrollIndicator={false}
+        ItemSeparatorComponent={() => <View style={{height: wp('4%')}} />}
+        renderItem={renderGroups}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.listStyle}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainerStyle: {
-    flex: 1,
+  listStyle: {
+    marginBottom: 15,
+    marginTop: 15,
   },
-  sperateLine: {
-    borderColor: colors.writePostSepratorColor,
-    borderWidth: 0.5,
-    marginVertical: hp('0.5%'),
-  },
-  backImageStyle: {
-    height: 20,
-    width: 16,
-    tintColor: colors.blackColor,
-    resizeMode: 'contain',
-  },
-  eventTextStyle: {
+
+  doneButtonStyle: {
+    fontFamily: fonts.RRegular,
     fontSize: 16,
-    fontFamily: fonts.RBold,
-    alignSelf: 'center',
+    marginRight: 10,
+  },
+  allStyle: {
+    flexDirection: 'row',
+    // backgroundColor:'red',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    margin: 15,
+    marginBottom: 0,
+  },
+  titleTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    marginLeft: 15,
+    marginRight: 15,
+  },
+
+  imageStyle: {
+    width: 23,
+    height: 23,
+    resizeMode: 'contain',
+    marginRight: 12,
+  },
+
+  headerTextStyle: {
+    fontSize: 20,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    margin: 15,
   },
 });

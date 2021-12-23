@@ -40,7 +40,7 @@ import fonts from '../../Constants/Fonts';
 import { updateUserProfile, getAppSettingsWithoutAuth } from '../../api/Users';
 import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import { getEntityIndex } from '../../api/elasticSearch';
+import { getGroupIndex } from '../../api/elasticSearch';
 
 export default function ChooseLocationScreen({ navigation }) {
   const authContext = useContext(AuthContext);
@@ -163,15 +163,17 @@ export default function ChooseLocationScreen({ navigation }) {
         bool: {
           must: [{
             multi_match: {
-              query: currentLocation.city,
+              query: currentLocation.country,
               fields: ['city', 'country', 'state'],
             },
-          }],
+          },
+          {term: {entity_type: 'team'}}
+        ],
         },
       },
     };
 
-    getEntityIndex(queryParams)
+    getGroupIndex(queryParams)
       .then((response) => {
         const userData = {
           city: currentLocation.city,
@@ -236,15 +238,18 @@ export default function ChooseLocationScreen({ navigation }) {
         bool: {
           must: [{
             multi_match: {
-              query: item?.terms?.[0]?.value,
+              query: item?.terms?.[2]?.value,
               fields: ['city', 'country', 'state'],
             },
-          }],
+            
+          },
+          {term: {entity_type: 'team'}}
+        ],
         },
       },
     };
 
-    getEntityIndex(queryParams)
+    getGroupIndex(queryParams)
       .then((response) => {
         setLoading(false);
 

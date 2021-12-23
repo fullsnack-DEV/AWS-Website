@@ -7,14 +7,14 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
 } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import EventOfItem from './Schedule/EventOfItem';
 import EventBetweenUserItem from './Schedule/EventBetweenUserItem';
-import { getHitSlop } from '../utils';
+import {getHitSlop} from '../utils';
 
 export default function TCEventView({
   onPress,
@@ -27,6 +27,7 @@ export default function TCEventView({
   screenUserId,
 }) {
   console.log('data.game.referees', data);
+  let showDot = false;
   let startDate = '';
   if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
@@ -53,7 +54,10 @@ export default function TCEventView({
   }
   let description2 = '';
   if (data?.game) {
-    if (profileID === (data?.game?.home_team?.group_id || data?.game?.home_team?.user_id)) {
+    if (
+      profileID ===
+      (data?.game?.home_team?.group_id || data?.game?.home_team?.user_id)
+    ) {
       if (data?.game?.home_team?.group_id) {
         description2 = data?.game?.away_team?.group_name;
       } else {
@@ -65,7 +69,7 @@ export default function TCEventView({
       description2 = `${data?.game?.home_team?.first_name} ${data?.game?.home_team?.last_name}`;
     }
   } else {
-    description2 = ''
+    description2 = '';
   }
 
   // if (data && data.game && data.game.away_team) {
@@ -103,37 +107,23 @@ export default function TCEventView({
       awayTeamImage = data.game.away_team.thumbnail;
     }
   }
-  const refereeFound = (dataObj) => (dataObj?.game?.referees || []).some((e) => entity.uid === e.referee_id)
-  const scorekeeperFound = (dataObj) => (dataObj?.game?.scorekeepers || []).some((e) => entity.uid === e.scorekeeper_id)
+  const refereeFound = (dataObj) =>
+    (dataObj?.game?.referees || []).some((e) => entity.uid === e.referee_id);
+  const scorekeeperFound = (dataObj) =>
+    (dataObj?.game?.scorekeepers || []).some(
+      (e) => entity.uid === e.scorekeeper_id,
+    );
 
-  console.log('scorekeeperFound::', scorekeeperFound());
-  let moreBtnVisible = true;
-  if (data && data.game) {
-    // const merchantID = entity.obj.merchant_id;
-    // if (
-    //   data.game.away_team.merchant_id === merchantID
-    //   || data.game.home_team.merchant_id === merchantID
-    //   || data.game.referees
-    // ) {
-    //   moreBtnVisible = true;
-    // } else {
-    //   moreBtnVisible = false;
-    // }
-    const userID = entity.uid;
-    if (
-      (data?.game?.home_team?.user_id || data?.game?.home_team?.group_id)
-        === userID
-      || (data?.game?.away_team?.user_id || data?.game?.away_team?.group_id)
-        === userID || refereeFound(data) || scorekeeperFound(data)
-    ) {
-      if (!screenUserId) {
-        moreBtnVisible = true;
-      } else {
-        moreBtnVisible = false;
-      }
-    } else {
-      moreBtnVisible = false;
-    }
+  
+
+  if (
+    screenUserId === entity.uid ||
+    refereeFound(data) ||
+    scorekeeperFound(data)
+  ) {
+    showDot = true;
+  } else {
+    showDot = false;
   }
 
   return (
@@ -157,13 +147,15 @@ export default function TCEventView({
             <Text
               style={[
                 styles.eventTitle,
-                { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor },
+                {color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor},
               ]}
               numberOfLines={1}>
               {title}
             </Text>
-            {moreBtnVisible && (
-              <TouchableOpacity onPress={onThreeDotPress} hitSlop={getHitSlop(15)}>
+            {showDot && (
+              <TouchableOpacity
+                onPress={onThreeDotPress}
+                hitSlop={getHitSlop(15)}>
                 <Image source={images.vertical3Dot} style={styles.threedot} />
               </TouchableOpacity>
             )}
@@ -176,19 +168,21 @@ export default function TCEventView({
               'LT',
             )} - `}</Text>
             <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
-            {(location !== '' || venue !== '') && <Text style={[styles.eventTime, { marginHorizontal: 5 }]}> | </Text>}
-            <Text numberOfLines={1} style={{ ...styles.eventTime, flex: 1 }}>
+            {(location !== '' || venue !== '') && (
+              <Text style={[styles.eventTime, {marginHorizontal: 5}]}> | </Text>
+            )}
+            <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
               {location !== '' ? location : venue}
             </Text>
           </View>
           {eventBetweenSection && (
             <EventBetweenUserItem
               firstUserImage={
-                homeTeamImage ? { uri: homeTeamImage } : images.team_ph
+                homeTeamImage ? {uri: homeTeamImage} : images.team_ph
               }
               firstText={homeTeamName !== '' ? homeTeamName : 'Newyork City FC'}
               secondUserImage={
-                awayTeamImage ? { uri: awayTeamImage } : images.team_ph
+                awayTeamImage ? {uri: awayTeamImage} : images.team_ph
               }
               secondText={
                 awayTeamName !== '' ? awayTeamName : 'Vancouver Whitecaps'
@@ -198,7 +192,7 @@ export default function TCEventView({
           {eventOfSection && (
             <EventOfItem
               eventOfText={'Referee'}
-              refereeList = {data?.game?.referees}
+              refereeList={data?.game?.referees}
               // countryIcon={
               //   refereeImage ? { uri: refereeImage } : images.profilePlaceHolder
               // }
@@ -207,7 +201,7 @@ export default function TCEventView({
           {data?.game?.scorekeepers?.length > 0 && (
             <EventOfItem
               eventOfText={'Scorekeeper'}
-              refereeList = {data?.game?.scorekeepers}
+              refereeList={data?.game?.scorekeepers}
               // countryIcon={
               //   refereeImage ? { uri: refereeImage } : images.profilePlaceHolder
               // }
@@ -228,7 +222,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 15,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: wp('94%'),

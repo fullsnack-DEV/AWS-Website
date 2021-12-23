@@ -460,7 +460,16 @@ const HomeNavigator = () => (
       name="GroupEventScreen"
       component={GroupEventScreen}
       options={{
-        headerShown: false,
+        title: 'Group Events',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen

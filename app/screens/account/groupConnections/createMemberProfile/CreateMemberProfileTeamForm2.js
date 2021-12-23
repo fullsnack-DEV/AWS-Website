@@ -130,7 +130,7 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
   const createProfile = (params) => {
     createMemberProfile(entity.uid, params, authContext).then((response) => {
       setloading(false);
-      console.log('Response :', response.payload);
+      console.log('Response create member :', response.payload);
 
       if (response.payload.group_member_detail.canConnect === true && response.payload.group_member_detail.connected === false) {
         const title = strings.connectMemberProfile

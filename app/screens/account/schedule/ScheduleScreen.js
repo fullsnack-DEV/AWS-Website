@@ -1358,19 +1358,29 @@ export default function ScheduleScreen({ navigation }) {
       />
       <ActionSheet
         ref={actionSheet}
-        options={[
+        options={authContext.entity.role === 'player' || authContext.entity.role === 'user' ? [
           'Default Color',
           'Group Events Display',
           'View Privacy',
           'Cancel',
+        ] : [
+          'Default Color',
+          
+          'View Privacy',
+          'Cancel',
         ]}
-        cancelButtonIndex={3}
-        destructiveButtonIndex={3}
+        cancelButtonIndex={authContext.entity.role === 'player' || authContext.entity.role === 'user' ? 3 : 2}
+        // destructiveButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
             navigation.navigate('DefaultColorScreen');
           } else if (index === 1) {
-            navigation.navigate('GroupEventScreen');
+            if(authContext.entity.role === 'player' || authContext.entity.role === 'user'){
+              navigation.navigate('GroupEventScreen');
+            }else{
+              navigation.navigate('ViewPrivacyScreen');
+            }
+            
           } else if (index === 2) {
             navigation.navigate('ViewPrivacyScreen');
           }

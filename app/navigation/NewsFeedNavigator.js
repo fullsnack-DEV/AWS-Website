@@ -78,6 +78,8 @@ import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallen
 import RefereeInviteAgreementScreen from '../screens/challenge/createChallenge/RefereeInviteAgreementScreen';
 import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
+import AlterScorekeeperScreen from '../screens/scorekeeper/alterScorekeeper/AlterScorekeeperScreen';
+import ScorekeeperReservationScreen from '../screens/scorekeeper/ScorekeeperReservationScreen';
 
 const Stack = createStackNavigator();
 
@@ -1141,7 +1143,38 @@ const NewsFeedNavigator = () => (
         },
       }}
     />
-
+    <Stack.Screen
+      name="AlterScorekeeperScreen"
+      component={AlterScorekeeperScreen}
+      options={{
+        title: 'Change Scorekeeper Reservation',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+            name="ScorekeeperReservationScreen"
+            component={ScorekeeperReservationScreen}
+            options={{
+              title: 'Scorekeeper Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
     <Stack.Screen
       name="WriteReviewScreen"
       component={WriteReviewScreen}

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-return-assign */
 /* eslint-disable array-callback-return */
 /* eslint-disable no-underscore-dangle */
@@ -22,7 +23,7 @@ import {
   Alert,
 } from 'react-native';
 
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import Geolocation from '@react-native-community/geolocation';
 import bodybuilder from 'bodybuilder';
 
@@ -31,15 +32,15 @@ import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
-import { useIsFocused } from '@react-navigation/native';
-import { getLocationNameWithLatLong } from '../../api/External';
+import {useIsFocused} from '@react-navigation/native';
+import {getLocationNameWithLatLong} from '../../api/External';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import strings from '../../Constants/String';
-import { getShortsList, getSportsList } from '../../api/Games'; // getRecentGameDetails
+import {getShortsList, getSportsList} from '../../api/Games'; // getRecentGameDetails
 import * as Utility from '../../utils';
 
 import {
@@ -48,9 +49,9 @@ import {
   getGroupIndex,
   getUserIndex,
 } from '../../api/elasticSearch';
-import { gameData } from '../../utils/constant';
+import {gameData} from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
-import { getHitSlop, widthPercentageToDP } from '../../utils';
+import {getHitSlop, widthPercentageToDP} from '../../utils';
 import TCChallengerCard from '../../components/TCChallengerCard';
 import TCHiringPlayersCard from '../../components/TCHiringPlayersCard';
 import TCEntityView from '../../components/TCEntityView';
@@ -61,11 +62,12 @@ import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import Header from '../../components/Home/Header';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
-import { getAppSettings } from '../../api/Users';
+import {getUserSettings} from '../../api/Users';
 import TCUpcomingMatchCard from '../../components/TCUpcomingMatchCard';
+import {getGameHomeScreen} from '../../utils/gameUtils';
 
 const defaultPageSize = 5;
-export default function LocalHomeScreen({ navigation, route }) {
+export default function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
   const isFocused = useIsFocused();
 
@@ -79,8 +81,8 @@ export default function LocalHomeScreen({ navigation, route }) {
   const [selectedSettingOption, setSelectedSettingOption] = useState();
 
   const [location, setLocation] = useState(
-    authContext?.entity?.obj?.city.charAt(0).toUpperCase()
-      + authContext?.entity?.obj?.city.slice(1),
+    authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+      authContext?.entity?.obj?.city.slice(1),
   );
 
   const [selectedSport, setSelectedSport] = useState('All');
@@ -105,7 +107,7 @@ export default function LocalHomeScreen({ navigation, route }) {
     location,
   });
 
-  console.log('route?.params?.locationText::=>',route?.params?.locationText);
+  console.log('route?.params?.locationText::=>', route?.params?.locationText);
 
   console.log('authContextttt::=>', authContext.entity.role);
 
@@ -120,17 +122,17 @@ export default function LocalHomeScreen({ navigation, route }) {
 
   useEffect(() => {
     if (route?.params?.locationText) {
-        setLocation(route?.params?.locationText);
-        setFilters({
-          ...filters,
-          location: route?.params?.locationText,
-        }); 
+      setLocation(route?.params?.locationText);
+      setFilters({
+        ...filters,
+        location: route?.params?.locationText,
+      });
     }
   }, [route?.params?.locationText]);
 
   useEffect(() => {
     if (isFocused) {
-      getAppSettings(authContext)
+      getUserSettings(authContext)
         .then(async (response) => {
           console.log('Settings:=>', response);
 
@@ -149,11 +151,12 @@ export default function LocalHomeScreen({ navigation, route }) {
     Utility.getStorage('sportSetting')
       .then((setting) => {
         console.log('Setting::1::=>', setting);
-        if (setting === null){
+        if (setting === null) {
           const arr = [];
           // const refereeSport = authContext?.entity?.auth?.user?.referee_data || [];
           // const scorekeeperSport = authContext?.entity?.auth?.user?.scorekeeper_data || [];
-          const playerSport = authContext?.entity?.auth?.user?.registered_sports || [];
+          const playerSport =
+            authContext?.entity?.auth?.user?.registered_sports || [];
           const allSports = [
             ...arr,
             // ...refereeSport,
@@ -209,7 +212,7 @@ export default function LocalHomeScreen({ navigation, route }) {
         query: {
           bool: {
             must: [
-              { match: { status: 'accepted' } },
+              {match: {status: 'accepted'}},
               {
                 range: {
                   start_datetime: {
@@ -220,7 +223,7 @@ export default function LocalHomeScreen({ navigation, route }) {
             ],
           },
         },
-        sort: [{ actual_enddatetime: 'desc' }],
+        sort: [{actual_enddatetime: 'desc'}],
       };
 
       if (location !== 'world') {
@@ -267,7 +270,7 @@ export default function LocalHomeScreen({ navigation, route }) {
             ],
           },
         },
-        sort: [{ actual_enddatetime: 'desc' }],
+        sort: [{actual_enddatetime: 'desc'}],
       };
 
       if (location !== 'world') {
@@ -310,15 +313,15 @@ export default function LocalHomeScreen({ navigation, route }) {
               {
                 bool: {
                   must: [
-                    { match: { 'setting.availibility': 'On' } },
-                    { term: { entity_type: 'team' } },
+                    {match: {'setting.availibility': 'On'}},
+                    {term: {entity_type: 'team'}},
                   ],
                 },
               },
               {
                 bool: {
                   must: [
-                    { match: { entity_type: 'player' } },
+                    {match: {entity_type: 'player'}},
                     {
                       nested: {
                         path: 'registered_sports',
@@ -398,7 +401,7 @@ export default function LocalHomeScreen({ navigation, route }) {
         size: defaultPageSize,
         query: {
           bool: {
-            must: [{ match: { hiringPlayers: true } }],
+            must: [{match: {hiringPlayers: true}}],
           },
         },
       };
@@ -496,7 +499,7 @@ export default function LocalHomeScreen({ navigation, route }) {
         size: defaultPageSize,
         query: {
           bool: {
-            must: [{ term: { 'referee_data.is_published': true } }],
+            must: [{term: {'referee_data.is_published': true}}],
           },
         },
       };
@@ -524,7 +527,7 @@ export default function LocalHomeScreen({ navigation, route }) {
         size: defaultPageSize,
         query: {
           bool: {
-            must: [{ term: { 'scorekeeper_data.is_published': true } }],
+            must: [{term: {'scorekeeper_data.is_published': true}}],
           },
         },
       };
@@ -613,13 +616,13 @@ export default function LocalHomeScreen({ navigation, route }) {
   }, [authContext, isFocused, location, selectedSport, sportType]);
 
   const sportsListView = useCallback(
-    ({ item, index }) => (
+    ({item, index}) => (
       <Text
         style={
           selectedSport === item.sport && sportType === item.sport_type
             ? [
                 styles.sportName,
-                { color: colors.themeColor, fontFamily: fonts.RBlack },
+                {color: colors.themeColor, fontFamily: fonts.RBlack},
               ]
             : styles.sportName
         }
@@ -645,7 +648,7 @@ export default function LocalHomeScreen({ navigation, route }) {
   );
 
   const onShortPress = useCallback(
-    ({ index }) => {
+    ({index}) => {
       // setShortsModalVisible(!shortsModalVisible);
       // setSelectedShortsIndex(index + 1);
       // setSelectedShortItem(cardItem);
@@ -660,72 +663,143 @@ export default function LocalHomeScreen({ navigation, route }) {
   );
 
   const shortsListView = useCallback(
-    ({ item, index }) => (
+    ({item, index}) => (
       <ShortsCard
         cardItem={item}
-        onPress={({ cardItem }) => onShortPress({ index, cardItem })}
+        onPress={({cardItem}) => onShortPress({index, cardItem})}
       />
     ),
     [onShortPress],
   );
   const keyExtractor = useCallback((item, index) => index.toString(), []);
-  const renderRecentMatchItems = useCallback(({ item }) => {
+  const renderRecentMatchItems = useCallback(({item}) => {
     console.log('Recent Item:=>', item);
     return (
-      <View style={{ marginBottom: 15 }}>
-        <TCRecentMatchCard data={item} cardWidth={'92%'} />
+      <View style={{marginBottom: 15}}>
+        <TCRecentMatchCard
+          data={item}
+          cardWidth={'92%'}
+          onPress={() => {
+            console.log('Data sport obj:=>', item);
+            const sportName = Utility.getSportName(item, authContext);
+            const routeName = getGameHomeScreen(sportName);
+            if (routeName) navigation.push(routeName, {gameId: item?.game_id});
+          }}
+        />
       </View>
     );
   }, []);
 
   const renderGameItems = useCallback(
-    ({ item }) => (
-      <View style={{ marginBottom: 15 }}>
-        <TCUpcomingMatchCard data={item} cardWidth={'92%'} />
+    ({item}) => (
+      <View style={{marginBottom: 15}}>
+        <TCUpcomingMatchCard
+          data={item}
+          cardWidth={'92%'}
+          onPress={() => {
+            console.log('Data sport obj:=>', item);
+            const sportName = Utility.getSportName(item, authContext);
+            const routeName = getGameHomeScreen(sportName);
+            if (routeName) navigation.push(routeName, {gameId: item?.game_id});
+          }}
+        />
       </View>
     ),
     [],
   );
   const renderChallengerItems = useCallback(
-    ({ item }) => (
-      <View style={{ marginBottom: 15, flex: 1 }}>
+    ({item}) => (
+      <View style={{marginBottom: 15, flex: 1}}>
         <TCChallengerCard
           data={item}
           entityType={item.entity_type}
           selectedSport={selectedSport}
           sportType={sportType}
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
         />
       </View>
     ),
-    [selectedSport, sportType],
+    [navigation, selectedSport, sportType],
   );
   const renderHiringPlayersItems = useCallback(
-    ({ item }) => (
-      <View style={{ marginBottom: 15 }}>
+    ({item}) => (
+      <View style={{marginBottom: 15}}>
         <TCHiringPlayersCard
           data={item}
           entityType={item.entity_type}
           selectedSport={selectedSport}
           sportType={sportType}
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
         />
       </View>
     ),
-    [selectedSport, sportType],
+    [navigation, selectedSport, sportType],
   );
 
   const renderEntityListView = useCallback(
-    ({ item }) => (
-      <View style={{ marginBottom: 15 }}>
-        <TCEntityView data={item} />
+    ({item}) => (
+      <View style={{marginBottom: 15}}>
+        <TCEntityView
+          data={item}
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
+        />
       </View>
     ),
     [],
   );
 
   const renderRefereesScorekeeperListView = useCallback(
-    ({ item }) => (
-      <View style={{ marginBottom: 15 }}>
-        <TCEntityView data={item} showStar={true} />
+    ({item}) => (
+      <View style={{marginBottom: 15}}>
+        <TCEntityView
+          data={item}
+          showStar={true}
+          onPress={() => {
+            navigation.navigate('HomeScreen', {
+              uid: ['user', 'player']?.includes(item?.entity_type)
+                ? item?.user_id
+                : item?.group_id,
+              role: ['user', 'player']?.includes(item?.entity_type)
+                ? 'user'
+                : item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
+        />
       </View>
     ),
     [],
@@ -825,17 +899,29 @@ export default function LocalHomeScreen({ navigation, route }) {
         // See error code charts below.
         console.log(error.code, error.message);
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       {renderTopHeader}
       <TCThinDivider width={'100%'} />
       {/* <ActivityLoader visible={loading} /> */}
       {loading ? (
         <LocalHomeScreenShimmer />
+      ) : recentMatch.length <= 0 &&
+        upcomingMatch.length <= 0 &&
+        challengeeMatch.length <= 0 &&
+        hiringPlayers.length <= 0 &&
+        referees.length <= 0 &&
+        scorekeepers.length <= 0 ? (
+          <View style={styles.placeholderContainer}>
+            <Text
+            style={styles.placeholderViewText}>
+              Towns Cup Data Not Available
+            </Text>
+          </View>
       ) : (
         <Fragment>
           <View style={styles.sportsListView}>
@@ -899,8 +985,9 @@ export default function LocalHomeScreen({ navigation, route }) {
                   isDisabled={!(recentMatch.length > 0)}
                   title={strings.recentMatchesTitle}
                   showArrow={true}
-                  viewStyle={{ marginTop: 20, marginBottom: 15 }}
-                  onPress={() => navigation.navigate('RecentMatchScreen', {
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
+                  onPress={() =>
+                    navigation.navigate('RecentMatchScreen', {
                       filters,
                     })
                   }
@@ -932,11 +1019,10 @@ export default function LocalHomeScreen({ navigation, route }) {
                   isDisabled={!(upcomingMatch.length > 0)}
                   title={strings.upcomingMatchesTitle}
                   showArrow={true}
-                  viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
                   onPress={() => {
                     navigation.navigate('UpcomingMatchScreen', {
                       filters,
-
                     });
 
                     // navigation.navigate('AddLogScreen')
@@ -967,7 +1053,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                   isDisabled={!(shortsList?.length > 0)}
                   title={strings.shortsTitle}
                   showArrow={true}
-                  viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
                   onPress={() => onShortPress(0, shortsList[0])}
                 />
                 <FlatList
@@ -985,7 +1071,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                   isDisabled={!(challengeeMatch.length > 0)}
                   title={strings.lookingForTitle}
                   showArrow={true}
-                  viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
                   onPress={() => {
                     navigation.navigate('LookingForChallengeScreen', {
                       filters,
@@ -1056,7 +1142,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                   isDisabled={!(hiringPlayers.length > 0)}
                   title={strings.hiringPlayerTitle}
                   showArrow={true}
-                  viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
                   onPress={() => {
                     navigation.navigate('RecruitingPlayerScreen', {
                       filters: {
@@ -1092,8 +1178,9 @@ export default function LocalHomeScreen({ navigation, route }) {
                   isDisabled={!(lookingTeam.length > 0)}
                   title={strings.lookingForTeamTitle}
                   showArrow={true}
-                  viewStyle={{ marginTop: 20, marginBottom: 15 }}
-                  onPress={() => navigation.navigate('LookingTeamScreen', {
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
+                  onPress={() =>
+                    navigation.navigate('LookingTeamScreen', {
                       filters,
                       sportsList: sports,
                     })
@@ -1107,7 +1194,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                   ItemSeparatorComponent={renderSeparator}
                   keyExtractor={keyExtractor}
                   renderItem={renderEntityListView}
-                  style={{ marginLeft: 15 }}
+                  style={{marginLeft: 15}}
                   ListEmptyComponent={() => (
                     <TCEntityListPlaceholder
                       cardWidth={'94%'}
@@ -1122,7 +1209,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                 <TCTitleWithArrow
                   title={strings.refereesTitle}
                   showArrow={true}
-                  viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
                   onPress={() => {
                     console.log('Applicable filter::=>', filters);
                     navigation.navigate('RefereesListScreen', {
@@ -1138,7 +1225,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                   ItemSeparatorComponent={renderSeparator}
                   keyExtractor={keyExtractor}
                   renderItem={renderRefereesScorekeeperListView}
-                  style={{ marginLeft: 15 }}
+                  style={{marginLeft: 15}}
                   ListEmptyComponent={() => (
                     <TCEntityListPlaceholder
                       cardWidth={'94%'}
@@ -1153,10 +1240,10 @@ export default function LocalHomeScreen({ navigation, route }) {
                 <TCTitleWithArrow
                   title={strings.scorekeeperTitle}
                   showArrow={true}
-                  viewStyle={{ marginTop: 20, marginBottom: 15 }}
-                  onPress={() => navigation.navigate('ScorekeeperListScreen', {
+                  viewStyle={{marginTop: 20, marginBottom: 15}}
+                  onPress={() =>
+                    navigation.navigate('ScorekeeperListScreen', {
                       filters,
-
                     })
                   }
                 />
@@ -1168,7 +1255,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                   ItemSeparatorComponent={renderSeparator}
                   keyExtractor={keyExtractor}
                   renderItem={renderRefereesScorekeeperListView}
-                  style={{ marginLeft: 15 }}
+                  style={{marginLeft: 15}}
                   ListEmptyComponent={() => (
                     <TCEntityListPlaceholder
                       cardWidth={'94%'}
@@ -1219,7 +1306,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                       <Text
                         style={[
                           styles.curruentLocationText,
-                          { color: colors.whiteColor },
+                          {color: colors.whiteColor},
                         ]}>
                         Current city
                       </Text>
@@ -1237,18 +1324,18 @@ export default function LocalHomeScreen({ navigation, route }) {
                     setSelectedLocationOption(1);
                     console.log(
                       'Location:=>',
-                      authContext?.entity?.obj?.city.charAt(0).toUpperCase()
-                        + authContext?.entity?.obj?.city.slice(1),
+                      authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+                        authContext?.entity?.obj?.city.slice(1),
                     );
                     setLocation(
-                      authContext?.entity?.obj?.city.charAt(0).toUpperCase()
-                        + authContext?.entity?.obj?.city.slice(1),
+                      authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+                        authContext?.entity?.obj?.city.slice(1),
                     );
                     setFilters({
                       ...filters,
                       location:
-                        authContext?.entity?.obj?.city.charAt(0).toUpperCase()
-                        + authContext?.entity?.obj?.city.slice(1),
+                        authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+                        authContext?.entity?.obj?.city.slice(1),
                     });
                     navigation.setParams({locationText: null});
                     setTimeout(() => {
@@ -1260,7 +1347,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                       colors={[colors.yellowColor, colors.orangeGradientColor]}
                       style={styles.backgroundView}>
                       <Text
-                        style={[styles.myCityText, { color: colors.whiteColor }]}>
+                        style={[styles.myCityText, {color: colors.whiteColor}]}>
                         Home city
                       </Text>
                     </LinearGradient>
@@ -1289,7 +1376,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                       colors={[colors.yellowColor, colors.orangeGradientColor]}
                       style={styles.backgroundView}>
                       <Text
-                        style={[styles.worldText, { color: colors.whiteColor }]}>
+                        style={[styles.worldText, {color: colors.whiteColor}]}>
                         World
                       </Text>
                     </LinearGradient>
@@ -1361,7 +1448,7 @@ export default function LocalHomeScreen({ navigation, route }) {
                       <Text
                         style={[
                           styles.curruentLocationText,
-                          { color: colors.whiteColor },
+                          {color: colors.whiteColor},
                         ]}>
                         Sports
                       </Text>
@@ -1457,7 +1544,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },
@@ -1474,7 +1561,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 50,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.2,
     shadowRadius: 5,
     width: widthPercentageToDP('86%'),
@@ -1540,7 +1627,7 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     width: widthPercentageToDP('86%'),
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.3,
     shadowRadius: 3,
     alignSelf: 'center',
@@ -1557,4 +1644,15 @@ const styles = StyleSheet.create({
     height: 35,
     width: 35,
   },
+  placeholderViewText:{
+    fontFamily: fonts.RBold,
+    fontSize: 20,
+    color: colors.ligherGray,
+  },
+  placeholderContainer:{
+    flex: 1, 
+    alignItems: 'center', 
+    justifyContent: 'center'
+  }
+
 });

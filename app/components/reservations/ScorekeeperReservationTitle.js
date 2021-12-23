@@ -19,9 +19,9 @@ export default function ScorekeeperReservationTitle({
   console.log('reservationObject OHHHH:=>', reservationObject);
 
   const entityList = [
-    { ...reservationObject.game.home_team },
-    { ...reservationObject.game.away_team },
-    { ...reservationObject.scorekeeper },
+    { ...reservationObject?.game?.home_team },
+    { ...reservationObject?.game?.away_team },
+    { ...reservationObject?.scorekeeper },
   ];
   console.log('entityList:=>', entityList);
 

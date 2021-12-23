@@ -347,7 +347,7 @@ const renderBottomBurron = () => (<SafeAreaView>
                   || bodyParams?.game?.status === GameStatus.reset
                 )
               ) {
-                Alert.alert(strings.cannotAcceptText);
+                Alert.alert('aa');
               } else if (
                 bodyParams?.game?.start_datetime
                 < new Date().getTime() / 1000

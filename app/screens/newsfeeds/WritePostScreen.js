@@ -482,6 +482,7 @@ export default function WritePostScreen({ navigation, route }) {
 
   const onImagePress = () => {
     ImagePicker.openPicker({
+      showsSelectedCount:true,
       multiple: true,
       maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
     })

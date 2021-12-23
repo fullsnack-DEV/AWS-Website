@@ -28,9 +28,9 @@ import moment from 'moment';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import AuthContext from '../../../auth/context';
-import { addGameRecord, resetGame, getGameRoster } from '../../../api/Games';
+import {addGameRecord, resetGame, getGameRoster, getGameByGameID} from '../../../api/Games';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
 import ReservationStatus from '../../../Constants/ReservationStatus';
@@ -40,8 +40,10 @@ import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import strings from '../../../Constants/String';
-import { getHitSlop } from '../../../utils';
+import {getHitSlop} from '../../../utils';
 
+
+let entity = {};
 let timer, timerForTimeline;
 let lastTimeStamp;
 let lastVerb;
@@ -49,13 +51,14 @@ let date;
 
 const recordButtonList = ['Goal', 'Own Goal', 'YC', 'RC', 'In', 'Out'];
 const assistButtonList = ['Assist'];
-export default function GameDetailRecord({ navigation, route }) {
+export default function GameDetailRecord({navigation, route}) {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [pickerShow, setPickerShow] = useState(false);
   const [selectedMemberID, setSelectedMemberID] = useState();
   // const [date, setDate] = useState();
+  const [isLineUpSet, setIsLineUpSet] = useState();
   const [isAssist, setIsAssist] = useState(false);
   const [selectedAssistMemberID, setSelectedAssistMemberID] = useState();
   const [gameObj, setGameObj] = useState();
@@ -69,10 +72,12 @@ export default function GameDetailRecord({ navigation, route }) {
   const [awayBench, setAwayBench] = useState([]);
 
   useEffect(() => {
-    const { gameId } = route.params ?? {};
-    getGameRosterDetail(gameId, true);
+    entity = authContext.entity;
+    const {gameId} = route.params ?? {};
+    getGameRosterDetail(gameId);
     return () => {};
   }, []);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -94,72 +99,57 @@ export default function GameDetailRecord({ navigation, route }) {
     messageToast,
   ]);
 
+  useEffect(() => {
+    const apiTimer = setInterval(() => {
+      getGameDetail(route?.params?.gameId);
+    }, 10000);
+    return () => clearInterval(apiTimer);
+  }, []);
+
   useFocusEffect(() => {
     if (gameObj) {
       startStopTimerTimeline(gameObj);
-      timer = setInterval(() => {
-        if (gameObj.status !== GameStatus.ended) {
-          getGameRosterDetail(gameObj.game_id, false);
-        }
-      }, 3000);
     }
     return () => {
-      clearInterval(timer);
       clearInterval(timerForTimeline);
     };
   }, []);
 
-  // const startStopTimerTimeline = (obj) => {
-  //   console.log('Timeline object:=>', obj);
-  //   clearInterval(timer);
-  //   clearInterval(timerForTimeline);
-  //   if (obj?.status === GameStatus.ended) {
-  //     setTimelineTimer(
-  //       getTimeDifferent(
-  //         obj?.actual_enddatetime * 1000,
-  //         obj?.actual_startdatetime * 1000,
-  //       ),
-  //     );
-  //   } else if (
-  //     obj?.status === GameStatus.accepted
-  //     || obj?.status === GameStatus.reset
-  //   ) {
-  //     // getTimeDifferent(new Date().getTime(), new Date().getTime()),
-  //     setTimelineTimer('00 : 00 : 00');
-  //   } else if (obj?.status === GameStatus.paused) {
-  //     console.log('last status::=', obj?.status);
-  //     setTimelineTimer(
-  //       getTimeDifferent(
-  //         obj?.pause_datetime * 1000,
-  //         obj?.actual_startdatetime * 1000,
-  //       ),
-  //     );
-  //   } else if (date) {
-  //     if (GameStatus.playing === obj?.status) {
-  //       console.log('playing');
-  //       setTimelineTimer(
-  //         getTimeDifferent(
-  //           obj?.actual_startdatetime * 1000,
-  //           new Date(date).getTime(),
-  //         ),
-  //       );
-  //     } else {
-  //       console.log('Come here');
-  //       setTimelineTimer(
-  //         getTimeDifferent(new Date().getTime(), new Date(date).getTime()),
-  //       );
-  //     }
-  //   } else {
-  //     timerForTimeline = setInterval(() => {
-  //       setTimelineTimer(
-  //         getTimeDifferent(
-  //           new Date().getTime(),
-  //           obj?.actual_startdatetime * 1000,
-  //         ),
-  //       );
-  //     }, 1000);
-  //   }
-  // };
+  const getGameDetail = (gameId) => {
+    
+    getGameByGameID(gameId, authContext)
+      .then((response) => {
+        if (response.payload.status === GameStatus.reset) {
+          setGameObj({
+            ...response.payload,
+            actual_startdatetime: 0,
+            actual_enddatetime: 0,
+            pause_datetime: 0,
+            resume_datetime: 0,
+            away_team_goal: 0,
+            home_team_goal: 0,
+            status: GameStatus.accepted,
+          });
+          setTimelineTimer('00 : 00 : 00');
+        } else {
+          setGameObj(response.payload);
+        }
+        if (entity === gameObj?.home_team?.group_id) {
+          setActionByTeamID(gameObj?.home_team?.group_id);
+        } else {
+          setActionByTeamID(gameObj?.away_team?.group_id);
+        }
+        setloading(false);
+
+        console.log('GAME RESPONSE::', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   const startStopTimerTimeline = (obj) => {
     clearInterval(timer);
@@ -172,8 +162,8 @@ export default function GameDetailRecord({ navigation, route }) {
         ),
       );
     } else if (
-      obj?.status === GameStatus.accepted
-      || obj?.status === GameStatus.reset
+      obj?.status === GameStatus.accepted ||
+      obj?.status === GameStatus.reset
     ) {
       // getTimeDifferent(new Date().getTime(), new Date().getTime()),
       setTimelineTimer('00 : 00 : 00');
@@ -224,7 +214,8 @@ export default function GameDetailRecord({ navigation, route }) {
     }
     const tempDate = new Date(eDate);
     tempDate.setMinutes(tempDate.getMinutes() + breakTime);
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(tempDate).getTime()) / 1000;
+    let delta =
+      Math.abs(new Date(sDate).getTime() - new Date(tempDate).getTime()) / 1000;
 
     const hours = Math.floor(delta / 3600) % 24;
     delta -= hours * 3600;
@@ -257,8 +248,8 @@ export default function GameDetailRecord({ navigation, route }) {
   };
   const validate = () => {
     if (
-      gameObj.status === GameStatus.accepted
-      || gameObj.status === GameStatus.reset
+      gameObj.status === GameStatus.accepted ||
+      gameObj.status === GameStatus.reset
     ) {
       Alert.alert('Please, start the game first.');
       return false;
@@ -281,10 +272,9 @@ export default function GameDetailRecord({ navigation, route }) {
     moment.locale('en');
     return moment(new Date(dateValue)).format('hh : mm a, MMM DD');
   };
-  const getGameRosterDetail = (gameId, isLoading) => {
-    if (isLoading) {
-      setloading(true);
-    }
+  const getGameRosterDetail = (gameId) => {
+    console.log('getGameRosterDetail called');
+   
     getGameRoster(gameId, authContext)
       .then((res2) => {
         setloading(false);
@@ -296,8 +286,9 @@ export default function GameDetailRecord({ navigation, route }) {
         );
         setHomeBench(
           res2.payload.home_team.roster.filter(
-            (obj) => (obj.field_status === 'onBench' || !obj.field_status)
-              && obj.role === 'player',
+            (obj) =>
+              (obj.field_status === 'onBench' || !obj.field_status) &&
+              obj.role === 'player',
           ),
         );
         setAwayField(
@@ -307,18 +298,28 @@ export default function GameDetailRecord({ navigation, route }) {
         );
         setAwayBench(
           res2.payload.away_team.roster.filter(
-            (obj) => (obj.field_status === 'onBench' || !obj.field_status)
-              && obj.role === 'player',
+            (obj) =>
+              (obj.field_status === 'onBench' || !obj.field_status) &&
+              obj.role === 'player',
           ),
         );
-        const { gameObject } = route.params ?? {};
+        if (res2.payload.home_team.roster.filter(
+          (obj) => obj.field_status === 'onField' && obj.role === 'player',
+        ).length <= 0) {
+          setIsLineUpSet('Your team does not configure lineup yet.');
+        } else if (res2.payload.away_team.roster.filter(
+          (obj) => obj.field_status === 'onField' && obj.role === 'player',
+        ).length <= 0) {
+          setIsLineUpSet('Away team does not configure lineup yet.');
+        }
+        const {gameObject} = route.params ?? {};
 
         setGameObj({
           ...gameObject,
           status:
-            (res2.payload.game_summary.status === GameStatus.reset
-              && GameStatus.accepted)
-            || res2.payload.game_summary.status,
+            (res2.payload.game_summary.status === GameStatus.reset &&
+              GameStatus.accepted) ||
+            res2.payload.game_summary.status,
           away_team_goal: res2.payload.game_summary.away_team_goal,
           home_team_goal: res2.payload.game_summary.home_team_goal,
         });
@@ -471,7 +472,7 @@ export default function GameDetailRecord({ navigation, route }) {
           setSelectedAssistMemberID();
           console.log('GAME RESPONSE::', response.payload);
         } else if (lastVerb === GameVerb.Resume) {
-          setGameObj({ ...gameObj, status: GameStatus.resume });
+          setGameObj({...gameObj, status: GameStatus.resume});
           setloading(false);
           setIsAssist(false);
           setSelectedMemberID();
@@ -491,24 +492,24 @@ export default function GameDetailRecord({ navigation, route }) {
         } else {
           setloading(false);
           setMessageText(
-            (lastVerb === GameVerb.Goal
-              && !isAssist
-              && `Goal, ${getMemberName(selectedMemberID)}`)
-              || (lastVerb === GameVerb.Goal
-                && isAssist
-                && `Goal, ${getMemberName(
+            (lastVerb === GameVerb.Goal &&
+              !isAssist &&
+              `Goal, ${getMemberName(selectedMemberID)}`) ||
+              (lastVerb === GameVerb.Goal &&
+                isAssist &&
+                `Goal, ${getMemberName(
                   selectedMemberID,
-                )} /Assist, ${getMemberName(selectedAssistMemberID)}`)
-              || (lastVerb === GameVerb.OwnGoal
-                && `Goal, ${getMemberName(selectedMemberID)}`)
-              || (lastVerb === GameVerb.YC
-                && `YC, ${getMemberName(selectedMemberID)}`)
-              || (lastVerb === GameVerb.RC
-                && `RC, ${getMemberName(selectedMemberID)}`)
-              || (lastVerb === GameVerb.In
-                && `In, ${getMemberName(selectedMemberID)}`)
-              || (lastVerb === GameVerb.Out
-                && `Out, ${getMemberName(selectedMemberID)}`),
+                )} /Assist, ${getMemberName(selectedAssistMemberID)}`) ||
+              (lastVerb === GameVerb.OwnGoal &&
+                `Goal, ${getMemberName(selectedMemberID)}`) ||
+              (lastVerb === GameVerb.YC &&
+                `YC, ${getMemberName(selectedMemberID)}`) ||
+              (lastVerb === GameVerb.RC &&
+                `RC, ${getMemberName(selectedMemberID)}`) ||
+              (lastVerb === GameVerb.In &&
+                `In, ${getMemberName(selectedMemberID)}`) ||
+              (lastVerb === GameVerb.Out &&
+                `Out, ${getMemberName(selectedMemberID)}`),
           );
           setMessageToast(true);
 
@@ -516,7 +517,7 @@ export default function GameDetailRecord({ navigation, route }) {
           setSelectedMemberID();
           setSelectedAssistMemberID();
           console.log('ELSE GAME RESPONSE::', response.payload);
-          getGameRosterDetail(gameObj.game_id, true);
+          getGameRosterDetail(gameObj.game_id);
         }
       })
       .catch((e) => {
@@ -526,11 +527,13 @@ export default function GameDetailRecord({ navigation, route }) {
         }, 10);
       });
   };
-  const checkMemberOnBench = (memberID) => homeBench.some((e) => e.member_id === memberID)
-    || awayBench.some((e) => e.member_id === memberID);
-  const checkMemberOnField = (memberID) => homeField.some((e) => e.member_id === memberID)
-    || awayField.some((e) => e.member_id === memberID);
-  const renderGameButton = ({ item }) => (
+  const checkMemberOnBench = (memberID) =>
+    homeBench.some((e) => e.member_id === memberID) ||
+    awayBench.some((e) => e.member_id === memberID);
+  const checkMemberOnField = (memberID) =>
+    homeField.some((e) => e.member_id === memberID) ||
+    awayField.some((e) => e.member_id === memberID);
+  const renderGameButton = ({item}) => (
     <TCGameButton
       title={item}
       onPress={() => {
@@ -557,8 +560,8 @@ export default function GameDetailRecord({ navigation, route }) {
                             lastVerb = GameVerb.Goal;
                             let body = [{}];
                             if (
-                              selectedMemberID === '0'
-                              || selectedMemberID === '1'
+                              selectedMemberID === '0' ||
+                              selectedMemberID === '1'
                             ) {
                               body = [
                                 {
@@ -589,7 +592,7 @@ export default function GameDetailRecord({ navigation, route }) {
                           },
                         },
                       ],
-                      { cancelable: false },
+                      {cancelable: false},
                     );
                   } else {
                     lastTimeStamp = date
@@ -618,83 +621,83 @@ export default function GameDetailRecord({ navigation, route }) {
                     addGameRecordDetail(gameObj.game_id, body);
                   }
                 } else if (awayField.length > 1) {
-                    Alert.alert(
-                      'Do you want to add an assist?',
-                      'If yes, choose a player and click the assist button.',
-                      [
-                        {
-                          text: 'No',
-                          onPress: () => {
-                            lastTimeStamp = date
-                              ? parseFloat(
-                                  date.setMilliseconds(0, 0) / 1000,
-                                ).toFixed(0)
-                              : parseFloat(new Date().getTime() / 1000).toFixed(
-                                  0,
-                                );
-                            lastVerb = GameVerb.Goal;
-                            let body = [{}];
-                            if (
-                              selectedMemberID === '0'
-                              || selectedMemberID === '1'
-                            ) {
-                              body = [
-                                {
-                                  verb: lastVerb,
-                                  timestamp: Number(lastTimeStamp),
-                                  team_id: actionByTeamID,
-                                },
-                              ];
-                            } else {
-                              body = [
-                                {
-                                  verb: lastVerb,
-                                  timestamp: Number(lastTimeStamp),
-                                  team_id: actionByTeamID,
-                                  doneBy: selectedMemberID,
-                                },
-                              ];
-                            }
-                            addGameRecordDetail(gameObj.game_id, body);
-                          },
-                          style: 'no',
+                  Alert.alert(
+                    'Do you want to add an assist?',
+                    'If yes, choose a player and click the assist button.',
+                    [
+                      {
+                        text: 'No',
+                        onPress: () => {
+                          lastTimeStamp = date
+                            ? parseFloat(
+                                date.setMilliseconds(0, 0) / 1000,
+                              ).toFixed(0)
+                            : parseFloat(new Date().getTime() / 1000).toFixed(
+                                0,
+                              );
+                          lastVerb = GameVerb.Goal;
+                          let body = [{}];
+                          if (
+                            selectedMemberID === '0' ||
+                            selectedMemberID === '1'
+                          ) {
+                            body = [
+                              {
+                                verb: lastVerb,
+                                timestamp: Number(lastTimeStamp),
+                                team_id: actionByTeamID,
+                              },
+                            ];
+                          } else {
+                            body = [
+                              {
+                                verb: lastVerb,
+                                timestamp: Number(lastTimeStamp),
+                                team_id: actionByTeamID,
+                                doneBy: selectedMemberID,
+                              },
+                            ];
+                          }
+                          addGameRecordDetail(gameObj.game_id, body);
                         },
+                        style: 'no',
+                      },
 
-                        {
-                          text: 'Yes',
-                          onPress: () => {
-                            setIsAssist(true);
-                          },
+                      {
+                        text: 'Yes',
+                        onPress: () => {
+                          setIsAssist(true);
                         },
-                      ],
-                      { cancelable: false },
-                    );
+                      },
+                    ],
+                    {cancelable: false},
+                  );
+                } else {
+                  lastTimeStamp = date
+                    ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+                    : parseFloat(new Date().getTime() / 1000).toFixed(0);
+                  lastVerb = GameVerb.Goal;
+                  let body = [{}];
+                  if (selectedMemberID === '0' || selectedMemberID === '1') {
+                    body = [
+                      {
+                        verb: lastVerb,
+                        timestamp: Number(lastTimeStamp),
+                        team_id: actionByTeamID,
+                      },
+                    ];
                   } else {
-                    lastTimeStamp = date
-                      ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
-                      : parseFloat(new Date().getTime() / 1000).toFixed(0);
-                    lastVerb = GameVerb.Goal;
-                    let body = [{}];
-                    if (selectedMemberID === '0' || selectedMemberID === '1') {
-                      body = [
-                        {
-                          verb: lastVerb,
-                          timestamp: Number(lastTimeStamp),
-                          team_id: actionByTeamID,
-                        },
-                      ];
-                    } else {
-                      body = [
-                        {
-                          verb: lastVerb,
-                          timestamp: Number(lastTimeStamp),
-                          team_id: actionByTeamID,
-                          doneBy: selectedMemberID,
-                        },
-                      ];
-                    }
-                    addGameRecordDetail(gameObj.game_id, body);
+                    body = [
+                      {
+                        verb: lastVerb,
+                        timestamp: Number(lastTimeStamp),
+                        team_id: actionByTeamID,
+                        doneBy: selectedMemberID,
+                      },
+                    ];
                   }
+                  addGameRecordDetail(gameObj.game_id, body);
+                }
               } else {
                 Alert.alert('Goal can\'t be done by on bench player');
               }
@@ -710,8 +713,8 @@ export default function GameDetailRecord({ navigation, route }) {
               let body = [{}];
               if (selectedMemberID === '0' || selectedMemberID === '1') {
                 if (
-                  selectedAssistMemberID === '0'
-                  || selectedAssistMemberID === '1'
+                  selectedAssistMemberID === '0' ||
+                  selectedAssistMemberID === '1'
                 ) {
                   body = [
                     {
@@ -731,8 +734,8 @@ export default function GameDetailRecord({ navigation, route }) {
                   ];
                 }
               } else if (
-                selectedAssistMemberID === '0'
-                || selectedAssistMemberID === '1'
+                selectedAssistMemberID === '0' ||
+                selectedAssistMemberID === '1'
               ) {
                 body = [
                   {
@@ -764,9 +767,10 @@ export default function GameDetailRecord({ navigation, route }) {
                 : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.Goal;
               let body = [{}];
-              const tempActionTeamID = (actionByTeamID === gameObj.home_team.group_id
-                  && gameObj.away_team.group_id)
-                || gameObj.home_team.group_id;
+              const tempActionTeamID =
+                (actionByTeamID === gameObj.home_team.group_id &&
+                  gameObj.away_team.group_id) ||
+                gameObj.home_team.group_id;
               if (selectedMemberID === '0' || selectedMemberID === '1') {
                 body = [
                   {
@@ -872,19 +876,19 @@ export default function GameDetailRecord({ navigation, route }) {
       }}
       buttonColor={colors.whiteColor}
       imageName={
-        (item === 'Goal' && images.gameGoal)
-        || (item === 'Own Goal' && images.gameOwnGoal)
-        || (item === 'YC' && images.gameYC)
-        || (item === 'RC' && images.gameRC)
-        || (item === 'In' && images.gameIn)
-        || (item === 'Out' && images.gameOut)
-        || (item === 'Assist' && images.assistsImage)
+        (item === 'Goal' && images.gameGoal) ||
+        (item === 'Own Goal' && images.gameOwnGoal) ||
+        (item === 'YC' && images.gameYC) ||
+        (item === 'RC' && images.gameRC) ||
+        (item === 'In' && images.gameIn) ||
+        (item === 'Out' && images.gameOut) ||
+        (item === 'Assist' && images.assistsImage)
       }
       textColor={colors.googleColor}
       imageSize={32}
     />
   );
-  const renderHomeSectionItems = ({ item }) => (
+  const renderHomeSectionItems = ({item}) => (
     <>
       {gameObj && (
         <TouchableOpacity
@@ -905,28 +909,28 @@ export default function GameDetailRecord({ navigation, route }) {
               setActionByTeamID(gameObj.home_team.group_id);
             }
           }}>
-          {selectedMemberID === item.member_id
-          || selectedAssistMemberID === item.member_id ? (
+          {selectedMemberID === item.member_id ||
+          selectedAssistMemberID === item.member_id ? (
             <LinearGradient
               colors={[colors.yellowColor, colors.themeColor]}
               style={styles.orangeFieldView}>
               <Image
                 source={
                   item.profile.thumbnail
-                    ? { uri: item.profile.thumbnail }
-                    : (item.profile.first_name === 'No Specific'
-                        && images.noSpecicPlayer)
-                      || images.profilePlaceHolder
+                    ? {uri: item.profile.thumbnail}
+                    : (item.profile.first_name === 'No Specific' &&
+                        images.noSpecicPlayer) ||
+                      images.profilePlaceHolder
                 }
                 style={styles.playerImage}
               />
               <View
                 style={[
                   styles.dividerView,
-                  { backgroundColor: colors.whiteColor },
+                  {backgroundColor: colors.whiteColor},
                 ]}></View>
               <View
-                style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text style={styles.whitePlayerName}>
                   {item.profile.first_name} {item.profile.last_name}
                 </Text>
@@ -940,21 +944,21 @@ export default function GameDetailRecord({ navigation, route }) {
               <Image
                 source={
                   item.profile.thumbnail
-                    ? { uri: item.profile.thumbnail }
-                    : (item.profile.first_name === 'No Specific'
-                        && images.noSpecicPlayer)
-                      || images.profilePlaceHolder
+                    ? {uri: item.profile.thumbnail}
+                    : (item.profile.first_name === 'No Specific' &&
+                        images.noSpecicPlayer) ||
+                      images.profilePlaceHolder
                 }
                 style={styles.playerImage}
               />
               <View
                 style={[
                   styles.dividerView,
-                  { backgroundColor: colors.smallDividerColor },
+                  {backgroundColor: colors.smallDividerColor},
                 ]}></View>
 
               <View
-                style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text style={styles.blackPlayerName}>
                   {item.profile.first_name} {item.profile.last_name}
                 </Text>
@@ -968,7 +972,7 @@ export default function GameDetailRecord({ navigation, route }) {
       )}
     </>
   );
-  const renderAwaySectionItems = ({ item }) => (
+  const renderAwaySectionItems = ({item}) => (
     <>
       {gameObj && (
         <TouchableOpacity
@@ -989,28 +993,28 @@ export default function GameDetailRecord({ navigation, route }) {
               setActionByTeamID(gameObj.away_team.group_id);
             }
           }}>
-          {selectedMemberID === item.member_id
-          || selectedAssistMemberID === item.member_id ? (
+          {selectedMemberID === item.member_id ||
+          selectedAssistMemberID === item.member_id ? (
             <LinearGradient
               colors={[colors.yellowColor, colors.themeColor]}
               style={styles.orangeFieldView}>
               <Image
                 source={
                   item.profile.thumbnail
-                    ? { uri: item.profile.thumbnail }
-                    : (item.profile.first_name === 'No Specific'
-                        && images.noSpecicPlayer)
-                      || images.profilePlaceHolder
+                    ? {uri: item.profile.thumbnail}
+                    : (item.profile.first_name === 'No Specific' &&
+                        images.noSpecicPlayer) ||
+                      images.profilePlaceHolder
                 }
                 style={styles.playerImage}
               />
               <View
                 style={[
                   styles.dividerView,
-                  { backgroundColor: colors.whiteColor },
+                  {backgroundColor: colors.whiteColor},
                 ]}></View>
               <View
-                style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text style={styles.whitePlayerName}>
                   {item.profile.first_name} {item.profile.last_name}
                 </Text>
@@ -1024,20 +1028,20 @@ export default function GameDetailRecord({ navigation, route }) {
               <Image
                 source={
                   item.profile.thumbnail
-                    ? { uri: item.profile.thumbnail }
-                    : (item.profile.first_name === 'No Specific'
-                        && images.noSpecicPlayer)
-                      || images.profilePlaceHolder
+                    ? {uri: item.profile.thumbnail}
+                    : (item.profile.first_name === 'No Specific' &&
+                        images.noSpecicPlayer) ||
+                      images.profilePlaceHolder
                 }
                 style={styles.playerImage}
               />
               <View
                 style={[
                   styles.dividerView,
-                  { backgroundColor: colors.smallDividerColor },
+                  {backgroundColor: colors.smallDividerColor},
                 ]}></View>
               <View
-                style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text style={styles.blackPlayerName} numberOfLines={1}>
                   {item.profile.first_name} {item.profile.last_name}
                 </Text>
@@ -1070,7 +1074,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 <Image
                   source={
                     gameObj?.home_team?.thumbnail
-                      ? { uri: gameObj?.home_team?.thumbnail }
+                      ? {uri: gameObj?.home_team?.thumbnail}
                       : images.teamPlaceholder
                   }
                   style={styles.profileImg}
@@ -1080,7 +1084,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 style={
                   gameObj?.home_team_goal <= gameObj?.away_team_goal
                     ? styles.leftText
-                    : [styles.leftText, { color: colors.themeColor }]
+                    : [styles.leftText, {color: colors.themeColor}]
                 }
                 numberOfLines={2}>
                 {gameObj?.home_team?.group_name}
@@ -1126,7 +1130,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 style={
                   gameObj?.away_team_goal <= gameObj?.home_team_goal
                     ? styles.rightText
-                    : [styles.rightText, { color: colors.themeColor }]
+                    : [styles.rightText, {color: colors.themeColor}]
                 }
                 numberOfLines={2}>
                 {gameObj?.away_team?.group_name}
@@ -1136,7 +1140,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 <Image
                   source={
                     gameObj?.away_team?.thumbnail
-                      ? { uri: gameObj?.away_team?.thumbnail }
+                      ? {uri: gameObj?.away_team?.thumbnail}
                       : images.teamPlaceholder
                   }
                   style={styles.profileImg}
@@ -1175,24 +1179,24 @@ export default function GameDetailRecord({ navigation, route }) {
                         style={styles.gameRecordButton}>
                         <Image
                           source={
-                            (lastVerb === GameVerb.Goal && images.gameGoal)
-                            || (lastVerb === GameVerb.YC && images.gameYC)
-                            || (lastVerb === GameVerb.RC && images.gameRC)
-                            || (lastVerb === GameVerb.In && images.gameIn)
-                            || (lastVerb === GameVerb.Out && images.gameOut)
+                            (lastVerb === GameVerb.Goal && images.gameGoal) ||
+                            (lastVerb === GameVerb.YC && images.gameYC) ||
+                            (lastVerb === GameVerb.RC && images.gameRC) ||
+                            (lastVerb === GameVerb.In && images.gameIn) ||
+                            (lastVerb === GameVerb.Out && images.gameOut)
                           }
                           style={styles.gameRecordImg}
                         />
                       </View>
                     </View>
                     <Text numberOfLines={1} style={styles.messageText}>
-                      {(messageText.split('/')[1]
-                        && `${messageText.split('/')[0]}`)
-                        || messageText}
+                      {(messageText.split('/')[1] &&
+                        `${messageText.split('/')[0]}`) ||
+                        messageText}
                     </Text>
                     {messageText.split('/')[1] && (
                       <>
-                        <Text style={{ color: colors.whiteColor }}>/ </Text>
+                        <Text style={{color: colors.whiteColor}}>/ </Text>
                         <View
                           colors={colors.whiteColor}
                           style={styles.gameRecordButton}>
@@ -1203,7 +1207,7 @@ export default function GameDetailRecord({ navigation, route }) {
                         </View>
                         <Text
                           numberOfLines={1}
-                          style={[styles.messageText, { width: 130 }]}>
+                          style={[styles.messageText, {width: 130}]}>
                           {' '}
                           {messageText.split('/') && messageText.split('/')[1]}
                         </Text>
@@ -1231,12 +1235,12 @@ export default function GameDetailRecord({ navigation, route }) {
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             <SectionList
               renderItem={renderHomeSectionItems}
-              renderSectionHeader={({ section: { title } }) => (
+              renderSectionHeader={({section: {title}}) => (
                 <View style={styles.sectionHeader}>
                   <Image
                     source={
                       gameObj.home_team && gameObj.home_team.thumbnail
-                        ? { uri: gameObj.home_team.thumbnail }
+                        ? {uri: gameObj.home_team.thumbnail}
                         : images.teamPlaceholder
                     }
                     style={styles.TeamImage}
@@ -1269,7 +1273,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 },
               ]}
               keyExtractor={(item, index) => index.toString()}
-              style={{ width: wp('72%'), height: hp('43%') }}
+              style={{width: wp('72%'), height: hp('43%')}}
               showsVerticalScrollIndicator={false}
             />
             <View
@@ -1281,12 +1285,12 @@ export default function GameDetailRecord({ navigation, route }) {
             />
             <SectionList
               renderItem={renderAwaySectionItems}
-              renderSectionHeader={({ section: { title } }) => (
+              renderSectionHeader={({section: {title}}) => (
                 <View style={styles.sectionHeader}>
                   <Image
                     source={
                       gameObj.away_team && gameObj.away_team.thumbnail
-                        ? { uri: gameObj.away_team.thumbnail }
+                        ? {uri: gameObj.away_team.thumbnail}
                         : images.teamPlaceholder
                     }
                     style={styles.TeamImage}
@@ -1319,7 +1323,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 },
               ]}
               keyExtractor={(item, index) => index.toString()}
-              style={{ width: wp('72%'), height: hp('43%') }}
+              style={{width: wp('72%'), height: hp('43%')}}
               showsVerticalScrollIndicator={false}
             />
           </ScrollView>
@@ -1347,12 +1351,12 @@ export default function GameDetailRecord({ navigation, route }) {
                 onPress={() => {
                   setPickerShow(!pickerShow);
                 }}>
-                {(gameObj
-                  && gameObj.status
-                  && gameObj.status === GameStatus.accepted)
-                || (gameObj
-                  && gameObj.status
-                  && gameObj.status === GameStatus.reset)
+                {(gameObj &&
+                  gameObj.status &&
+                  gameObj.status === GameStatus.accepted) ||
+                (gameObj &&
+                  gameObj.status &&
+                  gameObj.status === GameStatus.reset)
                   ? 'Game start at now'
                   : getDateFormat(date ? new Date(date.getTime()) : new Date())}
               </Text>
@@ -1368,8 +1372,8 @@ export default function GameDetailRecord({ navigation, route }) {
                   onChange={onChange}
                   mode={'datetime'}
                   minimumDate={
-                    gameObj.status === GameStatus.accepted
-                    || gameObj.status === GameStatus.reset
+                    gameObj.status === GameStatus.accepted ||
+                    gameObj.status === GameStatus.reset
                       ? new Date()
                       : new Date(gameObj.actual_startdatetime * 1000)
                   }
@@ -1385,25 +1389,27 @@ export default function GameDetailRecord({ navigation, route }) {
               showsHorizontalScrollIndicator={false}
               horizontal={true}
               style={
-                gameObj.status === GameStatus.accepted
-                || gameObj.status === GameStatus.reset
-                || gameObj.status === GameStatus.ended
-                  ? [styles.buttonListView, { opacity: 0.4 }]
+                gameObj.status === GameStatus.accepted ||
+                gameObj.status === GameStatus.reset ||
+                gameObj.status === GameStatus.ended
+                  ? [styles.buttonListView, {opacity: 0.4}]
                   : styles.buttonListView
               }
             />
 
-            <View style={{ flex: 1 }} />
+            <View style={{flex: 1}} />
             <View style={styles.bottomLine}></View>
             <View style={styles.gameRecordButtonView}>
               {gameObj.status === GameStatus.accepted && (
                 <TCGameButton
                   title="Start"
                   onPress={() => {
-                    if (
-                      gameObj?.challenge_status
-                      === (ReservationStatus.pendingrequestpayment
-                        || ReservationStatus.pendingpayment)
+                    if (isLineUpSet) {
+                      Alert.alert(isLineUpSet);
+                    } else if (
+                      gameObj?.challenge_status ===
+                      (ReservationStatus.pendingrequestpayment ||
+                        ReservationStatus.pendingpayment)
                     ) {
                       Alert.alert(
                         'Game cannot be start unless the payment goes through',
@@ -1455,8 +1461,8 @@ export default function GameDetailRecord({ navigation, route }) {
                   imageSize={16}
                 />
               )}
-              {(gameObj.status === GameStatus.playing
-                || gameObj.status === GameStatus.resume) && (
+              {(gameObj.status === GameStatus.playing ||
+                gameObj.status === GameStatus.resume) && (
                   <TCGameButton
                   title="Pause"
                   onPress={() => {
@@ -1479,9 +1485,9 @@ export default function GameDetailRecord({ navigation, route }) {
                   imageSize={15}
                 />
               )}
-              {(gameObj.status === GameStatus.playing
-                || gameObj.status === GameStatus.paused
-                || gameObj.status === GameStatus.resume) && (
+              {(gameObj.status === GameStatus.playing ||
+                gameObj.status === GameStatus.paused ||
+                gameObj.status === GameStatus.resume) && (
                   <TCGameButton
                   title="Match End"
                   onPress={() => {
@@ -1505,11 +1511,11 @@ export default function GameDetailRecord({ navigation, route }) {
                   imageSize={15}
                 />
               )}
-              {(gameObj.status === GameStatus.accepted
-                || gameObj.status === GameStatus.playing
-                || gameObj.status === GameStatus.paused
-                || gameObj.status === GameStatus.ended
-                || gameObj.status === GameStatus.resume) && (
+              {(gameObj.status === GameStatus.accepted ||
+                gameObj.status === GameStatus.playing ||
+                gameObj.status === GameStatus.paused ||
+                gameObj.status === GameStatus.ended ||
+                gameObj.status === GameStatus.resume) && (
                   <TCGameButton
                   title="Records"
                   onPress={() => {
@@ -1525,11 +1531,11 @@ export default function GameDetailRecord({ navigation, route }) {
                   imageSize={25}
                 />
               )}
-              {(gameObj.status === GameStatus.accepted
-                || gameObj.status === GameStatus.playing
-                || gameObj.status === GameStatus.paused
-                || gameObj.status === GameStatus.ended
-                || gameObj.status === GameStatus.resume) && (
+              {(gameObj.status === GameStatus.accepted ||
+                gameObj.status === GameStatus.playing ||
+                gameObj.status === GameStatus.paused ||
+                gameObj.status === GameStatus.ended ||
+                gameObj.status === GameStatus.resume) && (
                   <TCGameButton
                   title="Simple"
                   onPress={() => {
@@ -1573,8 +1579,8 @@ export default function GameDetailRecord({ navigation, route }) {
                       style: 'destructive',
                       onPress: () => {
                         if (
-                          gameObj.status === GameStatus.accepted
-                          || gameObj.status === GameStatus.reset
+                          gameObj.status === GameStatus.accepted ||
+                          gameObj.status === GameStatus.reset
                         ) {
                           Alert.alert('Game not started yet.');
                         } else if (gameObj.status === GameStatus.ended) {
@@ -1585,7 +1591,7 @@ export default function GameDetailRecord({ navigation, route }) {
                       },
                     },
                   ],
-                  { cancelable: false },
+                  {cancelable: false},
                 );
               }
             }}
@@ -1619,7 +1625,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },
@@ -1652,7 +1658,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
     shadowColor: colors.googleColor,
 
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: 30,
@@ -1688,7 +1694,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 10,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: '100%',
@@ -1731,7 +1737,7 @@ const styles = StyleSheet.create({
   profileShadow: {
     elevation: 10,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 3,
   },
@@ -1852,7 +1858,7 @@ const styles = StyleSheet.create({
     width: 20,
     borderRadius: 11,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.4,
     shadowRadius: 1,
     elevation: 10,

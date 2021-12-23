@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import {
-  Image, StyleSheet, Text, TouchableOpacity, View, Alert,
+  Image, StyleSheet, Text, TouchableOpacity, View, Alert,SafeAreaView,Platform
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
@@ -53,6 +53,7 @@ const TopBackgroundHeader = ({
     <LinearGradient
       colors={ ['transparent', 'rgba(0,0,0,0.4)'] }
       style={styles.topImageInnerContainer}>
+      {renderTopHeader}
       <Text style={styles.vsTextStyle}>VS</Text>
       <View style={styles.topHeaderAbsoluteContainer}>
         <View style={styles.teamVsSContainer}>
@@ -230,50 +231,53 @@ const TopBackgroundHeader = ({
 
   const onScroll = useCallback((e) => (onEndReached ? onReachedEnd(e) : null), [onEndReached, onReachedEnd])
 
-  const renderTopHeader = useMemo(() => (
-    <View style={{
-  height: 90, top: 0, flexDirection: 'row', justifyContent: 'space-between',
-    }}>
-      <TouchableOpacity onPress={handleGoBack} style={{ marginTop: 55, marginLeft: 15 }}>
-        <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.lightBlackColor }} />
-      </TouchableOpacity>
-      {isAdmin
-          && <TouchableOpacity onPress={onThreeDorPress} style={{ marginTop: 55, marginRight: 15 }}>
-            <Image source={images.threeDotIcon} style={{
-              height: 22, width: 16, tintColor: colors.lightBlackColor, resizeMode: 'contain',
-            }} />
-          </TouchableOpacity>}
-    </View>
-    // <Header
-    //       barStyle={'light-content'}
-    //       safeAreaStyle={{ position: 'absolute' }}
-    //       leftComponent={
-    //         <TouchableOpacity onPress={handleGoBack} style>
-    //           <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.lightBlackColor }} />
-    //         </TouchableOpacity>
-    //       }
-    //       centerComponent={
-    //         <View style={styles.headerCenterStyle}>
-    //           {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
-    //         </View>
-    //       }
-    //   />
+  
 
-  ), [handleGoBack])
+  const renderTopHeader = useMemo(
+    () => (
+      <SafeAreaView>
+        <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+          <TouchableOpacity onPress={handleGoBack}>
+            <Image
+              source={images.backArrow}
+              style={{ height: 22, width: 16, tintColor: colors.whiteColor }}
+            />
+          </TouchableOpacity>
+          <View style={styles.headerCenterStyle}>
+            {headerTitleShown && (
+              <Text style={styles.headerCenterTextStyle}>Match</Text>
+            )}
+          </View>
+          {isAdmin && <TouchableOpacity onPress={onThreeDorPress}>
+            <Image
+                source={images.threeDotIcon}
+                style={{
+                  height: 22,
+                  width: 16,
+                  tintColor: colors.whiteColor,
+                  resizeMode: 'contain',
+                }}
+              />
+          </TouchableOpacity>}
+        </View>
+      </SafeAreaView>
+    ),
+    [handleGoBack, headerTitleShown, isAdmin, onThreeDorPress],
+  );
 
   return (
     <View style={{ flex: 1 }}>
       <ActivityLoader visible={loading}/>
-      {renderTopHeader}
+      {/* {renderTopHeader} */}
 
       <ParallaxScrollView
           onScroll={onScroll}
           bounces={false}
-          scrollEventThrottle={400}
+          scrollEventThrottle={100}
             backgroundColor="transparent"
              contentBackgroundColor="white"
             parallaxHeaderHeight={200}
-              // stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
+            stickyHeaderHeight={Platform.OS === 'ios' ? 0 : 0}
             fadeOutForeground={false}
             onChangeHeaderVisibility={(isShown) => isShown !== headerTitleShown && setHeaderTitleShown(isShown)}
             renderFixedHeader={renderFixedHeader}
@@ -329,7 +333,7 @@ const TopBackgroundHeader = ({
                   onPress={onItemPress}
               />
           )
-        }, [gameData, goToChallengeDetail])}
+        }, [gameData, goToChallengeDetail, onResetGame])}
         {children}
       </ParallaxScrollView>
     </View>
@@ -339,8 +343,6 @@ const TopBackgroundHeader = ({
 const styles = StyleSheet.create({
   topImageInnerContainer: {
     height: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 10,
   },
   headerCenterStyle: {
@@ -364,11 +366,15 @@ const styles = StyleSheet.create({
     width: wp(100),
   },
   vsTextStyle: {
+    textAlign:'center',
     fontSize: 24,
     fontFamily: fonts.RMedium,
     color: colors.whiteColor,
   },
   topHeaderAbsoluteContainer: {
+    
+    right:15,
+    left:15,
     position: 'absolute',
     bottom: 10,
     alignItems: 'center',
@@ -445,6 +451,13 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     marginHorizontal: 5,
   },
+
+
+
+
+
+
+
 
 })
 
