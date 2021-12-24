@@ -35,7 +35,7 @@ export default function FollowTeams({ route }) {
 
   const followedTeam = [];
   useEffect(() => {
-    console.log('UseEffect Called... :::');
+    console.log('Team Data... :::',route.params.teamData);
 
     const setFollowData = () => {
       const arr = [];
@@ -103,7 +103,7 @@ export default function FollowTeams({ route }) {
               flex: 0.5,
               paddingHorizontal: 10,
             } }>
-            <Text style={ styles.teamNameText }>{teams[index].group_name}</Text>
+            <Text style={ styles.teamNameText }>{teams[index].group_name ?? teams[index].full_name}</Text>
             <Text style={ styles.cityText }>
               {teams[index].city}, {teams[index].state_abbr},{' '}
               {teams[index].country}

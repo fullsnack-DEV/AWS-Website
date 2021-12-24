@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-expressions */
 import React, { memo, useContext } from 'react';
 import {
- View, Text, StyleSheet, Image,
+ View, Text, StyleSheet, Image,TouchableOpacity
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -15,7 +15,7 @@ import fonts from '../Constants/Fonts';
 import { getSportName } from '../utils';
 
 const TCChallengerCard = ({
- data, entityType, selectedSport, sportType,
+ data, entityType, selectedSport, sportType,onPress
 }) => {
   const authContext = useContext(AuthContext);
 
@@ -68,24 +68,25 @@ const TCChallengerCard = ({
   }
 
   return (
-    <LinearGradient
+    <TouchableOpacity onPress={onPress}>
+      <LinearGradient
       colors={[colors.localHomeGradientStart, colors.localHomeGradientEnd]}
       style={styles.gradientContainer}>
-      <Image
+        <Image
         source={
           data?.background_thumbnail ? { uri: data?.background_thumbnail } : null
         }
         style={styles.backgroundView}
       />
-      <Image source={images.localhomeOverlay} style={styles.overlayView} />
-      <View
+        <Image source={images.localhomeOverlay} style={styles.overlayView} />
+        <View
         style={{
           width: wp('40%'),
           marginLeft: 10,
           marginTop: 10,
           position: 'absolute',
         }}>
-        {/* <View style={styles.bottomView}>
+          {/* <View style={styles.bottomView}>
           <Text style={styles.levelText}>Lv.0</Text>
           <Text style={styles.textSaperator}> | </Text>
           <Text style={styles.pointView} numberOfLines={1}>
@@ -93,8 +94,8 @@ const TCChallengerCard = ({
           </Text>
         </View> */}
 
-        <View style={{ flexDirection: 'row' }}>
-          <Image
+          <View style={{ flexDirection: 'row' }}>
+            <Image
             source={
               data?.thumbnail
                 ? { uri: data?.thumbnail }
@@ -102,13 +103,13 @@ const TCChallengerCard = ({
             }
             style={styles.profileImage}
           />
-          <View style={{ flexDirection: 'column', marginLeft: 10 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.entityTitle} numberOfLines={2}>
-                {entityName}
-              </Text>
-              {entityType === 'team' && (
-                <Image
+            <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.entityTitle} numberOfLines={2}>
+                  {entityName}
+                </Text>
+                {entityType === 'team' && (
+                  <Image
                   source={
                     (entityType === 'team' && images.teamT)
                     || (entityType === 'club' && images.clubC)
@@ -117,21 +118,22 @@ const TCChallengerCard = ({
                   style={styles.teamTImage}
                 />
               )}
-            </View>
-            <View>
-              <Text style={styles.smallTitle} numberOfLines={2}>
-                {data?.city} · {sportText}
-              </Text>
-            </View>
-            <View>
-              <Text style={styles.amountTitle} numberOfLines={2}>
-                {gameFee && `LV 13 · ${gameFee} ${currency}`}
-              </Text>
+              </View>
+              <View>
+                <Text style={styles.smallTitle} numberOfLines={2}>
+                  {data?.city} · {sportText}
+                </Text>
+              </View>
+              <View>
+                <Text style={styles.amountTitle} numberOfLines={2}>
+                  {gameFee && `LV 13 · ${gameFee} ${currency}`}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    </LinearGradient>
+      </LinearGradient>
+    </TouchableOpacity>
   );
 };
 

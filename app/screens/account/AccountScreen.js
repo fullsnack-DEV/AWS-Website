@@ -267,8 +267,9 @@ export default function AccountScreen({ navigation }) {
 
           const { teams } = response.payload;
           const { clubs } = response.payload;
-          const switchEntityObject = [...clubs, ...teams].filter(
-            (e) => e.group_id === authContext.entity.uid,
+          const { user } = response.payload;
+          const switchEntityObject = [{...user},...clubs, ...teams].filter(
+            (e) => e.group_id === authContext.entity.uid || e.user_id === authContext.entity.uid,
           );
           setTeam(teams);
           setClub(clubs);
@@ -279,12 +280,12 @@ export default function AccountScreen({ navigation }) {
             const updatedTeam = teams.filter(
               (item) => item.group_id !== authContext.entity.uid,
             );
-            setGroupList([currentEntity.auth.user, ...clubs, ...updatedTeam]);
+            setGroupList([{...user}, ...clubs, ...updatedTeam]);
           } else if (authContext.entity.role === 'club') {
             const updatedClub = clubs.filter(
               (item) => item.group_id !== authContext.entity.uid,
             );
-            setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
+            setGroupList([{...user}, ...updatedClub, ...teams]);
           }
           setloading(false);
 
@@ -352,14 +353,12 @@ export default function AccountScreen({ navigation }) {
         getJoinedGroups('team', authContext),
         getTeamPendingRequest(authContext),
       ];
-
       Promise.all(promises)
         .then(([res1, res2]) => {
           setloading(false);
           resolve(true);
           setTeamList([...res1.payload, ...res2.payload]);
         })
-
         // eslint-disable-next-line prefer-promise-reject-errors
         .catch(() => reject('error'));
     });

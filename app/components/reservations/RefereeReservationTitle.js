@@ -19,9 +19,9 @@ export default function RefereeReservationTitle({
   console.log('reservationObject OHHHH:=>', reservationObject);
 
   const entityList = [
-    { ...reservationObject.game.home_team },
-    { ...reservationObject.game.away_team },
-    { ...reservationObject.referee },
+    { ...reservationObject?.game?.home_team },
+    { ...reservationObject?.game?.away_team },
+    { ...reservationObject?.referee },
   ];
   console.log('entityList:=>', entityList);
 

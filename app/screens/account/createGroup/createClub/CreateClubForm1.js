@@ -1,3 +1,5 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable no-param-reassign */
 import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
@@ -135,8 +137,14 @@ export default function CreateClubForm1({navigation, route}) {
 
   const onNextPressed = () => {
     console.log('selectedSports', selectedSports);
+    const newArray = selectedSports.map((obj) => {
+      delete obj.isChecked;
+      delete obj.entity_type;
+      return obj
+    });
+    console.log('new sports:=>',newArray);
     const obj = {
-      sport: selectedSports, // Object of sport
+      sports: newArray, // Object of sport
       sports_string: sportsName,
       group_name: clubName,
       city,

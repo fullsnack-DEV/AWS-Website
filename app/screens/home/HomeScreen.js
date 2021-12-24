@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable consistent-return */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable array-callback-return */
 /* eslint-disable no-empty */
@@ -79,6 +81,7 @@ import {
   inviteTeam,
 } from '../../api/Groups';
 import * as RefereeUtils from '../referee/RefereeUtility';
+import * as ScorekeeperUtils from '../scorekeeper/ScorekeeperUtility';
 import * as Utils from '../challenge/ChallengeUtility';
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -320,47 +323,91 @@ const HomeScreen = ({navigation, route}) => {
 
   useEffect(() => {
     if (isFocused) {
-      const date = moment(new Date()).format('YYYY-MM-DD');
+      // const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = authContext.entity;
 
       const uid = route?.params?.uid || entity.uid || entity.auth.user_id;
-      const eventdata = [];
-      const timetabledata = [];
+      // const eventdata = [];
+      // const timetabledata = [];
       let eventTimeTableData = [];
 
       Utility.getCalendar(uid, new Date().getTime() / 1000)
         .then((response) => {
           console.log('Events response:=>', response);
 
-          eventTimeTableData = response;
-          setEventData(eventTimeTableData);
-          setTimeTable(eventTimeTableData);
-          eventTimeTableData.filter((event_item) => {
-            const startDate = new Date(event_item.start_datetime * 1000);
-            const eventDate = moment(startDate).format('YYYY-MM-DD');
-            if (eventDate === date) {
-              eventdata.push(event_item);
+
+          response = (response || []).filter((obj) => {
+            if (obj.cal_type === 'blocked') {
+              return obj;
             }
-            return null;
-          });
-          setFilterEventData(eventdata);
-          eventTimeTableData.filter((timetable_item) => {
-            const timetable_date = new Date(
-              timetable_item.start_datetime * 1000,
-            );
-            const endDate = new Date(timetable_item.end_datetime * 1000);
-            const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
-            if (timetabledate === date) {
-              const obj = {
-                ...timetable_item,
-                start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
-                end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-              };
-              timetabledata.push(obj);
+            if (obj.cal_type === 'event') {
+              if (obj?.expiry_datetime) {
+                if (obj?.expiry_datetime >= parseFloat(new Date().getTime() / 1000).toFixed(0)
+                ) {
+                  return obj;
+                }
+              } else {
+                return obj
+              }
             }
-            return null;
           });
-          setFilterTimeTable(timetabledata);
+          console.log('filter list:=>', response);
+
+          eventTimeTableData = [...response];
+          let gameIDs = [...new Set(response.map((item) => item.game_id))];
+
+          gameIDs = (gameIDs || []).filter((item) => item !== undefined);
+          console.log('gameIds  list:=>', gameIDs);
+
+          if (gameIDs.length > 0) {
+            const gameList = {
+              query: {
+                terms: {
+                  _id: gameIDs,
+                },
+              },
+            };
+
+            getGameIndex(gameList).then((games) => {
+              Utility.getGamesList(games).then((gamedata) => {
+                configureEvents(eventTimeTableData, gamedata);
+              })
+            });
+          }
+
+
+          configureEvents(eventTimeTableData);
+          setloading(false);
+
+          // eventTimeTableData = response;
+          // setEventData(eventTimeTableData);
+          // setTimeTable(eventTimeTableData);
+          // eventTimeTableData.filter((event_item) => {
+          //   const startDate = new Date(event_item.start_datetime * 1000);
+          //   const eventDate = moment(startDate).format('YYYY-MM-DD');
+          //   if (eventDate === date) {
+          //     eventdata.push(event_item);
+          //   }
+          //   return null;
+          // });
+          // setFilterEventData(eventdata);
+          // eventTimeTableData.filter((timetable_item) => {
+          //   const timetable_date = new Date(
+          //     timetable_item.start_datetime * 1000,
+          //   );
+          //   const endDate = new Date(timetable_item.end_datetime * 1000);
+          //   const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
+          //   if (timetabledate === date) {
+          //     const obj = {
+          //       ...timetable_item,
+          //       start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
+          //       end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+          //     };
+          //     timetabledata.push(obj);
+          //   }
+          //   return null;
+          // });
+          // setFilterTimeTable(timetabledata);
         })
         .catch((e) => {
           setTimeout(() => {
@@ -378,6 +425,40 @@ const HomeScreen = ({navigation, route}) => {
         });
     }
   }, [isFocused]);
+
+
+  const configureEvents = useCallback(
+    (eventsData, games) => {
+      const eventTimeTableData = eventsData.map((item) => {
+        if (item?.game_id) {
+          const gameObj = (games || []).filter((game) => game.game_id === item.game_id) ?? [];
+
+          if (gameObj.length > 0) {
+            item.game = gameObj[0];
+          }
+        } else {
+          return item;
+        }
+
+        return item;
+      });
+
+      setEventData(
+        (eventTimeTableData || []).sort(
+          (a, b) => new Date(a.start_datetime * 1000)
+            - new Date(b.start_datetime * 1000),
+        ),
+      );
+
+      setTimeTable(eventTimeTableData);
+
+      
+      
+    },
+    [eventData],
+  );
+
+
 
   useEffect(() => {
     if (selectedEventItem) {
@@ -834,8 +915,16 @@ const HomeScreen = ({navigation, route}) => {
     setCurrentUserData({...currentUserData});
     const params = {};
     joinTeam(params, userID, authContext)
-      .then(() => {
+      .then(async(response) => {
         console.log('user join group');
+        const entity = authContext.entity;
+          console.log('Register player response for club IS:: ', response.payload);
+          entity.auth.user = response.payload;
+          entity.obj = response.payload;
+          authContext.setEntity({...entity});
+          authContext.setUser(response.payload);
+          await Utility.setStorage('authContextUser', response.payload);
+          await Utility.setStorage('authContextEntity', {...entity});
       })
       .catch((error) => {
         console.log('userJoinGroup error with userID', error, userID);
@@ -903,8 +992,16 @@ const HomeScreen = ({navigation, route}) => {
     }
     setCurrentUserData({...currentUserData});
     joinTeam({}, userID, authContext)
-      .then(() => {
+      .then(async(response) => {
         console.log('club join');
+        const entity = authContext.entity;
+          console.log('Register player response for team IS:: ', response.payload);
+          entity.auth.user = response.payload;
+          entity.obj = response.payload;
+          authContext.setEntity({...entity});
+          authContext.setUser(response.payload);
+          await Utility.setStorage('authContextUser', response.payload);
+          await Utility.setStorage('authContextEntity', {...entity});
       })
       .catch((error) => {
         console.log('clubJoinTeam error with userID', error, userID);
@@ -1418,9 +1515,21 @@ const HomeScreen = ({navigation, route}) => {
     [authContext.entity.uid],
   );
 
+  const scorekeeperFound = useCallback(
+    (data) =>
+      (data?.game?.scorekeepers || []).some(
+        (e) => authContext.entity.uid === e.scorekeeper_id,
+      ),
+    [authContext.entity.uid],
+  );
+
+
   const findCancelButtonIndex = useCallback(
     (data) => {
       if (data?.game && refereeFound(data)) {
+        return 2;
+      }
+      if (data?.game && scorekeeperFound(data)) {
         return 2;
       }
       if (data?.game) {
@@ -1428,7 +1537,7 @@ const HomeScreen = ({navigation, route}) => {
       }
       return 2;
     },
-    [refereeFound],
+    [refereeFound,scorekeeperFound],
   );
 
   const goToChallengeDetail = useCallback(
@@ -1451,13 +1560,39 @@ const HomeScreen = ({navigation, route}) => {
 
   const goToRefereReservationDetail = useCallback(
     (data) => {
+      const refereeObj = data?.game?.referees?.filter((obj)=> obj?.referee_id === authContext.entity.uid)?.[0]
+       
       setloading(true);
       RefereeUtils.getRefereeReservationDetail(
-        data?.reservation_id,
+        refereeObj?.reservation_id,
         authContext.entity.uid,
         authContext,
       ).then((obj) => {
         setloading(false);
+        navigation.navigate(obj.screenName, {
+          reservationObj: obj.reservationObj || obj.reservationObj[0],
+        });
+        setloading(false);
+      });
+     
+    },
+    [authContext, navigation],
+  );
+
+  const goToScorekeeperReservationDetail = useCallback(
+    (data) => {
+      console.log('Screen data:=>',data);
+      const scorekeeperObj = data?.game?.scorekeepers?.filter((obj)=> obj?.scorekeeper_id === authContext.entity.uid)?.[0]
+      setloading(true);
+      ScorekeeperUtils.getScorekeeperReservationDetail(
+        scorekeeperObj?.reservation_id,
+        authContext.entity.uid,
+        authContext,
+      ).then((obj) => {
+        setloading(false);
+        console.log('Screen name:=>',obj.screenName);
+        console.log('Screen navigator:=>',navigation);
+
         navigation.navigate(obj.screenName, {
           reservationObj: obj.reservationObj || obj.reservationObj[0],
         });
@@ -1513,6 +1648,9 @@ const HomeScreen = ({navigation, route}) => {
     if (selectedEventItem !== null && selectedEventItem.game) {
       if (refereeFound(selectedEventItem)) {
         return ['Referee Reservation Details', 'Change Events Color', 'Cancel'];
+      }
+      if (scorekeeperFound(selectedEventItem)) {
+        return ['Scorekeeper Reservation Details', 'Change Events Color', 'Cancel'];
       }
       return [
         'Game Reservation Details',
@@ -2222,7 +2360,10 @@ const HomeScreen = ({navigation, route}) => {
                 console.log('selected Event Item:', selectedEventItem);
                 if (refereeFound(selectedEventItem)) {
                   goToRefereReservationDetail(selectedEventItem);
-                } else {
+                }else if (scorekeeperFound(selectedEventItem)) {
+                  goToScorekeeperReservationDetail(selectedEventItem);
+                }
+                 else {
                   console.log('Selected Event Item::', selectedEventItem);
                   goToChallengeDetail(selectedEventItem.game);
                 }

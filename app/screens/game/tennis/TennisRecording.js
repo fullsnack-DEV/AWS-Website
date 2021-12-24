@@ -24,9 +24,9 @@ import {
   Dimensions,
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 // import RNDateTimePicker from '@react-native-community/datetimepicker';
 import ActionSheet from 'react-native-actionsheet';
@@ -58,7 +58,7 @@ import strings from '../../../Constants/String';
 
 import TennisMatchRecordsList from './TennisMatchRecordsList';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 const recordButtonList = [
   'General',
@@ -70,14 +70,14 @@ const recordButtonList = [
   'Let',
 ];
 let entity = {};
-let timer, timerForTimeline;
+let timerForTimeline;
 let lastTimeStamp;
 let lastVerb;
 let homeTeamGamePoint = 0;
 let awayTeamGamePoint = 0;
 let date;
 
-export default function TennisRecording({ navigation, route }) {
+export default function TennisRecording({navigation, route}) {
   const isFocused = useIsFocused();
   const actionSheet = useRef();
   const scrollView = useRef();
@@ -108,7 +108,6 @@ export default function TennisRecording({ navigation, route }) {
   const [showToast, setShowToast] = useState(false);
   const [undoTeamID, setUndoTeamID] = useState();
   useEffect(() => {
-    clearInterval(timer);
     clearInterval(timerForTimeline);
     setTimelineTimer('00 : 00 : 00');
     date = null;
@@ -135,6 +134,13 @@ export default function TennisRecording({ navigation, route }) {
     });
   }, [navigation, gameObj, homeTeamMatchPoint, awayTeamMatchPoint]);
 
+  useEffect(() => {
+    const apiTimer = setInterval(() => {
+      getGameDetail(route?.params?.gameDetail?.game_id, false);
+    }, 10000);
+    return () => clearInterval(apiTimer);
+  }, []);
+
   useFocusEffect(() => {
     if (
       ![GameStatus.accepted, GameStatus.reset].includes(
@@ -143,35 +149,22 @@ export default function TennisRecording({ navigation, route }) {
     ) {
       startStopTimerTimeline();
     }
-    timer = setInterval(() => {
-      if (gameObj && gameObj.status !== GameStatus.ended) {
-        getGameDetail(route?.params?.gameDetail?.game_id, false);
-      }
-    }, 10000);
-    // timer = setInterval(() => {
-    //   if (gameObj && gameObj.status !== GameStatus.ended) {
-    //     getGameDetail(route?.params?.gameDetail?.game_id, false);
-    //   }
-    // }, 3000);
-    // timerForTimeline = setInterval(() => {
-    //   startStopTimerTimeline()
-    // }, 1000);
 
     return () => {
-      clearInterval(timer);
       clearInterval(timerForTimeline);
     };
   }, []);
 
-  const refreshMatchRecords = () => matchRecordsRef?.current?.refreshMatchRecords();
+  const refreshMatchRecords = () =>
+    matchRecordsRef?.current?.refreshMatchRecords();
 
   const configurePeriodOpetions = (data) => {
     const opetions = ['End Match', 'Cancel'];
     if (data?.scoreboard?.game_inprogress) {
       if (
         !(
-          data?.scoreboard?.game_inprogress?.winner
-          || data?.scoreboard?.game_inprogress?.end_datetime
+          data?.scoreboard?.game_inprogress?.winner ||
+          data?.scoreboard?.game_inprogress?.end_datetime
         )
       ) {
         opetions.unshift('End Game');
@@ -188,17 +181,18 @@ export default function TennisRecording({ navigation, route }) {
     console.log('serving:', isServingPressed);
     if (!isServingPressed) {
       if (
-        data?.scoreboard?.game_inprogress
-        && data?.scoreboard?.game_inprogress?.serving_team_id
+        data?.scoreboard?.game_inprogress &&
+        data?.scoreboard?.game_inprogress?.serving_team_id
       ) {
-        const tempServingID = data?.scoreboard?.game_inprogress?.serving_team_id;
+        const tempServingID =
+          data?.scoreboard?.game_inprogress?.serving_team_id;
         if (
-          data?.scoreboard?.game_inprogress?.winner
-          || data?.scoreboard?.game_inprogress?.end_datetime
+          data?.scoreboard?.game_inprogress?.winner ||
+          data?.scoreboard?.game_inprogress?.end_datetime
         ) {
           if (
-            tempServingID
-            === (data?.home_team?.user_id || data?.home_team?.group_id)
+            tempServingID ===
+            (data?.home_team?.user_id || data?.home_team?.group_id)
           ) {
             setServingTeamID(
               data?.away_team?.user_id ?? data?.away_team?.group_id,
@@ -242,20 +236,22 @@ export default function TennisRecording({ navigation, route }) {
   const calculateGameScore = (data) => {
     // eslint-disable-next-line array-callback-return
     if (
-      data?.scoreboard?.game_inprogress?.winner
-      || data?.scoreboard?.game_inprogress?.end_datetime
+      data?.scoreboard?.game_inprogress?.winner ||
+      data?.scoreboard?.game_inprogress?.end_datetime
     ) {
       homeTeamGamePoint = 0;
       awayTeamGamePoint = 0;
     } else {
-      homeTeamGamePoint = data?.scoreboard?.game_inprogress?.home_team_point || 0;
-      awayTeamGamePoint = data?.scoreboard?.game_inprogress?.away_team_point || 0;
+      homeTeamGamePoint =
+        data?.scoreboard?.game_inprogress?.home_team_point || 0;
+      awayTeamGamePoint =
+        data?.scoreboard?.game_inprogress?.away_team_point || 0;
     }
   };
   const validate = () => {
     if (
-      gameObj.status === GameStatus.accepted
-      || gameObj.status === GameStatus.reset
+      gameObj.status === GameStatus.accepted ||
+      gameObj.status === GameStatus.reset
     ) {
       Alert.alert('Please, start the game first.');
       return false;
@@ -284,7 +280,7 @@ export default function TennisRecording({ navigation, route }) {
       toggleView(() => setShowToast(false), 500);
     }, 5000);
   };
-  const renderGameButton = ({ item }) => (
+  const renderGameButton = ({item}) => (
     <TCGameButton
       title={item}
       onPress={() => {
@@ -342,13 +338,13 @@ export default function TennisRecording({ navigation, route }) {
       }}
       buttonColor={colors.whiteColor}
       imageName={
-        (item === 'General' && images.tennisGeneral)
-        || (item === 'Ace' && images.tennisAce)
-        || (item === 'Winner' && images.tennisWinner)
-        || (item === 'Unforced' && images.tennisUnForced)
-        || (item === 'Fault' && images.tennisFault)
-        || (item === 'Foot Fault' && images.tennisFootFault)
-        || (item === 'Let' && images.tennisLet)
+        (item === 'General' && images.tennisGeneral) ||
+        (item === 'Ace' && images.tennisAce) ||
+        (item === 'Winner' && images.tennisWinner) ||
+        (item === 'Unforced' && images.tennisUnForced) ||
+        (item === 'Fault' && images.tennisFault) ||
+        (item === 'Foot Fault' && images.tennisFootFault) ||
+        (item === 'Let' && images.tennisLet)
       }
       textColor={colors.googleColor}
       imageSize={32}
@@ -375,7 +371,8 @@ export default function TennisRecording({ navigation, route }) {
     }
     const tempDate = new Date(eDate);
     tempDate.setMinutes(tempDate.getMinutes() + breakTime);
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(tempDate).getTime()) / 1000;
+    let delta =
+      Math.abs(new Date(sDate).getTime() - new Date(tempDate).getTime()) / 1000;
 
     const days = Math.floor(delta / 86400);
     delta -= days * 86400;
@@ -414,8 +411,8 @@ export default function TennisRecording({ navigation, route }) {
     let name;
     let verbString;
     if (
-      (gameObj?.home_team?.user_id || gameObj.home_team.group_id)
-      === selectedTeam
+      (gameObj?.home_team?.user_id || gameObj.home_team.group_id) ===
+      selectedTeam
     ) {
       name = gameObj.home_team.first_name
         ? `${gameObj.home_team.first_name} ${gameObj.home_team.last_name}`
@@ -443,17 +440,16 @@ export default function TennisRecording({ navigation, route }) {
     return `${name} ${verbString}`;
   };
   const startStopTimerTimeline = () => {
-    clearInterval(timer);
     clearInterval(timerForTimeline);
     if (gameObj && gameObj.status === GameStatus.ended) {
       setTimelineTimer(
         getTimeDifferent(
-          gameObj
-            && gameObj.actual_enddatetime
-            && gameObj.actual_enddatetime * 1000,
-          gameObj
-            && gameObj.actual_startdatetime
-            && gameObj.actual_startdatetime * 1000,
+          gameObj &&
+            gameObj.actual_enddatetime &&
+            gameObj.actual_enddatetime * 1000,
+          gameObj &&
+            gameObj.actual_startdatetime &&
+            gameObj.actual_startdatetime * 1000,
         ),
       );
     } else if (
@@ -517,8 +513,9 @@ export default function TennisRecording({ navigation, route }) {
       });
   };
   const getGameDetail = (gameId, isLoading) => {
+    console.log('Game detail tennis recording called');
     if (isLoading) {
-      setloading(true);
+      // setloading(true);
     }
     getGameByGameID(gameId, authContext)
       .then((response) => {
@@ -526,8 +523,8 @@ export default function TennisRecording({ navigation, route }) {
         setGameObj(response.payload);
 
         if (
-          entity
-          === (gameObj?.home_team?.group_id || gameObj?.home_team?.user_id)
+          entity ===
+          (gameObj?.home_team?.group_id || gameObj?.home_team?.user_id)
         ) {
           setActionByTeamID(
             gameObj?.home_team?.group_id || gameObj?.home_team?.user_id,
@@ -557,8 +554,8 @@ export default function TennisRecording({ navigation, route }) {
     decreaseGameScore(teamId, gameId, authContext)
       .then((response) => {
         if (
-          selectedTeam
-          === (gameObj?.home_team?.group_id || gameObj?.home_team?.user_id)
+          selectedTeam ===
+          (gameObj?.home_team?.group_id || gameObj?.home_team?.user_id)
         ) {
           setGameObj({
             ...gameObj,
@@ -593,8 +590,8 @@ export default function TennisRecording({ navigation, route }) {
         date = null;
         if (lastVerb === GameVerb.Goal) {
           if (
-            selectedTeam
-            === (gameObj?.home_team?.group_id || gameObj?.home_team?.user_id)
+            selectedTeam ===
+            (gameObj?.home_team?.group_id || gameObj?.home_team?.user_id)
           ) {
             setGameObj({
               ...gameObj,
@@ -621,7 +618,7 @@ export default function TennisRecording({ navigation, route }) {
           });
           startStopTimerTimeline();
         } else if (lastVerb === GameVerb.Resume) {
-          setGameObj({ ...gameObj, status: GameStatus.resume });
+          setGameObj({...gameObj, status: GameStatus.resume});
           startStopTimerTimeline();
         } else if (lastVerb === GameVerb.End) {
           setGameObj({
@@ -644,8 +641,8 @@ export default function TennisRecording({ navigation, route }) {
   };
   const matchEnd = () => {
     if (
-      gameObj.status === GameStatus.accepted
-      || gameObj.status === GameStatus.reset
+      gameObj.status === GameStatus.accepted ||
+      gameObj.status === GameStatus.reset
     ) {
       Alert.alert('Please, start the game first.');
     } else if (gameObj.status === GameStatus.ended) {
@@ -678,8 +675,8 @@ export default function TennisRecording({ navigation, route }) {
   };
   const canDecreaseRecentGoal = () => {
     if (
-      selectedTeam
-      === (gameObj?.home_team?.user_id || gameObj?.home_team?.group_id)
+      selectedTeam ===
+      (gameObj?.home_team?.user_id || gameObj?.home_team?.group_id)
     ) {
       if (homeTeamGamePoint <= 0) {
         if (
@@ -705,22 +702,24 @@ export default function TennisRecording({ navigation, route }) {
     return true;
   };
 
-  const renderScoreRecordView = useMemo(() => (
-
-    <TennisMatchRecordsList
+  const renderScoreRecordView = useMemo(
+    () => (
+      <TennisMatchRecordsList
         matchRef={matchRecordsRef}
         isAdmin={route?.params?.isAdmin}
         matchData={gameData}
         visibleSetScore={false}
         visibleAddSetGameButton={visibleAddSetAndGameButton}
       />
-   ), [gameData, route?.params?.isAdmin, visibleAddSetAndGameButton])
+    ),
+    [gameData, route?.params?.isAdmin, visibleAddSetAndGameButton],
+  );
 
   return (
     <>
       {gameObj && gameObj?.home_team && gameObj?.away_team && (
-        <View style={{ flex: 1 }}>
-          <View style={{ flex: 1 }}>
+        <View style={{flex: 1}}>
+          <View style={{flex: 1}}>
             <ActivityLoader visible={loading} />
             <View style={styles.headerView}>
               <View style={styles.leftView}>
@@ -728,15 +727,15 @@ export default function TennisRecording({ navigation, route }) {
                   <Image
                     source={
                       gameObj?.home_team?.thumbnail
-                        ? { uri: gameObj?.home_team?.thumbnail }
+                        ? {uri: gameObj?.home_team?.thumbnail}
                         : images.profilePlaceHolder
                     }
                     style={
-                      servingTeamID
-                      === (gameObj?.home_team?.user_id
-                        || gameObj?.home_team?.group_id)
+                      servingTeamID ===
+                      (gameObj?.home_team?.user_id ||
+                        gameObj?.home_team?.group_id)
                         ? styles.profileImg
-                        : [styles.profileImg, { borderColor: colors.themeColor }]
+                        : [styles.profileImg, {borderColor: colors.themeColor}]
                     }
                   />
                 </View>
@@ -777,17 +776,17 @@ export default function TennisRecording({ navigation, route }) {
                                 'You can not change serving player during game.',
                               );
                             } else if (
-                              (gameObj?.home_team?.user_id
-                                || gameObj?.home_team?.group_id) === servingTeamID
+                              (gameObj?.home_team?.user_id ||
+                                gameObj?.home_team?.group_id) === servingTeamID
                             ) {
                               setServingTeamID(
-                                gameObj?.away_team?.user_id
-                                  ?? gameObj?.away_team?.group_id,
+                                gameObj?.away_team?.user_id ??
+                                  gameObj?.away_team?.group_id,
                               );
                             } else {
                               setServingTeamID(
-                                gameObj?.home_team?.user_id
-                                  ?? gameObj?.home_team?.group_id,
+                                gameObj?.home_team?.user_id ??
+                                  gameObj?.home_team?.group_id,
                               );
                             }
                             setIsServingPressed(true);
@@ -795,7 +794,7 @@ export default function TennisRecording({ navigation, route }) {
                           },
                         },
                       ],
-                      { cancelable: false },
+                      {cancelable: false},
                     );
                   }
                 }}>
@@ -805,9 +804,9 @@ export default function TennisRecording({ navigation, route }) {
                     <Text style={styles.centerText}>{homeTeamMatchPoint}</Text>
                     <Image
                       source={
-                        servingTeamID
-                        === (gameObj?.home_team?.user_id
-                          || gameObj?.home_team?.group_id)
+                        servingTeamID ===
+                        (gameObj?.home_team?.user_id ||
+                          gameObj?.home_team?.group_id)
                           ? images.tennisArrowLeft
                           : images.tennisArrowRight
                       }
@@ -828,15 +827,15 @@ export default function TennisRecording({ navigation, route }) {
                   <Image
                     source={
                       gameObj?.away_team?.thumbnail
-                        ? { uri: gameObj?.away_team?.thumbnail }
+                        ? {uri: gameObj?.away_team?.thumbnail}
                         : images.profilePlaceHolder
                     }
                     style={
-                      servingTeamID
-                      === (gameObj?.away_team?.user_id
-                        || gameObj?.away_team?.group_id)
+                      servingTeamID ===
+                      (gameObj?.away_team?.user_id ||
+                        gameObj?.away_team?.group_id)
                         ? styles.profileImg
-                        : [styles.profileImg, { borderColor: colors.themeColor }]
+                        : [styles.profileImg, {borderColor: colors.themeColor}]
                     }
                   />
                 </View>
@@ -944,11 +943,8 @@ export default function TennisRecording({ navigation, route }) {
               <View style={styles.view}>
                 <TennisScoreView scoreDataSource={gameObj} />
               </View>
-              <View style={styles.view2}>
-                {renderScoreRecordView}
-              </View>
+              <View style={styles.view2}>{renderScoreRecordView}</View>
             </ScrollView>
-
           </View>
 
           {gameObj && (
@@ -1035,8 +1031,8 @@ export default function TennisRecording({ navigation, route }) {
                             onChange(dt);
                           }}
                           minimumDate={
-                            gameObj.status === GameStatus.accepted
-                            || gameObj.status === GameStatus.reset
+                            gameObj.status === GameStatus.accepted ||
+                            gameObj.status === GameStatus.reset
                               ? new Date(1950, 0, 1)
                               : new Date(gameObj.actual_startdatetime * 1000)
                           }
@@ -1051,12 +1047,12 @@ export default function TennisRecording({ navigation, route }) {
                           setPlayer2Selected(false);
                           setPlayer1Selected(true);
                           setSelectedTeam(
-                            gameObj?.home_team?.user_id
-                              ?? gameObj?.home_team?.group_id,
+                            gameObj?.home_team?.user_id ??
+                              gameObj?.home_team?.group_id,
                           );
                           setActionByTeamID(
-                            gameObj?.home_team?.user_id
-                              ?? gameObj?.home_team?.group_id,
+                            gameObj?.home_team?.user_id ??
+                              gameObj?.home_team?.group_id,
                           );
                         }}>
                         {player1Selected ? (
@@ -1066,7 +1062,7 @@ export default function TennisRecording({ navigation, route }) {
                             <Image
                               source={
                                 gameObj?.home_team?.thumbnail
-                                  ? { uri: gameObj?.home_team?.thumbnail }
+                                  ? {uri: gameObj?.home_team?.thumbnail}
                                   : images.profilePlaceHolder
                               }
                               style={styles.playerProfile}
@@ -1082,7 +1078,7 @@ export default function TennisRecording({ navigation, route }) {
                             <Image
                               source={
                                 gameObj?.home_team?.thumbnail
-                                  ? { uri: gameObj?.home_team?.thumbnail }
+                                  ? {uri: gameObj?.home_team?.thumbnail}
                                   : images.profilePlaceHolder
                               }
                               style={styles.playerProfile}
@@ -1095,19 +1091,19 @@ export default function TennisRecording({ navigation, route }) {
                           </View>
                         )}
                       </TouchableWithoutFeedback>
-                      <Text style={{ marginLeft: 10, marginRight: 10 }}>:</Text>
+                      <Text style={{marginLeft: 10, marginRight: 10}}>:</Text>
                       <TouchableWithoutFeedback
                         style={styles.playerView}
                         onPress={() => {
                           setPlayer1Selected(false);
                           setPlayer2Selected(true);
                           setSelectedTeam(
-                            gameObj?.away_team?.user_id
-                              ?? gameObj?.away_team?.group_id,
+                            gameObj?.away_team?.user_id ??
+                              gameObj?.away_team?.group_id,
                           );
                           setActionByTeamID(
-                            gameObj?.away_team?.user_id
-                              ?? gameObj?.away_team?.group_id,
+                            gameObj?.away_team?.user_id ??
+                              gameObj?.away_team?.group_id,
                           );
                         }}>
                         {player2Selected ? (
@@ -1117,7 +1113,7 @@ export default function TennisRecording({ navigation, route }) {
                             <Image
                               source={
                                 gameObj?.away_team?.thumbnail
-                                  ? { uri: gameObj?.away_team?.thumbnail }
+                                  ? {uri: gameObj?.away_team?.thumbnail}
                                   : images.profilePlaceHolder
                               }
                               style={styles.playerProfile}
@@ -1133,7 +1129,7 @@ export default function TennisRecording({ navigation, route }) {
                             <Image
                               source={
                                 gameObj?.away_team?.thumbnail
-                                  ? { uri: gameObj?.away_team?.thumbnail }
+                                  ? {uri: gameObj?.away_team?.thumbnail}
                                   : images.profilePlaceHolder
                               }
                               style={styles.playerProfile}
@@ -1162,8 +1158,8 @@ export default function TennisRecording({ navigation, route }) {
                         <TouchableWithoutFeedback
                           onPress={() => {
                             if (
-                              gameObj.status === GameStatus.accepted
-                              || gameObj.status === GameStatus.reset
+                              gameObj.status === GameStatus.accepted ||
+                              gameObj.status === GameStatus.reset
                             ) {
                               Alert.alert('Game not started yet.');
                             } else if (gameObj.status === GameStatus.paused) {
@@ -1207,8 +1203,8 @@ export default function TennisRecording({ navigation, route }) {
                         <TouchableWithoutFeedback
                           onPress={() => {
                             if (
-                              gameObj.status === GameStatus.accepted
-                              || gameObj.status === GameStatus.reset
+                              gameObj.status === GameStatus.accepted ||
+                              gameObj.status === GameStatus.reset
                             ) {
                               Alert.alert(strings.gameNotStarted);
                             } else if (gameObj.status === GameStatus.paused) {
@@ -1241,7 +1237,7 @@ export default function TennisRecording({ navigation, route }) {
                                     },
                                   },
                                 ],
-                                { cancelable: false },
+                                {cancelable: false},
                               );
                             }
                           }}>
@@ -1266,10 +1262,10 @@ export default function TennisRecording({ navigation, route }) {
                         showsHorizontalScrollIndicator={false}
                         horizontal={true}
                         style={
-                          gameObj.status === GameStatus.accepted
-                          || gameObj.status === GameStatus.reset
-                          || gameObj.status === GameStatus.ended
-                            ? [styles.buttonListView, { opacity: 0.4 }]
+                          gameObj.status === GameStatus.accepted ||
+                          gameObj.status === GameStatus.reset ||
+                          gameObj.status === GameStatus.ended
+                            ? [styles.buttonListView, {opacity: 0.4}]
                             : styles.buttonListView
                         }
                       />
@@ -1278,18 +1274,18 @@ export default function TennisRecording({ navigation, route }) {
                     <TCThinDivider width={'100%'} />
                     <ScrollView
                       horizontal={true}
-                      style={{ alignSelf: 'center' }}
+                      style={{alignSelf: 'center'}}
                       showsHorizontalScrollIndicator={false}>
                       <View style={styles.gameRecordButtonView}>
-                        {(gameObj.status === GameStatus.accepted
-                          || gameObj.status === GameStatus.reset) && (
+                        {(gameObj.status === GameStatus.accepted ||
+                          gameObj.status === GameStatus.reset) && (
                             <TCGameButton
                             title="Start"
                             onPress={() => {
                               if (
-                                gameObj?.challenge_status
-                                === (ReservationStatus.pendingrequestpayment
-                                  || ReservationStatus.pendingpayment)
+                                gameObj?.challenge_status ===
+                                (ReservationStatus.pendingrequestpayment ||
+                                  ReservationStatus.pendingpayment)
                               ) {
                                 Alert.alert(
                                   'Game cannot be start unless the payment goes through',
@@ -1348,8 +1344,8 @@ export default function TennisRecording({ navigation, route }) {
                             imageSize={16}
                           />
                         )}
-                        {(gameObj.status === GameStatus.playing
-                          || gameObj.status === GameStatus.resume) && (
+                        {(gameObj.status === GameStatus.playing ||
+                          gameObj.status === GameStatus.resume) && (
                             <TCGameButton
                             title="Pause"
                             onPress={() => {
@@ -1375,9 +1371,9 @@ export default function TennisRecording({ navigation, route }) {
                             imageSize={15}
                           />
                         )}
-                        {(gameObj.status === GameStatus.playing
-                          || gameObj.status === GameStatus.paused
-                          || gameObj.status === GameStatus.resume) && (
+                        {(gameObj.status === GameStatus.playing ||
+                          gameObj.status === GameStatus.paused ||
+                          gameObj.status === GameStatus.resume) && (
                             <TCGameButton
                             title="Match End"
                             onPress={() => {
@@ -1398,7 +1394,7 @@ export default function TennisRecording({ navigation, route }) {
                                     },
                                   },
                                 ],
-                                { cancelable: false },
+                                {cancelable: false},
                               );
                             }}
                             gradientColor={[
@@ -1411,9 +1407,9 @@ export default function TennisRecording({ navigation, route }) {
                             imageSize={15}
                           />
                         )}
-                        {(gameObj.status === GameStatus.playing
-                          || gameObj.status === GameStatus.resume
-                          || gameObj.status === GameStatus.paused) && (
+                        {(gameObj.status === GameStatus.playing ||
+                          gameObj.status === GameStatus.resume ||
+                          gameObj.status === GameStatus.paused) && (
                             <TCGameButton
                             title="End"
                             onPress={() => {
@@ -1437,7 +1433,7 @@ export default function TennisRecording({ navigation, route }) {
                           title="Records"
                           onPress={() => {
                             toggleView(() => setFooterUp(false), 200);
-                            scrollView.current?.scrollToEnd({ animated: true });
+                            scrollView.current?.scrollToEnd({animated: true});
                           }}
                           gradientColor={[
                             colors.veryLightBlack,
@@ -1447,12 +1443,12 @@ export default function TennisRecording({ navigation, route }) {
                           textColor={colors.darkGrayColor}
                           imageSize={25}
                         />
-                        {(gameObj.status === GameStatus.accepted
-                          || gameObj.status === GameStatus.reset
-                          || gameObj.status === GameStatus.playing
-                          || gameObj.status === GameStatus.paused
-                          || gameObj.status !== GameStatus.ended
-                          || gameObj.status === GameStatus.resume) && (
+                        {(gameObj.status === GameStatus.accepted ||
+                          gameObj.status === GameStatus.reset ||
+                          gameObj.status === GameStatus.playing ||
+                          gameObj.status === GameStatus.paused ||
+                          gameObj.status !== GameStatus.ended ||
+                          gameObj.status === GameStatus.resume) && (
                             <TCGameButton
                             title={detailRecording ? 'Simple' : 'Detail'}
                             onPress={() => {
@@ -1522,9 +1518,9 @@ export default function TennisRecording({ navigation, route }) {
         ref={headerActionSheet}
         // title={'News Feed Post'}
         options={
-          gameObj?.status === GameStatus.playing
-          || gameObj?.status === GameStatus.paused
-          || gameObj?.status === GameStatus.resume
+          gameObj?.status === GameStatus.playing ||
+          gameObj?.status === GameStatus.paused ||
+          gameObj?.status === GameStatus.resume
             ? [
                 'Game Reservation Detail',
                 'Add Set or Game',
@@ -1540,17 +1536,17 @@ export default function TennisRecording({ navigation, route }) {
         ]
         }
         cancelButtonIndex={
-          gameObj?.status === GameStatus.playing
-          || gameObj?.status === GameStatus.paused
-          || gameObj?.status === GameStatus.resume
+          gameObj?.status === GameStatus.playing ||
+          gameObj?.status === GameStatus.paused ||
+          gameObj?.status === GameStatus.resume
             ? 4
             : 3
         }
         destructiveButtonIndex={
-          (gameObj?.status === GameStatus.playing
-            || gameObj?.status === GameStatus?.paused
-            || gameObj?.status === GameStatus.resume)
-          && 3
+          (gameObj?.status === GameStatus.playing ||
+            gameObj?.status === GameStatus?.paused ||
+            gameObj?.status === GameStatus.resume) &&
+        3
         }
         onPress={(index) => {
           if (index === 0) {
@@ -1570,7 +1566,7 @@ export default function TennisRecording({ navigation, route }) {
               .catch(() => setloading(false));
           } else if (index === 1) {
             setVisibleAddSetAndGameButton(false);
-            scrollView.current?.scrollToEnd({ animated: true });
+            scrollView.current?.scrollToEnd({animated: true});
             setVisibleAddSetAndGameButton(true);
           } else if (index === 2) {
             navigation.navigate('TennisDeletedRecordScreen', {
@@ -1579,9 +1575,9 @@ export default function TennisRecording({ navigation, route }) {
             });
           } else if (index === 3) {
             if (
-              gameObj?.status === GameStatus.playing
-              || gameObj?.status === GameStatus.paused
-              || gameObj?.status === GameStatus.resume
+              gameObj?.status === GameStatus.playing ||
+              gameObj?.status === GameStatus.paused ||
+              gameObj?.status === GameStatus.resume
             ) {
               Alert.alert(
                 'Do you want to reset all the match records?',
@@ -1596,8 +1592,8 @@ export default function TennisRecording({ navigation, route }) {
                     style: 'destructive',
                     onPress: () => {
                       if (
-                        gameObj.status === GameStatus.accepted
-                        || gameObj.status === GameStatus.reset
+                        gameObj.status === GameStatus.accepted ||
+                        gameObj.status === GameStatus.reset
                       ) {
                         Alert.alert('Game not started yet.');
                       } else if (gameObj.status === GameStatus.ended) {
@@ -1608,7 +1604,7 @@ export default function TennisRecording({ navigation, route }) {
                     },
                   },
                 ],
-                { cancelable: false },
+                {cancelable: false},
               );
             }
           }
@@ -1644,7 +1640,7 @@ const styles = StyleSheet.create({
     height: 70,
     justifyContent: 'space-between',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: '100%',
@@ -1679,7 +1675,7 @@ const styles = StyleSheet.create({
   profileShadow: {
     elevation: 10,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 3,
   },
@@ -1717,7 +1713,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },
@@ -1743,7 +1739,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
     shadowColor: colors.googleColor,
 
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: 30,
@@ -1863,7 +1859,7 @@ const styles = StyleSheet.create({
     tintColor: colors.blackColor,
     width: 15,
   },
-  container: { flex: 1 },
+  container: {flex: 1},
   view: {
     marginTop: 0,
     // backgroundColor: 'blue',

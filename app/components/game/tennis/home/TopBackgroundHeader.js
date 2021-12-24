@@ -20,6 +20,7 @@ import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../../../Home/Header';
 import images from '../../../../Constants/ImagePath';
 import colors from '../../../../Constants/Colors';
@@ -95,6 +96,7 @@ const TopBackgroundHeader = ({
     <LinearGradient
       colors={['transparent', 'rgba(0,0,0,0.4)']}
       style={styles.topImageInnerContainer}>
+      {renderTopHeader}
       <Text style={styles.vsTextStyle}>VS</Text>
       <View style={styles.topHeaderAbsoluteContainer}>
         <View style={styles.teamVsSContainer}>
@@ -242,30 +244,64 @@ const TopBackgroundHeader = ({
     onReachedEnd,
   ]);
 
+  // const renderTopHeader = useMemo(
+  //   () => (
+  //     <Header
+  //       barStyle={'light-content'}
+  //       safeAreaStyle={{ position: 'absolute',top:0 }}
+  //       leftComponent={
+  //         <TouchableOpacity onPress={handleGoBack}>
+  //           <Image
+  //             source={images.backArrow}
+  //             style={{ height: 22, width: 16, tintColor: colors.blackColor }}
+  //           />
+  //         </TouchableOpacity>
+  //       }
+  //       centerComponent={
+  //         <View style={styles.headerCenterStyle}>
+  //           {headerTitleShown && (
+  //             <Text style={styles.headerCenterTextStyle}>Match</Text>
+  //           )}
+  //         </View>
+  //       }
+  //       rightComponent={
+  //         isAdmin && (
+  //           <TouchableOpacity onPress={onThreeDorPress}>
+  //             <Image
+  //               source={images.threeDotIcon}
+  //               style={{
+  //                 height: 22,
+  //                 width: 16,
+  //                 tintColor: colors.blackColor,
+  //                 resizeMode: 'contain',
+  //               }}
+  //             />
+  //           </TouchableOpacity>
+  //       )
+  //       }
+  //     />
+  //   ),
+  //   [handleGoBack, headerTitleShown, isAdmin, onThreeDorPress],
+  // );
+
+
   const renderTopHeader = useMemo(
     () => (
-      <Header
-        barStyle={'light-content'}
-        safeAreaStyle={{ position: 'absolute' }}
-        leftComponent={
+      <SafeAreaView>
+        <View style={{flexDirection:'row',justifyContent:'space-between'}}>
           <TouchableOpacity onPress={handleGoBack}>
             <Image
               source={images.backArrow}
               style={{ height: 22, width: 16, tintColor: colors.whiteColor }}
             />
           </TouchableOpacity>
-        }
-        centerComponent={
           <View style={styles.headerCenterStyle}>
             {headerTitleShown && (
               <Text style={styles.headerCenterTextStyle}>Match</Text>
             )}
           </View>
-        }
-        rightComponent={
-          isAdmin && (
-            <TouchableOpacity onPress={onThreeDorPress}>
-              <Image
+          {isAdmin && <TouchableOpacity onPress={onThreeDorPress}>
+            <Image
                 source={images.threeDotIcon}
                 style={{
                   height: 22,
@@ -274,10 +310,9 @@ const TopBackgroundHeader = ({
                   resizeMode: 'contain',
                 }}
               />
-            </TouchableOpacity>
-        )
-        }
-      />
+          </TouchableOpacity>}
+        </View>
+      </SafeAreaView>
     ),
     [handleGoBack, headerTitleShown, isAdmin, onThreeDorPress],
   );
@@ -286,7 +321,7 @@ const TopBackgroundHeader = ({
     () => (
       <Header
         barStyle={'light-content'}
-        safeAreaStyle={{ position: 'absolute' }}
+        safeAreaStyle={{ position: 'absolute'}}
         leftComponent={
           <TouchableOpacity onPress={handleGoBack}>
             <Image
@@ -405,15 +440,15 @@ const TopBackgroundHeader = ({
   return (
     <View style={{ flex: 1 }}>
       <ActivityLoader visible={loading} />
-      {renderTopHeader}
+      
       <ParallaxScrollView
         onScroll={onScroll}
         bounces={false}
-        scrollEventThrottle={400}
+        scrollEventThrottle={100}
         backgroundColor="transparent"
         contentBackgroundColor="white"
         parallaxHeaderHeight={200}
-        stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
+        stickyHeaderHeight={Platform.OS === 'ios' ? 0 : 0}
         fadeOutForeground={false}
         onChangeHeaderVisibility={(isShown) => isShown !== headerTitleShown && setHeaderTitleShown(isShown)
         }
@@ -446,6 +481,8 @@ const TopBackgroundHeader = ({
             }
           };
           return (
+          
+             
             <ActionSheet
               ref={threeDotActionSheet}
               options={options}
@@ -453,6 +490,8 @@ const TopBackgroundHeader = ({
               destructiveButtonIndex={destructiveButtonIndex}
               onPress={onItemPress}
             />
+           
+           
           );
         }, [gameData, goToChallengeDetail, resetMatch])}
         {children}
@@ -464,8 +503,6 @@ const TopBackgroundHeader = ({
 const styles = StyleSheet.create({
   topImageInnerContainer: {
     height: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 10,
   },
   headerCenterStyle: {
@@ -489,6 +526,7 @@ const styles = StyleSheet.create({
   },
   vsTextStyle: {
     fontSize: 24,
+    textAlign:'center',
     fontFamily: fonts.RMedium,
     color: colors.whiteColor,
   },

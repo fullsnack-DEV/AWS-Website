@@ -33,6 +33,7 @@ import {
   addGameRecord,
   resetGame,
   decreaseGameScore,
+  getGameRoster,
 } from '../../../api/Games';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
@@ -41,7 +42,7 @@ import strings from '../../../Constants/String';
 import {getHitSlop} from '../../../utils';
 
 let entity = {};
-let timer, timerForTimeline;
+let timerForTimeline;
 let lastTimeStamp;
 let lastVerb;
 let date;
@@ -51,6 +52,8 @@ export default function SoccerRecording({navigation, route}) {
 
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
+  const [isLineUpSet, setIsLineUpSet] = useState();
+
   const [actionByTeamID, setActionByTeamID] = useState();
   const [pickerShow, setPickerShow] = useState(false);
   const [gameObj, setGameObj] = useState();
@@ -60,15 +63,60 @@ export default function SoccerRecording({navigation, route}) {
 
   useEffect(() => {
     entity = authContext.entity;
-
     const {gameId} = route.params ?? {};
-
     getGameDetail(gameId, true);
+    getGameRosterDetail(gameId);
     console.log('GAME IDD::', gameId);
   }, [isFocused]);
 
+  useEffect(() => {
+    const apiTimer = setInterval(() => {
+      getGameDetail(route.params.gameId, true);
+    }, 10000);
+    return () => clearInterval(apiTimer);
+  }, []);
+
+  const getGameRosterDetail = (gameId) => {
+    console.log('getGameRosterDetail called');
+
+    setloading(true);
+
+    getGameRoster(gameId, authContext)
+      .then((res2) => {
+        setloading(false);
+        console.log('ROSTER RESPONSE::', res2.payload);
+
+        const homeField = res2.payload.home_team.roster.filter(
+          (obj) => obj.field_status === 'onField' && obj.role === 'player',
+        );
+        // const homeBench = res2.payload.home_team.roster.filter(
+        //   (obj) => (obj.field_status === 'onBench' || !obj.field_status)
+        //     && obj.role === 'player',
+        // )
+        const awayField = res2.payload.away_team.roster.filter(
+          (obj) => obj.field_status === 'onField' && obj.role === 'player',
+        );
+        // const awayBench = res2.payload.away_team.roster.filter(
+        //   (obj) => (obj.field_status === 'onBench' || !obj.field_status)
+        //     && obj.role === 'player',
+        // )
+
+        if (homeField.length <= 0) {
+          setIsLineUpSet('Your team does not configure lineup yet.');
+        }
+        else if (awayField.length <= 0){
+          setIsLineUpSet('Away team does not configure lineup yet.');
+        }
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   const startStopTimerTimeline = (obj) => {
-    clearInterval(timer);
     clearInterval(timerForTimeline);
     if (obj?.status === GameStatus.ended) {
       setTimelineTimer(
@@ -213,11 +261,6 @@ export default function SoccerRecording({navigation, route}) {
         startStopTimerTimeline(gameObj);
       }
       console.log('route?.params?.gameDetail', route?.params?.gameDetail);
-      timer = setInterval(() => {
-        if (gameObj && gameObj.status !== GameStatus.ended) {
-          getGameDetail(route?.params?.gameId, false);
-        }
-      }, 10000);
     }
 
     // timerForTimeline = setInterval(() => {
@@ -225,7 +268,6 @@ export default function SoccerRecording({navigation, route}) {
     // }, 1000);
 
     return () => {
-      clearInterval(timer);
       clearInterval(timerForTimeline);
     };
   }, []);
@@ -293,7 +335,7 @@ export default function SoccerRecording({navigation, route}) {
   };
   const getGameDetail = (gameId, isLoading) => {
     if (isLoading) {
-      setloading(true);
+      // setloading(true);
     }
     getGameByGameID(gameId, authContext)
       .then((response) => {
@@ -810,7 +852,9 @@ export default function SoccerRecording({navigation, route}) {
                 <TCGameButton
                   title="Start"
                   onPress={() => {
-                    if (
+                    if (isLineUpSet) {
+                      Alert.alert(isLineUpSet);
+                    } else if (
                       gameObj?.challenge_status ===
                       (ReservationStatus.pendingrequestpayment ||
                         ReservationStatus.pendingpayment)
@@ -959,7 +1003,6 @@ export default function SoccerRecording({navigation, route}) {
                   <TCGameButton
                   title="Details"
                   onPress={() => {
-                    clearInterval(timer);
                     navigation.navigate('GameDetailRecord', {
                       gameObject: gameObj,
                       gameId: gameObj.game_id,
@@ -983,7 +1026,7 @@ export default function SoccerRecording({navigation, route}) {
             cancelButtonIndex={2}
             destructiveButtonIndex={1}
             onPress={(index) => {
-              const opetions = getOpetions()
+              const opetions = getOpetions();
               if (opetions[index] === 'Edit Roster and Non-roster') {
                 navigation.navigate('EditRosterScreen', {
                   gameObj,

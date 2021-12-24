@@ -104,6 +104,7 @@ export default function EditRefereeReservation({ navigation, route }) {
       reservationObject = reservationObj;
     }
     setOldVersion(route?.params?.lastConfirmVersion);
+    console.log('Reservation Object :=>',reservationObj);
     setbodyParams(reservationObject);
 
     if (!paymentCard) {
@@ -133,7 +134,7 @@ export default function EditRefereeReservation({ navigation, route }) {
 
   useLayoutEffect(() => {
     sectionEdited();
-  }, [editVenue, editRules, editReferee, editScorekeeper, editInfo, defaultCard, editMatch]);
+  }, [editVenue, editRules, editReferee, editScorekeeper, editInfo, defaultCard, editMatch,bodyParams]);
 
   const sectionEdited = () => {
     if (bodyParams && oldVersion) {

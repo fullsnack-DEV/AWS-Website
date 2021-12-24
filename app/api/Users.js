@@ -6,10 +6,20 @@ import makeAPIWithoutAuthRequest from '../utils/GlobleWithoutAuth';
 
 import apiCall from '../utils/apiCall';
 
-export const getAppSettings = (authContext) => makeAPIRequest({
+export const getUserSettings = (authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/users/settings`,
   authContext,
+  headers: {
+    setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
+  },
+});
+
+export const saveUserSettings = (params,authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/users/settings`,
+  authContext,
+  data: params,
   headers: {
     setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
   },

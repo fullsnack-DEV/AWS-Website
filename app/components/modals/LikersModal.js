@@ -17,6 +17,7 @@ const LikersModal = ({ likersModalRef, data }) => {
     const userRole = authContext?.entity?.role;
     const handleCloseModal = useCallback(() => likersModalRef.current.close(), [likersModalRef])
 
+    
     const ModalHeader = () => (
       <View style={styles.headerStyle}>
         <View style={styles.handleStyle}/>
@@ -24,7 +25,7 @@ const LikersModal = ({ likersModalRef, data }) => {
         <View style={styles.headerSeparator}/>
         <View style={{ flexDirection: 'row', padding: 10, alignItems: 'center' }}>
           <FastImage source={images.likePlay} style={{ height: 20, width: 30 }} resizeMode={'contain'}/>
-          <Text style={styles.playsText}>2323232plays</Text>
+          <Text style={styles.playsText}>2323232 plays</Text>
         </View>
         <View style={styles.headerSeparator}/>
       </View>
@@ -42,7 +43,7 @@ const LikersModal = ({ likersModalRef, data }) => {
             entityType={item?.user?.data?.entity_type}
             profileImage={item?.user?.data?.thumbnail}
             followUnfollowPress={() => {}}
-            showFollowUnfollowButton={userRole === 'user'}
+            showFollowUnfollowButton={userRole === 'user' && item?.user?.data?.user_id !== authContext.entity.uid }
         />
     )
 
@@ -61,7 +62,6 @@ const LikersModal = ({ likersModalRef, data }) => {
         renderItem: renderLikers,
         ListEmptyComponent: listEmptyComponent,
     }
-
     return (
       <Portal>
         <Modalize

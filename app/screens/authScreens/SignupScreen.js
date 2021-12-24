@@ -151,6 +151,7 @@ export default function SignupScreen({ navigation }) {
     };
 
     createUser(data, dummyAuthContext).then((createdUser) => {
+      console.log('QB CreatedUser:',createdUser);
       const authEntity = { ...dummyAuthContext.entity }
       authEntity.obj = createdUser?.payload
       authEntity.auth.user = createdUser?.payload
@@ -172,6 +173,8 @@ export default function SignupScreen({ navigation }) {
   const saveUserDetails = async (user) => {
     if (user) {
       user.getIdTokenResult().then(async (idTokenResult) => {
+      console.log('idTokenResult',idTokenResult);
+
         const token = {
           token: idTokenResult.token,
           expirationTime: idTokenResult.expirationTime,

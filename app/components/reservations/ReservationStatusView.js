@@ -248,14 +248,14 @@ function ReservationStatusView({ data, onClick }) {
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {!data?.referee_id && !data?.scorekeeper_id && (
-            <Text style={styles.matchText}>Match · {data.sport}</Text>
+            <Text style={styles.matchText}>Match · {data?.game?.sport}</Text>
           )}
           {data?.referee_id && (
-            <Text style={styles.matchText}>Referee · {data.game.sport}</Text>
+            <Text style={styles.matchText}>Referee · {data?.game?.sport}</Text>
           )}
           {data?.scorekeeper_id && (
             <Text style={styles.matchText}>
-              Scorekeeper · {data.game.sport}
+              Scorekeeper · {data?.game?.sport}
             </Text>
           )}
           <Image

@@ -10,7 +10,9 @@ import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChal
 import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen';
 import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSent';
 import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
+import ScorekeeperReservationScreen from '../screens/scorekeeper/ScorekeeperReservationScreen'
 import AlterRefereeScreen from '../screens/referee/alterReferee/AlterRefereeScreen';
+import AlterScorekeeperScreen from '../screens/scorekeeper/alterScorekeeper/AlterScorekeeperScreen'
 import EditRefereeReservation from '../screens/referee/alterReferee/EditRefereeReservation';
 import CurruentRefereeReservationScreen from '../screens/referee/alterReferee/CurruentRefereeReservationScreen';
 import EditRefereeFeeScreen from '../screens/referee/alterReferee/EditRefereeFeeScreen';
@@ -124,6 +126,7 @@ const ReservationNavigator = () => (
               },
             }}
         />
+    
     <Stack.Screen
             name="RefereeApprovalScreen"
             component={RefereeApprovalScreen}
@@ -469,6 +472,38 @@ const ReservationNavigator = () => (
         } }
       />
     <Stack.Screen
+      name="AlterScorekeeperScreen"
+      component={AlterScorekeeperScreen}
+      options={{
+        title: 'Change Scorekeeper Reservation',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+            name="ScorekeeperReservationScreen"
+            component={ScorekeeperReservationScreen}
+            options={{
+              title: 'Scorekeeper Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
         name="HomeScreen"
         component={ HomeScreen }
         options={ {
@@ -485,6 +520,7 @@ const ReservationNavigator = () => (
           },
         } }
       />
+      
     <Stack.Screen name={'FeedViewScreen'} component={FeedViewScreen} options={{ headerShown: false }} />
   </Stack.Navigator>
 );
