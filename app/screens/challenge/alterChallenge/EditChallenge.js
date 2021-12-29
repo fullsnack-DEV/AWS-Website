@@ -1,7 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-continue */
 /* eslint-disable no-nested-ternary */
-import React, { useEffect, useState, useContext } from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -13,18 +13,18 @@ import {
   SafeAreaView,
 } from 'react-native';
 import moment from 'moment';
-import _ from 'lodash'
+import _ from 'lodash';
 
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
 import * as Utility from '../../../utils';
-import { paymentMethods } from '../../../api/Users';
+import {paymentMethods} from '../../../api/Users';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
-import { getFeesEstimation, updateChallenge } from '../../../api/Challenge';
+import {getFeesEstimation, updateChallenge} from '../../../api/Challenge';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
@@ -38,20 +38,20 @@ import images from '../../../Constants/ImagePath';
 import TCLabel from '../../../components/TCLabel';
 import AuthContext from '../../../auth/context';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
-import { getNumberSuffix } from '../../../utils/gameUtils';
+import {getNumberSuffix} from '../../../utils/gameUtils';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import TCSmallButton from '../../../components/TCSmallButton';
-import { widthPercentageToDP } from '../../../utils';
+import {widthPercentageToDP} from '../../../utils';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
-import { getSetting } from '../manageChallenge/settingUtility';
+import {getSetting} from '../manageChallenge/settingUtility';
 import TCTabView from '../../../components/TCTabView';
 import CurruentReservationView from './CurrentReservationView';
 import RefereeAgreementView from '../../../components/challenge/RefereeAgreementView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
 
 let entity = {};
-export default function EditChallenge({ navigation, route }) {
-  const { sportName, groupObj } = route?.params;
+export default function EditChallenge({navigation, route}) {
+  const {sportName, groupObj} = route?.params;
 
   console.log('settingObjsettingObj:=>', route?.params?.settingObj);
 
@@ -80,10 +80,15 @@ export default function EditChallenge({ navigation, route }) {
         getPaymentMethods(challengeObj?.source);
       }
       if (route?.params?.lastConfirmVersion) {
-        setOldVersion(route?.params?.lastConfirmVersion)
+        setOldVersion(route?.params?.lastConfirmVersion);
       }
     }
-  }, [challengeObj?.source, defaultCard, isFocused, route?.params?.paymentMethod]);
+  }, [
+    challengeObj?.source,
+    defaultCard,
+    isFocused,
+    route?.params?.paymentMethod,
+  ]);
 
   useEffect(() => {
     if (route?.params?.selectedVenueObj) {
@@ -102,9 +107,9 @@ export default function EditChallenge({ navigation, route }) {
     entity = authContext.entity;
     if (groupObj) {
       if (challengeObj?.challenger === entity.uid) {
-        setteams([{ ...entity.obj }, { ...groupObj }]);
+        setteams([{...entity.obj}, {...groupObj}]);
       } else {
-        setteams([{ ...groupObj }, { ...entity.obj }]);
+        setteams([{...groupObj}, {...entity.obj}]);
       }
     }
     if (challengeObj?.game_fee?.fee || challengeObj?.game_fee?.fee === 0) {
@@ -122,7 +127,6 @@ export default function EditChallenge({ navigation, route }) {
       authContext.entity.role === 'user' ? 'player' : 'team',
       sportName,
       authContext,
-
     )
       .then((response) => {
         setloading(false);
@@ -145,7 +149,7 @@ export default function EditChallenge({ navigation, route }) {
   useEffect(() => {
     console.log('useEffect Called');
     if (isFocused) {
-      const settings = { ...challengeObj };
+      const settings = {...challengeObj};
       if (route?.params?.gameType) {
         settings.game_type = route?.params?.gameType;
       }
@@ -177,13 +181,19 @@ export default function EditChallenge({ navigation, route }) {
         settings.special_rules = route?.params?.gameSpecialRules;
       }
       if (route?.params?.refereeSetting) {
-        console.log('route?.params?.refereeSetting', route?.params?.refereeSetting);
+        console.log(
+          'route?.params?.refereeSetting',
+          route?.params?.refereeSetting,
+        );
         settings.responsible_for_referee = route?.params?.refereeSetting;
-        settings.min_referee = route?.params?.refereeSetting?.who_secure?.length;
+        settings.min_referee =
+          route?.params?.refereeSetting?.who_secure?.length;
       }
       if (route?.params?.scorekeeperSetting) {
-        settings.responsible_for_scorekeeper = route?.params?.scorekeeperSetting;
-        settings.min_scorekeeper = route?.params?.scorekeeperSetting?.who_secure?.length;
+        settings.responsible_for_scorekeeper =
+          route?.params?.scorekeeperSetting;
+        settings.min_scorekeeper =
+          route?.params?.scorekeeperSetting?.who_secure?.length;
       }
 
       setChallengeObj(settings);
@@ -229,8 +239,8 @@ export default function EditChallenge({ navigation, route }) {
 
   const getChallenger = () => {
     if (
-      challengeObj?.challenger === challengeObj?.home_team?.user_id
-      || challengeObj?.challenger === challengeObj?.home_team?.group_id
+      challengeObj?.challenger === challengeObj?.home_team?.user_id ||
+      challengeObj?.challenger === challengeObj?.home_team?.group_id
     ) {
       return challengeObj?.home_team;
     }
@@ -239,20 +249,20 @@ export default function EditChallenge({ navigation, route }) {
 
   const getChallengee = () => {
     if (
-      challengeObj?.challengee === challengeObj?.home_team?.user_id
-      || challengeObj?.challengee === challengeObj?.home_team?.group_id
+      challengeObj?.challengee === challengeObj?.home_team?.user_id ||
+      challengeObj?.challengee === challengeObj?.home_team?.group_id
     ) {
       return challengeObj?.home_team;
     }
     return challengeObj?.away_team;
   };
 
-  const renderPeriod = ({ item, index }) => (
+  const renderPeriod = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -263,9 +273,9 @@ export default function EditChallenge({ navigation, route }) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 2)} Period`}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.period}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -278,12 +288,12 @@ export default function EditChallenge({ navigation, route }) {
     </>
   );
 
-  const renderOverTime = ({ item, index }) => (
+  const renderOverTime = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -294,9 +304,9 @@ export default function EditChallenge({ navigation, route }) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 1)} Over time`}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.overTime}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -348,7 +358,7 @@ export default function EditChallenge({ navigation, route }) {
   };
 
   const updateChallengeDetail = () => {
-     setloading(true);
+    setloading(true);
     const body = {
       ...challengeObj,
       total_game_fee: feeObj?.total_game_fee,
@@ -450,14 +460,14 @@ export default function EditChallenge({ navigation, route }) {
         firstTabTitle={'ALTERATION REQUEST'}
         secondTabTitle={'CURRENT RESERVATION'}
         indexCounter={maintabNumber}
-        eventPrivacyContianer={{ width: 100 }}
+        eventPrivacyContianer={{width: 100}}
         onFirstTabPress={() => setMaintabNumber(0)}
         onSecondTabPress={() => setMaintabNumber(1)}
         activeHeight={36}
         inactiveHeight={40}
       />
-      { teams && challengeObj && maintabNumber === 0 && (
-        <View style={{ marginBottom: 15 }}>
+      {teams && challengeObj && maintabNumber === 0 && (
+        <View style={{marginBottom: 15}}>
           <View>
             <Text style={styles.buttonText}>
               Please edit the reservation details below before you send the
@@ -482,7 +492,7 @@ export default function EditChallenge({ navigation, route }) {
                     <Image
                       source={
                         getChallenger()?.thumbnail
-                          ? { uri: getChallenger()?.thumbnail }
+                          ? {uri: getChallenger()?.thumbnail}
                           : images.teamPlaceholder
                       }
                       style={styles.profileImage}
@@ -492,7 +502,7 @@ export default function EditChallenge({ navigation, route }) {
                     {getChallenger()?.group_id
                       ? `${getChallenger()?.group_name}`
                       : `${getChallenger()?.first_name} ${
-                        getChallenger()?.last_name
+                          getChallenger()?.last_name
                         }`}
                   </Text>
                 </View>
@@ -508,7 +518,7 @@ export default function EditChallenge({ navigation, route }) {
                     <Image
                       source={
                         getChallengee()?.thumbnail
-                          ? { uri: getChallengee()?.thumbnail }
+                          ? {uri: getChallengee()?.thumbnail}
                           : images.teamPlaceholder
                       }
                       style={styles.profileImage}
@@ -518,7 +528,7 @@ export default function EditChallenge({ navigation, route }) {
                     {getChallengee()?.group_id
                       ? `${getChallengee()?.group_name}`
                       : `${getChallengee()?.first_name} ${
-                        getChallengee()?.last_name
+                          getChallengee()?.last_name
                         }`}
                   </Text>
                 </View>
@@ -528,35 +538,40 @@ export default function EditChallenge({ navigation, route }) {
             <TCThickDivider marginTop={15} />
             <View>
               <TCChallengeTitle
-            title={'Home & Away'}
-            isNew={challengeObj?.home_team?.group_id !== oldVersion?.home_team?.group_id || challengeObj?.home_team?.user_id !== oldVersion?.home_team?.user_id}
-            isEdit={true}
-            onEditPress={() => {
-              navigation.navigate('HomeAway', {
-                settingObj: challengeObj,
-                comeFrom: 'EditChallenge',
-                sportName,
-              });
-            }}
-          />
+                title={'Home & Away'}
+                isNew={
+                  challengeObj?.home_team?.group_id !==
+                    oldVersion?.home_team?.group_id ||
+                  challengeObj?.home_team?.user_id !==
+                    oldVersion?.home_team?.user_id
+                }
+                isEdit={true}
+                onEditPress={() => {
+                  navigation.navigate('HomeAway', {
+                    settingObj: challengeObj,
+                    comeFrom: 'EditChallenge',
+                    sportName,
+                  });
+                }}
+              />
               <View style={styles.teamContainer}>
                 <Text style={styles.homeLableStyle}>Home</Text>
                 <View style={styles.teamViewStyle}>
                   <Image
-                source={
-                  challengeObj?.home_team?.thumbnail
-                    ? { uri: challengeObj?.home_team?.thumbnail }
-                    : challengeObj?.home_team?.user_challenge === true
-                    ? images.profilePlaceHolder
-                    : images.teamPlaceholder
-                }
-                style={styles.imageView}
-              />
+                    source={
+                      challengeObj?.home_team?.thumbnail
+                        ? {uri: challengeObj?.home_team?.thumbnail}
+                        : challengeObj?.home_team?.user_challenge === true
+                        ? images.profilePlaceHolder
+                        : images.teamPlaceholder
+                    }
+                    style={styles.imageView}
+                  />
 
                   <View style={styles.teamTextContainer}>
                     <Text style={styles.teamNameLable}>
-                      {challengeObj?.home_team?.full_name
-                    || challengeObj?.home_team?.group_name}
+                      {challengeObj?.home_team?.full_name ||
+                        challengeObj?.home_team?.group_name}
                     </Text>
                     <Text style={styles.locationLable}>
                       {`${challengeObj?.home_team?.city}, ${challengeObj?.home_team?.state_abbr}`}
@@ -569,20 +584,20 @@ export default function EditChallenge({ navigation, route }) {
                 <Text style={styles.homeLableStyle}>Away</Text>
                 <View style={styles.teamViewStyle}>
                   <Image
-                source={
-                  challengeObj?.away_team?.thumbnail
-                    ? { uri: challengeObj?.away_team?.thumbnail }
-                    : challengeObj?.away_team?.user_challenge === true
-                    ? images.profilePlaceHolder
-                    : images.teamPlaceholder
-                }
-                style={styles.imageView}
-              />
+                    source={
+                      challengeObj?.away_team?.thumbnail
+                        ? {uri: challengeObj?.away_team?.thumbnail}
+                        : challengeObj?.away_team?.user_challenge === true
+                        ? images.profilePlaceHolder
+                        : images.teamPlaceholder
+                    }
+                    style={styles.imageView}
+                  />
 
                   <View style={styles.teamTextContainer}>
                     <Text style={styles.teamNameLable}>
-                      {challengeObj?.away_team?.full_name
-                    ?? challengeObj?.away_team?.group_name}
+                      {challengeObj?.away_team?.full_name ??
+                        challengeObj?.away_team?.group_name}
                     </Text>
                     <Text style={styles.locationLable}>
                       {`${challengeObj?.away_team?.city}, ${challengeObj?.away_team?.state_abbr}`}
@@ -594,91 +609,100 @@ export default function EditChallenge({ navigation, route }) {
             </View>
 
             <TCChallengeTitle
-          title={'Game Duration'}
-          isEdit={true}
-          isNew={!_.isEqual(challengeObj?.game_duration, oldVersion?.game_duration)}
-          onEditPress={() => {
-            navigation.navigate('GameDuration', {
-              settingObj: challengeObj,
-              comeFrom: 'EditChallenge',
-              sportName,
-            });
-          }}
-        />
+              title={'Game Duration'}
+              isEdit={true}
+              isNew={
+                !_.isEqual(
+                  challengeObj?.game_duration,
+                  oldVersion?.game_duration,
+              )
+              }
+              onEditPress={() => {
+                navigation.navigate('GameDuration', {
+                  settingObj: challengeObj,
+                  comeFrom: 'EditChallenge',
+                  sportName,
+                });
+              }}
+            />
             <TCChallengeTitle
-          containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
-          title={'1st period'}
-          titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-          value={challengeObj?.game_duration?.first_period}
-          valueStyle={{
-            fontFamily: fonts.RBold,
-            fontSize: 16,
-            color: colors.greenColorCard,
-            marginRight: 2,
-          }}
-          staticValueText={'min.'}
-        />
+              containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
+              title={'1st period'}
+              titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
+              value={challengeObj?.game_duration?.first_period}
+              valueStyle={{
+                fontFamily: fonts.RBold,
+                fontSize: 16,
+                color: colors.greenColorCard,
+                marginRight: 2,
+              }}
+              staticValueText={'min.'}
+            />
 
             <FlatList
-          data={challengeObj?.game_duration?.period}
-          renderItem={renderPeriod}
-          keyExtractor={(item, index) => index.toString()}
-          style={{ marginBottom: 15 }}
-        />
+              data={challengeObj?.game_duration?.period}
+              renderItem={renderPeriod}
+              keyExtractor={(item, index) => index.toString()}
+              style={{marginBottom: 15}}
+            />
             {challengeObj?.game_duration?.period?.length > 0 && (
               <Text style={styles.normalTextStyle}>
                 {strings.gameDurationTitle2}
               </Text>
-        )}
+            )}
 
             <FlatList
-          data={challengeObj?.game_duration?.overtime}
-          renderItem={renderOverTime}
-          keyExtractor={(item, index) => index.toString()}
-          style={{ marginBottom: 15 }}
-        />
+              data={challengeObj?.game_duration?.overtime}
+              renderItem={renderOverTime}
+              keyExtractor={(item, index) => index.toString()}
+              style={{marginBottom: 15}}
+            />
             <TCThickDivider marginTop={20} />
 
             <View>
               <TCChallengeTitle
-            title={'Date & Time'}
-            isEdit={true}
-            isNew={(challengeObj?.start_datetime !== oldVersion?.start_datetime) || (challengeObj?.end_datetime !== oldVersion?.end_datetime)}
-            onEditPress={() => {
-              navigation.navigate('ChooseTimeSlotScreen', {
-                settingObject: challengeObj,
-                comeFrom: 'EditChallenge',
-              });
-            }}
-          />
+                title={'Date & Time'}
+                isEdit={true}
+                isNew={
+                  challengeObj?.start_datetime !== oldVersion?.start_datetime ||
+                  challengeObj?.end_datetime !== oldVersion?.end_datetime
+                }
+                onEditPress={() => {
+                  navigation.navigate('ChooseTimeSlotScreen', {
+                    settingObject: challengeObj,
+                    comeFrom: 'EditChallenge',
+                  });
+                }}
+              />
 
               <View>
                 <View style={styles.dateTimeValue}>
                   <Text style={styles.dateTimeText}>Start </Text>
                   <Text style={styles.dateTimeText}>
                     {moment(
-                  new Date(
-                    route?.params?.startTime
-                      ?? challengeObj?.start_datetime * 1000,
-                  ),
-                ).format('MMM DD, YYYY hh:mm a')}
+                      new Date(
+                        route?.params?.startTime ??
+                          challengeObj?.start_datetime * 1000,
+                      ),
+                    ).format('MMM DD, YYYY hh:mm a')}
                   </Text>
                 </View>
                 <View style={styles.dateTimeValue}>
                   <Text style={styles.dateTimeText}>End </Text>
                   <Text style={styles.dateTimeText}>
                     {moment(
-                  new Date(
-                    route?.params?.endTime ?? challengeObj?.end_datetime * 1000,
-                  ),
-                ).format('MMM DD, YYYY hh:mm a')}
+                      new Date(
+                        route?.params?.endTime ??
+                          challengeObj?.end_datetime * 1000,
+                      ),
+                    ).format('MMM DD, YYYY hh:mm a')}
                   </Text>
                 </View>
                 <View style={styles.dateTimeValue}>
                   <Text style={styles.dateTimeText}> </Text>
                   <Text style={styles.timeZoneText}>
                     Time zone{' '}
-                    <Text style={{ fontFamily: fonts.RRegular }}>Vancouver</Text>
+                    <Text style={{fontFamily: fonts.RRegular}}>Vancouver</Text>
                   </Text>
                 </View>
               </View>
@@ -688,125 +712,135 @@ export default function EditChallenge({ navigation, route }) {
 
             <View>
               <TCChallengeTitle
-            title={'Venue'}
-            isEdit={true}
-            isNew={!_.isEqual(challengeObj?.venue, oldVersion?.venue)}
-
-            onEditPress={() => {
-              navigation.navigate('ChooseVenueScreen', {
-                venues: venueList || [],
-                comeFrom: 'EditChallenge',
-              });
-            }}
-          />
+                title={'Venue'}
+                isEdit={true}
+                isNew={!_.isEqual(challengeObj?.venue, oldVersion?.venue)}
+                onEditPress={() => {
+                  navigation.navigate('ChooseVenueScreen', {
+                    venues: venueList || [],
+                    comeFrom: 'EditChallenge',
+                  });
+                }}
+              />
 
               <View style={styles.venueContainer}>
-                <Text style={styles.venueTitle}>{challengeObj?.venue?.name}</Text>
+                <Text style={styles.venueTitle}>
+                  {challengeObj?.venue?.name}
+                </Text>
                 <Text style={styles.venueAddress}>
                   {challengeObj?.venue?.address}
                 </Text>
 
                 <EventMapView
-              coordinate={challengeObj?.venue?.coordinate}
-              region={challengeObj?.venue?.region}
-              style={styles.map}
-            />
+                  coordinate={challengeObj?.venue?.coordinate}
+                  region={challengeObj?.venue?.region}
+                  style={styles.map}
+                />
               </View>
 
               <TCThickDivider marginTop={10} />
             </View>
 
             <TCChallengeTitle
-          title={'Game Type'}
-          value={challengeObj?.game_type}
-
-          tooltipText={
-          'The game result has an effect on TC points of the challengee and you.'
-          }
-          tooltipHeight={hp('6%')}
-          tooltipWidth={wp('50%')}
-          isEdit={true}
-          isNew={challengeObj?.game_type !== oldVersion?.game_type}
-
-          onEditPress={() => {
-            navigation.navigate('GameType', {
-              settingObj: challengeObj,
-              comeFrom: 'EditChallenge',
-              sportName,
-            });
-          }}
-        />
+              title={'Game Type'}
+              value={challengeObj?.game_type}
+              tooltipText={
+              'The game result has an effect on TC points of the challengee and you.'
+              }
+              tooltipHeight={hp('6%')}
+              tooltipWidth={wp('50%')}
+              isEdit={true}
+              isNew={challengeObj?.game_type !== oldVersion?.game_type}
+              onEditPress={() => {
+                navigation.navigate('GameType', {
+                  settingObj: challengeObj,
+                  comeFrom: 'EditChallenge',
+                  sportName,
+                });
+              }}
+            />
             <TCThickDivider />
 
             <TCChallengeTitle
-          title={'Game Fee'}
-          value={challengeObj?.game_fee?.fee}
-          staticValueText={`${challengeObj?.game_fee?.currency_type} /Game`}
-          valueStyle={{
-            fontFamily: fonts.RBold,
-            fontSize: 16,
-            color: colors.greenColorCard,
-            marginRight: 2,
-          }}
-          isEdit={true}
-          isNew={!_.isEqual(challengeObj?.game_fee, oldVersion?.game_fee)}
-          onEditPress={() => {
-            navigation.navigate('GameFee', {
-              settingObj: challengeObj,
-              comeFrom: 'EditChallenge',
-              sportName,
-            });
-          }}
-        />
+              title={'Game Fee'}
+              value={challengeObj?.game_fee?.fee}
+              staticValueText={`${challengeObj?.game_fee?.currency_type} /Game`}
+              valueStyle={{
+                fontFamily: fonts.RBold,
+                fontSize: 16,
+                color: colors.greenColorCard,
+                marginRight: 2,
+              }}
+              isEdit={true}
+              isNew={!_.isEqual(challengeObj?.game_fee, oldVersion?.game_fee)}
+              onEditPress={() => {
+                navigation.navigate('GameFee', {
+                  settingObj: challengeObj,
+                  comeFrom: 'EditChallenge',
+                  sportName,
+                });
+              }}
+            />
 
             <TCThickDivider />
-            {Number(challengeObj?.game_fee?.fee) !== 0
-          && challengeObj?.challenger === authContext.entity.uid && (
-            <View>
-              <View>
-                <TCLabel title={'Payment Method'} style={{ marginBottom: 10 }} />
-                <View style={styles.viewMarginStyle}>
-                  <TCTouchableLabel
-                    title={
-                      defaultCard
-                      && defaultCard?.card?.brand
-                      && defaultCard?.card?.last4
-                        ? `${Utility.capitalize(
-                            defaultCard?.card?.brand,
-                          )} ****${defaultCard?.card?.last4}`
-                        : strings.addOptionMessage
-                    }
-                    showNextArrow={true}
-                    onPress={() => {
-                      navigation.navigate('PaymentMethodsScreen', {
-                        comeFrom: 'EditChallenge',
-                      });
-                    }}
-                  />
+            {Number(challengeObj?.game_fee?.fee) !== 0 &&
+              challengeObj?.challenger === authContext.entity.uid && (
+                <View>
+                  <View>
+                    <TCLabel
+                      title={'Payment Method'}
+                      style={{marginBottom: 10}}
+                    />
+                    <View style={styles.viewMarginStyle}>
+                      <TCTouchableLabel
+                        title={
+                          defaultCard &&
+                          defaultCard?.card?.brand &&
+                          defaultCard?.card?.last4
+                            ? `${Utility.capitalize(
+                                defaultCard?.card?.brand,
+                              )} ****${defaultCard?.card?.last4}`
+                            : strings.addOptionMessage
+                        }
+                        showNextArrow={true}
+                        onPress={() => {
+                          navigation.navigate('PaymentMethodsScreen', {
+                            comeFrom: 'EditChallenge',
+                          });
+                        }}
+                      />
+                    </View>
+                  </View>
+                  <TCThickDivider marginTop={20} />
                 </View>
-              </View>
-              <TCThickDivider marginTop={20} />
-            </View>
-          )}
+              )}
 
             <TCChallengeTitle
-          title={'Game Rules'}
-          isEdit={true}
-          isNew={!!((challengeObj?.general_rules !== oldVersion?.general_rules || challengeObj?.special_rules !== oldVersion?.special_rules))}
-
-          onEditPress={() => {
-            navigation.navigate('GameRules', {
-              settingObj: challengeObj,
-              comeFrom: 'EditChallenge',
-              sportName,
-            });
-          }}
-        />
+              title={'Game Rules'}
+              isEdit={true}
+              isNew={
+                !!(
+                  challengeObj?.general_rules !== oldVersion?.general_rules ||
+                  challengeObj?.special_rules !== oldVersion?.special_rules
+              )
+              }
+              onEditPress={() => {
+                navigation.navigate('GameRules', {
+                  settingObj: challengeObj,
+                  comeFrom: 'EditChallenge',
+                  sportName,
+                });
+              }}
+            />
             <Text style={styles.rulesTitle}>General Rules</Text>
-            <Text style={styles.rulesDetail}>{challengeObj?.general_rules}</Text>
-            <View style={{ marginBottom: 10 }} />
+            <Text style={styles.rulesDetail}>
+              {challengeObj?.general_rules}
+            </Text>
+            <View style={{marginBottom: 10}} />
             <Text style={styles.rulesTitle}>Special Rules</Text>
-            <Text style={styles.rulesDetail}>{challengeObj?.special_rules}</Text>
+            <Text style={styles.rulesDetail}>
+              {challengeObj?.special_rules}
+            </Text>
             <TCThickDivider marginTop={20} />
           </View>
 
@@ -841,28 +875,32 @@ export default function EditChallenge({ navigation, route }) {
         /> */}
 
             <RefereeAgreementView
-            teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
-            teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
-
-            numberOfReferee={
-              challengeObj?.responsible_for_referee?.who_secure?.length ?? 0
-            }
-            agreementOpetion={challengeObj?.min_referee === 0 ? 1 : 2}
-            moreButtonVisible={true}
-            morePressed={(value) => {
-              setMoreButtonReferee(value)
-            }}
-          isMore={moreButtonReferee}
-          isNew={!_.isEqual(challengeObj?.responsible_for_referee, oldVersion?.responsible_for_referee)}
-          isEdit={true}
-          onEditPress={() => {
-            navigation.navigate('RefereesSetting', {
-              settingObj: challengeObj,
-              comeFrom: 'EditChallenge',
-              sportName,
-            });
-          }}
-          />
+              teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+              teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+              numberOfReferee={
+                challengeObj?.responsible_for_referee?.who_secure?.length ?? 0
+              }
+              agreementOpetion={challengeObj?.min_referee === 0 ? 1 : 2}
+              moreButtonVisible={true}
+              morePressed={(value) => {
+                setMoreButtonReferee(value);
+              }}
+              isMore={moreButtonReferee}
+              isNew={
+                !_.isEqual(
+                  challengeObj?.responsible_for_referee,
+                  oldVersion?.responsible_for_referee,
+              )
+              }
+              isEdit={true}
+              onEditPress={() => {
+                navigation.navigate('RefereesSetting', {
+                  settingObj: challengeObj,
+                  comeFrom: 'EditChallenge',
+                  sportName,
+                });
+              }}
+            />
 
             <TCThickDivider />
 
@@ -896,56 +934,62 @@ export default function EditChallenge({ navigation, route }) {
         /> */}
 
             <ScorekeeperAgreementView
-            teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
-            teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
-            numberOfScorekeeper={
-              challengeObj?.responsible_for_scorekeeper?.who_secure?.length ?? 0
-            }
-            agreementOpetion={challengeObj?.min_scorekeeper === 0 ? 1 : 2}
-            moreButtonVisible={true}
-            morePressed={(value) => {
-              setMoreButtonScorekeeper(value)
-            }}
-          isMore={moreButtonScorekeeper}
-          isNew={!_.isEqual(challengeObj?.responsible_for_scorekeeper, oldVersion?.responsible_for_scorekeeper)}
-          isEdit={true}
-          onEditPress={() => {
-            navigation.navigate('ScorekeepersSetting', {
-              settingObj: challengeObj,
-              comeFrom: 'EditChallenge',
-              sportName,
-            });
-          }}
-          />
+              teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
+              teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
+              numberOfScorekeeper={
+                challengeObj?.responsible_for_scorekeeper?.who_secure?.length ??
+              0
+              }
+              agreementOpetion={challengeObj?.min_scorekeeper === 0 ? 1 : 2}
+              moreButtonVisible={true}
+              morePressed={(value) => {
+                setMoreButtonScorekeeper(value);
+              }}
+              isMore={moreButtonScorekeeper}
+              isNew={
+                !_.isEqual(
+                  challengeObj?.responsible_for_scorekeeper,
+                  oldVersion?.responsible_for_scorekeeper,
+              )
+              }
+              isEdit={true}
+              onEditPress={() => {
+                navigation.navigate('ScorekeepersSetting', {
+                  settingObj: challengeObj,
+                  comeFrom: 'EditChallenge',
+                  sportName,
+                });
+              }}
+            />
 
             <TCThickDivider />
 
             <TCChallengeTitle
-          title={
-            challengeObj?.challenger === entity.uid ? 'Payment' : 'Earning'
-          }
-          isEdit={false}
-          onEditPress={() => {
-            navigation.navigate('EditFeeScreen', {
-              editableAlter: true,
-              body: challengeObj,
-            });
-          }}
-        />
+              title={
+                challengeObj?.challenger === entity.uid ? 'Payment' : 'Earning'
+              }
+              isEdit={false}
+              onEditPress={() => {
+                navigation.navigate('EditFeeScreen', {
+                  editableAlter: true,
+                  body: challengeObj,
+                });
+              }}
+            />
             <GameFeeCard
-          feeObject={
-            feeObj ?? {
-              total_game_fee: challengeObj?.total_game_fee,
-              total_service_fee1: challengeObj?.total_service_fee1,
-              total_service_fee2: challengeObj?.total_service_fee2,
-              total_stripe_fee: challengeObj?.total_stripe_fee,
-              total_payout: challengeObj?.total_payout,
-              total_amount: challengeObj?.total_amount,
-          }
-          }
-          currency={challengeObj?.game_fee?.currency_type}
-          isChallenger={challengeObj?.challenger === entity.uid}
-        />
+              feeObject={
+                feeObj ?? {
+                  total_game_fee: challengeObj?.total_game_fee,
+                  total_service_fee1: challengeObj?.total_service_fee1,
+                  total_service_fee2: challengeObj?.total_service_fee2,
+                  total_stripe_fee: challengeObj?.total_stripe_fee,
+                  total_payout: challengeObj?.total_payout,
+                  total_amount: challengeObj?.total_amount,
+              }
+              }
+              currency={challengeObj?.game_fee?.currency_type}
+              isChallenger={challengeObj?.challenger === entity.uid}
+            />
             <TCThickDivider marginTop={20} />
           </View>
 
@@ -964,55 +1008,55 @@ export default function EditChallenge({ navigation, route }) {
          }}
        /> */}
           <TCChallengeTitle
-        title={'Refund Policy'}
-        value={challengeObj?.refund_policy}
-        tooltipText={
-        '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
-        }
-        tooltipHeight={hp('18%')}
-        tooltipWidth={wp('50%')}
-        isEdit={false}
-        onEditPress={() => {
-          navigation.navigate('RefundPolicy', {
-            settingObj: challengeObj,
-            comeFrom: 'EditChallenge',
-            sportName,
-          });
-        }}
-      />
+            title={'Refund Policy'}
+            value={challengeObj?.refund_policy}
+            tooltipText={
+            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+            }
+            tooltipHeight={hp('18%')}
+            tooltipWidth={wp('50%')}
+            isEdit={false}
+            onEditPress={() => {
+              navigation.navigate('RefundPolicy', {
+                settingObj: challengeObj,
+                comeFrom: 'EditChallenge',
+                sportName,
+              });
+            }}
+          />
 
           <TCThickDivider />
           <SafeAreaView>
             <View style={styles.bottomButtonView}>
               <TCGradientButton
-            title={strings.sendAlterRequest}
-            onPress={() => {
-              // navigation.push('ChallengePaymentScreen');
-              // navigation.push('InviteToChallengeSentScreen');
-              updateChallengeDetail();
-            }}
-            outerContainerStyle={{
-              width: '92%',
-              alignSelf: 'center',
-            }}
-          />
+                title={strings.sendAlterRequest}
+                onPress={() => {
+                  // navigation.push('ChallengePaymentScreen');
+                  // navigation.push('InviteToChallengeSentScreen');
+                  updateChallengeDetail();
+                }}
+                outerContainerStyle={{
+                  width: '92%',
+                  alignSelf: 'center',
+                }}
+              />
               <TCSmallButton
-            isBorderButton={true}
-            borderstyle={{
-              borderColor: colors.themeColor,
-              borderWidth: 1,
-              borderRadious: 80,
-            }}
-            textStyle={{ color: colors.themeColor }}
-            title={strings.cancelTitle}
-            onPress={() => {
-              navigation.popToTop();
-            }}
-            style={{
-              width: widthPercentageToDP('92%'),
-              alignSelf: 'center',
-            }}
-          />
+                isBorderButton={true}
+                borderstyle={{
+                  borderColor: colors.themeColor,
+                  borderWidth: 1,
+                  borderRadious: 80,
+                }}
+                textStyle={{color: colors.themeColor}}
+                title={strings.cancelTitle}
+                onPress={() => {
+                  navigation.popToTop();
+                }}
+                style={{
+                  width: widthPercentageToDP('92%'),
+                  alignSelf: 'center',
+                }}
+              />
             </View>
           </SafeAreaView>
         </View>
@@ -1020,9 +1064,7 @@ export default function EditChallenge({ navigation, route }) {
 
       <SafeAreaView>
         {maintabNumber === 1 && (
-          <CurruentReservationView
-            reservationObj={oldVersion}
-          />
+          <CurruentReservationView reservationObj={oldVersion} />
         )}
       </SafeAreaView>
 
@@ -1099,7 +1141,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 20,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.4,
     shadowRadius: 1,
   },
@@ -1264,7 +1306,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 16,
     color: colors.lightBlackColor,
-  width: '80%',
+    width: '80%',
   },
   reqOutImage: {
     width: 20,
@@ -1285,7 +1327,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,

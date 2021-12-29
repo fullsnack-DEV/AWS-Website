@@ -491,6 +491,7 @@ export default function ScheduleScreen({ navigation }) {
           'Cancel',
         ];
       }
+      
       return [
         'Game Reservation Details',
         'Referee Reservation Details',

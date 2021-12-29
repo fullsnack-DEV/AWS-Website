@@ -31,6 +31,7 @@ import React, {
  import TCGameCard from '../../components/TCGameCard';
  import { getGameFromToDateDiff, getGameHomeScreen } from '../../utils/gameUtils';
  import TCChallengeTitle from '../../components/TCChallengeTitle';
+import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 
  let entity = {};
 
@@ -254,7 +255,7 @@ import React, {
                </View>
              </View>
 
-             {type === 'accepted' && <Text
+             {type === ScorekeeperReservationStatus.accepted && <Text
                      style={{
                        marginLeft: 15,
                        marginBottom: 15,
@@ -264,7 +265,16 @@ import React, {
                      }}>
                {'Approved'}
              </Text>}
-
+             {type === ScorekeeperReservationStatus.declined && <Text
+                    style={{
+                      marginLeft: 15,
+                      marginBottom: 15,
+                      fontFamily: fonts.RMedium,
+                      fontSize: 16,
+                      color: colors.lightBlackColor,
+                    }}>
+               {'Declined'}
+             </Text>}
              {type === 'expired' && <Text
                      style={{
                        marginLeft: 15,

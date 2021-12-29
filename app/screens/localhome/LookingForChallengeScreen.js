@@ -225,7 +225,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
             'setting.game_fee.fee': {
               gte: Number(parseFloat(filerdata.gameFee.split('-')[0]).toFixed(2)),
               lte: Number(parseFloat(filerdata.gameFee.split('-')[1]).toFixed(2)),
-               boost: 2.0,
+               
             },
           },
         });
@@ -235,7 +235,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
             'registered_sports.setting.game_fee.fee': {
               gte: Number(parseFloat(filerdata.gameFee.split('-')[0]).toFixed(2)),
               lte: Number(parseFloat(filerdata.gameFee.split('-')[1]).toFixed(2)),
-              boost: 2.0,
+              
             },
           },
         });

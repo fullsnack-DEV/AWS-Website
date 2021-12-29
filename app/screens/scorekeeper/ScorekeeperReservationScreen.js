@@ -549,18 +549,18 @@ const renderBottomBurron = () => (<SafeAreaView>
                   <View style={styles.profileView}>
                     <Image
                       source={
-                        getRequester(bodyParams).thumbnail
-                          ? { uri: getRequester(bodyParams).thumbnail }
+                        getRequester(bodyParams)?.thumbnail
+                          ? { uri: getRequester(bodyParams)?.thumbnail }
                           : images.teamPlaceholder
                       }
                       style={styles.profileImage}
                     />
                   </View>
                   <Text style={styles.teamNameText}>
-                    {getRequester(bodyParams).group_id
-                      ? `${getRequester(bodyParams).group_name}`
-                      : `${getRequester(bodyParams).first_name} ${
-                          getRequester(bodyParams).last_name
+                    {getRequester(bodyParams)?.group_id
+                      ? `${getRequester(bodyParams)?.group_name}`
+                      : `${getRequester(bodyParams)?.first_name} ${
+                          getRequester(bodyParams)?.last_name
                         }`}
                   </Text>
                 </View>

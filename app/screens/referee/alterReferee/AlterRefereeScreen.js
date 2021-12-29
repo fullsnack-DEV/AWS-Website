@@ -1,6 +1,4 @@
-import React, {
- useEffect, useState, useContext, useLayoutEffect,
- } from 'react';
+import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -11,7 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import moment from 'moment';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
 
@@ -24,7 +22,7 @@ import {
 } from '../../../api/Challenge';
 import * as Utility from '../../../utils';
 
-import { paymentMethods } from '../../../api/Users';
+import {paymentMethods} from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -47,7 +45,11 @@ import {
   getGameHomeScreen,
 } from '../../../utils/gameUtils';
 import RefereeReservationStatus from '../../../Constants/RefereeReservationStatus';
-import { getHitSlop, heightPercentageToDP, widthPercentageToDP } from '../../../utils';
+import {
+  getHitSlop,
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from '../../../utils';
 import TCTabView from '../../../components/TCTabView';
 import CurruentRefereeReservationView from './CurrentRefereeReservationView';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
@@ -56,7 +58,7 @@ import RefereeReservationTitle from '../../../components/reservations/RefereeRes
 
 let entity = {};
 const scroll = React.createRef();
-export default function AlterRefereeScreen({ navigation, route }) {
+export default function AlterRefereeScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [chiefOrAssistant, setChiefOrAssistant] = useState('');
   const isFocused = useIsFocused();
@@ -90,7 +92,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
   useEffect(() => {
     entity = authContext.entity;
 
-    const { reservationObj } = route.params ?? {};
+    const {reservationObj} = route.params ?? {};
+    console.log('reservationObjreservationObj:=>',reservationObj);
     if (reservationObj.length > 0) {
       setIsPendingRequestPayment(true);
       for (let i = 0; i < reservationObj.length; i++) {
@@ -104,8 +107,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
           }
 
           if (
-            (reservationObj[0]?.game?.away_team?.group_id
-              ?? reservationObj[0]?.game?.away_team?.user_id) === entity.uid
+            (reservationObj[0]?.game?.away_team?.group_id ??
+              reservationObj[0]?.game?.away_team?.user_id) === entity.uid
           ) {
             setHomeTeam(reservationObj[0]?.game?.away_team);
             setAwayTeam(reservationObj[0]?.game?.home_team);
@@ -146,8 +149,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
       }
 
       if (
-        (reservationObj?.game?.away_team?.group_id
-          ?? reservationObj?.game?.away_team?.user_id) === entity.uid
+        (reservationObj?.game?.away_team?.group_id ??
+          reservationObj?.game?.away_team?.user_id) === entity.uid
       ) {
         setHomeTeam(reservationObj?.game?.away_team);
         setAwayTeam(reservationObj?.game?.home_team);
@@ -201,8 +204,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
       // console.log('OLD:', oldVersion.responsible_to_secure_venue);
       // console.log('NEW:', bodyParams.responsible_to_secure_venue);
       if (
-        bodyParams.responsible_to_secure_venue
-        !== oldVersion.responsible_to_secure_venue
+        bodyParams.responsible_to_secure_venue !==
+        oldVersion.responsible_to_secure_venue
       ) {
         setEditVenue(true);
       } else {
@@ -219,21 +222,21 @@ export default function AlterRefereeScreen({ navigation, route }) {
         setEditScoreKeeper(false);
       }
       if (
-        bodyParams?.home_team?.group_id !== oldVersion?.home_team?.group_id
-        || bodyParams?.home_team?.user_id !== oldVersion?.home_team?.user_id
-        || bodyParams?.away_team?.group_id !== oldVersion?.away_team?.group_id
-        || bodyParams?.away_team?.user_id !== oldVersion?.away_team?.user_id
-        || bodyParams?.start_datetime !== oldVersion?.start_datetime
-        || bodyParams?.end_datetime !== oldVersion?.end_datetime
-        || bodyParams?.venue?.address !== oldVersion?.venue?.address
+        bodyParams?.home_team?.group_id !== oldVersion?.home_team?.group_id ||
+        bodyParams?.home_team?.user_id !== oldVersion?.home_team?.user_id ||
+        bodyParams?.away_team?.group_id !== oldVersion?.away_team?.group_id ||
+        bodyParams?.away_team?.user_id !== oldVersion?.away_team?.user_id ||
+        bodyParams?.start_datetime !== oldVersion?.start_datetime ||
+        bodyParams?.end_datetime !== oldVersion?.end_datetime ||
+        bodyParams?.venue?.address !== oldVersion?.venue?.address
       ) {
         setEditInfo(true);
       } else {
         setEditInfo(false);
       }
       if (
-        bodyParams.total_game_charges !== oldVersion.total_game_charges
-        || bodyParams.manual_fee !== oldVersion.manual_fee
+        bodyParams.total_game_charges !== oldVersion.total_game_charges ||
+        bodyParams.manual_fee !== oldVersion.manual_fee
       ) {
         setEditPayment(true);
         getFeesEstimationDetail();
@@ -389,7 +392,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
       callerID,
       versionNo,
       status,
-      paymentID && { source: paymentID },
+      paymentID && {source: paymentID},
       authContext,
     )
       .then((response) => {
@@ -428,20 +431,16 @@ export default function AlterRefereeScreen({ navigation, route }) {
   const getRequester = (param) => {
     if (entity.uid === param?.referee?.user_id) {
       if (
-        param?.initiated_by
-        === (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)
+        param?.initiated_by ===
+        (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)
       ) {
         return param?.game?.home_team;
       }
       return param?.game?.away_team;
     }
-    if (
-      entity.uid
-      === (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)
-    ) {
-      return param?.game?.home_team;
-    }
-    return param?.game?.away_team;
+    
+      return (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id) === param?.initiated_by ? param?.game?.home_team : param?.game?.away_team;
+   
   };
 
   const getPaymentMethods = () => {
@@ -480,10 +479,10 @@ export default function AlterRefereeScreen({ navigation, route }) {
   };
 
   const checkSenderOrReceiver = (reservationObj) => {
-    const teampObj = { ...reservationObj };
+    const teampObj = {...reservationObj};
     if (
-      teampObj?.status === RefereeReservationStatus.pendingpayment
-      || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
+      teampObj?.status === RefereeReservationStatus.pendingpayment ||
+      teampObj?.status === RefereeReservationStatus.pendingrequestpayment
     ) {
       if (teampObj?.updated_by) {
         if (teampObj?.updated_by?.group_id) {
@@ -499,18 +498,18 @@ export default function AlterRefereeScreen({ navigation, route }) {
     } else if (teampObj?.updated_by) {
       if (teampObj?.updated_by?.group_id) {
         if (
-          teampObj?.automatic_request
-          && teampObj?.status === RefereeReservationStatus.changeRequest
-          && entity?.obj?.entity_type === 'team'
+          teampObj?.automatic_request &&
+          teampObj?.status === RefereeReservationStatus.changeRequest &&
+          entity?.obj?.entity_type === 'team'
         ) {
           teampObj.requested_by = teampObj.initiated_by;
         } else {
           teampObj.requested_by = teampObj.updated_by.group_id;
         }
       } else if (
-        teampObj?.automatic_request
-        && teampObj?.status === RefereeReservationStatus.changeRequest
-        && teampObj?.referee?.user_id !== entity.uid
+        teampObj?.automatic_request &&
+        teampObj?.status === RefereeReservationStatus.changeRequest &&
+        teampObj?.referee?.user_id !== entity.uid
       ) {
         teampObj.requested_by = teampObj.initiated_by;
       } else {
@@ -547,8 +546,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
     body.currency_type = bodyParams?.currency_type;
 
     if (
-      checkSenderForPayment(bodyParams) === 'sender'
-      && paymentCard.total_game_charges > 0
+      checkSenderForPayment(bodyParams) === 'sender' &&
+      paymentCard.total_game_charges > 0
     ) {
       let paymentSource;
       if (defaultCard) {
@@ -581,14 +580,14 @@ export default function AlterRefereeScreen({ navigation, route }) {
       });
   };
 
-  const Title = ({ text, required }) => (
+  const Title = ({text, required}) => (
     <Text style={styles.titleText}>
       {text}
-      {required && <Text style={{ color: colors.redDelColor }}> * </Text>}
+      {required && <Text style={{color: colors.redDelColor}}> * </Text>}
     </Text>
   );
 
-  const Seperator = ({ height = 7 }) => (
+  const Seperator = ({height = 7}) => (
     <View
       style={{
         width: '100%',
@@ -608,8 +607,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
   const getOpponentEntity = (reservationObj) => {
     if (reservationObj?.referee?.user_id === entity.uid) {
       if (
-        reservationObj?.initiated_by
-        === reservationObj?.game?.home_team?.user_id
+        reservationObj?.initiated_by ===
+        reservationObj?.game?.home_team?.user_id
       ) {
         return reservationObj?.game?.away_team;
       }
@@ -666,6 +665,20 @@ export default function AlterRefereeScreen({ navigation, route }) {
         }, 10);
       });
   };
+
+  const isThirdParty = (data) => {
+    if (authContext.entity.uid === data?.referee?.user_id) {
+      return false;
+    }
+    if (authContext.entity.uid === getRequester(data)?.user_id) {
+      return false;
+    }
+    if (authContext.entity.uid === getRequester(data)?.group_id) {
+      
+      return false;
+    }
+    return true;
+  };
   return (
     <TCKeyboardView scrollReference={scroll}>
       <ActivityLoader visible={loading} />
@@ -674,14 +687,14 @@ export default function AlterRefereeScreen({ navigation, route }) {
         firstTabTitle={'ALTERATION REQUEST'}
         secondTabTitle={'CURRENT RESERVATION'}
         indexCounter={maintabNumber}
-        eventPrivacyContianer={{ width: 100 }}
+        eventPrivacyContianer={{width: 100}}
         onFirstTabPress={() => setMaintabNumber(0)}
         onSecondTabPress={() => setMaintabNumber(1)}
         activeHeight={36}
         inactiveHeight={40}
       />
       {homeTeam && awayTeam && bodyParams && maintabNumber === 0 && (
-        <View style={{ marginBottom: 15 }}>
+        <View style={{marginBottom: 15}}>
           {!isPendingRequestPayment && (
             <TouchableOpacity onPress={() => console.log('OK')}>
               <LinearGradient
@@ -724,7 +737,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   <Image
                     source={
                       getRequester(bodyParams).thumbnail
-                        ? { uri: getRequester(bodyParams).thumbnail }
+                        ? {uri: getRequester(bodyParams).thumbnail}
                         : images.teamPlaceholder
                     }
                     style={styles.profileImage}
@@ -758,7 +771,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   <Image
                     source={
                       bodyParams?.referee?.full_image
-                        ? { uri: bodyParams?.referee?.full_image }
+                        ? {uri: bodyParams?.referee?.full_image}
                         : images.profilePlaceHolder
                     }
                     style={styles.profileImage}
@@ -778,7 +791,11 @@ export default function AlterRefereeScreen({ navigation, route }) {
             </View>
           </View>
 
-          <RefereeReservationTitle reservationObject={bodyParams} showDesc={true} containerStyle={{ margin: 15 }}/>
+          <RefereeReservationTitle
+            reservationObject={bodyParams}
+            showDesc={true}
+            containerStyle={{margin: 15}}
+          />
 
           {/* status pending request payment */}
           {/* {bodyParams?.referee?.user_id !== entity.uid
@@ -819,23 +836,23 @@ export default function AlterRefereeScreen({ navigation, route }) {
             )} */}
           {/* status pending request payment */}
 
-          {bodyParams?.referee?.user_id !== entity.uid
-            && bodyParams.status
-              === RefereeReservationStatus.pendingrequestpayment && (
+          {bodyParams?.referee?.user_id !== entity.uid &&
+            bodyParams.status ===
+              RefereeReservationStatus.pendingrequestpayment && (
                 <TCGradientButton
                 title={strings.tryToPayText}
                 onPress={() => {
                   navigation.navigate('PayAgainRefereeScreen', {
-                    body: { ...bodyParams, ...paymentCard },
+                    body: {...bodyParams, ...paymentCard},
                     comeFrom: RefereeReservationStatus.pendingrequestpayment,
                   });
                 }}
                 marginBottom={15}
               />
             )}
-          {bodyParams?.referee?.user_id === entity.uid
-            && bodyParams.status
-              === RefereeReservationStatus.pendingrequestpayment && (
+          {bodyParams?.referee?.user_id === entity.uid &&
+            bodyParams.status ===
+              RefereeReservationStatus.pendingrequestpayment && (
                 <TCGradientButton
                 title={strings.restorePreviousText}
                 onPress={() => {
@@ -903,8 +920,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
                     <TCInfoField
                       title={'Date'}
                       value={
-                        bodyParams?.timestamp
-                        && moment(bodyParams?.game?.start_datetime * 1000).format(
+                        bodyParams?.timestamp &&
+                        moment(bodyParams?.game?.start_datetime * 1000).format(
                           'MMM DD, YYYY',
                       )
                       }
@@ -917,8 +934,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
                     <TCInfoField
                       title={'Time'}
                       value={
-                        bodyParams?.game?.start_datetime
-                        && bodyParams?.game?.end_datetime
+                        bodyParams?.game?.start_datetime &&
+                        bodyParams?.game?.end_datetime
                           ? getDateDuration(
                               bodyParams?.game?.start_datetime,
                               bodyParams?.game?.end_datetime,
@@ -975,15 +992,15 @@ export default function AlterRefereeScreen({ navigation, route }) {
           )}
           <TCLabel
             title={'Game Rules'}
-            style={{ marginTop: 0, marginBottom: 10 }}
+            style={{marginTop: 0, marginBottom: 10}}
           />
           <Text style={styles.rulesTitle}>General Rules</Text>
           <Text style={styles.rulesDetail}>
             {bodyParams?.game?.general_rules}
           </Text>
-          <View style={{ marginBottom: 10 }} />
+          <View style={{marginBottom: 10}} />
           <Text style={styles.rulesTitle}>Special Rules</Text>
-          <Text style={[styles.rulesDetail, { marginBottom: 10 }]}>
+          <Text style={[styles.rulesDetail, {marginBottom: 10}]}>
             {bodyParams?.game?.special_rules}
           </Text>
           <TCThickDivider marginTop={15} />
@@ -994,9 +1011,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
               <TCLabel
                 title={'Chief or assistant'}
                 isNew={oldVersion?.chief_referee !== bodyParams?.chief_referee}
-                style={{ marginTop: 0, marginLeft: 0, padding: 0 }}
+                style={{marginTop: 0, marginLeft: 0, padding: 0}}
               />
-
             </View>
             <View
               style={{
@@ -1027,16 +1043,15 @@ export default function AlterRefereeScreen({ navigation, route }) {
           <TCThickDivider />
           <View>
             <TCChallengeTitle
-          title={'Refund Policy'}
-          value={bodyParams?.refund_policy}
-          tooltipText={
-          '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
-          }
-          tooltipHeight={heightPercentageToDP('18%')}
-          tooltipWidth={widthPercentageToDP('50%')}
-          isEdit={false}
-
-        />
+              title={'Refund Policy'}
+              value={bodyParams?.refund_policy}
+              tooltipText={
+              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+              }
+              tooltipHeight={heightPercentageToDP('18%')}
+              tooltipWidth={widthPercentageToDP('50%')}
+              isEdit={false}
+            />
             <TCThickDivider />
           </View>
           <View style={styles.editableView}>
@@ -1064,8 +1079,9 @@ export default function AlterRefereeScreen({ navigation, route }) {
               <TouchableOpacity
                 style={styles.editTouchArea}
                 hitSlop={getHitSlop(15)}
-                onPress={() => navigation.navigate('EditRefereeFeeScreen', {
-                  comeFrom: 'AlterRefereeScreen',
+                onPress={() =>
+                  navigation.navigate('EditRefereeFeeScreen', {
+                    comeFrom: 'AlterRefereeScreen',
                     editableAlter: true,
                     body: bodyParams,
                   })
@@ -1084,27 +1100,29 @@ export default function AlterRefereeScreen({ navigation, route }) {
           {oldVersion?.total_game_fee === 0 && bodyParams?.total_game_fee > 0 && (
             <View style={styles.contentContainer}>
               <Title text={'Payment Method'} />
-              <View style={{ marginTop: 10 }}>
+              <View style={{marginTop: 10}}>
                 <TCTouchableLabel
-                title={
-                  route.params.paymentMethod
-                    ? Utility.capitalize(route.params.paymentMethod.card.brand)
-                    : strings.addOptionMessage
-                }
-                subTitle={route.params.paymentMethod?.card.last4}
-                showNextArrow={true}
-                onPress={() => {
-                  navigation.navigate('PaymentMethodsScreen', {
-                    comeFrom: 'AlterRefereeScreen',
-                  });
-                }}
-              />
+                  title={
+                    route.params.paymentMethod
+                      ? Utility.capitalize(
+                          route.params.paymentMethod.card.brand,
+                        )
+                      : strings.addOptionMessage
+                  }
+                  subTitle={route.params.paymentMethod?.card.last4}
+                  showNextArrow={true}
+                  onPress={() => {
+                    navigation.navigate('PaymentMethodsScreen', {
+                      comeFrom: 'AlterRefereeScreen',
+                    });
+                  }}
+                />
               </View>
             </View>
-        )}
+          )}
 
           {editPayment && (
-            <View style={{ marginTop: 15 }}>
+            <View style={{marginTop: 15}}>
               <Text style={styles.differenceText}>
                 Difference{' '}
                 <Text style={styles.differenceSmallText}>
@@ -1114,8 +1132,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
               <View style={styles.differeceView}>
                 <Text style={styles.differenceTextTitle}>Difference</Text>
                 <Text style={styles.diffenceAmount}>{`$${parseFloat(
-                  bodyParams?.total_game_fee
-                    - oldVersion?.total_game_fee,
+                  bodyParams?.total_game_fee - oldVersion?.total_game_fee,
                 ).toFixed(2)} ${
                   bodyParams.currency_type.toUpperCase() || 'CAD'
                 }`}</Text>
@@ -1123,9 +1140,9 @@ export default function AlterRefereeScreen({ navigation, route }) {
               </View>
             </View>
           )}
-          {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === RefereeReservationStatus.changeRequest && (
-              <View style={{ marginTop: 15 }}>
+          {checkSenderOrReceiver(bodyParams) === 'sender' &&
+            bodyParams.status === RefereeReservationStatus.changeRequest && (
+              <View style={{marginTop: 15}}>
                 <TCBorderButton
                   title={strings.cancelAlterRequest}
                   textColor={colors.grayColor}
@@ -1147,10 +1164,11 @@ export default function AlterRefereeScreen({ navigation, route }) {
               </View>
             )}
 
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === RefereeReservationStatus.changeRequest
-            && bodyParams.expiry_datetime < new Date().getTime() && (
-              <View style={{ marginTop: 15 }}>
+          {checkSenderOrReceiver(bodyParams) === 'receiver' &&
+            !isThirdParty(bodyParams) &&
+            bodyParams.status === RefereeReservationStatus.changeRequest &&
+            bodyParams.expiry_datetime < new Date().getTime() && (
+              <View style={{marginTop: 15}}>
                 <TCGradientButton
                   title={strings.accept}
                   onPress={() => {
@@ -1163,8 +1181,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
                       callerId,
                       bodyParams.version,
                       'accept',
-                      route?.params?.paymentMethod
-                        && route?.params?.paymentMethod?.id,
+                      route?.params?.paymentMethod &&
+                        route?.params?.paymentMethod?.id,
                     );
                   }}
                   marginBottom={15}
@@ -1191,9 +1209,9 @@ export default function AlterRefereeScreen({ navigation, route }) {
               </View>
             )}
 
-          {(bodyParams.status === RefereeReservationStatus.accepted
-            || bodyParams.status === RefereeReservationStatus.restored)
-            && !isPendingRequestPayment && (
+          {(bodyParams.status === RefereeReservationStatus.accepted ||
+            bodyParams.status === RefereeReservationStatus.restored) &&
+            !isPendingRequestPayment && (
               <View>
                 <TCGradientButton
                   title={strings.sendAlterRequest}
@@ -1227,51 +1245,52 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 />
               </View>
             )}
-          {(bodyParams.status === RefereeReservationStatus.changeRequest
-            || bodyParams.status
-              === RefereeReservationStatus.pendingrequestpayment) && (
-                <View>
-                  <TCBorderButton
-                title={strings.cancelreservation}
-                textColor={colors.whiteColor}
-                borderColor={colors.grayColor}
-                backgroundColor={colors.grayColor}
-                height={40}
-                shadow={true}
-                marginBottom={15}
-                marginTop={15}
-                onPress={() => {
-                  if (
-                    bodyParams?.game?.status === GameStatus.accepted
-                    || bodyParams?.game?.status === GameStatus.reset
-                  ) {
-                    let callerId = '';
-                    if (bodyParams?.referee?.user_id !== entity.uid) {
-                      callerId = entity.uid;
-                    }
+          {(bodyParams.status === RefereeReservationStatus.changeRequest ||
+            bodyParams.status ===
+              RefereeReservationStatus.pendingrequestpayment) &&
+            !isThirdParty(bodyParams) && (
+              <View>
+                <TCBorderButton
+                  title={strings.cancelreservation}
+                  textColor={colors.whiteColor}
+                  borderColor={colors.grayColor}
+                  backgroundColor={colors.grayColor}
+                  height={40}
+                  shadow={true}
+                  marginBottom={15}
+                  marginTop={15}
+                  onPress={() => {
+                    if (
+                      bodyParams?.game?.status === GameStatus.accepted ||
+                      bodyParams?.game?.status === GameStatus.reset
+                    ) {
+                      let callerId = '';
+                      if (bodyParams?.referee?.user_id !== entity.uid) {
+                        callerId = entity.uid;
+                      }
 
-                    acceptDeclineRefereeReservation(
-                      bodyParams.reservation_id,
-                      callerId,
-                      bodyParams.version,
-                      'cancel',
-                    );
-                  } else if (
-                    bodyParams.start_datetime * 1000
-                    < new Date().getTime()
-                  ) {
-                    Alert.alert(
-                      'Reservation cannot be cancel after game time passed or offer expired.',
-                    );
-                  } else {
-                    Alert.alert(
-                      'Reservation can not be change after game has been started.',
-                    );
-                  }
-                }}
-              />
-                </View>
-          )}
+                      acceptDeclineRefereeReservation(
+                        bodyParams.reservation_id,
+                        callerId,
+                        bodyParams.version,
+                        'cancel',
+                      );
+                    } else if (
+                      bodyParams.start_datetime * 1000 <
+                      new Date().getTime()
+                    ) {
+                      Alert.alert(
+                        'Reservation cannot be cancel after game time passed or offer expired.',
+                      );
+                    } else {
+                      Alert.alert(
+                        'Reservation can not be change after game has been started.',
+                      );
+                    }
+                  }}
+                />
+              </View>
+            )}
           {bodyParams.status === RefereeReservationStatus.declined && (
             <View>
               <TCBorderButton
@@ -1283,10 +1302,10 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 marginTop={15}
                 onPress={() => {
                   if (
-                    (bodyParams?.game?.status === GameStatus.accepted
-                      || bodyParams?.game?.status === GameStatus.reset)
-                    && bodyParams.start_datetime
-                      > parseFloat(new Date().getTime() / 1000).toFixed(0)
+                    (bodyParams?.game?.status === GameStatus.accepted ||
+                      bodyParams?.game?.status === GameStatus.reset) &&
+                    bodyParams.start_datetime >
+                      parseFloat(new Date().getTime() / 1000).toFixed(0)
                   ) {
                     navigation.navigate('EditRefereeReservation', {
                       reservationObj: oldVersion,
@@ -1298,45 +1317,47 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   }
                 }}
               />
-              <TCBorderButton
-                title={strings.cancelreservation}
-                textColor={colors.whiteColor}
-                borderColor={colors.grayColor}
-                backgroundColor={colors.grayColor}
-                height={40}
-                shadow={true}
-                marginBottom={15}
-                marginTop={15}
-                onPress={() => {
-                  if (
-                    bodyParams?.game?.status === GameStatus.accepted
-                    || bodyParams?.game?.status === GameStatus.reset
-                  ) {
-                    let callerId = '';
-                    if (bodyParams?.referee?.user_id !== entity.uid) {
-                      callerId = entity.uid;
-                    }
+              {!isThirdParty(bodyParams) && (
+                <TCBorderButton
+                  title={strings.cancelreservation}
+                  textColor={colors.whiteColor}
+                  borderColor={colors.grayColor}
+                  backgroundColor={colors.grayColor}
+                  height={40}
+                  shadow={true}
+                  marginBottom={15}
+                  marginTop={15}
+                  onPress={() => {
+                    if (
+                      bodyParams?.game?.status === GameStatus.accepted ||
+                      bodyParams?.game?.status === GameStatus.reset
+                    ) {
+                      let callerId = '';
+                      if (bodyParams?.referee?.user_id !== entity.uid) {
+                        callerId = entity.uid;
+                      }
 
-                    acceptDeclineRefereeReservation(
-                      bodyParams.reservation_id,
-                      callerId,
-                      bodyParams.version,
-                      'cancel',
-                    );
-                  } else if (
-                    bodyParams.start_datetime * 1000
-                    < new Date().getTime()
-                  ) {
-                    Alert.alert(
-                      'Reservation cannot be cancel after game time passed or offer expired.',
-                    );
-                  } else {
-                    Alert.alert(
-                      'Reservation can not be change after game has been started.',
-                    );
-                  }
-                }}
-              />
+                      acceptDeclineRefereeReservation(
+                        bodyParams.reservation_id,
+                        callerId,
+                        bodyParams.version,
+                        'cancel',
+                      );
+                    } else if (
+                      bodyParams.start_datetime * 1000 <
+                      new Date().getTime()
+                    ) {
+                      Alert.alert(
+                        'Reservation cannot be cancel after game time passed or offer expired.',
+                      );
+                    } else {
+                      Alert.alert(
+                        'Reservation can not be change after game has been started.',
+                      );
+                    }
+                  }}
+                />
+              )}
             </View>
           )}
         </View>
@@ -1344,12 +1365,11 @@ export default function AlterRefereeScreen({ navigation, route }) {
       <SafeAreaView>
         {maintabNumber === 1 && (
           <CurruentRefereeReservationView
-          reservationObj={oldVersion}
-          navigation={navigation}
-        />
-      )}
+            reservationObj={oldVersion}
+            navigation={navigation}
+          />
+        )}
       </SafeAreaView>
-
     </TCKeyboardView>
   );
 }
@@ -1428,7 +1448,7 @@ const styles = StyleSheet.create({
   },
   differeceView: {
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 3,
@@ -1490,7 +1510,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,
@@ -1509,5 +1529,4 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
   },
-
 });

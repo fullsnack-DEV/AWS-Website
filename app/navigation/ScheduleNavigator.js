@@ -171,6 +171,8 @@ import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChall
 import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 import ChallengePreviewScreen from '../screens/challenge/createChallenge/ChallengePreviewScreen';
+import SearchScreen from '../screens/search/SearchScreen';
+import GameFee from '../screens/challenge/manageChallenge/settings/GameFee';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1570,6 +1572,22 @@ const ScheduleNavigator = () => (
             }}
         />
     <Stack.Screen
+      name="GameFee"
+      component={GameFee}
+      options={{
+        title: 'Game Fee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
          name="NotificationsListScreen"
          component={NotificationsListScreen}
          options={{
@@ -2124,7 +2142,23 @@ const ScheduleNavigator = () => (
         } }
       />
     
-   
+    <Stack.Screen
+      name="SearchScreen"
+      component={SearchScreen}
+      options={{
+        title: 'Search',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
   </Stack.Navigator>
 );
 

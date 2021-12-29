@@ -17,7 +17,7 @@ import {
   Alert,
   ScrollView,
   Dimensions,
-} from 'react-native';
+ SafeAreaView } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
 import Moment from 'moment';
@@ -65,6 +65,7 @@ import PRNotificationTeamInvite from '../../components/notificationComponent/PRN
 import PRNotificationDetailItem from '../../components/notificationComponent/PRNotificationDetailItem';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
+
 
 function NotificationsListScreen({ navigation }) {
   const actionSheet = useRef();
@@ -163,7 +164,16 @@ function NotificationsListScreen({ navigation }) {
                 type: 'accepted',
                 reservationObj,
               });
-            } else if (
+            }else if (
+              reservationObj?.approved_by === authContext.entity.uid
+              && reservationObj.status === RefereeReservationStatus.declined
+            ) {
+              navigation.navigate('RefereeApprovalScreen', {
+                type: 'declined',
+                reservationObj,
+              });
+            }
+             else if (
               reservationObj.status === RefereeReservationStatus.offered
               && !reservationObj?.is_offer
             ) {
@@ -283,7 +293,17 @@ function NotificationsListScreen({ navigation }) {
             type: 'accepted',
             reservationObj,
           });
-        } else if (
+        }else if (
+          reservationObj?.approved_by === authContext.entity.uid
+          && reservationObj.status === ScorekeeperReservationStatus.declined
+        ) {
+          navigation.navigate('ScorekeeperApprovalScreen', {
+            type: 'declined',
+            reservationObj,
+          });
+        } 
+        
+        else if (
           reservationObj.status === ScorekeeperReservationStatus.offered
           && !reservationObj?.is_offer
         ) {
@@ -291,7 +311,8 @@ function NotificationsListScreen({ navigation }) {
             type: 'approve',
             reservationObj,
           });
-        } else if (
+        }
+         else if (
           reservationObj.status === ScorekeeperReservationStatus.approved
           && reservationObj?.is_offer
         ) {
@@ -609,14 +630,37 @@ function NotificationsListScreen({ navigation }) {
     }
   };
   const onNotificationClick = (notificationItem) => {
+    console.log('Notification detail::=>',notificationItem);
     console.log(notificationItem?.verb);
-    const verbTypes = [
+    const verb = notificationItem?.verb?.split('_')
+    const postVerbTypes = [
       NotificationType.clap,
       NotificationType.tagged,
       NotificationType.comment,
     ];
-    if (verbTypes.includes(notificationItem?.verb)) {
+    const scorekeeperVerbTypes = [
+      NotificationType.scorekeeperReservationCancelled,
+      NotificationType.scorekeeperReservationAccepted,
+      NotificationType.scorekeeperReservationApproved
+    ];
+    const refereeVerbTypes = [
+      NotificationType.refereeReservationCancelled,
+      NotificationType.refereeReservationAccepted,
+      NotificationType.refereeReservationApproved
+    ];
+    // const gameVerbTypes = [
+    //   NotificationType.gameAccepted,
+    //   NotificationType.gameCancelled,
+    // ];
+
+    if (postVerbTypes.includes(verb?.[0])) {
       navigation.navigate('SingleNotificationScreen', { notificationItem });
+    }
+    if (scorekeeperVerbTypes.includes(verb?.[0])) {
+      navigation.navigate('ScorekeeperReservationScreen', { reservationObj:JSON.parse(notificationItem.activities[0].object)?.reservationObject  });
+    }
+    if (refereeVerbTypes.includes(verb?.[0])) {
+      navigation.navigate('RefereeReservationScreen', { reservationObj:JSON.parse(notificationItem.activities[0].object)?.reservationObject  });
     }
   };
 
@@ -626,8 +670,6 @@ function NotificationsListScreen({ navigation }) {
       if (
         item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam)
       ) {
-        console.log('Ok ok2');
-
         return (
           <PRNotificationTeamInvite
             item={item}
@@ -660,7 +702,7 @@ function NotificationsListScreen({ navigation }) {
       )
       || item.activities[0].verb.includes(NotificationType.refereeRequest) || item.activities[0].verb.includes(NotificationType.scorekeeperRequest)
     ) {
-      console.log('Ok ok4');
+      
 
       return (
         <PRNotificationDetailItem
@@ -672,7 +714,7 @@ function NotificationsListScreen({ navigation }) {
         />
       );
     }
-    console.log('Ok ok5');
+   
 
     return (
       <PRNotificationDetailMessageItem
@@ -910,12 +952,13 @@ function NotificationsListScreen({ navigation }) {
   };
 
   return (
-    <View
+    <SafeAreaView style={{flex:1}}>
+      <View
       style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]}
       needsOffscreenAlphaCompositing>
-      <View>
-        {groupList?.length <= 0 ? (
-          <NotificationListTopHeaderShimmer />
+        <View>
+          {groupList?.length <= 0 ? (
+            <NotificationListTopHeaderShimmer />
         ) : (
           groupList?.length > 1 && (
             <FlatList
@@ -943,11 +986,11 @@ function NotificationsListScreen({ navigation }) {
             />
           )
         )}
-      </View>
-      <ActivityLoader visible={loading} />
-      {/* eslint-disable-next-line no-nested-ternary */}
-      {firstTimeLoading ? (
-        <NotificationListShimmer />
+        </View>
+        <ActivityLoader visible={loading} />
+        {/* eslint-disable-next-line no-nested-ternary */}
+        {firstTimeLoading ? (
+          <NotificationListShimmer />
       ) : mainNotificationsList?.length > 0 ? (
         <SectionList
           ItemSeparatorComponent={itemSeparator}
@@ -965,7 +1008,7 @@ function NotificationsListScreen({ navigation }) {
       ) : (
         <TCNoDataView title={'No records found'} />
       )}
-      <ActionSheet
+        <ActionSheet
         ref={actionSheet}
         options={['Trash', 'Cancel']}
         cancelButtonIndex={1}
@@ -982,8 +1025,8 @@ function NotificationsListScreen({ navigation }) {
         }}
       />
 
-      {/* Rules notes modal */}
-      <Modal
+        {/* Rules notes modal */}
+        <Modal
         isVisible={isRulesModalVisible} // isRulesModalVisible
         backdropColor="black"
         onBackdropPress={() => setIsRulesModalVisible(false)}
@@ -993,7 +1036,7 @@ function NotificationsListScreen({ navigation }) {
           margin: 0,
           backgroundColor: 'rgba(0,0,0,0.5)',
         }}>
-        <View
+          <View
           style={{
             width: '100%',
             height: Dimensions.get('window').height / 1.7,
@@ -1009,14 +1052,14 @@ function NotificationsListScreen({ navigation }) {
             shadowRadius: 5,
             elevation: 15,
           }}>
-          <View
+            <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Text
+              <Text
               style={{
                 alignSelf: 'center',
                 marginVertical: 20,
@@ -1024,39 +1067,40 @@ function NotificationsListScreen({ navigation }) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Respond to invite to create team
-            </Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <View style={{ flex: 1 }}>
-            <ScrollView>
-              <Text style={[styles.rulesText, { margin: 15 }]}>
-                {'When your team creates a club:'}
+                Respond to invite to create team
               </Text>
-              <Text style={[styles.rulesText, { marginLeft: 15 }]}>
-                {'\n• your team will belong to the club initially.'}
-              </Text>
-              <Text style={[styles.rulesText, { marginLeft: 15 }]}>
-                {'\n• your team can leave the club anytime later.'}
-              </Text>
-              <Text style={[styles.rulesText, { marginLeft: 15 }]}>
-                {
+            </View>
+            <View style={styles.separatorLine} />
+            <View style={{ flex: 1 }}>
+              <ScrollView>
+                <Text style={[styles.rulesText, { margin: 15 }]}>
+                  {'When your team creates a club:'}
+                </Text>
+                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                  {'\n• your team will belong to the club initially.'}
+                </Text>
+                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                  {'\n• your team can leave the club anytime later.'}
+                </Text>
+                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                  {
                   '\n• the admins of your team will be the admins of the club initially.'
                 }
-              </Text>
-            </ScrollView>
-          </View>
-          <TCGradientButton
+                </Text>
+              </ScrollView>
+            </View>
+            <TCGradientButton
             isDisabled={false}
             title={strings.nextTitle}
             style={{ marginBottom: 30 }}
             onPress={onNextPressed}
           />
-        </View>
-      </Modal>
+          </View>
+        </Modal>
 
-      {/* Rules notes modal */}
-    </View>
+        {/* Rules notes modal */}
+      </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

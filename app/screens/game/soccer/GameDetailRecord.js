@@ -30,7 +30,12 @@ import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
 import {useFocusEffect} from '@react-navigation/native';
 import AuthContext from '../../../auth/context';
-import {addGameRecord, resetGame, getGameRoster, getGameByGameID} from '../../../api/Games';
+import {
+  addGameRecord,
+  resetGame,
+  getGameRoster,
+  getGameByGameID,
+} from '../../../api/Games';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
 import ReservationStatus from '../../../Constants/ReservationStatus';
@@ -41,7 +46,6 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import strings from '../../../Constants/String';
 import {getHitSlop} from '../../../utils';
-
 
 let entity = {};
 let timer, timerForTimeline;
@@ -116,7 +120,6 @@ export default function GameDetailRecord({navigation, route}) {
   }, []);
 
   const getGameDetail = (gameId) => {
-    
     getGameByGameID(gameId, authContext)
       .then((response) => {
         if (response.payload.status === GameStatus.reset) {
@@ -274,7 +277,7 @@ export default function GameDetailRecord({navigation, route}) {
   };
   const getGameRosterDetail = (gameId) => {
     console.log('getGameRosterDetail called');
-   
+
     getGameRoster(gameId, authContext)
       .then((res2) => {
         setloading(false);
@@ -303,13 +306,17 @@ export default function GameDetailRecord({navigation, route}) {
               obj.role === 'player',
           ),
         );
-        if (res2.payload.home_team.roster.filter(
-          (obj) => obj.field_status === 'onField' && obj.role === 'player',
-        ).length <= 0) {
+        if (
+          res2.payload.home_team.roster.filter(
+            (obj) => obj.field_status === 'onField' && obj.role === 'player',
+          ).length <= 0
+        ) {
           setIsLineUpSet('Your team does not configure lineup yet.');
-        } else if (res2.payload.away_team.roster.filter(
-          (obj) => obj.field_status === 'onField' && obj.role === 'player',
-        ).length <= 0) {
+        } else if (
+          res2.payload.away_team.roster.filter(
+            (obj) => obj.field_status === 'onField' && obj.role === 'player',
+          ).length <= 0
+        ) {
           setIsLineUpSet('Away team does not configure lineup yet.');
         }
         const {gameObject} = route.params ?? {};
@@ -1404,32 +1411,39 @@ export default function GameDetailRecord({navigation, route}) {
                 <TCGameButton
                   title="Start"
                   onPress={() => {
-                    if (isLineUpSet) {
-                      Alert.alert(isLineUpSet);
-                    } else if (
-                      gameObj?.challenge_status ===
-                      (ReservationStatus.pendingrequestpayment ||
-                        ReservationStatus.pendingpayment)
+                    if (
+                      gameObj.start_datetime >
+                      Number((new Date().getTime() / 1000).toFixed(0))
                     ) {
-                      Alert.alert(
-                        'Game cannot be start unless the payment goes through',
-                      );
+                      if (isLineUpSet) {
+                        Alert.alert(isLineUpSet);
+                      } else if (
+                        gameObj?.challenge_status ===
+                        (ReservationStatus.pendingrequestpayment ||
+                          ReservationStatus.pendingpayment)
+                      ) {
+                        Alert.alert(
+                          'Game cannot be start unless the payment goes through',
+                        );
+                      } else {
+                        lastTimeStamp = date
+                          ? parseFloat(
+                              date.setMilliseconds(0, 0) / 1000,
+                            ).toFixed(0)
+                          : parseFloat(new Date().getTime() / 1000).toFixed(0);
+                        console.log('lastTimeStamp:=>', lastTimeStamp);
+                        lastVerb = GameVerb.Start;
+                        const body = [
+                          {
+                            verb: lastVerb,
+                            timestamp: Number(lastTimeStamp),
+                            team_id: actionByTeamID,
+                          },
+                        ];
+                        addGameRecordDetail(gameObj.game_id, body);
+                      }
                     } else {
-                      lastTimeStamp = date
-                        ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(
-                            0,
-                          )
-                        : parseFloat(new Date().getTime() / 1000).toFixed(0);
-                      console.log('lastTimeStamp:=>', lastTimeStamp);
-                      lastVerb = GameVerb.Start;
-                      const body = [
-                        {
-                          verb: lastVerb,
-                          timestamp: Number(lastTimeStamp),
-                          team_id: actionByTeamID,
-                        },
-                      ];
-                      addGameRecordDetail(gameObj.game_id, body);
+                      Alert.alert('Game cannot be start because its expired.');
                     }
                   }}
                   gradientColor={[colors.yellowColor, colors.themeColor]}

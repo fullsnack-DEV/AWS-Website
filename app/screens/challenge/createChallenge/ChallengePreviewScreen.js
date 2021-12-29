@@ -16,6 +16,7 @@ import {
 import moment from 'moment';
 
 import Modal from 'react-native-modal';
+import {useIsFocused} from '@react-navigation/native';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -49,13 +50,13 @@ import {
 import GameStatus from '../../../Constants/GameStatus';
 import TCArrowView from '../../../components/TCArrowView';
 import TCGradientButton from '../../../components/TCGradientButton';
-
 import TCBorderButton from '../../../components/TCBorderButton';
 import * as Utils from '../manageChallenge/settingUtility';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCTabView from '../../../components/TCTabView';
 import CurruentReservationView from '../alterChallenge/CurrentReservationView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
+import { paymentMethods } from '../../../api/Users';
 
 let entity = {};
 export default function ChallengePreviewScreen({ navigation, route }) {
@@ -66,6 +67,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   const [selectedTab, setSelectedTab] = useState(0);
 
   entity = authContext.entity;
+  const isFocused = useIsFocused();
 
   const [settingObject, setSettingObject] = useState();
   const [modalVisible, setModalVisible] = useState(false);
@@ -73,6 +75,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   const [moreButtonReferee, setMoreButtonReferee] = useState();
   const [moreButtonScorekeeper, setMoreButtonScorekeeper] = useState();
   const [alterModalVisible, setAlterModalVisible] = useState(false);
+  const [defaultCard, setDefaultCard] = useState();
 
   const [challengeStatus, setChallengeStatus] = useState();
   const [teamObject, setTeamObject] = useState();
@@ -141,6 +144,18 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       );
     }
   }, [oldVersion, route?.params?.challengeObj]);
+
+
+  useEffect(() => {
+   
+    if (isFocused) {
+      if (route?.params?.paymentMethod) {
+        setDefaultCard(route?.params?.paymentMethod);
+      }else if (!defaultCard && challengeData?.source) {
+          getPaymentMethods(challengeData?.source);
+        }
+    }
+  }, [challengeData?.source, defaultCard, isFocused, route?.params?.paymentMethod]);
 
   useEffect(() => {
     console.log('challenge data11:=>', challengeData?.challengee);
@@ -639,13 +654,13 @@ export default function ChallengePreviewScreen({ navigation, route }) {
               title={strings.acceptTitle}
               onPress={() => {
                 let paymentObj = {};
-                if (route?.params?.paymentMethod) {
+                if (defaultCard) {
                   paymentObj = {
-                    source: route?.params?.paymentMethod?.id,
+                    source: defaultCard?.id,
                     payment_method_type: 'card',
                   };
                 }
-
+                console.log('paymentObj',defaultCard);
                 alterChallengeOperation(
                   entity.uid,
                   challengeData?.challenge_id,
@@ -749,7 +764,29 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
     return <View style={{ marginBottom: 45 }} />;
   };
-
+  const getPaymentMethods = () => {
+    setloading(true);
+    paymentMethods(authContext)
+      .then((response) => {
+        setloading(false);
+        console.log('source ID:', challengeData?.source);
+        console.log('payment method', response.payload);
+        for (const tempCard of response?.payload) {
+          if (tempCard?.id === challengeData?.source) {
+            setDefaultCard(tempCard);
+            console.log('default card:', tempCard);
+            break;
+          }
+        }
+      })
+      .catch((e) => {
+        console.log('error in payment method', e);
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
   const topButtons = () => {
     if (challengeData?.challenger === challengeData?.invited_by) {
       if (
@@ -1154,7 +1191,6 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             />
             <TCThickDivider />
           </View>
-
           <TCLabel
             title={
               challengeData?.challenger === entity.uid ? 'Payment' : 'Earning'
@@ -1175,7 +1211,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           />
           <TCThickDivider marginTop={20} />
 
-          {oldVersion?.total_game_fee === 0
+          {oldVersion?.total_game_fee >= 0
             && challengeData?.total_game_fee > 0
             && challengeData?.challenger === entity.uid && (
               <View>
@@ -1184,10 +1220,10 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                   <View style={styles.viewMarginStyle}>
                     <TCTouchableLabel
                       title={
-                        route?.params?.paymentMethod
+                        defaultCard
                           ? `${Utility.capitalize(
-                              route?.params?.paymentMethod?.card?.brand,
-                            )} ****${route?.params?.paymentMethod?.card?.last4}`
+                              defaultCard?.card?.brand,
+                            )} ****${defaultCard?.card?.last4}`
                           : strings.addOptionMessage
                       }
                       showNextArrow={true}

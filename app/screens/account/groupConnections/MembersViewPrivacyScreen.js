@@ -4,7 +4,7 @@ import React, {
   useState, useEffect, useContext,
 } from 'react';
 import {
-  Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, Alert,
+  Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, Alert,SafeAreaView
 } from 'react-native';
 
 import {
@@ -77,7 +77,7 @@ export default function MembersViewPrivacyScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <ScrollView>
         <Text style={styles.titleStyle}>Connections</Text>
@@ -139,9 +139,10 @@ export default function MembersViewPrivacyScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         </View>
-        <TCGradientButton title={strings.saveTitle} onPress={() => sendClubSetting()}/>
+       
       </ScrollView>
-    </View>
+      <TCGradientButton title={strings.saveTitle} onPress={() => sendClubSetting()}/>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

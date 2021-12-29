@@ -1282,31 +1282,39 @@ export default function TennisRecording({navigation, route}) {
                             <TCGameButton
                             title="Start"
                             onPress={() => {
-                              if (
-                                gameObj?.challenge_status ===
-                                (ReservationStatus.pendingrequestpayment ||
-                                  ReservationStatus.pendingpayment)
-                              ) {
+                              console.log('Start time:',gameObj.start_datetime);
+                              console.log('now time time:',Number((new Date().getTime()/1000).toFixed(0)));
+                              if(gameObj.start_datetime > Number((new Date().getTime()/1000).toFixed(0))){
+                                if (
+                                  gameObj?.challenge_status ===
+                                  (ReservationStatus.pendingrequestpayment ||
+                                    ReservationStatus.pendingpayment)
+                                ) {
+                                  Alert.alert(
+                                    'Game cannot be start unless the payment goes through',
+                                  );
+                                } else {
+                                  lastTimeStamp = date
+                                    ? parseFloat(
+                                        date.setMilliseconds(0, 0) / 1000,
+                                      ).toFixed(0)
+                                    : parseFloat(
+                                        new Date().getTime() / 1000,
+                                      ).toFixed(0);
+                                  lastVerb = GameVerb.Start;
+                                  const body = [
+                                    {
+                                      verb: lastVerb,
+                                      timestamp: lastTimeStamp,
+                                      team_id: actionByTeamID,
+                                    },
+                                  ];
+                                  addGameRecordDetail(gameObj.game_id, body);
+                                }
+                              }else{
                                 Alert.alert(
-                                  'Game cannot be start unless the payment goes through',
+                                  'Game cannot be start because its expired.',
                                 );
-                              } else {
-                                lastTimeStamp = date
-                                  ? parseFloat(
-                                      date.setMilliseconds(0, 0) / 1000,
-                                    ).toFixed(0)
-                                  : parseFloat(
-                                      new Date().getTime() / 1000,
-                                    ).toFixed(0);
-                                lastVerb = GameVerb.Start;
-                                const body = [
-                                  {
-                                    verb: lastVerb,
-                                    timestamp: lastTimeStamp,
-                                    team_id: actionByTeamID,
-                                  },
-                                ];
-                                addGameRecordDetail(gameObj.game_id, body);
                               }
                             }}
                             gradientColor={[

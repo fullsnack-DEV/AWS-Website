@@ -24,7 +24,7 @@ export default function TCEventView({
   eventOfSection,
   entity,
   profileID,
-  screenUserId,
+  
 }) {
   console.log('data.game.referees', data);
   let showDot = false;
@@ -117,7 +117,10 @@ export default function TCEventView({
   
 
   if (
-    screenUserId === entity.uid ||
+    data?.game?.home_team?.group_id === entity.uid ||
+    data?.game?.away_team?.group_id === entity.uid ||
+    data?.game?.home_team?.user_id === entity.uid ||
+    data?.game?.away_team?.user_id === entity.uid ||
     refereeFound(data) ||
     scorekeeperFound(data)
   ) {

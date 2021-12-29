@@ -22,6 +22,8 @@ import TennisHome from '../screens/game/tennis/TennisHome';
 import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 import AddOrDeleteSport from '../screens/localhome/AddOrDeleteSport';
 import RecruitingPlayerScreen from '../screens/localhome/RecruitingPlayerScreen';
+import SearchScreen from '../screens/search/SearchScreen';
+import EntitySearchScreen from '../screens/EntitySearchScreen';
 
 const Stack = createStackNavigator();
 
@@ -327,6 +329,40 @@ const LocalHomeNavigator = () => (
       component={TennisHome}
       options={{
         headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="SearchScreen"
+      component={SearchScreen}
+      options={{
+        title: 'Search',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="EntitySearchScreen"
+      component={EntitySearchScreen}
+      options={{
+        title: 'Search',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        // headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
   </Stack.Navigator>
