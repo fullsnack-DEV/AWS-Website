@@ -69,6 +69,7 @@ import {getGameHomeScreen} from '../../utils/gameUtils';
 const defaultPageSize = 5;
 export default function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
+  const galleryRef = useRef();
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
@@ -499,12 +500,22 @@ export default function LocalHomeScreen({navigation, route}) {
         size: defaultPageSize,
         query: {
           bool: {
-            must: [{term: {'referee_data.is_published': true}}],
+            must: [
+              {
+                nested: {
+                  path: 'referee_data',
+                  query: {
+                    bool: {must: [{term: {'referee_data.is_published': true}}]},
+                  },
+                },
+              },
+            ],
           },
         },
       };
+
       if (location !== 'world') {
-        refereeQuery.query.bool.must.push({
+        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           multi_match: {
             query: `${location}`,
             fields: ['city', 'country', 'state'],
@@ -512,7 +523,7 @@ export default function LocalHomeScreen({navigation, route}) {
         });
       }
       if (selectedSport !== 'All') {
-        refereeQuery.query.bool.must.push({
+        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
             'referee_data.sport.keyword': {
               value: selectedSport,
@@ -521,18 +532,28 @@ export default function LocalHomeScreen({navigation, route}) {
         });
       }
       // Referee query
-
+      console.log('refereeQuery:=>', JSON.stringify(refereeQuery));
       // Scorekeeper query
       const scorekeeperQuery = {
         size: defaultPageSize,
         query: {
           bool: {
-            must: [{term: {'scorekeeper_data.is_published': true}}],
+            must: [
+              {
+                nested: {
+                  path: 'scorekeeper_data',
+                  query: {
+                    bool: {must: [{term: {'scorekeeper_data.is_published': true}}]},
+                  },
+                },
+              },
+            ],
           },
         },
       };
       if (location !== 'world') {
-        scorekeeperQuery.query.bool.must.push({
+        
+        scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
           multi_match: {
             query: `${location}`,
             fields: ['city', 'country', 'state'],
@@ -540,7 +561,7 @@ export default function LocalHomeScreen({navigation, route}) {
         });
       }
       if (selectedSport !== 'All') {
-        scorekeeperQuery.query.bool.must.push({
+        scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
             'scorekeeper_data.sport.keyword': {
               value: selectedSport,
@@ -842,7 +863,15 @@ export default function LocalHomeScreen({navigation, route}) {
           }
           rightComponent={
             <View style={styles.rightHeaderView}>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('SearchScreen', {
+                    isAdmin: true,
+                    galleryRef,
+                    entityType: authContext.entity?.role,
+                    entityID: authContext.entity?.uid,
+                  });
+                }}>
                 <Image
                   source={images.home_search}
                   style={styles.townsCupIcon}
@@ -917,8 +946,7 @@ export default function LocalHomeScreen({navigation, route}) {
         referees.length <= 0 &&
         scorekeepers.length <= 0 ? (
           <View style={styles.placeholderContainer}>
-            <Text
-            style={styles.placeholderViewText}>
+            <Text style={styles.placeholderViewText}>
               Towns Cup Data Not Available
             </Text>
           </View>
@@ -1644,15 +1672,14 @@ const styles = StyleSheet.create({
     height: 35,
     width: 35,
   },
-  placeholderViewText:{
+  placeholderViewText: {
     fontFamily: fonts.RBold,
     fontSize: 20,
     color: colors.ligherGray,
   },
-  placeholderContainer:{
-    flex: 1, 
-    alignItems: 'center', 
-    justifyContent: 'center'
-  }
-
+  placeholderContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

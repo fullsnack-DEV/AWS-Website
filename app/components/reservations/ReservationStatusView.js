@@ -16,6 +16,7 @@ import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 import RefereeReservationTitle from './RefereeReservationTitle';
 import ScorekeeperReservationTitle from './ScorekeeperReservationTitle';
+import { getSportName } from '../../utils';
 
 let entity = {};
 function ReservationStatusView({ data, onClick }) {
@@ -25,7 +26,7 @@ function ReservationStatusView({ data, onClick }) {
   const getDate = () => data?.start_datetime * 1000;
 
   const checkSenderOrReceiver = (challengeObj) => {
-    console.log('sender & receiver Obj', challengeObj);
+    console.log('Data Obj', data);
 
     if (
       challengeObj?.status === ReservationStatus.pendingpayment
@@ -248,14 +249,14 @@ function ReservationStatusView({ data, onClick }) {
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {!data?.referee_id && !data?.scorekeeper_id && (
-            <Text style={styles.matchText}>Match · {data?.game?.sport}</Text>
+            <Text style={styles.matchText}>Match · {getSportName(data,authContext)}</Text>
           )}
           {data?.referee_id && (
-            <Text style={styles.matchText}>Referee · {data?.game?.sport}</Text>
+            <Text style={styles.matchText}>Referee · {getSportName(data,authContext)}</Text>
           )}
           {data?.scorekeeper_id && (
             <Text style={styles.matchText}>
-              Scorekeeper · {data?.game?.sport}
+              Scorekeeper · {getSportName(data,authContext)}
             </Text>
           )}
           <Image

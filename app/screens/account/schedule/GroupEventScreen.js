@@ -25,7 +25,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-import { getUnreadCount } from '../../../api/Notificaitons';
+import { getGroups } from '../../../api/Groups';
 
 export default function GroupEventScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -46,10 +46,13 @@ export default function GroupEventScreen({navigation}) {
         schedule_group: resultOfIds,
       };
       saveUserSettings(params, authContext)
-        .then(async(response) => {
+        .then(async (response) => {
           console.log('After save setting', response);
-          await Utility.setStorage('scheduleSetting', response.payload.schedule_group)
-          navigation.goBack()
+          await Utility.setStorage(
+            'scheduleSetting',
+            response.payload.schedule_group,
+          );
+          navigation.goBack();
           setLoading(false);
         })
         .catch((e) => {
@@ -74,7 +77,7 @@ export default function GroupEventScreen({navigation}) {
   useEffect(() => {
     setLoading(true);
     // getGroups(authContext)
-    getUnreadCount(authContext)
+    getGroups(authContext)
       .then((response) => {
         const {teams, clubs} = response.payload;
 
@@ -98,6 +101,12 @@ export default function GroupEventScreen({navigation}) {
                     isSelected: false,
                   },
             );
+            setGroupsList([...groups]);
+          } else {
+            const groups = [...teams, ...clubs].map((obj) => ({
+              ...obj,
+              isSelected: false,
+            }));
             setGroupsList([...groups]);
           }
           // await Utility.setStorage('appSetting', response.payload.app);

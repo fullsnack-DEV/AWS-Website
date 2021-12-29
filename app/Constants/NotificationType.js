@@ -15,6 +15,8 @@ const NotificationType = {
   scorekeeperRequest: 'scorekeeperRequest',
   changeScorekeeperRequest: 'changeScorekeeperRequest',
 
+  gameCancelled:'gameCancelled',
+  gameAccepted:'gameAccepted',
   initialChallengePaymentFail: 'initialChallengePaymentFail',
   alterChallengePaymentFail: 'alterChallengePaymentFail',
   challengeAwaitingPaymentPaid: 'challengeAwaitingPaymentPaid',
@@ -23,6 +25,9 @@ const NotificationType = {
   gameCanceledDuringAwaitingPayment: 'gameCanceledDuringAwaitingPayment',
   gameRestoredDuringAwaitingPayment: 'gameRestoredDuringAwaitingPayment',
 
+  refereeReservationApproved: 'refereeReservationApproved',
+  refereeReservationCancelled: 'refereeReservationCancelled',
+  refereeReservationAccepted: 'refereeReservationAccepted',
   refereeReservationInitialPaymentFail: 'refereeReservationInitialPaymentFail',
   refereeReservationAlterPaymentFail: 'refereeReservationAlterPaymentFail',
   refereeReservationAwaitingPaymentPaid: 'refereeReservationAwaitingPaymentPaid',
@@ -31,6 +36,9 @@ const NotificationType = {
   refereeReservationCanceledDuringAwaitingPayment: 'refereeReservationCanceledDuringAwaitingPayment',
   refereeReservationRestoredDuringAwaitingPayment: 'refereeReservationRestoredDuringAwaitingPayment',
 
+  scorekeeperReservationApproved : 'refereeReservationApproved',
+  scorekeeperReservationCancelled: 'scorekeeperReservationCancelled',
+  scorekeeperReservationAccepted: 'scorekeeperReservationAccepted',
   scorekeeperReservationInitialPaymentFail: 'scorekeeperReservationInitialPaymentFail',
   scorekeeperReservationAlterPaymentFail: 'scorekeeperReservationAlterPaymentFail',
   scorekeeperReservationAwaitingPaymentPaid: 'scorekeeperReservationAwaitingPaymentPaid',

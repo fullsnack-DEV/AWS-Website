@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useContext} from 'react';
 import {
   View, Text, StyleSheet, FlatList,
 } from 'react-native';
@@ -16,10 +16,14 @@ import TCClubClipView from '../TCClubClipView'
 import NewsFeedDescription from '../newsFeed/NewsFeedDescription'
 import images from '../../Constants/ImagePath';
 import TCGradientButton from '../TCGradientButton';
+import AuthContext from '../../auth/context';
+
 
 export default function GroupInfo({
   navigation, groupDetails, isAdmin, onGroupPress, onMemberPress, onGroupListPress,
 }) {
+  const authContext = useContext(AuthContext);
+
   const members = groupDetails.joined_members && groupDetails.joined_members.length > 0
 
   const renderTeam = ({ item }) => (
@@ -212,7 +216,7 @@ export default function GroupInfo({
             });
           }}/>
 
-        <TCInfoField title={strings.sport} value={groupDetails.sport ? Utility.capitalize(groupDetails.sport) : groupDetails.sport} marginLeft={10} marginTop={20}/>
+        <TCInfoField title={strings.sport} value={groupDetails.sports_string ? groupDetails.sports_string : Utility.getSportName(groupDetails,authContext)} marginLeft={10} marginTop={20}/>
         <TCInfoField title={strings.membersgender} value={groupDetails.gender ? Utility.capitalize(groupDetails.gender) : groupDetails.gender} marginLeft={10}/>
         <TCInfoField title={strings.membersage} value={memberage} marginLeft={10}/>
         <TCInfoField title={strings.language} value={groupDetails.languages} marginLeft={10}/>

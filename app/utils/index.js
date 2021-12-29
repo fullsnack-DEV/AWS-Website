@@ -14,7 +14,7 @@ import {
   PixelRatio,
   LayoutAnimation,
 } from 'react-native';
-
+import _ from 'lodash';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
   heightPercentageToDP as hp,
@@ -705,9 +705,12 @@ export const getCalendar = async (
   type,
   blocked,
 ) => {
-  return getStorage('scheduleSetting').then((ids) => {
+  return getStorage('scheduleSetting').then(async (ids) => {
     console.log('Calender ids:=>', ids);
     console.log('parti ids:=>', participantId);
+
+    const idss = await getStorage('scheduleSetting');
+    console.log('Calender ids:=>', idss);
 
     const body = {
       query: {
@@ -716,24 +719,6 @@ export const getCalendar = async (
             {
               bool: {
                 should: [
-                  {
-                    bool: {
-                      must: [
-                        {
-                          terms: {
-                            'participants.entity_id.keyword': ids,
-                          },
-                        },
-
-                        {
-                          bool: {
-                            must_not: {exists: {field: 'expiry_datetime'}},
-                          },
-                        },
-                      ],
-                    },
-                  },
-
                   {
                     term: {
                       'participants.entity_id.keyword': participantId,
@@ -746,6 +731,26 @@ export const getCalendar = async (
         },
       },
     };
+
+    if (ids && ids.length > 0) {
+      body.query.bool.must[0].bool.should.push({
+        bool: {
+          must: [
+            {
+              terms: {
+                'participants.entity_id.keyword': ids,
+              },
+            },
+
+            {
+              bool: {
+                must_not: {exists: {field: 'expiry_datetime'}},
+              },
+            },
+          ],
+        },
+      });
+    }
 
     if (type) {
       body.query.bool.must.push({

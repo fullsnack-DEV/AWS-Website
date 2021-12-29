@@ -17,7 +17,6 @@ import * as Utility from '../../../../utils';
 export default function GameFee({ navigation, route }) {
   const { comeFrom, sportName, sportType } = route?.params;
   const authContext = useContext(AuthContext);
-
   const [loading, setloading] = useState(false);
   const [basicFee, setBasicFee] = useState(
     route?.params?.settingObj?.game_fee

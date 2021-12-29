@@ -218,7 +218,10 @@ const getTabBarVisibility = (route) => {
     routeName === 'DeactivateSportScreen' ||
     routeName === 'EditRosterScreen' ||
     routeName === 'CreateEventScreen' ||
-    routeName === 'EditLineUpScreen'
+    routeName === 'EditLineUpScreen' ||
+    routeName === 'SearchScreen' || 
+    routeName === 'MembersViewPrivacyScreen' ||
+    routeName === 'NotificationsListScreen'
 
   ) {
     return false;

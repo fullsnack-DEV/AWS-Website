@@ -1342,7 +1342,7 @@ export default function AccountScreen({ navigation }) {
                       // marqueeDelay={0}
                       // marqueeResetDelay={1000}
                     >
-                      {authContext?.entity?.auth?.user?.full_name || ''}
+                      {authContext?.entity?.obj?.full_name || ''}
                     </MarqueeText>
 
                     <Image

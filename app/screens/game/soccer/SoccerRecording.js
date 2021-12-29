@@ -852,32 +852,39 @@ export default function SoccerRecording({navigation, route}) {
                 <TCGameButton
                   title="Start"
                   onPress={() => {
-                    if (isLineUpSet) {
-                      Alert.alert(isLineUpSet);
-                    } else if (
-                      gameObj?.challenge_status ===
-                      (ReservationStatus.pendingrequestpayment ||
-                        ReservationStatus.pendingpayment)
-                    ) {
+                    if(gameObj.start_datetime > Number((new Date().getTime()/1000).toFixed(0))){
+                      if (isLineUpSet) {
+                        Alert.alert(isLineUpSet);
+                      } else if (
+                        gameObj?.challenge_status ===
+                        (ReservationStatus.pendingrequestpayment ||
+                          ReservationStatus.pendingpayment)
+                      ) {
+                        Alert.alert(
+                          'Game cannot be start unless the payment goes through',
+                        );
+                      } else {
+                        lastTimeStamp = date
+                          ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(
+                              0,
+                            )
+                          : parseFloat(new Date().getTime() / 1000).toFixed(0);
+                        lastVerb = GameVerb.Start;
+                        const body = [
+                          {
+                            verb: lastVerb,
+                            timestamp: lastTimeStamp,
+                            team_id: actionByTeamID,
+                          },
+                        ];
+                        addGameRecordDetail(gameObj.game_id, body);
+                      }
+                    }else{
                       Alert.alert(
-                        'Game cannot be start unless the payment goes through',
+                        'Game cannot be start because its expired.',
                       );
-                    } else {
-                      lastTimeStamp = date
-                        ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(
-                            0,
-                          )
-                        : parseFloat(new Date().getTime() / 1000).toFixed(0);
-                      lastVerb = GameVerb.Start;
-                      const body = [
-                        {
-                          verb: lastVerb,
-                          timestamp: lastTimeStamp,
-                          team_id: actionByTeamID,
-                        },
-                      ];
-                      addGameRecordDetail(gameObj.game_id, body);
                     }
+                   
                   }}
                   gradientColor={[colors.yellowColor, colors.themeColor]}
                   imageName={images.gameStart}

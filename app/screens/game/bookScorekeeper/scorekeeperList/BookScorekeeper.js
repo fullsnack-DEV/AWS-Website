@@ -131,7 +131,7 @@ import React, {
              'scorekeeper_data.setting.game_fee.fee': {
                gte: Number(filerScorekeeper.scorekeeperFee.split('-')[0]),
                lte: Number(filerScorekeeper.scorekeeperFee.split('-')[1]),
-               boost: 2.0,
+               
              },
            },
          });

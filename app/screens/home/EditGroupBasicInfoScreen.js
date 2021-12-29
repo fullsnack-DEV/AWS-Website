@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, {useState, useLayoutEffect, useEffect, useCallback,useContext} from 'react';
 
 import {
   View,
@@ -8,37 +8,93 @@ import {
   StyleSheet,
   Image,
   FlatList,
-  Dimensions, TouchableOpacity,
+  Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
 import RNPickerSelect from 'react-native-picker-select';
 import TCTextField from '../../components/TCTextField';
 import TCLabel from '../../components/TCLabel';
-import { patchGroup } from '../../api/Groups';
+import {patchGroup} from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import images from '../../Constants/ImagePath'
+import images from '../../Constants/ImagePath';
 import TCTouchableLabel from '../../components/TCTouchableLabel';
-import TCGradientButton from '../../components/TCGradientButton'
+import TCGradientButton from '../../components/TCGradientButton';
 import ImageButton from '../../components/WritePost/ImageButton';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import DataSource from '../../Constants/DataSource';
+import AuthContext from '../../auth/context';
 
-export default function EditGroupBasicInfoScreen({ navigation, route }) {
+
+export default function EditGroupBasicInfoScreen({navigation, route}) {
   // For activity indicator
+  const authContext = useContext(AuthContext);
+
+  const {groupDetails} = route?.params;
+  console.log('groupDetailsgroupDetails:', groupDetails);
   const [loading, setloading] = useState(false);
-  const [groupData, setGroupData] = useState(route.params.groupDetails);
-  const [minAge, setMinAge] = useState(route.params.groupDetails.min_age);
-  const [maxAge, setMaxAge] = useState(route.params.groupDetails.max_age);
+  const [groupData, setGroupData] = useState(groupDetails);
+  const [minAge, setMinAge] = useState(groupDetails?.min_age ?? 1);
+  const [maxAge, setMaxAge] = useState(groupDetails?.max_age ?? 70);
   const [minAgeValue, setMinAgeValue] = useState([]);
   const [maxAgeValue, setMaxAgeValue] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [groupLanguages, setGroupLanguages] = useState(route.params.groupDetails.languages);
+  const [groupLanguages, setGroupLanguages] = useState(groupDetails?.languages);
   const [languages, setLanguages] = useState([]);
+
+  const onSaveButtonClicked = useCallback(() => {
+    if (checkValidation()) {
+      setloading(true);
+      const groupProfile = {};
+      groupProfile.sport = groupData.sport;
+      groupProfile.gender = groupData.gender;
+      groupProfile.min_age = minAge;
+      groupProfile.max_age = maxAge;
+      groupProfile.languages = groupLanguages;
+      groupProfile.registration_fee = groupData.registration_fee;
+      groupProfile.membership_fee = groupData.membership_fee;
+      groupProfile.membership_fee_type = groupData.membership_fee_type;
+
+      console.log('updating values', groupProfile);
+
+      patchGroup(groupData.group_id, groupProfile,authContext).then(async (response) => {
+        setloading(false);
+        if (response && response.status === true) {
+          console.log('response', response);
+          const entity = await Utility.getStorage('loggedInEntity');
+          entity.obj = response.payload;
+          Utility.setStorage('loggedInEntity', entity);
+          navigation.goBack();
+        } else {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, 'Something went wrong');
+          }, 0.1);
+        }
+      }).catch((e) => {
+        setloading(false);
+        console.log('2');
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+    }
+  }, [
+    groupData.gender,
+    groupData.group_id,
+    groupData.membership_fee,
+    groupData.membership_fee_type,
+    groupData.registration_fee,
+    groupData.sport,
+    groupLanguages,
+    maxAge,
+    minAge,
+    navigation,
+  ]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -57,26 +113,25 @@ export default function EditGroupBasicInfoScreen({ navigation, route }) {
         </Text>
       ),
     });
-  }, [navigation, groupData, groupLanguages]);
+  }, [navigation, groupData, groupLanguages, onSaveButtonClicked]);
 
   useEffect(() => {
     const arr = [];
-    for (const tempData of Utility.languages) {
+    for (const tempData of Utility.languageList) {
       tempData.isChecked = false;
       arr.push(tempData);
     }
     setLanguages(arr);
-  }, [])
+  }, []);
   // Generating min and max age values
   useEffect(() => {
     const minAgeArray = [];
     const maxAgeArray = [];
-    let minAgeCounter = 1;
-    if (+maxAge > 0) {
-      minAgeCounter = maxAge
-    }
 
-    for (let i = 1; i <= minAgeCounter; i++) {
+    console.log('MIN AGE:=>',minAge);
+    console.log('MAX AGE:=>',maxAge);
+
+    for (let i = 1; i <= maxAge; i++) {
       const dataSource = {
         label: `${i}`,
         value: i,
@@ -84,12 +139,7 @@ export default function EditGroupBasicInfoScreen({ navigation, route }) {
       minAgeArray.push(dataSource);
     }
 
-    let maxAgeCounter = 1;
-    if (+minAge > 0) {
-      maxAgeCounter = minAge
-    }
-
-    for (let i = maxAgeCounter; i <= 70; i++) {
+    for (let i = minAge; i <= 70; i++) {
       const dataSource = {
         label: `${i}`,
         value: i,
@@ -100,42 +150,10 @@ export default function EditGroupBasicInfoScreen({ navigation, route }) {
     setMaxAgeValue(maxAgeArray);
   }, [minAge, maxAge]);
 
-  const onSaveButtonClicked = () => {
-    if (checkValidation()) {
-      setloading(true);
-      const groupProfile = {};
-      groupProfile.sport = groupData.sport;
-      groupProfile.gender = groupData.gender;
-      groupProfile.min_age = minAge;
-      groupProfile.max_age = maxAge;
-      groupProfile.languages = groupLanguages;
-      groupProfile.registration_fee = groupData.registration_fee
-      groupProfile.membership_fee = groupData.membership_fee
-      groupProfile.membership_fee_type = groupData.membership_fee_type
-
-      console.log('updating values', groupProfile)
-
-      patchGroup(groupData.group_id, groupProfile).then(async (response) => {
-        setloading(false);
-        if (response && response.status === true) {
-          console.log('response', response)
-          const entity = await Utility.getStorage('loggedInEntity');
-          entity.obj = response.payload;
-          Utility.setStorage('loggedInEntity', entity);
-          navigation.goBack();
-        } else {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, 'Something went wrong');
-          }, 0.1);
-        }
-      });
-    }
-  };
-
   const checkValidation = () => {
     if (groupData.sport === '') {
       Alert.alert(strings.alertmessagetitle, strings.sportcannotbeblank);
-      return false
+      return false;
     }
 
     // else if (player1ID === player2ID) {
@@ -148,18 +166,18 @@ export default function EditGroupBasicInfoScreen({ navigation, route }) {
     // ) {
     //   Alert.alert('Towns Cup', 'One player cannot be blank');
     // }
-    return true
+    return true;
   };
 
-  const isIconCheckedOrNot = ({ item, index }) => {
+  const isIconCheckedOrNot = ({item, index}) => {
     languages[index].isChecked = !item.isChecked;
     setLanguages([...languages]);
   };
 
   const toggleLanguageModal = () => {
-    let selectedLanguages = []
+    let selectedLanguages = [];
     if (groupLanguages) {
-      selectedLanguages = groupLanguages.split(', ')
+      selectedLanguages = groupLanguages.split(', ');
     }
     const arr = [];
     for (const tempData of Utility.languages) {
@@ -182,23 +200,27 @@ export default function EditGroupBasicInfoScreen({ navigation, route }) {
         arr.push(tempData.language);
       }
     }
-    setGroupLanguages(arr.join(', '))
+    setGroupLanguages(arr.join(', '));
     setModalVisible(!isModalVisible);
   };
 
-  const renderLanguage = ({ item, index }) => (
+  const renderLanguage = ({item, index}) => (
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-        isIconCheckedOrNot({ item, index });
+        isIconCheckedOrNot({item, index});
       }}>
-      <View style={{ height: 60, justifyContent: 'center' }}>
+      <View style={{height: 60, justifyContent: 'center'}}>
         <Text style={styles.languageList}>{item.language}</Text>
         <View style={styles.checkbox}>
           <FastImage
-              source={languages[index].isChecked ? images.checkWhiteLanguage : images.uncheckWhite}
-              style={styles.checkboxImg}
-            />
+            source={
+              languages[index].isChecked
+                ? images.checkWhiteLanguage
+                : images.uncheckWhite
+            }
+            style={styles.checkboxImg}
+          />
         </View>
       </View>
     </TouchableOpacity>
@@ -210,111 +232,146 @@ export default function EditGroupBasicInfoScreen({ navigation, route }) {
         <ActivityLoader visible={loading} />
         {/* Sport */}
         <View>
-          <View style={{ flexDirection: 'row' }}>
-            <TCLabel title= {strings.SportsTextFieldTitle } style={styles.titleStyle}/>
+          <View style={{flexDirection: 'row'}}>
+            <TCLabel
+              title={strings.SportsTextFieldTitle}
+              style={styles.titleStyle}
+            />
             <Text style={styles.validationSign}>*</Text>
           </View>
-          {groupData.entity_type === 'club' && <View style={{ height: 40, marginHorizontal: 15 }}>
-            <RNPickerSelect
-            placeholder={ {
-              label: strings.selectSportPlaceholder,
-              value: '',
-            } }
-            items={ [
-              { label: 'Football', value: 'football' },
-              { label: 'Baseball', value: 'baseball' },
-              { label: 'Tennis', value: 'tennis' },
-              { label: 'Hockey', value: 'hockey' },
-            ] }
-            onValueChange={ (value) => {
-              setGroupData({ ...groupData, sport: value });
-            } }
-            useNativeAndroidPickerStyle={ false }
-            style={ { inputIOS: styles.inputIOS, inputAndroid: styles.inputAndroid } }
-            value={ groupData.sport }
-            Icon={ () => (
-              <Image source={ images.dropDownArrow } style={ styles.downArrow } />
-            ) }
-          />
-          </View>}
-          {groupData.entity_type === 'team' && <View style={{ marginHorizontal: 25, marginTop: 5 }}>
-            <Text style={{ fontFamily: fonts.RRegular, fontSize: 16 }}>{Utility.capitalize(groupData.sport)}</Text>
-          </View>}
+          {groupData.entity_type === 'club' && (
+            <View style={{height: 40, marginHorizontal: 15}}>
+              <RNPickerSelect
+                placeholder={{
+                  label: strings.selectSportPlaceholder,
+                  value: '',
+                }}
+                items={[
+                  {label: 'Football', value: 'football'},
+                  {label: 'Baseball', value: 'baseball'},
+                  {label: 'Tennis', value: 'tennis'},
+                  {label: 'Hockey', value: 'hockey'},
+                ]}
+                onValueChange={(value) => {
+                  setGroupData({...groupData, sport: value});
+                }}
+                useNativeAndroidPickerStyle={false}
+                style={{
+                  inputIOS: styles.inputIOS,
+                  inputAndroid: styles.inputAndroid,
+                }}
+                value={groupData.sport}
+                Icon={() => (
+                  <Image
+                    source={images.dropDownArrow}
+                    style={styles.downArrow}
+                  />
+                )}
+              />
+            </View>
+          )}
+          {groupData.entity_type === 'team' && (
+            <View style={{marginHorizontal: 25, marginTop: 5}}>
+              <Text style={{fontFamily: fonts.RRegular, fontSize: 16}}>
+                {Utility.capitalize(groupData.sport)}
+              </Text>
+            </View>
+          )}
         </View>
         {/* Member's gender */}
         <View>
           <TCLabel title={strings.genderTitle} style={styles.titleStyle} />
-          {groupData.entity_type === 'club' && <View style={{ height: 40, marginHorizontal: 15 }}>
-            <RNPickerSelect
-              placeholder={ {
-                label: strings.selectGenderPlaceholder,
-                value: null,
-              } }
-              items={ DataSource.Gender }
-              onValueChange={ (value) => {
-                setGroupData({ ...groupData, gender: value })
-              } }
-              useNativeAndroidPickerStyle={ false }
-              style={ { inputIOS: styles.inputIOS, inputAndroid: styles.inputAndroid } }
-              value={ groupData.gender }
-              Icon={ () => (
-                <Image source={ images.dropDownArrow } style={ styles.downArrow } />
-              ) }
-            />
-          </View>}
-          {groupData.entity_type === 'team' && <View style={{ marginHorizontal: 25, marginTop: 5 }}>
-            <Text style={{ fontFamily: fonts.RRegular, fontSize: 16 }}>{groupData.gender ? Utility.capitalize(groupData.gender) : strings.NA}</Text>
-          </View>}
+          {groupData.entity_type === 'club' && (
+            <View style={{height: 40, marginHorizontal: 15}}>
+              <RNPickerSelect
+                placeholder={{
+                  label: strings.selectGenderPlaceholder,
+                  value: null,
+                }}
+                items={DataSource.Gender}
+                onValueChange={(value) => {
+                  setGroupData({...groupData, gender: value});
+                }}
+                useNativeAndroidPickerStyle={false}
+                style={{
+                  inputIOS: styles.inputIOS,
+                  inputAndroid: styles.inputAndroid,
+                }}
+                value={groupData.gender}
+                Icon={() => (
+                  <Image
+                    source={images.dropDownArrow}
+                    style={styles.downArrow}
+                  />
+                )}
+              />
+            </View>
+          )}
+          {groupData.entity_type === 'team' && (
+            <View style={{marginHorizontal: 25, marginTop: 5}}>
+              <Text style={{fontFamily: fonts.RRegular, fontSize: 16}}>
+                {groupData.gender
+                  ? Utility.capitalize(groupData.gender)
+                  : strings.NA}
+              </Text>
+            </View>
+          )}
         </View>
         {/* Member's Age */}
         <View>
           <TCLabel title={strings.membersAgeTitle} />
           <View
-            style={ {
+            style={{
               flexDirection: 'row',
               marginHorizontal: 15,
               justifyContent: 'space-between',
-            } }>
-            <View style={{ width: '49%' }}>
+            }}>
+            <View style={{width: '49%'}}>
               <RNPickerSelect
-                placeholder={ {
+                placeholder={{
                   label: strings.minPlaceholder,
                   value: null,
-                } }
-                items={ minAgeValue }
-                onValueChange={ (value) => {
+                }}
+                items={minAgeValue}
+                onValueChange={(value) => {
                   setMinAge(value);
-                } }
-                useNativeAndroidPickerStyle={ false }
-                style={ { inputIOS: styles.inputIOS, inputAndroid: styles.inputAndroid } }
-                value={ minAge }
-                Icon={ () => (
+                }}
+                useNativeAndroidPickerStyle={false}
+                style={{
+                  inputIOS: styles.inputIOS,
+                  inputAndroid: styles.inputAndroid,
+                }}
+                value={minAge}
+                Icon={() => (
                   <Image
-                      source={ images.dropDownArrow }
-                      style={ styles.downArrow }
-                    />
-                ) }
+                    source={images.dropDownArrow}
+                    style={styles.downArrow}
+                  />
+                )}
               />
             </View>
-            <View style={{ width: '49%' }}>
+            <View style={{width: '49%'}}>
               <RNPickerSelect
-                placeholder={ {
+                placeholder={{
                   label: strings.maxPlaceholder,
                   value: 0,
-                } }
-                items={ maxAgeValue }
-                onValueChange={ (value) => {
+                }}
+                items={maxAgeValue}
+                onValueChange={(value) => {
                   setMaxAge(value);
-                } }
-                useNativeAndroidPickerStyle={ false }
-                style={ { inputIOS: styles.inputIOS, inputAndroid: styles.inputAndroid } }
-                value={ maxAge }
-                Icon={ () => (
+                }}
+                useNativeAndroidPickerStyle={false}
+                style={{
+                  inputIOS: styles.inputIOS,
+                  inputAndroid: styles.inputAndroid,
+                }}
+                value={maxAge}
+                Icon={() => (
                   <Image
-                      source={ images.dropDownArrow }
-                      style={ styles.downArrow }
-                    />
-                ) }
+                    source={images.dropDownArrow}
+                    style={styles.downArrow}
+                  />
+                )}
               />
             </View>
           </View>
@@ -323,89 +380,108 @@ export default function EditGroupBasicInfoScreen({ navigation, route }) {
         <View>
           <TCLabel title={strings.languageTitle} />
           <TCTouchableLabel
-           title = {groupLanguages || ''}
-           onPress = {toggleLanguageModal}
-           placeholder = {strings.languagePlaceholder}
-           showNextArrow = {true}
+            title={groupLanguages || ''}
+            onPress={toggleLanguageModal}
+            placeholder={strings.languagePlaceholder}
+            showNextArrow={true}
           />
         </View>
         {/* Membership Registration Fee */}
         <View>
-          <TCLabel title={strings.membershipregfee}/>
-          <TCTextField placeholder={strings.enterFeePlaceholder}
-          onChangeText={(text) => setGroupData({ ...groupData, registration_fee: text })}
+          <TCLabel title={strings.membershipregfee} />
+          <TCTextField
+            placeholder={strings.enterFeePlaceholder}
+            onChangeText={(text) =>
+              setGroupData({...groupData, registration_fee: text})
+            }
             value={groupData.registration_fee}
             keyboardType={'decimal-pad'}
-                leftView={<Text style={ styles.leftViewStyle }>{strings.CAD}</Text>}
-            />
+            leftView={<Text style={styles.leftViewStyle}>{strings.CAD}</Text>}
+          />
         </View>
         {/* Membership Fee */}
         <View>
           <TCLabel title={strings.membershipfee} />
           <View
-            style={ {
+            style={{
               flexDirection: 'row',
               marginHorizontal: 15,
               justifyContent: 'space-between',
-            } }>
-            <View style={{ width: '49%' }}>
+            }}>
+            <View style={{width: '49%'}}>
               <RNPickerSelect
-                placeholder={ {
+                placeholder={{
                   label: strings.feeCyclePlaceholder,
                   value: null,
-                } }
-                items={ Utility.groupMembershipFeeTypes }
-                onValueChange={ (value) => setGroupData({ ...groupData, membership_fee_type: value }) }
-                value={ groupData.membership_fee_type }
-                useNativeAndroidPickerStyle={ false }
-                style={ { inputIOS: styles.inputIOS, inputAndroid: styles.inputAndroid } }
-                Icon={ () => (
+                }}
+                items={Utility.groupMembershipFeeTypes}
+                onValueChange={(value) =>
+                  setGroupData({...groupData, membership_fee_type: value})
+                }
+                value={groupData.membership_fee_type}
+                useNativeAndroidPickerStyle={false}
+                style={{
+                  inputIOS: styles.inputIOS,
+                  inputAndroid: styles.inputAndroid,
+                }}
+                Icon={() => (
                   <Image
-                    source={ images.dropDownArrow }
-                    style={ styles.downArrow }
+                    source={images.dropDownArrow}
+                    style={styles.downArrow}
                   />
-                ) }
+                )}
               />
             </View>
-            <View style={ { width: '49%' }}>
-              <TCTextField placeholder={strings.enterFeePlaceholder}
-                onChangeText={(text) => setGroupData({ ...groupData, membership_fee: text })}
+            <View style={{width: '49%'}}>
+              <TCTextField
+                placeholder={strings.enterFeePlaceholder}
+                onChangeText={(text) =>
+                  setGroupData({...groupData, membership_fee: text})
+                }
                 value={groupData.membership_fee}
                 keyboardType={'decimal-pad'}
-                leftView={<Text style={ styles.leftViewStyle }>{strings.CAD}</Text>}
+                leftView={
+                  <Text style={styles.leftViewStyle}>{strings.CAD}</Text>
+                }
               />
             </View>
           </View>
         </View>
 
-        <View style={{ height: 50 }} />
+        <View style={{height: 50}} />
       </ScrollView>
       <Modal
         isVisible={isModalVisible}
         backdropColor="black"
         backdropOpacity={0.1}
-        style={{ marginLeft: 0, marginRight: 0, marginBottom: 0 }}>
-        <View
-          style={styles.languageView}>
+        style={{marginLeft: 0, marginRight: 0, marginBottom: 0}}>
+        <View style={styles.languageView}>
           <ImageButton
-              source={images.cancelImage}
-              style={styles.cancelButtonStyle}
-              imageStyle={{ width: 13, height: 13 }}
-              onImagePress={() => { toggleLanguageModal() }}
-            />
+            source={images.cancelImage}
+            style={styles.cancelButtonStyle}
+            imageStyle={{width: 13, height: 13}}
+            onImagePress={() => {
+              toggleLanguageModal();
+            }}
+          />
           <Text style={styles.languageTitle}>{strings.languages}</Text>
           <View style={styles.separatorLine}></View>
           <FlatList
             data={languages}
             keyExtractor={(item, i) => i.toString()}
             renderItem={renderLanguage}
-            ItemSeparatorComponent={() => <View style={styles.shortSeparatorLine}></View>}
+            ItemSeparatorComponent={() => (
+              <View style={styles.shortSeparatorLine}></View>
+            )}
           />
           <View style={styles.separatorLine}></View>
           <TCGradientButton
-            outerContainerStyle={{ marginBottom: 40 }}
+            outerContainerStyle={{marginBottom: 40}}
             title={strings.applyTitle}
-            onPress = {() => { languageApplyBtnPress(); }}/>
+            onPress={() => {
+              languageApplyBtnPress();
+            }}
+          />
         </View>
       </Modal>
     </TCKeyboardView>
@@ -444,7 +520,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.29,
     shadowRadius: 1,
   },
@@ -508,7 +584,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.29,
     shadowRadius: 5,
     elevation: 5,

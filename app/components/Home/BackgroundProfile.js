@@ -1,30 +1,26 @@
-import React, { memo, useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Animated,
-} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import React, {memo, useEffect, useState,useContext} from 'react';
+import {StyleSheet, View, Text, TouchableOpacity, Animated} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import * as Utility from '../../utils';
+import AuthContext from '../../auth/context';
 
 const BackgroundProfile = ({
   currentUserData,
   onConnectionButtonPress,
   imageSize = 82,
 }) => {
-  const [entityData, setEntityData] = useState(null)
+  const authContext = useContext(AuthContext);
+  const [entityData, setEntityData] = useState(null);
   useEffect(() => {
     if (currentUserData) {
-      const etData = {}
-      etData.fullName = currentUserData?.first_name ? `${currentUserData?.first_name} ${currentUserData?.last_name}` : currentUserData?.group_name;
+      const etData = {};
+      etData.fullName = currentUserData?.first_name
+        ? `${currentUserData?.first_name} ${currentUserData?.last_name}`
+        : currentUserData?.group_name;
       etData.profileImage = currentUserData?.full_image ?? null;
       etData.followingsCounter = currentUserData?.following_count ?? 0;
       etData.memberCount = currentUserData?.member_count ?? 0;
@@ -32,79 +28,149 @@ const BackgroundProfile = ({
       etData.city = currentUserData?.city ?? '';
       etData.country = currentUserData?.country ?? '';
       etData.teamCount = currentUserData?.joined_teams?.length ?? 0;
-      setEntityData({ ...etData });
+      setEntityData({...etData});
     }
-  }, [currentUserData])
+  }, [currentUserData]);
 
   return (
-    <View style={{ width: wp('100%'), margin: 0 }}>
-      <View style={{ backgroundColor: colors.whiteColor }} >
-        <View style={{ width: '100%', marginBottom: 20 }}>
+    <View style={{width: wp('100%'), margin: 0}}>
+      <View style={{backgroundColor: colors.whiteColor}}>
+        <View style={{width: '100%', marginBottom: 20}}>
           <Animated.Image
-              style={{ ...styles.profileImageStyle, height: imageSize, width: imageSize }}
-              source={entityData?.profileImage ? { uri: entityData?.profileImage } : images.profilePlaceHolder}
+            style={{
+              ...styles.profileImageStyle,
+              height: imageSize,
+              width: imageSize,
+            }}
+            source={
+              entityData?.profileImage
+                ? {uri: entityData?.profileImage}
+                : images.profilePlaceHolder
+            }
           />
           <View style={styles.userViewStyle}>
             <Text style={styles.userTextStyle}>{entityData?.fullName}</Text>
-            {currentUserData.description?.length > 0 && <Text style={styles.sloganTextStyle}>{currentUserData.description}</Text>}
-            <View style={{
-              flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
-            }}>
-              {(currentUserData.entity_type === 'team' || currentUserData.entity_type === 'club') && <View style={{
-                flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+            {currentUserData.description?.length > 0 && (
+              <Text style={styles.sloganTextStyle}>
+                {currentUserData.description}
+              </Text>
+            )}
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}>
-                <Text style={styles.cityTextStyle}>{currentUserData.sport ? Utility.capitalize(currentUserData.sport) : ''}</Text>
-                <View style={{
-                  backgroundColor: colors.lightBlackColor, marginHorizontal: 5, borderRadius: 2, height: 4, width: 4,
-                }}/>
-              </View>}
-              <Text style={styles.cityTextStyle}>{`${entityData?.city}, ${entityData?.country}`}</Text>
+              {(currentUserData.entity_type === 'team' ||
+                (currentUserData.entity_type === 'club' && currentUserData.sports_string)) && (
+                  <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                    {/*  */}
+                    <Text style={styles.cityTextStyle}>
+                      {currentUserData.sports_string
+                      ? currentUserData.sports_string
+                      : Utility.getSportName(currentUserData,authContext) ?? ''}
+                    </Text>
+                    <View
+                    style={{
+                      backgroundColor: colors.lightBlackColor,
+                      marginHorizontal: 5,
+                      borderRadius: 2,
+                      height: 4,
+                      width: 4,
+                    }}
+                  />
+                  </View>
+              )}
+              <Text
+                style={
+                  styles.cityTextStyle
+                }>{`${entityData?.city}, ${entityData?.country}`}</Text>
             </View>
           </View>
-          {currentUserData.entity_type === 'club' && <View style={styles.statusViewStyle}>
-            <TouchableOpacity
+          {currentUserData.entity_type === 'club' && (
+            <View style={styles.statusViewStyle}>
+              <TouchableOpacity
                 onPress={() => onConnectionButtonPress('following')}
                 style={styles.statusInnerViewStyle}>
-              <Text style={styles.followingTextStyle}>{strings.teamstitle}</Text>
-              <Text style={styles.followingLengthText}>{entityData?.teamCount}</Text>
-            </TouchableOpacity>
-            <View style={styles.followingSepratorView} />
-            <TouchableOpacity
+                <Text style={styles.followingTextStyle}>
+                  {strings.teamstitle}
+                </Text>
+                <Text style={styles.followingLengthText}>
+                  {entityData?.teamCount}
+                </Text>
+              </TouchableOpacity>
+              <View style={styles.followingSepratorView} />
+              <TouchableOpacity
                 onPress={() => onConnectionButtonPress('members')}
                 style={styles.statusInnerViewStyle}>
-              <Text style={styles.followingTextStyle}>{strings.membersTitle}</Text>
-              <Text style={styles.followingLengthText}>{entityData?.memberCount}</Text>
-            </TouchableOpacity>
-            <View style={styles.followingSepratorView} />
-            <TouchableOpacity
+                <Text style={styles.followingTextStyle}>
+                  {strings.membersTitle}
+                </Text>
+                <Text style={styles.followingLengthText}>
+                  {entityData?.memberCount}
+                </Text>
+              </TouchableOpacity>
+              <View style={styles.followingSepratorView} />
+              <TouchableOpacity
                 onPress={() => onConnectionButtonPress('followers')}
                 style={styles.statusInnerViewStyle}>
-              <Text style={styles.followingTextStyle}>{strings.followersRadio}</Text>
-              <Text style={styles.followingLengthText}>{entityData?.followersCounter}</Text>
-            </TouchableOpacity>
-          </View>}
-          {currentUserData.entity_type !== 'club' && <View style={styles.statusViewStyle}>
-            {currentUserData.following_count !== undefined ? (
+                <Text style={styles.followingTextStyle}>
+                  {strings.followersRadio}
+                </Text>
+                <Text style={styles.followingLengthText}>
+                  {entityData?.followersCounter}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          {currentUserData.entity_type !== 'club' && (
+            <View style={styles.statusViewStyle}>
+              {currentUserData.following_count !== undefined ? (
+                <TouchableOpacity
+                  onPress={() => onConnectionButtonPress('following')}
+                  style={[styles.statusInnerViewStyle, {width: '47%'}]}>
+                  <Text style={styles.followingTextStyle}>
+                    {strings.following}
+                  </Text>
+                  <Text style={styles.followingLengthText}>
+                    {entityData?.followingsCounter}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => onConnectionButtonPress('members')}
+                  style={[styles.statusInnerViewStyle, {width: '47%'}]}>
+                  <Text style={styles.followingTextStyle}>
+                    {strings.membersTitle}
+                  </Text>
+                  <Text style={styles.followingLengthText}>
+                    {entityData?.memberCount}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              <View style={styles.followingSepratorView} />
               <TouchableOpacity
-              onPress={() => onConnectionButtonPress('following')}
-                  style={[styles.statusInnerViewStyle, { width: '47%' }]}>
-                <Text style={styles.followingTextStyle}>{strings.following}</Text>
-                <Text style={styles.followingLengthText}>{entityData?.followingsCounter}</Text>
-              </TouchableOpacity>) : <TouchableOpacity onPress={() => onConnectionButtonPress('members')} style={[styles.statusInnerViewStyle, { width: '47%' }]}>
-                <Text style={styles.followingTextStyle}>{strings.membersTitle}</Text>
-                <Text style={styles.followingLengthText}>{entityData?.memberCount}</Text>
-              </TouchableOpacity>}
-            <View style={styles.followingSepratorView} />
-            <TouchableOpacity onPress={() => onConnectionButtonPress('followers')} style={[styles.statusInnerViewStyle, { width: '47%' }]}>
-              <Text style={styles.followingTextStyle}>{strings.followersRadio}</Text>
-              <Text style={styles.followingLengthText}>{entityData?.followersCounter}</Text>
-            </TouchableOpacity>
-          </View>}
+                onPress={() => onConnectionButtonPress('followers')}
+                style={[styles.statusInnerViewStyle, {width: '47%'}]}>
+                <Text style={styles.followingTextStyle}>
+                  {strings.followersRadio}
+                </Text>
+                <Text style={styles.followingLengthText}>
+                  {entityData?.followersCounter}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   // bgImageStyle: {

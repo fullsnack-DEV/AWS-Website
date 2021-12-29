@@ -638,8 +638,22 @@ function NotificationNavigator() {
               headerShown: false,
             } }
         />
-      <Stack.Screen name="SingleNotificationScreen" component={ SingleNotificationScreen }/>
-
+      <Stack.Screen
+      name="SingleNotificationScreen"
+      component={SingleNotificationScreen}
+      options={{
+        title: '',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
       <Stack.Screen
             name="SoccerRecordList"
             component={ SoccerRecordList }

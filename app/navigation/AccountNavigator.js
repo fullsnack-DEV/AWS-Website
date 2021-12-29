@@ -222,6 +222,7 @@ import LookingForSettingScreen from '../screens/home/playInModule/LookingForSett
 import SportActivityScreen from '../screens/home/SportActivityScreen';
 import SportActivityTagScreen from '../screens/home/SportActivityTagScreen';
 import DeactivateSportScreen from '../components/Home/DeactivateSportScreen';
+import SearchScreen from '../screens/search/SearchScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2180,7 +2181,24 @@ const AccountNavigator = () => (
       options={{ headerShown: false }}
     />
 
-    <Stack.Screen name="SingleNotificationScreen" component={ SingleNotificationScreen } options={{ headerShown: false }}/>
+    
+
+    <Stack.Screen
+      name="SingleNotificationScreen"
+      component={SingleNotificationScreen}
+      options={{
+        title: '',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="ManageChallengeScreen"
       component={ManageChallengeScreen}
@@ -2999,6 +3017,23 @@ const AccountNavigator = () => (
         headerTitleStyle: {
           fontWeight: '500',
         },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="SearchScreen"
+      component={SearchScreen}
+      options={{
+        title: 'Search',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,

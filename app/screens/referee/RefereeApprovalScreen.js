@@ -31,6 +31,7 @@ import EventMapView from '../../components/Schedule/EventMapView';
 import TCGameCard from '../../components/TCGameCard';
 import { getGameFromToDateDiff, getGameHomeScreen } from '../../utils/gameUtils';
 import TCChallengeTitle from '../../components/TCChallengeTitle';
+import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 
 let entity = {};
 
@@ -254,7 +255,7 @@ const approveDisapproveButton = () => (<View>
               </View>
             </View>
 
-            {type === 'accepted' && <Text
+            {type === RefereeReservationStatus.accepted && <Text
                     style={{
                       marginLeft: 15,
                       marginBottom: 15,
@@ -264,7 +265,16 @@ const approveDisapproveButton = () => (<View>
                     }}>
               {'Approved'}
             </Text>}
-
+            {type === RefereeReservationStatus.declined && <Text
+                    style={{
+                      marginLeft: 15,
+                      marginBottom: 15,
+                      fontFamily: fonts.RMedium,
+                      fontSize: 16,
+                      color: colors.lightBlackColor,
+                    }}>
+              {'Declined'}
+            </Text>}
             {type === 'expired' && <Text
                     style={{
                       marginLeft: 15,

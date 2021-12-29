@@ -13,6 +13,7 @@ import MessageEditGroupScreen from '../screens/message/MessageEditGroupScreen';
 import MessageSearchScreen from '../screens/message/MessageSearchScreen';
 import MessageEditInviteeScreen from '../screens/message/MessageEditInviteeScreen';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
+import SearchScreen from '../screens/search/SearchScreen';
 
 const Stack = createStackNavigator();
 
@@ -162,6 +163,23 @@ const MessageNavigator = () => (
             },
           } }
       />
+    <Stack.Screen
+      name="SearchScreen"
+      component={SearchScreen}
+      options={{
+        title: 'Search',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
   </Stack.Navigator>
 );
 
