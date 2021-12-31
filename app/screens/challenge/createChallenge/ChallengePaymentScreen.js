@@ -56,8 +56,6 @@ export default function ChallengePaymentScreen({route, navigation}) {
   const [groupObj] = useState(route?.params?.groupObj);
   const [defaultCard, setDefaultCard] = useState();
 
-  
-
   const getChallenger = () => {
     if (
       challengeData?.challenger === challengeData?.home_team?.user_id ||
@@ -79,25 +77,31 @@ export default function ChallengePaymentScreen({route, navigation}) {
   };
 
   useEffect(() => {
-    Utility.getStorage('appSetting').then((setting)=>{
+    Utility.getStorage('appSetting').then((setting) => {
       console.log('App setting for fee:=>', setting.refund_policy);
       const policytype = setting.refund_policy;
-      const refund = policytype.filter((obj) => obj.policy_type === challengeData?.refund_policy)[0];
+      const refund = policytype.filter(
+        (obj) => obj.policy_type === challengeData?.refund_policy,
+      )[0];
       const value = refund.values.filter((obj_1) => obj_1.after === 1)[0];
       console.log('refund obj', value.refund);
-      setRefundValue(value.refund)
-    })
-    
+      setRefundValue(value.refund);
+    });
   }, [challengeData?.refund_policy]);
+
   useEffect(() => {
-   
+    Utility.getStorage('paymentSetting').then((setting) => {
+      setDefaultCard(setting);
+    });
+  }, []);
+
+  useEffect(() => {
     if (isFocused) {
       if (route?.params?.paymentMethod) {
         setDefaultCard(route?.params?.paymentMethod);
       }
     }
   }, [isFocused, route?.params?.paymentMethod]);
-
 
   const getTimeDifferent = (sDate, eDate) => {
     let delta =
@@ -118,7 +122,6 @@ export default function ChallengePaymentScreen({route, navigation}) {
   const sendChallenge = () => {
     entity = authContext.entity;
     console.log('Entity:=>', entity);
-
     const res_secure_referee = challengeData.responsible_for_referee.who_secure.map(
       (obj) => ({
         ...obj,
@@ -149,9 +152,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
     };
     body.responsible_for_referee.who_secure = res_secure_referee;
     body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
-
     console.log('body:=>', body);
-
     const homeID = body.home_team.group_id ?? body.home_team.user_id;
     const awayID = body.away_team.group_id ?? body.away_team.user_id;
     delete body.home_team;
@@ -162,11 +163,8 @@ export default function ChallengePaymentScreen({route, navigation}) {
     if (defaultCard) {
       body.source = defaultCard.id;
     }
-
     console.log('Challenge Object:=>', body);
-
     setloading(true);
-
     createChallenge(body, authContext)
       .then((response) => {
         console.log(' challenge response:=>', response.payload);
@@ -192,7 +190,6 @@ export default function ChallengePaymentScreen({route, navigation}) {
     payment,
   ) => {
     console.log('payment:=>', payment);
-
     setloading(true);
     acceptDeclineChallenge(
       teamID,
@@ -472,7 +469,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
             'MMMM DD',
           )}, you will get a ${refundValue}% refund, minus the service fee.`}
       </Text>
-      <TCThickDivider />
+      <TCThickDivider/>
 
       <Text style={styles.termsTextStyle}>
         By selecting the button below, I agree to the Game Rules cancellation

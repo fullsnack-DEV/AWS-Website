@@ -102,13 +102,22 @@ import React, {
          size: pageSize,
          from: pageFrom,
          query: {
-           bool: {
-             must: [{ term: { 'scorekeeper_data.is_published': true } }],
-           },
-         },
+          bool: {
+            must: [
+              {
+                nested: {
+                  path: 'scorekeeper_data',
+                  query: {
+                    bool: {must: [{term: {'scorekeeper_data.is_published': true}}]},
+                  },
+                },
+              },
+            ],
+          },
+        },
        };
        if (filerScorekeeper.location !== 'world') {
-        scorekeeperQuery.query.bool.must.push({
+        scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
            multi_match: {
              query: `${filerScorekeeper.location.toLowerCase()}`,
              fields: ['city', 'country', 'state'],
@@ -116,17 +125,16 @@ import React, {
          });
        }
        if (route?.params?.sport) {
-        scorekeeperQuery.query.bool.must.push({
+        scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
            term: {
              'scorekeeper_data.sport.keyword': {
                value: route?.params?.sport,
-               
              },
            },
          });
        }
        if (filerScorekeeper.scorekeeperFee) {
-        scorekeeperQuery.query.bool.must.push({
+        scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
            range: {
              'scorekeeper_data.setting.game_fee.fee': {
                gte: Number(filerScorekeeper.scorekeeperFee.split('-')[0]),

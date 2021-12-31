@@ -201,6 +201,7 @@ export default function RegisterPlayerForm2({navigation, route}) {
             multiline
             textAlignVertical={'top'}
             numberOfLines={4}
+            maxLength={1000}
             placeholder={strings.descriptionTextDetails}
           />
           <View style={{flex: 1}} />

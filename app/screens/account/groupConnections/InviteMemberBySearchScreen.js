@@ -57,6 +57,7 @@ export default function InviteMembersBySearchScreen({ navigation }) {
       });
   }
   const getUsers = async () => {
+   
     getUserList().then((response) => {
       setloading(false);
       const result = response.map((obj) => {

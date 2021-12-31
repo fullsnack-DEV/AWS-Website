@@ -102,17 +102,28 @@ export default function BookReferee({ navigation, route }) {
 
   const getReferees = useCallback(
     (filerReferee) => {
-      const refereeQuery = {
-        size: pageSize,
-        from: pageFrom,
-        query: {
-          bool: {
-            must: [{ term: { 'referee_data.is_published': true } }],
+      const refereeQuery = 
+        {
+          size: pageSize,
+          from: pageFrom,
+          query: {
+            bool: {
+              must: [
+                {
+                  nested: {
+                    path: 'referee_data',
+                    query: {
+                      bool: {must: [{term: {'referee_data.is_published': true}}]},
+                    },
+                  },
+                },
+              ],
+            },
           },
-        },
-      };
+        };
+    
       if (filerReferee.location !== 'world') {
-        refereeQuery.query.bool.must.push({
+        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           multi_match: {
             query: `${filerReferee.location.toLowerCase()}`,
             fields: ['city', 'country', 'state'],
@@ -120,7 +131,7 @@ export default function BookReferee({ navigation, route }) {
         });
       }
       if (route?.params?.sport) {
-        refereeQuery.query.bool.must.push({
+        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           term: {
             'referee_data.sport.keyword': {
               value: route?.params?.sport,
@@ -130,7 +141,7 @@ export default function BookReferee({ navigation, route }) {
         });
       }
       if (filerReferee.refereeFee) {
-        refereeQuery.query.bool.must.push({
+        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           range: {
             'referee_data.setting.game_fee.fee': {
               gte: Number(filerReferee.refereeFee.split('-')[0]),

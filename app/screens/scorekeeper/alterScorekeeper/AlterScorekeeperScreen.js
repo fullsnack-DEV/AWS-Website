@@ -439,7 +439,9 @@ export default function AlterScorekeeperScreen({navigation, route}) {
       }
       return param?.game?.away_team;
     }
+    
       return (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id) === param?.initiated_by ? param?.game?.home_team : param?.game?.away_team;
+   
   };
   const getPaymentMethods = () => {
     setloading(true);
@@ -681,6 +683,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
     return true;
     
   };
+
   return (
     <TCKeyboardView scrollReference={scroll}>
       <ActivityLoader visible={loading} />

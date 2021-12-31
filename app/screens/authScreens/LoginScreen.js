@@ -93,7 +93,6 @@ export default function LoginScreen({ navigation }) {
       console.log('User Data:', userData);
       getRedirectionScreenName(userData).then((responseScreen) => {
         setloading(false);
-
         navigation.replace(responseScreen?.screen, { ...responseScreen?.params })
       }).catch(async () => {
         entity.isLoggedIn = true;
@@ -140,7 +139,7 @@ export default function LoginScreen({ navigation }) {
 
   const onAuthStateChanged = useCallback((user) => {
     if (user) {
-      user.getIdTokenResult().then(async (idTokenResult) => {
+      user.getIdTokenResult().then( (idTokenResult) => {
         const token = {
           token: idTokenResult.token,
           expirationTime: idTokenResult.expirationTime,
@@ -156,7 +155,7 @@ export default function LoginScreen({ navigation }) {
           headers: { Authorization: `Bearer ${token?.token}` },
         }
         console.log('Login Request:=>', userConfig);
-        apiCall(userConfig).then(async (response) => {
+        apiCall(userConfig).then( (response) => {
           dummyAuthContext.entity = {
             uid: user.uid,
             role: 'user',
@@ -167,7 +166,8 @@ export default function LoginScreen({ navigation }) {
             },
           }
           QBInitialLogin(user, response.payload);
-        }).catch(async (error) => {
+          
+        }).catch( (error) => {
           // eslint-disable-next-line no-underscore-dangle
           setloading(false);
           setTimeout(() => Alert.alert(
@@ -190,6 +190,7 @@ export default function LoginScreen({ navigation }) {
 
         const loginOnAuthStateChanged = auth().onAuthStateChanged(onAuthStateChanged);
         loginOnAuthStateChanged();
+        setloading(false);
       })
       .catch((error) => {
         setloading(false);
@@ -224,7 +225,6 @@ export default function LoginScreen({ navigation }) {
   }, []);
 
   const renderEmailInput = useMemo(() => (
-
     <TCTextField
             style={styles.textFieldStyle}
             placeholder={strings.emailPlaceHolder}
@@ -234,7 +234,6 @@ export default function LoginScreen({ navigation }) {
             onChangeText={(text) => setEmail(text)}
             value={email}
         />
-
   ), [email]);
 
   const renderPasswordInput = useMemo(() => (
