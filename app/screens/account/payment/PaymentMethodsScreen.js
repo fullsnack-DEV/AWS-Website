@@ -1,294 +1,372 @@
 /* eslint-disable array-callback-return */
-import React, {
-  useState, useEffect, useContext, useLayoutEffect,
-} from 'react';
-import {
-  View, StyleSheet, Alert, Text, Image,
-  FlatList,
-} from 'react-native';
+import React, {useState, useEffect, useContext, useLayoutEffect} from 'react';
+import {View, StyleSheet, Alert, Text, Image, FlatList} from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import stripe from 'tipsi-stripe'
+import {useIsFocused} from '@react-navigation/native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import stripe from 'tipsi-stripe';
 import LinearGradient from 'react-native-linear-gradient';
-import AuthContext from '../../../auth/context'
+import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AppleStyleSwipeableRow from '../../../components/notificationComponent/AppleStyleSwipeableRow';
-import { paymentMethods, attachPaymentMethod, deletePaymentMethod } from '../../../api/Users';
-import strings from '../../../Constants/String'
-import colors from '../../../Constants/Colors'
+import {
+  paymentMethods,
+  attachPaymentMethod,
+  deletePaymentMethod,
+} from '../../../api/Users';
+import strings from '../../../Constants/String';
+import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import * as Utility from '../../../utils';
 import images from '../../../Constants/ImagePath';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCInnerLoader from '../../../components/TCInnerLoader';
 
-export default function PaymentMethodsScreen({ navigation, route }) {
+export default function PaymentMethodsScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [firstTimeLoad, setFirstTimeLoad] = useState(true);
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
-  const [selectedCard, setSelectedCard] = useState()
-  const [cards, setCards] = useState([])
+  const [selectedCard, setSelectedCard] = useState();
+  const [cards, setCards] = useState([]);
+
+  useEffect(() => {
+    Utility.getStorage('paymentSetting').then((setting) => {
+      console.log('paymentSetting:=>',setting);
+      setSelectedCard(setting);
+    });
+  }, []);
 
   useEffect(() => {
     if (isFocused) {
-        setFirstTimeLoad(true);
-        getPaymentMethods().then(() => {
-            setFirstTimeLoad(false)
-        }).catch((error) => {
-            setFirstTimeLoad(false);
-            console.log(error);
+      setFirstTimeLoad(true);
+      getPaymentMethods()
+        .then(() => {
+          setFirstTimeLoad(false);
         })
+        .catch((error) => {
+          setFirstTimeLoad(false);
+          console.log(error);
+        });
     }
-  }, [isFocused])
+  }, [isFocused]);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={styles.nextButtonStyle} onPress={() => {
+        <Text
+          style={styles.nextButtonStyle}
+          onPress={() => {
             if (selectedCard) {
-              onCardSelected(selectedCard)
+              onCardSelected(selectedCard);
             } else {
-              Alert.alert(strings.selectAnyCard)
+              Alert.alert(strings.selectAnyCard);
             }
-        } }>Done</Text>
+          }}>
+          Done
+        </Text>
       ),
     });
-  }, [navigation, loading, selectedCard])
-  const getPaymentMethods = () => new Promise((resolve, reject) => {
-    paymentMethods(authContext)
+  }, [navigation, loading, selectedCard]);
+  const getPaymentMethods = () =>
+    new Promise((resolve, reject) => {
+      paymentMethods(authContext)
         .then((response) => {
-          const newCards = response.payload.filter((v, i, a) => a.findIndex((t) => (t.card.fingerprint === v.card.fingerprint)) === i)
+          const newCards = response.payload.filter(
+            (v, i, a) =>
+              a.findIndex((t) => t.card.fingerprint === v.card.fingerprint) ===
+              i,
+          );
 
-          setCards([...newCards])
+          setCards([...newCards]);
           // setloading(false)
           if (response.payload.length === 0) {
             openNewCardScreen();
           }
-          resolve(true)
+          resolve(true);
         })
         .catch((e) => {
-            reject(new Error(e.message))
+          reject(new Error(e.message));
           // setloading(false)
           // setTimeout(() => {
           //   Alert.alert(strings.alertmessagetitle, e.message);
           // }, 0.3)
-        })
-  })
+        });
+    });
 
   const onCardSelected = async (item) => {
+    if(route?.params?.comeFrom === 'AccountScreen'){
+      await Utility.setStorage('paymentSetting', item);
+    }
     navigation.navigate(route?.params?.comeFrom, {
       paymentMethod: item,
     });
-  }
-
-  const onDeleteCard = (item) => {
-    Alert.alert(strings.alertmessagetitle, `Do you want remove card ending with ${item.card.last4} from your account to ?`, [
-          {
-            text: strings.cancel,
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          {
-            text: strings.yes,
-            onPress: () => {
-              setloading(true)
-              deletePaymentMethod(item.id, authContext)
-                  .then(() => {
-                    const newCards = cards.filter((card) => card.id !== item.id)
-                    setCards(newCards)
-                    setloading(false)
-                  })
-                  .catch((e) => {
-                    console.log('error in payment method onDeleteCard', e)
-                    setloading(false)
-                    setTimeout(() => {
-                      Alert.alert(strings.alertmessagetitle, e.message);
-                    }, 0.3)
-                  })
-            },
-          },
-        ],
-        { cancelable: true })
   };
 
-  const renderCard = ({ item }) => (
-    <AppleStyleSwipeableRow onPress={() => onDeleteCard(item)} color={colors.redDelColor} image={images.deleteIcon}>
+  const onDeleteCard = (item) => {
+    Alert.alert(
+      strings.alertmessagetitle,
+      `Do you want remove card ending with ${item.card.last4} from your account to ?`,
+      [
+        {
+          text: strings.cancel,
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: strings.yes,
+          onPress: () => {
+            setloading(true);
+            deletePaymentMethod(item.id, authContext)
+              .then(() => {
+                const newCards = cards.filter((card) => card.id !== item.id);
+                setCards(newCards);
+                setloading(false);
+              })
+              .catch((e) => {
+                console.log('error in payment method onDeleteCard', e);
+                setloading(false);
+                setTimeout(() => {
+                  Alert.alert(strings.alertmessagetitle, e.message);
+                }, 0.3);
+              });
+          },
+        },
+      ],
+      {cancelable: true},
+    );
+  };
 
-      {selectedCard && selectedCard?.id === item.id ? <LinearGradient
-            colors={ [colors.orangeEventColor, colors.assistTextColor] }
-            style={ styles.paymentCardRow }>
-        <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { setSelectedCard(item) }}>
-          <View style={{ flexDirection: 'column', width: '60%' }}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={{
+  const renderCard = ({item}) => (
+    <AppleStyleSwipeableRow
+      onPress={() => onDeleteCard(item)}
+      color={colors.redDelColor}
+      image={images.deleteIcon}>
+      {selectedCard && selectedCard?.id === item.id ? (
+        <LinearGradient
+          colors={[colors.orangeEventColor, colors.assistTextColor]}
+          style={styles.paymentCardRow}>
+          <TouchableOpacity
+            style={{flexDirection: 'row'}}
+            onPress={() => {
+              setSelectedCard(item);
+            }}>
+            <View style={{flexDirection: 'column', width: '60%'}}>
+              <View style={{flexDirection: 'row'}}>
+                <Text
+                  style={{
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    color: colors.whiteColor,
+                  }}>
+                  {Utility.capitalize(item.card.brand)}
+                </Text>
+                <Text
+                  style={{
+                    marginLeft: 12,
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    color: colors.whiteColor,
+                  }}>
+                  {Utility.capitalize(item.card.brand)}
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    color: colors.whiteColor,
+                  }}>
+                  {strings.endingin}
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    color: colors.whiteColor,
+                  }}>
+                  {item.card.last4}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={{
+                    color: colors.whiteColor,
+                    fontFamily: fonts.RRegular,
+                    fontSize: 14,
+                    marginTop: 5,
+                  }}>
+                  Expires {item.card.exp_month} / {item.card.exp_year}
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                width: '40%',
+                flexDirection: 'row-reverse',
+                alignSelf: 'center',
+              }}>
+              <Image
+                source={images.whiteTick}
+                style={{height: 15, width: 15, resizeMode: 'contain'}}
+              />
+            </View>
+          </TouchableOpacity>
+        </LinearGradient>
+      ) : (
+        <View style={styles.paymentCardRow}>
+          <TouchableOpacity
+            style={{}}
+            onPress={() => {
+              setSelectedCard(item);
+            }}>
+            <View style={{flexDirection: 'row'}}>
+              <Text
+                style={{
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
-                  color: colors.whiteColor,
-              }}>{Utility.capitalize(item.card.brand)}</Text>
-              <Text style={{
+                  color: colors.lightBlackColor,
+                }}>
+                {Utility.capitalize(item.card.brand)}
+              </Text>
+              <Text
+                style={{
                   marginLeft: 12,
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
-                  color: colors.whiteColor,
-              }}>{Utility.capitalize(item.card.brand) }</Text>
-              <Text style={{
+                  color: colors.lightBlackColor,
+                }}>
+                {Utility.capitalize(item.card.brand)}
+              </Text>
+              <Text
+                style={{
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
-                  color: colors.whiteColor,
-              }}>{strings.endingin}</Text>
-              <Text style={{
+                  color: colors.lightBlackColor,
+                }}>
+                {strings.endingin}
+              </Text>
+              <Text
+                style={{
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
-                  color: colors.whiteColor,
-              }}>{item.card.last4}</Text>
+                  color: colors.lightBlackColor,
+                }}>
+                {item.card.last4}
+              </Text>
             </View>
-            <View>
-              <Text style={{
-                  color: colors.whiteColor,
+            <View style={{flexDirection: 'column'}}>
+              <Text
+                style={{
+                  color: colors.lightBlackColor,
                   fontFamily: fonts.RRegular,
                   fontSize: 14,
                   marginTop: 5,
-              }}>Expires {item.card.exp_month} / {item.card.exp_year}</Text>
-
+                }}>
+                Expires {item.card.exp_month} / {item.card.exp_year}
+              </Text>
             </View>
-
-          </View>
-          <View style={{ width: '40%', flexDirection: 'row-reverse', alignSelf: 'center' }}>
-            <Image
-                  source={ images.whiteTick }
-                  style={{ height: 15, width: 15, resizeMode: 'contain' }}
-              />
-          </View>
-
-        </TouchableOpacity>
-      </LinearGradient> : <View style={styles.paymentCardRow}>
-        <TouchableOpacity style={{
-
-        }} onPress={() => { setSelectedCard(item) }}>
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-            }}>{Utility.capitalize(item.card.brand)}</Text>
-            <Text style={{
-                marginLeft: 12,
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-            }}>{Utility.capitalize(item.card.brand) }</Text>
-            <Text style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-            }}>{strings.endingin}</Text>
-            <Text style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-            }}>{item.card.last4}</Text>
-          </View>
-          <View style={{ flexDirection: 'column' }}>
-            <Text style={{
-                color: colors.lightBlackColor,
-                fontFamily: fonts.RRegular,
-                fontSize: 14,
-                marginTop: 5,
-            }}>Expires {item.card.exp_month} / {item.card.exp_year}</Text>
-          </View>
-        </TouchableOpacity>
-
-      </View>}
-
+          </TouchableOpacity>
+        </View>
+      )}
     </AppleStyleSwipeableRow>
-  )
+  );
 
   const onSaveCard = async (paymentMethod) => {
-    setloading(true)
+    setloading(true);
     const params = {
       payment_method: paymentMethod.id,
-    }
+    };
     attachPaymentMethod(params, authContext)
-        .then(() => {
-          getPaymentMethods().then(() => {
-              setloading(false)
-          }).catch(() => {
-              setloading(false);
+      .then(() => {
+        getPaymentMethods()
+          .then(() => {
+            setloading(false);
+          })
+          .catch(() => {
+            setloading(false);
           });
-        })
-        .catch((e) => {
-          console.log('error in onSaveCard', e)
-          setloading(false)
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.3)
-        })
-  }
+      })
+      .catch((e) => {
+        console.log('error in onSaveCard', e);
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.3);
+      });
+  };
 
   const openNewCardScreen = () => {
     Utility.getStorage('appSetting').then((setting) => {
       stripe.setOptions({
         publishableKey: setting.publishableKey,
-      })
-      stripe.paymentRequestWithCardForm({
-        requiredBillingAddressFields: 'zip',
-        theme: {
-          accentColor: colors.orangeColor,
-        },
-      }).then((token) => {
-        console.log('card/Token:=>', token)
+      });
+      stripe
+        .paymentRequestWithCardForm({
+          requiredBillingAddressFields: 'zip',
+          theme: {
+            accentColor: colors.orangeColor,
+          },
+        })
+        .then((token) => {
+          console.log('card/Token:=>', token);
 
-          const result = cards.filter((obj) => obj.card.fingerprint === token?.card?.fingerprint)
+          const result = cards.filter(
+            (obj) => obj.card.fingerprint === token?.card?.fingerprint,
+          );
           if (result.length > 0) {
-            Alert.alert('You already have added this card.')
+            Alert.alert('You already have added this card.');
           } else {
             onSaveCard(token);
           }
-      }).catch((e) => {
-        console.log('error in openNewCardScreen', e)
-        setloading(false)
-        if (e.message !== 'Cancelled by user') {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.3)
-        }
-      })
-    })
-  }
+        })
+        .catch((e) => {
+          console.log('error in openNewCardScreen', e);
+          setloading(false);
+          if (e.message !== 'Cancelled by user') {
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 0.3);
+          }
+        });
+    });
+  };
 
   const renderFooter = () => (
-    <View style={{ marginBottom: 5 }}>
+    <View style={{marginBottom: 5}}>
       <TCTouchableLabel
-            title={
-                strings.addOptionMessage
-            }
-            showNextArrow={true}
-            onPress={() => {
-              openNewCardScreen()
-            }}
-          />
+        title={strings.addOptionMessage}
+        showNextArrow={true}
+        onPress={() => {
+          openNewCardScreen();
+        }}
+      />
     </View>
-  )
+  );
 
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <Text style={{
-        marginLeft: 15, marginTop: 15, color: colors.lightBlackColor, fontFamily: fonts.RRegular, fontSize: 20,
-      }}>{strings.selectPaymentMethod}</Text>
-      <TCInnerLoader visible={firstTimeLoad} size={50}/>
+      <Text
+        style={{
+          marginLeft: 15,
+          marginTop: 15,
+          color: colors.lightBlackColor,
+          fontFamily: fonts.RRegular,
+          fontSize: 20,
+        }}>
+        {strings.selectPaymentMethod}
+      </Text>
+      <TCInnerLoader visible={firstTimeLoad} size={50} />
       {!firstTimeLoad && (
         <FlatList
-                style={{ marginTop: 15 }}
-                data={cards}
-                renderItem={renderCard}
-                keyExtractor={(item) => item.id}
-                ListFooterComponent={renderFooter}
-                showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-            />
-        )}
+          style={{marginTop: 15}}
+          data={cards}
+          renderItem={renderCard}
+          keyExtractor={(item) => item.id}
+          ListFooterComponent={renderFooter}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        />
+      )}
     </View>
   );
 }
@@ -307,7 +385,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: -2 },
+    shadowOffset: {width: 0, height: -2},
     shadowOpacity: 0.3,
     shadowRadius: 3,
     borderRadius: 10,
@@ -316,6 +394,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     justifyContent: 'center',
     paddingHorizontal: 15,
-
   },
-})
+});

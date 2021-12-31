@@ -45,7 +45,6 @@ import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservation
 
    useEffect(() => {
      entity = authContext.entity;
-
      setbodyParams(reservationObj);
    }, [isFocused]);
    // useLayoutEffect(() => {

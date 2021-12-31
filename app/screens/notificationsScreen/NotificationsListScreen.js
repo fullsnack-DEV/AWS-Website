@@ -17,11 +17,12 @@ import {
   Alert,
   ScrollView,
   Dimensions,
- SafeAreaView } from 'react-native';
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
+  SafeAreaView,
+} from 'react-native';
+import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
 import Moment from 'moment';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
 import NotificationProfileItem from '../../components/notificationComponent/NotificationProfileItem';
@@ -45,9 +46,9 @@ import TCNoDataView from '../../components/TCNoDataView';
 import AppleStyleSwipeableRow from '../../components/notificationComponent/AppleStyleSwipeableRow';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
-import * as Utils from '../challenge/ChallengeUtility';
 import * as RefereeUtils from '../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../scorekeeper/ScorekeeperUtility';
+import * as challengeUtility from '../challenge/ChallengeUtility';
 import {
   getQBAccountType,
   QB_ACCOUNT_TYPE,
@@ -56,8 +57,8 @@ import {
   QBlogin,
   QBLogout,
 } from '../../utils/QuickBlox';
-import { getUserDetails } from '../../api/Users';
-import { getGroupDetails } from '../../api/Groups';
+import {getUserDetails} from '../../api/Users';
+import {getGroupDetails} from '../../api/Groups';
 import NotificationListShimmer from '../../components/shimmer/account/NotificationListShimmer';
 import NotificationListTopHeaderShimmer from '../../components/shimmer/account/NotificationListTopHeaderShimmer';
 import TCGradientButton from '../../components/TCGradientButton';
@@ -66,8 +67,7 @@ import PRNotificationDetailItem from '../../components/notificationComponent/PRN
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 
-
-function NotificationsListScreen({ navigation }) {
+function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
@@ -93,25 +93,26 @@ function NotificationsListScreen({ navigation }) {
       const verb = item.activities[0].verb;
 
       if (
-        verb.includes(NotificationType.initialChallengePaymentFail)
-        || verb.includes(NotificationType.alterChallengePaymentFail)
-        || verb.includes(NotificationType.challengeAwaitingPaymentPaid)
-        || verb.includes(
+        verb.includes(NotificationType.initialChallengePaymentFail) ||
+        verb.includes(NotificationType.alterChallengePaymentFail) ||
+        verb.includes(NotificationType.challengeAwaitingPaymentPaid) ||
+        verb.includes(
           NotificationType.gameAutoCanceledDueToInitialPaymentFailed,
-        )
-        || verb.includes(
+        ) ||
+        verb.includes(
           NotificationType.gameAutoRestoredDueToAlterPaymentFailed,
-        )
-        || verb.includes(NotificationType.gameCanceledDuringAwaitingPayment)
-        || verb.includes(NotificationType.gameRestoredDuringAwaitingPayment)
-        || verb.includes(NotificationType.challengeOffered)
-        || verb.includes(NotificationType.challengeAltered)
+        ) ||
+        verb.includes(NotificationType.gameCanceledDuringAwaitingPayment) ||
+        verb.includes(NotificationType.gameRestoredDuringAwaitingPayment) ||
+        verb.includes(NotificationType.challengeOffered) ||
+        verb.includes(NotificationType.challengeAltered)
       ) {
-        const a = JSON.parse(item.activities[0].object)?.challengeObject
-            ?.challenge_id
-          || JSON.parse(item.activities[0].object).newChallengeObject.challenge_id;
+        const a =
+          JSON.parse(item.activities[0].object)?.challengeObject
+            ?.challenge_id ||
+          JSON.parse(item.activities[0].object).newChallengeObject.challenge_id;
         setloading(true);
-        Utils.getChallengeDetail(a, authContext)
+        challengeUtility.getChallengeDetail(a, authContext)
           .then((obj) => {
             console.log('challenge utils res:=>', obj);
             navigation.navigate(obj.screenName, {
@@ -121,27 +122,28 @@ function NotificationsListScreen({ navigation }) {
           })
           .catch(() => setloading(false));
       } else if (
-        verb.includes(NotificationType.refereeReservationInitialPaymentFail)
-        || verb.includes(NotificationType.refereeReservationAlterPaymentFail)
-        || verb.includes(NotificationType.refereeReservationAwaitingPaymentPaid)
-        || verb.includes(
+        verb.includes(NotificationType.refereeReservationInitialPaymentFail) ||
+        verb.includes(NotificationType.refereeReservationAlterPaymentFail) ||
+        verb.includes(NotificationType.refereeReservationAwaitingPaymentPaid) ||
+        verb.includes(
           NotificationType.refereeReservationAutoCanceledDueToInitialPaymentFailed,
-        )
-        || verb.includes(
+        ) ||
+        verb.includes(
           NotificationType.refereeReservationAutoRestoredDueToAlterPaymentFailed,
-        )
-        || verb.includes(
+        ) ||
+        verb.includes(
           NotificationType.refereeReservationCanceledDuringAwaitingPayment,
-        )
-        || verb.includes(
+        ) ||
+        verb.includes(
           NotificationType.refereeReservationRestoredDuringAwaitingPayment,
-        )
-        || verb.includes(NotificationType.refereeRequest)
-        || verb.includes(NotificationType.changeRefereeRequest)
+        ) ||
+        verb.includes(NotificationType.refereeRequest) ||
+        verb.includes(NotificationType.changeRefereeRequest)
       ) {
-        const a = JSON.parse(item.activities[0].object)?.reservationObject
-            ?.reservation_id
-          || JSON.parse(item.activities[0].object)?.reservation?.reservation_id;
+        const a =
+          JSON.parse(item.activities[0].object)?.reservationObject
+            ?.reservation_id ||
+          JSON.parse(item.activities[0].object)?.reservation?.reservation_id;
         setloading(true);
         RefereeUtils.getRefereeReservationDetail(
           a,
@@ -157,33 +159,32 @@ function NotificationsListScreen({ navigation }) {
                 reservationObj,
               });
             } else if (
-              reservationObj?.approved_by === authContext.entity.uid
-              && reservationObj.status === RefereeReservationStatus.accepted
+              reservationObj?.approved_by === authContext.entity.uid &&
+              reservationObj.status === RefereeReservationStatus.accepted
             ) {
               navigation.navigate('RefereeApprovalScreen', {
                 type: 'accepted',
                 reservationObj,
               });
-            }else if (
-              reservationObj?.approved_by === authContext.entity.uid
-              && reservationObj.status === RefereeReservationStatus.declined
+            } else if (
+              reservationObj?.approved_by === authContext.entity.uid &&
+              reservationObj.status === RefereeReservationStatus.declined
             ) {
               navigation.navigate('RefereeApprovalScreen', {
                 type: 'declined',
                 reservationObj,
               });
-            }
-             else if (
-              reservationObj.status === RefereeReservationStatus.offered
-              && !reservationObj?.is_offer
+            } else if (
+              reservationObj.status === RefereeReservationStatus.offered &&
+              !reservationObj?.is_offer
             ) {
               navigation.navigate('RefereeApprovalScreen', {
                 type: 'approve',
                 reservationObj,
               });
             } else if (
-              reservationObj.status === RefereeReservationStatus.approved
-              && reservationObj?.is_offer
+              reservationObj.status === RefereeReservationStatus.approved &&
+              reservationObj?.is_offer
             ) {
               if (authContext.entity.uid === reservationObj.initiated_by) {
                 navigation.navigate(obj.screenName, {
@@ -196,17 +197,17 @@ function NotificationsListScreen({ navigation }) {
                 });
               }
             } else if (
-              reservationObj.status === RefereeReservationStatus.approved
-              && !reservationObj?.is_offer
+              reservationObj.status === RefereeReservationStatus.approved &&
+              !reservationObj?.is_offer
             ) {
               navigation.navigate('RefereeApprovalScreen', {
                 type: 'accepted',
                 reservationObj,
               });
             } else if (
-              reservationObj.status === RefereeReservationStatus.offered
-              && reservationObj?.expiry_datetime
-                < parseFloat(new Date().getTime() / 1000).toFixed(0)
+              reservationObj.status === RefereeReservationStatus.offered &&
+              reservationObj?.expiry_datetime <
+                parseFloat(new Date().getTime() / 1000).toFixed(0)
             ) {
               navigation.navigate('RefereeApprovalScreen', {
                 type: 'expired',
@@ -231,27 +232,27 @@ function NotificationsListScreen({ navigation }) {
       } else if (
         verb.includes(
           NotificationType.scorekeeperReservationInitialPaymentFail,
-        )
-        || verb.includes(
+        ) ||
+        verb.includes(
           NotificationType.scorekeeperReservationAlterPaymentFail,
-        )
-        || verb.includes(
+        ) ||
+        verb.includes(
           NotificationType.scorekeeperReservationAwaitingPaymentPaid,
-        )
-        || verb.includes(
+        ) ||
+        verb.includes(
           NotificationType.scorekeeperReservationAutoCanceledDueToInitialPaymentFailed,
-        )
-        || verb.includes(
+        ) ||
+        verb.includes(
           NotificationType.scorekeeperReservationAutoRestoredDueToAlterPaymentFailed,
-        )
-        || verb.includes(
+        ) ||
+        verb.includes(
           NotificationType.scorekeeperReservationCanceledDuringAwaitingPayment,
-        )
-        || verb.includes(
+        ) ||
+        verb.includes(
           NotificationType.scorekeeperReservationRestoredDuringAwaitingPayment,
-        )
-        || verb.includes(NotificationType.scorekeeperRequest)
-        || verb.includes(NotificationType.changeScorekeeperRequest)
+        ) ||
+        verb.includes(NotificationType.scorekeeperRequest) ||
+        verb.includes(NotificationType.changeScorekeeperRequest)
       ) {
         // const a = JSON.parse(item.activities[0].object)?.reservationObject
         //   ?.reservation_id;
@@ -268,97 +269,96 @@ function NotificationsListScreen({ navigation }) {
         //     setloading(false);
         //   })
         //   .catch(() => setloading(false));
-        const a = JSON.parse(item.activities[0].object)?.reservationObject
-        ?.reservation_id
-      || JSON.parse(item.activities[0].object)?.reservation?.reservation_id;
-    setloading(true);
-    ScorekeeperUtils.getScorekeeperReservationDetail(
-      a,
-      authContext.entity.uid,
-      authContext,
-    )
-      .then((obj) => {
-        const reservationObj = obj.reservationObj || obj.reservationObj[0];
-
-        console.log('reservationObj:1>=>', reservationObj);
-        if (reservationObj?.scorekeeper?.user_id === authContext.entity.uid) {
-          navigation.navigate(obj.screenName, {
-            reservationObj,
-          });
-        } else if (
-          reservationObj?.approved_by === authContext.entity.uid
-          && reservationObj.status === ScorekeeperReservationStatus.accepted
-        ) {
-          navigation.navigate('ScorekeeperApprovalScreen', {
-            type: 'accepted',
-            reservationObj,
-          });
-        }else if (
-          reservationObj?.approved_by === authContext.entity.uid
-          && reservationObj.status === ScorekeeperReservationStatus.declined
-        ) {
-          navigation.navigate('ScorekeeperApprovalScreen', {
-            type: 'declined',
-            reservationObj,
-          });
-        } 
-        
-        else if (
-          reservationObj.status === ScorekeeperReservationStatus.offered
-          && !reservationObj?.is_offer
-        ) {
-          navigation.navigate('ScorekeeperApprovalScreen', {
-            type: 'approve',
-            reservationObj,
-          });
-        }
-         else if (
-          reservationObj.status === ScorekeeperReservationStatus.approved
-          && reservationObj?.is_offer
-        ) {
-          if (authContext.entity.uid === reservationObj.initiated_by) {
-            navigation.navigate(obj.screenName, {
-              reservationObj,
-            });
-          } else {
-            navigation.navigate('ScorekeeperApprovalScreen', {
-              type: 'accept',
-              reservationObj,
-            });
-          }
-        } else if (
-          reservationObj.status === ScorekeeperReservationStatus.approved
-          && !reservationObj?.is_offer
-        ) {
-          navigation.navigate('ScorekeeperApprovalScreen', {
-            type: 'accepted',
-            reservationObj,
-          });
-        } else if (
-          reservationObj.status === ScorekeeperReservationStatus.offered
-          && reservationObj?.expiry_datetime
-            < parseFloat(new Date().getTime() / 1000).toFixed(0)
-        ) {
-          navigation.navigate('ScorekeeperApprovalScreen', {
-            type: 'expired',
-            reservationObj,
-          });
-        } else {
-          console.log('reservationObj', reservationObj.status);
-          if (authContext.entity.uid === reservationObj.approved_by) {
-            navigation.navigate('ScorekeeperApprovalScreen', {
-              type: 'accepted',
-              reservationObj,
-            });
-          } else {
-            navigation.navigate(obj.screenName, {
-              reservationObj,
-            });
-          }
-        }
-        setloading(false);
-      })
-      .catch(() => setloading(false));
+        const a =
+          JSON.parse(item.activities[0].object)?.reservationObject
+            ?.reservation_id ||
+          JSON.parse(item.activities[0].object)?.reservation?.reservation_id;
+        setloading(true);
+        ScorekeeperUtils.getScorekeeperReservationDetail(
+          a,
+          authContext.entity.uid,
+          authContext,
+        )
+          .then((obj) => {
+            const reservationObj = obj.reservationObj || obj.reservationObj[0];
+            console.log('reservationObj:1>=>', reservationObj);
+            if (
+              reservationObj?.scorekeeper?.user_id === authContext.entity.uid
+            ) {
+              navigation.navigate(obj.screenName, {
+                reservationObj,
+              });
+            } else if (
+              reservationObj?.approved_by === authContext.entity.uid &&
+              reservationObj.status === ScorekeeperReservationStatus.accepted
+            ) {
+              navigation.navigate('ScorekeeperApprovalScreen', {
+                type: 'accepted',
+                reservationObj,
+              });
+            } else if (
+              reservationObj?.approved_by === authContext.entity.uid &&
+              reservationObj.status === ScorekeeperReservationStatus.declined
+            ) {
+              navigation.navigate('ScorekeeperApprovalScreen', {
+                type: 'declined',
+                reservationObj,
+              });
+            } else if (
+              reservationObj.status === ScorekeeperReservationStatus.offered &&
+              !reservationObj?.is_offer
+            ) {
+              navigation.navigate('ScorekeeperApprovalScreen', {
+                type: 'approve',
+                reservationObj,
+              });
+            } else if (
+              reservationObj.status === ScorekeeperReservationStatus.approved &&
+              reservationObj?.is_offer
+            ) {
+              if (authContext.entity.uid === reservationObj.initiated_by) {
+                navigation.navigate(obj.screenName, {
+                  reservationObj,
+                });
+              } else {
+                navigation.navigate('ScorekeeperApprovalScreen', {
+                  type: 'accept',
+                  reservationObj,
+                });
+              }
+            } else if (
+              reservationObj.status === ScorekeeperReservationStatus.approved &&
+              !reservationObj?.is_offer
+            ) {
+              navigation.navigate('ScorekeeperApprovalScreen', {
+                type: 'accepted',
+                reservationObj,
+              });
+            } else if (
+              reservationObj.status === ScorekeeperReservationStatus.offered &&
+              reservationObj?.expiry_datetime <
+                parseFloat(new Date().getTime() / 1000).toFixed(0)
+            ) {
+              navigation.navigate('ScorekeeperApprovalScreen', {
+                type: 'expired',
+                reservationObj,
+              });
+            } else {
+              console.log('reservationObj', reservationObj.status);
+              if (authContext.entity.uid === reservationObj.approved_by) {
+                navigation.navigate('ScorekeeperApprovalScreen', {
+                  type: 'accepted',
+                  reservationObj,
+                });
+              } else {
+                navigation.navigate(obj.screenName, {
+                  reservationObj,
+                });
+              }
+            }
+            setloading(false);
+          })
+          .catch(() => setloading(false));
       } else if (verb.includes(NotificationType.inviteToConnectMember)) {
         navigation.navigate('InviteToMemberScreen', {
           data: item,
@@ -380,7 +380,7 @@ function NotificationsListScreen({ navigation }) {
         setloading(false);
         navigation.push('MessageChat', {
           screen: 'MessageChatRoom',
-          params: { userId },
+          params: {userId},
         });
       };
       const createQBUser = (userData) => {
@@ -439,8 +439,8 @@ function NotificationsListScreen({ navigation }) {
         obj: item,
       };
     }
-    authContext.setEntity({ ...currentEntity });
-    await Utility.setStorage('authContextEntity', { ...currentEntity });
+    authContext.setEntity({...currentEntity});
+    await Utility.setStorage('authContextEntity', {...currentEntity});
     return currentEntity;
   };
   const switchQBAccount = async (accountData, entity) => {
@@ -449,9 +449,7 @@ function NotificationsListScreen({ navigation }) {
     const uid = entityType === 'player' ? 'user_id' : 'group_id';
     QBLogout()
       .then(() => {
-        const {
- USER, CLUB, LEAGUE, TEAM,
- } = QB_ACCOUNT_TYPE;
+        const {USER, CLUB, LEAGUE, TEAM} = QB_ACCOUNT_TYPE;
         let accountType = USER;
         if (entityType === 'club') accountType = CLUB;
         else if (entityType === 'team') accountType = TEAM;
@@ -467,10 +465,10 @@ function NotificationsListScreen({ navigation }) {
           .then(async (res) => {
             currentEntity = {
               ...currentEntity,
-              QB: { ...res.user, connected: true, token: res?.session?.token },
+              QB: {...res.user, connected: true, token: res?.session?.token},
             };
-            authContext.setEntity({ ...currentEntity });
-            await Utility.setStorage('authContextEntity', { ...currentEntity });
+            authContext.setEntity({...currentEntity});
+            await Utility.setStorage('authContextEntity', {...currentEntity});
             QBconnectAndSubscribe(currentEntity)
               .then((qbRes) => {
                 setloading(false);
@@ -507,7 +505,8 @@ function NotificationsListScreen({ navigation }) {
   };
 
   const showSwitchProfilePopup = () => {
-    const name = selectedEntity.entity_type === 'player'
+    const name =
+      selectedEntity.entity_type === 'player'
         ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
         : selectedEntity.group_name;
     Alert.alert(
@@ -519,13 +518,13 @@ function NotificationsListScreen({ navigation }) {
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        { text: 'Yes', onPress: () => onSwitchProfile(selectedEntity) },
+        {text: 'Yes', onPress: () => onSwitchProfile(selectedEntity)},
       ],
-      { cancelable: true },
+      {cancelable: true},
     );
   };
 
-  const onDelete = ({ item }) => {
+  const onDelete = ({item}) => {
     if (activeScreen) {
       setloading(true);
       const ids = item.activities.map((activity) => activity.id);
@@ -608,12 +607,13 @@ function NotificationsListScreen({ navigation }) {
     // setIsRulesModalVisible(true)
   };
 
-  const isInvite = (verb) => verb.includes(NotificationType.inviteToJoinClub)
-    || verb.includes(NotificationType.invitePlayerToJoinTeam)
-    || verb.includes(NotificationType.invitePlayerToJoinClub)
-    || verb.includes(NotificationType.inviteToConnectProfile)
-    || verb.includes(NotificationType.invitePlayerToJoingame)
-    || verb.includes(NotificationType.inviteToDoubleTeam);
+  const isInvite = (verb) =>
+    verb.includes(NotificationType.inviteToJoinClub) ||
+    verb.includes(NotificationType.invitePlayerToJoinTeam) ||
+    verb.includes(NotificationType.invitePlayerToJoinClub) ||
+    verb.includes(NotificationType.inviteToConnectProfile) ||
+    verb.includes(NotificationType.invitePlayerToJoingame) ||
+    verb.includes(NotificationType.inviteToDoubleTeam);
 
   const openHomePage = (item) => {
     if (activeScreen) {
@@ -630,9 +630,9 @@ function NotificationsListScreen({ navigation }) {
     }
   };
   const onNotificationClick = (notificationItem) => {
-    console.log('Notification detail::=>',notificationItem);
+    console.log('Notification detail::=>', notificationItem);
     console.log(notificationItem?.verb);
-    const verb = notificationItem?.verb?.split('_')
+    const verb = notificationItem?.verb?.split('_');
     const postVerbTypes = [
       NotificationType.clap,
       NotificationType.tagged,
@@ -641,26 +641,89 @@ function NotificationsListScreen({ navigation }) {
     const scorekeeperVerbTypes = [
       NotificationType.scorekeeperReservationCancelled,
       NotificationType.scorekeeperReservationAccepted,
-      NotificationType.scorekeeperReservationApproved
+      NotificationType.scorekeeperReservationApproved,
     ];
     const refereeVerbTypes = [
       NotificationType.refereeReservationCancelled,
       NotificationType.refereeReservationAccepted,
-      NotificationType.refereeReservationApproved
+      NotificationType.refereeReservationApproved,
     ];
-    // const gameVerbTypes = [
-    //   NotificationType.gameAccepted,
-    //   NotificationType.gameCancelled,
-    // ];
+    const gameVerbTypes = [
+      NotificationType.gameAccepted,
+      NotificationType.gameCancelled,
+    ];
 
     if (postVerbTypes.includes(verb?.[0])) {
-      navigation.navigate('SingleNotificationScreen', { notificationItem });
+      navigation.navigate('SingleNotificationScreen', {notificationItem});
     }
     if (scorekeeperVerbTypes.includes(verb?.[0])) {
-      navigation.navigate('ScorekeeperReservationScreen', { reservationObj:JSON.parse(notificationItem.activities[0].object)?.reservationObject  });
+      const a =
+        JSON.parse(notificationItem.activities[0].object)?.reservationObject
+          ?.reservation_id ||
+        JSON.parse(notificationItem.activities[0].object)?.reservation
+          ?.reservation_id;
+      setloading(true);
+      ScorekeeperUtils.getScorekeeperReservationDetail(
+        a,
+        authContext.entity.uid,
+        authContext,
+      )
+        .then((obj) => {
+          const reservationObj = obj.reservationObj || obj.reservationObj[0];
+
+          console.log('reservationObj:1>=>', reservationObj);
+
+          navigation.navigate(obj.screenName, {
+            reservationObj,
+          });
+
+          setloading(false);
+        })
+        .catch(() => setloading(false));
     }
     if (refereeVerbTypes.includes(verb?.[0])) {
-      navigation.navigate('RefereeReservationScreen', { reservationObj:JSON.parse(notificationItem.activities[0].object)?.reservationObject  });
+      const a =
+        JSON.parse(notificationItem.activities[0].object)?.reservationObject
+          ?.reservation_id ||
+        JSON.parse(notificationItem.activities[0].object)?.reservation
+          ?.reservation_id;
+      setloading(true);
+      RefereeUtils.getRefereeReservationDetail(
+        a,
+        authContext.entity.uid,
+        authContext,
+      )
+        .then((obj) => {
+          const reservationObj = obj.reservationObj || obj.reservationObj[0];
+
+          console.log('reservationObj:1>=>', reservationObj);
+
+          navigation.navigate(obj.screenName, {
+            reservationObj,
+          });
+
+          setloading(false);
+        })
+        .catch(() => setloading(false));
+    }
+    if (gameVerbTypes.includes(verb?.[0])) {
+      const a = JSON.parse(notificationItem.activities[0].object)
+        ?.challengeObject?.challenge_id;
+      setloading(true);
+      challengeUtility
+        .getChallengeDetail(a, authContext)
+        .then((obj) => {
+          const challengeObj = obj.challengeObj || obj.challengeObj[0];
+
+          console.log('challengeObj:1>=>', challengeObj);
+
+          navigation.navigate(obj.screenName, {
+            challengeObj,
+          });
+
+          setloading(false);
+        })
+        .catch(() => setloading(false));
     }
   };
 
@@ -675,7 +738,8 @@ function NotificationsListScreen({ navigation }) {
             item={item}
             selectedEntity={selectedEntity}
             // onAccept={() => onAccept(item.activities[0].id)}
-            onRespond={() => onRespond(
+            onRespond={() =>
+              onRespond(
                 JSON.parse(item.activities[0].object)?.groupData?.group_id,
             )
             } // JSON.parse(item.activities[0].object))
@@ -699,11 +763,10 @@ function NotificationsListScreen({ navigation }) {
     if (
       item.activities[0].verb.includes(
         NotificationType.inviteToConnectMember,
-      )
-      || item.activities[0].verb.includes(NotificationType.refereeRequest) || item.activities[0].verb.includes(NotificationType.scorekeeperRequest)
+      ) ||
+      item.activities[0].verb.includes(NotificationType.refereeRequest) ||
+      item.activities[0].verb.includes(NotificationType.scorekeeperRequest)
     ) {
-      
-
       return (
         <PRNotificationDetailItem
           item={item}
@@ -714,7 +777,6 @@ function NotificationsListScreen({ navigation }) {
         />
       );
     }
-   
 
     return (
       <PRNotificationDetailMessageItem
@@ -728,11 +790,11 @@ function NotificationsListScreen({ navigation }) {
     );
   };
 
-  const renderPendingRequestComponent = ({ item }) => {
+  const renderPendingRequestComponent = ({item}) => {
     console.log('ITEm:,', item);
     return (
       <AppleStyleSwipeableRow
-        onPress={() => onDelete({ item })}
+        onPress={() => onDelete({item})}
         color={colors.redDelColor}
         image={images.deleteIcon}>
         {notificationComponentType(item)}
@@ -740,11 +802,11 @@ function NotificationsListScreen({ navigation }) {
     );
   };
 
-  const renderNotificationComponent = ({ item }) => {
+  const renderNotificationComponent = ({item}) => {
     console.log('Item notification:=>', item);
     return (
       <AppleStyleSwipeableRow
-        onPress={() => onDelete({ item })}
+        onPress={() => onDelete({item})}
         color={colors.redDelColor}
         image={images.deleteIcon}>
         <NotificationItem
@@ -757,17 +819,17 @@ function NotificationsListScreen({ navigation }) {
     );
   };
 
-  const RenderSections = ({ item, section }) => {
+  const RenderSections = ({item, section}) => {
     if (section.section === strings.pendingrequests) {
-      return renderPendingRequestComponent({ item: { ...item, type: 'request' } });
+      return renderPendingRequestComponent({item: {...item, type: 'request'}});
     }
 
     if (
-      section.section === strings.earlier
-      || section.section === strings.today
+      section.section === strings.earlier ||
+      section.section === strings.today
     ) {
       return renderNotificationComponent({
-        item: { ...item, type: 'notification' },
+        item: {...item, type: 'notification'},
       });
     }
 
@@ -808,10 +870,11 @@ function NotificationsListScreen({ navigation }) {
       if (notifAPI !== 1) {
         getUnreadCount(authContext).then((response) => {
           if (response.status === true) {
-            const { teams } = response.payload;
-            const { clubs } = response.payload;
+            const {teams} = response.payload;
+            const {clubs} = response.payload;
             const groups = [authContext.entity.auth.user, ...clubs, ...teams];
-            const entityId = authContext?.entity?.role === 'user'
+            const entityId =
+              authContext?.entity?.role === 'user'
                 ? authContext?.entity?.obj?.user_id
                 : authContext?.entity?.obj?.group_id;
             const tabIndex = groups.findIndex(
@@ -833,9 +896,10 @@ function NotificationsListScreen({ navigation }) {
     }
   }, [currentTab, isFocused]);
 
-  const callNotificationList = () => new Promise((resolve, reject) => {
+  const callNotificationList = () =>
+    new Promise((resolve, reject) => {
       const entity = groupList[currentTab];
-      setSelectedEntity({ ...entity });
+      setSelectedEntity({...entity});
       const params = {
         mark_read: 'true',
         mark_seen: 'true',
@@ -846,14 +910,15 @@ function NotificationsListScreen({ navigation }) {
           const pendingReqNotification = response.payload.requests;
           console.log('pendingReqNotification:=>', pendingReqNotification);
           const todayNotifications = response.payload.notifications.filter(
-            (item) => Moment(item.created_at).format('yyyy-MM-DD')
-              === Moment(currentDate).format('yyyy-MM-DD'),
+            (item) =>
+              Moment(item.created_at).format('yyyy-MM-DD') ===
+              Moment(currentDate).format('yyyy-MM-DD'),
           );
           const erlierNotifications = response.payload.notifications.filter(
-            (item) => Moment(item.created_at).format('yyyy-MM-DD')
-              !== Moment(currentDate).format('yyyy-MM-DD'),
+            (item) =>
+              Moment(item.created_at).format('yyyy-MM-DD') !==
+              Moment(currentDate).format('yyyy-MM-DD'),
           );
-
           const array = [
             {
               data: [...pendingReqNotification],
@@ -889,13 +954,13 @@ function NotificationsListScreen({ navigation }) {
     <View style={styles.listItemSeparatorStyle} />
   );
 
-  const renderSectionFooter = ({ section }) => {
+  const renderSectionFooter = ({section}) => {
     if (section.section === strings.pendingrequests) {
       return (
         <View
           style={[
             styles.listItemSeparatorStyle,
-            { height: 7, backgroundColor: colors.grayBackgroundColor },
+            {height: 7, backgroundColor: colors.grayBackgroundColor},
           ]}
         />
       );
@@ -903,7 +968,7 @@ function NotificationsListScreen({ navigation }) {
     return <View style={styles.listItemSeparatorStyle} />;
   };
 
-  const renderGroupItem = ({ item, index }) => (
+  const renderGroupItem = ({item, index}) => (
     <TouchableOpacity
       onPress={() => {
         if (groupList.length === 2) {
@@ -927,7 +992,7 @@ function NotificationsListScreen({ navigation }) {
             opacity: 0.2,
             height: 2,
             shadowColor: colors.grayColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.8,
             shadowRadius: 5,
             elevation: 3,
@@ -938,7 +1003,8 @@ function NotificationsListScreen({ navigation }) {
 
   const checkActiveScreen = async (entity) => {
     const loggedInEntity = authContext.entity;
-    const currentID = entity.entity_type === 'player' ? entity.user_id : entity.group_id;
+    const currentID =
+      entity.entity_type === 'player' ? entity.user_id : entity.group_id;
     if (loggedInEntity.uid === currentID) {
       setActiveScreen(true);
     } else {
@@ -947,154 +1013,156 @@ function NotificationsListScreen({ navigation }) {
   };
 
   const onNextPressed = () => {
-    navigation.navigate('RespondToInviteScreen', { teamObject: groupData });
+    navigation.navigate('RespondToInviteScreen', {teamObject: groupData});
     setIsRulesModalVisible(false);
   };
 
   return (
-    <SafeAreaView style={{flex:1}}>
+    <SafeAreaView style={{flex: 1}}>
       <View
-      style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]}
-      needsOffscreenAlphaCompositing>
+        style={[styles.rowViewStyle, {opacity: activeScreen ? 1.0 : 0.5}]}
+        needsOffscreenAlphaCompositing>
         <View>
           {groupList?.length <= 0 ? (
             <NotificationListTopHeaderShimmer />
-        ) : (
-          groupList?.length > 1 && (
-            <FlatList
-              ref={refContainer}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              data={groupList.length === 2 ? [...groupList, {}] : groupList}
-              renderItem={renderGroupItem}
-              keyExtractor={keyExtractor}
-              initialScrollIndex={currentTab}
-              initialNumToRender={30}
-              style={{
-                paddingTop: 8,
-                backgroundColor: colors.grayBackgroundColor,
-              }}
-              onScrollToIndexFailed={(info) => {
-                const wait = new Promise((resolve) => setTimeout(resolve, 100));
-                wait.then(() => {
-                  refContainer.current.scrollToIndex({
-                    animated: true,
-                    index: info.index,
+          ) : (
+            groupList?.length > 1 && (
+              <FlatList
+                ref={refContainer}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                data={groupList.length === 2 ? [...groupList, {}] : groupList}
+                renderItem={renderGroupItem}
+                keyExtractor={keyExtractor}
+                initialScrollIndex={currentTab}
+                initialNumToRender={30}
+                style={{
+                  paddingTop: 8,
+                  backgroundColor: colors.grayBackgroundColor,
+                }}
+                onScrollToIndexFailed={(info) => {
+                  const wait = new Promise((resolve) =>
+                    setTimeout(resolve, 100),
+                  );
+                  wait.then(() => {
+                    refContainer.current.scrollToIndex({
+                      animated: true,
+                      index: info.index,
+                    });
                   });
-                });
-              }}
-            />
-          )
-        )}
+                }}
+              />
+            )
+          )}
         </View>
         <ActivityLoader visible={loading} />
         {/* eslint-disable-next-line no-nested-ternary */}
         {firstTimeLoading ? (
           <NotificationListShimmer />
-      ) : mainNotificationsList?.length > 0 ? (
-        <SectionList
-          ItemSeparatorComponent={itemSeparator}
-          sections={mainNotificationsList}
-          keyExtractor={keyExtractor}
-          renderItem={RenderSections}
-          renderSectionHeader={({ section: { section } }) => (
-            <View style={{ flex: 1, flexDirection: 'column-reverse' }}>
-              <View style={styles.listItemSeparatorStyle} />
-              <Text style={styles.header}>{section}</Text>
-            </View>
-          )}
-          renderSectionFooter={renderSectionFooter}
-        />
-      ) : (
-        <TCNoDataView title={'No records found'} />
-      )}
+        ) : mainNotificationsList?.length > 0 ? (
+          <SectionList
+            ItemSeparatorComponent={itemSeparator}
+            sections={mainNotificationsList}
+            keyExtractor={keyExtractor}
+            renderItem={RenderSections}
+            renderSectionHeader={({section: {section}}) => (
+              <View style={{flex: 1, flexDirection: 'column-reverse'}}>
+                <View style={styles.listItemSeparatorStyle} />
+                <Text style={styles.header}>{section}</Text>
+              </View>
+            )}
+            renderSectionFooter={renderSectionFooter}
+          />
+        ) : (
+          <TCNoDataView title={'No records found'} />
+        )}
         <ActionSheet
-        ref={actionSheet}
-        options={['Trash', 'Cancel']}
-        cancelButtonIndex={1}
-        onPress={(index) => {
-          if (index === 0) {
-            navigation.navigate('NotificationNavigator', {
-              screen: 'TrashScreen',
-              params: {
-                selectedGroup: groupList[currentTab],
-                selectedEntity,
-              },
-            });
-          }
-        }}
-      />
+          ref={actionSheet}
+          options={['Trash', 'Cancel']}
+          cancelButtonIndex={1}
+          onPress={(index) => {
+            if (index === 0) {
+              navigation.navigate('NotificationNavigator', {
+                screen: 'TrashScreen',
+                params: {
+                  selectedGroup: groupList[currentTab],
+                  selectedEntity,
+                },
+              });
+            }
+          }}
+        />
 
         {/* Rules notes modal */}
         <Modal
-        isVisible={isRulesModalVisible} // isRulesModalVisible
-        backdropColor="black"
-        onBackdropPress={() => setIsRulesModalVisible(false)}
-        onRequestClose={() => setIsRulesModalVisible(false)}
-        backdropOpacity={0}
-        style={{
-          margin: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-        }}>
-          <View
+          isVisible={isRulesModalVisible} // isRulesModalVisible
+          backdropColor="black"
+          onBackdropPress={() => setIsRulesModalVisible(false)}
+          onRequestClose={() => setIsRulesModalVisible(false)}
+          backdropOpacity={0}
           style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.7,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
+            margin: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
           }}>
-            <View
+          <View
             style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'center',
-              alignItems: 'center',
+              width: '100%',
+              height: Dimensions.get('window').height / 1.7,
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              shadowColor: '#000',
+              shadowOffset: {width: 0, height: 1},
+              shadowOpacity: 0.5,
+              shadowRadius: 5,
+              elevation: 15,
             }}>
-              <Text
+            <View
               style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                justifyContent: 'center',
+                alignItems: 'center',
               }}>
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RBold,
+                  color: colors.lightBlackColor,
+                }}>
                 Respond to invite to create team
               </Text>
             </View>
             <View style={styles.separatorLine} />
-            <View style={{ flex: 1 }}>
+            <View style={{flex: 1}}>
               <ScrollView>
-                <Text style={[styles.rulesText, { margin: 15 }]}>
+                <Text style={[styles.rulesText, {margin: 15}]}>
                   {'When your team creates a club:'}
                 </Text>
-                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                <Text style={[styles.rulesText, {marginLeft: 15}]}>
                   {'\n• your team will belong to the club initially.'}
                 </Text>
-                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                <Text style={[styles.rulesText, {marginLeft: 15}]}>
                   {'\n• your team can leave the club anytime later.'}
                 </Text>
-                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                <Text style={[styles.rulesText, {marginLeft: 15}]}>
                   {
-                  '\n• the admins of your team will be the admins of the club initially.'
-                }
+                    '\n• the admins of your team will be the admins of the club initially.'
+                  }
                 </Text>
               </ScrollView>
             </View>
             <TCGradientButton
-            isDisabled={false}
-            title={strings.nextTitle}
-            style={{ marginBottom: 30 }}
-            onPress={onNextPressed}
-          />
+              isDisabled={false}
+              title={strings.nextTitle}
+              style={{marginBottom: 30}}
+              onPress={onNextPressed}
+            />
           </View>
         </Modal>
 

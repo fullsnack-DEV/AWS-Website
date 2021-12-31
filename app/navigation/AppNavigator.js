@@ -221,7 +221,11 @@ const getTabBarVisibility = (route) => {
     routeName === 'EditLineUpScreen' ||
     routeName === 'SearchScreen' || 
     routeName === 'MembersViewPrivacyScreen' ||
-    routeName === 'NotificationsListScreen'
+    routeName === 'NotificationsListScreen' ||
+    routeName === 'GroupMembersScreen' ||
+    routeName === 'UserConnections' ||
+    routeName === 'EditGroupProfileScreen'
+
 
   ) {
     return false;

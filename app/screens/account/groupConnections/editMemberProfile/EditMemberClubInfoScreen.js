@@ -82,7 +82,6 @@ export default function EditMemberClubInfoScreen({ navigation }) {
           </TouchableOpacity>
           <Text style={styles.checkBoxItemText}>Admin</Text>
         </View>
-
       </View>
       <TCThinDivider/>
       <FlatList

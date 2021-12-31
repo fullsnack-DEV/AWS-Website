@@ -21,7 +21,6 @@ export const getChallengeDetail = (challengeID, authContext) => {
         challenge.game_status = gameStatus
         return challenge
         })
-
       if (ReservationStatus.changeRequest === challenges[0].status
         || ReservationStatus.pendingrequestpayment === challenges[0].status) {
         Obj.challengeObj = challenges
