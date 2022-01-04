@@ -40,14 +40,7 @@ const UserHomeTopSection = ({
   //   ],
   // );
 
-  Utility.getStorage('appSetting').then((setting) => {
-    console.log('APPSETTING:=', setting);
-    image_url = setting.base_url_sporticon;
-  });
-
-  useEffect(() => {
-    isSectionEnable();
-  }, []);
+ 
 
   const isSectionEnable = useCallback(() => {
     const gameLength = userDetails?.games?.length ?? 0;
@@ -63,18 +56,33 @@ const UserHomeTopSection = ({
     userDetails?.scorekeeper_data,
   ]);
 
+
+  Utility.getStorage('appSetting').then((setting) => {
+     
+    image_url = setting.base_url_sporticon;
+    console.log('APPSETTING:=', setting.base_url_sporticon);
+    
+  });
+  useEffect(() => {
+    
+      isSectionEnable();
+
+   
+  }, [isSectionEnable]);
+
+  
   const oneLineSection = () => {
-    console.log('authContext::=>>', authContext.entity.obj);
-    if (authContext?.entity?.obj?.sport_setting?.activity_order?.length > 0) {
+    console.log('userDetails::=>>', userDetails);
+    if (userDetails?.sport_setting?.activity_order?.length > 0) {
       return [
-        ...(authContext?.entity?.obj?.sport_setting?.activity_order ?? []),
+        ...(userDetails?.sport_setting?.activity_order ?? []),
         { sport_name: strings.addrole, item_type: EntityStatus.addNew },
       ];
     }
     return [
-      ...(authContext?.entity?.obj?.registered_sports?.filter((obj) => obj.is_published) ?? []),
-      ...(authContext?.entity?.obj?.referee_data?.filter((obj) => obj.is_published) ?? []),
-      ...(authContext?.entity?.obj?.scorekeeper_data?.filter((obj) => obj.is_published) ?? []),
+      ...(userDetails?.registered_sports?.filter((obj) => obj.is_published) ?? []),
+      ...(userDetails?.referee_data?.filter((obj) => obj.is_published) ?? []),
+      ...(userDetails?.scorekeeper_data?.filter((obj) => obj.is_published) ?? []),
       { sport_name: strings.addrole, item_type: EntityStatus.addNew },
     ];
   };
@@ -98,7 +106,6 @@ const UserHomeTopSection = ({
     if (item?.item_type === EntityStatus.addNew) {
       return renderAddRole();
     }
-
     if (item?.type === EntityStatus.playin) {
       return renderPlayIn({ item });
     }
@@ -110,7 +117,8 @@ const UserHomeTopSection = ({
     }
   }, []);
 
-  const renderPlayIn = ({ item }) => {
+  const renderPlayIn = useCallback(({ item }) => {
+    console.log('OKOK player:=>',image_url);
     if (item.item_type) {
       return renderAddPlayInRole({ item });
     }
@@ -121,7 +129,7 @@ const UserHomeTopSection = ({
         thumbURL={
           item?.type
             ? {
-                uri: `${image_url}${Utility.getSportImage(item.sport, item.type, authContext)}`,
+                uri: image_url + Utility.getSportImage(item.sport, item.type, authContext),
               }
             : images.addRole
         }
@@ -130,10 +138,15 @@ const UserHomeTopSection = ({
         }}
       />
     );
-  };
+  },[authContext, onPlayInPress]);
 
   const renderRefereesIn = useCallback(
     ({ item }) => {
+      console.log('OKOK referee:=>',image_url + Utility.getSportImage(
+        item.sport,
+        'referee',
+        authContext,
+      ));
       if (item.item_type) {
         return renderAddRefereeRole({ item });
       }
@@ -144,11 +157,11 @@ const UserHomeTopSection = ({
           thumbURL={
             item?.type
               ? {
-                  uri: `${image_url}${Utility.getSportImage(
+                  uri: image_url + Utility.getSportImage(
                     item.sport,
                     item.type,
                     authContext,
-                  )}`,
+                  ),
                 }
               : images.addRole
           }
@@ -158,7 +171,7 @@ const UserHomeTopSection = ({
         />
       );
     },
-    [onRefereesInPress],
+    [authContext, onRefereesInPress],
   );
 
   const renderScorekeeperIn = useCallback(
@@ -173,11 +186,11 @@ const UserHomeTopSection = ({
           thumbURL={
             item?.type
               ? {
-                  uri: `${image_url}${Utility.getSportImage(
+                  uri: image_url + Utility.getSportImage(
                     item.sport,
                     item.type,
                     authContext,
-                  )}`,
+                  ),
                 }
               : images.addRole
           }
@@ -187,7 +200,7 @@ const UserHomeTopSection = ({
         />
       );
     },
-    [onScorekeeperInPress],
+    [authContext, onScorekeeperInPress],
   );
 
   const renderAddRefereeRole = useCallback(

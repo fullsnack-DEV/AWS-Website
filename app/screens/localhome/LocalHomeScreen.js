@@ -8,8 +8,9 @@ import React, {
   useState,
   useContext,
   useEffect,
-  useMemo,
+  
   useRef,
+  useLayoutEffect
 } from 'react';
 import {
   View,
@@ -60,7 +61,6 @@ import TCThinDivider from '../../components/TCThinDivider';
 import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
 import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
-import Header from '../../components/Home/Header';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
 import {getUserSettings} from '../../api/Users';
 import TCUpcomingMatchCard from '../../components/TCUpcomingMatchCard';
@@ -112,6 +112,67 @@ export default function LocalHomeScreen({navigation, route}) {
 
   console.log('authContextttt::=>', authContext.entity.role);
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <TouchableOpacity
+              style={styles.titleHeaderView}
+              onPress={() => {
+                setLocationPopup(true);
+              }}
+              hitSlop={getHitSlop(15)}>
+          <Text style={styles.headerTitle}>
+            {location.charAt(0).toUpperCase() + location.slice(1)}
+          </Text>
+          <Image source={images.home_gps} style={styles.gpsIconStyle} />
+        </TouchableOpacity>
+      ),
+      headerLeft: () => (
+        <View style={{marginLeft:15}}>
+          <FastImage
+                source={images.tc_message_top_icon}
+                resizeMode={'contain'}
+                style={styles.backImageStyle}
+              />
+        </View>
+      ),
+      
+      headerRight: () => (
+        <View style={styles.rightHeaderView}>
+          <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('SearchScreen', {
+                    isAdmin: true,
+                    galleryRef,
+                    entityType: authContext.entity?.role,
+                    entityID: authContext.entity?.uid,
+                  });
+                }}>
+            <Image
+                  source={images.home_search}
+                  style={styles.townsCupIcon}
+                />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setSettingPopup(true)}>
+            <Image
+                  source={images.home_setting}
+                  style={styles.townsCupIcon}
+                />
+          </TouchableOpacity>
+        </View>
+      ),
+
+      headerStyle: {
+        // shadowColor: 'transparent',
+        shadowOpacity: 0,
+        backgroundColor: '#fff',
+        borderBottomWidth: 0,
+      },
+    });
+  }, [authContext.entity?.role, authContext.entity?.uid, location, navigation]);
+
+
+
   useEffect(() => {
     if (isFocused) {
       getSportsList(authContext).then(async (res) => {
@@ -146,34 +207,22 @@ export default function LocalHomeScreen({navigation, route}) {
           }, 10);
         });
     }
-  }, [authContext]);
+  }, [authContext, isFocused]);
 
   useEffect(() => {
     Utility.getStorage('sportSetting')
       .then((setting) => {
         console.log('Setting::1::=>', setting);
         if (setting === null) {
-          const arr = [];
-          // const refereeSport = authContext?.entity?.auth?.user?.referee_data || [];
-          // const scorekeeperSport = authContext?.entity?.auth?.user?.scorekeeper_data || [];
           const playerSport =
-            authContext?.entity?.auth?.user?.registered_sports || [];
-          const allSports = [
-            ...arr,
-            // ...refereeSport,
-            // ...scorekeeperSport,
-            ...playerSport,
-          ];
-          const uniqSports = {};
-          const uniqueSports = allSports.filter(
-            (obj) => !uniqSports[obj.sport] && (uniqSports[obj.sport] = true),
-          );
-
-          const result = uniqueSports.map((obj) => ({
+            authContext?.entity?.obj?.registered_sports || [];
+          const result = playerSport.map((obj) => ({
             sport: obj.sport,
+            sport_type: obj.sport_type,
           }));
+          console.log('playerSport:1=>', playerSport);
+
           setSports(result);
-          console.log('Unique sport:=>', result);
         } else {
           setSports([...setting]);
         }
@@ -182,7 +231,7 @@ export default function LocalHomeScreen({navigation, route}) {
       .catch((e) => {
         Alert.alert('Can not fetch local sport setting.');
       });
-  }, [authContext, isFocused]);
+  }, [authContext]);
 
   useEffect(() => {
     if (isFocused) {
@@ -653,7 +702,7 @@ export default function LocalHomeScreen({navigation, route}) {
             index,
             viewPosition: 0.5,
           });
-          console.log('selected sport::=>', item.sport);
+          console.log('selected sport::=>', item);
           setSelectedSport(item.sport);
           setSportType(item.sport_type);
           setFilters({
@@ -834,63 +883,7 @@ export default function LocalHomeScreen({navigation, route}) {
     />
   );
 
-  const renderTopHeader = useMemo(
-    () => (
-      <>
-        <Header
-          showBackgroundColor={true}
-          leftComponent={
-            <View>
-              <FastImage
-                source={images.tc_message_top_icon}
-                resizeMode={'contain'}
-                style={styles.backImageStyle}
-              />
-            </View>
-          }
-          centerComponent={
-            <TouchableOpacity
-              style={styles.titleHeaderView}
-              onPress={() => {
-                setLocationPopup(true);
-              }}
-              hitSlop={getHitSlop(15)}>
-              <Text style={styles.headerTitle}>
-                {location.charAt(0).toUpperCase() + location.slice(1)}
-              </Text>
-              <Image source={images.home_gps} style={styles.gpsIconStyle} />
-            </TouchableOpacity>
-          }
-          rightComponent={
-            <View style={styles.rightHeaderView}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('SearchScreen', {
-                    isAdmin: true,
-                    galleryRef,
-                    entityType: authContext.entity?.role,
-                    entityID: authContext.entity?.uid,
-                  });
-                }}>
-                <Image
-                  source={images.home_search}
-                  style={styles.townsCupIcon}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setSettingPopup(true)}>
-                <Image
-                  source={images.home_setting}
-                  style={styles.townsCupIcon}
-                />
-              </TouchableOpacity>
-            </View>
-          }
-        />
-        <View style={styles.separateLine} />
-      </>
-    ),
-    [location],
-  );
+  
 
   const getLocation = () => {
     Geolocation.getCurrentPosition(
@@ -934,26 +927,10 @@ export default function LocalHomeScreen({navigation, route}) {
 
   return (
     <View style={{flex: 1}}>
-      {renderTopHeader}
       <TCThinDivider width={'100%'} />
       {/* <ActivityLoader visible={loading} /> */}
-      {loading ? (
-        <LocalHomeScreenShimmer />
-      ) : recentMatch.length <= 0 &&
-        upcomingMatch.length <= 0 &&
-        challengeeMatch.length <= 0 &&
-        hiringPlayers.length <= 0 &&
-        referees.length <= 0 &&
-        scorekeepers.length <= 0 ? (
-          <View style={styles.placeholderContainer}>
-            <Text style={styles.placeholderViewText}>
-              Towns Cup Data Not Available
-            </Text>
-          </View>
-      ) : (
-        <Fragment>
-          <View style={styles.sportsListView}>
-            <FlatList
+      <View style={styles.sportsListView}>
+        <FlatList
               ref={refContainer}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
@@ -984,7 +961,23 @@ export default function LocalHomeScreen({navigation, route}) {
                 alignContent: 'center',
               }}
             />
+      </View>
+      {loading ? (
+        <LocalHomeScreenShimmer />
+      ) : recentMatch.length <= 0 &&
+        upcomingMatch.length <= 0 &&
+        challengeeMatch.length <= 0 &&
+        hiringPlayers.length <= 0 &&
+        referees.length <= 0 &&
+        scorekeepers.length <= 0 ? (
+          <View style={styles.placeholderContainer}>
+            <Text style={styles.placeholderViewText}>
+              Towns Cup Data Not Available
+            </Text>
           </View>
+      ) : (
+        <Fragment>
+        
 
           <ScrollView>
             {recentMatch.length > 0 && (
@@ -1532,8 +1525,8 @@ const styles = StyleSheet.create({
   },
   rightHeaderView: {
     flexDirection: 'row',
-    marginRight: 5,
-    marginLeft: 25,
+    marginRight: 15,
+    // marginLeft: 25,
   },
   headerTitle: {
     fontFamily: fonts.RBold,

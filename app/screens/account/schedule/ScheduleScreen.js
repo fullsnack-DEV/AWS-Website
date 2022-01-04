@@ -10,7 +10,7 @@ import React, {
   useEffect,
   useContext,
   useCallback,
-  useMemo,
+  
 } from 'react';
 import {
   StyleSheet,
@@ -21,7 +21,6 @@ import {
   Dimensions,
   Alert,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   SafeAreaView,
   ScrollView,
   Animated,
@@ -29,7 +28,7 @@ import {
   SectionList,
 } from 'react-native';
 import {
-  widthPercentageToDP as wp,
+  
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 // import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
@@ -85,9 +84,11 @@ import { getGameIndex } from '../../../api/elasticSearch';
 let selectedCalendarDate = moment(new Date());
 const { width } = Dimensions.get('window');
 
-export default function ScheduleScreen({ navigation }) {
+export default function ScheduleScreen({ navigation,route }) {
   const authContext = useContext(AuthContext);
+  const actionSheet = useRef();
   const isFocused = useIsFocused();
+  
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [eventData, setEventData] = useState([]);
   const [timeTable, setTimeTable] = useState([]);
@@ -102,16 +103,11 @@ export default function ScheduleScreen({ navigation }) {
   const [scorekeeperReservData, setScorekeeperReserveData] = useState([]);
   const [showTimeTable, setShowTimeTable] = useState(false);
   const [isMenu, setIsMenu] = useState(false);
-
   const [listView, setListView] = useState(true);
-
   const [selectedCalendarDateString] = useState(
     selectedCalendarDate.format('YYYY-MM-DD'),
   );
-
   const [markingDays, setMarkingDays] = useState({});
-
-  const actionSheet = useRef();
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
   const [notifAPI, setNotifAPI] = useState();
@@ -120,24 +116,49 @@ export default function ScheduleScreen({ navigation }) {
   const [activeScreen, setActiveScreen] = useState(false);
   const [animatedOpacityValue] = useState(new Animated.Value(0));
   const [slots, setSlots] = useState();
-
   const [blockedGroups, setBlockedGroups] = useState([]);
-
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <TouchableWithoutFeedback
-          hitSlop={getHitSlop(15)}
-          onPress={() => {
-            actionSheet.current.show();
-          }}>
-          <Image source={images.vertical3Dot} style={styles.headerRightImg} />
-        </TouchableWithoutFeedback>
+      headerTitle: () => (
+        <Text style={styles.eventTitleTextStyle}>
+          Schedule
+        </Text> 
       ),
+      headerLeft: () => (
+        <TouchableOpacity style={{marginLeft:15}} onPress={()=>{
+          if(route?.params?.isBackVisible){
+            navigation.push('HomeScreen', {
+              uid: route?.params?.uid,
+              role: route?.params?.role,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }
+        }}>
+          <FastImage
+                source={route?.params?.isBackVisible ? images.backArrow : images.tc_message_top_icon}
+                resizeMode={'contain'}
+                style={route?.params?.isBackVisible ? styles.backStyle : styles.backImageStyle}
+              />
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <TouchableOpacity onPress={onThreeDotPress}>
+          <Image source={images.scheduleThreeDot} style={styles.headerRightImg} />
+        </TouchableOpacity>
+      ),
+      headerStyle: {
+        // shadowColor: 'transparent',
+        shadowOpacity: 0,
+        backgroundColor: '#fff',
+        borderBottomWidth: 0,
+      },
     });
-  }, [navigation]);
+  }, [authContext.entity.role, authContext.entity.uid, navigation]);
+
+
 
   useEffect(() => {
     getBlockedSlots();
@@ -797,41 +818,9 @@ export default function ScheduleScreen({ navigation }) {
     actionSheet.current.show();
   }, []);
 
-  const topRightButton = useMemo(
-    () => (
-      <TouchableOpacity onPress={onThreeDotPress}>
-        <Image source={images.scheduleThreeDot} style={styles.headerRightImg} />
-      </TouchableOpacity>
-    ),
-    [onThreeDotPress],
-  );
 
-  const renderTopHeader = useMemo(
-    () => (
-      <>
-        <Header
-          leftComponent={
-            <View>
-              <FastImage
-                source={images.tc_message_top_icon}
-                resizeMode={'contain'}
-                style={styles.backImageStyle}
-              />
-            </View>
-          }
-          showBackgroundColor={true}
-          centerComponent={
-            <Text style={styles.eventTitleTextStyle}>Schedule</Text>
-          }
-          rightComponent={topRightButton}
-        />
-        <View style={styles.separateLine} />
-      </>
-    ),
-    [topRightButton],
-  );
 
-  const onPressListView = useCallback((value, buttonIndex) => {
+    const onPressListView = useCallback((value, buttonIndex) => {
     console.log('List view Pressed:=>', value, buttonIndex);
     if (buttonIndex === 2) {
       setListView(value);
@@ -963,7 +952,7 @@ export default function ScheduleScreen({ navigation }) {
     <View
       style={[styles.mainContainer, { opacity: activeScreen ? 1.0 : 0.5 }]}
       needsOffscreenAlphaCompositing>
-      {renderTopHeader}
+      
       <View>
         {groupList?.length <= 0 ? (
           <NotificationListTopHeaderShimmer />
@@ -1721,6 +1710,7 @@ const styles = StyleSheet.create({
     height: 25,
     resizeMode: 'contain',
     width: 25,
+    marginRight:15
   },
   eventTitleTextStyle: {
     fontSize: 16,
@@ -1728,11 +1718,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     alignSelf: 'center',
   },
-  separateLine: {
-    borderColor: colors.grayColor,
-    borderWidth: 0.5,
-    width: wp(100),
-  },
+  
 
   sectionHeader: {
     fontSize: 16,
@@ -1746,4 +1732,8 @@ const styles = StyleSheet.create({
     height: 35,
     width: 35,
   },
+  backStyle:{
+    height: 20,
+    width: 35,
+  }
 });

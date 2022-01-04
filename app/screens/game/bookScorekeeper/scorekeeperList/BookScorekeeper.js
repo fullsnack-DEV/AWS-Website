@@ -117,9 +117,9 @@ import React, {
         },
        };
        if (filerScorekeeper.location !== 'world') {
-        scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
+        scorekeeperQuery.query.bool.must.push({
            multi_match: {
-             query: `${filerScorekeeper.location.toLowerCase()}`,
+             query: `${filerScorekeeper.location}`,
              fields: ['city', 'country', 'state'],
            },
          });

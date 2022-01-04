@@ -829,18 +829,29 @@ export const getSportImage = (sportName, type, authContext) => {
     )[0];
     return tempObj?.player_image;
   } else {
-    let sportArr = [];
-    authContext.sports.map((item) => {
-      sportArr = [...sportArr, ...item.format];
-      return null;
-    });
-    const filterFormat = sportArr?.filter((obj) => obj.sport === sportName)[0];
     if (type === 'referee') {
-      return filterFormat?.referee_image;
-    }
-    if (type === 'scorekeeper') {
-      return filterFormat?.scorekeeper_image;
-    }
+      const tempObj = authContext.sports.filter(
+        (obj) => obj.sport === sportName,
+      )[0];
+      return tempObj?.referee_image;
+    }if(type === 'scorekeeper'){
+      const tempObj = authContext.sports.filter(
+        (obj) => obj.sport === sportName,
+      )[0];
+      return tempObj?.scorekeeper_image;
+    } // let sportArr = [];
+    // authContext.sports.map((item) => {
+    //   sportArr = [...sportArr, ...item.format];
+    //   console.log('rerrr::=>',item);
+    //   return null;
+    // });
+    // const filterFormat = sportArr?.filter((obj) => obj.sport === sportName)[0];
+    // if (type === 'referee') {
+    //   return filterFormat?.referee_image;
+    // }
+    // if (type === 'scorekeeper') {
+    //   return filterFormat?.scorekeeper_image;
+    // }
   }
 };
 

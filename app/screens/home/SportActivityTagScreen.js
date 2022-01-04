@@ -58,7 +58,6 @@ export default function SportActivityTagScreen({ navigation }) {
       ...(authContext?.entity?.obj?.scorekeeper_data || []),
     ],
   );
-
   Utility.getStorage('appSetting').then((setting) => {
     console.log('APPSETTING:=', setting);
     image_url = setting.base_url_sporticon;

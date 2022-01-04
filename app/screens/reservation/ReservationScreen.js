@@ -49,9 +49,9 @@ export default function ReservationScreen({ navigation }) {
           pastData.push(temp);
         }
       }
-      setUpcoming(upcomingData.sort((x, y) => y.start_datetime - x.start_datetime));
+      setUpcoming(upcomingData.sort((x, y) =>  x.start_datetime - y.start_datetime));
 
-      setPast(pastData.sort((x, y) => y.start_datetime - x.start_datetime));
+      setPast(pastData.sort((x, y) => x.start_datetime - y.start_datetime));
       setFirstTimeLoading(false);
     }).catch((e) => {
       setFirstTimeLoading(false);

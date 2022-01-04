@@ -671,7 +671,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
   };
 
   const isThirdParty = (data) => {
-    if (authContext.entity.uid === data?.referee?.user_id) {
+    if (authContext.entity.uid === data?.scorekeeper?.user_id) {
       return false;
     }
     if (authContext.entity.uid === getRequester(data)?.user_id) {
@@ -1095,7 +1095,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                 </View>
             )}
 
-          {checkSenderOrReceiver(bodyParams) === 'receiver' && !isThirdParty(bodyParams) &&
+          {checkSenderOrReceiver(bodyParams) === 'receiver'  && 
+          !isThirdParty(bodyParams) &&
             bodyParams.status === ScorekeeperReservationStatus.changeRequest &&
             bodyParams.expiry_datetime < new Date().getTime() && (
               <View style={{marginTop: 15}}>

@@ -14,7 +14,7 @@ import { sendInvitationInGroup } from '../../../api/Users';
 import AuthContext from '../../../auth/context'
 import ProfileCheckView from '../../../components/groupConnections/ProfileCheckView';
 import TCTags from '../../../components/TCTags';
-import { getUserList } from '../../../api/elasticSearch';
+import { getUserIndex } from '../../../api/elasticSearch';
 
 export default function InviteMembersBySearchScreen({ navigation }) {
   const [loading, setloading] = useState(true);
@@ -35,7 +35,7 @@ export default function InviteMembersBySearchScreen({ navigation }) {
     });
   }, [navigation, selectedList]);
 
-  const sendInvitation = async () => {
+  const sendInvitation =  () => {
     setloading(true)
     const entity = authContext.entity
     const obj = {
@@ -56,9 +56,9 @@ export default function InviteMembersBySearchScreen({ navigation }) {
         }, 10);
       });
   }
-  const getUsers = async () => {
-   
-    getUserList().then((response) => {
+  const getUsers =  () => {
+   getUserIndex().then((response) => {
+     console.log('User list:->',response);
       setloading(false);
       const result = response.map((obj) => {
         // eslint-disable-next-line no-param-reassign

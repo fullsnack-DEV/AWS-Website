@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, { useState, useLayoutEffect, useContext } from 'react';
+import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -16,8 +16,8 @@ import Modal from 'react-native-modal';
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
-import { patchPlayer } from '../../../../api/Users';
-import { patchGroup } from '../../../../api/Groups';
+import {patchPlayer} from '../../../../api/Users';
+import {patchGroup} from '../../../../api/Groups';
 
 import * as Utility from '../../../../utils';
 import strings from '../../../../Constants/String';
@@ -28,21 +28,32 @@ import TCThinDivider from '../../../../components/TCThinDivider';
 import images from '../../../../Constants/ImagePath';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 
-export default function ScorekeepersSetting({ navigation, route }) {
-  console.log('route?.params?.settingObj?.responsible_for_scorekeeper', route?.params?.settingObj?.responsible_for_scorekeeper);
-  const { comeFrom, sportName, sportType } = route?.params;
+export default function ScorekeepersSetting({navigation, route}) {
+  console.log(
+    'route?.params?.settingObj?.responsible_for_scorekeeper',
+    route?.params?.settingObj?.responsible_for_scorekeeper,
+  );
+  const {comeFrom, sportName, sportType} = route?.params;
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
 
+  console.log('route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure',route?.params?.settingObj);
   const [selection, setSelection] = useState(
-    route?.params?.settingObj?.responsible_for_scorekeeper
-      && route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure === 'None' ? 'None' : route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure?.length,
+    
+    route?.params?.settingObj && route?.params?.settingObj?.responsible_for_scorekeeper && (route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure !==
+        'None' ||
+        route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
+          ?.length > 0)
+      ? route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure?.length
+      : 'None',
   );
 
   const [scorekeeper, setScorekeeper] = useState(
-    route?.params?.settingObj?.responsible_for_scorekeeper && route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure !== 'None'
+    route?.params?.settingObj?.responsible_for_scorekeeper &&
+      route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure !==
+        'None'
       ? route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
       : [],
   );
@@ -61,7 +72,7 @@ export default function ScorekeepersSetting({ navigation, route }) {
     });
   }, [comeFrom, navigation, scorekeeper, selection]);
 
-  const renderNumbersOf = ({ item }) => (
+  const renderNumbersOf = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
@@ -121,176 +132,37 @@ export default function ScorekeepersSetting({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 
-  // const renderScorekeeper = ({ index, item }) => (
-  //   <View>
-  //     {item !== 'None' ? <View>
-  //       <View style={styles.viewTitleContainer}>
-  //         <Text style={styles.venueCountTitle}>
-  //           Scorekeeper {index + 1} {index === 0 && '(Chief)'}
-  //         </Text>
-  //       </View>
-  //       <Text
-  //       style={{
-  //         fontSize: 16,
-  //         marginLeft: 15,
-  //         marginRight: 15,
-  //         marginBottom: 10,
-  //         fontFamily: fonts.RRegular,
-  //         color: colors.lightBlackColor,
-  //       }}>
-  //         {strings.scorekeeperSettingNote}
-  //       </Text>
-  //       <TouchableOpacity
-  //       style={{
-  //         flexDirection: 'row',
-  //         justifyContent: 'space-between',
-  //         alignItems: 'center',
-  //         margin: 15,
-  //         marginBottom: 5,
-  //       }}
-  //       onPress={() => {
-  //           const ref = [...scorekeeper];
-  //           scorekeeper[index].responsible_to_secure_scorekeeper = 'challengee';
-  //           scorekeeper[index].is_chief = index === 0;
-  //           setScorekeeper(ref);
-  //       }}>
-  //         <View style={styles.teamContainer}>
-  //           <View style={styles.teamViewStyle}>
-  //             <View style={styles.imageShadowView}>
-  //               <Image
-  //               source={
-  //                 authContext?.entity?.role === 'user'
-  //                 || authContext?.entity?.role === 'player'
-  //                   ? authContext?.entity?.obj?.thumbnail
-  //                     ? { uri: authContext?.entity?.obj?.thumbnail }
-  //                     : images.profilePlaceHolder
-  //                   : authContext?.entity?.obj?.thumbnail
-  //                   ? { uri: authContext?.entity?.obj?.thumbnail }
-  //                   : images.teamPlaceholder
-  //               }
-  //               style={styles.imageView}
-  //             />
-  //             </View>
-  //             <View style={styles.teamTextContainer}>
-  //               <Text style={styles.teamNameLable}>
-  //                 {authContext?.entity?.role === 'user'
-  //               || authContext?.entity?.role === 'player'
-  //                 ? authContext?.entity?.obj?.full_name
-  //                 : authContext?.entity?.obj?.group_name}
-  //               </Text>
-  //               <Text style={styles.locationLable}>
-  //                 {authContext?.entity?.obj?.city},{' '}
-  //                 {authContext?.entity?.obj?.state_abbr}
-  //               </Text>
-  //             </View>
-  //           </View>
-  //         </View>
-  //         <View style={styles.checkbox}>
-  //           {item?.responsible_to_secure_scorekeeper === 'challengee' ? (
-  //             <Image
-  //             source={images.radioCheckYellow}
-  //             style={styles.checkboxImg}
-  //           />
-  //         ) : (
-  //           <Image source={images.radioUnselect} style={styles.checkboxImg} />
-  //         )}
-  //         </View>
-  //       </TouchableOpacity>
-  //       <TouchableOpacity
-  //       style={{
-  //         flexDirection: 'row',
-  //         justifyContent: 'space-between',
-  //         alignItems: 'center',
-  //         margin: 15,
-  //         marginBottom: 5,
-  //       }}
-  //       onPress={() => {
-  //         const ref = [...scorekeeper];
-  //         scorekeeper[index].responsible_to_secure_scorekeeper = 'challenger';
-  //         scorekeeper[index].is_chief = index === 0;
-  //         setScorekeeper(ref);
-  //       }}>
-  //         <View style={styles.teamContainer}>
-  //           <View style={styles.teamViewStyle}>
-  //             <View style={styles.imageShadowView}>
-  //               <Image
-  //               source={
-  //                 // teams[0].thumbnail
-  //                 //   ? { uri: teams[0].thumbnail }
-  //                 //   : images.teamPlaceholder
-  //                 images.teamPlaceholder
-  //               }
-  //               style={styles.imageView}
-  //             />
-  //             </View>
-  //             <View style={styles.teamTextContainer}>
-  //               <Text style={styles.teamNameLable}>Challenger</Text>
-  //             </View>
-  //           </View>
-  //         </View>
-  //         <View style={styles.checkbox}>
-  //           {item?.responsible_to_secure_scorekeeper === 'challenger' ? (
-  //             <Image
-  //             source={images.radioCheckYellow}
-  //             style={styles.checkboxImg}
-  //           />
-  //         ) : (
-  //           <Image source={images.radioUnselect} style={styles.checkboxImg} />
-  //         )}
-  //         </View>
-  //       </TouchableOpacity>
-
-  //       {/* <TCTextInputClear
-  //       placeholder={strings.venueDetailsPlaceholder}
-  //         onChangeText={(text) => {
-  //           const ven = [...venue];
-  //           venue[index].details = text;
-  //           setVenue(ven);
-  //         }}
-  //         value={venue[index].details}
-  //         onPressClear={() => {
-  //           const ven = [...venue];
-  //           venue[index].details = '';
-  //           setVenue(ven);
-  //         }}
-  //         multiline={true}
-  //       /> */}
-  //     </View> : <View/>}
-  //   </View>
-  // );
-
-const saveUser = () => {
-  let bodyParams;
-  if (selection === 'None') {
-    bodyParams = {
-      sport: sportName,
-      sport_type: sportType,
-      entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-      responsible_for_scorekeeper: {
-        who_secure: 'None',
-      },
-    };
-  } else {
-    let score;
+  const saveUser = () => {
+    let bodyParams;
+    if (selection === 'None') {
+      bodyParams = {
+        sport: sportName,
+        sport_type: sportType,
+        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+        responsible_for_scorekeeper: {
+          who_secure: 'None',
+        },
+      };
+    } else {
+      let score;
       for (let i = 0; i < selection; i++) {
-        score = [...scorekeeper]
+        score = [...scorekeeper];
         score[i].responsible_to_secure_scorekeeper = 'challengee';
         score[i].is_chief = i === 0;
       }
-    setScorekeeper(score);
-     bodyParams = {
-      sport: sportName,
-      sport_type: sportType,
-      entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-      responsible_for_scorekeeper: {
-        who_secure: scorekeeper.map((e) => {
-          delete e.id;
-          return e;
-        }),
-
-      },
-    };
-  }
+      setScorekeeper(score);
+      bodyParams = {
+        sport: sportName,
+        sport_type: sportType,
+        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+        responsible_for_scorekeeper: {
+          who_secure: scorekeeper.map((e) => {
+            delete e.id;
+            return e;
+          }),
+        },
+      };
+    }
 
     console.log('scorekeeper secure:=>', bodyParams);
 
@@ -298,11 +170,11 @@ const saveUser = () => {
     const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null
+          return null;
         }
-        return obj
+        return obj;
       },
-  );
+    );
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -310,11 +182,14 @@ const saveUser = () => {
 
     selectedSport = {
       ...selectedSport,
-      setting: { ...selectedSport?.setting, ...bodyParams },
-    }
+      setting: {...selectedSport?.setting, ...bodyParams},
+    };
     registerdPlayerData.push(selectedSport);
 
-    const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
+    const body = {
+      ...authContext?.entity?.obj,
+      registered_sports: registerdPlayerData,
+    };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
@@ -325,14 +200,14 @@ const saveUser = () => {
           console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
           authContext.setUser(response.payload);
           await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.registered_sports.filter(
               (obj) => obj.sport === sportName && obj.sport_type === sportType,
-              )[0].setting,
+            )[0].setting,
           });
         } else {
           Alert.alert('Towns Cup', response.messages);
@@ -346,104 +221,107 @@ const saveUser = () => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-}
+  };
 
-const saveTeam = () => {
-  let bodyParams;
-  if (selection === 'None') {
-    bodyParams = {
-      sport: sportName,
-      sport_type: sportType,
-      entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-      responsible_for_scorekeeper: {
-        who_secure: 'None',
-      },
-    };
-  } else {
-    let score;
+  const saveTeam = () => {
+    let bodyParams;
+    console.log('selection',selection);
+    if (selection === 'None') {
+      bodyParams = {
+        sport: sportName,
+        sport_type: sportType,
+        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+        responsible_for_scorekeeper: {
+          who_secure: 'None',
+        },
+      };
+    } else {
+      let score;
       for (let i = 0; i < selection; i++) {
-        score = [...scorekeeper]
+        score = [...scorekeeper];
         score[i].responsible_to_secure_scorekeeper = 'challengee';
         score[i].is_chief = i === 0;
       }
       setScorekeeper(score);
 
-     bodyParams = {
-      sport: sportName,
-      sport_type: sportType,
-      entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-      responsible_for_scorekeeper: {
-        who_secure: scorekeeper.map((e) => {
-          delete e.id;
-          return e;
-        }),
-
-      },
-    };
-  }
+      bodyParams = {
+        sport: sportName,
+        sport_type: sportType,
+        entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
+        responsible_for_scorekeeper: {
+          who_secure: scorekeeper.map((e) => {
+            delete e.id;
+            return e;
+          }),
+        },
+      };
+    }
 
     console.log('scorekeeper secure:=>', bodyParams);
-  setloading(true);
-  const selectedTeam = authContext?.entity?.obj;
-  selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
-  const body = { ...selectedTeam };
-  console.log('Body Team::::--->', body);
+    
+    setloading(true);
+    const selectedTeam = authContext?.entity?.obj;
+    selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
+    const body = {...selectedTeam};
+    console.log('Body Team::::--->', body);
 
-  patchGroup(authContext.entity.uid, body, authContext)
-    .then(async (response) => {
-      if (response.status === true) {
-        console.log('Team patch::::--->', response.payload);
+    patchGroup(authContext.entity.uid, body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          console.log('Team patch::::--->', response.payload);
 
+          setloading(false);
+          const entity = authContext.entity;
+          entity.obj = response.payload;
+          authContext.setEntity({...entity});
+
+          await Utility.setStorage('authContextEntity', {...entity});
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.setting,
+          });
+        } else {
+          Alert.alert('Towns Cup', response.messages);
+        }
         setloading(false);
-        const entity = authContext.entity;
-        entity.obj = response.payload;
-        authContext.setEntity({ ...entity });
-
-        await Utility.setStorage('authContextEntity', { ...entity });
-        navigation.navigate(comeFrom, {
-          settingObj: response.payload.setting,
-        });
-      } else {
-        Alert.alert('Towns Cup', response.messages);
-      }
-      setloading(false);
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
-};
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   const onSavePressed = () => {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
-        navigation.navigate(comeFrom, {
-          scorekeeperSetting: selection !== 'None' ? {
-            who_secure: scorekeeper.map((e) => {
-              delete e.id;
-              return e;
-            }),
-
-          } : {
-            who_secure: 'None',
-          },
-        });
+      navigation.navigate(comeFrom, {
+        scorekeeperSetting:
+          selection !== 'None'
+            ? {
+                who_secure: scorekeeper.map((e) => {
+                  delete e.id;
+                  return e;
+                }),
+              }
+            : {
+                who_secure: 'None',
+              },
+      });
     } else if (authContext.entity.role === 'team') {
-    saveTeam()
-  } else {
-    saveUser()
-  }
+      saveTeam();
+    } else {
+      saveUser();
+    }
   };
 
   return (
-    <TCKeyboardView style={{ flex: 1 }}>
+    <TCKeyboardView style={{flex: 1}}>
       <SafeAreaView>
         <ActivityLoader visible={loading} />
 
         <TCLabel
           title={strings.scorekeeperSettingTitle}
-          style={{ marginRight: 15 }}
+          style={{marginRight: 15}}
         />
 
         <Text
@@ -470,7 +348,7 @@ const saveTeam = () => {
           style={styles.viewContainer}
           onPress={() => setVisibleModal(true)}>
           <Text style={styles.itemView}> {selection || '-'}</Text>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{flexDirection: 'row'}}>
             <Text style={styles.itemView}>{'Scorekeeper(s)'}</Text>
             <Image
               source={images.dropDownArrow}
@@ -501,7 +379,9 @@ const saveTeam = () => {
             color: colors.darkThemeColor,
             margin: 15,
           }}>
-          {'In order to complete this part, please click the Save button on the right top after choosing your preference.'}
+          {
+            'In order to complete this part, please click the Save button on the right top after choosing your preference.'
+          }
         </Text>
         <Modal
           isVisible={visibleModal}
@@ -513,7 +393,7 @@ const saveTeam = () => {
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
               <TouchableOpacity
-               hitSlop={Utility.getHitSlop(15)}
+                hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
                 onPress={() => setVisibleModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
@@ -559,7 +439,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
   },
@@ -609,7 +489,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 15,
@@ -631,5 +511,4 @@ const styles = StyleSheet.create({
     margin: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
-
 });
