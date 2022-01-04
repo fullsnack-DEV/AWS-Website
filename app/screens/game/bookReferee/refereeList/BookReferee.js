@@ -53,6 +53,7 @@ export default function BookReferee({ navigation, route }) {
 
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
+  console.log('route-Filter:->',gameData);
   const [filters, setFilters] = useState(route?.params?.filters);
 
   const [settingPopup, setSettingPopup] = useState(false);
@@ -123,12 +124,14 @@ export default function BookReferee({ navigation, route }) {
         };
     
       if (filerReferee.location !== 'world') {
-        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
+        refereeQuery.query.bool.must.push({
           multi_match: {
-            query: `${filerReferee.location.toLowerCase()}`,
+            query: `${filerReferee.location}`,
             fields: ['city', 'country', 'state'],
           },
         });
+
+        
       }
       if (route?.params?.sport) {
         refereeQuery.query.bool.must[0].nested.query.bool.must.push({
@@ -501,13 +504,34 @@ export default function BookReferee({ navigation, route }) {
                 <Text
                   style={styles.doneText}
                   onPress={() => {
+                    // if (applyValidation()) {
+                    //   setSettingPopup(false);
+                    //   setTimeout(() => {
+                    //     const tempFilter = { ...filters };
+                    //     // tempFilter.sport = selectedSport;
+                    //     tempFilter.location = location;
+
+                    //     if (minFee && maxFee) {
+                    //       tempFilter.refereeFee = `${minFee}-${maxFee}`;
+                    //     }
+                    //     setFilters({
+                    //       ...tempFilter,
+                    //     });
+                    //     setPageFrom(0);
+                    //     setReferees([]);
+                    //     applyFilter(tempFilter);
+                    //   }, 100);
+                    //   console.log('DONE::');
+                    // }
                     if (applyValidation()) {
+                      
                       setSettingPopup(false);
                       setTimeout(() => {
-                        const tempFilter = { ...filters };
-                        // tempFilter.sport = selectedSport;
-                        tempFilter.location = location;
+                        const tempFilter = {...filters};
+                        // tempFilter.sport = gameData?.sport;
+                        // tempFilter.sport_type = gameData?.sport_type;
 
+                        tempFilter.location = location;
                         if (minFee && maxFee) {
                           tempFilter.refereeFee = `${minFee}-${maxFee}`;
                         }
@@ -518,7 +542,6 @@ export default function BookReferee({ navigation, route }) {
                         setReferees([]);
                         applyFilter(tempFilter);
                       }, 100);
-                      console.log('DONE::');
                     }
                   }}>
                   {'Apply'}

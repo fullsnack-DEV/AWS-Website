@@ -80,6 +80,7 @@ import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 import AlterScorekeeperScreen from '../screens/scorekeeper/alterScorekeeper/AlterScorekeeperScreen';
 import ScorekeeperReservationScreen from '../screens/scorekeeper/ScorekeeperReservationScreen';
+import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 
 const Stack = createStackNavigator();
 
@@ -246,6 +247,22 @@ const NewsFeedNavigator = () => (
           fontWeight: '500',
         },
         headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="ScheduleScreen"
+      component={ScheduleScreen}
+      options={{
+        title: 'Schedule',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,

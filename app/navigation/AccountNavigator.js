@@ -445,7 +445,18 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="ScheduleScreen"
       component={ScheduleScreen}
-      options={{ headerShown: false }}
+      options={{
+        title: 'Schedule',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
     />
     <Stack.Screen
       name="GameDetail"

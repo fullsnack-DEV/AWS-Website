@@ -230,6 +230,9 @@ const Referees = ({
 
   const handleBookReferee = useCallback(() => {
     // navigation.navigate('BookReferee', { gameData });
+    console.log('gameData',gameData);
+
+    console.log('gameData.city',gameData.city);
     navigation.navigate('BookReferee', {
       filters: {
         location: gameData.city,

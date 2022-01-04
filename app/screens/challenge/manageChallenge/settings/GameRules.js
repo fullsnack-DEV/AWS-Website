@@ -170,6 +170,7 @@ const saveTeam = () => {
           onChangeText={(text) => setGeneralRules(text)}
           value={generalRules}
           multiline
+          maxLength={1000}
           textAlignVertical={'top'}
           numberOfLines={4}
           placeholder={strings.generalRulesPlaceholder}
@@ -181,6 +182,7 @@ const saveTeam = () => {
           onChangeText={(text) => setSpecialRules(text)}
           value={specialRules}
           multiline
+          maxLength={1000}
           textAlignVertical={'top'}
           numberOfLines={4}
           placeholder={strings.specialRulesPlaceholder}

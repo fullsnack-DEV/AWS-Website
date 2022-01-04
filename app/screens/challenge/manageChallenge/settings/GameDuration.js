@@ -1,8 +1,6 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable array-callback-return */
-import React, {
- useState, useLayoutEffect, useCallback, useContext,
- } from 'react';
+import React, {useState, useLayoutEffect, useCallback, useContext} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -18,10 +16,10 @@ import {
 // import { useIsFocused } from '@react-navigation/native';
 import AuthContext from '../../../../auth/context';
 
-import { patchPlayer } from '../../../../api/Users';
-import { patchGroup } from '../../../../api/Groups';
+import {patchPlayer} from '../../../../api/Users';
+import {patchGroup} from '../../../../api/Groups';
 
-   import * as Utility from '../../../../utils';
+import * as Utility from '../../../../utils';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
@@ -31,11 +29,12 @@ import TCLabel from '../../../../components/TCLabel';
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTextInputClear from '../../../../components/TCTextInputClear';
 import images from '../../../../Constants/ImagePath';
-import { getNumberSuffix } from '../../../../utils/gameUtils';
+import {getNumberSuffix} from '../../../../utils/gameUtils';
 
+const MAX_HOUR_LIMIT = 100;
 // const entity = {};
-export default function GameDuration({ navigation, route }) {
-  const { comeFrom, sportName, sportType } = route?.params;
+export default function GameDuration({navigation, route}) {
+  const {comeFrom, sportName, sportType} = route?.params;
 
   // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
@@ -46,7 +45,9 @@ export default function GameDuration({ navigation, route }) {
   );
 
   const [loading, setloading] = useState(false);
-  const [withOverTime, setWithOverTime] = useState(!!route?.params?.settingObj?.game_duration?.overtime);
+  const [withOverTime, setWithOverTime] = useState(
+    !!route?.params?.settingObj?.game_duration?.overtime,
+  );
   const [details, setDetails] = useState(
     route?.params?.settingObj?.game_duration
       ? route?.params?.settingObj?.game_duration?.details
@@ -127,7 +128,7 @@ export default function GameDuration({ navigation, route }) {
   };
 
   const renderPeriods = useCallback(
-    ({ index }) => (
+    ({index}) => (
       <View>
         <View style={styles.viewTitleContainer}>
           <Text></Text>
@@ -145,7 +146,7 @@ export default function GameDuration({ navigation, route }) {
 
         <View style={styles.viewContainer}>
           <View style={styles.textTitle}>
-            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+            <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
               {strings.intervalText}
             </Text>
             <View style={styles.textInputContainer}>
@@ -164,7 +165,7 @@ export default function GameDuration({ navigation, route }) {
           </View>
 
           <View style={styles.textTitle}>
-            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+            <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
               {/* {strings.secondPeriodText} */}
               {`${getNumberSuffix(index + 2)} Period`}
             </Text>
@@ -188,7 +189,7 @@ export default function GameDuration({ navigation, route }) {
     [period],
   );
   const renderOverTime = useCallback(
-    ({ index }) => (
+    ({index}) => (
       <View>
         <View style={styles.viewTitleContainer}>
           <Text style={styles.venueCountTitle}></Text>
@@ -206,7 +207,7 @@ export default function GameDuration({ navigation, route }) {
 
         <View style={styles.viewContainer}>
           <View style={styles.textTitle}>
-            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+            <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
               {strings.intervalText}
             </Text>
             <View style={styles.textInputContainer}>
@@ -225,7 +226,7 @@ export default function GameDuration({ navigation, route }) {
           </View>
 
           <View style={styles.textTitle}>
-            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+            <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
               {/* {strings.firstOverTimeText} */}
               {`${getNumberSuffix(index + 1)} Overtime`}
             </Text>
@@ -271,148 +272,159 @@ export default function GameDuration({ navigation, route }) {
       });
     }
 
-    return { hours: Math.floor(sum / 60), minutes: sum % 60 };
+    return {hours: Math.floor(sum / 60), minutes: sum % 60};
   };
 
-const saveUser = () => {
-  const bodyParams = {
-    sport: sportName,
-    sport_type: sportType,
-    entity_type: 'player',
-    game_duration: {
-      period: period.map((e) => {
+  const saveUser = () => {
+    const bodyParams = {
+      sport: sportName,
+      sport_type: sportType,
+      entity_type: 'player',
+      game_duration: {
+        period: period.map((e) => {
+          delete e.id;
+          return e;
+        }),
+        first_period: firstPeriod,
+        details,
+      },
+    };
+    if (withOverTime) {
+      bodyParams.game_duration.overtime = overTime.map((e) => {
         delete e.id;
         return e;
-      }),
-      first_period: firstPeriod,
-      details,
-    },
-  };
-  if (withOverTime) {
-    bodyParams.game_duration.overtime = overTime.map((e) => {
-      delete e.id;
-      return e;
-    });
-  } else {
-    delete bodyParams.game_duration.overtime;
-  }
+      });
+    } else {
+      delete bodyParams.game_duration.overtime;
+    }
 
-  bodyParams.game_duration.totalHours = calculateDuration().hours;
-  bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
-  console.log('body params:=>', bodyParams);
+    bodyParams.game_duration.totalHours = calculateDuration().hours;
+    bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
+    console.log('body params:=>', bodyParams);
 
-  setloading(true);
-  const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
-    (obj) => {
-      if (obj.sport === sportName && obj.sport_type === sportType) {
-        return null
-      }
-      return obj
-    },
-);
+    setloading(true);
+    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => {
+        if (obj.sport === sportName && obj.sport_type === sportType) {
+          return null;
+        }
+        return obj;
+      },
+    );
 
-  let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-    (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
-  )[0];
+    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
+    )[0];
 
-  selectedSport = {
-    ...selectedSport,
-    setting: { ...selectedSport?.setting, ...bodyParams },
-  }
-  registerdPlayerData.push(selectedSport);
+    selectedSport = {
+      ...selectedSport,
+      setting: {...selectedSport?.setting, ...bodyParams},
+    };
+    registerdPlayerData.push(selectedSport);
 
-  const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
-  console.log('Body::::--->', body);
-
-  patchPlayer(body, authContext)
-    .then(async (response) => {
-      if (response.status === true) {
-        setloading(false);
-        const entity = authContext.entity;
-        console.log('Register player response IS:: ', response.payload);
-        entity.auth.user = response.payload;
-        entity.obj = response.payload;
-        authContext.setEntity({ ...entity });
-        authContext.setUser(response.payload);
-        await Utility.setStorage('authContextUser', response.payload);
-        await Utility.setStorage('authContextEntity', { ...entity });
-        navigation.navigate(comeFrom, {
-          settingObj: response.payload.registered_sports.filter(
-            (obj) => obj.sport === sportName && obj.sport_type === sportType,
-          )[0].setting,
+    const body = {
+      ...authContext?.entity?.obj,
+      registered_sports: registerdPlayerData,
+    };
+    console.log('Body::::--->', body);
+    if (calculateDuration().hours > MAX_HOUR_LIMIT) {
+      Alert.alert(`Please enter less than ${MAX_HOUR_LIMIT} hours`);
+    } else {
+      patchPlayer(body, authContext)
+        .then(async (response) => {
+          if (response.status === true) {
+            setloading(false);
+            const entity = authContext.entity;
+            console.log('Register player response IS:: ', response.payload);
+            entity.auth.user = response.payload;
+            entity.obj = response.payload;
+            authContext.setEntity({...entity});
+            authContext.setUser(response.payload);
+            await Utility.setStorage('authContextUser', response.payload);
+            await Utility.setStorage('authContextEntity', {...entity});
+            navigation.navigate(comeFrom, {
+              settingObj: response.payload.registered_sports.filter(
+                (obj) =>
+                  obj.sport === sportName && obj.sport_type === sportType,
+              )[0].setting,
+            });
+          } else {
+            Alert.alert('Towns Cup', response.messages);
+          }
+          console.log('RESPONSE IS:: ', response);
+          setloading(false);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
         });
-      } else {
-        Alert.alert('Towns Cup', response.messages);
-      }
-      console.log('RESPONSE IS:: ', response);
-      setloading(false);
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
-}
+    }
+  };
 
-const saveTeam = () => {
-  const bodyParams = {
-    sport: sportName,
-    sport_type: sportType,
-    entity_type: 'team',
-    game_duration: {
-      period: period.map((e) => {
+  const saveTeam = () => {
+    const bodyParams = {
+      sport: sportName,
+      sport_type: sportType,
+      entity_type: 'team',
+      game_duration: {
+        period: period.map((e) => {
+          delete e.id;
+          return e;
+        }),
+        first_period: firstPeriod,
+        details,
+      },
+    };
+    if (withOverTime) {
+      bodyParams.game_duration.overtime = overTime.map((e) => {
         delete e.id;
         return e;
-      }),
-      first_period: firstPeriod,
-      details,
-    },
-  };
-  if (withOverTime) {
-    bodyParams.game_duration.overtime = overTime.map((e) => {
-      delete e.id;
-      return e;
-    });
-  } else {
-    delete bodyParams.game_duration.overtime;
-  }
+      });
+    } else {
+      delete bodyParams.game_duration.overtime;
+    }
 
-  bodyParams.game_duration.totalHours = calculateDuration().hours;
-  bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
-  console.log('body params:=>', bodyParams);
-  setloading(true);
+    bodyParams.game_duration.totalHours = calculateDuration().hours;
+    bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
+    console.log('body params:=>', bodyParams);
+    setloading(true);
     const selectedTeam = authContext?.entity?.obj;
-    selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
-    const body = { ...selectedTeam };
+    selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
+    const body = {...selectedTeam};
     console.log('Body Team::::--->', body);
 
-    patchGroup(authContext.entity.uid, body, authContext)
-      .then(async (response) => {
-        if (response.status === true) {
-          console.log('Team patch::::--->', response.payload);
+    if (calculateDuration().hours > MAX_HOUR_LIMIT) {
+      Alert.alert(`Please enter less than ${MAX_HOUR_LIMIT} hours`);
+    } else {
+      patchGroup(authContext.entity.uid, body, authContext)
+        .then(async (response) => {
+          if (response.status === true) {
+            console.log('Team patch::::--->', response.payload);
 
+            setloading(false);
+            const entity = authContext.entity;
+            entity.obj = response.payload;
+            authContext.setEntity({...entity});
+
+            await Utility.setStorage('authContextEntity', {...entity});
+            navigation.navigate(comeFrom, {
+              settingObj: response.payload.setting,
+            });
+          } else {
+            Alert.alert('Towns Cup', response.messages);
+          }
           setloading(false);
-          const entity = authContext.entity;
-          entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
-
-          await Utility.setStorage('authContextEntity', { ...entity });
-          navigation.navigate(comeFrom, {
-            settingObj: response.payload.setting,
-          });
-        } else {
-          Alert.alert('Towns Cup', response.messages);
-        }
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-}
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  };
 
   const onSavePressed = () => {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
@@ -438,11 +450,11 @@ const saveTeam = () => {
         gameDuration,
       });
     } else if (authContext.entity.role === 'team') {
-        saveTeam()
-      } else {
-        saveUser()
-      }
+      saveTeam();
+    } else {
+      saveUser();
     }
+  };
   return (
     <TCKeyboardView>
       <SafeAreaView>
@@ -451,14 +463,14 @@ const saveTeam = () => {
         <View>
           <TCLabel
             title={strings.gameDurationTitle1}
-            style={{ marginRight: 15 }}
+            style={{marginRight: 15}}
           />
           <View
             style={[
               styles.textTitle,
-              { marginLeft: 15, marginRight: 15, marginBottom: -10 },
+              {marginLeft: 15, marginRight: 15, marginBottom: -10},
             ]}>
-            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+            <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
               {strings.firstPeriodText}
             </Text>
             <View style={styles.textInputContainer}>
@@ -478,7 +490,7 @@ const saveTeam = () => {
             data={period}
             renderItem={renderPeriods}
             keyExtractor={(item, index) => index.toString()}
-            style={{ marginBottom: 15 }}
+            style={{marginBottom: 15}}
           />
           <TCMessageButton
             title={'+ Add Interval & Period'}
@@ -490,7 +502,7 @@ const saveTeam = () => {
           />
           <TCLabel
             title={strings.gameDurationTitle2}
-            style={{ marginRight: 15 }}
+            style={{marginRight: 15}}
           />
           <View
             style={{
@@ -503,7 +515,7 @@ const saveTeam = () => {
               onPress={() => {
                 setWithOverTime(!withOverTime);
               }}>
-              <Text style={[styles.minText, { marginLeft: 10 }]}>
+              <Text style={[styles.minText, {marginLeft: 10}]}>
                 {strings.withoutOverTimeText}
               </Text>
               <View>
@@ -532,7 +544,7 @@ const saveTeam = () => {
               onPress={() => {
                 setWithOverTime(!withOverTime);
               }}>
-              <Text style={[styles.minText, { marginLeft: 10 }]}>
+              <Text style={[styles.minText, {marginLeft: 10}]}>
                 {strings.withOverTimeText}
               </Text>
               <View>
@@ -556,7 +568,7 @@ const saveTeam = () => {
                 data={overTime}
                 renderItem={renderOverTime}
                 keyExtractor={(item, index) => index.toString()}
-                style={{ marginBottom: 15 }}
+                style={{marginBottom: 15}}
               />
               <TCMessageButton
                 title={'+ Add Interval & Overtime'}
@@ -568,21 +580,21 @@ const saveTeam = () => {
               />
             </View>
           ) : (
-            <View style={{ marginBottom: 40 }} />
+            <View style={{marginBottom: 40}} />
           )}
           <View style={styles.totalTimeContainer}>
-            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+            <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
               {strings.totalTimeTitle}
             </Text>
 
             <Text style={styles.totalTimeText}>{`${
               calculateDuration().hours !== null && calculateDuration().hours
             }h ${
-              calculateDuration().minutes !== null
-              && calculateDuration().minutes
+              calculateDuration().minutes !== null &&
+              calculateDuration().minutes
             }m`}</Text>
           </View>
-          <TCLabel title={strings.detailsTitleText} style={{ marginRight: 15 }} />
+          <TCLabel title={strings.detailsTitleText} style={{marginRight: 15}} />
           <TCTextInputClear
             placeholder={strings.venueDetailsPlaceholder}
             onChangeText={(text) => {
@@ -637,7 +649,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,

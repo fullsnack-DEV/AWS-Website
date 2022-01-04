@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import React, {
   useContext,
   memo,
@@ -31,12 +31,12 @@ import fonts from '../../../Constants/Fonts';
 import PlayInInfoView from './info/PlayInInfoView';
 import PlayInScoreboardView from './scoreboard/PlayInScoreboardView';
 import PlayInStatsView from './stats/PlayInStatsView';
-import { patchPlayer } from '../../../api/Users';
+import {patchPlayer} from '../../../api/Users';
 import strings from '../../../Constants/String';
 import AuthContext from '../../../auth/context';
 
 import * as Utility from '../../../utils';
-import { getQBAccountType, QBcreateUser } from '../../../utils/QuickBlox';
+import {getQBAccountType, QBcreateUser} from '../../../utils/QuickBlox';
 import TCGradientDivider from '../../../components/TCThinGradientDivider';
 import PlayInReviewsView from './stats/PlayInReviewsView';
 import TCScrollableTabs from '../../../components/TCScrollableTabs';
@@ -75,8 +75,10 @@ const PlayInModule = ({
   }, [userData]);
 
   useEffect(() => {
-    
-    if (playInObject?.sport !== 'tennis' && playInObject?.sport_type !== 'single') {
+    if (
+      playInObject?.sport !== 'tennis' &&
+      playInObject?.sport_type !== 'single'
+    ) {
       TAB_ITEMS = ['Info', 'Scoreboard', 'Stats'];
       setSinglePlayerGame(false);
     } else TAB_ITEMS = ['Info', 'Scoreboard', 'Stats', 'Reviews'];
@@ -84,30 +86,34 @@ const PlayInModule = ({
 
   useEffect(() => {
     if (playInObject.sport) {
-      if (playInObject.sport === 'tennis' && playInObject.sport_type === 'single') {
+      if (
+        playInObject.sport === 'tennis' &&
+        playInObject.sport_type === 'single'
+      ) {
         setMainTitle({
-          title: `Player in ${Utility.getSportName(playInObject,authContext)}`,
+          title: `Player in ${Utility.getSportName(playInObject, authContext)}`,
           titleIcon: images.tennisSingleHeaderIcon,
         });
       } else {
         setMainTitle({
-          title: `Play in ${Utility.getSportName(playInObject,authContext)}`,
+          title: `Play in ${Utility.getSportName(playInObject, authContext)}`,
           titleIcon: images.soccerImage,
         });
       }
     }
   }, [singlePlayerGame, playInObject, authContext]);
   const onSave = useCallback(
-    (params) => new Promise((resolve, reject) => {
+    (params) =>
+      new Promise((resolve, reject) => {
         patchPlayer(params, authContext)
           .then(async (res) => {
             const entity = authContext.entity;
             entity.auth.user = res.payload;
             entity.obj = res.payload;
-            authContext.setEntity({ ...entity });
+            authContext.setEntity({...entity});
             await Utility.setStorage('authContextUser', res.payload);
             authContext.setUser(res.payload);
-            setCurrentUserData({ ...res?.payload });
+            setCurrentUserData({...res?.payload});
             resolve(res);
           })
           .catch((error) => {
@@ -122,7 +128,7 @@ const PlayInModule = ({
     () => (
       <>
         <Header
-          safeAreaStyle={{ marginTop: 10 }}
+          safeAreaStyle={{marginTop: 10}}
           mainContainerStyle={styles.headerMainContainerStyle}
           centerComponent={
             <View style={styles.headerCenterViewStyle}>
@@ -155,7 +161,7 @@ const PlayInModule = ({
 
   const renderPlayInInfoTab = useMemo(
     () => (
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView style={{flex: 1}}>
         <PlayInInfoView
           openPlayInModal={openPlayInModal}
           onSave={onSave}
@@ -168,7 +174,16 @@ const PlayInModule = ({
         />
       </ScrollView>
     ),
-    [currentUserData, isAdmin, navigation, onClose, onSave, openPlayInModal, playInObject?.sport, playInObject?.sport_type],
+    [
+      currentUserData,
+      isAdmin,
+      navigation,
+      onClose,
+      onSave,
+      openPlayInModal,
+      playInObject?.sport,
+      playInObject?.sport_type,
+    ],
   );
 
   const renderScoreboardTab = useMemo(
@@ -185,7 +200,7 @@ const PlayInModule = ({
 
   const renderStatsViewTab = useMemo(
     () => (
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView style={{flex: 1}}>
         <PlayInStatsView
           currentUserData={currentUserData}
           playInObject={playInObject}
@@ -209,7 +224,7 @@ const PlayInModule = ({
 
   const renderTabs = useCallback(
     (item, index) => (
-      <View tabLabel={item} style={{ flex: 1 }}>
+      <View tabLabel={item} style={{flex: 1}}>
         {index === 0 ? renderPlayInInfoTab : null}
         {index === 1 ? renderScoreboardTab : null}
         {index === 2 ? renderStatsViewTab : null}
@@ -225,19 +240,20 @@ const PlayInModule = ({
   );
 
   const renderChallengeButton = useMemo(
-    () => currentTab === 0
-      && authContext?.entity?.uid !== currentUserData?.user_id
-      && (authContext?.entity?.role === 'user' && 'player')
-        === currentUserData?.entity_type
-      && !['soccer', 'tennis double'].includes(
-        playInObject?.sport,
-      ) && (
+    () =>
+      currentTab === 0 &&
+      authContext?.entity?.uid !== currentUserData?.user_id &&
+      (authContext?.entity?.role === 'user' && 'player') ===
+        currentUserData?.entity_type &&
+      !['soccer', 'tennis double'].includes(playInObject?.sport) && (
         <TouchableOpacity
           onPress={() => {
             console.log('auth123:=>', authContext);
             if (
               authContext?.entity?.obj?.registered_sports?.some(
-                (item) => item?.sport === playInObject?.sport && item?.sport_type === playInObject?.sport_type,
+                (item) =>
+                  item?.sport === playInObject?.sport &&
+                  item?.sport_type === playInObject?.sport_type,
               )
             ) {
               actionSheetRef.current.show();
@@ -280,14 +296,21 @@ const PlayInModule = ({
           </LinearGradient>
         </TouchableOpacity>
       ),
-    [authContext, currentTab, currentUserData?.entity_type, currentUserData?.user_id, playInObject?.sport, playInObject?.sport_type],
+    [
+      authContext,
+      currentTab,
+      currentUserData?.entity_type,
+      currentUserData?.user_id,
+      playInObject?.sport,
+      playInObject?.sport_type,
+    ],
   );
 
   const onMessageButtonPress = useCallback(() => {
     const navigateToMessage = (userId) => {
       navigation.push('MessageChat', {
         screen: 'MessageChatRoom',
-        params: { userId },
+        params: {userId},
       });
     };
     const accountType = getQBAccountType(currentUserData?.entity_type);
@@ -318,7 +341,7 @@ const PlayInModule = ({
         onBackdropPress={onClose}
         backdropOpacity={0}>
         <View style={styles.modalContainerViewStyle}>
-          <SafeAreaView style={{ flex: 1 }}>
+          <SafeAreaView style={{flex: 1}}>
             {renderHeader}
 
             {/* Challenge Button */}
@@ -328,8 +351,8 @@ const PlayInModule = ({
             {useMemo(
               () => (
                 <PlayInProfileViewSection
-                isPatch={!!playInObject?.lookingForTeamClub}
-                patchType={playInObject?.sport === 'tennis' ? 'club' : 'team'}
+                  isPatch={!!playInObject?.lookingForTeamClub}
+                  patchType={playInObject?.sport === 'tennis' ? 'club' : 'team'}
                   onSettingPress={() => {
                     actionSheetSettingRef.current.show();
                   }}
@@ -337,14 +360,22 @@ const PlayInModule = ({
                   isAdmin={isAdmin}
                   profileImage={
                     currentUserData?.thumbnail
-                      ? { uri: currentUserData?.thumbnail }
+                      ? {uri: currentUserData?.thumbnail}
                       : images.profilePlaceHolder
                   }
                   userName={currentUserData?.full_name ?? ''}
                   cityName={currentUserData?.city ?? ''}
                 />
               ),
-              [currentUserData?.city, currentUserData?.full_name, currentUserData?.thumbnail, isAdmin, onMessageButtonPress, playInObject?.lookingForTeamClub, playInObject?.sport],
+              [
+                currentUserData?.city,
+                currentUserData?.full_name,
+                currentUserData?.thumbnail,
+                isAdmin,
+                onMessageButtonPress,
+                playInObject?.lookingForTeamClub,
+                playInObject?.sport,
+              ],
             )}
 
             {/* Tabs */}
@@ -364,10 +395,9 @@ const PlayInModule = ({
         ref={actionSheetRef}
         options={['Continue to Challenge', 'Invite to Challenge', 'Cancel']}
         cancelButtonIndex={2}
-        destructiveButtonIndex={2}
+        // destructiveButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
-            onClose();
             setTimeout(() => {
               setloading(true);
             }, 10);
@@ -387,27 +417,34 @@ const PlayInModule = ({
                 setloading(false);
                 console.log('challenge setting:::::=>', obj);
 
-                if (
-                  obj?.game_duration
-                  && obj?.availibility
-                  && obj?.special_rules !== undefined
-                  && obj?.general_rules !== undefined
-                  && obj?.responsible_for_referee
-                  && obj?.responsible_for_scorekeeper
-                  && obj?.game_fee
-                  && obj?.venue
-                  && obj?.refund_policy
-                  && obj?.home_away
-                  && obj?.game_type
-                ) {
-                  navigation.navigate('ChallengeScreen', {
-                    setting: obj,
-                    sportName: currentUserData.sport,
-                    groupObj: currentUserData,
-                  });
+                if (obj?.availibility === 'On') {
+                  if (
+                    obj?.game_duration &&
+                    obj?.availibility &&
+                    obj?.special_rules !== undefined &&
+                    obj?.general_rules !== undefined &&
+                    obj?.responsible_for_referee &&
+                    obj?.responsible_for_scorekeeper &&
+                    obj?.game_fee &&
+                    obj?.venue &&
+                    obj?.refund_policy &&
+                    obj?.home_away &&
+                    obj?.game_type
+                  ) {
+                    onClose();
+                    navigation.navigate('ChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData.sport,
+                      groupObj: currentUserData,
+                    });
+                  } else {
+                    Alert.alert(
+                      'Opponent player has no completed challenge setting.',
+                    );
+                  }
                 } else {
                   Alert.alert(
-                    'Opponent player has no completed challenge setting.',
+                    'Opponent player or team not availble for challenge.',
                   );
                 }
               })
@@ -420,53 +457,73 @@ const PlayInModule = ({
               });
           }
           if (index === 1) {
-             onClose();
-
             setloading(true);
 
-           Utils.getSetting(
+            Utils.getSetting(
               authContext?.entity.uid,
               'user',
               playInObject?.sport,
               authContext,
               playInObject?.sport_type,
-            ).then((obj) => {
-              setloading(false);
-              console.log('challenge setting:::::=>', obj);
+            )
+              .then((obj) => {
+                setloading(false);
+                console.log('challenge setting:::::=>', obj);
+                if (obj?.availibility === 'On') {
+                  if (
+                    obj?.game_duration &&
+                    obj?.availibility &&
+                    obj?.special_rules !== undefined &&
+                    obj?.general_rules !== undefined &&
+                    obj?.responsible_for_referee &&
+                    obj?.responsible_for_scorekeeper &&
+                    obj?.game_fee &&
+                    obj?.venue &&
+                    obj?.refund_policy &&
+                    obj?.home_away &&
+                    obj?.game_type
+                  ) {
+                    onClose();
+                    navigation.navigate('InviteChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData.sport,
+                      groupObj: currentUserData,
+                    });
+                  } else {
+                    setTimeout(() => {
+                      Alert.alert(
+                        'Please complete your all setting before send a challenge invitation.',
+                        '',
+                        [
+                          {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed!'),
+                          },
+                          {
+                            text: 'OK',
+                            onPress: () => {
+                              navigation.navigate('ManageChallengeScreen', {
+                                sportName: currentUserData.sport,
+                                sportType: currentUserData?.sport_type,
+                              });
+                            },
+                          },
+                        ],
+                        {cancelable: false},
+                      );
+                    }, 1000);
+                  }
+                } else {
+                  Alert.alert('Your availability for challenge is off.');
+                }
+              })
+              .catch((e) => {
+                setloading(false);
 
-              if (
-                obj?.game_duration
-                && obj?.availibility
-                && obj?.special_rules !== undefined
-                && obj?.general_rules !== undefined
-                && obj?.responsible_for_referee
-                && obj?.responsible_for_scorekeeper
-                && obj?.game_fee
-                && obj?.venue
-                && obj?.refund_policy
-                && obj?.home_away
-                && obj?.game_type
-              ) {
-                navigation.navigate('InviteChallengeScreen', {
-                  setting: obj,
-                  sportName: currentUserData.sport,
-                  groupObj: currentUserData,
-                });
-              } else {
                 setTimeout(() => {
-                  Alert.alert(
-                    'Please complete your all setting before send a challenge invitation.',
-                  );
-                }, 100);
-              }
-            })
-            .catch((e) => {
-              setloading(false);
-
-              setTimeout(() => {
-                Alert.alert(strings.alertmessagetitle, e.message);
-              }, 10);
-            });
+                  Alert.alert(strings.alertmessagetitle, e.message);
+                }, 10);
+              });
           }
         }}
       />
@@ -478,11 +535,17 @@ const PlayInModule = ({
         onPress={(index) => {
           if (index === 0) {
             onClose();
-            navigation.navigate('LookingForSettingScreen', { sportName: playInObject.sport,sportType: playInObject?.sport_type });
+            navigation.navigate('LookingForSettingScreen', {
+              sportName: playInObject.sport,
+              sportType: playInObject?.sport_type,
+            });
           }
           if (index === 1) {
-             onClose();
-             navigation.navigate('DeactivateSportScreen', { sportName: playInObject?.sport, type: 'player' });
+            onClose();
+            navigation.navigate('DeactivateSportScreen', {
+              sportName: playInObject?.sport,
+              type: 'player',
+            });
           }
         }}
       />
@@ -505,7 +568,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     shadowColor: '#FF3B00',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.15,
     shadowRadius: 3,
     elevation: 10,

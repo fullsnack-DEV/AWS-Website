@@ -14,6 +14,7 @@ import moment from 'moment';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
+import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../../auth/context';
 import EventMapView from '../../../../components/Schedule/EventMapView';
 import colors from '../../../../Constants/Colors';
@@ -26,6 +27,7 @@ import {
   getGameFromToDateDiff,
   getGameHomeScreen,
 } from '../../../../utils/gameUtils';
+
 import { getRefereeGameFeeEstimation } from '../../../../api/Challenge';
 import MatchFeesCard from '../../../../components/challenge/MatchFeesCard';
 import { createUserReservation } from '../../../../api/Reservations';
@@ -40,12 +42,15 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 
 let body = {};
 const RefereeBookingDateAndTime = ({ navigation, route }) => {
+  const isFocused = useIsFocused();
+
   const sportName = route?.params?.sportName;
   const userData = route?.params?.userData;
   const [gameData, setGameData] = useState(route?.params?.gameData ?? null);
   const [chiefOrAssistant, setChiefOrAssistant] = useState('chief');
   const [challengeObject, setChallengeObject] = useState(null);
   const [refereeReservationList, setRefereeReservationList] = useState();
+  const [defaultCard, setDefaultCard] = useState();
 
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -54,6 +59,20 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     setGameData(route?.params?.gameData);
     getFeeDetail();
   }, [route?.params?.gameData]);
+
+  useEffect(() => {
+    Utility.getStorage('paymentSetting').then((setting) => {
+      setDefaultCard(setting);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (isFocused) {
+      if (route?.params?.paymentMethod) {
+        setDefaultCard(route?.params?.paymentMethod);
+      }
+    }
+  }, [isFocused, route?.params?.paymentMethod]);
 
   useEffect(() => {
     if (gameData) {
@@ -75,6 +94,9 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
         });
     }
   }, [authContext, gameData, route?.params?.gameData?.game_id]);
+
+
+  
 
   const getFeeDetail = () => {
     const gData = route?.params?.gameData;
@@ -500,13 +522,15 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               <View style={{ marginTop: 10 }}>
                 <TCTouchableLabel
                   title={
-                    route.params.paymentMethod
-                      ? Utility.capitalize(
-                          route.params.paymentMethod.card.brand,
-                        )
+                    defaultCard &&
+                    defaultCard?.card?.brand &&
+                    defaultCard?.card?.last4
+                      ? `${Utility.capitalize(defaultCard?.card?.brand)} ****${
+                          defaultCard?.card?.last4
+                        }`
                       : strings.addOptionMessage
                   }
-                  subTitle={route.params.paymentMethod?.card.last4}
+                  
                   showNextArrow={true}
                   onPress={() => {
                     navigation.navigate('PaymentMethodsScreen', {

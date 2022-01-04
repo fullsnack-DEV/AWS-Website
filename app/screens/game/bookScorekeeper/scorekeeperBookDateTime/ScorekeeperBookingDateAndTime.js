@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import FastImage from 'react-native-fast-image';
+import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../../auth/context';
 import EventMapView from '../../../../components/Schedule/EventMapView';
 import colors from '../../../../Constants/Colors';
@@ -34,15 +35,35 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 import TCChallengeTitle from '../../../../components/TCChallengeTitle';
 import TCThickDivider from '../../../../components/TCThickDivider';
 
+
 let body = {};
 const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
+  const isFocused = useIsFocused();
+
   const sportName = route?.params?.sportName;
   const userData = route?.params?.userData;
   const [gameData, setGameData] = useState(route?.params?.gameData ?? null);
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
+  const [defaultCard, setDefaultCard] = useState();
 
   const [challengeObject, setChallengeObject] = useState(null);
+
+
+  useEffect(() => {
+    Utility.getStorage('paymentSetting').then((setting) => {
+      setDefaultCard(setting);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (isFocused) {
+      if (route?.params?.paymentMethod) {
+        setDefaultCard(route?.params?.paymentMethod);
+      }
+    }
+  }, [isFocused, route?.params?.paymentMethod]);
+
 
   useEffect(() => {
     setGameData(route?.params?.gameData);
@@ -370,11 +391,14 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
             <View style={{ marginTop: 10 }}>
               <TCTouchableLabel
                 title={
-                  route.params.paymentMethod
-                    ? Utility.capitalize(route.params.paymentMethod.card.brand)
-                    : strings.addOptionMessage
+                  defaultCard &&
+                    defaultCard?.card?.brand &&
+                    defaultCard?.card?.last4
+                      ? `${Utility.capitalize(defaultCard?.card?.brand)} ****${
+                          defaultCard?.card?.last4
+                        }`
+                      : strings.addOptionMessage
                 }
-                subTitle={route.params.paymentMethod?.card.last4}
                 showNextArrow={true}
                 onPress={() => {
                   navigation.navigate('PaymentMethodsScreen', {

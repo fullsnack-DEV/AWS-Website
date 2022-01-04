@@ -335,19 +335,20 @@ const HomeScreen = ({navigation, route}) => {
         .then((response) => {
           console.log('Events response:=>', response);
 
-
           response = (response || []).filter((obj) => {
             if (obj.cal_type === 'blocked') {
               return obj;
             }
             if (obj.cal_type === 'event') {
               if (obj?.expiry_datetime) {
-                if (obj?.expiry_datetime >= parseFloat(new Date().getTime() / 1000).toFixed(0)
+                if (
+                  obj?.expiry_datetime >=
+                  parseFloat(new Date().getTime() / 1000).toFixed(0)
                 ) {
                   return obj;
                 }
               } else {
-                return obj
+                return obj;
               }
             }
           });
@@ -371,10 +372,9 @@ const HomeScreen = ({navigation, route}) => {
             getGameIndex(gameList).then((games) => {
               Utility.getGamesList(games).then((gamedata) => {
                 configureEvents(eventTimeTableData, gamedata);
-              })
+              });
             });
           }
-
 
           configureEvents(eventTimeTableData);
           setloading(false);
@@ -426,12 +426,12 @@ const HomeScreen = ({navigation, route}) => {
     }
   }, [isFocused]);
 
-
   const configureEvents = useCallback(
     (eventsData, games) => {
       const eventTimeTableData = eventsData.map((item) => {
         if (item?.game_id) {
-          const gameObj = (games || []).filter((game) => game.game_id === item.game_id) ?? [];
+          const gameObj =
+            (games || []).filter((game) => game.game_id === item.game_id) ?? [];
 
           if (gameObj.length > 0) {
             item.game = gameObj[0];
@@ -445,20 +445,16 @@ const HomeScreen = ({navigation, route}) => {
 
       setEventData(
         (eventTimeTableData || []).sort(
-          (a, b) => new Date(a.start_datetime * 1000)
-            - new Date(b.start_datetime * 1000),
+          (a, b) =>
+            new Date(a.start_datetime * 1000) -
+            new Date(b.start_datetime * 1000),
         ),
       );
 
       setTimeTable(eventTimeTableData);
-
-      
-      
     },
     [eventData],
   );
-
-
 
   useEffect(() => {
     if (selectedEventItem) {
@@ -915,16 +911,19 @@ const HomeScreen = ({navigation, route}) => {
     setCurrentUserData({...currentUserData});
     const params = {};
     joinTeam(params, userID, authContext)
-      .then(async(response) => {
+      .then(async (response) => {
         console.log('user join group');
         const entity = authContext.entity;
-          console.log('Register player response for club IS:: ', response.payload);
-          entity.auth.user = response.payload;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-          authContext.setUser(response.payload);
-          await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', {...entity});
+        console.log(
+          'Register player response for club IS:: ',
+          response.payload,
+        );
+        entity.auth.user = response.payload;
+        entity.obj = response.payload;
+        authContext.setEntity({...entity});
+        authContext.setUser(response.payload);
+        await Utility.setStorage('authContextUser', response.payload);
+        await Utility.setStorage('authContextEntity', {...entity});
       })
       .catch((error) => {
         console.log('userJoinGroup error with userID', error, userID);
@@ -992,16 +991,19 @@ const HomeScreen = ({navigation, route}) => {
     }
     setCurrentUserData({...currentUserData});
     joinTeam({}, userID, authContext)
-      .then(async(response) => {
+      .then(async (response) => {
         console.log('club join');
         const entity = authContext.entity;
-          console.log('Register player response for team IS:: ', response.payload);
-          entity.auth.user = response.payload;
-          entity.obj = response.payload;
-          authContext.setEntity({...entity});
-          authContext.setUser(response.payload);
-          await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', {...entity});
+        console.log(
+          'Register player response for team IS:: ',
+          response.payload,
+        );
+        entity.auth.user = response.payload;
+        entity.obj = response.payload;
+        authContext.setEntity({...entity});
+        authContext.setUser(response.payload);
+        await Utility.setStorage('authContextUser', response.payload);
+        await Utility.setStorage('authContextEntity', {...entity});
       })
       .catch((error) => {
         console.log('clubJoinTeam error with userID', error, userID);
@@ -1523,7 +1525,6 @@ const HomeScreen = ({navigation, route}) => {
     [authContext.entity.uid],
   );
 
-
   const findCancelButtonIndex = useCallback(
     (data) => {
       if (data?.game && refereeFound(data)) {
@@ -1537,7 +1538,7 @@ const HomeScreen = ({navigation, route}) => {
       }
       return 2;
     },
-    [refereeFound,scorekeeperFound],
+    [refereeFound, scorekeeperFound],
   );
 
   const goToChallengeDetail = useCallback(
@@ -1560,8 +1561,10 @@ const HomeScreen = ({navigation, route}) => {
 
   const goToRefereReservationDetail = useCallback(
     (data) => {
-      const refereeObj = data?.game?.referees?.filter((obj)=> obj?.referee_id === authContext.entity.uid)?.[0]
-       
+      const refereeObj = data?.game?.referees?.filter(
+        (obj) => obj?.referee_id === authContext.entity.uid,
+      )?.[0];
+
       setloading(true);
       RefereeUtils.getRefereeReservationDetail(
         refereeObj?.reservation_id,
@@ -1574,15 +1577,16 @@ const HomeScreen = ({navigation, route}) => {
         });
         setloading(false);
       });
-     
     },
     [authContext, navigation],
   );
 
   const goToScorekeeperReservationDetail = useCallback(
     (data) => {
-      console.log('Screen data:=>',data);
-      const scorekeeperObj = data?.game?.scorekeepers?.filter((obj)=> obj?.scorekeeper_id === authContext.entity.uid)?.[0]
+      console.log('Screen data:=>', data);
+      const scorekeeperObj = data?.game?.scorekeepers?.filter(
+        (obj) => obj?.scorekeeper_id === authContext.entity.uid,
+      )?.[0];
       setloading(true);
       ScorekeeperUtils.getScorekeeperReservationDetail(
         scorekeeperObj?.reservation_id,
@@ -1590,8 +1594,8 @@ const HomeScreen = ({navigation, route}) => {
         authContext,
       ).then((obj) => {
         setloading(false);
-        console.log('Screen name:=>',obj.screenName);
-        console.log('Screen navigator:=>',navigation);
+        console.log('Screen name:=>', obj.screenName);
+        console.log('Screen navigator:=>', navigation);
 
         navigation.navigate(obj.screenName, {
           reservationObj: obj.reservationObj || obj.reservationObj[0],
@@ -1650,7 +1654,11 @@ const HomeScreen = ({navigation, route}) => {
         return ['Referee Reservation Details', 'Change Events Color', 'Cancel'];
       }
       if (scorekeeperFound(selectedEventItem)) {
-        return ['Scorekeeper Reservation Details', 'Change Events Color', 'Cancel'];
+        return [
+          'Scorekeeper Reservation Details',
+          'Change Events Color',
+          'Cancel',
+        ];
       }
       return [
         'Game Reservation Details',
@@ -1753,7 +1761,7 @@ const HomeScreen = ({navigation, route}) => {
         <View>
           <ReviewSection
             onFeedPress={onFeedPress}
-            reviewsData={averageRefereeReview }
+            reviewsData={averageRefereeReview}
             reviewsFeed={refereeReviewData}
             onReadMorePress={() => {
               reviewerDetailModal();
@@ -2308,9 +2316,9 @@ const HomeScreen = ({navigation, route}) => {
               <Header
                 mainContainerStyle={styles.refereeHeaderMainStyle}
                 leftComponent={
-                  <TouchableOpacity 
-                  hitSlop={Utility.getHitSlop(15)}
-                  onPress={() => setIsRefereeModal(false)}>
+                  <TouchableOpacity
+                    hitSlop={Utility.getHitSlop(15)}
+                    onPress={() => setIsRefereeModal(false)}>
                     <Image
                       source={images.cancelImage}
                       style={[
@@ -2360,10 +2368,9 @@ const HomeScreen = ({navigation, route}) => {
                 console.log('selected Event Item:', selectedEventItem);
                 if (refereeFound(selectedEventItem)) {
                   goToRefereReservationDetail(selectedEventItem);
-                }else if (scorekeeperFound(selectedEventItem)) {
+                } else if (scorekeeperFound(selectedEventItem)) {
                   goToScorekeeperReservationDetail(selectedEventItem);
-                }
-                 else {
+                } else {
                   console.log('Selected Event Item::', selectedEventItem);
                   goToChallengeDetail(selectedEventItem.game);
                 }
@@ -2566,13 +2573,20 @@ const HomeScreen = ({navigation, route}) => {
     ),
     [averageTeamReview, reviewerDetailModal, teamReviewData],
   );
-
+  const moveToSchedule = () => {
+    console.log('move to schedule');
+    navigation.navigate('ScheduleScreen', {
+      isBackVisible: true,
+      uid: route?.params?.uid || authContext?.entity?.uid,
+      role: route?.params?.role || authContext?.entity?.role,
+    });
+  };
   const renderHomeMainTabContain = useMemo(
     () => (
       <View style={{flex: 1}}>
         {currentTab === 1 && renderMainInfoTab}
         {currentTab === 2 && renderMainScoreboardTab}
-        {currentTab === 3 && renderMainScheduleTab}
+        {currentTab === 3 && moveToSchedule()}
         {currentTab === 4 && (
           <AllInOneGallery
             isAdmin={isAdmin}
@@ -2832,7 +2846,7 @@ const HomeScreen = ({navigation, route}) => {
     () =>
       isUserHome && (
         <UserHomeTopSection
-          userDetails={authContext?.entity?.obj}
+          userDetails={currentUserData}
           isAdmin={isAdmin}
           loggedInEntity={authContext.entity}
           onAddRolePress={onAddRolePress}
@@ -3368,7 +3382,6 @@ const HomeScreen = ({navigation, route}) => {
             sportName: item.sport,
             sportType: currentUserData?.sport_type,
           });
-          
         }, 300);
       }}>
       <View
@@ -3445,7 +3458,7 @@ const HomeScreen = ({navigation, route}) => {
           // const assistantCnt = game?.referees?.filter(
           //   (chal_ref) => !chal_ref?.chief_referee,
           // )?.length;
-          
+
           // if (isSameReferee) {
           //   message = 'This referee is already booked for this game.';
           // } else if (!game.isAvailable) {
@@ -5321,6 +5334,7 @@ const HomeScreen = ({navigation, route}) => {
             onPress={() => {
               setSelectedChallengeOption(0);
               const obj = settingObject;
+              if (obj?.availibility === 'On') {
               if (
                 obj?.game_duration &&
                 obj?.availibility &&
@@ -5343,7 +5357,11 @@ const HomeScreen = ({navigation, route}) => {
               } else {
                 Alert.alert('This team has no completed challenge setting.');
               }
-
+            } else {
+              Alert.alert(
+                'Opponent player or team not availble for challenge.',
+              );
+            }
               // setTimeout(() => {
               //   setChallengePopup(false);
               //   navigation.navigate('ChallengeScreen', {
@@ -5390,6 +5408,7 @@ const HomeScreen = ({navigation, route}) => {
                 .then((response) => {
                   setloading(false);
                   const obj = response;
+                  if (obj?.availibility === 'On') {
                   if (
                     obj?.game_duration &&
                     obj?.availibility &&
@@ -5411,11 +5430,29 @@ const HomeScreen = ({navigation, route}) => {
                     });
                   } else {
                     setTimeout(() => {
+
                       Alert.alert(
                         'Please complete your all setting before send a challenge invitation.',
-                      );
-                    }, 100);
+                        '',
+                        [
+                          {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                          {text: 'OK', onPress: () => {
+                            navigation.navigate('ManageChallengeScreen', {
+                              sportName: currentUserData.sport,
+                              sportType: currentUserData?.sport_type,
+                            });
+                          }},
+                    
+                        ],
+                        { cancelable: false }
+                      )
+    
+                     
+                    }, 1000);
                   }
+                }else{
+                  Alert.alert('Your availability for challenge is off.');
+                }
                 })
                 .catch((e) => {
                   setloading(false);
@@ -5485,7 +5522,7 @@ const HomeScreen = ({navigation, route}) => {
               alignItems: 'center',
             }}>
             <TouchableOpacity
-             hitSlop={Utility.getHitSlop(15)}
+              hitSlop={Utility.getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />

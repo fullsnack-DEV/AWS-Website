@@ -41,18 +41,15 @@ export default function RefereesSetting({ navigation, route }) {
   const [visibleModal, setVisibleModal] = useState(false);
 
   const [selection, setSelection] = useState(
-    route?.params?.settingObj?.responsible_for_referee
-      && route?.params?.settingObj?.responsible_for_referee?.who_secure === 'None'
-      ? 'None'
-      : route?.params?.settingObj?.responsible_for_referee?.who_secure?.length,
+    route?.params?.settingObj && route?.params?.settingObj?.responsible_for_referee && (route?.params?.settingObj?.responsible_for_referee?.who_secure !==
+      'None' ||
+      route?.params?.settingObj?.responsible_for_referee?.who_secure
+        ?.length > 0)
+    ? route?.params?.settingObj?.responsible_for_referee?.who_secure?.length
+    : 'None',
   );
 
-  // const [detail, setDetail] = useState(
-  //   route?.params?.settingObj?.responsible_for_referee?.details
-  //     ? route?.params?.settingObj?.responsible_for_referee?.details
-  //     : '',
-  // );
-
+ 
   const [referee, setReferee] = useState(
     route?.params?.settingObj?.responsible_for_referee
       && route?.params?.settingObj?.responsible_for_referee?.who_secure !== 'None'
@@ -139,144 +136,7 @@ export default function RefereesSetting({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 
-  // const renderReferee = ({ index, item }) => (item !== 'None' ? (
-  //   <View>
-  //     <View style={styles.viewTitleContainer}>
-  //       <Text style={styles.venueCountTitle}>
-  //         Referee {index + 1} {index === 0 && '(Chief)'}
-  //       </Text>
-  //     </View>
-  //     <Text
-  //         style={{
-  //           fontSize: 16,
-  //           marginLeft: 15,
-  //           marginRight: 15,
-  //           marginBottom: 10,
-  //           fontFamily: fonts.RRegular,
-  //           color: colors.lightBlackColor,
-  //         }}>
-  //       {strings.refereeSettingNote}
-  //     </Text>
-  //     <TouchableOpacity
-  //         style={{
-  //           flexDirection: 'row',
-  //           justifyContent: 'space-between',
-  //           alignItems: 'center',
-  //           margin: 15,
-  //           marginBottom: 5,
-  //         }}
-  //         onPress={() => {
-  //           const ref = [...referee];
-  //           referee[index].responsible_to_secure_referee = 'challengee';
-  //           referee[index].is_chief = index === 0;
-
-  //           setReferee(ref);
-  //         }}>
-  //       <View style={styles.teamContainer}>
-  //         <View style={styles.teamViewStyle}>
-  //           <View style={styles.imageShadowView}>
-  //             <Image
-  //                 source={
-  //                   authContext?.entity?.role === 'user'
-  //                   || authContext?.entity?.role === 'player'
-  //                     ? authContext?.entity?.obj?.thumbnail
-  //                       ? { uri: authContext?.entity?.obj?.thumbnail }
-  //                       : images.profilePlaceHolder
-  //                     : authContext?.entity?.obj?.thumbnail
-  //                     ? { uri: authContext?.entity?.obj?.thumbnail }
-  //                     : images.teamPlaceholder
-  //                 }
-  //                 style={styles.imageView}
-  //               />
-  //           </View>
-  //           <View style={styles.teamTextContainer}>
-  //             <Text style={styles.teamNameLable}>
-  //               {authContext?.entity?.role === 'user'
-  //                 || authContext?.entity?.role === 'player'
-  //                   ? authContext?.entity?.obj?.full_name
-  //                   : authContext?.entity?.obj?.group_name}
-  //             </Text>
-  //             <Text style={styles.locationLable}>
-  //               {authContext?.entity?.obj?.city},{' '}
-  //               {authContext?.entity?.obj?.state_abbr}
-  //             </Text>
-  //           </View>
-  //         </View>
-  //       </View>
-  //       <View style={styles.checkbox}>
-  //         {item?.responsible_to_secure_referee === 'challengee' ? (
-  //           <Image
-  //               source={images.radioCheckYellow}
-  //               style={styles.checkboxImg}
-  //             />
-  //           ) : (
-  //             <Image source={images.radioUnselect} style={styles.checkboxImg} />
-  //           )}
-  //       </View>
-  //     </TouchableOpacity>
-  //     <TouchableOpacity
-  //         style={{
-  //           flexDirection: 'row',
-  //           justifyContent: 'space-between',
-  //           alignItems: 'center',
-  //           margin: 15,
-  //           marginBottom: 5,
-  //         }}
-  //         onPress={() => {
-  //           const ref = [...referee];
-  //           referee[index].responsible_to_secure_referee = 'challenger';
-  //           referee[index].is_chief = index === 0;
-  //           setReferee(ref);
-  //         }}>
-  //       <View style={styles.teamContainer}>
-  //         <View style={styles.teamViewStyle}>
-  //           <View style={styles.imageShadowView}>
-  //             <Image
-  //                 source={
-  //                   // teams[0].thumbnail
-  //                   //   ? { uri: teams[0].thumbnail }
-  //                   //   : images.teamPlaceholder
-  //                   images.teamPlaceholder
-  //                 }
-  //                 style={styles.imageView}
-  //               />
-  //           </View>
-  //           <View style={styles.teamTextContainer}>
-  //             <Text style={styles.teamNameLable}>Challenger</Text>
-  //           </View>
-  //         </View>
-  //       </View>
-  //       <View style={styles.checkbox}>
-  //         {item?.responsible_to_secure_referee === 'challenger' ? (
-  //           <Image
-  //               source={images.radioCheckYellow}
-  //               style={styles.checkboxImg}
-  //             />
-  //           ) : (
-  //             <Image source={images.radioUnselect} style={styles.checkboxImg} />
-  //           )}
-  //       </View>
-  //     </TouchableOpacity>
-
-  //     {/* <TCTextInputClear
-  //    placeholder={strings.venueDetailsPlaceholder}
-  //      onChangeText={(text) => {
-  //        const ven = [...venue];
-  //        venue[index].details = text;
-  //        setVenue(ven);
-  //      }}
-  //      value={venue[index].details}
-  //      onPressClear={() => {
-  //        const ven = [...venue];
-  //        venue[index].details = '';
-  //        setVenue(ven);
-  //      }}
-  //      multiline={true}
-  //    /> */}
-  //   </View>
-  //   ) : (
-  //     <View></View>
-  //   ));
+  
 
   const saveUser = () => {
     let bodyParams;
