@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return */
 import {
   Alert,
   SafeAreaView,
@@ -249,6 +248,7 @@ const PlayInModule = ({
     ],
   );
 
+  // eslint-disable-next-line consistent-return
   const renderChallengeButton = () => {
     if (
       currentTab === 0 &&
@@ -677,11 +677,6 @@ const styles = StyleSheet.create({
     height: 25,
     width: '92%',
     margin: 15,
-  },
-  challengeTextStyle: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 16,
   },
   challengeButtonTitle: {
     color: colors.whiteColor,
