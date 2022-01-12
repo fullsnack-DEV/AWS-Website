@@ -67,6 +67,7 @@ import fonts from '../Constants/Fonts';
 import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChallengeScreen';
 import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
+import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInviteScreen';
 
 const Stack = createStackNavigator();
 
@@ -833,7 +834,22 @@ function NotificationNavigator() {
           },
         } }
       />
-
+      <Stack.Screen
+        name="RespondForInviteScreen"
+        component={ RespondForInviteScreen}
+        options={ {
+          title: 'Respond',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
       <Stack.Screen
          name="InviteToMemberScreen"
          component={InviteToMemberScreen}

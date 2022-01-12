@@ -8,8 +8,8 @@ const ProfileScreenShimmer = () => (
   <ScrollView style={{ width: '100%' }}>
     <View>
       {/* Top Background And Profile */}
-      <View>
-        <ShimmerView style={{ width: '100%' }} height={200} marginVertical={0} borderRadius={0} />
+      <View style={{alignItems:'center'}}>
+        <ShimmerView style={{ width: '94%' }} height={135} margin={10} borderRadius={10} alignSelf={'center'}/>
         <ShimmerView style={{
             position: 'absolute',
             bottom: -30,

@@ -27,11 +27,7 @@ export const getSetting = async (entityID, entityType, sportName, authContext, s
           return obj
         })
         // eslint-disable-next-line no-unused-vars
-        .catch((e) => {
-          setTimeout(() => {
-            // Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+        
   }
   if (entityType === 'team') {
     if (entityID === authContext.entity.uid) {

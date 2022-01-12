@@ -1,47 +1,53 @@
 import React, {
-  useState, useLayoutEffect, useRef, useEffect, useContext, useCallback,
+  useState,
+  useLayoutEffect,
+  useRef,
+  useEffect,
+  useContext,
+  useCallback,
 } from 'react';
 import {
-
   View,
   StyleSheet,
   Image,
   TouchableWithoutFeedback,
-
+  Text,
   Alert,
   FlatList,
-
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 
 import ActionSheet from 'react-native-actionsheet';
 // import Modal from 'react-native-modal';
 // import LinearGradient from 'react-native-linear-gradient';
 import QB from 'quickblox-react-native-sdk';
-import AuthContext from '../../../auth/context'
+import AuthContext from '../../../auth/context';
 import UserRoleView from '../../../components/groupConnections/UserRoleView';
 import TCSearchBox from '../../../components/TCSearchBox';
 import TCNoDataView from '../../../components/TCNoDataView';
 
-import {
-  getGroupMembers,
-} from '../../../api/Groups';
+import {getGroupMembers} from '../../../api/Groups';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-import images from '../../../Constants/ImagePath'
-import colors from '../../../Constants/Colors'
+import images from '../../../Constants/ImagePath';
+import colors from '../../../Constants/Colors';
 // import fonts from '../../../Constants/Fonts'
 // import TCThinDivider from '../../../components/TCThinDivider';
 import strings from '../../../Constants/String';
 import {
-  getQBAccountType, QB_DIALOG_TYPE, QBcreateDialog, QBcreateUser, QBgetUserDetail,
+  getQBAccountType,
+  QB_DIALOG_TYPE,
+  QBcreateDialog,
+  QBcreateUser,
+  QBgetUserDetail,
 } from '../../../utils/QuickBlox';
 import UserListShimmer from '../../../components/shimmer/commonComponents/UserListShimmer';
+import fonts from '../../../Constants/Fonts';
 
 let entity = {};
-export default function GroupMembersScreen({ navigation, route }) {
+export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   // For activity indigator
   const [loading, setloading] = useState(false);
@@ -52,45 +58,57 @@ export default function GroupMembersScreen({ navigation, route }) {
   // const [allSelected, setAllSelected] = useState(false);
   // const [filter, setFilter] = useState([]);
   const [members, setMembers] = useState();
-  const [switchUser, setSwitchUser] = useState({})
+  const [switchUser, setSwitchUser] = useState({});
 
   useEffect(() => {
     console.log('NAVIGATION:', navigation);
     const getAuthEntity = async () => {
-      entity = authContext.entity
-      setSwitchUser(entity)
-    }
-    getMembers()
-    getAuthEntity()
-  }, [isFocused])
+      entity = authContext.entity;
+      setSwitchUser(entity);
+    };
+    getMembers();
+    getAuthEntity();
+  }, [isFocused]);
 
   const getMembers = async () => {
     if (route.params?.groupID) {
       getGroupMembers(route.params?.groupID, authContext)
         .then((response) => {
-          setMembers(response.payload)
-          setSearchMember(response.payload)
+          setMembers(response.payload);
+          setSearchMember(response.payload);
           setFirstTimeLoading(false);
         })
         .catch((e) => {
-          setFirstTimeLoading(false)
+          setFirstTimeLoading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
     }
-  }
+  };
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        switchUser.uid === route?.params?.groupID && <TouchableWithoutFeedback
-          onPress={ () => actionSheet.current.show() }>
-          <Image source={ images.vertical3Dot } style={ styles.navigationRightItem } />
-        </TouchableWithoutFeedback>
-
+      headerTitle: () => (
+        <Text style={styles.screenTitleText}>
+          {route?.params?.fromProfile ? 'Members' : 'Connection'}
+        </Text>
       ),
+      headerRight: () =>
+        switchUser.uid === route?.params?.groupID && (
+          <TouchableWithoutFeedback onPress={() => actionSheet.current.show()}>
+            <Image
+              source={images.vertical3Dot}
+              style={styles.navigationRightItem}
+            />
+          </TouchableWithoutFeedback>
+        ),
     });
-  }, [navigation, switchUser]);
+  }, [
+    navigation,
+    route?.params?.fromProfile,
+    route?.params?.groupID,
+    switchUser,
+  ]);
 
   // const toggleModal = () => {
   //   setModalVisible(!isModalVisible);
@@ -162,113 +180,156 @@ export default function GroupMembersScreen({ navigation, route }) {
         QB.users.USERS_FILTER.FIELD.LOGIN,
         QB.users.USERS_FILTER.TYPE.STRING,
         [UIDs].join(),
-      ).then((userData) => {
-        const IDs = [];
-        userData.users.map((item) => IDs.push(item?.id));
-        const groupName = authContext?.entity?.obj?.group_name;
-        QBcreateDialog(IDs, QB_DIALOG_TYPE.GROUP, groupName).then((dialog) => {
+      )
+        .then((userData) => {
+          const IDs = [];
+          userData.users.map((item) => IDs.push(item?.id));
+          const groupName = authContext?.entity?.obj?.group_name;
+          QBcreateDialog(IDs, QB_DIALOG_TYPE.GROUP, groupName)
+            .then((dialog) => {
+              setloading(false);
+              navigation.navigate('MessageChat', {
+                screen: 'MessageChatRoom',
+                params: {dialog},
+              });
+            })
+            .catch((error) => {
+              setloading(false);
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
           setloading(false);
+        });
+    }
+  };
+
+  const onPressProfile = useCallback(
+    (item) => {
+      navigation.navigate('MembersProfileScreen', {
+        memberID: item.user_id,
+        whoSeeID: item.group_member_detail.group_id,
+        groupID: route.params?.groupID,
+      });
+    },
+    [navigation, route.params?.groupID],
+  );
+
+  const onPressMessage = useCallback(
+    (item) => {
+      const accountType = getQBAccountType(item?.entity_type);
+      QBcreateUser(item?.user_id, item, accountType)
+        .then(() => {
           navigation.navigate('MessageChat', {
             screen: 'MessageChatRoom',
-            params: { dialog },
+            params: {userId: item.user_id},
           });
-        }).catch((error) => {
-          setloading(false);
-          console.log(error);
         })
-      }).catch((error) => {
-        console.log(error);
-        setloading(false)
-      })
-    }
-  }
-
-  const onPressProfile = useCallback((item) => {
-    navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params?.groupID })
-  }, [navigation, route.params?.groupID])
-
-  const onPressMessage = useCallback((item) => {
-      const accountType = getQBAccountType(item?.entity_type);
-      QBcreateUser(item?.user_id, item, accountType).then(() => {
-        navigation.navigate('MessageChat', {
-          screen: 'MessageChatRoom',
-          params: { userId: item.user_id },
+        .catch(() => {
+          navigation.navigate('MessageChat', {
+            screen: 'MessageChatRoom',
+            params: {userId: item.user_id},
+          });
         });
-      }).catch(() => {
-        navigation.navigate('MessageChat', {
-          screen: 'MessageChatRoom',
-          params: { userId: item.user_id },
-        });
-      })
-  }, [navigation])
+    },
+    [navigation],
+  );
 
-  const renderMembers = useCallback(({ item }) => (
-    <UserRoleView
-        data = {item}
-        onPressProfile = {() => onPressProfile(item)}
-        onPressMessage={() => onPressMessage(item)} />
-    ), [onPressMessage, onPressProfile])
+  const renderMembers = useCallback(
+    ({item}) => (
+      <UserRoleView
+        data={item}
+        onPressProfile={() => onPressProfile(item)}
+        onPressMessage={() => onPressMessage(item)}
+      />
+    ),
+    [onPressMessage, onPressProfile],
+  );
 
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
 
-      <View tabLabel='Members' style={{ flex: 1 }}>
+      <View tabLabel="Members" style={{flex: 1}}>
         <View style={styles.searchBarView}>
           <TCSearchBox
-              editable={members?.length > 0}
-              onChangeText={ (text) => searchFilterFunction(text) }
+            editable={members?.length > 0}
+            onChangeText={(text) => searchFilterFunction(text)}
           />
         </View>
         {/* eslint-disable-next-line no-nested-ternary */}
-        {firstTimeLoading
-          ? <UserListShimmer/>
-          : members.length > 0 ? <FlatList
-                data={members}
-                renderItem={renderMembers}
-                keyExtractor={(item, index) => index.toString()}
-            /> : <TCNoDataView title={'No Members Found'}/>
-        }
+        {firstTimeLoading ? (
+          <UserListShimmer />
+        ) : members.length > 0 ? (
+          <FlatList
+            data={members}
+            renderItem={renderMembers}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        ) : (
+          <TCNoDataView title={'No Members Found'} />
+        )}
       </View>
       <ActionSheet
-                ref={actionSheet}
-                // title={'News Feed Post'}
-                options={switchUser.role === 'club' ? ['Group Message', 'Invite Member', 'Create Member Profile', 'Connect Member Account', 'Privacy Setting', 'Setting', 'Cancel']
-                  : ['Group Message', 'Invite Member', 'Create Member Profile', 'Connect Member Account', 'Privacy Setting', 'Cancel']}
-                cancelButtonIndex={switchUser.role === 'club' ? 6 : 5}
-                // destructiveButtonIndex={1}
-                onPress={(index) => {
-                  if (index === 0) {
-                    navigateToGroupMessage()
-                  } else if (index === 1) {
-                    actionSheetInvite.current.show();
-                  } else if (index === 2) {
-                    navigation.navigate('CreateMemberProfileForm1');
-                  } else if (index === 3) {
-                    navigation.navigate('ConnectMemberAccountScreen', { groupID: route.params?.groupID });
-                  } else if (index === 4) {
-                    navigation.navigate('MembersViewPrivacyScreen');
-                  } else if (index === 5) {
-                    if (switchUser.role === 'club') {
-                      navigation.navigate('ClubSettingScreen');
-                    }
-                  }
-                }}
-              />
+        ref={actionSheet}
+        // title={'News Feed Post'}
+        options={
+          switchUser.role === 'club'
+            ? [
+                'Group Message',
+                'Invite Member',
+                'Create Member Profile',
+                'Connect Member Account',
+                'Privacy Setting',
+                'Setting',
+                'Cancel',
+              ]
+            : [
+                'Group Message',
+                'Invite Member',
+                'Create Member Profile',
+                'Connect Member Account',
+                'Privacy Setting',
+                'Cancel',
+        ]
+        }
+        cancelButtonIndex={switchUser.role === 'club' ? 6 : 5}
+        // destructiveButtonIndex={1}
+        onPress={(index) => {
+          if (index === 0) {
+            navigateToGroupMessage();
+          } else if (index === 1) {
+            actionSheetInvite.current.show();
+          } else if (index === 2) {
+            navigation.navigate('CreateMemberProfileForm1');
+          } else if (index === 3) {
+            navigation.navigate('ConnectMemberAccountScreen', {
+              groupID: route.params?.groupID,
+            });
+          } else if (index === 4) {
+            navigation.navigate('MembersViewPrivacyScreen');
+          } else if (index === 5) {
+            if (switchUser.role === 'club') {
+              navigation.navigate('ClubSettingScreen');
+            }
+          }
+        }}
+      />
       <ActionSheet
-                ref={actionSheetInvite}
-                // title={'News Feed Post'}
-                options={['Invite by Search', 'Invite by E-mail', 'Cancel']}
-                cancelButtonIndex={2}
-                // destructiveButtonIndex={1}
-                onPress={(index) => {
-                  if (index === 0) {
-                    navigation.navigate('InviteMembersBySearchScreen');
-                  } else if (index === 1) {
-                    navigation.navigate('InviteMembersByEmailScreen');
-                  }
-                }}
-              />
+        ref={actionSheetInvite}
+        // title={'News Feed Post'}
+        options={['Invite by Search', 'Invite by E-mail', 'Cancel']}
+        cancelButtonIndex={2}
+        // destructiveButtonIndex={1}
+        onPress={(index) => {
+          if (index === 0) {
+            navigation.navigate('InviteMembersBySearchScreen');
+          } else if (index === 1) {
+            navigation.navigate('InviteMembersByEmailScreen');
+          }
+        }}
+      />
       {/* {isModalVisible && <Modal
         isVisible={isModalVisible}
         backdropColor="black"
@@ -307,7 +368,6 @@ export default function GroupMembersScreen({ navigation, route }) {
   );
 }
 const styles = StyleSheet.create({
-
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -463,4 +523,9 @@ const styles = StyleSheet.create({
   //   marginRight: 30,
   //   marginTop: 20,
   // },
+  screenTitleText: {
+    fontSize: 18,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
 });

@@ -1,4 +1,10 @@
-import React, {useState, useLayoutEffect, useEffect, useCallback,useContext} from 'react';
+import React, {
+  useState,
+  useLayoutEffect,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
 
 import {
   View,
@@ -30,7 +36,6 @@ import TCKeyboardView from '../../components/TCKeyboardView';
 import DataSource from '../../Constants/DataSource';
 import AuthContext from '../../auth/context';
 
-
 export default function EditGroupBasicInfoScreen({navigation, route}) {
   // For activity indicator
   const authContext = useContext(AuthContext);
@@ -49,6 +54,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
 
   const onSaveButtonClicked = useCallback(() => {
     if (checkValidation()) {
+      console.log('groupData', groupData);
+
       setloading(true);
       const groupProfile = {};
       groupProfile.sport = groupData.sport;
@@ -59,42 +66,35 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
       groupProfile.registration_fee = groupData.registration_fee;
       groupProfile.membership_fee = groupData.membership_fee;
       groupProfile.membership_fee_type = groupData.membership_fee_type;
+      groupProfile.office_address =
+        groupData.office_address && groupData.office_address;
 
       console.log('updating values', groupProfile);
 
-      patchGroup(groupData.group_id, groupProfile,authContext).then(async (response) => {
-        setloading(false);
-        if (response && response.status === true) {
-          console.log('response', response);
-          const entity = await Utility.getStorage('loggedInEntity');
-          entity.obj = response.payload;
-          Utility.setStorage('loggedInEntity', entity);
-          navigation.goBack();
-        } else {
+      patchGroup(groupData.group_id, groupProfile, authContext)
+        .then(async (response) => {
+          setloading(false);
+          if (response && response.status === true) {
+            console.log('response', response);
+            const entity = await Utility.getStorage('loggedInEntity');
+            entity.obj = response.payload;
+            Utility.setStorage('loggedInEntity', entity);
+            navigation.goBack();
+          } else {
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, 'Something went wrong');
+            }, 0.1);
+          }
+        })
+        .catch((e) => {
+          setloading(false);
+          console.log('2');
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, 'Something went wrong');
-          }, 0.1);
-        }
-      }).catch((e) => {
-        setloading(false);
-        console.log('2');
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     }
-  }, [
-    groupData.gender,
-    groupData.group_id,
-    groupData.membership_fee,
-    groupData.membership_fee_type,
-    groupData.registration_fee,
-    groupData.sport,
-    groupLanguages,
-    maxAge,
-    minAge,
-    navigation,
-  ]);
+  }, [authContext, groupData, groupLanguages, maxAge, minAge, navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -109,7 +109,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
           onPress={() => {
             onSaveButtonClicked();
           }}>
-          {strings.done}
+          {strings.save}
         </Text>
       ),
     });
@@ -128,8 +128,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
     const minAgeArray = [];
     const maxAgeArray = [];
 
-    console.log('MIN AGE:=>',minAge);
-    console.log('MAX AGE:=>',maxAge);
+    console.log('MIN AGE:=>', minAge);
+    console.log('MAX AGE:=>', maxAge);
 
     for (let i = 1; i <= maxAge; i++) {
       const dataSource = {
@@ -175,13 +175,17 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
   };
 
   const toggleLanguageModal = () => {
-    let selectedLanguages = [];
-    if (groupLanguages) {
-      selectedLanguages = groupLanguages.split(', ');
-    }
+    const selectedLanguages = groupLanguages || [];
+    console.log('groupLanguages',groupLanguages);
+    
+    // if (groupLanguages) {
+    //   selectedLanguages = groupLanguages.split(', ');
+    // }
+    console.log('Utility.languages',Utility.languageList);
     const arr = [];
-    for (const tempData of Utility.languages) {
-      if (selectedLanguages.find((x) => x === tempData.language)) {
+    for (const tempData of Utility.languageList) {
+      
+      if (selectedLanguages.includes(tempData.language)) {
         tempData.isChecked = true;
       } else {
         tempData.isChecked = false;
@@ -380,7 +384,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
         <View>
           <TCLabel title={strings.languageTitle} />
           <TCTouchableLabel
-            title={groupLanguages || ''}
+            title={groupLanguages?.toString() || ''}
             onPress={toggleLanguageModal}
             placeholder={strings.languagePlaceholder}
             showNextArrow={true}
@@ -446,6 +450,17 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
               />
             </View>
           </View>
+
+          <View style={{width: '100%'}}>
+            <TCLabel title={strings.officeAddress} />
+            <TCTextField
+              placeholder={strings.officeAddress}
+              onChangeText={(text) =>
+                setGroupData({...groupData, office_address: text})
+              }
+              value={groupData.office_address}
+            />
+          </View>
         </View>
 
         <View style={{height: 50}} />
@@ -468,7 +483,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
           <View style={styles.separatorLine}></View>
           <FlatList
             data={languages}
-            keyExtractor={(item, i) => i.toString()}
+            keyExtractor={(item, i) => i?.toString()}
             renderItem={renderLanguage}
             ItemSeparatorComponent={() => (
               <View style={styles.shortSeparatorLine}></View>

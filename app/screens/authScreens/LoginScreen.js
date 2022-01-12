@@ -187,10 +187,10 @@ export default function LoginScreen({ navigation }) {
       .signInWithEmailAndPassword(email, password)
       .then(() => {
         console.log('then:=>');
-
+        setloading(true);
         const loginOnAuthStateChanged = auth().onAuthStateChanged(onAuthStateChanged);
         loginOnAuthStateChanged();
-        setloading(false);
+        
       })
       .catch((error) => {
         setloading(false);

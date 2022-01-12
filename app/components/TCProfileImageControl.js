@@ -23,7 +23,8 @@ function TCProfileImageControl({
 }) {
   return (
     <View style={{ flex: 1 }}>
-      <View>
+      <View style={{margin:10,borderRadius:10,overflow:'hidden',
+    height: 135,}}>
         <TCImage
           containerStyle={[styles.bgContainerStyle]}
           imageStyle={[styles.bgImageStyle, bgImageStyle]}
@@ -46,7 +47,7 @@ function TCProfileImageControl({
         imageStyle={[
           styles.profileImageStyle,
           profileImageStyle,
-          { marginTop: showEditButtons ? -20 : -36 },
+          { marginTop: showEditButtons ? -40 : -36 },
         ]}
         source={profileImage || profileImagePlaceholder}
         defaultSource={profileImagePlaceholder}
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
   bgContainerStyle: {
     flex: 1,
     width: '100%',
-    height: 200,
+    height: 135,
 
     // aspectRatio: 375 / 147,
   },
@@ -79,8 +80,8 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   profileImageStyle: {
-    height: 71,
-    width: 71,
+    height: 60,
+    width: 60,
     marginTop: -36,
     borderRadius: 35.5,
     borderWidth: 2,

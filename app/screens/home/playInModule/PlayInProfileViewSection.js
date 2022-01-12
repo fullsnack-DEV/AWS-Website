@@ -72,7 +72,7 @@ export default function PlayInProfileViewSection({
 }
 const styles = StyleSheet.create({
   topViewContainer: {
-    backgroundColor: colors.searchGrayColor,
+    // backgroundColor: colors.searchGrayColor,
     paddingVertical: 12,
     paddingHorizontal: 15,
   },

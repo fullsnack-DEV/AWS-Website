@@ -112,7 +112,8 @@ function NotificationsListScreen({navigation}) {
             ?.challenge_id ||
           JSON.parse(item.activities[0].object).newChallengeObject.challenge_id;
         setloading(true);
-        challengeUtility.getChallengeDetail(a, authContext)
+        challengeUtility
+          .getChallengeDetail(a, authContext)
           .then((obj) => {
             console.log('challenge utils res:=>', obj);
             navigation.navigate(obj.screenName, {
@@ -584,22 +585,33 @@ function NotificationsListScreen({navigation}) {
     }
   };
 
-  const onRespond = (groupId) => {
-    setloading(true);
+  const onRespond = (groupObj) => {
+    console.log('groupObj:=>',groupObj);
+    const groupId =  JSON.parse(groupObj.activities[0].object).group.group_id
+    console.log('groupId:=>',groupId);
+
+    
     if (activeScreen) {
-      getRequestDetail(groupId, authContext)
-        .then((response) => {
-          setloading(false);
-          console.log('details: =>', response.payload);
-          setGroupData(response.payload);
-          setIsRulesModalVisible(true);
-        })
-        .catch((error) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, error.message);
-          }, 10);
-        });
+      if (
+        groupObj.activities[0].verb.includes(NotificationType.inviteToJoinClub)
+      ) {
+        navigation.navigate('RespondForInviteScreen',{groupObj});
+      } else {
+        setloading(true);
+        getRequestDetail(groupId, authContext)
+          .then((response) => {
+            setloading(false);
+            console.log('details: =>', response.payload);
+            setGroupData(response.payload);
+            setIsRulesModalVisible(true);
+          })
+          .catch((error) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, error.message);
+            }, 10);
+          });
+      }
     } else {
       showSwitchProfilePopup();
     }
@@ -728,21 +740,19 @@ function NotificationsListScreen({navigation}) {
   };
 
   const notificationComponentType = (item) => {
+    console.log('VERB::=>', item);
     if (isInvite(item.activities[0].verb)) {
       console.log('Ok ok1');
       if (
-        item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam)
+        item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
+        item.activities[0].verb.includes(NotificationType.inviteToJoinClub)
       ) {
         return (
           <PRNotificationTeamInvite
             item={item}
             selectedEntity={selectedEntity}
             // onAccept={() => onAccept(item.activities[0].id)}
-            onRespond={() =>
-              onRespond(
-                JSON.parse(item.activities[0].object)?.groupData?.group_id,
-            )
-            } // JSON.parse(item.activities[0].object))
+            onRespond={() => onRespond(item)} // JSON.parse(item.activities[0].object))
             onPress={() => onNotificationClick(item)}
             onPressFirstEntity={openHomePage}
           />
