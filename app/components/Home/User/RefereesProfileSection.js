@@ -1,10 +1,5 @@
-import React, {
-  useCallback,
-  useRef,
-} from 'react';
-import {
-  Text, View, StyleSheet, Image, TouchableOpacity,
-} from 'react-native';
+import React, {useCallback, useRef} from 'react';
+import {Text, View, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 
 import FastImage from 'react-native-fast-image';
@@ -12,7 +7,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
 
 export default function RefereesProfileSection({
   isReferee,
@@ -35,8 +29,8 @@ export default function RefereesProfileSection({
 
   return (
     <View style={styles.topViewContainer}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <View style={{ flexDirection: 'row' }}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={{flexDirection: 'row'}}>
           <View style={styles.profileView}>
             <Image source={profileImage} style={styles.profileImage} />
           </View>
@@ -45,30 +39,42 @@ export default function RefereesProfileSection({
             <Text style={styles.locationTextStyle}>{location}</Text>
           </View>
         </View>
-        {isAdmin && <View>
-          <TouchableOpacity onPress={() => {
-            actionSheetSettingRef.current.show();
-          }}>
-            <FastImage
+        {isAdmin && (
+          <View>
+            <TouchableOpacity
+              onPress={() => {
+                actionSheetSettingRef.current.show();
+              }}>
+              <FastImage
                 resizeMode={'contain'}
                 source={images.SettingPrivacy}
-                style={{ width: 40, height: 40 }}
+                style={{width: 40, height: 40}}
               />
-          </TouchableOpacity>
-        </View>}
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
       {bookRefereeButtonVisible && (
-        <TouchableOpacity
-          onPress={onBookRefereePress}>
+        <TouchableOpacity onPress={onBookRefereePress} style={{marginTop: 15}}>
           <LinearGradient
-            colors={isReferee ? [colors.themeColor, colors.yellowColor] : [colors.blueGradiantStart, colors.blueGradiantEnd]}
-            style={isReferee ? styles.refereeButtonStyle : styles.scorekeeperButtonStyle}>
-            <Text style={styles.editTextStyle}>
-              ${feesCount} CAD (per hours)
-            </Text>
-            <Text style={styles.editTextStyle}>
-              {isReferee ? strings.bookReferee : strings.bookScorekeeper}
-            </Text>
+            colors={isReferee ? [colors.darkThemeColor, colors.themeColor] : [colors.blueGradiantStart, colors.blueGradiantEnd]}
+            style={[
+              styles.containerStyle,
+              {
+                justifyContent: 'center',
+              },
+            ]}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text style={styles.challengeButtonTitle}>
+                {isReferee ? 'Book Referee' : 'Book Scorekeeper'}
+                <Text>{` $${feesCount} CAD / hour`}</Text>
+              </Text>
+            </View>
           </LinearGradient>
         </TouchableOpacity>
       )}
@@ -80,13 +86,24 @@ export default function RefereesProfileSection({
         // destructiveButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
-            onClose(true)
+            onClose(true);
             if (isReferee) {
-              navigation.navigate('DeactivateSportScreen', { sport_name, type: (isReferee === true && 'referee') || (isReferee === false && 'scorekeeper') || 'player' });
-
+              navigation.navigate('DeactivateSportScreen', {
+                sport_name,
+                type:
+                  (isReferee === true && 'referee') ||
+                  (isReferee === false && 'scorekeeper') ||
+                  'player',
+              });
               console.log('setting for referee');
             } else {
-              navigation.navigate('DeactivateSportScreen', { sport_name, type: (isReferee === true && 'referee') || (isReferee === false && 'scorekeeper') || 'player' });
+              navigation.navigate('DeactivateSportScreen', {
+                sport_name,
+                type:
+                  (isReferee === true && 'referee') ||
+                  (isReferee === false && 'scorekeeper') ||
+                  'player',
+              });
               console.log('setting for scorekeeper');
             }
           }
@@ -97,7 +114,7 @@ export default function RefereesProfileSection({
 }
 const styles = StyleSheet.create({
   topViewContainer: {
-    backgroundColor: colors.searchGrayColor,
+    backgroundColor: colors.whiteColor,
     paddingVertical: 12,
     paddingHorizontal: 15,
   },
@@ -116,7 +133,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,
@@ -135,45 +152,16 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RLight,
     color: colors.lightBlackColor,
   },
-  editTextStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
+ 
+  containerStyle: {
+    flexDirection: 'row',
+    height: 25,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  challengeButtonTitle: {
     color: colors.whiteColor,
-  },
-  refereeButtonStyle: {
-    height: 40,
-    width: '98%',
-    backgroundColor: colors.themeColor,
-    alignSelf: 'center',
-    marginTop: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingLeft: 15,
-    paddingRight: 15,
-    alignItems: 'center',
-    borderRadius: 10,
-    shadowColor: colors.themeColor,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  scorekeeperButtonStyle: {
-    height: 40,
-    width: '98%',
-    backgroundColor: colors.blueGradiantStart,
-    alignSelf: 'center',
-    marginTop: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingLeft: 15,
-    paddingRight: 15,
-    alignItems: 'center',
-    borderRadius: 10,
-    shadowColor: colors.blueGradiantStart,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 3,
+    fontSize: 14,
+    fontFamily: fonts.RBold,
   },
 });

@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import {
   Alert,
   SafeAreaView,
@@ -43,6 +44,10 @@ import TCScrollableTabs from '../../../components/TCScrollableTabs';
 import * as Utils from '../../challenge/manageChallenge/settingUtility';
 
 let TAB_ITEMS = [];
+
+let oppSetting = {};
+let mySetting = {};
+
 const PlayInModule = ({
   visible = false,
   onModalClose = () => {},
@@ -52,7 +57,9 @@ const PlayInModule = ({
   navigation,
   openPlayInModal,
 }) => {
+  console.log('userData', userData);
   console.log('playInObject', playInObject);
+
   const actionSheetRef = useRef();
   const actionSheetSettingRef = useRef();
   const [singlePlayerGame, setSinglePlayerGame] = useState(true);
@@ -60,6 +67,8 @@ const PlayInModule = ({
   const authContext = useContext(AuthContext);
   const [currentUserData, setCurrentUserData] = useState();
   const [currentTab, setCurrentTab] = useState(0);
+
+  const [challengeType, setChallengeType] = useState();
 
   const [loading, setloading] = useState(false);
 
@@ -71,6 +80,7 @@ const PlayInModule = ({
   }, [onModalClose]);
 
   useEffect(() => {
+    getSettingOfBoth();
     if (userData) setCurrentUserData(userData);
   }, [userData]);
 
@@ -239,72 +249,113 @@ const PlayInModule = ({
     ],
   );
 
-  const renderChallengeButton = useMemo(
-    () =>
+  const renderChallengeButton = () => {
+    if (
       currentTab === 0 &&
-      authContext?.entity?.uid !== currentUserData?.user_id &&
-      (authContext?.entity?.role === 'user' && 'player') ===
-        currentUserData?.entity_type &&
-      !['soccer', 'tennis double'].includes(playInObject?.sport) && (
-        <TouchableOpacity
-          onPress={() => {
-            console.log('auth123:=>', authContext);
-            if (
-              authContext?.entity?.obj?.registered_sports?.some(
-                (item) =>
-                  item?.sport === playInObject?.sport &&
-                  item?.sport_type === playInObject?.sport_type,
-              )
-            ) {
-              actionSheetRef.current.show();
-            } else {
-              Alert.alert('Towns Cup', 'Both Player have a different sports');
-            }
-          }}
-          style={styles.challengeButtonContainer}>
-          <LinearGradient
-            colors={[colors.themeColor, '#FF3B00']}
-            style={styles.challengeLinearContainer}>
-            <View
-              style={{
-                width: '100%',
-                paddingHorizontal: 25,
-                flexDirection: 'row',
-                justifyContent: 'center',
-              }}>
-              {/* <View
+      authContext?.entity?.uid !== currentUserData?.user_id && authContext?.entity?.role === 'user'
+    ) {
+      return (
+        playInObject?.sport_type !== 'double' &&
+        playInObject?.sport !== 'soccer' && (
+          <TouchableOpacity
+            onPress={onChallengePress}
+            style={styles.challengeButtonContainer}>
+            <LinearGradient
+              colors={[colors.themeColor, '#FF3B00']}
+              style={styles.challengeLinearContainer}>
+              <View
                 style={{
                   flexDirection: 'row',
-                  alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                <Text style={styles.challengeTextStyle}>{`$${
-                  playInObject?.fee ?? 0
-                }`}</Text>
-                <Text
-                  style={{
-                    ...styles.challengeTextStyle,
-                    fontSize: 13,
-                    fontFamily: fonts.RRegular,
-                  }}>
-                  {' '}
-                  (per hours)
-                </Text>
-              </View> */}
-              <Text style={styles.challengeTextStyle}>CHALLENGE</Text>
-            </View>
-          </LinearGradient>
-        </TouchableOpacity>
-      ),
-    [
-      authContext,
-      currentTab,
-      currentUserData?.entity_type,
-      currentUserData?.user_id,
-      playInObject?.sport,
-      playInObject?.sport_type,
-    ],
-  );
+                {(challengeType === 'both' ||
+                  challengeType === 'challenge') && (
+                    <Text style={styles.challengeButtonTitle}>
+                      {strings.challenge}
+                      <Text>{` $${oppSetting?.game_fee?.fee} ${
+                      currentUserData?.currency_type ?? 'CAD'
+                    }${' / match'}`}</Text>
+                    </Text>
+                )}
+                {challengeType === 'invite' && (
+                  <Text style={styles.challengeButtonTitle}>
+                    {'Invite to challenge'}
+                  </Text>
+                )}
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        )
+      );
+    }
+  };
+  const getSettingOfBoth = useCallback(() => {
+    oppSetting = playInObject.setting ?? {};
+
+    mySetting =
+      (authContext?.entity?.obj?.registered_sports ?? []).filter(
+        (o) =>
+          o.sport === playInObject?.sport &&
+          o.sport_type === playInObject?.sport_type,
+      )[0]?.setting ?? {};
+
+    console.log('opp setting', oppSetting);
+    console.log('My setting', mySetting);
+    if (
+      mySetting !== undefined &&
+      oppSetting !== undefined &&
+      oppSetting?.availibility === 'On' &&
+      mySetting?.availibility === 'On'
+    ) {
+      console.log('both123:=>');
+      setChallengeType('both');
+    } else if (
+      oppSetting?.game_duration &&
+      oppSetting?.availibility &&
+      oppSetting?.availibility === 'On' &&
+      (mySetting?.availibility === undefined ||
+        mySetting?.availibility === 'Off') &&
+      oppSetting?.special_rules !== undefined &&
+      oppSetting?.general_rules !== undefined &&
+      oppSetting?.responsible_for_referee &&
+      oppSetting?.responsible_for_scorekeeper &&
+      oppSetting?.game_fee &&
+      oppSetting?.venue &&
+      oppSetting?.refund_policy &&
+      oppSetting?.home_away &&
+      oppSetting?.game_type
+    ) {
+      console.log('challenge123:=>');
+      setChallengeType('challenge');
+    } else if (
+      mySetting !== undefined &&
+      (oppSetting?.availibility === undefined ||
+        oppSetting?.availibility === 'Off') &&
+      mySetting?.game_duration &&
+      (mySetting?.availibility !== undefined ||
+        mySetting?.availibility === 'On') &&
+      mySetting?.special_rules !== undefined &&
+      mySetting?.general_rules !== undefined &&
+      mySetting?.responsible_for_referee &&
+      mySetting?.responsible_for_scorekeeper &&
+      mySetting?.game_fee &&
+      mySetting?.venue &&
+      mySetting?.refund_policy &&
+      mySetting?.home_away &&
+      mySetting?.game_type
+    ) {
+      console.log('invite123:=>');
+      setChallengeType('invite');
+    } else if (oppSetting === undefined && mySetting === undefined) {
+      console.log('invite123:=>');
+      setChallengeType('invite');
+    }
+  }, [
+    authContext?.entity?.obj?.registered_sports,
+    playInObject.setting,
+    playInObject?.sport,
+    playInObject?.sport_type,
+  ]);
 
   const onMessageButtonPress = useCallback(() => {
     const navigateToMessage = (userId) => {
@@ -326,6 +377,31 @@ const PlayInModule = ({
   const onChangeTab = useCallback((ChangeTab) => {
     setCurrentTab(ChangeTab.i);
   }, []);
+
+  const onChallengePress = () => {
+    console.log('--------', challengeType);
+    if (challengeType === 'both') {
+      actionSheetRef.current.show();
+    } else if (challengeType === 'challenge') {
+      actionSheetRef.current.show();
+    } else if (challengeType === 'invite') {
+      if (mySetting.availibility === 'On') {
+        onClose();
+        navigation.navigate('InviteChallengeScreen', {
+          setting: mySetting,
+          sportName: currentUserData.sport,
+          groupObj: currentUserData,
+        });
+      } else {
+        onClose();
+        navigation.navigate('ManageChallengeScreen', {
+          sportName: currentUserData?.sport,
+          sportType: currentUserData?.sport_type,
+        });
+      }
+    }
+  };
+
   return (
     <>
       <ActivityLoader visible={loading} />
@@ -345,7 +421,6 @@ const PlayInModule = ({
             {renderHeader}
 
             {/* Challenge Button */}
-            {renderChallengeButton}
 
             {/* Profile View Section */}
             {useMemo(
@@ -377,7 +452,7 @@ const PlayInModule = ({
                 playInObject?.sport,
               ],
             )}
-
+            {renderChallengeButton()}
             {/* Tabs */}
             {useMemo(
               () => (
@@ -561,12 +636,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 12,
   },
   challengeLinearContainer: {
-    flex: 1,
-    width: '90%',
+    height: 25,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 10,
+    borderRadius: 5,
     shadowColor: '#FF3B00',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.15,
@@ -598,19 +672,21 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   challengeButtonContainer: {
-    position: 'absolute',
     alignSelf: 'center',
     alignItems: 'center',
-    right: 0,
-    left: 0,
-    bottom: 0,
-    marginBottom: 15,
-    zIndex: 10,
+    height: 25,
+    width: '92%',
+    margin: 15,
   },
   challengeTextStyle: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 16,
+  },
+  challengeButtonTitle: {
+    color: colors.whiteColor,
+    fontSize: 14,
+    fontFamily: fonts.RBold,
   },
 });
 

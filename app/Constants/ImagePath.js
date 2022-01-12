@@ -397,6 +397,7 @@ arrowGT: require('../assets/images/arrow_gt.png'),
   greenGradient: require('../assets/images/green_gradient.png'),
   blueGradient: require('../assets/images/blue_gradient.png'),
   uncheckBox: require('../assets/images/uncheckBox.png'),
+  profileLevel: require('../assets/images/profile_level.png'),
 
 };
 

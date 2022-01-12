@@ -7,7 +7,7 @@ import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import strings from '../../../Constants/String';
 import TCProfileButton from '../../TCProfileButton'
-import TCGradientButton from '../../TCGradientButton'
+import TCActionButton from '../../TCActionButton';
 
 export default function ClubHomeTopSection({
   clubDetails, isAdmin, loggedInEntity, onAction,
@@ -43,7 +43,7 @@ export default function ClubHomeTopSection({
           textStyle={styles.buttonTextStyle}
           onPressProfile = {() => { onAction('leave') } }
           /> }
-          {(clubDetails && !clubDetails.is_joined) && <TCGradientButton
+          {(clubDetails && !clubDetails.is_joined) && <TCActionButton
           outerContainerStyle={styles.userButtonOuterStyle}
           style={styles.userButtonStyle}
           textStyle={styles.buttonTextStyle}
@@ -58,7 +58,7 @@ export default function ClubHomeTopSection({
           textStyle={styles.buttonTextStyle}
           onPressProfile = {() => { onAction('unfollow') } }
           /> }
-          {(clubDetails && !clubDetails.is_following) && <TCGradientButton
+          {(clubDetails && !clubDetails.is_following) && <TCActionButton
           outerContainerStyle={styles.userButtonOuterStyle}
           style={styles.userButtonStyle}
           textStyle={styles.buttonTextStyle}
@@ -73,7 +73,7 @@ export default function ClubHomeTopSection({
           imageStyle = {styles.checkMarkStyle}
           textStyle={styles.buttonTextStyle}
           onPressProfile = {() => { onAction('leaveTeam') }}/> }
-          {!isMember && <TCGradientButton
+          {!isMember && <TCActionButton
           outerContainerStyle={styles.firstButtonOuterStyle}
           style={styles.firstButtonStyle}
           textStyle={styles.buttonTextStyle}

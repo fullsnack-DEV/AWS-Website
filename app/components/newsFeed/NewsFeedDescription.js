@@ -131,7 +131,7 @@ const NewsFeedDescription = ({
     ), [renderSelectedGame, tagData])
 
   const renderDescriptions = useMemo(() => descriptions?.length > 0 && (
-    <View style={{ paddingHorizontal: 15 }}>
+    <View style={{ paddingHorizontal: 10 }}>
       <Text style={[styles.descText, descText]} numberOfLines={0}>
         <ParsedText
                   style={[styles.text, descriptionTxt]}
@@ -156,7 +156,7 @@ const NewsFeedDescription = ({
    [character, descText, descriptionTxt, descriptions, readMore, renderTagText, renderURLText, toggleNumberOfLines])
 
   return (
-    <View style={[styles.containerStyle, containerStyle]}>
+    <View style={containerStyle}>
       <View pointerEvents={disableTouch ? 'none' : 'auto'}>
         {renderDescriptions}
         <TaggedModal
@@ -171,8 +171,7 @@ const NewsFeedDescription = ({
 }
 
 const styles = StyleSheet.create({
-  containerStyle: {
-  },
+  
   descText: {
     color: 'gray',
     fontSize: 12,

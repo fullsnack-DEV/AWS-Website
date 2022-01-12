@@ -173,6 +173,10 @@ import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprova
 import ChallengePreviewScreen from '../screens/challenge/createChallenge/ChallengePreviewScreen';
 import SearchScreen from '../screens/search/SearchScreen';
 import GameFee from '../screens/challenge/manageChallenge/settings/GameFee';
+import EntityInfoScreen from '../screens/home/EntityInfoScreen';
+import EntityScoreboardScreen from '../screens/home/EntityScoreboardScreen';
+import EntityGallaryScreen from '../screens/home/EntityGallaryScreen';
+import EntityReviewScreen from '../screens/home/EntityReviewScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -194,6 +198,70 @@ const ScheduleNavigator = () => (
       component={ScheduleScreen}
       options={{
         title: 'Schedule',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="EntityInfoScreen"
+      component={EntityInfoScreen}
+      options={{
+        title: 'Info',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="EntityReviewScreen"
+      component={EntityReviewScreen}
+      options={{
+        title: 'Review',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="EntityGallaryScreen"
+      component={EntityGallaryScreen}
+      options={{
+        title: 'Gallary',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="EntityScoreboardScreen"
+      component={EntityScoreboardScreen}
+      options={{
+        title: 'Scoreboard',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

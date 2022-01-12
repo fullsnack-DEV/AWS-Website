@@ -81,6 +81,11 @@ import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprova
 import AlterScorekeeperScreen from '../screens/scorekeeper/alterScorekeeper/AlterScorekeeperScreen';
 import ScorekeeperReservationScreen from '../screens/scorekeeper/ScorekeeperReservationScreen';
 import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
+import EntityInfoScreen from '../screens/home/EntityInfoScreen';
+import EntityScoreboardScreen from '../screens/home/EntityScoreboardScreen';
+import EntityGallaryScreen from '../screens/home/EntityGallaryScreen';
+import EntityReviewScreen from '../screens/home/EntityReviewScreen';
+import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInviteScreen';
 
 const Stack = createStackNavigator();
 
@@ -259,6 +264,86 @@ const NewsFeedNavigator = () => (
       component={ScheduleScreen}
       options={{
         title: 'Schedule',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="EntityInfoScreen"
+      component={EntityInfoScreen}
+      options={{
+        title: 'Info',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="EntityReviewScreen"
+      component={EntityReviewScreen}
+      options={{
+        title: 'Review',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+        name="RespondForInviteScreen"
+        component={ RespondForInviteScreen}
+        options={ {
+          title: 'Respond',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+      name="EntityGallaryScreen"
+      component={EntityGallaryScreen}
+      options={{
+        title: 'Gallary',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="EntityScoreboardScreen"
+      component={EntityScoreboardScreen}
+      options={{
+        title: 'Scoreboard',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

@@ -395,6 +395,7 @@ const strings = {
 
   abouttitle: 'About',
   basicinfotitle: 'Basic Info',
+  membershipFeesTitle: 'Membership Fees',
   teamstitle: 'Teams',
   clubstitle: 'Clubs',
   leaguesTitle: 'League',
@@ -492,6 +493,7 @@ const strings = {
   language: 'Language',
   languagesName: 'Korean, English, Hindi, Italian',
   membershipregfee: 'Membership registration fee',
+  officeAddress: 'Office Address',
   membershipfee: 'Membership Fee',
   CADpermatch: 'CAD / MATCH',
   addaddress: 'Add Address',
@@ -515,6 +517,7 @@ const strings = {
   enterBylawPlaceholder: 'Enter Bylaw',
   leagues: 'Leagues',
   tcpoint: 'TC Points',
+  matchAmountTitle:'Match Fee',
   tcranking: 'TC Ranking',
   history: 'History',
   addrole: 'Add',

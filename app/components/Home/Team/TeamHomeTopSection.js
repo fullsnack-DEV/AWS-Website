@@ -1,92 +1,149 @@
 import React from 'react';
-import {
-  View, StyleSheet,
-} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import strings from '../../../Constants/String';
 
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
-import TCProfileButton from '../../TCProfileButton'
-import TCGradientButton from '../../TCGradientButton'
+import TCProfileButton from '../../TCProfileButton';
 import fonts from '../../../Constants/Fonts';
+import TCActionButton from '../../TCActionButton';
 
 export default function UserTeamTopSection({
-  teamDetails, isAdmin, loggedInEntity, onAction,
+  teamDetails,
+  isAdmin,
+  loggedInEntity,
+  onAction,
 }) {
   let isMember = false;
   if (teamDetails && teamDetails.parent_group_id === loggedInEntity.uid) {
-    isMember = true
+    isMember = true;
   }
 
   return (
-    <View style={{ paddingTop: 20, paddingBottom: 25 }}>
-      {isAdmin && <TCProfileButton
-      title={strings.editprofiletitle}
-      style={styles.editButtonStyle}
-      textStyle={styles.buttonTextStyle}
-      onPressProfile = {() => { onAction('edit') }}
-      showArrow={false}/>}
-      {!isAdmin && <View style={styles.otherUserStyle}>
-        {loggedInEntity.role === 'user' && <View style={styles.joinFollowViewStyle}>
-          {(teamDetails && teamDetails.is_joined) && <TCProfileButton
-          title={strings.joining}
-          style={styles.userButtonOuterStyle}
-          rightImage = {images.check}
-          imageStyle = {styles.checkMarkStyle}
+    <View style={{marginTop: !isAdmin ? 0 : 15, marginBottom: 15}}>
+      {isAdmin && (
+        <TCProfileButton
+          title={strings.editprofiletitle}
+          style={styles.editButtonStyle}
           textStyle={styles.buttonTextStyle}
-          onPressProfile = {() => { onAction('leave') } }
-          /> }
-          {(teamDetails && !teamDetails.is_joined) && <TCGradientButton
-          outerContainerStyle={styles.userButtonOuterStyle}
-          style={styles.userButtonStyle}
-          textStyle={styles.buttonTextStyle}
-          title={strings.join}
-          onPress = {() => { onAction('join') }}/> }
+          onPressProfile={() => {
+            onAction('edit');
+          }}
+          showArrow={false}
+        />
+      )}
+      {!isAdmin && (
+        <View style={styles.otherUserStyle}>
+          {loggedInEntity.role === 'user' && (
+            <View style={styles.joinFollowViewStyle}>
+              {teamDetails && teamDetails.is_joined && (
+                <TCProfileButton
+                  title={strings.joining}
+                  style={styles.userButtonOuterStyle}
+                  rightImage={images.check}
+                  imageStyle={styles.checkMarkStyle}
+                  textStyle={styles.buttonTextStyle}
+                  onPressProfile={() => {
+                    onAction('leave');
+                  }}
+                />
+              )}
+              {teamDetails && !teamDetails.is_joined && (
+                <TCActionButton
+                  outerContainerStyle={styles.userButtonOuterStyle}
+                  style={styles.userButtonStyle}
+                  textStyle={styles.buttonTextStyle}
+                  title={strings.join}
+                  onPress={() => {
+                    onAction('join');
+                  }}
+                />
+              )}
 
-          {(teamDetails && teamDetails.is_following) && <TCProfileButton
-          title={strings.following}
-          style={styles.userButtonOuterStyle}
-          rightImage = {images.check}
-          imageStyle = {styles.checkMarkStyle}
-          textStyle={styles.buttonTextStyle}
-          onPressProfile = {() => { onAction('unfollow') } }
-          /> }
-          {(teamDetails && !teamDetails.is_following) && <TCGradientButton
-          outerContainerStyle={styles.userButtonOuterStyle}
-          style={styles.userButtonStyle}
-          textStyle={styles.buttonTextStyle}
-          title={strings.follow}
-          onPress = {() => { onAction('follow') }}/> }
-        </View>}
-        {loggedInEntity.role === 'club' && <View style={styles.messageButtonStyle}>
-          {isMember && <TCProfileButton
-          title={strings.member}
-          style={styles.firstButtonStyle}
-          rightImage = {images.check}
-          imageStyle = {styles.checkMarkStyle}
-          textStyle={styles.buttonTextStyle}
-          onPressProfile = {() => {}}/> }
-          {!isMember && <TCGradientButton
-          outerContainerStyle={styles.firstButtonOuterStyle}
-          style={styles.firstButtonStyle}
-          textStyle={styles.buttonTextStyle}
-          title={strings.invite}
-          onPress = {() => { onAction('invite') }}/> }
-        </View>}
+              {teamDetails && teamDetails.is_following && (
+                <TCProfileButton
+                  title={strings.following}
+                  style={styles.userButtonOuterStyle}
+                  rightImage={images.check}
+                  imageStyle={styles.checkMarkStyle}
+                  textStyle={styles.buttonTextStyle}
+                  onPressProfile={() => {
+                    onAction('unfollow');
+                  }}
+                />
+              )}
+              {teamDetails && !teamDetails.is_following && (
+                <TCActionButton
+                  outerContainerStyle={styles.userButtonOuterStyle}
+                  style={styles.userButtonStyle}
+                  textStyle={styles.buttonTextStyle}
+                  title={strings.follow}
+                  onPress={() => {
+                    onAction('follow');
+                  }}
+                />
+              )}
 
-        {loggedInEntity.role !== 'team' && <TCProfileButton
+              {teamDetails && (
+                <TCActionButton
+                  outerContainerStyle={{width: 50, height: 28, marginLeft: 5}}
+                  style={{
+                    height: 28,
+                    width: '100%',
+                    borderRadius: 5,
+                  
+                  }}
+                  textStyle={{fontSize:10,color: colors.lightBlackColor}}
+                  title={'•••'}
+                  onPress={() => {
+                    onAction('dot');
+                  }}
+                />
+              )}
+            </View>
+          )}
+
+          {loggedInEntity.role === 'club' && (
+            <View style={styles.messageButtonStyle}>
+              {isMember && (
+                <TCProfileButton
+                  title={strings.member}
+                  style={styles.firstButtonStyle}
+                  rightImage={images.check}
+                  imageStyle={styles.checkMarkStyle}
+                  textStyle={styles.buttonTextStyle}
+                  onPressProfile={() => {}}
+                />
+              )}
+              {!isMember && (
+                <TCActionButton
+                  outerContainerStyle={styles.firstButtonOuterStyle}
+                  style={styles.firstButtonStyle}
+                  textStyle={styles.buttonTextStyle}
+                  title={strings.invite}
+                  onPress={() => {
+                    onAction('invite');
+                  }}
+                />
+              )}
+            </View>
+          )}
+
+          {/* {loggedInEntity.role !== 'team' && <TCProfileButton
         title={strings.message}
         style={[styles.messageButtonStyle, { width: loggedInEntity.role === 'user' ? '32%' : '48%' }]}
         textStyle={styles.buttonTextStyle}
         showArrow={false}
-        onPressProfile = {() => { onAction('message') }}/>}
-        {loggedInEntity.role === 'team' && <TCProfileButton
+        onPressProfile = {() => { onAction('message') }}/>} */}
+
+          {/* {loggedInEntity.role === 'team' && <TCProfileButton
         title={strings.message}
         style={[styles.messageButtonStyle, { width: '100%' }]}
         textStyle={styles.buttonTextStyle}
         showArrow={false}
-        onPressProfile = {() => { onAction('message') }}/>}
-      </View> }
+        onPressProfile = {() => { onAction('message') }}/>} */}
+        </View>
+      )}
     </View>
   );
 }
@@ -122,7 +179,7 @@ const styles = StyleSheet.create({
     height: 28,
     marginHorizontal: 5,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 2,
@@ -138,7 +195,7 @@ const styles = StyleSheet.create({
     height: 28,
     width: '100%',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 2,
@@ -146,14 +203,14 @@ const styles = StyleSheet.create({
   joinFollowViewStyle: {
     margin: 0,
     height: 28,
-    width: '66%',
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   messageButtonStyle: {
     marginTop: 0,
     height: 28,
-    width: '48%',
+    width: '100%',
   },
   checkMarkStyle: {
     alignSelf: 'center',
@@ -167,4 +224,4 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 14,
   },
-})
+});

@@ -86,8 +86,7 @@ import * as Utils from '../challenge/ChallengeUtility';
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
-import UserInfo from '../../components/Home/User/UserInfo';
-import GroupInfo from '../../components/Home/GroupInfo';
+
 import ScheduleTabView from '../../components/Home/ScheduleTabView';
 import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
 import UserHomeTopSection from '../../components/Home/User/UserHomeTopSection';
@@ -133,11 +132,9 @@ import TCGradientDivider from '../../components/TCThinGradientDivider';
 import HomeFeed from '../homeFeed/HomeFeed';
 import RefereeFeedPostItems from '../../components/game/soccer/home/review/reviewForReferee/RefereeFeedPostItems';
 import ScorekeeperFeedPostItems from '../../components/game/soccer/home/review/reviewForScorekeeper/ScorekeeperFeedPostItems';
-import ScrollableTabs from '../../components/ScrollableTabs';
 import ProfileScreenShimmer from '../../components/shimmer/account/ProfileScreenShimmer';
 import {ImageUploadContext} from '../../context/GetContexts';
 import GameStatus from '../../Constants/GameStatus';
-import AllInOneGallery from './AllInOneGallery';
 import UserHomeHeader from '../../components/Home/UserHomeHeader';
 import TCProfileButton from '../../components/TCProfileButton';
 import UserProfileScreenShimmer from '../../components/shimmer/account/UserProfileScreenShimmer';
@@ -233,6 +230,7 @@ const HomeScreen = ({navigation, route}) => {
   const [loading, setloading] = useState(false);
   const [userID, setUserID] = useState('');
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
+  // eslint-disable-next-line no-unused-vars
   const [currentTab, setCurrentTab] = useState(0);
   const [currentRefereeTab, setRefereeCurrentTab] = useState(0);
   const [currentScorekeeperTab, setScorekeeperCurrentTab] = useState(0);
@@ -277,6 +275,7 @@ const HomeScreen = ({navigation, route}) => {
   const [selectedChallengeOption, setSelectedChallengeOption] = useState();
 
   const [settingObject, setSettingObject] = useState();
+  const [mySettingObject, setMySettingObject] = useState();
   const [refereeSettingObject, setRefereeSettingObject] = useState();
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
@@ -576,7 +575,7 @@ const HomeScreen = ({navigation, route}) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerShown: !!isUserHome,
+      headerShown: true,
       headerTitle: '',
       headerLeft: () => (
         <TouchableOpacity
@@ -596,13 +595,26 @@ const HomeScreen = ({navigation, route}) => {
             />
           )}
           <Text style={styles.userNavigationTextStyle}>
-            {currentUserData?.first_name} {currentUserData?.last_name}
+            {currentUserData?.full_name || currentUserData?.group_name}
           </Text>
+
+          <Image
+            source={
+              (currentUserData.entity_type === 'team' && images.teamPatch) ||
+              (currentUserData.entity_type === 'club' && images.clubPatch)
+            }
+            style={{
+              height: 15,
+              width: 15,
+              marginLeft: 5,
+              resizeMode: 'cover',
+            }}
+          />
         </TouchableOpacity>
       ),
       headerRight: () => (
         <View>
-          {isAdmin && isUserHome && (
+          {isAdmin && (isUserHome || isTeamHome) && (
             <TouchableOpacity onPress={onThreeDotPressed}>
               <Image
                 source={images.threeDotIcon}
@@ -626,13 +638,55 @@ const HomeScreen = ({navigation, route}) => {
         borderBottomWidth: 0,
       },
     });
-  }, [
-    currentUserData?.first_name,
-    currentUserData?.last_name,
-    isUserHome,
-    navigation,
-    settingObject,
-  ]);
+  }, [currentUserData]);
+
+  const getSettingOfBoth = (details) => {
+    settingUtils
+      .getSetting(
+        route?.params?.uid ?? authContext.entity.uid,
+        authContext.entity.role === ('user' || 'player') ? 'user' : 'team',
+        details.sport,
+        authContext,
+        authContext.entity.role === ('user' || 'player')
+          ? details.sport_type
+          : '',
+      )
+      .then((res3) => {
+        setSettingObject(res3);
+        console.log('res3 setting:::=>', res3);
+      })
+      .catch(() => {
+        setFirstTimeLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, strings.defaultError);
+        }, 10);
+        // navigation.goBack();
+      });
+
+    settingUtils
+      .getSetting(
+        authContext?.entity?.uid,
+        authContext.entity.role === ('user' || 'player') ? 'user' : 'team',
+        authContext.entity.role === ('user' || 'player')
+          ? currentPlayInObject?.sport
+          : currentUserData?.sport,
+        authContext,
+        authContext.entity.role === ('user' || 'player')
+          ? currentPlayInObject?.sport_type
+          : currentUserData?.sport_type,
+      )
+      .then((res4) => {
+        setMySettingObject(res4);
+        console.log('res4 my setting:::=>', res4);
+      })
+      .catch(() => {
+        setFirstTimeLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, strings.defaultError);
+        }, 10);
+        // navigation.goBack();
+      });
+  };
 
   const getData = async (uid, role, admin) => {
     const userHome = role === 'user';
@@ -687,28 +741,7 @@ const HomeScreen = ({navigation, route}) => {
           setUserID(uid);
           setFirstTimeLoading(false);
           console.log('authContext.entity.role:::-->', authContext.entity.role);
-
-          settingUtils
-            .getSetting(
-              uid,
-              authContext.entity.role,
-              groupDetails.sport,
-              authContext,
-              authContext.entity.role === ('user' || 'player')
-                ? groupDetails.sport_type
-                : '',
-            )
-            .then((res3) => {
-              setSettingObject(res3);
-              console.log('res3 setting:::=>', res3);
-            })
-            .catch(() => {
-              setFirstTimeLoading(false);
-              setTimeout(() => {
-                Alert.alert(strings.alertmessagetitle, strings.defaultError);
-              }, 10);
-              // navigation.goBack();
-            });
+          getSettingOfBoth(groupDetails);
         })
         .catch(() => {
           setFirstTimeLoading(false);
@@ -1047,6 +1080,9 @@ const HomeScreen = ({navigation, route}) => {
         setloading(false);
       });
   };
+  const onDotPress = () => {
+    offerActionSheet.current.show();
+  };
   const clubLeaveTeam = async () => {
     const e = authContext.entity;
     e.obj.parent_group_id = '';
@@ -1193,6 +1229,9 @@ const HomeScreen = ({navigation, route}) => {
         case 'message':
           onMessageButtonPress(currentUserData);
           break;
+        case 'dot':
+          onDotPress();
+          break;
         case 'edit':
           // edit code here
           navigation.navigate('EditGroupProfileScreen', {
@@ -1242,20 +1281,6 @@ const HomeScreen = ({navigation, route}) => {
       groups: groupList,
       entity_type: entityType,
     });
-  };
-
-  const onChallengePress = async () => {
-    if (
-      authContext.entity.obj.sport.toLowerCase() ===
-      currentUserData.sport.toLowerCase()
-    ) {
-      setChallengePopup(true);
-    } else {
-      Alert.alert(
-        strings.alertmessagetitle,
-        'Sport must be same for both teams',
-      );
-    }
   };
 
   let language_string = '';
@@ -1612,6 +1637,7 @@ const HomeScreen = ({navigation, route}) => {
         setSportName(Utility.getSportName(playInObject, authContext));
         setCurrentPlayInObject({...playInObject});
         setPlaysInModalVisible(!playsInModalVisible);
+        getSettingOfBoth(playInObject);
       } else {
         navigation.navigate('RegisterPlayer');
       }
@@ -2159,48 +2185,54 @@ const HomeScreen = ({navigation, route}) => {
     [goToRefereReservationDetail],
   );
 
-  const renderMainInfoTab = useMemo(
-    () => (
-      <View style={{flex: 1}}>
-        {isUserHome && (
-          <UserInfo
-            navigation={navigation}
-            userDetails={currentUserData}
-            isAdmin={isAdmin}
-            onGroupListPress={onGroupListPress}
-            onGroupPress={onTeamPress}
-            onRefereesInPress={refereesInModal}
-            onPlayInPress={playInModel}
-          />
-        )}
-        {(isClubHome || isTeamHome) && (
-          <GroupInfo
-            navigation={navigation}
-            groupDetails={currentUserData}
-            isAdmin={isAdmin}
-            onGroupListPress={onGroupListPress}
-            onGroupPress={onTeamPress}
-            onMemberPress={onMemberPress}
-          />
-        )}
-      </View>
-    ),
-    [
-      currentUserData,
-      isAdmin,
-      isClubHome,
-      isTeamHome,
-      isUserHome,
-      navigation,
+  const moveToMainInfoTab = () => {
+    console.log('move to EntityInfoScreen');
+    console.log('Admin condition:',currentUserData,authContext.entity.uid);
+    navigation.navigate('EntityInfoScreen', {
+      uid: route?.params?.uid || authContext.entity.uid,
+      isAdmin : route?.params?.uid === authContext.entity.uid,
       onGroupListPress,
       onTeamPress,
-      playInModel,
       refereesInModal,
-    ],
-  );
+      playInModel,
+      onMemberPress,
+    });
+  };
 
-  const renderMainScoreboardTab = useMemo(
-    () => (
+  const moveToScoreboardTab = () => {
+    console.log('move to EntityScoreboardScreen');
+    navigation.navigate('EntityScoreboardScreen', {
+      uid: route?.params?.uid || authContext.entity.uid,
+      isAdmin,
+    });
+  };
+  // <View style={{flex: 1}}>
+  //   {isUserHome && (
+  //     <UserInfo
+  //       navigation={navigation}
+  //       userDetails={currentUserData}
+  //       isAdmin={isAdmin}
+  //       onGroupListPress={onGroupListPress}
+  //       onGroupPress={onTeamPress}
+  //       onRefereesInPress={refereesInModal}
+  //       onPlayInPress={playInModel}
+  //     />
+  //   )}
+  //   {(isClubHome || isTeamHome) && (
+  //     <GroupInfo
+  //       navigation={navigation}
+  //       groupDetails={currentUserData}
+  //       isAdmin={isAdmin}
+  //       onGroupListPress={onGroupListPress}
+  //       onGroupPress={onTeamPress}
+  //       onMemberPress={onMemberPress}
+  //     />
+  //   )}
+  // </View>
+
+  const renderMainScoreboardTab = () => {
+    console.log('onScoreboardSearchTextChange', onScoreboardSearchTextChange);
+    return (
       <View style={{flex: 1}}>
         <TCSearchBox
           onChangeText={onScoreboardSearchTextChange}
@@ -2226,15 +2258,8 @@ const HomeScreen = ({navigation, route}) => {
           }}
         />
       </View>
-    ),
-    [
-      filterScoreboardGameData,
-      navigation,
-      onScoreboardSearchTextChange,
-      scoreboardGameData,
-      scoreboardSearchText.length,
-    ],
-  );
+    );
+  };
 
   const renderMainScheduleTab = useMemo(
     () => (
@@ -2581,33 +2606,30 @@ const HomeScreen = ({navigation, route}) => {
       role: route?.params?.role || authContext?.entity?.role,
     });
   };
+
+  const moveToGallary = () => {
+    console.log('move to EntityGallaryScreen');
+    navigation.navigate('EntityGallaryScreen', {
+      currentUserData,
+      isAdmin,
+    });
+  };
+  const moveToReview = () => {
+    console.log('move to EntityReviewScreen');
+    navigation.navigate('EntityReviewScreen', {
+      averageTeamReview,
+      teamReviewData,
+      userID,
+    });
+  };
+
   const renderHomeMainTabContain = useMemo(
     () => (
       <View style={{flex: 1}}>
-        {currentTab === 1 && renderMainInfoTab}
-        {currentTab === 2 && renderMainScoreboardTab}
+        {currentTab === 1 && moveToMainInfoTab()}
+        {currentTab === 2 && renderMainScoreboardTab()}
         {currentTab === 3 && moveToSchedule()}
-        {currentTab === 4 && (
-          <AllInOneGallery
-            isAdmin={isAdmin}
-            ref={galleryRef}
-            entity_type={
-              ['user', 'player'].includes(
-                route?.params?.role ?? authContext.entity?.role,
-              )
-                ? 'player'
-                : route?.params?.role ?? authContext.entity?.role
-            }
-            entity_id={route?.params?.uid ?? authContext.entity?.uid}
-            onAddPhotoPress={(pickImages) => {
-              navigation.navigate('WritePostScreen', {
-                postData: currentUserData,
-                onPressDone: callthis,
-                selectedImageList: pickImages,
-              });
-            }}
-          />
-        )}
+        {currentTab === 4 && moveToGallary()}
         {currentTab === 5 && isTeamHome && renderHomeMainReviewTab}
       </View>
     ),
@@ -2621,7 +2643,7 @@ const HomeScreen = ({navigation, route}) => {
       isTeamHome,
       navigation,
       renderHomeMainReviewTab,
-      renderMainInfoTab,
+      moveToMainInfoTab,
       renderMainScheduleTab,
       renderMainScoreboardTab,
       route?.params?.role,
@@ -2633,147 +2655,9 @@ const HomeScreen = ({navigation, route}) => {
     {nativeEvent: {contentOffset: {y: mainFlatListFromTop}}},
   ]);
 
-  const onBackPress = useCallback(() => {
-    if (route?.params?.sourceScreen) {
-      navigation.popToTop();
-    } else {
-      if (route.params?.onBackPress) route.params.onBackPress();
-      // navigation.navigate('AccountScreen');
-      navigation.goBack();
-    }
-  }, [navigation, route.params]);
-
   const onThreeDotPressed = useCallback(() => {
     manageChallengeActionSheet.current.show();
   }, []);
-
-  const renderTopFixedButtons = useMemo(
-    () => (
-      <View
-        style={{
-          position: 'absolute',
-          zIndex: 100,
-          top: 30,
-          right: 0,
-          left: 0,
-          justifyContent: 'space-between',
-          paddingLeft: 15,
-          paddingRight: 15,
-        }}>
-        {route && route.params && route.params.backButtonVisible && (
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              flex: 1,
-            }}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: 'rgba(0,0,0,0.4)',
-                height: 30,
-                width: 30,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 25,
-              }}
-              onPress={onBackPress}>
-              <Image
-                source={images.backArrow}
-                style={{height: 15, width: 15, tintColor: colors.whiteColor}}
-              />
-            </TouchableOpacity>
-            {!isClubHome && (
-              <TouchableOpacity
-                style={{
-                  backgroundColor: 'rgba(0,0,0,0.4)',
-                  height: 30,
-                  width: 30,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 25,
-                }}
-                onPress={() => {
-                  if (
-                    authContext.entity.uid === currentUserData?.user_id ||
-                    authContext.entity.uid === currentUserData?.group_id
-                  ) {
-                    onThreeDotPressed();
-                  } else {
-                    offerOpetions();
-                    offerActionSheet.current.show();
-                  }
-                }}>
-                <Image
-                  source={images.threeDotIcon}
-                  style={{
-                    height: 15,
-                    width: 15,
-                    tintColor: colors.whiteColor,
-                    resizeMode: 'contain',
-                  }}
-                />
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-      </View>
-    ),
-    [
-      authContext.entity.uid,
-      currentUserData?.group_id,
-      currentUserData?.user_id,
-      isClubHome,
-      onBackPress,
-      onThreeDotPressed,
-      route,
-    ],
-  );
-
-  // const renderUserTopFixedButtons = useMemo(
-  //   () => (
-  //     <View
-  //       style={{
-  //         zIndex: 5,
-  //         top: 52,
-  //         justifyContent: 'space-between',
-  //         paddingLeft: 15,
-  //         paddingRight: 15,
-  //       }}>
-  //       {route && route.params && route.params.backButtonVisible && (
-  //         <View
-  //           style={{
-  //             flexDirection: 'row',
-  //             justifyContent: 'space-between',
-  //             flex: 1,
-  //           }}>
-  //           <TouchableOpacity onPress={onBackPress}>
-  //             <Image
-  //               source={images.backArrow}
-  //               style={{
-  //                 height: 22,
-  //                 width: 22,
-  //                 resizeMode: 'contain',
-  //                 tintColor: colors.lightBlackColor,
-  //               }}
-  //             />
-  //           </TouchableOpacity>
-  //           <TouchableOpacity onPress={onThreeDotPressed}>
-  //             <Image
-  //               source={images.threeDotIcon}
-  //               style={{
-  //                 height: 15,
-  //                 width: 15,
-  //                 tintColor: colors.lightBlackColor,
-  //                 resizeMode: 'contain',
-  //               }}
-  //             />
-  //           </TouchableOpacity>
-  //         </View>
-  //       )}
-  //     </View>
-  //   ),
-  //   [onBackPress, onThreeDotPressed, route],
-  // );
 
   const offerOpetions = () => {
     const opetionArray = [];
@@ -2799,24 +2683,118 @@ const HomeScreen = ({navigation, route}) => {
     return opetionArray;
   };
 
-  const renderBackground = useMemo(
-    () =>
-      bgImage ? (
-        <FastImage
-          source={{uri: bgImage}}
-          resizeMode={'cover'}
-          style={styles.bgImageStyle}
-        />
-      ) : (
-        <View style={styles.bgImageStyle} />
-      ),
-    [bgImage],
-  );
+  const renderBackground = () => {
+    if (bgImage) {
+      return (
+        <View style={{marginLeft: 10, marginRight: 10}}>
+          <FastImage
+            source={{uri: bgImage}}
+            resizeMode={'cover'}
+            style={styles.bgImageStyle}>
+            {currentUserData.entity_type !== 'club' && (
+              <ImageBackground
+                source={images.profileLevel}
+                style={{
+                  height: 58,
+                  width: 93,
+                  resizeMode: 'contain',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 8,
+                  }}>
+                  <FastImage
+                    source={images.tc_message_top_icon}
+                    resizeMode={'contain'}
+                    style={{height: 35, width: 35}}
+                  />
+                  <View style={{flexDirection: 'column', alignItems: 'center'}}>
+                    <Text
+                      style={{
+                        fontFamily: fonts.RBold,
+                        fontSize: 16,
+                        color: colors.lightBlackColor,
+                      }}>
+                      {currentUserData?.point ?? 0}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: fonts.RMedium,
+                        fontSize: 10,
+                        color: colors.lightBlackColor,
+                      }}>
+                      POINTS
+                    </Text>
+                  </View>
+                </View>
+              </ImageBackground>
+            )}
+          </FastImage>
+        </View>
+      );
+    }
+    return (
+      <View style={{marginLeft: 10, marginRight: 10}}>
+        <View style={styles.bgImageStyle}>
+          {currentUserData.entity_type !== 'club' && (
+            <ImageBackground
+              source={images.profileLevel}
+              style={{
+                height: 58,
+                width: 93,
+                resizeMode: 'contain',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 8,
+                }}>
+                <FastImage
+                  source={images.tc_message_top_icon}
+                  resizeMode={'contain'}
+                  style={{height: 35, width: 35}}
+                />
+                <View style={{flexDirection: 'column', alignItems: 'center'}}>
+                  <Text
+                    style={{
+                      fontFamily: fonts.RBold,
+                      fontSize: 16,
+                      color: colors.lightBlackColor,
+                    }}>
+                    {currentUserData?.point ?? 0}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: fonts.RMedium,
+                      fontSize: 10,
+                      color: colors.lightBlackColor,
+                    }}>
+                    POINTS
+                  </Text>
+                </View>
+              </View>
+            </ImageBackground>
+          )}
+        </View>
+      </View>
+    );
+  };
 
   const renderHeaderBackgroundProfile = useMemo(
     () => (
       <BackgroundProfile
         currentUserData={currentUserData}
+        onAction={onUserAction}
+        loggedInEntity={authContext.entity}
         onConnectionButtonPress={onConnectionButtonPress}
       />
     ),
@@ -2896,7 +2874,7 @@ const HomeScreen = ({navigation, route}) => {
 
   const renderMainHeaderComponent = useMemo(
     () => (
-      <View style={{zIndex: 1}}>
+      <View>
         {isUserHome
           ? renderHeaderBackgroundUserProfile
           : renderHeaderBackgroundProfile}
@@ -2905,7 +2883,6 @@ const HomeScreen = ({navigation, route}) => {
           {renderHeaderUserHomeTopSection}
           {renderHeaderTeamHomeTopSection}
           {renderHeaderClubHomeTopSection}
-          <View style={styles.sepratorStyle} />
         </View>
       </View>
     ),
@@ -2919,9 +2896,177 @@ const HomeScreen = ({navigation, route}) => {
     ],
   );
 
+  const renderHomeTabs = useCallback(({item, index}) => {
+    console.log('Render feed:=>', item);
+    return (
+      <TouchableOpacity
+        style={{margin: 10}}
+        onPress={() => {
+          if (index === 0) {
+            moveToMainInfoTab();
+          }
+          if (index === 1) {
+            moveToScoreboardTab();
+          }
+          if (index === 2) {
+            moveToSchedule();
+          }
+          if (index === 3) {
+            moveToGallary();
+          }
+          if (index === 4) {
+            moveToReview();
+          }
+        }}>
+        <Text
+          style={{
+            fontSize: 12,
+            fontFamily: fonts.RBold,
+            color: colors.lightBlackColor,
+          }}>
+          {item.toUpperCase()}
+        </Text>
+      </TouchableOpacity>
+    );
+  }, []);
+
+  const challengeButtonType = () => {
+    if (
+      mySettingObject !== null &&
+      settingObject !== null &&
+      settingObject?.availibility === 'On' &&
+      mySettingObject?.availibility === 'On'
+    ) {
+      return 'both';
+    }
+    if (settingObject === null && mySettingObject === null) {
+      return 'invite';
+    }
+    if (
+      authContext.entity.obj.sport.toLowerCase() ===
+        currentUserData.sport.toLowerCase() &&
+      settingObject?.game_duration &&
+      settingObject?.availibility &&
+      settingObject?.availibility === 'On' &&
+      (mySettingObject?.availibility === undefined ||
+        mySettingObject?.availibility === 'Off') &&
+      settingObject?.special_rules !== undefined &&
+      settingObject?.general_rules !== undefined &&
+      settingObject?.responsible_for_referee &&
+      settingObject?.responsible_for_scorekeeper &&
+      settingObject?.game_fee &&
+      settingObject?.venue &&
+      settingObject?.refund_policy &&
+      settingObject?.home_away &&
+      settingObject?.game_type
+    ) {
+      return 'challenge';
+    }
+    if (
+      authContext.entity.obj.sport.toLowerCase() ===
+        currentUserData.sport.toLowerCase() &&
+      mySettingObject !== undefined &&
+      (settingObject?.availibility === undefined ||
+        settingObject?.availibility === 'Off') &&
+      mySettingObject?.game_duration &&
+      (mySettingObject?.availibility !== undefined ||
+        mySettingObject?.availibility === 'On') &&
+      mySettingObject?.special_rules !== undefined &&
+      mySettingObject?.general_rules !== undefined &&
+      mySettingObject?.responsible_for_referee &&
+      mySettingObject?.responsible_for_scorekeeper &&
+      mySettingObject?.game_fee &&
+      mySettingObject?.venue &&
+      mySettingObject?.refund_policy &&
+      mySettingObject?.home_away &&
+      mySettingObject?.game_type
+    ) {
+      return 'invite';
+    }
+  };
+
+  const onChallengePress = () => {
+    if (challengeButtonType() === 'both') {
+      setChallengePopup(true);
+    } else if (challengeButtonType() === 'challenge') {
+      setChallengePopup(true);
+
+      // navigation.navigate('ChallengeScreen', {
+      //   setting: settingObject,
+      //   sportName: currentUserData.sport,
+      //   groupObj: currentUserData,
+      // });
+    } else if (challengeButtonType() === 'invite') {
+      if (mySettingObject.availibility === 'On') {
+        navigation.navigate('InviteChallengeScreen', {
+          setting: mySettingObject,
+          sportName: currentUserData.sport,
+          groupObj: currentUserData,
+        });
+      } else {
+        navigation.navigate('ManageChallengeScreen', {
+          sportName: currentUserData?.sport,
+          sportType: currentUserData?.sport_type,
+        });
+      }
+    }
+  };
+
+  const challengeButton = () => {
+    if (
+      !loading &&
+      isTeamHome &&
+      authContext.entity.role === 'team' &&
+      authContext.entity.obj.sport.toLowerCase() ===
+        currentUserData.sport.toLowerCase()
+    ) {
+      return (
+        <View style={styles.challengeButtonStyle}>
+          {authContext.entity.obj.group_id !== currentUserData.group_id && (
+            <View styles={[styles.outerContainerStyle, {height: 25}]}>
+              <TouchableOpacity onPress={onChallengePress}>
+                <LinearGradient
+                  colors={[colors.darkThemeColor, colors.themeColor]}
+                  style={[
+                    styles.containerStyle,
+                    {
+                      justifyContent: 'center',
+                    },
+                  ]}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    {(challengeButtonType() === 'both' ||
+                      challengeButtonType() === 'challenge') && (
+                        <Text style={styles.challengeButtonTitle}>
+                          {strings.challenge}
+                          <Text>{` $${settingObject?.game_fee?.fee} ${
+                          currentUserData?.currency_type ?? 'CAD'
+                        }${' / match'}`}</Text>
+                        </Text>
+                    )}
+                    {challengeButtonType() === 'invite' && (
+                      <Text style={styles.challengeButtonTitle}>
+                        {'Invite to challenge'}
+                      </Text>
+                    )}
+                  </View>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      );
+    }
+  };
+
   const renderMainFlatList = useMemo(
     () => (
-      <View style={{flex: 1, margin: 15}}>
+      <View style={{margin: 15, marginTop: 0}}>
+        {challengeButton()}
         {isUserHome ? (
           <View style={{flex: 1}}>
             <Text
@@ -2952,6 +3097,8 @@ const HomeScreen = ({navigation, route}) => {
                     currentUserData,
                     callFunction: callthis,
                   });
+
+                  
                 }}
               />
               <TCProfileButton
@@ -2969,22 +3116,34 @@ const HomeScreen = ({navigation, route}) => {
             <TCThinDivider width={'100%'} />
           </View>
         ) : (
-          <ScrollableTabs
-            tabs={
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            data={
               isTeamHome
-                ? [
-                    'Post',
-                    'Info',
-                    'Scoreboard',
-                    'Schedule',
-                    'Gallery',
-                    'Review',
-                  ]
-                : ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']
+                ? ['Info', 'Scoreboard', 'Schedule', 'Gallery', 'Review']
+                : ['Info', 'Scoreboard', 'Schedule', 'Gallery']
             }
-            currentTab={currentTab}
-            onTabPress={setCurrentTab}
+            horizontal
+            renderItem={renderHomeTabs}
+            keyExtractor={(index) => index.toString()}
           />
+
+          // <ScrollableTabs
+          //   tabs={
+          //     isTeamHome
+          //       ? [
+          //           'Post',
+          //           'Info',
+          //           'Scoreboard',
+          //           'Schedule',
+          //           'Gallery',
+          //           'Review',
+          //         ]
+          //       : ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']
+          //   }
+          //   currentTab={currentTab}
+          //   onTabPress={setCurrentTab}
+          // />
         )}
       </View>
     ),
@@ -3165,109 +3324,11 @@ const HomeScreen = ({navigation, route}) => {
 
   const MainHeaderComponent = () => (
     <>
-      {!isUserHome && renderBackground}
+      {!isUserHome && renderBackground()}
       {renderMainHeaderComponent}
       {renderMainFlatList}
       {renderHomeMainTabContain}
     </>
-  );
-
-  const fixedHeader = useMemo(
-    () => (
-      <Animated.View
-        style={{
-          position: 'absolute',
-          zIndex: 1,
-          top: 0,
-          opacity: mainFlatListFromTop.interpolate({
-            inputRange: [0, 200],
-            outputRange: [0, 1],
-            extrapolate: 'clamp',
-          }),
-        }}>
-        <ImageBackground
-          source={{uri: bgImage}}
-          resizeMode={'cover'}
-          blurRadius={10}
-          style={styles.stickyImageStyle}>
-          <Text style={styles.userTextStyle}>{fullName}</Text>
-        </ImageBackground>
-      </Animated.View>
-    ),
-    [bgImage, fullName, mainFlatListFromTop],
-  );
-
-  console.log('authContext.entity.role ', authContext.entity.role === 'team');
-  console.log('isTeamHome', isTeamHome);
-  console.log('currentUserData', currentUserData);
-
-  const renderChallengeButton = useMemo(
-    () =>
-      !loading &&
-      isTeamHome &&
-      authContext.entity.role === 'team' && (
-        <View style={styles.challengeButtonStyle}>
-          {authContext.entity.obj.group_id !== currentUserData.group_id && (
-            <View styles={[styles.outerContainerStyle, {height: 50}]}>
-              <TouchableOpacity onPress={onChallengePress}>
-                <LinearGradient
-                  colors={[colors.darkThemeColor, colors.themeColor]}
-                  style={[
-                    styles.containerStyle,
-                    {
-                      justifyContent: settingObject?.game_fee?.fee
-                        ? 'space-between'
-                        : 'center',
-                    },
-                  ]}>
-                  {settingObject?.game_fee?.fee ? (
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      <Text style={styles.buttonLeftText}>{`$${
-                        settingObject?.game_fee?.fee
-                      } ${currentUserData?.currency_type ?? 'CAD'}`}</Text>
-                      <Text style={styles.buttonTextSmall}>
-                        {' '}
-                        {strings.perGameText}
-                      </Text>
-                    </View>
-                  ) : (
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      {/* <Text style={styles.buttonLeftText}>{'Game fee not Configured'}</Text> */}
-                    </View>
-                  )}
-                  <Text
-                    style={
-                      settingObject?.game_fee?.fee
-                        ? {
-                            color: colors.whiteColor,
-                            fontSize: 16,
-                            marginRight: 26,
-                            fontFamily: fonts.RBold,
-                          }
-                        : {
-                            color: colors.whiteColor,
-                            fontSize: 16,
-                            fontFamily: fonts.RBold,
-                    }
-                    }>
-                    {strings.challenge.toUpperCase()}
-                  </Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      ),
-    [
-      authContext.entity.obj.group_id,
-      authContext.entity.role,
-      currentUserData.currency_type,
-      currentUserData.game_fee,
-      currentUserData.group_id,
-      isTeamHome,
-      loading,
-      onChallengePress,
-    ],
   );
 
   const openPlayInModal = useCallback(() => setPlaysInModalVisible(true), []);
@@ -3644,6 +3705,76 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
+  const renderRefereeHeader = useMemo(() => {
+    console.log('');
+    return (
+      <Header
+        mainContainerStyle={styles.headerMainContainerStyle}
+        centerComponent={
+          <View style={styles.headerCenterViewStyle}>
+            <Image
+              source={images.refereesInImage}
+              style={styles.refereesImageStyle}
+              resizeMode={'contain'}
+            />
+            <Text style={styles.playInTextStyle}>{`Referees in ${
+              sportName || ''
+            }`}</Text>
+          </View>
+        }
+        rightComponent={
+          <TouchableOpacity
+            onPress={() => {
+              setRefereesInModalVisible(false);
+              setRefereeCurrentTab(0);
+            }}
+            style={{padding: 10}}>
+            <Image
+              source={images.cancelWhite}
+              style={styles.cancelImageStyle}
+              resizeMode={'contain'}
+            />
+          </TouchableOpacity>
+        }
+      />
+    );
+  }, []);
+
+  const renderScorekeeperHeader = useMemo(() => {
+    console.log('');
+    return (
+      <Header
+        mainContainerStyle={styles.headerMainContainerStyle}
+        centerComponent={
+          <View style={styles.headerCenterViewStyle}>
+            <Image
+              source={images.myScoreKeeping}
+              style={styles.refereesImageStyle}
+              resizeMode={'contain'}
+            />
+            <Text style={styles.playInTextStyle}>{`Scorekeeper in ${
+              sportName || ''
+            }`}</Text>
+          </View>
+        }
+        rightComponent={
+          <TouchableOpacity
+            onPress={() => {
+              setScorekeeperInModalVisible(false);
+              setScorekeeperCurrentTab(0);
+            }}
+            style={{padding: 10}}>
+            <Image
+              source={images.cancelWhite}
+              style={styles.cancelImageStyle}
+              resizeMode={'contain'}
+            />
+          </TouchableOpacity>
+        }
+      />
+    );
+  }, []);
+
   const getGamesForScorekeeper = async (scorekeeperId, teamId) => {
     const gameListWithFilter = {
       query: {
@@ -3770,6 +3901,7 @@ const HomeScreen = ({navigation, route}) => {
           }
         }}
       />
+
       <ActionSheet
         ref={manageChallengeActionSheet}
         options={[
@@ -3836,7 +3968,7 @@ const HomeScreen = ({navigation, route}) => {
               setloading(false);
               console.log('Game slots:=>', gameList);
               console.log('refereeSetting:=>', refereeSetting);
-              if (gameList.length > 0) {
+              if (gameList) {
                 setMatchData([...gameList]);
               }
               if (
@@ -3848,9 +3980,11 @@ const HomeScreen = ({navigation, route}) => {
                 gameListRefereeModalRef.current.open();
                 setRefereeSettingObject(refereeSetting);
               } else {
-                Alert.alert(
-                  'You can\'t send offer, please configure your referee setting first.',
-                );
+                setTimeout(() => {
+                  Alert.alert(
+                    'You can\'t send offer, please configure your referee setting first.',
+                  );
+                }, 10);
               }
             });
           } else if (offerOpetions()[index] === strings.scorekeeperOffer) {
@@ -3894,22 +4028,24 @@ const HomeScreen = ({navigation, route}) => {
                 gameListScorekeeperModalRef.current.open();
                 setScorekeeperSettingObject(scorekeeperSetting);
               } else {
-                Alert.alert(
-                  'You can\'t send offer, please configure your scorekeeper setting first.',
-                );
+                setTimeout(() => {
+                  Alert.alert(
+                    'You can\'t send offer, please configure your scorekeeper setting first.',
+                  );
+                }, 10);
               }
             });
           } else if (offerOpetions()[index] === strings.cancel) {
           }
         }}
       />
-      {renderChallengeButton}
+
       <ActivityLoader visible={loading} />
 
       <View style={{flex: 1}}>
         {/* renderUserTopFixedButtons */}
-        {!isUserHome && renderTopFixedButtons}
-        {!isUserHome && fixedHeader}
+        {/* {!isUserHome && renderTopFixedButtons} */}
+        {/* {!isUserHome && fixedHeader} */}
         {firstTimeLoading &&
           (route?.params?.role === 'user' ??
             authContext?.entity?.role === 'user') && (
@@ -3944,6 +4080,8 @@ const HomeScreen = ({navigation, route}) => {
               userData={currentUserData}
               playInObject={currentPlayInObject}
               isAdmin={isAdmin}
+              opponentSetting={settingObject}
+              mySetting={mySettingObject}
             />
           ),
         [
@@ -3971,37 +4109,8 @@ const HomeScreen = ({navigation, route}) => {
           onBackdropPress={() => setRefereesInModalVisible(false)}
           backdropOpacity={0}>
           <View style={styles.modalContainerViewStyle}>
-            {/* <Image style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]} source={images.orangeLayer} /> */}
             <SafeAreaView style={{flex: 1}}>
-              <Header
-                mainContainerStyle={styles.headerMainContainerStyle}
-                centerComponent={
-                  <View style={styles.headerCenterViewStyle}>
-                    <Image
-                      source={images.refereesInImage}
-                      style={styles.refereesImageStyle}
-                      resizeMode={'contain'}
-                    />
-                    <Text style={styles.playInTextStyle}>{`Referees in ${
-                      sportName || ''
-                    }`}</Text>
-                  </View>
-                }
-                rightComponent={
-                  <TouchableOpacity
-                    onPress={() => {
-                      setRefereesInModalVisible(false);
-                      setRefereeCurrentTab(0);
-                    }}
-                    style={{padding: 10}}>
-                    <Image
-                      source={images.cancelWhite}
-                      style={styles.cancelImageStyle}
-                      resizeMode={'contain'}
-                    />
-                  </TouchableOpacity>
-                }
-              />
+              {renderRefereeHeader}
               {/* <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/> */}
               <TCGradientDivider width={'100%'} height={3} />
               <RefereesProfileSection
@@ -4516,35 +4625,7 @@ const HomeScreen = ({navigation, route}) => {
           <View style={styles.modalContainerViewStyle}>
             {/* <Image style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]} source={images.orangeLayer} /> */}
             <SafeAreaView style={{flex: 1}}>
-              <Header
-                mainContainerStyle={styles.headerMainContainerStyle}
-                centerComponent={
-                  <View style={styles.headerCenterViewStyle}>
-                    <Image
-                      source={images.myScoreKeeping}
-                      style={styles.refereesImageStyle}
-                      resizeMode={'contain'}
-                    />
-                    <Text style={styles.playInTextStyle}>{`Scorekeeper in ${
-                      sportName || ''
-                    }`}</Text>
-                  </View>
-                }
-                rightComponent={
-                  <TouchableOpacity
-                    onPress={() => {
-                      setScorekeeperInModalVisible(false);
-                      setScorekeeperCurrentTab(0);
-                    }}
-                    style={{padding: 10}}>
-                    <Image
-                      source={images.cancelWhite}
-                      style={styles.cancelImageStyle}
-                      resizeMode={'contain'}
-                    />
-                  </TouchableOpacity>
-                }
-              />
+              {renderScorekeeperHeader}
               <TCThinDivider
                 backgroundColor={colors.refereeHomeDividerColor}
                 width={'100%'}
@@ -5335,33 +5416,33 @@ const HomeScreen = ({navigation, route}) => {
               setSelectedChallengeOption(0);
               const obj = settingObject;
               if (obj?.availibility === 'On') {
-              if (
-                obj?.game_duration &&
-                obj?.availibility &&
-                obj?.special_rules !== undefined &&
-                obj?.general_rules !== undefined &&
-                obj?.responsible_for_referee &&
-                obj?.responsible_for_scorekeeper &&
-                obj?.game_fee &&
-                obj?.venue &&
-                obj?.refund_policy &&
-                obj?.home_away &&
-                obj?.game_type
-              ) {
-                setChallengePopup(false);
-                navigation.navigate('ChallengeScreen', {
-                  setting: obj,
-                  sportName: currentUserData.sport,
-                  groupObj: currentUserData,
-                });
+                if (
+                  obj?.game_duration &&
+                  obj?.availibility &&
+                  obj?.special_rules !== undefined &&
+                  obj?.general_rules !== undefined &&
+                  obj?.responsible_for_referee &&
+                  obj?.responsible_for_scorekeeper &&
+                  obj?.game_fee &&
+                  obj?.venue &&
+                  obj?.refund_policy &&
+                  obj?.home_away &&
+                  obj?.game_type
+                ) {
+                  setChallengePopup(false);
+                  navigation.navigate('ChallengeScreen', {
+                    setting: obj,
+                    sportName: currentUserData.sport,
+                    groupObj: currentUserData,
+                  });
+                } else {
+                  Alert.alert('This team has no completed challenge setting.');
+                }
               } else {
-                Alert.alert('This team has no completed challenge setting.');
+                Alert.alert(
+                  'Opponent player or team not availble for challenge.',
+                );
               }
-            } else {
-              Alert.alert(
-                'Opponent player or team not availble for challenge.',
-              );
-            }
               // setTimeout(() => {
               //   setChallengePopup(false);
               //   navigation.navigate('ChallengeScreen', {
@@ -5393,81 +5474,54 @@ const HomeScreen = ({navigation, route}) => {
           <TouchableWithoutFeedback
             onPress={() => {
               setSelectedChallengeOption(1);
-
-              setloading(true);
-              settingUtils
-                .getSetting(
-                  authContext?.entity?.uid,
-                  authContext.entity.role === ('user' || 'player')
-                    ? 'player'
-                    : 'team',
-                  currentUserData.sport,
-                  authContext,
-                  currentUserData.sport_type,
-                )
-                .then((response) => {
-                  setloading(false);
-                  const obj = response;
-                  if (obj?.availibility === 'On') {
-                  if (
-                    obj?.game_duration &&
-                    obj?.availibility &&
-                    obj?.special_rules !== undefined &&
-                    obj?.general_rules !== undefined &&
-                    obj?.responsible_for_referee &&
-                    obj?.responsible_for_scorekeeper &&
-                    obj?.game_fee &&
-                    obj?.venue &&
-                    obj?.refund_policy &&
-                    obj?.home_away &&
-                    obj?.game_type
-                  ) {
-                    setChallengePopup(false);
-                    navigation.navigate('InviteChallengeScreen', {
-                      setting: obj,
-                      sportName: currentUserData.sport,
-                      groupObj: currentUserData,
-                    });
-                  } else {
-                    setTimeout(() => {
-
-                      Alert.alert(
-                        'Please complete your all setting before send a challenge invitation.',
-                        '',
-                        [
-                          {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                          {text: 'OK', onPress: () => {
+              const obj = mySettingObject;
+              if (obj?.availibility === 'On') {
+                if (
+                  obj?.game_duration &&
+                  obj?.availibility &&
+                  obj?.special_rules !== undefined &&
+                  obj?.general_rules !== undefined &&
+                  obj?.responsible_for_referee &&
+                  obj?.responsible_for_scorekeeper &&
+                  obj?.game_fee &&
+                  obj?.venue &&
+                  obj?.refund_policy &&
+                  obj?.home_away &&
+                  obj?.game_type
+                ) {
+                  setChallengePopup(false);
+                  navigation.navigate('InviteChallengeScreen', {
+                    setting: obj,
+                    sportName: currentUserData.sport,
+                    groupObj: currentUserData,
+                  });
+                } else {
+                  setTimeout(() => {
+                    Alert.alert(
+                      'Please complete your all setting before send a challenge invitation.',
+                      '',
+                      [
+                        {
+                          text: 'Cancel',
+                          onPress: () => console.log('Cancel Pressed!'),
+                        },
+                        {
+                          text: 'OK',
+                          onPress: () => {
                             navigation.navigate('ManageChallengeScreen', {
                               sportName: currentUserData.sport,
                               sportType: currentUserData?.sport_type,
                             });
-                          }},
-                    
-                        ],
-                        { cancelable: false }
-                      )
-    
-                     
-                    }, 1000);
-                  }
-                }else{
-                  Alert.alert('Your availability for challenge is off.');
+                          },
+                        },
+                      ],
+                      {cancelable: false},
+                    );
+                  }, 1000);
                 }
-                })
-                .catch((e) => {
-                  setloading(false);
-                  setTimeout(() => {
-                    Alert.alert(strings.alertmessagetitle, e.message);
-                  }, 10);
-                });
-
-              // setTimeout(() => {
-              //   setChallengePopup(false);
-              //   navigation.navigate('InviteChallengeScreen', {
-              //     sportName: currentUserData.sport,
-              //     groupObj: currentUserData,
-              //   });
-              // }, 300);
+              } else {
+                Alert.alert('Your availability for challenge is off.');
+              }
             }}>
             {selectedChallengeOption === 1 ? (
               <LinearGradient
@@ -5573,33 +5627,20 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
-  userTextStyle: {
-    fontSize: 20,
-    fontFamily: fonts.RBold,
-    textAlign: 'center',
-    color: colors.whiteColor,
-  },
-  sepratorStyle: {
-    height: 7,
-    width: '100%',
-    backgroundColor: colors.grayBackgroundColor,
-  },
 
   bgImageStyle: {
-    backgroundColor: colors.darkGrayTrashColor,
-    width: wp(100),
-    height: 200,
+    backgroundColor: colors.grayBackgroundColor,
+    width: '100%',
+    height: 135,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 10,
   },
   challengeButtonStyle: {
-    position: 'absolute',
     width: '100%',
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    zIndex: 1001,
-    bottom: 40,
-    height: 60,
+
+    height: 25,
+    marginBottom: 15,
   },
   outerContainerStyle: {
     height: 45,
@@ -5612,21 +5653,16 @@ const styles = StyleSheet.create({
   },
   containerStyle: {
     flexDirection: 'row',
-    height: 45,
-    borderRadius: 8,
+    height: 25,
+    borderRadius: 5,
     alignItems: 'center',
   },
-  buttonLeftText: {
+  challengeButtonTitle: {
     color: colors.whiteColor,
-    fontSize: 16,
-    marginLeft: 26,
+    fontSize: 14,
     fontFamily: fonts.RBold,
   },
-  buttonTextSmall: {
-    color: colors.whiteColor,
-    fontSize: 12,
-    fontFamily: fonts.RRegular,
-  },
+
   // buttonText: {
   //   color: colors.whiteColor,
   //   fontSize: 16,
@@ -5636,12 +5672,13 @@ const styles = StyleSheet.create({
   modalContainerViewStyle: {
     height: hp('94%'),
     backgroundColor: colors.whiteColor,
+
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
   },
   headerMainContainerStyle: {
     borderTopLeftRadius: 15,
-    borderTopRightRadius: 14,
+    borderTopRightRadius: 15,
     paddingVertical: 15,
   },
   cancelImageStyle: {
@@ -5740,13 +5777,7 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.writePostSepratorColor,
   },
-  stickyImageStyle: {
-    backgroundColor: colors.darkGrayTrashColor,
-    width: wp('100%'),
-    height: 90,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   headerCenterStyle: {
     fontSize: 16,
     fontFamily: fonts.RBold,
