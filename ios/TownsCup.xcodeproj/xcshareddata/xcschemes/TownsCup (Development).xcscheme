@@ -10,7 +10,7 @@
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
                title = "Run Script"
-               scriptText = "cp &quot;${PROJECT_DIR}/../.env.development&quot; &quot;${PROJECT_DIR}/../.env&quot;  # replace .env.staging for your file&#10;">
+               scriptText = "PATH_TO_GOOGLE_PLISTS=${PROJECT_DIR}/${TARGET_NAME}/Firebase&#10;cp &quot;${PROJECT_DIR}/../.env.development&quot; &quot;${PROJECT_DIR}/../.env&quot;  # replace .env.staging for your file&#10;cp &quot;$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-dev.plist&quot; &quot;$PATH_TO_GOOGLE_PLISTS/GoogleService-Info.plist&quot;&#10;">
                <EnvironmentBuildable>
                   <BuildableReference
                      BuildableIdentifier = "primary"
