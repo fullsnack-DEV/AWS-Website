@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable consistent-return */
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 import moment from 'moment';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
@@ -36,10 +36,10 @@ export default function ChallengeStatusView({
       if (finalDate > new Date().getTime()) {
         timer = setInterval(() => {
           if (
-            status === ReservationStatus.offered
-            || status === ReservationStatus.changeRequest
-            || status === ReservationStatus.pendingpayment
-            || status === ReservationStatus.pendingrequestpayment
+            status === ReservationStatus.offered ||
+            status === ReservationStatus.changeRequest ||
+            status === ReservationStatus.pendingpayment ||
+            status === ReservationStatus.pendingrequestpayment
           ) {
             getTwoDateDifference(finalDate, new Date().getTime());
           }
@@ -63,13 +63,13 @@ export default function ChallengeStatusView({
   };
   const isOfferExpired = () => {
     if (status === ReservationStatus.offered) {
-      if (offerExpiry > new Date().getTime()) {
+      if (offerExpiry < new Date().getTime() / 1000) {
         return true;
       }
       return false;
     }
     if (status === ReservationStatus.changeRequest) {
-      if (offerExpiry > new Date().getTime()) {
+      if (offerExpiry < new Date().getTime() / 1000) {
         return true;
       }
       return false;
@@ -77,7 +77,8 @@ export default function ChallengeStatusView({
   };
 
   const getTwoDateDifference = (sDate, eDate) => {
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+    let delta =
+      Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
     const days = Math.floor(delta / 86400);
     delta -= days * 86400;
@@ -92,24 +93,24 @@ export default function ChallengeStatusView({
 
     setCountDown(`${hours}h ${minutes}m ${seconds.toFixed(0)}s`);
   };
-return (
-  <View style={styles.viewContainer}>
-    {isSender && status === ReservationStatus.offered && (
-      <View>
-        {isOfferExpired() ? (
-          <View>
-            <Text
-                style={[styles.statusTitleText, { color: colors.googleColor }]}>
-              {challengeObj?.challenger === challengeObj?.invited_by
+  return (
+    <View style={styles.viewContainer}>
+      {isSender && status === ReservationStatus.offered && (
+        <View>
+          {isOfferExpired() ? (
+            <View>
+              <Text
+                style={[styles.statusTitleText, {color: colors.googleColor}]}>
+                {challengeObj?.challenger === challengeObj?.invited_by
                   ? 'RESERVATION REQUEST EXPIRED'
                   : 'INVITE TO CHALLENGE EXPIRED'}
-            </Text>
-            <Text style={styles.statusDescription}>
-              {challengeObj?.challenger === challengeObj?.invited_by
+              </Text>
+              <Text style={styles.statusDescription}>
+                {challengeObj?.challenger === challengeObj?.invited_by
                   ? `Match reservation request you sent to ${teamName} was expired.`
                   : `Invite to Challegne you sent to ${teamName} was expired.`}
-            </Text>
-          </View>
+              </Text>
+            </View>
           ) : (
             <View>
               <Text style={styles.statusTitleText}>
@@ -122,28 +123,28 @@ return (
                   ? `${isTeamText()} sent a match reservation request to ${teamName}. This request will be expired in`
                   : `${isTeamText()} has sent invite to challenge to ${teamName}. The invite will be expired within \n`}
 
-                <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
+                <Text style={{color: colors.darkThemeColor}}>{countDown}.</Text>
               </Text>
             </View>
           )}
-      </View>
+        </View>
       )}
-    {!isSender && status === ReservationStatus.offered && (
-      <View>
-        {isOfferExpired() ? (
-          <View>
-            <Text
-                style={[styles.statusTitleText, { color: colors.googleColor }]}>
-              {challengeObj?.challenger === challengeObj?.invited_by
+      {!isSender && status === ReservationStatus.offered && (
+        <View>
+          {isOfferExpired() ? (
+            <View>
+              <Text
+                style={[styles.statusTitleText, {color: colors.googleColor}]}>
+                {challengeObj?.challenger === challengeObj?.invited_by
                   ? 'RESERVATION REQUEST EXPIRED'
                   : 'INVITE TO CHALLENGE EXPIRED'}
-            </Text>
-            <Text style={styles.statusDescription}>
-              {challengeObj?.challenger === challengeObj?.invited_by
+              </Text>
+              <Text style={styles.statusDescription}>
+                {challengeObj?.challenger === challengeObj?.invited_by
                   ? `Match reservation request received from ${teamName} was expired.`
                   : `Invite To Challenge received from ${teamName} was expired.`}
-            </Text>
-          </View>
+              </Text>
+            </View>
           ) : (
             <View>
               <Text style={styles.statusTitleText}>
@@ -156,19 +157,19 @@ return (
                   ? `${isTeamText()} received a match reservation request from ${teamName}. Please, respond within\n`
                   : `${teamName} sent you an invite to challenge. The invite will be expired within \n`}
 
-                <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
+                <Text style={{color: colors.darkThemeColor}}>{countDown}.</Text>
               </Text>
             </View>
           )}
-      </View>
+        </View>
       )}
 
-    {isSender
-        && (status === ReservationStatus.accepted
-          || status === ReservationStatus.restored
-          || status === ReservationStatus.requestcancelled) && (
+      {isSender &&
+        (status === ReservationStatus.accepted ||
+          status === ReservationStatus.restored ||
+          status === ReservationStatus.requestcancelled) && (
             <View>
-              <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
+              <Text style={[styles.statusTitleText, {color: colors.greeColor}]}>
                 CONFIRMED
               </Text>
               <Text style={styles.statusDescription}>
@@ -176,12 +177,12 @@ return (
               </Text>
             </View>
         )}
-    {!isSender
-        && (status === ReservationStatus.accepted
-          || status === ReservationStatus.restored
-          || status === ReservationStatus.requestcancelled) && (
+      {!isSender &&
+        (status === ReservationStatus.accepted ||
+          status === ReservationStatus.restored ||
+          status === ReservationStatus.requestcancelled) && (
             <View>
-              <Text style={[styles.statusTitleText, { color: colors.greeColor }]}>
+              <Text style={[styles.statusTitleText, {color: colors.greeColor}]}>
                 CONFIRMED
               </Text>
               <Text style={styles.statusDescription}>
@@ -191,173 +192,173 @@ return (
             </View>
         )}
 
-    {isSender && status === ReservationStatus.declined && (
-      <View>
-        <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+      {isSender && status === ReservationStatus.declined && (
+        <View>
+          <Text style={[styles.statusTitleText, {color: colors.googleColor}]}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? 'REQUEST DECLINED'
               : 'INVITE TO CHALLENGE DECLINED'}
-        </Text>
-        <Text style={styles.statusDescription}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+          </Text>
+          <Text style={styles.statusDescription}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? `${teamName} declined  match reservation request.`
               : `${teamName} declined your Invite To Challenge.`}
-        </Text>
-      </View>
+          </Text>
+        </View>
       )}
-    {!isSender && status === ReservationStatus.declined && (
-      <View>
-        <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+      {!isSender && status === ReservationStatus.declined && (
+        <View>
+          <Text style={[styles.statusTitleText, {color: colors.googleColor}]}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? 'REQUEST DECLINED'
               : 'INVITE TO CHALLENGE DECLINED'}
-        </Text>
-        <Text style={styles.statusDescription}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+          </Text>
+          <Text style={styles.statusDescription}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? `${isTeamText()} declined match reservation request from ${teamName}.`
               : `${isTeamText()} declined Invite To Challege from ${teamName}.`}
-        </Text>
-      </View>
+          </Text>
+        </View>
       )}
 
-    {status === ReservationStatus.completed && (
-      <View>
-        <Text style={[styles.statusTitleText, { color: colors.blueColorCard }]}>
-          {'COMPLETED'}
-        </Text>
-        <Text style={styles.statusDescription}>
-          {'The match has been completed.'}
-        </Text>
-      </View>
+      {status === ReservationStatus.completed && (
+        <View>
+          <Text style={[styles.statusTitleText, {color: colors.blueColorCard}]}>
+            {'COMPLETED'}
+          </Text>
+          <Text style={styles.statusDescription}>
+            {'The match has been completed.'}
+          </Text>
+        </View>
       )}
 
-    {isSender && status === ReservationStatus.cancelled && (
-      <View>
-        <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+      {isSender && status === ReservationStatus.cancelled && (
+        <View>
+          <Text style={[styles.statusTitleText, {color: colors.googleColor}]}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? 'RESERVATION CANCELLED'
               : 'INVITE TO CHALLENGE CANCELLED'}
-        </Text>
-        <Text style={styles.statusDescription}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+          </Text>
+          <Text style={styles.statusDescription}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? `${isTeamText()} cancelled the match reservation.`
               : `${isTeamText()} canceled Invite To Challenge you sent to ${teamName}.`}
-        </Text>
-      </View>
+          </Text>
+        </View>
       )}
-    {!isSender && status === ReservationStatus.cancelled && (
-      <View>
-        <Text style={[styles.statusTitleText, { color: colors.googleColor }]}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+      {!isSender && status === ReservationStatus.cancelled && (
+        <View>
+          <Text style={[styles.statusTitleText, {color: colors.googleColor}]}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? 'RESERVATION CANCELLED'
               : 'INVITE TO CHALLENGE CANCELLED'}
-        </Text>
-        <Text style={styles.statusDescription}>
-          {challengeObj?.challenger === challengeObj?.invited_by
+          </Text>
+          <Text style={styles.statusDescription}>
+            {challengeObj?.challenger === challengeObj?.invited_by
               ? `${teamName} cancelled the match reservation.`
               : `${teamName} canceled Invite To Challenge.`}
-        </Text>
-      </View>
+          </Text>
+        </View>
       )}
 
-    {isSender && status === ReservationStatus.pendingpayment && (
-      <View>
-        <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
-        <Text style={styles.statusDescription}>
-          {teamName} has accepted your match reservation,but your payment
-          hasn't gone through yet.
-        </Text>
-        <Text style={styles.pendingRequestText}>
-          This reservation will be canceled unless the payment goes through
-          within<Text style={{ color: colors.darkThemeColor }}> {countDown}.</Text>
-        </Text>
-      </View>
+      {isSender && status === ReservationStatus.pendingpayment && (
+        <View>
+          <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
+          <Text style={styles.statusDescription}>
+            {teamName} has accepted your match reservation,but your payment
+            hasn't gone through yet.
+          </Text>
+          <Text style={styles.pendingRequestText}>
+            This reservation will be canceled unless the payment goes through
+            within
+            <Text style={{color: colors.darkThemeColor}}> {countDown}.</Text>
+          </Text>
+        </View>
       )}
-    {!isSender && status === ReservationStatus.pendingpayment && (
-      <View>
-        <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
-        <Text style={styles.statusDescription}>
-          {isTeamText()} has accepted a game reservation from {teamName}, but
-          the payment hasn't gone through yet.
-        </Text>
-        <Text style={styles.pendingRequestText}>
-          This reservation will be canceled unless the payment goes through
-          within<Text style={{ color: colors.darkThemeColor }}> {countDown}.</Text>
-        </Text>
-      </View>
-      )}
-
-    {isSender && status === ReservationStatus.pendingrequestpayment && (
-      <View>
-        <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
-        <Text style={styles.statusDescription}>
-          {teamName} has accepted your match reservation alteration request,
-          but your payment hasn't gone through yet.
-        </Text>
-        <Text style={styles.pendingRequestText}>
-          The accepted alteration won't be applied to the current reservation
-          unless the payment goes through within
-          <Text style={{ color: colors.darkThemeColor }}> {countDown} </Text>
-          {'\n\n'}Meanwhile, {teamName} can cancel acceptance of the
-          alteration request before the payment is completed.
-        </Text>
-      </View>
-      )}
-    {!isSender && status === ReservationStatus.pendingrequestpayment && (
-      <View>
-        <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
-        <Text style={styles.statusDescription}>
-          {isTeamText()} has accepted a match reservation alteration request
-          from {teamName}, but the payment hasn't gone through yet.
-        </Text>
-        <Text style={styles.pendingRequestText}>
-          The accepted alteration won't be applied to the current reservation
-          unless the payment goes through within
-          <Text style={{ color: colors.darkThemeColor }}>{countDown} </Text>
-          {'\n\n'}Meanwhile, you can cancel acceptance of the alteration
-          request before the payment will go through.
-        </Text>
-      </View>
+      {!isSender && status === ReservationStatus.pendingpayment && (
+        <View>
+          <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
+          <Text style={styles.statusDescription}>
+            {isTeamText()} has accepted a game reservation from {teamName}, but
+            the payment hasn't gone through yet.
+          </Text>
+          <Text style={styles.pendingRequestText}>
+            This reservation will be canceled unless the payment goes through
+            within
+            <Text style={{color: colors.darkThemeColor}}> {countDown}.</Text>
+          </Text>
+        </View>
       )}
 
-    {isSender && status === ReservationStatus.changeRequest && (
-      <View>
-        {isOfferExpired() ? (
-          <View>
-            <Text
-                style={[styles.statusTitleText, { color: colors.googleColor }]}>
-              ALTERATION REQUEST EXPIRED
-            </Text>
-            <Text style={styles.statusDescription}>
-              Your match reservation alteration request has been expired
-            </Text>
-          </View>
+      {isSender && status === ReservationStatus.pendingrequestpayment && (
+        <View>
+          <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
+          <Text style={styles.statusDescription}>
+            {teamName} has accepted your match reservation alteration request,
+            but your payment hasn't gone through yet.
+          </Text>
+          <Text style={styles.pendingRequestText}>
+            The accepted alteration won't be applied to the current reservation
+            unless the payment goes through within
+            <Text style={{color: colors.darkThemeColor}}> {countDown} </Text>
+            {'\n\n'}Meanwhile, {teamName} can cancel acceptance of the
+            alteration request before the payment is completed.
+          </Text>
+        </View>
+      )}
+      {!isSender && status === ReservationStatus.pendingrequestpayment && (
+        <View>
+          <Text style={styles.statusTitleText}>AWAITING PAYMENT</Text>
+          <Text style={styles.statusDescription}>
+            {isTeamText()} has accepted a match reservation alteration request
+            from {teamName}, but the payment hasn't gone through yet.
+          </Text>
+          <Text style={styles.pendingRequestText}>
+            The accepted alteration won't be applied to the current reservation
+            unless the payment goes through within
+            <Text style={{color: colors.darkThemeColor}}>{countDown} </Text>
+            {'\n\n'}Meanwhile, you can cancel acceptance of the alteration
+            request before the payment will go through.
+          </Text>
+        </View>
+      )}
+
+      {isSender && status === ReservationStatus.changeRequest && (
+        <View>
+          {isOfferExpired() ? (
+            <View>
+              <Text
+                style={[styles.statusTitleText, {color: colors.googleColor}]}>
+                ALTERATION REQUEST EXPIRED
+              </Text>
+              <Text style={styles.statusDescription}>
+                Your match reservation alteration request has been expired
+              </Text>
+            </View>
           ) : (
             <View>
-              <Text style={styles.statusTitleText}>
-                ALTERATION · AWAITING
-              </Text>
+              <Text style={styles.statusTitleText}>ALTERATION · AWAITING</Text>
               <Text style={styles.statusDescription}>
                 {isTeamText()} sent a match reservation alteration request to{' '}
                 {teamName}. This request will be expired in{'\n'}
-                <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
+                <Text style={{color: colors.darkThemeColor}}>{countDown}.</Text>
               </Text>
             </View>
           )}
-      </View>
+        </View>
       )}
-    {!isSender && status === ReservationStatus.changeRequest && (
-      <View>
-        {isOfferExpired() ? (
-          <View>
-            <Text
-                style={[styles.statusTitleText, { color: colors.googleColor }]}>
-              ALTERATION REQUEST EXPIRED
-            </Text>
-            <Text style={styles.statusDescription}>
-              The match reservation request from {teamName} has been expired.
-            </Text>
-          </View>
+      {!isSender && status === ReservationStatus.changeRequest && (
+        <View>
+          {isOfferExpired() ? (
+            <View>
+              <Text
+                style={[styles.statusTitleText, {color: colors.googleColor}]}>
+                ALTERATION REQUEST EXPIRED
+              </Text>
+              <Text style={styles.statusDescription}>
+                The match reservation request from {teamName} has been expired.
+              </Text>
+            </View>
           ) : (
             <View>
               <Text style={styles.statusTitleText}>
@@ -366,13 +367,13 @@ return (
               <Text style={styles.statusDescription}>
                 {isTeamText()} received a match reservation alteration request
                 from {teamName}. Please, respond within{'\n'}
-                <Text style={{ color: colors.darkThemeColor }}>{countDown}.</Text>
+                <Text style={{color: colors.darkThemeColor}}>{countDown}.</Text>
               </Text>
             </View>
           )}
-      </View>
+        </View>
       )}
-  </View>
+    </View>
   );
 }
 const styles = StyleSheet.create({

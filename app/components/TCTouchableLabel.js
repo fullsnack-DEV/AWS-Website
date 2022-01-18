@@ -13,6 +13,7 @@ import fonts from '../Constants/Fonts'
 import images from '../Constants/ImagePath'
 
 function TCTouchableLabel({
+  disabled=false,
   title = '',
   subTitle,
   onPress,
@@ -26,6 +27,7 @@ function TCTouchableLabel({
   return (
     <View>
       <TouchableOpacity
+      disabled={disabled}
         onPress={ onPress } style={[styles.containerStyle, style]}>
         {!subTitle && <TextInput
           placeholder={placeholder}

@@ -171,7 +171,22 @@ export default function LocalHomeScreen({navigation, route}) {
     });
   }, [authContext.entity?.role, authContext.entity?.uid, location, navigation]);
 
+  useEffect(() => {
+    if (isFocused) {
+      getUserSettings(authContext)
+        .then(async (response) => {
+          console.log('Settings:=>', response);
 
+          await Utility.setStorage('appSetting', response.payload.app);
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            console.log('catch -> local home Screen setting api');
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  }, [authContext, isFocused]);
 
   useEffect(() => {
     if (isFocused) {
@@ -192,22 +207,7 @@ export default function LocalHomeScreen({navigation, route}) {
     }
   }, [route?.params?.locationText]);
 
-  useEffect(() => {
-    if (isFocused) {
-      getUserSettings(authContext)
-        .then(async (response) => {
-          console.log('Settings:=>', response);
-
-          await Utility.setStorage('appSetting', response.payload.app);
-        })
-        .catch((e) => {
-          setTimeout(() => {
-            console.log('catch -> local home Screen setting api');
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    }
-  }, [authContext, isFocused]);
+ 
 
   useEffect(() => {
     Utility.getStorage('sportSetting')
@@ -216,7 +216,7 @@ export default function LocalHomeScreen({navigation, route}) {
         if (setting === null) {
           const playerSport =
             authContext?.entity?.obj?.registered_sports || [];
-          const result = playerSport.map((obj) => ({
+          const result = (playerSport || []).map((obj) => ({
             sport: obj.sport,
             sport_type: obj.sport_type,
           }));
@@ -624,7 +624,7 @@ export default function LocalHomeScreen({navigation, route}) {
         console.log('Recent match response :=>', games);
 
         Utility.getGamesList(games).then((gamedata) => {
-          if (games.length === 0) {
+          if (games?.length) {
             setRecentMatch([]);
           } else {
             setRecentMatch(gamedata);
@@ -636,7 +636,7 @@ export default function LocalHomeScreen({navigation, route}) {
         console.log('Upcoming match response :=>', games);
 
         Utility.getGamesList(games).then((gamedata) => {
-          if (games.length === 0) {
+          if (games?.length ) {
             setUpcomingMatch([]);
           } else {
             setUpcomingMatch(gamedata);
@@ -664,22 +664,14 @@ export default function LocalHomeScreen({navigation, route}) {
           console.log('res referee list:=>', res);
           setReferees([...res]);
         })
-        .catch((e) => {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e);
-          }, 10);
-        });
+       
 
       getUserIndex(scorekeeperQuery)
         .then((res) => {
           console.log('res scorekeeper list:=>', res);
           setScorekeepers([...res]);
         })
-        .catch((e) => {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e);
-          }, 10);
-        });
+        
 
       // });
     }
@@ -945,7 +937,7 @@ export default function LocalHomeScreen({navigation, route}) {
               keyExtractor={keyExtractor}
               renderItem={sportsListView}
               // initialScrollIndex={sports.indexOf(selectedSport)}
-              initialNumToRender={sports.length}
+              initialNumToRender={sports?.length}
               onScrollToIndexFailed={(info) => {
                 const wait = new Promise((resolve) => setTimeout(resolve, 500));
                 wait.then(() => {
@@ -964,12 +956,12 @@ export default function LocalHomeScreen({navigation, route}) {
       </View>
       {loading ? (
         <LocalHomeScreenShimmer />
-      ) : recentMatch.length <= 0 &&
-        upcomingMatch.length <= 0 &&
-        challengeeMatch.length <= 0 &&
-        hiringPlayers.length <= 0 &&
-        referees.length <= 0 &&
-        scorekeepers.length <= 0 ? (
+      ) : !recentMatch?.length &&
+        !upcomingMatch?.length  &&
+        !challengeeMatch?.length  &&
+        !hiringPlayers?.length  &&
+        !referees?.length  &&
+        !scorekeepers?.length  ? (
           <View style={styles.placeholderContainer}>
             <Text style={styles.placeholderViewText}>
               Towns Cup Data Not Available
@@ -980,7 +972,7 @@ export default function LocalHomeScreen({navigation, route}) {
         
 
           <ScrollView>
-            {recentMatch.length > 0 && (
+            {recentMatch?.length > 0 && (
               <View>
                 {/* <FlatList
                 horizontal={true}
@@ -1003,7 +995,7 @@ export default function LocalHomeScreen({navigation, route}) {
               />
               <TCThinDivider width={'100%'} marginTop={10} /> */}
                 <TCTitleWithArrow
-                  isDisabled={!(recentMatch.length > 0)}
+                  isDisabled={!(recentMatch?.length > 0)}
                   title={strings.recentMatchesTitle}
                   showArrow={true}
                   viewStyle={{marginTop: 20, marginBottom: 15}}
@@ -1034,10 +1026,10 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
               </View>
             )}
-            {upcomingMatch.length > 0 && (
+            {upcomingMatch?.length > 0 && (
               <View>
                 <TCTitleWithArrow
-                  isDisabled={!(upcomingMatch.length > 0)}
+                  isDisabled={!(upcomingMatch?.length > 0)}
                   title={strings.upcomingMatchesTitle}
                   showArrow={true}
                   viewStyle={{marginTop: 20, marginBottom: 15}}
@@ -1051,7 +1043,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
                 <Carousel
                   data={upcomingMatch}
-                  scrollEnabled={upcomingMatch.length > 0}
+                  scrollEnabled={upcomingMatch?.length > 0}
                   renderItem={renderGameItems}
                   inactiveSlideScale={1}
                   inactiveSlideOpacity={1}
@@ -1068,7 +1060,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
               </View>
             )}
-            {shortsList.length > 2 && (
+            {shortsList?.length > 2 && (
               <View>
                 <TCTitleWithArrow
                   isDisabled={!(shortsList?.length > 0)}
@@ -1086,10 +1078,10 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
               </View>
             )}
-            {challengeeMatch.length > 0 && (
+            {challengeeMatch?.length > 0 && (
               <View>
                 <TCTitleWithArrow
-                  isDisabled={!(challengeeMatch.length > 0)}
+                  isDisabled={!(challengeeMatch?.length > 0)}
                   title={strings.lookingForTitle}
                   showArrow={true}
                   viewStyle={{marginTop: 20, marginBottom: 15}}
@@ -1101,7 +1093,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
                 <Carousel
                   data={challengeeMatch}
-                  scrollEnabled={challengeeMatch.length > 0}
+                  scrollEnabled={challengeeMatch?.length > 0}
                   renderItem={renderChallengerItems}
                   inactiveSlideScale={1}
                   inactiveSlideOpacity={1}
@@ -1157,10 +1149,10 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
               </View>
             )}
-            {hiringPlayers.length > 0 && (
+            {hiringPlayers?.length > 0 && (
               <View>
                 <TCTitleWithArrow
-                  isDisabled={!(hiringPlayers.length > 0)}
+                  isDisabled={!(hiringPlayers?.length > 0)}
                   title={strings.hiringPlayerTitle}
                   showArrow={true}
                   viewStyle={{marginTop: 20, marginBottom: 15}}
@@ -1177,7 +1169,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
                 <Carousel
                   data={hiringPlayers}
-                  scrollEnabled={hiringPlayers.length > 0}
+                  scrollEnabled={hiringPlayers?.length > 0}
                   renderItem={renderHiringPlayersItems}
                   inactiveSlideScale={1}
                   inactiveSlideOpacity={1}
@@ -1193,10 +1185,10 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
               </View>
             )}
-            {lookingTeam.length > 0 && (
+            {lookingTeam?.length > 0 && (
               <View>
                 <TCTitleWithArrow
-                  isDisabled={!(lookingTeam.length > 0)}
+                  isDisabled={!(lookingTeam?.length > 0)}
                   title={strings.lookingForTeamTitle}
                   showArrow={true}
                   viewStyle={{marginTop: 20, marginBottom: 15}}
@@ -1209,7 +1201,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
                 <FlatList
                   horizontal={true}
-                  scrollEnabled={lookingTeam.length > 0}
+                  scrollEnabled={lookingTeam?.length > 0}
                   showsHorizontalScrollIndicator={false}
                   data={lookingTeam}
                   ItemSeparatorComponent={renderSeparator}
@@ -1225,7 +1217,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
               </View>
             )}
-            {referees.length > 0 && (
+            {referees?.length > 0 && (
               <View>
                 <TCTitleWithArrow
                   title={strings.refereesTitle}
@@ -1240,7 +1232,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
                 <FlatList
                   horizontal={true}
-                  scrollEnabled={referees.length > 0}
+                  scrollEnabled={referees?.length > 0}
                   showsHorizontalScrollIndicator={false}
                   data={referees}
                   ItemSeparatorComponent={renderSeparator}
@@ -1256,7 +1248,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
               </View>
             )}
-            {scorekeepers.length > 0 && (
+            {scorekeepers?.length > 0 && (
               <View>
                 <TCTitleWithArrow
                   title={strings.scorekeeperTitle}
@@ -1270,7 +1262,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
                 <FlatList
                   horizontal={true}
-                  scrollEnabled={scorekeepers.length > 0}
+                  scrollEnabled={scorekeepers?.length > 0}
                   showsHorizontalScrollIndicator={false}
                   data={scorekeepers}
                   ItemSeparatorComponent={renderSeparator}

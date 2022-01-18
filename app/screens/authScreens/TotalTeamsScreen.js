@@ -11,6 +11,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
+import {useIsFocused} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors'
@@ -19,17 +20,22 @@ import images from '../../Constants/ImagePath';
 
 const DELAY_PAGE_TIME = 2000;
 export default function TotalTeamsScreen({ navigation, route }) {
+  const isFocused = useIsFocused();
+
   useEffect(() => {
     // FastImage.preload([images.checkWhite, images.uncheckWhite]);
-    setTimeout(() => {
-      navigation.navigate('ChooseSportsScreen', {
-        teamData: route.params.teamData,
-        city: route.params.city,
-        state: route.params.state,
-        country: route.params.country,
-      })
-    }, DELAY_PAGE_TIME)
-  }, [])
+    if (isFocused) {
+      setTimeout(() => {
+        navigation.navigate('ChooseSportsScreen', {
+          teamData: route.params.teamData,
+          city: route.params.city,
+          state: route.params.state,
+          country: route.params.country,
+        })
+      }, DELAY_PAGE_TIME)
+    }
+   
+  }, [isFocused, navigation, route.params.city, route.params.country, route.params.state, route.params.teamData])
   return (
     <LinearGradient
           colors={[colors.themeColor1, colors.themeColor3]}

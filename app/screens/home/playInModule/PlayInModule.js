@@ -405,6 +405,7 @@ const PlayInModule = ({
   return (
     <>
       <ActivityLoader visible={loading} />
+      
       <Modal
         isVisible={visible}
         backdropColor="black"

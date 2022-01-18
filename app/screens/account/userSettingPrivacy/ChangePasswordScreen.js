@@ -1,6 +1,4 @@
-import React, {
-  useState, useContext, useLayoutEffect,
-} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   View,
   Text,
@@ -11,26 +9,20 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import firebase from '@react-native-firebase/app';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-import colors from '../../../Constants/Colors'
-import fonts from '../../../Constants/Fonts'
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import Header from '../../../components/Home/Header';
 
-export default function ChangePasswordScreen({ navigation }) {
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    })
-  })
+export default function ChangePasswordScreen({navigation}) {
+  
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
@@ -43,33 +35,39 @@ export default function ChangePasswordScreen({ navigation }) {
   // New Password Hide/Show function for setState
   const hideShowNewPassword = () => {
     setHideNewPassword(!hideNewPassword);
-  }
+  };
 
   // Confirm Password Hide/Show function for setState
   const hideShowConfirmPassword = () => {
     setHideConfirmPassword(!hideConfirmPassword);
-  }
+  };
 
   const checkValidation = () => {
     if (oldPassword === '') {
       Alert.alert('Towns Cup', 'Old password cannot be blank');
-      return false
-    } if (newPassword === '') {
+      return false;
+    }
+    if (newPassword === '') {
       Alert.alert('Towns Cup', 'New password cannot be blank');
-      return false
-    } if (confirmPassword === '') {
+      return false;
+    }
+    if (confirmPassword === '') {
       Alert.alert('Towns Cup', 'Confirm password cannot be blank');
-      return false
-    } if (newPassword.length < 8) {
+      return false;
+    }
+    if (newPassword.length < 8) {
       Alert.alert('Towns Cup', 'Password should be atleast 8 characters');
-      return false
+      return false;
     }
     if (newPassword !== confirmPassword) {
-      Alert.alert('Towns Cup', 'New password and confirm password should be same');
-      return false
+      Alert.alert(
+        'Towns Cup',
+        'New password and confirm password should be same',
+      );
+      return false;
     }
 
-    return true
+    return true;
   };
 
   // changePassword = (currentPassword, newPassword) => {
@@ -85,108 +83,154 @@ export default function ChangePasswordScreen({ navigation }) {
     if (checkValidation()) {
       setloading(true);
       console.log('EMAIL::', authContext?.entity?.obj?.email);
-      const credential = firebase.auth.EmailAuthProvider.credential(authContext?.entity?.obj?.email, oldPassword);
+      const credential = firebase.auth.EmailAuthProvider.credential(
+        authContext?.entity?.obj?.email,
+        oldPassword,
+      );
       console.log('CREDENTIAL::', credential);
-      firebase.auth().currentUser.reauthenticateWithCredential(credential).then(() => {
-        firebase.auth().currentUser.updatePassword(newPassword).then(() => {
-          setNewPassword('');
-          setOldPassword('');
-          setConfirmPassword('');
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert('Towns Cup', 'Your new password has beed set successfully');
-          }, 10);
-          navigation.goBack()
+      firebase
+        .auth()
+        .currentUser.reauthenticateWithCredential(credential)
+        .then(() => {
+          firebase
+            .auth()
+            .currentUser.updatePassword(newPassword)
+            .then(() => {
+              setNewPassword('');
+              setOldPassword('');
+              setConfirmPassword('');
+              setloading(false);
+              setTimeout(() => {
+                Alert.alert(
+                  'Towns Cup',
+                  'Your new password has beed set successfully',
+                );
+              }, 10);
+              navigation.goBack();
+            });
         })
-      }).catch((error) => {
-        setloading(false);
-        if (error.code === 'auth/wrong-password') {
-          Alert.alert('Towns Cup', 'The password is invalid or the user does not have a password.');
-        }
-      });
+        .catch((error) => {
+          setloading(false);
+          if (error.code === 'auth/wrong-password') {
+            Alert.alert(
+              'Towns Cup',
+              'The password is invalid or the user does not have a password.',
+            );
+          }
+        });
     }
-  }
+  };
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
       <Header
-            leftComponent={
-              <TouchableOpacity onPress={() => navigation.goBack() }>
-                <Image source={images.backArrow} style={styles.backImageStyle} />
-              </TouchableOpacity>
-            }
-            centerComponent={
-              <Text style={{
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image source={images.backArrow} style={styles.backImageStyle} />
+          </TouchableOpacity>
+        }
+        centerComponent={
+          <Text
+            style={{
+              fontSize: 16,
+              color: colors.lightBlackColor,
+              textAlign: 'center',
+              fontFamily: fonts.RBold,
+            }}>
+            Change Password
+          </Text>
+        }
+        rightComponent={
+          <TouchableOpacity onPress={onSavePress}>
+            <Text
+              style={{
                 fontSize: 16,
+                fontFamily: fonts.RMedium,
                 color: colors.lightBlackColor,
-                textAlign: 'center',
-                fontFamily: fonts.RBold,
               }}>
-                Change Password
-              </Text>
-            }
-            rightComponent={
-              <TouchableOpacity onPress={onSavePress}>
-                <Text style={{ fontSize: 16, fontFamily: fonts.RMedium, color: colors.lightBlackColor }}>Done</Text>
-              </TouchableOpacity>
-            }
-        />
-      <View style={{ width: '100%', height: 0.5, backgroundColor: colors.writePostSepratorColor }}/>
+              Done
+            </Text>
+          </TouchableOpacity>
+        }
+      />
+      <View
+        style={{
+          width: '100%',
+          height: 0.5,
+          backgroundColor: colors.writePostSepratorColor,
+        }}
+      />
 
       <TCKeyboardView>
-        <View style={ styles.mainContainer }>
-          <ActivityLoader visible={ loading } />
+        <View style={styles.mainContainer}>
+          <ActivityLoader visible={loading} />
           <TextInput
-              placeholderTextColor={colors.userPostTimeColor}
-            placeholder={ strings.oldPassword }
-            secureTextEntry={ true }
-            style={ styles.matchFeeTxt }
-            onChangeText={ (text) => setOldPassword(text) }
-            value={ oldPassword }/>
+            placeholderTextColor={colors.userPostTimeColor}
+            placeholder={strings.oldPassword}
+            secureTextEntry={true}
+            style={styles.matchFeeTxt}
+            onChangeText={(text) => setOldPassword(text)}
+            value={oldPassword}
+          />
 
-          <View style={ styles.separatorLine }></View>
-          <View style={ styles.passwordView }>
+          <View style={styles.separatorLine}></View>
+          <View style={styles.passwordView}>
             <TextInput
-                placeholderTextColor={colors.userPostTimeColor}
-            placeholder={ strings.newPassword + strings.atLeastText }
-            secureTextEntry={ hideNewPassword }
-            style={ styles.textInput }
-            onChangeText={ (text) => setNewPassword(text) }
-            value={ newPassword }/>
+              placeholderTextColor={colors.userPostTimeColor}
+              placeholder={strings.newPassword + strings.atLeastText}
+              secureTextEntry={hideNewPassword}
+              style={styles.textInput}
+              onChangeText={(text) => setNewPassword(text)}
+              value={newPassword}
+            />
             <TouchableOpacity
-                onPress={ () => hideShowNewPassword() }
+              onPress={() => hideShowNewPassword()}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                right: 15,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text
                 style={{
-                  position: 'absolute',
-                  top: 0,
-                  bottom: 0,
-                  right: 15,
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  textDecorationLine: 'underline',
+                  color: colors.userPostTimeColor,
+                  fontSize: 10,
+                  fontFamily: fonts.RLight,
                 }}>
-              <Text style={{
- textDecorationLine: 'underline', color: colors.userPostTimeColor, fontSize: 10, fontFamily: fonts.RLight,
-              }}>{hideNewPassword ? 'SHOW' : 'HIDE'}</Text>
+                {hideNewPassword ? 'SHOW' : 'HIDE'}
+              </Text>
             </TouchableOpacity>
           </View>
 
-          <View style={ styles.passwordView }>
+          <View style={styles.passwordView}>
             <TextInput
-                placeholderTextColor={colors.userPostTimeColor}
-            placeholder={ strings.confirmPassword }
-            secureTextEntry={ hideConfirmPassword }
-            style={ styles.textInput }
-            onChangeText={ (text) => setConfirmPassword(text) }
-            value={ confirmPassword }/>
+              placeholderTextColor={colors.userPostTimeColor}
+              placeholder={strings.confirmPassword}
+              secureTextEntry={hideConfirmPassword}
+              style={styles.textInput}
+              onChangeText={(text) => setConfirmPassword(text)}
+              value={confirmPassword}
+            />
             <TouchableOpacity
-                onPress={ () => hideShowConfirmPassword() }
+              onPress={() => hideShowConfirmPassword()}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                right: 15,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text
                 style={{
-                  position: 'absolute',
-                  top: 0,
-                  bottom: 0,
-                  right: 15,
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  color: colors.userPostTimeColor,
+                  fontSize: 10,
+                  fontFamily: fonts.RLight,
                 }}>
-              <Text style={{ color: colors.userPostTimeColor, fontSize: 10, fontFamily: fonts.RLight }}>{hideConfirmPassword ? 'SHOW' : 'HIDE'}</Text>
+                {hideConfirmPassword ? 'SHOW' : 'HIDE'}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -195,7 +239,6 @@ export default function ChangePasswordScreen({ navigation }) {
   );
 }
 const styles = StyleSheet.create({
-
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -215,7 +258,7 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 0.5 },
+    shadowOffset: {width: 0, height: 0.5},
     shadowOpacity: 0.16,
     shadowRadius: 1,
 
@@ -234,11 +277,10 @@ const styles = StyleSheet.create({
 
     marginTop: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 0.5 },
+    shadowOffset: {width: 0, height: 0.5},
     shadowOpacity: 0.16,
     shadowRadius: 1,
     width: wp('92%'),
-
   },
   separatorLine: {
     alignSelf: 'center',
