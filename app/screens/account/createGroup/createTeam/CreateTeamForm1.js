@@ -229,6 +229,7 @@ export default function CreateTeamForm1({ navigation, route }) {
           <TextInput
             placeholder={strings.teamNamePlaceholder}
             style={styles.matchFeeTxt}
+            maxLength={20}
             onChangeText={(text) => setTeamName(text)}
             value={teamName}></TextInput>
         </View>

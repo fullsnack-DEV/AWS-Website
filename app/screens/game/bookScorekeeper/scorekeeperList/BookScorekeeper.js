@@ -83,6 +83,12 @@ import React, {
    }, [navigation, selectedScorekeeper]);
 
    useEffect(() => {
+    if( route?.params?.filters.location !== 'world'){
+      setLocationFilterOpetion(3)
+    }else{
+      setLocationFilterOpetion(0)
+
+    }
      if (route?.params?.locationText) {
        setSettingPopup(true);
        setTimeout(() => {
@@ -94,7 +100,7 @@ import React, {
        }, 10);
        // navigation.setParams({ locationText: null });
      }
-   }, [route?.params?.locationText]);
+   }, [route?.params?.filters.location, route?.params?.locationText]);
 
    const getScorekeepers = useCallback(
      (filerScorekeeper) => {
@@ -640,7 +646,7 @@ import React, {
 
                          <View style={styles.searchCityContainer}>
                            <Text style={styles.searchCityText}>
-                             {route?.params?.locationText || 'Search City'}
+                             {route?.params?.locationText ||  (location !== 'world' && location)  || 'Search City'}
                            </Text>
                          </View>
                          <View

@@ -184,10 +184,10 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       challengeObj?.status === ReservationStatus.pendingpayment
       || challengeObj?.status === ReservationStatus.pendingrequestpayment
     ) {
-      if (challengeObj?.requested_by === entity.uid) {
-        return 'sender';
+      if (challengeObj?.invited_by === entity.uid) {
+        return 'receiver';
       }
-      return 'receiver';
+      return 'sender';
     }
     if (
       challengeObj?.status === ReservationStatus.requestcancelled
@@ -230,6 +230,22 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     }
     return 'receiver';
   };
+
+  const isOfferExpired = () => {
+    if (challengeData?.status === ReservationStatus.offered) {
+      if (challengeData?.start_datetime < new Date().getTime()/1000) {
+        return true;
+      }
+      return false;
+    }
+    if (challengeData?.status === ReservationStatus.changeRequest) {
+      if (challengeData?.start_datetime < new Date().getTime()/1000) {
+        return true;
+      }
+      return false;
+    }
+  };
+
 
   // eslint-disable-next-line consistent-return
   const getTeamName = (challengeObject) => {
@@ -451,7 +467,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     }
     if (
       checkSenderOrReceiver(challengeData) === 'receiver'
-      && challengeData?.status === ReservationStatus.offered
+      && challengeData?.status === ReservationStatus.offered && !isOfferExpired()
     ) {
       return (
         <View style={styles.bottomButtonContainer}>
@@ -787,8 +803,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         }, 10);
       });
   };
+  
   const topButtons = () => {
-    if (challengeData?.challenger === challengeData?.invited_by) {
       if (
         checkSenderOrReceiver(challengeData) === 'sender'
         && [
@@ -831,50 +847,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           />
         );
       }
-    } else {
-      if (
-        checkSenderOrReceiver(challengeData) === 'sender'
-        && [ReservationStatus.pendingrequestpayment].includes(
-          challengeData?.status,
-        )
-      ) {
-        return (
-          <TCGradientButton
-            title={'RESTORE TO PREVIOUS VERSION'}
-            onPress={() => {
-              challengeOperation(
-                entity.uid,
-                challengeData.challenge_id,
-                challengeData.version,
-                'decline',
-                true,
-              );
-            }}
-            marginBottom={15}
-          />
-        );
-      }
-      if (
-        checkSenderOrReceiver(challengeData) === 'receiver'
-        && [
-          ReservationStatus.pendingrequestpayment,
-          ReservationStatus.pendingpayment,
-        ].includes(challengeData?.status)
-      ) {
-        return (
-          <TCGradientButton
-            title={'TRY TO PAY AGAIN'}
-            onPress={() => {
-              navigation.navigate('PayAgainScreen', {
-                body: { ...challengeData },
-                status: challengeData?.status,
-              });
-            }}
-            marginBottom={15}
-          />
-        );
-      }
-    }
+    
   };
 
   return (
@@ -918,7 +891,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             offerExpiry={
               ReservationStatus.offered === 'offered'
               || ReservationStatus.offered === 'changeRequest'
-                ? new Date().getTime()
+                ? challengeData?.start_datetime
                 : ''
             } // only if status offered
             status={challengeData?.status}
@@ -1219,6 +1192,10 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                   <TCLabel title={'Payment Method'} />
                   <View style={styles.viewMarginStyle}>
                     <TCTouchableLabel
+                    disabled={challengeData?.status === ReservationStatus.accepted
+                      || challengeData?.status === ReservationStatus.restored
+                      || challengeData?.status === ReservationStatus.requestcancelled
+                    || challengeData?.status === ReservationStatus.cancelled}
                       title={
                         defaultCard
                           ? `${Utility.capitalize(
@@ -1226,7 +1203,10 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                             )} ****${defaultCard?.card?.last4}`
                           : strings.addOptionMessage
                       }
-                      showNextArrow={true}
+                      showNextArrow={!(challengeData?.status === ReservationStatus.accepted
+                        || challengeData?.status === ReservationStatus.restored
+                        || challengeData?.status === ReservationStatus.requestcancelled
+                        || challengeData?.status === ReservationStatus.cancelled)}
                       onPress={() => {
                         navigation.navigate('PaymentMethodsScreen', {
                           comeFrom: 'ChallengePreviewScreen',

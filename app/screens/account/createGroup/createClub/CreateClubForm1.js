@@ -169,6 +169,7 @@ export default function CreateClubForm1({navigation, route}) {
             <TextInput
               placeholder={strings.clubNameplaceholder}
               style={styles.matchFeeTxt}
+              maxLength={20}
               onChangeText={(text) => setClubName(text)}
               value={clubName}></TextInput>
           </View>

@@ -1260,16 +1260,7 @@ const AccountNavigator = () => (
       name="ChangePasswordScreen"
       component={ChangePasswordScreen}
       options={{
-        title: 'Change Password',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen

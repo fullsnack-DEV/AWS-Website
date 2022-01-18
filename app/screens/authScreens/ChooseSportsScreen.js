@@ -1,10 +1,12 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext,useLayoutEffect } from 'react';
 import {
   StyleSheet,
   View,
   Text,
   FlatList,
   Alert,
+  TouchableOpacity,
+  Image
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
@@ -33,6 +35,18 @@ export default function ChooseSportsScreen({ navigation, route }) {
 
   const authContext = useContext(AuthContext);
   const selectedSports = [];
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => navigation.pop(2)}>
+          <Image source={images.backArrow} style={{
+            height: 20, width: 15, marginLeft: 15, tintColor: colors.whiteColor,
+          }} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     getSportsList(authContext).then((response) => {

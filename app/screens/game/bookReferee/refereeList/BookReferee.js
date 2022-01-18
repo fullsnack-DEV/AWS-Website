@@ -53,11 +53,10 @@ export default function BookReferee({ navigation, route }) {
 
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
-  console.log('route-Filter:->',gameData);
   const [filters, setFilters] = useState(route?.params?.filters);
 
   const [settingPopup, setSettingPopup] = useState(false);
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState();
 
   const [datePickerFor, setDatePickerFor] = useState();
   const [show, setShow] = useState(false);
@@ -75,7 +74,7 @@ export default function BookReferee({ navigation, route }) {
   const [location, setLocation] = useState(route?.params?.filters.location);
   const [selectedReferee, setSelectedReferee] = useState(null);
 
-  console.log('Referee Filter:=>', filters);
+  console.log('Referee location Filter:=>', route?.params?.filters.location);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -88,7 +87,14 @@ export default function BookReferee({ navigation, route }) {
   }, [navigation, selectedReferee]);
 
   useEffect(() => {
+    if( route?.params?.filters.location !== 'world'){
+      setLocationFilterOpetion(3)
+    }else{
+      setLocationFilterOpetion(0)
+
+    }
     if (route?.params?.locationText) {
+      console.log('route?.params?.locationText',route?.params?.locationText);
       setSettingPopup(true);
       setTimeout(() => {
         setLocation(route?.params?.locationText);
@@ -124,14 +130,12 @@ export default function BookReferee({ navigation, route }) {
         };
     
       if (filerReferee.location !== 'world') {
-        refereeQuery.query.bool.must.push({
+        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           multi_match: {
-            query: `${filerReferee.location}`,
+            query: `${filerReferee.location.toLowerCase()}`,
             fields: ['city', 'country', 'state'],
           },
         });
-
-        
       }
       if (route?.params?.sport) {
         refereeQuery.query.bool.must[0].nested.query.bool.must.push({
@@ -318,6 +322,7 @@ export default function BookReferee({ navigation, route }) {
   };
   const handleTagPress = ({ item }) => {
     const tempFilter = filters;
+    console.log('tempFilter',tempFilter);
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'location') {
@@ -504,34 +509,13 @@ export default function BookReferee({ navigation, route }) {
                 <Text
                   style={styles.doneText}
                   onPress={() => {
-                    // if (applyValidation()) {
-                    //   setSettingPopup(false);
-                    //   setTimeout(() => {
-                    //     const tempFilter = { ...filters };
-                    //     // tempFilter.sport = selectedSport;
-                    //     tempFilter.location = location;
-
-                    //     if (minFee && maxFee) {
-                    //       tempFilter.refereeFee = `${minFee}-${maxFee}`;
-                    //     }
-                    //     setFilters({
-                    //       ...tempFilter,
-                    //     });
-                    //     setPageFrom(0);
-                    //     setReferees([]);
-                    //     applyFilter(tempFilter);
-                    //   }, 100);
-                    //   console.log('DONE::');
-                    // }
                     if (applyValidation()) {
-                      
                       setSettingPopup(false);
                       setTimeout(() => {
-                        const tempFilter = {...filters};
-                        // tempFilter.sport = gameData?.sport;
-                        // tempFilter.sport_type = gameData?.sport_type;
-
+                        const tempFilter = { ...filters };
+                        // tempFilter.sport = selectedSport;
                         tempFilter.location = location;
+
                         if (minFee && maxFee) {
                           tempFilter.refereeFee = `${minFee}-${maxFee}`;
                         }
@@ -542,6 +526,7 @@ export default function BookReferee({ navigation, route }) {
                         setReferees([]);
                         applyFilter(tempFilter);
                       }, 100);
+                      console.log('DONE::');
                     }
                   }}>
                   {'Apply'}
@@ -661,7 +646,7 @@ export default function BookReferee({ navigation, route }) {
 
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText || 'Search City'}
+                            {route?.params?.locationText || (location !== 'world' && location) || 'Search City'}
                           </Text>
                         </View>
                         <View

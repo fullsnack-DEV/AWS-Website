@@ -567,7 +567,7 @@ const HomeScreen = ({navigation, route}) => {
         console.log('promise error', errResponse);
         setFirstTimeLoading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, strings.defaultError);
+          Alert.alert(strings.alertmessagetitle, errResponse);
         }, 10);
         navigation.goBack();
       });
@@ -657,9 +657,7 @@ const HomeScreen = ({navigation, route}) => {
       })
       .catch(() => {
         setFirstTimeLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, strings.defaultError);
-        }, 10);
+       
         // navigation.goBack();
       });
 
@@ -681,9 +679,7 @@ const HomeScreen = ({navigation, route}) => {
       })
       .catch(() => {
         setFirstTimeLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, strings.defaultError);
-        }, 10);
+       
         // navigation.goBack();
       });
   };
@@ -745,9 +741,7 @@ const HomeScreen = ({navigation, route}) => {
         })
         .catch(() => {
           setFirstTimeLoading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, strings.defaultError);
-          }, 10);
+          
           // navigation.goBack();
         });
     }
@@ -1397,9 +1391,7 @@ const HomeScreen = ({navigation, route}) => {
           })
           .catch(() => {
             setFirstTimeLoading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, strings.defaultError);
-            }, 10);
+            
             // navigation.goBack();
           });
       } else {
@@ -1518,9 +1510,7 @@ const HomeScreen = ({navigation, route}) => {
           })
           .catch(() => {
             setFirstTimeLoading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, strings.defaultError);
-            }, 10);
+            
             // navigation.goBack();
           });
       } else {
