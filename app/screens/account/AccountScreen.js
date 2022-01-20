@@ -555,7 +555,7 @@ export default function AccountScreen({ navigation }) {
 
   const onLogout = useCallback(async () => {
     QBLogout();
-    firebase.auth().signOut();
+    await firebase.auth().signOut();
     const email = await AsyncStorage.getItem('appleemail');
     const firstName = await AsyncStorage.getItem('applefirstname');
     const lastName = await AsyncStorage.getItem('applelastname');

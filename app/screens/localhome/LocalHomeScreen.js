@@ -26,7 +26,6 @@ import {
 
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Geolocation from '@react-native-community/geolocation';
-import bodybuilder from 'bodybuilder';
 
 import Modal from 'react-native-modal';
 
@@ -439,10 +438,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         );
       }
-      console.log(
-        'Available For challengeQuery  match Query:=>',
-        JSON.stringify(availableForchallengeQuery),
-      );
+      
       // Looking Challengee query
 
       // Hiring player query
@@ -1105,44 +1101,8 @@ export default function LocalHomeScreen({navigation, route}) {
                       cardWidth={'94%'}
                       placeholderText={strings.challengerPlaceholderText}
                       onStartPress={async () => {
-                        // const body = {
-                        //   query: {
-                        //     bool: {
-                        //       must: [
-                        //         { match: { sport: 'soccer' } },
-                        //         { match: { status: 'ended' } },
-                        //         {
-                        //           multi_match: {
-                        //             query: 'vancouver',
-                        //             fields: ['city', 'country', 'state'],
-                        //           },
-                        //         },
-                        //       ],
-                        //     },
-                        //   },
-                        // };
-
-                        // const a = '{ }\n{"query" : {"match" : { "message": "this is a test"}}}\n{"index": "entityindex"}\n{"query" : {"match_all" : {}}}\n';
-
-                        console.log('Registerd sports', authContext.entity);
-
-                        const body = bodybuilder()
-                          .query('match', 'entity_type', 'player')
-                          .query('match', 'registered_sports.sport', 'Tennis')
-                          .query('multi_match', {
-                            query: 'india',
-                            fields: ['city', 'country', 'state'],
-                          })
-                          .build();
-                        console.log('Query:=>', JSON.stringify(body));
-
-                        getUserIndex(body)
-                          .then((res) => {
-                            console.log('Then s response', res);
-                          })
-                          .catch((err) => {
-                            console.log(err.message);
-                          });
+                        
+                      
                       }}
                     />
                   )}

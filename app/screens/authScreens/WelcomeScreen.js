@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-native/split-platform-components */
 import React, {
   useCallback,
@@ -22,13 +23,15 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import auth from '@react-native-firebase/auth';
-import { AccessToken, LoginManager } from 'react-native-fbsdk';
-import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
+import {AccessToken, LoginManager} from 'react-native-fbsdk';
+import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
+import jwtDecode from 'jwt-decode';
+
 import {
   appleAuth,
   appleAuthAndroid,
 } from '@invertase/react-native-apple-authentication';
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from 'uuid';
 import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -44,13 +47,13 @@ import strings from '../../Constants/String';
 import * as Utility from '../../utils/index';
 import apiCall from '../../utils/apiCall';
 
-import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
+import {QBconnectAndSubscribe, QBlogin} from '../../utils/QuickBlox';
 import AppleButton from '../../components/AppleButton';
-import { checkTownscupEmail, createUser } from '../../api/Users';
-import { getHitSlop } from '../../utils/index';
+import {checkTownscupEmail, createUser} from '../../api/Users';
+import {getHitSlop} from '../../utils/index';
 
 const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
-export default function WelcomeScreen({ navigation }) {
+export default function WelcomeScreen({navigation}) {
   const fadeInOpacity = new Animated.Value(0);
   // For activity indigator
   const [loading, setloading] = useState(false);
@@ -58,7 +61,6 @@ export default function WelcomeScreen({ navigation }) {
   const [currentBackground, setCurrentBackground] = useState(1);
 
   useEffect(() => {
-    console.log('QB credentials:=>', authContext);
     onLoad();
   }, [currentBackground]);
 
@@ -87,10 +89,11 @@ export default function WelcomeScreen({ navigation }) {
   });
 
   const getRedirectionScreenName = useCallback(
-    (townscupUser) => new Promise((resolve, reject) => {
-        if (!townscupUser.birthday) resolve({ screen: 'AddBirthdayScreen' });
-        else if (!townscupUser.gender) resolve({ screen: 'ChooseGenderScreen' });
-        else if (!townscupUser.city) resolve({ screen: 'ChooseLocationScreen' });
+    (townscupUser) =>
+      new Promise((resolve, reject) => {
+        if (!townscupUser.birthday) resolve({screen: 'AddBirthdayScreen'});
+        else if (!townscupUser.gender) resolve({screen: 'ChooseGenderScreen'});
+        else if (!townscupUser.city) resolve({screen: 'ChooseLocationScreen'});
         else if (!townscupUser.sports) {
           resolve({
             screen: 'ChooseSportsScreen',
@@ -100,25 +103,25 @@ export default function WelcomeScreen({ navigation }) {
               country: townscupUser?.country,
             },
           });
-        } else reject(new Error({ error: 'completed user profile' }));
+        } else reject(new Error({error: 'completed user profile'}));
       }),
     [],
   );
 
   const loginFinalRedirection = useCallback(
     async (townscupUser, dummyAuthContext) => {
-      let entity = { ...dummyAuthContext?.entity };
+      let entity = {...dummyAuthContext?.entity};
       entity = {
         ...entity,
-        auth: { ...entity?.auth, user: townscupUser },
-        obj: { ...entity?.obj, ...townscupUser },
+        auth: {...entity?.auth, user: townscupUser},
+        obj: {...entity?.obj, ...townscupUser},
       };
       await authContext.setTokenData(dummyAuthContext?.tokenData);
-      await Utility.setStorage('authContextUser', { ...townscupUser });
-      await Utility.setStorage('authContextEntity', { ...entity });
+      await Utility.setStorage('authContextUser', {...townscupUser});
+      await Utility.setStorage('authContextEntity', {...entity});
       await Utility.setStorage('loggedInEntity', entity);
-      await authContext.setUser({ ...townscupUser });
-      await authContext.setEntity({ ...entity });
+      await authContext.setUser({...townscupUser});
+      await authContext.setEntity({...entity});
       // eslint-disable-next-line no-underscore-dangle
       getRedirectionScreenName(townscupUser)
         .then((responseScreen) => {
@@ -129,60 +132,60 @@ export default function WelcomeScreen({ navigation }) {
         })
         .catch(async () => {
           entity.isLoggedIn = true;
-          await Utility.setStorage('authContextEntity', { ...entity });
-          await Utility.setStorage('loggedInEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
+          await Utility.setStorage('loggedInEntity', {...entity});
           setloading(false);
-          await authContext.setEntity({ ...entity });
+          await authContext.setEntity({...entity});
         });
     },
     [authContext, getRedirectionScreenName, navigation],
   );
 
   const QBInitialLogin = async (dummyAuth, townscupUser) => {
-    const dummyAuthContext = { ...dummyAuth };
-    let qbEntity = { ...dummyAuthContext?.entity };
+    const dummyAuthContext = {...dummyAuth};
+    let qbEntity = {...dummyAuthContext?.entity};
     QBlogin(qbEntity?.uid, townscupUser)
       .then(async (res) => {
         qbEntity = {
           ...qbEntity,
-          QB: { ...res?.user, connected: true, token: res?.session?.token },
+          QB: {...res?.user, connected: true, token: res?.session?.token},
         };
         QBconnectAndSubscribe(qbEntity);
-        dummyAuthContext.entity = { ...qbEntity };
+        dummyAuthContext.entity = {...qbEntity};
         await loginFinalRedirection(townscupUser, dummyAuthContext);
       })
       .catch(async (error) => {
         console.log('QB Login Error : ', error.message);
-        qbEntity = { ...qbEntity, QB: { connected: false } };
-        dummyAuthContext.entity = { ...qbEntity };
+        qbEntity = {...qbEntity, QB: {connected: false}};
+        dummyAuthContext.entity = {...qbEntity};
         await loginFinalRedirection(townscupUser, dummyAuthContext);
       });
   };
 
   const wholeSignUpProcessComplete = async (userData, dummyAuthContext) => {
-    const entity = { ...dummyAuthContext?.entity };
+    const entity = {...dummyAuthContext?.entity};
     const tokenData = dummyAuthContext?.tokenData;
-    entity.auth.user = { ...userData };
-    entity.obj = { ...userData };
+    entity.auth.user = {...userData};
+    entity.obj = {...userData};
     entity.uid = userData?.user_id;
-    await Utility.setStorage('loggedInEntity', { ...entity });
-    await Utility.setStorage('authContextEntity', { ...entity });
-    await Utility.setStorage('authContextUser', { ...userData });
+    await Utility.setStorage('loggedInEntity', {...entity});
+    await Utility.setStorage('authContextEntity', {...entity});
+    await Utility.setStorage('authContextUser', {...userData});
     await authContext.setTokenData(tokenData);
-    await authContext.setUser({ ...userData });
-    await authContext.setEntity({ ...entity });
+    await authContext.setUser({...userData});
+    await authContext.setEntity({...entity});
     setloading(false);
     navigation.navigate('AddBirthdayScreen');
   };
 
   const signUpWithQB = (response, dummyAuth) => {
-    const dummyAuthContext = { ...dummyAuth };
-    let qbEntity = { ...dummyAuthContext?.entity };
+    const dummyAuthContext = {...dummyAuth};
+    let qbEntity = {...dummyAuthContext?.entity};
     QBlogin(qbEntity?.uid, response)
       .then(async (res) => {
         qbEntity = {
           ...qbEntity,
-          QB: { ...res?.user, connected: true, token: res?.session?.token },
+          QB: {...res?.user, connected: true, token: res?.session?.token},
         };
         QBconnectAndSubscribe(qbEntity);
         dummyAuthContext.entity = qbEntity;
@@ -190,14 +193,14 @@ export default function WelcomeScreen({ navigation }) {
       })
       .catch(async (error) => {
         console.log('QB Login Error : ', error.message);
-        qbEntity = { ...qbEntity, QB: { connected: false } };
+        qbEntity = {...qbEntity, QB: {connected: false}};
         dummyAuthContext.entity = qbEntity;
         await wholeSignUpProcessComplete(response, dummyAuthContext);
       });
   };
 
   const signUpToTownsCup = async (userDetail, dummyAuth) => {
-    const dummyAuthContext = { ...dummyAuth };
+    const dummyAuthContext = {...dummyAuth};
     setloading(true);
     const data = {
       first_name: userDetail?.first_name,
@@ -209,7 +212,7 @@ export default function WelcomeScreen({ navigation }) {
     console.log('Post Data:=>', data);
     createUser(data, dummyAuthContext)
       .then((createdUser) => {
-        const authEntity = { ...dummyAuthContext?.entity };
+        const authEntity = {...dummyAuthContext?.entity};
         authEntity.obj = createdUser?.payload;
         authEntity.auth.user = createdUser?.payload;
         authEntity.role = 'user';
@@ -225,7 +228,8 @@ export default function WelcomeScreen({ navigation }) {
       });
   };
 
-  const checkUserIsRegistratedOrNotWithFirebase = (email) => new Promise((resolve, reject) => {
+  const checkUserIsRegistratedOrNotWithFirebase = (email) =>
+    new Promise((resolve, reject) => {
       auth()
         .fetchSignInMethodsForEmail(email)
         .then((isAccountThereInFirebase) => {
@@ -241,7 +245,8 @@ export default function WelcomeScreen({ navigation }) {
         });
     });
 
-  const checkUserIsRegistratedOrNotWithTownscup = (email) => new Promise((resolve) => {
+  const checkUserIsRegistratedOrNotWithTownscup = (email) =>
+    new Promise((resolve) => {
       checkTownscupEmail(encodeURIComponent(email))
         .then(() => {
           resolve(true);
@@ -252,7 +257,7 @@ export default function WelcomeScreen({ navigation }) {
     });
 
   const socialSignInSignUp = (authResult, message, extraData = {}) => {
-    const dummyAuthContext = { ...authContext };
+    const dummyAuthContext = {...authContext};
     const socialSignInSignUpOnAuthChanged = auth().onAuthStateChanged(
       (user) => {
         console.log('User :-', user);
@@ -273,7 +278,7 @@ export default function WelcomeScreen({ navigation }) {
                   const userConfig = {
                     method: 'get',
                     url: `${Config.BASE_URL}/users/${user?.uid}`,
-                    headers: { Authorization: `Bearer ${token?.token}` },
+                    headers: {Authorization: `Bearer ${token?.token}`},
                   };
                   if (userExist) {
                     apiCall(userConfig)
@@ -295,12 +300,12 @@ export default function WelcomeScreen({ navigation }) {
                       });
                   } else {
                     dummyAuthContext.entity = {
-                      auth: { user_id: user.uid },
+                      auth: {user_id: user.uid},
                       uid: user.uid,
                       role: 'user',
                     };
                     const flName = user?.displayName?.split(' ');
-                    const userDetail = { ...extraData };
+                    const userDetail = {...extraData};
                     if (flName?.length >= 2) {
                       [userDetail.first_name, userDetail.last_name] = flName;
                     } else if (flName?.length === 1) {
@@ -338,6 +343,7 @@ export default function WelcomeScreen({ navigation }) {
     provider,
     extraData = {},
   ) => {
+    console.log('google cred:=>', credential);
     auth()
       .signInWithCredential(credential)
       .then(async (authResult) => {
@@ -374,6 +380,7 @@ export default function WelcomeScreen({ navigation }) {
       'public_profile',
       'email',
     ]);
+    console.log('facebook login result', result);
     if (result.isCancelled) {
       setloading(false);
       throw new Error('User cancelled the login process');
@@ -393,7 +400,7 @@ export default function WelcomeScreen({ navigation }) {
   const onGoogleButtonPress = async () => {
     try {
       setloading(true);
-      const { idToken } = await GoogleSignin.signIn();
+      const {idToken} = await GoogleSignin.signIn();
       const googleCredential = await auth.GoogleAuthProvider.credential(
         idToken,
       );
@@ -412,19 +419,20 @@ export default function WelcomeScreen({ navigation }) {
 
   // Login With Apple manage function
 
-  const registerWithAnotherProvider = (param) => new Promise((resolve, reject) => {
+  const registerWithAnotherProvider = (param) =>
+    new Promise((resolve, reject) => {
       if (param.includes('facebook.com')) {
         // eslint-disable-next-line prefer-promise-reject-errors
-        reject({ provider: 'facebook' });
+        reject({provider: 'facebook'});
       } else if (param.includes('google.com')) {
         // eslint-disable-next-line prefer-promise-reject-errors
-        reject({ provider: 'google' });
+        reject({provider: 'google'});
       } else if (param.includes('apple.com')) {
         // eslint-disable-next-line prefer-promise-reject-errors
-        reject({ provider: 'apple' });
+        reject({provider: 'apple'});
       } else if (param.includes('password')) {
         // eslint-disable-next-line prefer-promise-reject-errors
-        reject({ provider: 'email-password' });
+        reject({provider: 'email-password'});
       }
       resolve(true);
     });
@@ -437,29 +445,32 @@ export default function WelcomeScreen({ navigation }) {
   }) => {
     checkUserIsRegistratedOrNotWithFirebase(email)
       .then(async (providerData) => {
+        console.log('providerData::=>', providerData);
         if (providerData?.length > 0) {
-          registerWithAnotherProvider(providerData)
-            .then(async () => {
-              successCallback();
-            })
-            .catch(async (error) => {
-              if (error?.provider !== provider) {
-                errorCallback();
-                console.log(error);
-                setloading(false);
-                setTimeout(() => {
-                  Alert.alert(
-                    'Townscup',
-                    `This email is already registrated with ${error?.provider}`,
-                  );
-                }, 100);
-              } else {
-                successCallback();
-              }
-            });
-        } else {
           successCallback();
+          // registerWithAnotherProvider(providerData)
+          //   .then(async () => {
+          //     successCallback();
+          //   })
+          //   .catch(async (error) => {
+          //     if (error?.provider !== provider) {
+          //       errorCallback();
+          //       console.log(error);
+          //       setloading(false);
+          //       setTimeout(() => {
+          //         Alert.alert(
+          //           'Townscup',
+          //           `This email is already registrated with ${error?.provider}`,
+          //         );
+          //       }, 100);
+          //     } else {
+          //       successCallback();
+          //     }
+          //   });
         }
+        // else {
+        //   successCallback();
+        // }
       })
       .catch(async (error) => {
         console.log(error);
@@ -605,7 +616,7 @@ export default function WelcomeScreen({ navigation }) {
           Alert.alert('Apple Sign-In failed - no identify token returned');
         }, 10);
       } else {
-        const { identityToken, nonce } = appleAuthRequestResponse;
+        const {identityToken, nonce} = appleAuthRequestResponse;
         commonCheckEmailVerification({
           email,
           provider: 'apple',
@@ -631,25 +642,33 @@ export default function WelcomeScreen({ navigation }) {
   };
 
   const handleAndroidAppleLogin = async () => {
+    console.log('1::=>:');
     if (!appleAuthAndroid?.isSupported) {
       alert('Apple Login not supported');
     } else {
+      console.log('2::=>:');
+
       const rawNonce = uuid();
       const state = uuid();
       appleAuthAndroid.configure({
         clientId: 'com.townscup',
         redirectUri: 'https://townscup-fee6e.firebaseapp.com/__/auth/handler',
-        scope: appleAuthAndroid.Scope.ALL,
         responseType: appleAuthAndroid.ResponseType.ALL,
+        scope: appleAuthAndroid.Scope.ALL,
         nonce: rawNonce,
         state,
       });
+      console.log('3::=>:');
+
       const appleAuthRequestResponse = await appleAuthAndroid.signIn();
+      console.log('4::=>:');
+      const { email } = await jwtDecode(appleAuthRequestResponse.id_token);
+
       console.log(appleAuthRequestResponse);
+      console.log('email:',email);
+
       setloading(true);
-      const {
- id_token, nonce, fullName, email,
- } = appleAuthRequestResponse;
+      const {id_token, nonce} = appleAuthRequestResponse;
       commonCheckEmailVerification({
         email,
         provider: 'apple',
@@ -662,8 +681,8 @@ export default function WelcomeScreen({ navigation }) {
             appleAndroidCredential,
             'APPLE Android| ',
             {
-              first_name: fullName?.givenName,
-              last_name: fullName?.familyName,
+              first_name: '',
+              last_name: '',
             },
           );
         },
@@ -724,8 +743,8 @@ export default function WelcomeScreen({ navigation }) {
         <Text style={styles.logoTagLine}>{strings.townsCupTagLine}</Text>
       </View>
 
-      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <View style={{ marginBottom: hp(2) }}>
+      <View style={{flex: 1, justifyContent: 'flex-end'}}>
+        <View style={{marginBottom: hp(2)}}>
           {/* {Platform.OS === 'ios' && ( */}
           <AppleButton
             onPress={() => {
@@ -771,16 +790,16 @@ export default function WelcomeScreen({ navigation }) {
         </View>
         <Text style={styles.privacyText}>
           By continuing or signing up you agree to Townty’s{'\n'}
-          <Text onPress={() => {}} style={{ textDecorationLine: 'underline' }}>
+          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
             Terms of Service.
           </Text>{' '}
           We will manage information about you{'\n'}
           as described in our{' '}
-          <Text onPress={() => {}} style={{ textDecorationLine: 'underline' }}>
+          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
             Privacy Policy
           </Text>{' '}
           and{' '}
-          <Text onPress={() => {}} style={{ textDecorationLine: 'underline' }}>
+          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
             Cookie Policy
           </Text>
           .
@@ -801,7 +820,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
   },

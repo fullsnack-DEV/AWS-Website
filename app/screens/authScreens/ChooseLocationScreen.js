@@ -2,7 +2,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable react-native/split-platform-components */
 /* eslint-disable no-nested-ternary */
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -19,7 +19,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import Geolocation from '@react-native-community/geolocation';
 
 import LinearGradient from 'react-native-linear-gradient';
@@ -37,12 +37,12 @@ import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-import { updateUserProfile, getAppSettingsWithoutAuth } from '../../api/Users';
+import {updateUserProfile, getAppSettingsWithoutAuth} from '../../api/Users';
 import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import { getGroupIndex } from '../../api/elasticSearch';
+import {getGroupIndex} from '../../api/elasticSearch';
 
-export default function ChooseLocationScreen({ navigation }) {
+export default function ChooseLocationScreen({navigation}) {
   const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
   const [currentLocation, setCurrentLocation] = useState();
@@ -85,8 +85,8 @@ export default function ChooseLocationScreen({ navigation }) {
       .then((result) => {
         console.log('Data :::::', JSON.stringify(result));
         if (
-          result['android.permission.ACCESS_COARSE_LOCATION']
-          && result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
+          result['android.permission.ACCESS_COARSE_LOCATION'] &&
+          result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
         ) {
           getLocation();
         }
@@ -120,7 +120,7 @@ export default function ChooseLocationScreen({ navigation }) {
               country = e.long_name;
             }
           });
-          setCurrentLocation({ stateAbbr, city, country });
+          setCurrentLocation({stateAbbr, city, country});
         });
         console.log(position.coords.latitude);
       },
@@ -128,13 +128,13 @@ export default function ChooseLocationScreen({ navigation }) {
         // See error code charts below.
         console.log(error.code, error.message);
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };
 
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
-      searchLocations(searchLocationText, 'cities')
+      searchLocations(searchLocationText)
         .then((response) => {
           setNoData(false);
           setCityData(response.predictions);
@@ -161,14 +161,15 @@ export default function ChooseLocationScreen({ navigation }) {
       size: 50,
       query: {
         bool: {
-          must: [{
-            multi_match: {
-              query: currentLocation.country,
-              fields: ['city', 'country', 'state'],
+          must: [
+            {
+              multi_match: {
+                query: currentLocation.country,
+                fields: ['city', 'country', 'state'],
+              },
             },
-          },
-          {term: {entity_type: 'team'}}
-        ],
+            {term: {entity_type: 'team'}},
+          ],
         },
       },
     };
@@ -210,14 +211,14 @@ export default function ChooseLocationScreen({ navigation }) {
     updateUserProfile(params, authContext)
       .then(async (userResoponse) => {
         const userData = userResoponse?.payload;
-        const entity = { ...authContext?.entity };
+        const entity = {...authContext?.entity};
         entity.auth.user = userData;
         entity.obj = userData;
-        await Utility.setStorage('loggedInEntity', { ...entity });
-        await Utility.setStorage('authContextEntity', { ...entity });
-        await Utility.setStorage('authContextUser', { ...userData });
-        await authContext.setUser({ ...userData });
-        await authContext.setEntity({ ...entity });
+        await Utility.setStorage('loggedInEntity', {...entity});
+        await Utility.setStorage('authContextEntity', {...entity});
+        await Utility.setStorage('authContextUser', {...userData});
+        await authContext.setUser({...userData});
+        await authContext.setEntity({...entity});
         setLoading(false);
         callback();
       })
@@ -226,7 +227,6 @@ export default function ChooseLocationScreen({ navigation }) {
 
   const getTeamsData = async (item) => {
     console.log('item location data:=>', item);
-
     setLoading(true);
     // const queryParams = {
     //   state: item?.terms?.[1]?.value,
@@ -236,15 +236,15 @@ export default function ChooseLocationScreen({ navigation }) {
       size: 50,
       query: {
         bool: {
-          must: [{
-            multi_match: {
-              query: item?.terms?.[2]?.value,
-              fields: ['city', 'country', 'state'],
+          must: [
+            {
+              multi_match: {
+                query: item?.terms?.[1]?.value,
+                fields: ['city', 'country', 'state'],
+              },
             },
-            
-          },
-          {term: {entity_type: 'team'}}
-        ],
+            {term: {entity_type: 'team'}},
+          ],
         },
       },
     };
@@ -252,7 +252,7 @@ export default function ChooseLocationScreen({ navigation }) {
     getGroupIndex(queryParams)
       .then((response) => {
         setLoading(false);
-
+        console.log('groupIndex:=>', response);
         const userData = {
           city: item?.terms?.[0]?.value,
           state_abbr: item?.terms?.[1]?.value,
@@ -286,7 +286,7 @@ export default function ChooseLocationScreen({ navigation }) {
       });
   };
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => getTeamsData(item)}>
@@ -296,7 +296,8 @@ export default function ChooseLocationScreen({ navigation }) {
     </TouchableWithoutFeedback>
   );
 
-  const removeExtendedSpecialCharacters = (str) => str.replace(/[^\x20-\x7E]/g, '');
+  const removeExtendedSpecialCharacters = (str) =>
+    str.replace(/[^\x20-\x7E]/g, '');
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
@@ -320,7 +321,8 @@ export default function ChooseLocationScreen({ navigation }) {
           placeholder={strings.locationPlaceholderText}
           clearButtonMode="always"
           placeholderTextColor={colors.themeColor}
-          onChangeText={(text) => setSearchText(removeExtendedSpecialCharacters(text))
+          onChangeText={(text) =>
+            setSearchText(removeExtendedSpecialCharacters(text))
           }
         />
       </View>
@@ -334,7 +336,7 @@ export default function ChooseLocationScreen({ navigation }) {
           style={styles.listItem}
           onPress={() => getTeamsDataByCurrentLocation()}>
           <View>
-            <Text style={[styles.cityList, { marginBottom: 3 }]}>
+            <Text style={[styles.cityList, {marginBottom: 3}]}>
               {currentLocation.city}, {currentLocation.stateAbbr},{' '}
               {currentLocation.country}
             </Text>
@@ -431,7 +433,7 @@ const styles = StyleSheet.create({
     paddingRight: 5,
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
   },
