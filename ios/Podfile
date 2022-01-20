@@ -2,7 +2,17 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 platform :ios, '10.0'
-
+project 'Townscup',
+        'Debug' => :debug,
+        'Release' => :release, 
+        'Debug_Development' => :debug,
+        'Release_Development' => :release,
+        'Debug_QA' => :debug, 
+        'Release_QA' => :release,
+        'Debug_Staging' => :debug, 
+        'Release_Staging' => :release,
+        'Debug_Production' => :debug, 
+        'Release_Production' => :release
 target 'townscup_reactnative' do
   config = use_native_modules!
   permissions_path = '../node_modules/react-native-permissions/ios'
