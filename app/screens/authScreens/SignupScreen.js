@@ -9,7 +9,6 @@ import {
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 import firebase from '@react-native-firebase/app';
-import axios from 'axios';
 
 import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -225,38 +224,10 @@ export default function SignupScreen({ navigation }) {
 
   const signUpWithFirebase = () => {
 
-    axios({
-      method: 'get',
-      url: `${Config.BASE_URL}/app/settings`,
-      withCredentials: true,
-      headers: {
-        Accept: 'application/json',
-        setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
-      },
-    }).then(async (response) => {
-      console.log('init app', response.data.payload.app.firebaseConfig);
-      console.log('config:', Config.environment);
-      firebase.auth().signOut();
-      let firebaseENV={}
-      if(Config.environment === 'qa'){
-        firebase.initializeApp(response.data.payload.app.firebaseConfig,'qa');
-        firebaseENV=  firebase.app('qa')
-      }
-      if(Config.environment === 'development'){
-        firebase.initializeApp(response.data.payload.app.firebaseConfig);
-        firebaseENV=  firebase.app()
-      }
-
-         
-      console.log('firebase then:=>', firebaseENV);
-   
-     
-  
-
-      firebaseENV.auth()
+    firebase.auth()
       .createUserWithEmailAndPassword(email, password)
       .then(async () => {
-        const signUpOnAuthChanged = firebaseENV.auth().onAuthStateChanged((user) => {
+        const signUpOnAuthChanged = firebase.auth().onAuthStateChanged((user) => {
           if (user) {
             user.sendEmailVerification();
             saveUserDetails(user);
@@ -284,7 +255,6 @@ export default function SignupScreen({ navigation }) {
         }
         if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 50);
       });
-    })
   };
 
   const registerWithAnotherProvider = (param) => new Promise((resolve, reject) => {

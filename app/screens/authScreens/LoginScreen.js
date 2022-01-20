@@ -182,6 +182,7 @@ export default function LoginScreen({ navigation }) {
   const login = useCallback(async () => {
     setloading(true);
     await Utility.clearStorage();
+    console.log('firebase:=>',firebase);
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)

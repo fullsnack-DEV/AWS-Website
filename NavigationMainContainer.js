@@ -50,7 +50,7 @@ export default function NavigationMainContainer() {
 
       if (setting) {
         if (firebase.apps.length === 0) {
-          await firebase.initializeApp(setting.firebaseConfig);
+          // await firebase.initializeApp(setting.firebaseConfig);
         }
         authContext.setQBCredential(setting)
         QB.settings
