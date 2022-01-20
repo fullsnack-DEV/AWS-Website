@@ -41,7 +41,6 @@ export default function ChangePasswordScreen({navigation}) {
   const hideShowConfirmPassword = () => {
     setHideConfirmPassword(!hideConfirmPassword);
   };
-
   const checkValidation = () => {
     if (oldPassword === '') {
       Alert.alert('Towns Cup', 'Old password cannot be blank');
@@ -55,8 +54,8 @@ export default function ChangePasswordScreen({navigation}) {
       Alert.alert('Towns Cup', 'Confirm password cannot be blank');
       return false;
     }
-    if (newPassword.length < 8) {
-      Alert.alert('Towns Cup', 'Password should be atleast 8 characters');
+    if (newPassword.length < 6) {
+      Alert.alert('Towns Cup', 'Password should be atleast 6 characters');
       return false;
     }
     if (newPassword !== confirmPassword) {

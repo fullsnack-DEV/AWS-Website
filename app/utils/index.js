@@ -15,6 +15,7 @@ import {
   LayoutAnimation,
 } from 'react-native';
 import _ from 'lodash';
+
 import AsyncStorage from '@react-native-community/async-storage';
 import {
   heightPercentageToDP as hp,
@@ -944,3 +945,4 @@ export const getGamesList = async (games) => {
     });
   }
 };
+

@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect } from 'react';
+import React, { useContext, useLayoutEffect,useState,useEffect ,useCallback} from 'react';
 import {
   StyleSheet,
   View,
@@ -11,6 +11,7 @@ import {
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
+import auth from '@react-native-firebase/auth';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -19,19 +20,64 @@ import Header from '../../../components/Home/Header';
 
 export default function UserSettingPrivacyScreen({ navigation }) {
   const authContext = useContext(AuthContext);
-
+const [userSetting,setUserSetting] = useState();
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, [navigation]);
 
-  const userSettingMenu = [
-    { key: 'Account', id: 1 },
-    { key: 'Change Password', id: 2 },
-    { key: 'Currency', id: 3 },
-    // {key: 'Privacy Setting',id:3}
-  ];
+
+
+  const getUserSettingMenu= useCallback(()=>{
+    checkUserIsRegistratedOrNotWithFirebase(authContext.entity.obj.email)
+    .then(async (providerData) => {
+     
+      if(providerData.includes('password')){
+       setUserSetting([
+        { key: 'Account', id: 1 },
+        { key: 'Change Password', id: 2 },
+        { key: 'Currency', id: 3 },
+        // {key: 'Privacy Setting',id:3}
+      ])
+      }else{
+        setUserSetting([
+          { key: 'Account', id: 1 },
+          
+          { key: 'Currency', id: 2},
+          // {key: 'Privacy Setting',id:3}
+        ])
+      }
+  
+    }).catch(async (error) => {
+      console.log(error);
+      
+    });
+  },[authContext.entity.obj.email])
+
+   useEffect(()=>{
+    getUserSettingMenu()
+  },[getUserSettingMenu])
+
+  const checkUserIsRegistratedOrNotWithFirebase = (email) => new Promise((resolve, reject) => {
+    auth()
+      .fetchSignInMethodsForEmail(email)
+      .then((isAccountThereInFirebase) => {
+        if (isAccountThereInFirebase?.length > 0) {
+          resolve(isAccountThereInFirebase);
+        } else {
+          resolve(false);
+        }
+      })
+      .catch((error) => {
+        reject(error);
+        console.log(error);
+      });
+  });
+
+
+
+  
   const handleOpetions = async (opetions) => {
     if (opetions === 'Account') {
       navigation.navigate('PersonalInformationScreen');
@@ -82,7 +128,7 @@ export default function UserSettingPrivacyScreen({ navigation }) {
       <View style={{ width: '100%', height: 0.5, backgroundColor: colors.writePostSepratorColor }}/>
       <ScrollView style={styles.mainContainer}>
         <FlatList
-        data={userSettingMenu}
+        data={userSetting}
         keyExtractor={(index) => index.toString()}
         renderItem={renderMenu}
         ItemSeparatorComponent={() => (
