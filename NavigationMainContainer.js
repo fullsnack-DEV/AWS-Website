@@ -34,6 +34,7 @@ export default function NavigationMainContainer() {
       unsubscribe()
       if (user) {
         user.getIdTokenResult(true).then((refreshedToken) => {
+          console.log('refreshedToken',refreshedToken);
           resolve(refreshedToken)
         }).catch(() => {
           reject()
@@ -49,9 +50,7 @@ export default function NavigationMainContainer() {
       console.log('App QB Setting:=>', setting);
 
       if (setting) {
-        if (firebase.apps.length === 0) {
-          // await firebase.initializeApp(setting.firebaseConfig);
-        }
+        
         authContext.setQBCredential(setting)
         QB.settings
           .init({

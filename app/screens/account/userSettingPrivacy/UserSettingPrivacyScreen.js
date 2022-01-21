@@ -9,9 +9,9 @@ import {
   ScrollView, SafeAreaView, TouchableOpacity,
 } from 'react-native';
 
+import firebase from '@react-native-firebase/app';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-import auth from '@react-native-firebase/auth';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -60,7 +60,7 @@ const [userSetting,setUserSetting] = useState();
   },[getUserSettingMenu])
 
   const checkUserIsRegistratedOrNotWithFirebase = (email) => new Promise((resolve, reject) => {
-    auth()
+    firebase.auth()
       .fetchSignInMethodsForEmail(email)
       .then((isAccountThereInFirebase) => {
         if (isAccountThereInFirebase?.length > 0) {

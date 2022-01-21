@@ -233,6 +233,7 @@ android {
 dependencies {
     implementation project(':react-native-config')
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation platform('com.google.firebase:firebase-bom:29.0.3')
     //noinspection GradleDynamicVersion
     compile project(':react-native-orientation')
     implementation "com.facebook.react:react-native:+"  // From node_modules

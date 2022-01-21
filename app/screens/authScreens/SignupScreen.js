@@ -10,7 +10,6 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 
 import firebase from '@react-native-firebase/app';
 
-import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
 import Config from 'react-native-config';
@@ -95,7 +94,7 @@ export default function SignupScreen({ navigation }) {
   })
 
   const checkUserIsRegistratedOrNotWithFirebase = () => new Promise((resolve, reject) => {
-    auth().fetchSignInMethodsForEmail(email).then((isAccountThereInFirebase) => {
+    firebase.auth().fetchSignInMethodsForEmail(email).then((isAccountThereInFirebase) => {
       if (isAccountThereInFirebase?.length > 0) {
         resolve(isAccountThereInFirebase);
       } else {
@@ -223,7 +222,6 @@ export default function SignupScreen({ navigation }) {
   };
 
   const signUpWithFirebase = () => {
-
     firebase.auth()
       .createUserWithEmailAndPassword(email, password)
       .then(async () => {
