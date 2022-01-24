@@ -86,11 +86,10 @@ project.ext.react = [
 apply from: "../../node_modules/react-native/react.gradle"
 
 project.ext.envConfigFiles = [
-    debug: ".env.development",
-    debugdev: ".env.development",
-    releaseprod: ".env.production",
-    releaseqa: ".env.qa",
-    releasestaging: ".env.staging",
+    Development: ".env.development",
+    Production: ".env.production",
+    Qa: ".env.qa",
+    Staging: ".env.staging",
 ]
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
@@ -135,7 +134,7 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-lintOptions {
+    lintOptions {
         checkReleaseBuilds false
         abortOnError false
     }
@@ -151,6 +150,7 @@ lintOptions {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        flavorDimensions "default"
         vectorDrawables.useSupportLibrary = true
     }
     splits {
@@ -191,6 +191,29 @@ lintOptions {
         }
     }
 
+    productFlavors{
+        Development{
+            applicationId "com.townscup"
+            minSdkVersion rootProject.ext.minSdkVersion
+            targetSdkVersion rootProject.ext.targetSdkVersion
+        }
+        Staging{
+            applicationId "com.townscup"
+            minSdkVersion rootProject.ext.minSdkVersion
+            targetSdkVersion rootProject.ext.targetSdkVersion
+        }
+        Qa{
+            applicationId "com.townscup"
+            minSdkVersion rootProject.ext.minSdkVersion
+            targetSdkVersion rootProject.ext.targetSdkVersion
+        }
+        Production{
+            applicationId "com.townscup"
+            minSdkVersion rootProject.ext.minSdkVersion
+            targetSdkVersion rootProject.ext.targetSdkVersion
+        }
+    }
+
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
@@ -210,6 +233,7 @@ lintOptions {
 dependencies {
     implementation project(':react-native-config')
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation platform('com.google.firebase:firebase-bom:29.0.3')
     //noinspection GradleDynamicVersion
     compile project(':react-native-orientation')
     implementation "com.facebook.react:react-native:+"  // From node_modules

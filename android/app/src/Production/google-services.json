@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "554403942194",
+    "firebase_url": "https://towncsup.firebaseio.com",
+    "project_id": "towncsup",
+    "storage_bucket": "towncsup.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:554403942194:android:ec5e84d5969cc53a1ed12b",
+        "android_client_info": {
+          "package_name": "com.townscup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "554403942194-hsoj82knt2a8rf87i87loi19mh354n06.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP7yHrVumgtNQZ0tt-moZGRL5-jQRZqfA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "554403942194-hsoj82knt2a8rf87i87loi19mh354n06.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "554403942194-m5esi5lppofkn6u3katti7402qg5uvls.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.FBandFirebase"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

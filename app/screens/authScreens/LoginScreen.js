@@ -16,7 +16,6 @@ import {
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import firebase from '@react-native-firebase/app';
-import auth from '@react-native-firebase/auth';
 import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../auth/context';
@@ -182,13 +181,14 @@ export default function LoginScreen({ navigation }) {
   const login = useCallback(async () => {
     setloading(true);
     await Utility.clearStorage();
+    console.log('firebase:=>',firebase);
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
         console.log('then:=>');
         setloading(true);
-        const loginOnAuthStateChanged = auth().onAuthStateChanged(onAuthStateChanged);
+        const loginOnAuthStateChanged = firebase.auth().onAuthStateChanged(onAuthStateChanged);
         loginOnAuthStateChanged();
         
       })

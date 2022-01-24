@@ -84,7 +84,7 @@ export default function WelcomeScreen({navigation}) {
   // Google sign-in configuration initialization
   GoogleSignin.configure({
     webClientId:
-      '1003329053001-tmrapda76mrggdv8slroapq21icrkdb9.apps.googleusercontent.com',
+     Config.WEB_CLIENT_FIREBASE,
     offlineAccess: false,
   });
 
@@ -400,19 +400,31 @@ export default function WelcomeScreen({navigation}) {
   const onGoogleButtonPress = async () => {
     try {
       setloading(true);
+
+      await GoogleSignin.hasPlayServices();
       const {idToken} = await GoogleSignin.signIn();
+      console.log('idToken',idToken);
+
       const googleCredential = await auth.GoogleAuthProvider.credential(
         idToken,
       );
+      console.log('googleCredential',googleCredential);
       await signInSignUpWithSocialCredential(googleCredential, 'GOOGLE | ');
     } catch (error) {
-      let message = '';
+      
       setloading(false);
-      if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        message = 'Play services are not available';
-      }
-      if (message !== '') {
-        setTimeout(() => Alert.alert('Towns cup', message), 100);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // sign in was cancelled
+        Alert.alert('cancelled');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation in progress already
+        Alert.alert('in progress');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        Alert.alert('play services not available or outdated');
+      } else {
+        console.log('Something went wrong:',error);
+        Alert.alert('Something went wrong', error.toString());
+        
       }
     }
   };
