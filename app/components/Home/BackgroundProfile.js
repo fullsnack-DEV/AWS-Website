@@ -24,6 +24,7 @@ const BackgroundProfile = ({
 }) => {
   const authContext = useContext(AuthContext);
   const [entityData, setEntityData] = useState(null);
+
   useEffect(() => {
     if (currentUserData) {
       const etData = {};
@@ -39,6 +40,9 @@ const BackgroundProfile = ({
       etData.country = currentUserData?.country ?? '';
       etData.teamCount = currentUserData?.joined_teams?.length ?? 0;
       setEntityData({...etData});
+
+      console.log('CurrentUserData:=>',currentUserData);
+      console.log('ETDATA:=>',etData);
     }
   }, [currentUserData]);
 

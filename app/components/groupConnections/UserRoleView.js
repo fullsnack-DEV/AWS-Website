@@ -32,21 +32,21 @@ export default function UserRoleView({ data, onPressProfile, onPressMessage }) {
             <View style={styles.topTextContainer}>
               <Text style={styles.nameText} numberOfLines={1}>{data.first_name} {data.last_name}</Text>
               <View style={{ flexDirection: 'row' }}>
-                {data.group_member_detail.is_admin && <TCUserRoleBadge title='Admin' titleColor={colors.themeColor}/>}
-                {data.group_member_detail.is_coach && <TCUserRoleBadge title='Coach' titleColor={colors.greeColor}/>}
-                {data.group_member_detail.is_player && <TCUserRoleBadge title='Player' titleColor={colors.playerBadgeColor}/>}
+                {data?.group_member_detail?.is_admin && <TCUserRoleBadge title='Admin' titleColor={colors.themeColor}/>}
+                {data?.group_member_detail?.is_coach && <TCUserRoleBadge title='Coach' titleColor={colors.greeColor}/>}
+                {data?.group_member_detail?.is_player && <TCUserRoleBadge title='Player' titleColor={colors.playerBadgeColor}/>}
               </View>
             </View>
           </View>
           <View>
             <View style={styles.bottomViewContainer}>
               {/* <Text style={styles.skillText} numberOfLines={2}>Forward, Midfielder, Goal Keeper</Text> */}
-              {data.group_member_detail.status && <Text style={styles.awayStatusText} numberOfLines={1}>{data.group_member_detail.status.join(', ')}</Text>}
+              {data?.group_member_detail?.status && <Text style={styles.awayStatusText} numberOfLines={1}>{data.group_member_detail.status.join(', ')}</Text>}
             </View>
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          {data.group_member_detail.connected ? <TCMessageButton title = 'Message' color={colors.greeColor} onPress={onPressMessage}/>
+          {data?.group_member_detail?.connected ? <TCMessageButton title = 'Message' color={colors.greeColor} onPress={onPressMessage}/>
             : <TCMessageButton title = 'Email' color={colors.lightBlackColor} onPress={() => {
               Linking.canOpenURL('mailto:')
                 // eslint-disable-next-line consistent-return

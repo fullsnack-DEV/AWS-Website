@@ -229,7 +229,8 @@ const getTabBarVisibility = (route) => {
 routeName === 'EntityScoreboardScreen' || 
 routeName === 'EntityGallaryScreen' ||
 routeName === 'EntityReviewScreen' || 
-routeName === 'RespondForInviteScreen'
+routeName === 'RespondForInviteScreen' || 
+routeName === 'JoinedTeamsScreen'
 
   ) {
     return false;

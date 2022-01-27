@@ -392,6 +392,7 @@ import React, {
            onChangeText={(text) => setDescription(text)}
            value={description}
            multiline
+           maxLength={1000}
            textAlignVertical={'top'}
            numberOfLines={4}
            placeholder={strings.descriptionClubTextPlaceholder}

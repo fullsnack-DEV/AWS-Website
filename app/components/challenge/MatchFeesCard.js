@@ -55,8 +55,19 @@ export default function MatchFeesCard({
             </Text>
           </View>
 
+          {senderOrReceiver === 'sender' && <View style={styles.feesRow}>
+            <Text style={styles.matchServiceFeeText}>International card fee</Text>
+            <Text style={styles.matchServiceFeeText}>
+              {senderOrReceiver === 'sender' ? '$' : '-$'}
+              
+              {challengeObj?.international_card_fee?.toFixed(2)}
+               
+              {(challengeObj?.currency_type)?.toUpperCase() || 'CAD'}
+            </Text>
+          </View>}
+
           <View style={{ flex: 1 }} />
-          <TCThinDivider width={'94%'} />
+          <TCThinDivider width={'94%'}/>
           <View style={[styles.feesRow, { marginBottom: 5 }]}>
             <Text style={styles.feeStructureText}>
               {senderOrReceiver === 'sender'
@@ -83,7 +94,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     borderRadius: 8,
     elevation: 5,
-    height: 102,
+    height: 120, // 102
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,

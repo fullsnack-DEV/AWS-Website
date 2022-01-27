@@ -300,11 +300,19 @@ const HomeScreen = ({navigation, route}) => {
   const [sportsSelection, setSportsSelection] = useState();
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [matchData, setMatchData] = useState();
+  const [hideScore, SetHideScore] = useState();
 
   const eventEditDeleteAction = useRef();
   const addRoleActionSheet = useRef();
   const manageChallengeActionSheet = useRef();
   const offerActionSheet = useRef();
+
+  useEffect(() => {
+    setTimeout(() => {
+      SetHideScore(true);
+    }, 5000);
+  }, []);
+
   useEffect(() => {
     if (route?.params?.isEntityCreated) {
       onSwitchProfile(route?.params?.entityObj);
@@ -657,7 +665,7 @@ const HomeScreen = ({navigation, route}) => {
       })
       .catch(() => {
         setFirstTimeLoading(false);
-       
+
         // navigation.goBack();
       });
 
@@ -679,7 +687,7 @@ const HomeScreen = ({navigation, route}) => {
       })
       .catch(() => {
         setFirstTimeLoading(false);
-       
+
         // navigation.goBack();
       });
   };
@@ -702,7 +710,7 @@ const HomeScreen = ({navigation, route}) => {
         promises.push(getTeamsOfClub(uid, authContext));
       }
       Promise.all(promises)
-        .then(([res1, res2]) => {
+        .then(([res1, res2,res3]) => {
           const groupDetails = res1.payload;
 
           console.log('res1:::=>', res1.payload);
@@ -727,9 +735,10 @@ const HomeScreen = ({navigation, route}) => {
           groupDetails.joined_leagues = league_Data;
           groupDetails.history = history_Data;
           groupDetails.joined_members = res2.payload;
-          // if (res3) {
-          //   groupDetails.joined_teams = res3.payload;
-          // }
+           if (res3 && clubHome) {
+             groupDetails.joined_teams = res3.payload;
+             console.log('Club teams list:=>',res3);
+           }
           setCurrentUserData(groupDetails);
           setIsClubHome(clubHome);
           setIsTeamHome(teamHome);
@@ -741,7 +750,7 @@ const HomeScreen = ({navigation, route}) => {
         })
         .catch(() => {
           setFirstTimeLoading(false);
-          
+
           // navigation.goBack();
         });
     }
@@ -1391,7 +1400,7 @@ const HomeScreen = ({navigation, route}) => {
           })
           .catch(() => {
             setFirstTimeLoading(false);
-            
+
             // navigation.goBack();
           });
       } else {
@@ -1510,7 +1519,7 @@ const HomeScreen = ({navigation, route}) => {
           })
           .catch(() => {
             setFirstTimeLoading(false);
-            
+
             // navigation.goBack();
           });
       } else {
@@ -1649,7 +1658,10 @@ const HomeScreen = ({navigation, route}) => {
       let user_id = authContext?.entity?.uid;
       if (route?.params?.role) entity_type = route?.params?.role;
       if (route?.params?.uid) user_id = route?.params?.uid;
-      if (tab !== 'members') {
+      if(tab === 'following'){
+        navigation.navigate('JoinedTeamsScreen');
+      }
+      else if (tab !== 'members') {
         navigation.navigate('UserConnections', {tab, entity_type, user_id});
       } else {
         navigation.navigate('GroupMembersScreen', {groupID: user_id});
@@ -2177,10 +2189,10 @@ const HomeScreen = ({navigation, route}) => {
 
   const moveToMainInfoTab = () => {
     console.log('move to EntityInfoScreen');
-    console.log('Admin condition:',currentUserData,authContext.entity.uid);
+    console.log('Admin condition:', currentUserData, authContext.entity.uid);
     navigation.navigate('EntityInfoScreen', {
       uid: route?.params?.uid || authContext.entity.uid,
-      isAdmin : route?.params?.uid === authContext.entity.uid,
+      isAdmin: route?.params?.uid === authContext.entity.uid,
       onGroupListPress,
       onTeamPress,
       refereesInModal,
@@ -2681,7 +2693,7 @@ const HomeScreen = ({navigation, route}) => {
             source={{uri: bgImage}}
             resizeMode={'cover'}
             style={styles.bgImageStyle}>
-            {currentUserData.entity_type !== 'club' && (
+            {currentUserData.entity_type !== 'club' && !hideScore && (
               <ImageBackground
                 source={images.profileLevel}
                 style={{
@@ -2731,7 +2743,7 @@ const HomeScreen = ({navigation, route}) => {
     return (
       <View style={{marginLeft: 10, marginRight: 10}}>
         <View style={styles.bgImageStyle}>
-          {currentUserData.entity_type !== 'club' && (
+          {currentUserData.entity_type !== 'club' && !hideScore && (
             <ImageBackground
               source={images.profileLevel}
               style={{
@@ -3087,8 +3099,6 @@ const HomeScreen = ({navigation, route}) => {
                     currentUserData,
                     callFunction: callthis,
                   });
-
-                  
                 }}
               />
               <TCProfileButton

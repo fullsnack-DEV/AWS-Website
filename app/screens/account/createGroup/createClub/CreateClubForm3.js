@@ -450,27 +450,29 @@ export default function CreateClubForm3({ navigation, route }) {
   };
 
   const openImagePicker = (width = 400, height = 400) => {
-    let cropCircle = false;
-    if (currentImageSelection === 1) {
-      cropCircle = true;
-    }
-    ImagePicker.openPicker({
-      width,
-      height,
-      cropping: true,
-      cropperCircleOverlay: cropCircle,
-    }).then((data) => {
-      // 1 means profile, 0 - means background
+    
+      let cropCircle = false;
       if (currentImageSelection === 1) {
-        // setGroupProfile({ ...groupProfile, thumbnail: data.path })
-        setThumbnail(data.path);
-      } else {
-        // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
-        setBackgroundThumbnail(data.path);
+        cropCircle = true;
       }
-    }).catch((e) => {
-      Alert.alert(e)
-    });
+      ImagePicker.openPicker({
+        width,
+        height,
+        cropping: true,
+        cropperCircleOverlay: cropCircle,
+      }).then((data) => {
+        // 1 means profile, 0 - means background
+        if (currentImageSelection === 1) {
+          // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+          setThumbnail(data.path);
+        } else {
+          // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+          setBackgroundThumbnail(data.path);
+        }
+      })
+
+    
+    
   };
 
   const deleteImage = () => {
@@ -538,9 +540,7 @@ export default function CreateClubForm3({ navigation, route }) {
         break;
     }
   })
-  .catch((error) => {
-    Alert.alert(error)
-  });
+  
   };
 
   const nextOnPress = () => {
@@ -674,7 +674,7 @@ export default function CreateClubForm3({ navigation, route }) {
           style={{ marginBottom: 10 }}
         />
         <TCProfileImageControl
-          profileImage={thumbnail ? { uri: thumbnail } : undefined}
+          profileImage={thumbnail ? { uri: thumbnail } : images.clubPlaceholder}
           profileImagePlaceholder={images.clubPlaceholder}
           bgImage={backgroundThumbnail ? { uri: backgroundThumbnail } : undefined}
           onPressBGImage={() => onBGImageClicked()}

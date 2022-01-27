@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext,useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,7 +14,6 @@ import moment from 'moment';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
-import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../../auth/context';
 import EventMapView from '../../../../components/Schedule/EventMapView';
 import colors from '../../../../Constants/Colors';
@@ -42,7 +41,6 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 
 let body = {};
 const RefereeBookingDateAndTime = ({ navigation, route }) => {
-  const isFocused = useIsFocused();
 
   const sportName = route?.params?.sportName;
   const userData = route?.params?.userData;
@@ -57,8 +55,12 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
 
   useEffect(() => {
     setGameData(route?.params?.gameData);
-    getFeeDetail();
-  }, [route?.params?.gameData]);
+      if (route?.params?.paymentMethod) {
+        setDefaultCard(route?.params?.paymentMethod);
+        console.log('route?.params?.paymentMethod',route?.params?.paymentMethod);
+      }
+      getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
+  }, [  route?.params?.gameData, route?.params?.paymentMethod]);
 
   useEffect(() => {
     Utility.getStorage('paymentSetting').then((setting) => {
@@ -66,13 +68,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     });
   }, []);
 
-  useEffect(() => {
-    if (isFocused) {
-      if (route?.params?.paymentMethod) {
-        setDefaultCard(route?.params?.paymentMethod);
-      }
-    }
-  }, [isFocused, route?.params?.paymentMethod]);
+ 
 
   useEffect(() => {
     if (gameData) {
@@ -98,7 +94,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
 
   
 
-  const getFeeDetail = () => {
+  const getFeeDetail = useCallback((paymentObj) => {
     const gData = route?.params?.gameData;
     if (gData) {
       setLoading(true);
@@ -107,13 +103,18 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
         manual_fee: false,
         start_datetime: gData?.start_datetime,
         end_datetime: gData?.end_datetime,
+        source: paymentObj?.id,
       };
+
+      console.log('Body',body);
       getRefereeGameFeeEstimation(
         route?.params?.isHirer ? authContext.entity.uid : userData?.user_id,
         body,
         authContext,
       )
         .then((response) => {
+          console.log('Estimate referee::=>',response.payload);
+
           body.hourly_game_fee = response?.payload?.hourly_game_fee ?? 0;
           body.currency_type = 'CAD';
           body.total_payout = response?.payload?.total_payout ?? 0;
@@ -121,6 +122,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
           body.total_service_fee2 = response?.payload?.total_service_fee2 ?? 0;
           body.total_amount = response?.payload?.total_amount ?? 0;
           body.total_game_fee = response?.payload?.total_game_fee ?? 0;
+          body.international_card_fee = response?.payload?.international_card_fee ?? 0;
           body.payment_method_type = 'card';
           // body = { ...body, hourly_game_fee: hFee, currency_type: cType };
           setChallengeObject(body);
@@ -136,7 +138,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     } else {
       setLoading(false);
     }
-  };
+  },[authContext, defaultCard?.id, route?.params?.gameData, route?.params?.isHirer, userData?.user_id]);
 
   const Title = ({ text, required }) => (
     <Text style={styles.titleText}>

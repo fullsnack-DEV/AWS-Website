@@ -47,6 +47,7 @@ import fonts from '../../../Constants/Fonts';
 import strings from '../../../Constants/String';
 import {getHitSlop} from '../../../utils';
 
+// eslint-disable-next-line no-unused-vars
 let entity = {};
 let timer, timerForTimeline;
 let lastTimeStamp;
@@ -137,11 +138,12 @@ export default function GameDetailRecord({navigation, route}) {
         } else {
           setGameObj(response.payload);
         }
-        if (entity === gameObj?.home_team?.group_id) {
-          setActionByTeamID(gameObj?.home_team?.group_id);
-        } else {
-          setActionByTeamID(gameObj?.away_team?.group_id);
-        }
+        // if (entity === gameObj?.home_team?.group_id) {
+        //   setActionByTeamID(gameObj?.home_team?.group_id);
+        // } else {
+        //   console.log('action by changed');
+        //   setActionByTeamID(gameObj?.away_team?.group_id);
+        // }
         setloading(false);
 
         console.log('GAME RESPONSE::', response.payload);

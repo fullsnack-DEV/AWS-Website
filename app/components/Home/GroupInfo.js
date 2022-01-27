@@ -354,7 +354,7 @@ export default function GroupInfo({
         </View>
       )}
 
-      <View>
+      {groupDetails?.entity_type === 'team' &&     <View>
         <View style={styles.sectionStyle}>
           <TCEditHeader
             title={'Available Venues'}
@@ -383,7 +383,7 @@ export default function GroupInfo({
         )}
 
         <TCThickDivider marginTop={10} />
-      </View>
+      </View>}
 
       {/* TC Point section */}
       {groupDetails?.entity_type === 'team' && (

@@ -21,7 +21,7 @@ import Separator from '../../../components/Separator';
 import AuthContext from '../../../auth/context'
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts'
-import { searchLocationPlaceDetail, searchLocations } from '../../../api/External';
+import { searchCityState, searchLocationPlaceDetail } from '../../../api/External';
 
 export default function SearchLocationScreen({ navigation, route }) {
   const authContext = useContext(AuthContext)
@@ -35,7 +35,7 @@ export default function SearchLocationScreen({ navigation, route }) {
 
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
-      searchLocations(searchLocationText, 'cities').then((response) => {
+      searchCityState(searchLocationText).then((response) => {
         setNoData(false);
         setCityData(response.predictions);
       });
@@ -54,63 +54,69 @@ export default function SearchLocationScreen({ navigation, route }) {
             locationDetail: response.result.geometry.location,
           });
         }
-        if (route.params.comeFrom === 'EditEventScreen') {
+        else if (route.params.comeFrom === 'EditEventScreen') {
           navigation.navigate('EditEventScreen', {
             locationName: item.description,
             locationDetail: response.result.geometry.location,
           });
         }
-        if (route.params.comeFrom === 'HomeScreen') {
+        else if (route.params.comeFrom === 'HomeScreen') {
           navigation.navigate('HomeScreen', {
             locationName: item.description,
             locationDetail: response.result.geometry.location,
             locationCity: item.structured_formatting.main_text,
           });
         }
+        else if (route.params.comeFrom === 'CreateTeamForm1') {
+          navigation.navigate('CreateTeamForm1', {
+            city: item.terms[0].value,
+            state: item.terms[1].value,
+            country: item?.terms?.[2]?.value,
+          });
+        } 
+        else if (route.params.comeFrom === 'CreateClubForm1') {
+          navigation.navigate('CreateClubForm1', {
+            city: item.terms[0].value ?? '',
+            state: item.terms[1].value ?? '',
+            country: item?.terms?.[2]?.value ?? '',
+          });
+        } 
+        else if (route.params.comeFrom === 'PersonalInformationScreen') {
+          navigation.navigate('PersonalInformationScreen', {
+            city: item.terms[0].value,
+            state: item.terms[1].value,
+            country: item.terms[2].value,
+          });
+        } 
+        else if (route.params.comeFrom === 'EditPersonalProfileScreen') {
+          navigation.navigate('EditPersonalProfileScreen', {
+            city: item.terms[0].value,
+            state: item.terms[1].value,
+            country: item.terms[2].value,
+          });
+        } 
+        else if (route.params.comeFrom === 'EditGroupProfileScreen') {
+          navigation.navigate('EditGroupProfileScreen', {
+            city: item.terms[0].value,
+            state: item.terms[1].value,
+            country: item.terms[2].value,
+          });
+        }
       }
     });
-    if (route.params.comeFrom === 'CreateTeamForm1') {
-      navigation.navigate('CreateTeamForm1', {
-        city: item.terms[0].value,
-        state: item.terms[1].value,
-        country: item.terms[2].value,
-      });
-    } else if (route.params.comeFrom === 'CreateClubForm1') {
-      navigation.navigate('CreateClubForm1', {
-        city: item.terms[0].value,
-        state: item.terms[1].value,
-        country: item.terms[2].value,
-      });
-    } else if (route.params.comeFrom === 'PersonalInformationScreen') {
-      navigation.navigate('PersonalInformationScreen', {
-        city: item.terms[0].value,
-        state: item.terms[1].value,
-        country: item.terms[2].value,
-      });
-    } else if (route.params.comeFrom === 'EditPersonalProfileScreen') {
-      navigation.navigate('EditPersonalProfileScreen', {
-        city: item.terms[0].value,
-        state: item.terms[1].value,
-        country: item.terms[2].value,
-      });
-    } else if (route.params.comeFrom === 'EditGroupProfileScreen') {
-      navigation.navigate('EditGroupProfileScreen', {
-        city: item.terms[0].value,
-        state: item.terms[1].value,
-        country: item.terms[2].value,
-      });
-    }
   };
 
-  const renderItem = ({ item, index }) => (
-    <TouchableWithoutFeedback
-        style={ styles.listItem }
-        onPress={ () => getTeamsData(item) }>
-      <Text style={ styles.cityList }>{cityData[index].description}</Text>
-
-      <Separator />
-    </TouchableWithoutFeedback>
-  );
+  const renderItem = ({ item, index }) => {
+    console.log('Location item:=>',item);
+    return (
+      <TouchableWithoutFeedback
+          style={ styles.listItem }
+          onPress={ () => getTeamsData(item) }>
+        <Text style={ styles.cityList }>{cityData[index].description}</Text>
+        <Separator />
+      </TouchableWithoutFeedback>
+    )
+  };
 
   return (
     <View style={ styles.mainContainer }>

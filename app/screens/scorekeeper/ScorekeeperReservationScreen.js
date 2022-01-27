@@ -21,7 +21,7 @@ import moment from 'moment';
 
 import _ from 'lodash';
 import * as Utility from '../../utils';
-import { acceptDeclineReservation, getReservation } from '../../api/Challenge';
+import {acceptDeclineReservation, getReservation} from '../../api/Challenge';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import fonts from '../../Constants/Fonts';
@@ -40,17 +40,17 @@ import TCBorderButton from '../../components/TCBorderButton';
 import MatchFeesCard from '../../components/challenge/MatchFeesCard';
 import ReservationNumber from '../../components/reservations/ReservationNumber';
 import TCGameCard from '../../components/TCGameCard';
-import { getGameFromToDateDiff, getGameHomeScreen } from '../../utils/gameUtils';
+import {getGameFromToDateDiff, getGameHomeScreen} from '../../utils/gameUtils';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 import TCChallengeTitle from '../../components/TCChallengeTitle';
-import { heightPercentageToDP, widthPercentageToDP } from '../../utils';
+import {heightPercentageToDP, widthPercentageToDP} from '../../utils';
 import TCTouchableLabel from '../../components/TCTouchableLabel';
 import ScorekeeperReservationTitle from '../../components/reservations/ScorekeeperReservationTitle';
-import { paymentMethods } from '../../api/Users';
+import {paymentMethods} from '../../api/Users';
 
 let entity = {};
 
-export default function ScorekeeperReservationScreen({ navigation, route }) {
+export default function ScorekeeperReservationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -61,7 +61,7 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
 
   useEffect(() => {
     entity = authContext.entity;
-    const { reservationObj } = route.params ?? {};
+    const {reservationObj} = route.params ?? {};
     console.log('ALTER Scorekeeper RESERVATION OBJECT:', reservationObj);
     console.log('ALTER Scorekeeper RESERVATION Home team OBJECT:', awayTeam);
     if (route?.params?.isRefresh) {
@@ -69,8 +69,8 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
     }
     setbodyParams(reservationObj);
     if (
-      (reservationObj?.game?.away_team?.group_id
-        || reservationObj?.game?.away_team?.user_id) === entity.uid
+      (reservationObj?.game?.away_team?.group_id ||
+        reservationObj?.game?.away_team?.user_id) === entity.uid
     ) {
       setHomeTeam(reservationObj?.game?.away_team);
       setAwayTeam(reservationObj?.game?.home_team);
@@ -80,11 +80,10 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
     }
     if (route?.params?.paymentMethod) {
       setDefaultCard(route?.params?.paymentMethod);
-    }else{
-      getPaymentMethods(reservationObj?.source)
+    } else {
+      getPaymentMethods(reservationObj?.source);
     }
   }, [authContext.entity, awayTeam, route.params]);
-
 
   const getPaymentMethods = (source) => {
     setloading(true);
@@ -115,8 +114,8 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
 
   const getNavigationTitle = () => {
     if (
-      bodyParams?.status === ScorekeeperReservationStatus.approved
-      || bodyParams?.status === ScorekeeperReservationStatus.declined
+      bodyParams?.status === ScorekeeperReservationStatus.approved ||
+      bodyParams?.status === ScorekeeperReservationStatus.declined
     ) {
       return strings.scorekeeperRequestScreenTitle;
     }
@@ -135,7 +134,7 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
       callerID,
       versionNo,
       status,
-      { source: defaultCard?.id },
+      {source: defaultCard?.id},
       authContext,
     )
       .then((response) => {
@@ -177,8 +176,8 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
         setloading(false);
         setbodyParams(response.payload[0]);
         if (
-          (response.payload[0]?.game?.away_team?.group_id
-            || response.payload[0]?.game?.away_team?.user_id) === entity.uid
+          (response.payload[0]?.game?.away_team?.group_id ||
+            response.payload[0]?.game?.away_team?.user_id) === entity.uid
         ) {
           setHomeTeam(response.payload[0]?.game?.away_team);
           setAwayTeam(response.payload[0]?.game?.home_team);
@@ -205,7 +204,7 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
     return 'sender';
   }, []);
   const checkSenderOrReceiver = (reservationObj) => {
-    const teampObj = { ...reservationObj };
+    const teampObj = {...reservationObj};
     // if (
     //   teampObj?.status === ScorekeeperReservationStatus.pendingpayment
     //   || teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
@@ -255,10 +254,10 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
     return 'receiver';
   };
 
-  const Title = ({ text, required }) => (
+  const Title = ({text, required}) => (
     <Text style={styles.titleText}>
       {text}
-      {required && <Text style={{ color: colors.redDelColor }}> * </Text>}
+      {required && <Text style={{color: colors.redDelColor}}> * </Text>}
     </Text>
   );
 
@@ -269,7 +268,7 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
     return `${startDate} - ${endDate} (${duration})`;
   };
 
-  const Seperator = ({ height = 7 }) => (
+  const Seperator = ({height = 7}) => (
     <View
       style={{
         width: '100%',
@@ -283,87 +282,41 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
   const getRequester = (param) => {
     if (entity.uid === param?.scorekeeper?.user_id) {
       if (
-        param?.initiated_by
-        === (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)
+        param?.initiated_by ===
+        (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)
       ) {
         return param?.game?.home_team;
       }
       return param?.game?.away_team;
     }
 
-      if (
-      (entity.uid
-      === (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)) || (param?.initiated_by
-      === (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id))
+    if (
+      entity.uid ===
+        (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id) ||
+      param?.initiated_by ===
+        (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)
     ) {
       return param?.game?.home_team;
     }
     return param?.game?.away_team;
   };
 
-const renderBottomBurron = () => (<SafeAreaView>
-  {checkSenderOrReceiver(bodyParams) === 'sender'
-      && (bodyParams.status === ScorekeeperReservationStatus.approved
-        || bodyParams.status === ScorekeeperReservationStatus.offered)
-      && bodyParams.expiry_datetime < new Date().getTime() && (
-        <View>
-          <TCBorderButton
-            title={strings.calcelRequest}
-            textColor={colors.grayColor}
-            borderColor={colors.grayColor}
-            marginBottom={15}
-            marginTop={15}
-            height={40}
-            shadow={true}
-            onPress={() => {
-              let callerId = '';
-              if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
-                callerId = entity.uid;
-              }
-              acceptDeclineScorekeeperReservation(
-                bodyParams.reservation_id,
-                callerId,
-                bodyParams.version,
-                'cancel',
-              );
-            }}
-          />
-        </View>
-      )}
-
-  {checkSenderOrReceiver(bodyParams) === 'receiver'
-      && ((bodyParams.status === ScorekeeperReservationStatus.offered) || ((bodyParams.status === ScorekeeperReservationStatus.approved) && !bodyParams.is_offer))
-      && bodyParams.expiry_datetime > new Date().getTime() / 1000 && (
-        <View style={{ marginTop: 15 }}>
-          <TCGradientButton
-            title={strings.accept}
-            marginBottom={15}
-            onPress={() => {
-              // navigation.navigate('AlterScorekeeperScreen', { reservationObj: allReservationData })
-
-              if (
-                !(
-                  bodyParams?.game?.status === GameStatus.accepted
-                  || bodyParams?.game?.status === GameStatus.reset
-                )
-              ) {
-                Alert.alert('aa');
-              } else if (
-                bodyParams?.game?.start_datetime
-                < new Date().getTime() / 1000
-              ) {
-                Alert.alert(strings.scorekeeperOfferExpiryText);
-              } else if (
-                bodyParams.initiated_by === authContext.entity.uid
-                && (bodyParams.status
-                  === ScorekeeperReservationStatus.approved
-                  || bodyParams.status
-                    === ScorekeeperReservationStatus.offered)
-                && bodyParams.total_game_fee > 0
-                && !defaultCard
-              ) {
-                Alert.alert('Please choose payment method first.');
-              } else {
+  const renderBottomBurron = () => (
+    <SafeAreaView>
+      {checkSenderOrReceiver(bodyParams) === 'sender' &&
+        (bodyParams.status === ScorekeeperReservationStatus.approved ||
+          bodyParams.status === ScorekeeperReservationStatus.offered) &&
+        bodyParams.expiry_datetime < new Date().getTime() && (
+          <View>
+            <TCBorderButton
+              title={strings.calcelRequest}
+              textColor={colors.grayColor}
+              borderColor={colors.grayColor}
+              marginBottom={15}
+              marginTop={15}
+              height={40}
+              shadow={true}
+              onPress={() => {
                 let callerId = '';
                 if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
                   callerId = entity.uid;
@@ -372,71 +325,164 @@ const renderBottomBurron = () => (<SafeAreaView>
                   bodyParams.reservation_id,
                   callerId,
                   bodyParams.version,
-                  bodyParams?.status
-                    === ScorekeeperReservationStatus.offered
-                    && bodyParams?.is_offer === true
-                    ? 'approve'
-                    : 'accept',
+                  'cancel',
+                );
+              }}
+            />
+          </View>
+        )}
+
+      {checkSenderOrReceiver(bodyParams) === 'receiver' &&
+        (bodyParams.status === ScorekeeperReservationStatus.offered ||
+          (bodyParams.status === ScorekeeperReservationStatus.approved &&
+            !bodyParams.is_offer)) &&
+        bodyParams.expiry_datetime > new Date().getTime() / 1000 && (
+          <View style={{marginTop: 15}}>
+            <TCGradientButton
+              title={strings.accept}
+              marginBottom={15}
+              onPress={() => {
+                // navigation.navigate('AlterScorekeeperScreen', { reservationObj: allReservationData })
+
+                if (
+                  !(
+                    bodyParams?.game?.status === GameStatus.accepted ||
+                    bodyParams?.game?.status === GameStatus.reset
+                  )
+                ) {
+                  Alert.alert('aa');
+                } else if (
+                  bodyParams?.game?.start_datetime <
+                  new Date().getTime() / 1000
+                ) {
+                  Alert.alert(strings.scorekeeperOfferExpiryText);
+                } else if (
+                  bodyParams.initiated_by === authContext.entity.uid &&
+                  (bodyParams.status ===
+                    ScorekeeperReservationStatus.approved ||
+                    bodyParams.status ===
+                      ScorekeeperReservationStatus.offered) &&
+                  bodyParams.total_game_fee > 0 &&
+                  !defaultCard
+                ) {
+                  Alert.alert('Please choose payment method first.');
+                } else {
+                  let callerId = '';
+                  if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
+                    callerId = entity.uid;
+                  }
+                  acceptDeclineScorekeeperReservation(
+                    bodyParams.reservation_id,
+                    callerId,
+                    bodyParams.version,
+                    bodyParams?.status ===
+                      ScorekeeperReservationStatus.offered &&
+                      bodyParams?.is_offer === true
+                      ? 'approve'
+                      : 'accept',
+                  );
+                }
+              }}
+            />
+            <TCBorderButton
+              title={strings.decline}
+              textColor={colors.grayColor}
+              borderColor={colors.grayColor}
+              height={40}
+              marginBottom={15}
+              shadow={true}
+              onPress={() => {
+                let callerId = '';
+                if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
+                  callerId = entity.uid;
+                }
+                acceptDeclineScorekeeperReservation(
+                  bodyParams.reservation_id,
+                  callerId,
+                  bodyParams.version,
+                  'decline',
+                );
+              }}
+            />
+          </View>
+        )}
+
+      {(bodyParams.status === ScorekeeperReservationStatus.accepted ||
+        bodyParams.status === ScorekeeperReservationStatus.restored ||
+        bodyParams.status === ScorekeeperReservationStatus.requestcancelled ||
+        (bodyParams.status === ScorekeeperReservationStatus.declined &&
+          bodyParams.version > 3)) && (
+            <View>
+              <TCBorderButton
+            title={strings.alterReservation}
+            textColor={colors.grayColor}
+            borderColor={colors.grayColor}
+            height={40}
+            shadow={true}
+            marginTop={15}
+            onPress={() => {
+              if (
+                (bodyParams?.game?.status === GameStatus.accepted ||
+                  bodyParams?.game?.status === GameStatus.reset) &&
+                bodyParams.start_datetime >
+                  parseFloat(new Date().getTime() / 1000).toFixed(0)
+              ) {
+                navigation.navigate('EditScorekeeperReservation', {
+                  reservationObj: bodyParams,
+                  lastConfirmVersion: bodyParams,
+                });
+              } else if (bodyParams?.game?.status === GameStatus.ended) {
+                Alert.alert('Game is ended so you can not change reservation.');
+              } else {
+                Alert.alert(
+                  'Reservation cannot be change after game time passed or offer expired.',
                 );
               }
             }}
           />
-          <TCBorderButton
-            title={strings.decline}
-            textColor={colors.grayColor}
+              <TCBorderButton
+            title={strings.cancelreservation}
+            textColor={colors.whiteColor}
             borderColor={colors.grayColor}
+            backgroundColor={colors.grayColor}
             height={40}
-            marginBottom={15}
             shadow={true}
+            marginBottom={15}
+            marginTop={10}
             onPress={() => {
-              let callerId = '';
-              if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
-                callerId = entity.uid;
+              if (
+                bodyParams?.game?.status ===
+                (GameStatus.accepted || GameStatus.reset)
+              ) {
+                let callerId = '';
+                if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
+                  callerId = entity.uid;
+                }
+                acceptDeclineScorekeeperReservation(
+                  bodyParams.reservation_id,
+                  callerId,
+                  bodyParams.version,
+                  'cancel',
+                );
+              } else if (
+                bodyParams.start_datetime * 1000 <
+                new Date().getTime()
+              ) {
+                Alert.alert(
+                  'Reservation cannot be cancel after game time passed or offer expired.',
+                );
+              } else {
+                Alert.alert(
+                  'Reservation can not be cancel after game has been started.',
+                );
               }
-              acceptDeclineScorekeeperReservation(
-                bodyParams.reservation_id,
-                callerId,
-                bodyParams.version,
-                'decline',
-              );
             }}
           />
-        </View>
+            </View>
       )}
-
-  {(bodyParams.status === ScorekeeperReservationStatus.accepted
-      || bodyParams.status === ScorekeeperReservationStatus.restored
-      || bodyParams.status
-        === ScorekeeperReservationStatus.requestcancelled
-        || (bodyParams.status
-        === ScorekeeperReservationStatus.declined && bodyParams.version > 3)) && (
-          <View>
-            <TCBorderButton
-          title={strings.alterReservation}
-          textColor={colors.grayColor}
-          borderColor={colors.grayColor}
-          height={40}
-          shadow={true}
-          marginTop={15}
-          onPress={() => {
-            if (
-              (bodyParams?.game?.status === GameStatus.accepted
-                || bodyParams?.game?.status === GameStatus.reset)
-              && bodyParams.start_datetime
-                > parseFloat(new Date().getTime() / 1000).toFixed(0)
-            ) {
-              navigation.navigate('EditScorekeeperReservation', {
-                reservationObj: bodyParams,
-                lastConfirmVersion: bodyParams,
-              });
-            } else {
-              Alert.alert(
-                'Reservation cannot be change after game time passed or offer expired.',
-              );
-            }
-          }}
-        />
-            <TCBorderButton
+      {(bodyParams.status === ScorekeeperReservationStatus.pendingpayment ||
+        bodyParams.status === ScorekeeperReservationStatus.approved) && (
+          <TCBorderButton
           title={strings.cancelreservation}
           textColor={colors.whiteColor}
           borderColor={colors.grayColor}
@@ -444,12 +490,21 @@ const renderBottomBurron = () => (<SafeAreaView>
           height={40}
           shadow={true}
           marginBottom={15}
-          marginTop={10}
+          marginTop={15}
           onPress={() => {
             if (
-              bodyParams?.game?.status
-              === (GameStatus.accepted || GameStatus.reset)
+              !(
+                bodyParams?.game?.status === GameStatus.accepted ||
+                bodyParams?.game?.status === GameStatus.reset
+              )
             ) {
+              Alert.alert(strings.cannotAcceptText);
+            } else if (
+              bodyParams?.expiry_datetime < new Date().getTime() / 1000 ||
+              bodyParams?.game?.start_datetime < new Date().getTime() / 1000
+            ) {
+              Alert.alert(strings.scorekeeperOfferExpiryText);
+            } else {
               let callerId = '';
               if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
                 callerId = entity.uid;
@@ -460,69 +515,17 @@ const renderBottomBurron = () => (<SafeAreaView>
                 bodyParams.version,
                 'cancel',
               );
-            } else if (
-              bodyParams.start_datetime * 1000
-              < new Date().getTime()
-            ) {
-              Alert.alert(
-                'Reservation cannot be cancel after game time passed or offer expired.',
-              );
-            } else {
-              Alert.alert(
-                'Reservation can not be cancel after game has been started.',
-              );
             }
           }}
         />
-          </View>
-    )}
-  {((bodyParams.status
-      === ScorekeeperReservationStatus.pendingpayment) || (bodyParams.status === ScorekeeperReservationStatus.approved)) && (
-        <TCBorderButton
-        title={strings.cancelreservation}
-        textColor={colors.whiteColor}
-        borderColor={colors.grayColor}
-        backgroundColor={colors.grayColor}
-        height={40}
-        shadow={true}
-        marginBottom={15}
-        marginTop={15}
-        onPress={() => {
-          if (
-            !(
-              bodyParams?.game?.status === GameStatus.accepted
-              || bodyParams?.game?.status === GameStatus.reset
-            )
-          ) {
-            Alert.alert(strings.cannotAcceptText);
-          } else if (
-            bodyParams?.expiry_datetime
-              < new Date().getTime() / 1000
-            || bodyParams?.game?.start_datetime
-              < new Date().getTime() / 1000
-          ) {
-            Alert.alert(strings.scorekeeperOfferExpiryText);
-          } else {
-            let callerId = '';
-            if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
-              callerId = entity.uid;
-            }
-            acceptDeclineScorekeeperReservation(
-              bodyParams.reservation_id,
-              callerId,
-              bodyParams.version,
-              'cancel',
-            );
-          }
-        }}
-      />
-    )}
-</SafeAreaView>)
+      )}
+    </SafeAreaView>
+  );
 
   console.log('Scorekeeper bodyparams:', bodyParams);
   return (
     <TCKeyboardView>
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView style={{flex: 1}}>
         <ActivityLoader visible={loading} />
         {bodyParams && (
           <View>
@@ -550,7 +553,7 @@ const renderBottomBurron = () => (<SafeAreaView>
                     <Image
                       source={
                         getRequester(bodyParams)?.thumbnail
-                          ? { uri: getRequester(bodyParams)?.thumbnail }
+                          ? {uri: getRequester(bodyParams)?.thumbnail}
                           : images.teamPlaceholder
                       }
                       style={styles.profileImage}
@@ -584,7 +587,7 @@ const renderBottomBurron = () => (<SafeAreaView>
                     <Image
                       source={
                         bodyParams?.scorekeeper?.full_image
-                          ? { uri: bodyParams?.scorekeeper?.full_image }
+                          ? {uri: bodyParams?.scorekeeper?.full_image}
                           : images.profilePlaceHolder
                       }
                       style={styles.profileImage}
@@ -605,7 +608,11 @@ const renderBottomBurron = () => (<SafeAreaView>
             </View>
             <TCThinDivider />
 
-            <ScorekeeperReservationTitle reservationObject={bodyParams} showDesc={true} containerStyle={{ margin: 15 }}/>
+            <ScorekeeperReservationTitle
+              reservationObject={bodyParams}
+              showDesc={true}
+              containerStyle={{margin: 15}}
+            />
 
             {/* Status declined */}
             {/* {bodyParams?.approved_by === entity.uid && !bodyParams?.is_offer
@@ -651,9 +658,10 @@ const renderBottomBurron = () => (<SafeAreaView>
                 </View>
               )} */}
 
-            {bodyParams?.scorekeeper?.user_id !== entity.uid
-              && bodyParams.status === ScorekeeperReservationStatus.pendingpayment && (
-                <TCGradientButton
+            {bodyParams?.scorekeeper?.user_id !== entity.uid &&
+              bodyParams.status ===
+                ScorekeeperReservationStatus.pendingpayment && (
+                  <TCGradientButton
                   title={'TRY TO PAY AGAIN'}
                   onPress={() => {
                     navigation.navigate('PayAgainScorekeeperScreen', {
@@ -661,7 +669,7 @@ const renderBottomBurron = () => (<SafeAreaView>
                       comeFrom: 'ScorekeeperReservationScreen',
                     });
                   }}
-                  style={{ marginTop: 15 }}
+                  style={{marginTop: 15}}
                 />
               )}
 
@@ -671,7 +679,7 @@ const renderBottomBurron = () => (<SafeAreaView>
               <View>
                 <TCLabel
                   title="Game"
-                  style={{ marginLeft: 15, marginBottom: 15, marginTop: 15 }}
+                  style={{marginLeft: 15, marginBottom: 15, marginTop: 15}}
                 />
                 {bodyParams?.game && (
                   <TCGameCard
@@ -695,8 +703,8 @@ const renderBottomBurron = () => (<SafeAreaView>
                       <TCInfoField
                         title={'Date'}
                         value={
-                          bodyParams?.start_datetime
-                          && moment(bodyParams?.start_datetime * 1000).format(
+                          bodyParams?.start_datetime &&
+                          moment(bodyParams?.start_datetime * 1000).format(
                             'MMM DD, YYYY',
                         )
                         }
@@ -746,19 +754,19 @@ const renderBottomBurron = () => (<SafeAreaView>
                       <EventMapView
                         coordinate={{
                           latitude:
-                            bodyParams?.game?.venue?.coordinate?.latitude
-                            ?? 0.0,
+                            bodyParams?.game?.venue?.coordinate?.latitude ??
+                            0.0,
                           longitude:
-                            bodyParams?.game?.venue?.coordinate?.longitude
-                            ?? 0.0,
+                            bodyParams?.game?.venue?.coordinate?.longitude ??
+                            0.0,
                         }}
                         region={{
                           latitude:
-                            bodyParams?.game?.venue?.coordinate?.latitude
-                            ?? 0.0,
+                            bodyParams?.game?.venue?.coordinate?.latitude ??
+                            0.0,
                           longitude:
-                            bodyParams?.game?.venue?.coordinate?.longitude
-                            ?? 0.0,
+                            bodyParams?.game?.venue?.coordinate?.longitude ??
+                            0.0,
                           latitudeDelta: 0.0922,
                           longitudeDelta: 0.0421,
                         }}
@@ -773,9 +781,9 @@ const renderBottomBurron = () => (<SafeAreaView>
             <Text style={styles.rulesDetail}>
               {bodyParams?.game?.general_rules}
             </Text>
-            <View style={{ marginBottom: 10 }} />
+            <View style={{marginBottom: 10}} />
             <Text style={styles.rulesTitle}>Special Rules</Text>
-            <Text style={[styles.rulesDetail, { marginBottom: 10 }]}>
+            <Text style={[styles.rulesDetail, {marginBottom: 10}]}>
               {bodyParams?.game?.special_rules}
             </Text>
             <TCThickDivider />
@@ -819,10 +827,10 @@ const renderBottomBurron = () => (<SafeAreaView>
               senderOrReceiver={checkSenderForPayment(bodyParams)}
             />
 
-            {bodyParams.initiated_by === authContext.entity.uid
-              && bodyParams.status === ScorekeeperReservationStatus.offered
-              && bodyParams.total_game_fee > 0 && (
-                <View style={{ marginTop: 15 }}>
+            {bodyParams.initiated_by === authContext.entity.uid &&
+              bodyParams.status === ScorekeeperReservationStatus.offered &&
+              bodyParams.total_game_fee > 0 && (
+                <View style={{marginTop: 15}}>
                   <TCTouchableLabel
                     title={
                       defaultCard && defaultCard?.card?.brand
@@ -830,8 +838,8 @@ const renderBottomBurron = () => (<SafeAreaView>
                         : strings.addOptionMessage
                     }
                     subTitle={
-                      (defaultCard && defaultCard?.card?.last4)
-                      ?? defaultCard?.card?.last4
+                      (defaultCard && defaultCard?.card?.last4) ??
+                      defaultCard?.card?.last4
                     }
                     showNextArrow={true}
                     onPress={() => {
@@ -851,7 +859,6 @@ const renderBottomBurron = () => (<SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-
   teamView: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -913,7 +920,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,

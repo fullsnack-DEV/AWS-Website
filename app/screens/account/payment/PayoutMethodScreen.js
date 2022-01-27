@@ -11,13 +11,11 @@ import AuthContext from '../../../auth/context'
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import { merchantAuthDetail, addMerchantAccount } from '../../../api/Users';
 import strings from '../../../Constants/String'
-import colors from '../../../Constants/Colors'
 import * as Utility from '../../../utils';
-import TCInnerLoader from '../../../components/TCInnerLoader';
+// import TCInnerLoader from '../../../components/TCInnerLoader';
 
 export default function PayoutMethodScreen({ navigation }) {
   const [loading, setloading] = useState(false);
-  const [firstTimeLoad, setFirstTimeLoad] = useState(false);
   const authContext = useContext(AuthContext)
   const [merchantURL, setMerchantURL] = useState();
   const [redirectURI, setRedirectURI] = useState();
@@ -30,7 +28,7 @@ export default function PayoutMethodScreen({ navigation }) {
   }, [])
 
   const callPaymentAuthDetailAPI = async () => {
-      setFirstTimeLoad(true)
+      setloading(true)
       Utility.getStorage('appSetting').then((setting) => {
         merchantAuthDetail(authContext.entity.uid, authContext)
       .then((response) => {
@@ -45,11 +43,11 @@ export default function PayoutMethodScreen({ navigation }) {
         urlString = `${urlString}&suggested_capabilities[]=card_payments`
         setMerchantURL(urlString)
         console.log('URL::=>', urlString)
-        setFirstTimeLoad(false)
+        // setFirstTimeLoad(false)
       })
       .catch((e) => {
         console.log('error in payout method', e)
-        setFirstTimeLoad(false)
+        setloading(false)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10)
@@ -83,12 +81,13 @@ export default function PayoutMethodScreen({ navigation }) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <TCInnerLoader visible={firstTimeLoad} size={50}/>
+      {/* <TCInnerLoader visible={firstTimeLoad} size={50}/> */}
       {merchantURL && <WebView
         ref={webView}
         source={{ uri: merchantURL }}
         renderLoading={renderLoadingView}
         startInLoadingState={true}
+        onLoadEnd={() => setloading(false)}
         onShouldStartLoadWithRequest={(request) => {
           const { url } = request;
           if (!url) return false;
@@ -122,6 +121,6 @@ export default function PayoutMethodScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: colors.grayBackgroundColor,
+    // backgroundColor: colors.grayBackgroundColor,
   },
 })
