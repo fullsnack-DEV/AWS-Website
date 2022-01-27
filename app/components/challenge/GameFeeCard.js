@@ -39,7 +39,24 @@ export default function GameFeeCard({ feeObject, currency, isChallenger }) {
                 )} ${currency}`}
           </Text>
         </View>
+        
       </View>
+
+      {isChallenger && <View style={styles.feeContainer}>
+        <View>
+          <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>
+            International Card Fee
+          </Text>
+        </View>
+        <View>
+          <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>
+            {`$${parseFloat(feeObject?.international_card_fee).toFixed(
+                  2,
+                )} ${currency}`}
+          </Text>
+        </View>
+      </View>}
+
       <TCThinDivider marginBottom={10} marginTop={10} />
       <View style={styles.feeContainer}>
         <View>

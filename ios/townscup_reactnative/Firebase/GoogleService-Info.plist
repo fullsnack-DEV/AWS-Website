@@ -3,21 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>554403942194-n3qob9dmoct5g3kf2dkgj3bqcmpfdo0l.apps.googleusercontent.com</string>
+	<string>1003329053001-d6vrap0re8g99pt8hc747a39b1ko9t9k.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.554403942194-n3qob9dmoct5g3kf2dkgj3bqcmpfdo0l</string>
+	<string>com.googleusercontent.apps.1003329053001-d6vrap0re8g99pt8hc747a39b1ko9t9k</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1003329053001-9el21u3is4p1sfd9184mucm5dqibsruv.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDgeauHI9WKk0gwPmtxTGiIy1yrXyuipSY</string>
+	<string>AIzaSyD3OeCH3PW2eqt79NAWrMq2dq1m-_hICjY</string>
 	<key>GCM_SENDER_ID</key>
-	<string>554403942194</string>
+	<string>1003329053001</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.towncup.app</string>
 	<key>PROJECT_ID</key>
-	<string>towncsup</string>
+	<string>townscup-fee6e</string>
 	<key>STORAGE_BUCKET</key>
-	<string>towncsup.appspot.com</string>
+	<string>townscup-fee6e.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:554403942194:ios:8a9a6aed2a8aced41ed12b</string>
+	<string>1:1003329053001:ios:871cb0767d635d0d463a98</string>
 	<key>DATABASE_URL</key>
-	<string>https://towncsup.firebaseio.com</string>
+	<string>https://townscup-fee6e.firebaseio.com</string>
 </dict>
 </plist>

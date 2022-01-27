@@ -38,7 +38,7 @@ import * as Utility from '../../../utils';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import images from '../../../Constants/ImagePath';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
-import {acceptDeclineChallenge, createChallenge} from '../../../api/Challenge';
+import {acceptDeclineChallenge, createChallenge, getFeesEstimation} from '../../../api/Challenge';
 import TCFormProgress from '../../../components/TCFormProgress';
 
 let entity = {};
@@ -51,7 +51,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [refundValue, setRefundValue] = useState();
 
-  const [challengeData] = useState(route?.params?.challengeObj);
+  const [challengeData,setChallengeData] = useState(route?.params?.challengeObj);
   console.log(' route?.params?.challengeObj,', route?.params?.challengeObj);
   const [groupObj] = useState(route?.params?.groupObj);
   const [defaultCard, setDefaultCard] = useState();
@@ -98,6 +98,8 @@ export default function ChallengePaymentScreen({route, navigation}) {
   useEffect(() => {
     if (isFocused) {
       if (route?.params?.paymentMethod) {
+        console.log('route?.params?.paymentMethod',route?.params?.paymentMethod);
+        getFeeDetail()
         setDefaultCard(route?.params?.paymentMethod);
       }
     }
@@ -117,6 +119,48 @@ export default function ChallengePaymentScreen({route, navigation}) {
     delta -= minutes * 60;
 
     return `${hours}h ${minutes}m`;
+  };
+
+
+  const getFeeDetail = () => {
+    const feeBody = {};
+    console.log('challengeData check:=>', challengeData);
+
+    feeBody.source = route?.params?.paymentMethod?.id;
+    feeBody.challenge_id = challengeData?.challenge_id;
+    feeBody.payment_method_type = 'card';
+    feeBody.currency_type = challengeData?.game_fee?.currency_type?.toLowerCase();
+    feeBody.total_game_fee = Number(
+      parseFloat(challengeData?.game_fee?.fee).toFixed(2),
+    );
+    setloading(true);
+    getFeesEstimation(feeBody, authContext)
+      .then((response) => {
+       
+        setChallengeData({
+          ...challengeData,
+          total_game_fee: response.payload?.total_game_fee,
+          total_service_fee1: response.payload?.total_service_fee1,
+          total_service_fee2: response.payload?.total_service_fee2,
+          total_stripe_fee: response.payload?.total_stripe_fee,
+          total_payout: response.payload?.total_payout,
+          total_amount: response.payload?.total_amount,
+          international_card_fee: response.payload?.international_card_fee,
+        });
+
+        // if (response.payload.total_game_fee === 0) {
+        //   setTotalZero(true);
+        // }
+        console.log('Body estimate fee:=>', response.payload);
+
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
 
   const sendChallenge = () => {
@@ -400,6 +444,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
           total_stripe_fee: challengeData?.total_stripe_fee,
           total_payout: challengeData?.total_payout,
           total_amount: challengeData?.total_amount,
+          international_card_fee: challengeData?.international_card_fee,
         }}
         currency={challengeData?.game_fee?.currency_type}
         isChallenger={challengeData?.challenger === entity.uid}
@@ -491,6 +536,13 @@ export default function ChallengePaymentScreen({route, navigation}) {
               challengeObj = {
                 source: defaultCard?.id,
                 payment_method_type: 'card',
+                total_game_fee: challengeData?.total_game_fee,
+                total_service_fee1: challengeData?.total_service_fee1,
+                total_service_fee2: challengeData?.total_service_fee2,
+                total_stripe_fee: challengeData?.total_stripe_fee,
+                total_payout: challengeData?.total_payout,
+                total_amount: challengeData?.total_amount,
+                international_card_fee: challengeData?.international_card_fee,
               };
             }
 

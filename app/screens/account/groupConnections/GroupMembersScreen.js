@@ -11,7 +11,6 @@ import {
   StyleSheet,
   Image,
   TouchableWithoutFeedback,
-  Text,
   Alert,
   FlatList,
 } from 'react-native';
@@ -42,7 +41,6 @@ import {
   QBgetUserDetail,
 } from '../../../utils/QuickBlox';
 import UserListShimmer from '../../../components/shimmer/commonComponents/UserListShimmer';
-import fonts from '../../../Constants/Fonts';
 
 let entity = {};
 export default function GroupMembersScreen({navigation, route}) {
@@ -88,11 +86,6 @@ export default function GroupMembersScreen({navigation, route}) {
   };
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.screenTitleText}>
-          {route?.params?.fromProfile ? 'Members' : 'Connection'}
-        </Text>
-      ),
       headerRight: () =>
         switchUser.uid === route?.params?.groupID && (
           <TouchableWithoutFeedback onPress={() => actionSheet.current.show()}>
@@ -103,12 +96,7 @@ export default function GroupMembersScreen({navigation, route}) {
           </TouchableWithoutFeedback>
         ),
     });
-  }, [
-    navigation,
-    route?.params?.fromProfile,
-    route?.params?.groupID,
-    switchUser,
-  ]);
+  }, [navigation, switchUser]);
 
   // const toggleModal = () => {
   //   setModalVisible(!isModalVisible);
@@ -250,7 +238,6 @@ export default function GroupMembersScreen({navigation, route}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-
       <View tabLabel="Members" style={{flex: 1}}>
         <View style={styles.searchBarView}>
           <TCSearchBox
@@ -271,6 +258,7 @@ export default function GroupMembersScreen({navigation, route}) {
           <TCNoDataView title={'No Members Found'} />
         )}
       </View>
+
       <ActionSheet
         ref={actionSheet}
         // title={'News Feed Post'}
@@ -523,9 +511,4 @@ const styles = StyleSheet.create({
   //   marginRight: 30,
   //   marginTop: 20,
   // },
-  screenTitleText: {
-    fontSize: 18,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
 });

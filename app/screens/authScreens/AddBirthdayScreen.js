@@ -29,6 +29,8 @@ export default function AddBirthdayScreen({ navigation }) {
   ];
   const [dateValue, setDateValue] = useState(new Date());
   const [minDateValue, setMinDateValue] = useState(new Date());
+  const [maxDateValue, setMaxDateValue] = useState(new Date());
+
   const [loading, setLoading] = useState(false);
 
   const onChange = (selectedDate) => {
@@ -36,10 +38,13 @@ export default function AddBirthdayScreen({ navigation }) {
   };
 
   useEffect(() => {
-    const date = new Date(new Date());
-    date.setFullYear(date.getFullYear() - 13);
-    setDateValue(date);
-    setMinDateValue(date);
+    const mindate = new Date();
+    const maxdate = new Date();
+    mindate.setFullYear(mindate.getFullYear() - 13);
+    maxdate.setFullYear(maxdate.getFullYear()-123)
+    setDateValue(mindate);
+    setMinDateValue(mindate);
+    setMaxDateValue(maxdate);
   }, [])
 
   const updateProfile = async (params, callback) => {
@@ -90,6 +95,7 @@ export default function AddBirthdayScreen({ navigation }) {
               fadeToColor={'none'}
               mode={'date'}
               maximumDate={minDateValue}
+              minimumDate={maxDateValue}
               testID={'startsDateDateTimePicker'}
               style={{ marginTop: 15 }}
               date={dateValue}

@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState,useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -57,20 +57,19 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    if (isFocused) {
+    
       if (route?.params?.paymentMethod) {
         setDefaultCard(route?.params?.paymentMethod);
       }
-    }
+      getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
   }, [isFocused, route?.params?.paymentMethod]);
 
 
   useEffect(() => {
     setGameData(route?.params?.gameData);
-    getFeeDetail();
   }, [route?.params?.gameData]);
 
-  const getFeeDetail = () => {
+  const getFeeDetail = useCallback((paymentObj) => {
     const gData = route?.params?.gameData;
     if (gData) {
       setLoading(true);
@@ -79,6 +78,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
         manual_fee: false,
         start_datetime: gData?.start_datetime,
         end_datetime: gData?.end_datetime,
+        source: paymentObj?.id,
       };
       getScorekeeperGameFeeEstimation(route?.params?.isHirer ? authContext.entity.uid : userData?.user_id, body, authContext)
         .then((response) => {
@@ -90,6 +90,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
           body.total_service_fee2 = response?.payload?.total_service_fee2 ?? 0;
           body.total_amount = response?.payload?.total_amount ?? 0;
           body.total_game_fee = response?.payload?.total_game_fee ?? 0;
+          body.international_card_fee = response?.payload?.international_card_fee ?? 0;
           body.payment_method_type = 'card';
           // body = { ...body, hourly_game_fee: hFee, currency_type: cType };
           setChallengeObject(body);
@@ -103,7 +104,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
     } else {
       setLoading(false);
     }
-  };
+  },[authContext, route?.params?.gameData, route?.params?.isHirer, userData?.user_id]);
 
   const Title = ({ text, required }) => (
     <Text style={styles.titleText}>

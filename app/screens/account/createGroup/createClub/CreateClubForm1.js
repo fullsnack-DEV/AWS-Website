@@ -190,11 +190,9 @@ export default function CreateClubForm1({navigation, route}) {
                 pointerEvents="none"></TextInput>
             </TouchableOpacity>
           </View>
-
           <Text style={styles.fieldTitle}>
             {strings.SportsTextFieldClubTitle}
           </Text>
-
           <TouchableOpacity style={styles.languageView} onPress={toggleModal}>
             <Text
               style={

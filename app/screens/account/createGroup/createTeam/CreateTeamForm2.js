@@ -494,6 +494,7 @@ export default function CreateTeamForm2({ navigation, route }) {
             onChangeText={(text) => setDescription(text)}
             value={description}
             multiline
+            maxLength={1000}
             textAlignVertical={'top'}
             numberOfLines={4}
             placeholder={strings.descriptionTeamTextPlaceholder}

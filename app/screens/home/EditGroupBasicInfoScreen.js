@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, {
   useState,
   useLayoutEffect,
@@ -16,7 +17,9 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
 import RNPickerSelect from 'react-native-picker-select';
@@ -35,6 +38,7 @@ import ImageButton from '../../components/WritePost/ImageButton';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import DataSource from '../../Constants/DataSource';
 import AuthContext from '../../auth/context';
+import TCThinDivider from '../../components/TCThinDivider';
 
 export default function EditGroupBasicInfoScreen({navigation, route}) {
   // For activity indicator
@@ -51,14 +55,28 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [groupLanguages, setGroupLanguages] = useState(groupDetails?.languages);
   const [languages, setLanguages] = useState([]);
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  const [selectedSports, setSelectedSports] = useState(
+    groupDetails?.sports ? groupDetails?.sports : [],
+  );
+  const [sportsName, setSportsName] = useState('');
+  const [sportList, setSportList] = useState([]);
 
   const onSaveButtonClicked = useCallback(() => {
     if (checkValidation()) {
       console.log('groupData', groupData);
 
+      console.log('selectedSports', selectedSports);
+      const newArray = selectedSports.map((obj) => {
+        delete obj.isChecked;
+        delete obj.entity_type;
+        return obj;
+      });
+
       setloading(true);
       const groupProfile = {};
-      groupProfile.sport = groupData.sport;
+      groupProfile.sports = newArray;
+      groupProfile.sports_string = sportsName;
       groupProfile.gender = groupData.gender;
       groupProfile.min_age = minAge;
       groupProfile.max_age = maxAge;
@@ -67,7 +85,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
       groupProfile.membership_fee = groupData.membership_fee;
       groupProfile.membership_fee_type = groupData.membership_fee_type;
       groupProfile.office_address =
-        groupData.office_address && groupData.office_address;
+      groupData.office_address && groupData.office_address;
 
       console.log('updating values', groupProfile);
 
@@ -94,7 +112,16 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
           }, 10);
         });
     }
-  }, [authContext, groupData, groupLanguages, maxAge, minAge, navigation]);
+  }, [
+    authContext,
+    groupData,
+    groupLanguages,
+    maxAge,
+    minAge,
+    navigation,
+    selectedSports,
+    sportsName,
+  ]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -113,9 +140,16 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
         </Text>
       ),
     });
-  }, [navigation, groupData, groupLanguages, onSaveButtonClicked]);
+  }, [
+    navigation,
+    groupData,
+    groupLanguages,
+    onSaveButtonClicked,
+    selectedSports,
+  ]);
 
   useEffect(() => {
+    getSports();
     const arr = [];
     for (const tempData of Utility.languageList) {
       tempData.isChecked = false;
@@ -150,12 +184,66 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
     setMaxAgeValue(maxAgeArray);
   }, [minAge, maxAge]);
 
+  const getSports = () => {
+    let sportArr = [];
+
+    authContext.sports.map((item) => {
+      sportArr = [...sportArr, ...item.format];
+      return null;
+    });
+
+    const arr = [];
+    for (const tempData of sportArr) {
+      console.log('tempData', tempData);
+      const sportsArray = selectedSports.filter(
+        (spo) =>
+          spo.sport === tempData.sport &&
+          spo.sport_type === tempData.sport_type,
+      );
+      const obj = {};
+      obj.entity_type = tempData.entity_type;
+      obj.sport = tempData.sport;
+      obj.sport_type = tempData.sport_type;
+      obj.isChecked = sportsArray.length > 0;
+      arr.push(obj);
+    }
+    console.log('Sport array:=>', arr);
+    setSportList(arr);
+  };
+
+  useEffect(() => {
+    let sportText = '';
+    console.log('selectedSports:=>', selectedSports);
+    if (selectedSports.length > 0) {
+      selectedSports.map((sportItem, index) => {
+        sportText =
+          sportText +
+          (index ? ', ' : '') +
+          Utility.getSportName(sportItem, authContext);
+        return null;
+      });
+      setSportsName(sportText);
+    }
+  }, [authContext, selectedSports]);
+
+  const toggleModal = () => {
+    setVisibleSportsModal(!visibleSportsModal);
+  };
+
   const checkValidation = () => {
-    if (groupData.sport === '') {
+    if (selectedSports.length <= 0) {
       Alert.alert(strings.alertmessagetitle, strings.sportcannotbeblank);
       return false;
     }
-
+    if (groupData.registration_fee >= 1000) {
+      Alert.alert(strings.alertmessagetitle, 'Membership Registration fee can not be biggger than 1000.');
+      return false;
+    }
+    if (groupData.membership_fee >= 1000) {
+      Alert.alert(strings.alertmessagetitle, 'Membership fee can not be biggger than 1000.');
+      return false;
+    }
+    
     // else if (player1ID === player2ID) {
     //   if (player1ID !== '' && player2ID !== '') {
     //     Alert.alert('Towns Cup', 'Both player cannot be same');
@@ -176,15 +264,14 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
 
   const toggleLanguageModal = () => {
     const selectedLanguages = groupLanguages || [];
-    console.log('groupLanguages',groupLanguages);
-    
+    console.log('groupLanguages', groupLanguages);
+
     // if (groupLanguages) {
     //   selectedLanguages = groupLanguages.split(', ');
     // }
-    console.log('Utility.languages',Utility.languageList);
+    console.log('Utility.languages', Utility.languageList);
     const arr = [];
     for (const tempData of Utility.languageList) {
-      
       if (selectedLanguages.includes(tempData.language)) {
         tempData.isChecked = true;
       } else {
@@ -230,6 +317,37 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
     </TouchableOpacity>
   );
 
+  const isIconCheckedOrNotSport = ({item, index}) => {
+    sportList[index].isChecked = !item.isChecked;
+    setSportList([...sportList]);
+  };
+
+  const renderSports = ({item, index}) => (
+    <TouchableWithoutFeedback
+      onPress={() => {
+        isIconCheckedOrNotSport({item, index});
+      }}>
+      <View
+        style={{
+          // padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>
+          {Utility.getSportName(item, authContext)}
+        </Text>
+        <View style={styles.checkbox}>
+          {sportList[index].isChecked ? (
+            <Image source={images.orangeCheckBox} style={styles.checkboxImg} />
+          ) : (
+            <Image source={images.uncheckWhite} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
+  );
+
   return (
     <TCKeyboardView>
       <ScrollView style={styles.mainContainer}>
@@ -244,35 +362,17 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
             <Text style={styles.validationSign}>*</Text>
           </View>
           {groupData.entity_type === 'club' && (
-            <View style={{height: 40, marginHorizontal: 15}}>
-              <RNPickerSelect
-                placeholder={{
-                  label: strings.selectSportPlaceholder,
-                  value: '',
-                }}
-                items={[
-                  {label: 'Football', value: 'football'},
-                  {label: 'Baseball', value: 'baseball'},
-                  {label: 'Tennis', value: 'tennis'},
-                  {label: 'Hockey', value: 'hockey'},
-                ]}
-                onValueChange={(value) => {
-                  setGroupData({...groupData, sport: value});
-                }}
-                useNativeAndroidPickerStyle={false}
-                style={{
-                  inputIOS: styles.inputIOS,
-                  inputAndroid: styles.inputAndroid,
-                }}
-                value={groupData.sport}
-                Icon={() => (
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrow}
-                  />
-                )}
-              />
-            </View>
+            <TouchableOpacity style={styles.languageView} onPress={toggleModal}>
+              <Text
+                style={
+                  sportsName
+                    ? styles.languageText
+                    : styles.languagePlaceholderText
+                }
+                numberOfLines={50}>
+                {sportsName || 'Sports'}
+              </Text>
+            </TouchableOpacity>
           )}
           {groupData.entity_type === 'team' && (
             <View style={{marginHorizontal: 25, marginTop: 5}}>
@@ -499,6 +599,84 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
           />
         </View>
       </Modal>
+      <Modal
+        isVisible={visibleSportsModal}
+        backdropColor="black"
+        onBackdropPress={() => setVisibleSportsModal(false)}
+        onRequestClose={() => setVisibleSportsModal(false)}
+        backdropOpacity={0}
+        style={{
+          marginLeft: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          marginRight: 0,
+          marginBottom: 0,
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.3,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              hitSlop={Utility.getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => setVisibleSportsModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              Sports
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                const filterChecked = sportList.filter((obj) => obj.isChecked);
+                setSelectedSports(filterChecked);
+                toggleModal();
+              }}>
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: colors.themeColor,
+                }}>
+                Apply
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={sportList}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderSports}
+          />
+        </View>
+      </Modal>
     </TCKeyboardView>
   );
 }
@@ -590,19 +768,38 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   languageView: {
-    width: '100%',
-    height: Dimensions.get('window').height / 2,
-    backgroundColor: 'white',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    shadowColor: '#000',
+    // width: '100%',
+    // height: Dimensions.get('window').height / 2,
+    // backgroundColor: 'white',
+    // position: 'absolute',
+    // bottom: 0,
+    // left: 0,
+    // borderTopLeftRadius: 15,
+    // borderTopRightRadius: 15,
+    // shadowColor: '#000',
+    // shadowOffset: {width: 0, height: 1},
+    // shadowOpacity: 0.29,
+    // shadowRadius: 5,
+    // elevation: 5,
+
+    alignSelf: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 5,
+    color: 'black',
+    elevation: 3,
+    flexDirection: 'row',
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    marginTop: 12,
+    paddingHorizontal: 15,
+    paddingRight: 30,
+    paddingVertical: 12,
+    shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.29,
-    shadowRadius: 5,
-    elevation: 5,
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+
+    width: wp('92%'),
   },
   cancelButtonStyle: {
     width: 23,
@@ -619,5 +816,25 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
+  },
+  languageText: {
+    backgroundColor: colors.whiteColor,
+    color: colors.lightBlackColor,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+  },
+  languagePlaceholderText: {
+    backgroundColor: colors.whiteColor,
+    color: colors.userPostTimeColor,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+  },
+
+  closeButton: {
+    alignSelf: 'center',
+    width: 13,
+    height: 13,
+    marginLeft: 5,
+    resizeMode: 'contain',
   },
 });

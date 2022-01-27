@@ -129,7 +129,7 @@ export default function ScheduleScreen({ navigation,route }) {
       headerLeft: () => (
         <TouchableOpacity style={{marginLeft:15}} onPress={()=>{
           if(route?.params?.isBackVisible){
-            navigation.push('HomeScreen', {
+            navigation.navigate('HomeScreen', {
               uid: route?.params?.uid,
               role: route?.params?.role,
               backButtonVisible: true,

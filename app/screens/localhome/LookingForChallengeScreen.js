@@ -50,7 +50,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
   const [filters, setFilters] = useState(route?.params?.filters);
 
   const [settingPopup, setSettingPopup] = useState(false);
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  const [locationFilterOpetion, setLocationFilterOpetion] = useState(filters.location !== 'world' ? 3 : 0);
 
   const [sports, setSports] = useState([]);
 
@@ -123,15 +123,16 @@ export default function LookingForChallengeScreen({ navigation, route }) {
               {
                 bool: {
                   must: [
-                    { match: { 'setting.availibility': 'On' } },
-                    { term: { entity_type: 'team' } },
+                    {match: {'setting.availibility': 'On'}},
+                    {term: {entity_type: 'team'}},
+                    
                   ],
                 },
               },
               {
                 bool: {
                   must: [
-                    { match: { entity_type: 'player' } },
+                    {match: {entity_type: 'player'}},
                     {
                       nested: {
                         path: 'registered_sports',
@@ -149,6 +150,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
                         },
                       },
                     },
+                    
                   ],
                 },
               },
@@ -157,8 +159,16 @@ export default function LookingForChallengeScreen({ navigation, route }) {
         },
       };
 
+
       if (filerdata.location !== 'world') {
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
+          multi_match: {
+            query: filerdata.location,
+            fields: ['city', 'country', 'state_abbr', 'venue.address'],
+          },
+        });
+
+        availableForchallengeQuery.query.bool.should[1].bool.must.push({
           multi_match: {
             query: filerdata.location,
             fields: ['city', 'country', 'state_abbr', 'venue.address'],
@@ -653,7 +663,7 @@ export default function LookingForChallengeScreen({ navigation, route }) {
 
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText || 'Search City'}
+                            {route?.params?.locationText || filters.location !== 'world' && filters.location || 'Search City'}
                           </Text>
                         </View>
                         <View

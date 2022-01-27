@@ -97,7 +97,6 @@ export default function LoginScreen({ navigation }) {
         entity.isLoggedIn = true;
         await Utility.setStorage('authContextEntity', { ...entity })
         await Utility.setStorage('loggedInEntity', { ...entity })
-
         getAppSettingsWithoutAuth()
         .then(async (response) => {
           console.log('Settings without auth:=>', response);
@@ -144,7 +143,6 @@ export default function LoginScreen({ navigation }) {
           expirationTime: idTokenResult.expirationTime,
         };
         console.log('token:=>', token);
-
         dummyAuthContext.tokenData = token;
         Utility.setStorage('eventColor', eventDefaultColorsData);
         Utility.setStorage('groupEventValue', true)
@@ -239,7 +237,7 @@ export default function LoginScreen({ navigation }) {
   const renderPasswordInput = useMemo(() => (
     <View style={styles.passwordContainer}>
       <TextInput
-      style={styles.passwordInput}
+            style={styles.passwordInput}
             placeholder={strings.passwordPlaceHolder}
             onChangeText={(text) => setPassword(text)}
             value={password}

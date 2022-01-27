@@ -52,6 +52,7 @@ export default function TCPhoneNumber({
              style={ styles.halffeeText }
              keyboardType={ 'phone-pad' }
              onChangeText={ onChangeText }
+             maxLength={10}
              // editable={ editMode }
              value={ numberValue }></TextInput>
 

@@ -1,12 +1,13 @@
-import React, {
-  useEffect, useState, useContext,
-} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
-  View, Text, Image, TouchableWithoutFeedback,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
   FlatList,
-  ScrollView,
   StyleSheet,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 
 import {
@@ -14,81 +15,85 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import { getJoinedGroups, getTeamsOfClub } from '../../api/Groups';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
-import images from '../../Constants/ImagePath'
-import AuthContext from '../../auth/context'
+import ActivityLoader from '../../components/loader/ActivityLoader';
+
+import {getJoinedGroups, getTeamsOfClub} from '../../api/Groups';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
+import images from '../../Constants/ImagePath';
+import AuthContext from '../../auth/context';
 import strings from '../../Constants/String';
 
 export default function JoinedTeamsScreen() {
   const [teamList, setTeamList] = useState([]);
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
+  const [loading, setloading] = useState(false);
+
+
   useEffect(() => {
     getTeamsList();
   }, []);
 
-  const getTeamsList = async () => {
-    const entity = authContext.entity
+  const getTeamsList = () => {
+    setloading(true)
+    const entity = authContext.entity;
     if (entity.role === 'club') {
-      getTeamsOfClub(entity.uid, authContext).then((response) => {
-        setTeamList(response.payload);
-      }).catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+      getTeamsOfClub(entity.uid, authContext)
+        .then((response) => {
+          setloading(false)
+          setTeamList(response.payload);
+        })
+        .catch((e) => {
+          setloading(false)
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     } else {
-      getJoinedGroups('team', authContext).then((response) => {
-        setTeamList(response.payload);
-      }).catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+      getJoinedGroups('team', authContext)
+        .then((response) => {
+          setloading(false)
+          setTeamList(response.payload);
+        })
+        .catch((e) => {
+          setloading(false)
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     }
   };
 
+  const renderTeams = ({item}) => (
+    <TouchableOpacity
+      style={styles.listContainer}
+      onPress={() => {
+        console.log('Pressed Team..');
+      }}>
+      <View>
+        <Image
+          source={item?.full_image ? {uri: item?.full_image} : images.team_ph}
+          style={styles.entityImg}
+        />
+      </View>
+      <View style={styles.textContainer}>
+        <Text style={styles.entityNameText}>{item?.group_name}</Text>
+        <Text style={styles.entityLocationText}>
+          {item?.city}, {item?.state_abbr}, {item?.country}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
   return (
-    <ScrollView style={ styles.mainContainer }>
+    <SafeAreaView>
+      <ActivityLoader visible={loading} />
       <FlatList
-        data={ teamList }
-        renderItem={ ({ item }) => (
-          <TouchableWithoutFeedback
-            style={ styles.listContainer }
-            onPress={ () => {
-              console.log('Pressed Team..');
-            } }>
-            <View>
-              {item.full_image ? (
-                <Image
-                  source={ { uri: item.full_image } }
-                  style={ styles.entityImg }
-                />
-              ) : (
-                <Image source={ images.team_ph } style={ styles.entityImg } />
-              )}
-            </View>
-
-            <View style={ styles.textContainer }>
-              <Text style={ styles.entityNameText }>{item.group_name}</Text>
-
-              <Text style={ styles.entityLocationText }>
-                {item.city}, {item.state_abbr}, {item.country}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
-        ) }
-        // ItemSeparatorComponent={() => (
-        //   <View style={styles.separatorLine}></View>
-        // )}
-        scrollEnabled={ false }
-      />
-    </ScrollView>
+          data={teamList}
+          renderItem={renderTeams}/>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-
   entityImg: {
     alignSelf: 'center',
     borderColor: colors.whiteColor,
@@ -117,12 +122,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    width: '100%',
-    height: '100%',
-  },
+  
 
   textContainer: {
     height: 80,

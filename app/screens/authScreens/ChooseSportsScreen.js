@@ -27,12 +27,13 @@ import * as Utility from '../../utils/index';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
+
 export default function ChooseSportsScreen({ navigation, route }) {
   const [sports, setSports] = useState([]);
   const [selected, setSelected] = useState([]);
   // For activity indigator
   const [loading, setloading] = useState(true);
-
+const [image_base_url, setImageBaseUrl] = useState();
   const authContext = useContext(AuthContext);
   const selectedSports = [];
 
@@ -50,6 +51,15 @@ export default function ChooseSportsScreen({ navigation, route }) {
 
   useEffect(() => {
     getSportsList(authContext).then((response) => {
+      console.log('Sport list:::', response);
+
+      Utility.getStorage('appSetting').then((setting) => {
+     
+        setImageBaseUrl(setting.base_url_sporticon)
+        console.log('IMAGE_BASE_URL', setting.base_url_sporticon);
+        
+      });
+
       const arr = [];
       for (const tempData of response.payload) {
         tempData.isChecked = false;
@@ -98,25 +108,28 @@ export default function ChooseSportsScreen({ navigation, route }) {
     }).catch(() => setloading(false))
   }
 
-  const renderItem = ({ item, index }) => (
-    <TouchableWithoutFeedback
-        style={ styles.listItem }
-        onPress={ () => {
-          isIconCheckedOrNot({ item, index });
-        } }>
-      <FastImage resizeMode={'contain'} source={{ uri: item?.thumbnail }} style={ styles.sportImg } />
-      <Text style={ styles.sportList }>{item.sport_name}</Text>
-      <View style={ styles.checkbox }>
-        {sports?.[index]?.isChecked ? (
-          <FastImage source={ images.checkWhite } resizeMode={'contain'} style={ styles.checkboxImg } />
-        ) : (
-          <FastImage resizeMode={'contain'} source={ images.unCheckWhiteBorder } style={ styles.unCheckboxImg } />
-        )}
-      </View>
-      <Separator />
-
-    </TouchableWithoutFeedback>
-  );
+  const renderItem = ({ item, index }) => {
+console.log('Image url :=>',`${image_base_url}${item.player_image}`);
+    return (
+      <TouchableWithoutFeedback
+          style={ styles.listItem }
+          onPress={ () => {
+            isIconCheckedOrNot({ item, index });
+          } }>
+        <FastImage resizeMode={'contain'} source={{ uri: `${image_base_url}${item.player_image}` }} style={ styles.sportImg } />
+        <Text style={ styles.sportList }>{item.sport_name}</Text>
+        <View style={ styles.checkbox }>
+          {sports?.[index]?.isChecked ? (
+            <FastImage source={ images.checkWhite } resizeMode={'contain'} style={ styles.checkboxImg } />
+          ) : (
+            <FastImage resizeMode={'contain'} source={ images.unCheckWhiteBorder } style={ styles.unCheckboxImg } />
+          )}
+        </View>
+        <Separator />
+  
+      </TouchableWithoutFeedback>
+    )
+  };
 
   const finalStepSignUp = async () => {
       let dummyEntity = { ...authContext?.entity }
@@ -193,8 +206,8 @@ const styles = StyleSheet.create({
     paddingTop: 25,
   },
   sportImg: {
-    width: wp('5%'),
-    height: hp('4%'),
+    width: 25,
+    height: 25,
     alignSelf: 'center',
   },
   sportList: {

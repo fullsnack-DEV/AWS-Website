@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
-import React, { useContext, useState, useEffect } from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -34,12 +34,12 @@ import SecureRefereeView from '../../../components/SecureRefereeView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import ChallengeStatusView from '../../../components/challenge/ChallengeStatusView';
 import ReservationStatus from '../../../Constants/ReservationStatus';
-import { heightPercentageToDP, widthPercentageToDP } from '../../../utils';
+import {heightPercentageToDP, widthPercentageToDP} from '../../../utils';
 import TCSmallButton from '../../../components/TCSmallButton';
 import images from '../../../Constants/ImagePath';
 import RefereeAgreementView from '../../../components/challenge/RefereeAgreementView';
 
-import { getGameHomeScreen, getNumberSuffix } from '../../../utils/gameUtils';
+import {getGameHomeScreen, getNumberSuffix} from '../../../utils/gameUtils';
 import * as Utility from '../../../utils';
 
 import {
@@ -56,10 +56,10 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCTabView from '../../../components/TCTabView';
 import CurruentReservationView from '../alterChallenge/CurrentReservationView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
-import { paymentMethods } from '../../../api/Users';
+import {paymentMethods} from '../../../api/Users';
 
 let entity = {};
-export default function ChallengePreviewScreen({ navigation, route }) {
+export default function ChallengePreviewScreen({navigation, route}) {
   console.log('route?.params?.challengeObj[0]', route?.params?.challengeObj[0]);
   console.log('route?.params?.challengeObj', route?.params?.challengeObj);
   const authContext = useContext(AuthContext);
@@ -90,8 +90,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
   const getChallenger = () => {
     if (
-      challengeData?.challenger === challengeData?.home_team?.user_id
-      || challengeData?.challenger === challengeData?.home_team?.group_id
+      challengeData?.challenger === challengeData?.home_team?.user_id ||
+      challengeData?.challenger === challengeData?.home_team?.group_id
     ) {
       return challengeData?.home_team;
     }
@@ -100,8 +100,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
   const getChallengee = () => {
     if (
-      challengeData?.challengee === challengeData?.home_team?.user_id
-      || challengeData?.challengee === challengeData?.home_team?.group_id
+      challengeData?.challengee === challengeData?.home_team?.user_id ||
+      challengeData?.challengee === challengeData?.home_team?.group_id
     ) {
       return challengeData?.home_team;
     }
@@ -112,8 +112,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       // setIsPendingRequestPayment(true);
       for (let i = 0; i < route?.params?.challengeObj.length; i++) {
         if (
-          route?.params?.challengeObj?.[i]?.status
-          === ReservationStatus.accepted
+          route?.params?.challengeObj?.[i]?.status ===
+          ReservationStatus.accepted
         ) {
           console.log('Old version111::=>', route?.params?.challengeObj?.[i]);
           setOldVersion(route?.params?.challengeObj?.[i]);
@@ -123,8 +123,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     }
     if (
       [ReservationStatus.declined, ReservationStatus.requestcancelled].includes(
-        route?.params?.challengeObj?.[0]?.status
-          ?? route?.params?.challengeObj?.status,
+        route?.params?.challengeObj?.[0]?.status ??
+          route?.params?.challengeObj?.status,
       )
     ) {
       if (route?.params?.challengeObj?.length > 1) {
@@ -145,17 +145,20 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     }
   }, [oldVersion, route?.params?.challengeObj]);
 
-
   useEffect(() => {
-   
     if (isFocused) {
       if (route?.params?.paymentMethod) {
         setDefaultCard(route?.params?.paymentMethod);
-      }else if (!defaultCard && challengeData?.source) {
-          getPaymentMethods(challengeData?.source);
-        }
+      } else if (!defaultCard && challengeData?.source) {
+        getPaymentMethods(challengeData?.source);
+      }
     }
-  }, [challengeData?.source, defaultCard, isFocused, route?.params?.paymentMethod]);
+  }, [
+    challengeData?.source,
+    defaultCard,
+    isFocused,
+    route?.params?.paymentMethod,
+  ]);
 
   useEffect(() => {
     console.log('challenge data11:=>', challengeData?.challengee);
@@ -165,24 +168,26 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       challengeData?.sport,
       authContext,
       challengeData?.sport_type,
-    ).then((response) => {
-      setloading(false);
-      console.log('manage challenge response:=>', response);
-      setSettingObject(response);
-    }).catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        // Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    })
+    )
+      .then((response) => {
+        setloading(false);
+        console.log('manage challenge response:=>', response);
+        setSettingObject(response);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          // Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   }, [authContext, challengeData?.challengee, challengeData?.sport]);
 
   const checkSenderOrReceiver = (challengeObj) => {
     console.log('sender & receiver Obj', challengeObj);
 
     if (
-      challengeObj?.status === ReservationStatus.pendingpayment
-      || challengeObj?.status === ReservationStatus.pendingrequestpayment
+      challengeObj?.status === ReservationStatus.pendingpayment ||
+      challengeObj?.status === ReservationStatus.pendingrequestpayment
     ) {
       if (challengeObj?.invited_by === entity.uid) {
         return 'receiver';
@@ -190,8 +195,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       return 'sender';
     }
     if (
-      challengeObj?.status === ReservationStatus.requestcancelled
-      || challengeObj?.status === ReservationStatus.cancelled
+      challengeObj?.status === ReservationStatus.requestcancelled ||
+      challengeObj?.status === ReservationStatus.cancelled
     ) {
       if (challengeObj?.requested_by === entity.uid) {
         return 'sender';
@@ -223,8 +228,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       return 'receiver';
     }
     if (
-      (challengeObj?.updated_by?.group_id ?? challengeObj?.updated_by?.uid)
-      === entity.uid
+      (challengeObj?.updated_by?.group_id ?? challengeObj?.updated_by?.uid) ===
+      entity.uid
     ) {
       return 'sender';
     }
@@ -233,19 +238,18 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
   const isOfferExpired = () => {
     if (challengeData?.status === ReservationStatus.offered) {
-      if (challengeData?.start_datetime < new Date().getTime()/1000) {
+      if (challengeData?.start_datetime < new Date().getTime() / 1000) {
         return true;
       }
       return false;
     }
     if (challengeData?.status === ReservationStatus.changeRequest) {
-      if (challengeData?.start_datetime < new Date().getTime()/1000) {
+      if (challengeData?.start_datetime < new Date().getTime() / 1000) {
         return true;
       }
       return false;
     }
   };
-
 
   // eslint-disable-next-line consistent-return
   const getTeamName = (challengeObject) => {
@@ -262,7 +266,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
   };
 
   const getTimeDifferent = (sDate, eDate) => {
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+    let delta =
+      Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
     const days = Math.floor(delta / 86400);
     delta -= days * 86400;
@@ -283,7 +288,9 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       ChallengeId,
       versionNo,
       status,
-      {},
+      {
+        ...challengeData,
+      },
       authContext,
     )
       .then((response) => {
@@ -371,12 +378,12 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       });
   };
 
-  const renderPeriod = ({ item, index }) => (
+  const renderPeriod = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -387,9 +394,9 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 2)} Period`}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.period}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -402,12 +409,12 @@ export default function ChallengePreviewScreen({ navigation, route }) {
     </>
   );
 
-  const renderOverTime = ({ item, index }) => (
+  const renderOverTime = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -418,9 +425,9 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 1)} Over time`}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.overTime}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -435,8 +442,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
   const bottomButtonView = () => {
     if (
-      checkSenderOrReceiver(challengeData) === 'sender'
-      && challengeData?.status === ReservationStatus.offered
+      checkSenderOrReceiver(challengeData) === 'sender' &&
+      challengeData?.status === ReservationStatus.offered
     ) {
       return (
         <TCSmallButton
@@ -446,7 +453,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             borderWidth: 1,
             borderRadious: 80,
           }}
-          textStyle={{ color: colors.userPostTimeColor }}
+          textStyle={{color: colors.userPostTimeColor}}
           title={strings.calcelRequest}
           onPress={() => {
             challengeOperation(
@@ -466,8 +473,9 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       );
     }
     if (
-      checkSenderOrReceiver(challengeData) === 'receiver'
-      && challengeData?.status === ReservationStatus.offered && !isOfferExpired()
+      checkSenderOrReceiver(challengeData) === 'receiver' &&
+      challengeData?.status === ReservationStatus.offered &&
+      !isOfferExpired()
     ) {
       return (
         <View style={styles.bottomButtonContainer}>
@@ -478,7 +486,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
               borderWidth: 1,
               borderRadious: 80,
             }}
-            textStyle={{ color: colors.userPostTimeColor }}
+            textStyle={{color: colors.userPostTimeColor}}
             title={strings.declineTitle}
             onPress={() => {
               // navigation.navigate('ChallengeAcceptedDeclinedScreen', {
@@ -492,7 +500,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                 'decline',
               );
             }}
-            style={{ width: widthPercentageToDP('45%') }}
+            style={{width: widthPercentageToDP('45%')}}
           />
           <TCSmallButton
             title={strings.acceptTitle}
@@ -512,16 +520,16 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                 let groupObj;
                 if (challengeData?.home_team?.full_name) {
                   if (
-                    challengeData?.home_team?.user_id
-                    === authContext?.entity?.uid
+                    challengeData?.home_team?.user_id ===
+                    authContext?.entity?.uid
                   ) {
                     groupObj = challengeData?.away_team;
                   } else {
                     groupObj = challengeData?.home_team;
                   }
                 } else if (
-                  challengeData?.home_team?.group_id
-                  === authContext?.entity?.uid
+                  challengeData?.home_team?.group_id ===
+                  authContext?.entity?.uid
                 ) {
                   groupObj = challengeData?.away_team;
                 } else {
@@ -540,26 +548,26 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                 });
               }
             }}
-            style={{ width: widthPercentageToDP('45%') }}
+            style={{width: widthPercentageToDP('45%')}}
           />
         </View>
       );
     }
     console.log('Challenge Object:=>', challengeData);
     if (
-      (checkSenderOrReceiver(challengeData) === 'sender'
-        || checkSenderOrReceiver(challengeData) === 'receiver')
-      && selectedTab === 0
-      && (challengeData?.status === ReservationStatus.accepted
-        || challengeData?.status === ReservationStatus.restored
-        || (challengeData?.status === ReservationStatus.declined
-          && challengeData?.version !== 2))
+      (checkSenderOrReceiver(challengeData) === 'sender' ||
+        checkSenderOrReceiver(challengeData) === 'receiver') &&
+      selectedTab === 0 &&
+      (challengeData?.status === ReservationStatus.accepted ||
+        challengeData?.status === ReservationStatus.restored ||
+        (challengeData?.status === ReservationStatus.declined &&
+          challengeData?.version !== 2))
     ) {
       return (
         <View style={styles.bottomButtonView}>
-          {(challengeData?.game_status === GameStatus.accepted
-            || challengeData?.game_status === GameStatus.reset
-            || !challengeData?.game_status) && (
+          {(challengeData?.game_status === GameStatus.accepted ||
+            challengeData?.game_status === GameStatus.reset ||
+            !challengeData?.game_status) && (
               <TCSmallButton
               isBorderButton={true}
               borderstyle={{
@@ -567,17 +575,17 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                 borderWidth: 1,
                 borderRadious: 80,
               }}
-              textStyle={{ color: colors.userPostTimeColor }}
+              textStyle={{color: colors.userPostTimeColor}}
               title={strings.alterReservation}
               onPress={() => {
                 if (
-                  challengeData?.game_status === GameStatus.accepted
-                  || challengeData?.game_status === GameStatus.reset
-                  || !challengeData?.game_status
+                  challengeData?.game_status === GameStatus.accepted ||
+                  challengeData?.game_status === GameStatus.reset ||
+                  !challengeData?.game_status
                 ) {
                   if (
-                    challengeData?.start_datetime * 1000
-                    < new Date().getTime()
+                    challengeData?.start_datetime * 1000 <
+                    new Date().getTime()
                   ) {
                     Alert.alert(strings.cannotChangeReservationGameStartedText);
                   } else {
@@ -610,12 +618,12 @@ export default function ChallengePreviewScreen({ navigation, route }) {
               // });
 
               if (
-                challengeData?.game_status === GameStatus.accepted
-                || challengeData?.game_status === GameStatus.reset
+                challengeData?.game_status === GameStatus.accepted ||
+                challengeData?.game_status === GameStatus.reset
               ) {
                 if (
-                  challengeData?.start_datetime * 1000
-                  < new Date().getTime()
+                  challengeData?.start_datetime * 1000 <
+                  new Date().getTime()
                 ) {
                   Alert.alert(strings.cannotChangeReservationGameStartedText);
                 } else {
@@ -637,8 +645,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       );
     }
     if (
-      checkSenderOrReceiver(challengeData) === 'receiver'
-      && challengeData?.status === ReservationStatus.changeRequest
+      checkSenderOrReceiver(challengeData) === 'receiver' &&
+      challengeData?.status === ReservationStatus.changeRequest
     ) {
       return (
         <View>
@@ -650,7 +658,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                 borderWidth: 1,
                 borderRadious: 80,
               }}
-              textStyle={{ color: colors.userPostTimeColor }}
+              textStyle={{color: colors.userPostTimeColor}}
               title={strings.declineTitle}
               onPress={() => {
                 // navigation.navigate('ChallengeAcceptedDeclinedScreen', {
@@ -664,7 +672,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                   'decline',
                 );
               }}
-              style={{ width: widthPercentageToDP('45%') }}
+              style={{width: widthPercentageToDP('45%')}}
             />
             <TCSmallButton
               title={strings.acceptTitle}
@@ -674,9 +682,15 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                   paymentObj = {
                     source: defaultCard?.id,
                     payment_method_type: 'card',
+                    total_game_fee: defaultCard?.total_game_fee,
+                    total_service_fee1: defaultCard?.total_service_fee1,
+                    total_service_fee2: defaultCard?.total_service_fee2,
+                    total_stripe_fee: defaultCard?.total_stripe_fee,
+                    total_payout: defaultCard?.total_payout,
+                    total_amount: defaultCard?.total_amount,
                   };
                 }
-                console.log('paymentObj',defaultCard);
+                console.log('paymentObj', defaultCard);
                 alterChallengeOperation(
                   entity.uid,
                   challengeData?.challenge_id,
@@ -685,7 +699,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                   paymentObj,
                 );
               }}
-              style={{ width: widthPercentageToDP('45%') }}
+              style={{width: widthPercentageToDP('45%')}}
             />
           </View>
           <TCSmallButton
@@ -712,8 +726,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       );
     }
     if (
-      checkSenderOrReceiver(challengeData) === 'sender'
-      && challengeData?.status === ReservationStatus.changeRequest
+      checkSenderOrReceiver(challengeData) === 'sender' &&
+      challengeData?.status === ReservationStatus.changeRequest
     ) {
       return (
         <View style={styles.bottomButtonView}>
@@ -724,16 +738,16 @@ export default function ChallengePreviewScreen({ navigation, route }) {
               borderWidth: 1,
               borderRadious: 80,
             }}
-            textStyle={{ color: colors.userPostTimeColor }}
+            textStyle={{color: colors.userPostTimeColor}}
             title={strings.calcelRequest}
             onPress={() => {
               if (
-                challengeData?.game_status === GameStatus.accepted
-                || challengeData?.game_status === GameStatus.reset
+                challengeData?.game_status === GameStatus.accepted ||
+                challengeData?.game_status === GameStatus.reset
               ) {
                 if (
-                  challengeData?.start_datetime * 1000
-                  < new Date().getTime()
+                  challengeData?.start_datetime * 1000 <
+                  new Date().getTime()
                 ) {
                   Alert.alert(strings.cannotChangeReservationGameStartedText);
                 } else {
@@ -778,7 +792,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
       );
     }
 
-    return <View style={{ marginBottom: 45 }} />;
+    return <View style={{marginBottom: 45}} />;
   };
   const getPaymentMethods = () => {
     setloading(true);
@@ -803,65 +817,62 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         }, 10);
       });
   };
-  
+
   const topButtons = () => {
-      if (
-        checkSenderOrReceiver(challengeData) === 'sender'
-        && [
-          ReservationStatus.pendingrequestpayment,
-          ReservationStatus.pendingpayment,
-        ].includes(challengeData?.status)
-      ) {
-        return (
-          <TCGradientButton
-            title={'TRY TO PAY AGAIN'}
-            onPress={() => {
-              navigation.navigate('PayAgainScreen', {
-                body: { ...challengeData },
-                status: challengeData?.status,
-              });
-            }}
-            marginBottom={15}
-          />
-        );
-      }
-      if (
-        checkSenderOrReceiver(challengeData) === 'receiver'
-        && [ReservationStatus.pendingrequestpayment].includes(
-          challengeData?.status,
-        )
-      ) {
-        return (
-          <TCGradientButton
-            title={'RESTORE TO PREVIOUS VERSION'}
-            onPress={() => {
-              challengeOperation(
-                entity.uid,
-                challengeData.challenge_id,
-                challengeData.version,
-                'decline',
-                true,
-              );
-            }}
-            marginBottom={15}
-          />
-        );
-      }
-    
+    if (
+      checkSenderOrReceiver(challengeData) === 'sender' &&
+      [
+        ReservationStatus.pendingrequestpayment,
+        ReservationStatus.pendingpayment,
+      ].includes(challengeData?.status)
+    ) {
+      return (
+        <TCGradientButton
+          title={'TRY TO PAY AGAIN'}
+          onPress={() => {
+            navigation.navigate('PayAgainScreen', {
+              body: {...challengeData},
+              status: challengeData?.status,
+            });
+          }}
+          marginBottom={15}
+        />
+      );
+    }
+    if (
+      checkSenderOrReceiver(challengeData) === 'receiver' &&
+      [ReservationStatus.pendingrequestpayment].includes(challengeData?.status)
+    ) {
+      return (
+        <TCGradientButton
+          title={'RESTORE TO PREVIOUS VERSION'}
+          onPress={() => {
+            challengeOperation(
+              entity.uid,
+              challengeData.challenge_id,
+              challengeData.version,
+              'decline',
+              true,
+            );
+          }}
+          marginBottom={15}
+        />
+      );
+    }
   };
 
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
 
-      {(challengeData?.status === ReservationStatus.changeRequest
-        || selectedTab === 1) && (
+      {(challengeData?.status === ReservationStatus.changeRequest ||
+        selectedTab === 1) && (
           <TCTabView
           totalTabs={2}
           firstTabTitle={'ALTERATION REQUEST'}
           secondTabTitle={'CURRENT RESERVATION'}
           indexCounter={selectedTab}
-          eventPrivacyContianer={{ width: 100 }}
+          eventPrivacyContianer={{width: 100}}
           onFirstTabPress={() => setSelectedTab(0)}
           onSecondTabPress={() => setSelectedTab(1)}
           activeHeight={36}
@@ -869,7 +880,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
         />
       )}
       {challengeData && selectedTab === 0 && (
-        <View style={{ marginBottom: 15 }}>
+        <View style={{marginBottom: 15}}>
           <Text
             style={[
               styles.challengeNumberStyle,
@@ -889,8 +900,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             teamName={getTeamName(challengeData)}
             // receiverName={challengee?.full_name ?? challengee?.group_name}
             offerExpiry={
-              ReservationStatus.offered === 'offered'
-              || ReservationStatus.offered === 'changeRequest'
+              ReservationStatus.offered === 'offered' ||
+              ReservationStatus.offered === 'changeRequest'
                 ? challengeData?.start_datetime
                 : ''
             } // only if status offered
@@ -899,25 +910,26 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
           {topButtons()}
 
-          {challengeData?.game_id && challengeData?.status !== ReservationStatus.cancelled && (
-            <TCArrowView
-              title={'Game Home '}
-              onPress={() => {
-                console.log('teamObject?.sport', challengeData);
-                const gameHome = getGameHomeScreen(challengeData?.sport);
-                console.log('gameHome', gameHome);
+          {challengeData?.game_id &&
+            challengeData?.status !== ReservationStatus.cancelled && (
+              <TCArrowView
+                title={'Game Home '}
+                onPress={() => {
+                  console.log('teamObject?.sport', challengeData);
+                  const gameHome = getGameHomeScreen(challengeData?.sport);
+                  console.log('gameHome', gameHome);
 
-                navigation.navigate(gameHome, {
-                  gameId: challengeData?.game_id,
-                });
-              }}
-              containerStyle={{
-                marginBottom: 15,
-                justifyContent: 'flex-start',
-                marginLeft: 15,
-              }}
-            />
-          )}
+                  navigation.navigate(gameHome, {
+                    gameId: challengeData?.game_id,
+                  });
+                }}
+                containerStyle={{
+                  marginBottom: 15,
+                  justifyContent: 'flex-start',
+                  marginLeft: 15,
+                }}
+              />
+            )}
 
           <TCThinDivider />
 
@@ -939,7 +951,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                   <Image
                     source={
                       getChallenger()?.thumbnail
-                        ? { uri: getChallenger()?.thumbnail }
+                        ? {uri: getChallenger()?.thumbnail}
                         : images.teamPlaceholder
                     }
                     style={styles.profileImage}
@@ -965,7 +977,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                   <Image
                     source={
                       getChallengee()?.thumbnail
-                        ? { uri: getChallengee()?.thumbnail }
+                        ? {uri: getChallengee()?.thumbnail}
                         : images.teamPlaceholder
                     }
                     style={styles.profileImage}
@@ -983,22 +995,20 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           </View>
 
           <TCThickDivider />
-
           <View>
             <TCLabel title={`Game · ${challengeData?.sport}`} />
-
             <TCInfoImageField
               title={'Home'}
               image={
                 challengeData?.home_team?.thumbnail
-                  ? { uri: challengeData?.home_team?.thumbnail }
+                  ? {uri: challengeData?.home_team?.thumbnail}
                   : challengeData?.home_team?.full_name
                   ? images.profilePlaceHolder
                   : images.teamPlaceholder
               }
               name={
-                challengeData?.home_team?.group_name
-                ?? challengeData?.home_team?.full_name
+                challengeData?.home_team?.group_name ??
+                challengeData?.home_team?.full_name
               }
               marginLeft={30}
             />
@@ -1007,14 +1017,14 @@ export default function ChallengePreviewScreen({ navigation, route }) {
               title={'Away'}
               image={
                 challengeData?.away_team?.thumbnail
-                  ? { uri: challengeData?.away_team?.thumbnail }
+                  ? {uri: challengeData?.away_team?.thumbnail}
                   : challengeData?.away_team?.full_name
                   ? images.profilePlaceHolder
                   : images.teamPlaceholder
               }
               name={
-                challengeData?.away_team?.group_name
-                ?? challengeData?.away_team?.full_name
+                challengeData?.away_team?.group_name ??
+                challengeData?.away_team?.full_name
               }
               marginLeft={30}
             />
@@ -1031,7 +1041,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                 new Date(challengeData?.end_datetime * 1000),
               )} )   `}
               marginLeft={30}
-              titleStyle={{ fontSize: 16 }}
+              titleStyle={{fontSize: 16}}
             />
             <TCThinDivider />
 
@@ -1039,14 +1049,14 @@ export default function ChallengePreviewScreen({ navigation, route }) {
               title={'Venue'}
               value={challengeData?.venue?.name}
               marginLeft={30}
-              titleStyle={{ fontSize: 16 }}
+              titleStyle={{fontSize: 16}}
             />
             <TCThinDivider />
             <TCInfoField
               title={'Address'}
               value={challengeData?.venue?.address}
               marginLeft={30}
-              titleStyle={{ fontSize: 16 }}
+              titleStyle={{fontSize: 16}}
             />
             <EventMapView
               coordinate={challengeData?.venue?.coordinate}
@@ -1069,9 +1079,9 @@ export default function ChallengePreviewScreen({ navigation, route }) {
 
           <TCLabel title={'Game Duration'} />
           <TCChallengeTitle
-            containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
+            containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
             title={'1st period'}
-            titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+            titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
             value={challengeData?.game_duration?.first_period}
             valueStyle={{
               fontFamily: fonts.RBold,
@@ -1086,7 +1096,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             data={challengeData?.game_duration?.period}
             renderItem={renderPeriod}
             keyExtractor={(item, index) => index.toString()}
-            style={{ marginBottom: 15 }}
+            style={{marginBottom: 15}}
           />
           {challengeData?.game_duration?.period?.length > 0 && (
             <Text style={styles.normalTextStyle}>
@@ -1098,7 +1108,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             data={challengeData?.game_duration?.overtime}
             renderItem={renderOverTime}
             keyExtractor={(item, index) => index.toString()}
-            style={{ marginBottom: 15 }}
+            style={{marginBottom: 15}}
           />
           <TCThickDivider marginTop={20} />
 
@@ -1108,7 +1118,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             <Text style={styles.rulesDetail}>
               {challengeData?.general_rules}
             </Text>
-            <View style={{ marginBottom: 10 }} />
+            <View style={{marginBottom: 10}} />
             <Text style={styles.rulesTitle}>Special Rules</Text>
             <Text style={styles.rulesDetail}>
               {challengeData?.special_rules}
@@ -1116,40 +1126,53 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             <TCThickDivider marginTop={20} />
           </View>
 
-          {challengeData?.min_referee >= 0 ? <View>
-            <RefereeAgreementView
-              teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
-              teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
-              numberOfReferee={
-                challengeData?.responsible_for_referee?.who_secure?.length ?? 0
-              }
-              agreementOpetion={challengeData?.min_referee === 0 ? 1 : 2}
-              moreButtonVisible={true}
-              morePressed={(value) => {
-                setMoreButtonReferee(value);
-              }}
-              isMore={moreButtonReferee}
-            />
-            <TCThickDivider marginTop={20} />
-          </View> : null}
+          {challengeData?.min_referee >= 0 ? (
+            <View>
+              <RefereeAgreementView
+                teamA={
+                  getChallenger()?.group_name ?? getChallenger()?.full_name
+                }
+                teamB={
+                  getChallengee()?.group_name ?? getChallengee()?.full_name
+                }
+                numberOfReferee={
+                  challengeData?.responsible_for_referee?.who_secure?.length ??
+                0
+                }
+                agreementOpetion={challengeData?.min_referee === 0 ? 1 : 2}
+                moreButtonVisible={true}
+                morePressed={(value) => {
+                  setMoreButtonReferee(value);
+                }}
+                isMore={moreButtonReferee}
+              />
+              <TCThickDivider marginTop={20} />
+            </View>
+          ) : null}
 
-          {challengeData?.min_scorekeeper >= 0 ? <View>
-            <ScorekeeperAgreementView
-              teamA={getChallenger()?.group_name ?? getChallenger()?.full_name}
-              teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
-              numberOfScorekeeper={
-                challengeData?.responsible_for_scorekeeper?.who_secure
-                  ?.length ?? 0
-              }
-              agreementOpetion={challengeData?.min_scorekeeper === 0 ? 1 : 2}
-              moreButtonVisible={true}
-              morePressed={(value) => {
-                setMoreButtonScorekeeper(value);
-              }}
-              isMore={moreButtonScorekeeper}
-            />
-            <TCThickDivider marginTop={20} />
-          </View> : null}
+          {challengeData?.min_scorekeeper >= 0 ? (
+            <View>
+              <ScorekeeperAgreementView
+                teamA={
+                  getChallenger()?.group_name ?? getChallenger()?.full_name
+                }
+                teamB={
+                  getChallengee()?.group_name ?? getChallengee()?.full_name
+                }
+                numberOfScorekeeper={
+                  challengeData?.responsible_for_scorekeeper?.who_secure
+                    ?.length ?? 0
+                }
+                agreementOpetion={challengeData?.min_scorekeeper === 0 ? 1 : 2}
+                moreButtonVisible={true}
+                morePressed={(value) => {
+                  setMoreButtonScorekeeper(value);
+                }}
+                isMore={moreButtonScorekeeper}
+              />
+              <TCThickDivider marginTop={20} />
+            </View>
+          ) : null}
 
           <View>
             <TCChallengeTitle
@@ -1168,7 +1191,7 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             title={
               challengeData?.challenger === entity.uid ? 'Payment' : 'Earning'
             }
-            style={{ marginBottom: 15 }}
+            style={{marginBottom: 15}}
           />
           <GameFeeCard
             feeObject={{
@@ -1184,18 +1207,21 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           />
           <TCThickDivider marginTop={20} />
 
-          {oldVersion?.total_game_fee >= 0
-            && challengeData?.total_game_fee > 0
-            && challengeData?.challenger === entity.uid && (
+          {oldVersion?.total_game_fee >= 0 &&
+            challengeData?.total_game_fee > 0 &&
+            challengeData?.challenger === entity.uid && (
               <View>
                 <View>
                   <TCLabel title={'Payment Method'} />
                   <View style={styles.viewMarginStyle}>
                     <TCTouchableLabel
-                    disabled={challengeData?.status === ReservationStatus.accepted
-                      || challengeData?.status === ReservationStatus.restored
-                      || challengeData?.status === ReservationStatus.requestcancelled
-                    || challengeData?.status === ReservationStatus.cancelled}
+                      disabled={
+                        challengeData?.status === ReservationStatus.accepted ||
+                        challengeData?.status === ReservationStatus.restored ||
+                        challengeData?.status ===
+                          ReservationStatus.requestcancelled ||
+                        challengeData?.status === ReservationStatus.cancelled
+                      }
                       title={
                         defaultCard
                           ? `${Utility.capitalize(
@@ -1203,10 +1229,17 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                             )} ****${defaultCard?.card?.last4}`
                           : strings.addOptionMessage
                       }
-                      showNextArrow={!(challengeData?.status === ReservationStatus.accepted
-                        || challengeData?.status === ReservationStatus.restored
-                        || challengeData?.status === ReservationStatus.requestcancelled
-                        || challengeData?.status === ReservationStatus.cancelled)}
+                      showNextArrow={
+                        !(
+                          challengeData?.status ===
+                            ReservationStatus.accepted ||
+                          challengeData?.status ===
+                            ReservationStatus.restored ||
+                          challengeData?.status ===
+                            ReservationStatus.requestcancelled ||
+                          challengeData?.status === ReservationStatus.cancelled
+                      )
+                      }
                       onPress={() => {
                         navigation.navigate('PaymentMethodsScreen', {
                           comeFrom: 'ChallengePreviewScreen',
@@ -1260,8 +1293,8 @@ export default function ChallengePreviewScreen({ navigation, route }) {
               <Text style={styles.invitationText}>Challenge sent</Text>
               <Text style={styles.infoText}>
                 When{' '}
-                {groupObject?.group_name
-                  ?? `${groupObject?.first_name} ${groupObject?.last_name}`}{' '}
+                {groupObject?.group_name ??
+                  `${groupObject?.first_name} ${groupObject?.last_name}`}{' '}
                 accepts your match reservation request, you will be notified.
               </Text>
             </View>
@@ -1270,10 +1303,10 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           {challengeStatus !== 'sent' && (
             <View style={styles.mailContainer}>
               <Text style={styles.invitationText}>
-                {(challengeStatus === 'accept' && 'Challenge accepted')
-                  || (challengeStatus === 'decline' && 'Challenge declined')
-                  || (challengeStatus === 'cancel' && 'Challenge cancelled')
-                  || (challengeStatus === 'restored' && 'Challenge Restored')}
+                {(challengeStatus === 'accept' && 'Challenge accepted') ||
+                  (challengeStatus === 'decline' && 'Challenge declined') ||
+                  (challengeStatus === 'cancel' && 'Challenge cancelled') ||
+                  (challengeStatus === 'restored' && 'Challenge Restored')}
               </Text>
 
               {challengeStatus === 'accept' && (
@@ -1324,14 +1357,14 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                   <Image
                     source={
                       entity?.thumbnail
-                        ? { uri: entity?.thumbnail }
+                        ? {uri: entity?.thumbnail}
                         : entity?.full_name
                         ? images.profilePlaceHolder
                         : images.teamPlaceholder
                     }
                     style={[
                       styles.entityImage,
-                      { opacity: challengeStatus === 'decline' ? 0.5 : 1.0 },
+                      {opacity: challengeStatus === 'decline' ? 0.5 : 1.0},
                       teamObject?.thumbnail
                         ? {
                             height: 82,
@@ -1347,12 +1380,12 @@ export default function ChallengePreviewScreen({ navigation, route }) {
                   <Image
                     source={
                       teamObject?.thumbnail
-                        ? { uri: teamObject?.thumbnail }
+                        ? {uri: teamObject?.thumbnail}
                         : images.teamPlaceholder
                     }
                     style={[
                       styles.entityImage,
-                      { opacity: challengeStatus === 'decline' ? 0.5 : 1.0 },
+                      {opacity: challengeStatus === 'decline' ? 0.5 : 1.0},
                       teamObject?.thumbnail
                         ? {
                             height: 82,
@@ -1380,11 +1413,11 @@ export default function ChallengePreviewScreen({ navigation, route }) {
             </SafeAreaView>
           ) : (
             <SafeAreaView>
-              <View style={{ height: 95, justifyContent: 'space-between' }}>
+              <View style={{height: 95, justifyContent: 'space-between'}}>
                 <TCBorderButton
                   title={`GO TO ${
-                    teamObject?.group_name?.toUpperCase()
-                    || `${teamObject?.first_name?.toUpperCase()} ${teamObject?.last_name?.toUpperCase()}`
+                    teamObject?.group_name?.toUpperCase() ||
+                    `${teamObject?.first_name?.toUpperCase()} ${teamObject?.last_name?.toUpperCase()}`
                   }`}
                   textColor={colors.whiteColor}
                   borderColor={colors.whiteColor}
@@ -1473,14 +1506,14 @@ export default function ChallengePreviewScreen({ navigation, route }) {
           {challengeStatus !== 'sent' && (
             <View style={styles.mailContainer}>
               <Text style={styles.invitationText}>
-                {(challengeStatus === 'accept'
-                  && 'Alteration request\naccepted')
-                  || (challengeStatus === 'decline'
-                    && 'Alteration request\ndeclined')
-                  || (challengeStatus === 'cancel'
-                    && 'Alteration request\ncancelled')
-                  || (challengeStatus === 'restored'
-                    && 'Alteration request\nRestored')}
+                {(challengeStatus === 'accept' &&
+                  'Alteration request\naccepted') ||
+                  (challengeStatus === 'decline' &&
+                    'Alteration request\ndeclined') ||
+                  (challengeStatus === 'cancel' &&
+                    'Alteration request\ncancelled') ||
+                  (challengeStatus === 'restored' &&
+                    'Alteration request\nRestored')}
               </Text>
             </View>
           )}
@@ -1682,7 +1715,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,

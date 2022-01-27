@@ -307,7 +307,7 @@ const Scorekeepers = ({
 
     if (
       // isAdmin
-      gameData?.invited_to === authContext.entity.uid
+      gameData?.challenge_scorekeeper?.who_secure?.[0]?.responsible_team_id  === authContext.entity.uid
       && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status)
     ) {
       return (

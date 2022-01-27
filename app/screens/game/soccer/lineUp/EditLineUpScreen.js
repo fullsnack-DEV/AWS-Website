@@ -1,5 +1,9 @@
 import React, {
-  useLayoutEffect, useState, useRef, useEffect, useContext,
+  useLayoutEffect,
+  useState,
+  useRef,
+  useEffect,
+  useContext,
 } from 'react';
 import {
   View,
@@ -13,6 +17,7 @@ import {
   Alert,
   TouchableWithoutFeedback,
   SafeAreaView,
+  TextInput,
 } from 'react-native';
 
 import Modal from 'react-native-modal';
@@ -29,7 +34,6 @@ import {
 import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
-import TCSearchBox from '../../../../components/TCSearchBox';
 import TCGreenSwitcher from '../../../../components/TCGreenSwitcher';
 import TCLabel from '../../../../components/TCLabel';
 import TCGradientButton from '../../../../components/TCGradientButton';
@@ -39,7 +43,7 @@ import strings from '../../../../Constants/String';
 import LineUpPlayerMultiSelectionView from '../../../../components/game/soccer/home/lineUp/LineUpPlayerMultiSelectionView';
 
 const moveToData = ['Starting', 'Subs', 'Non-roster'];
-export default function EditLineUpScreen({ navigation, route }) {
+export default function EditLineUpScreen({navigation, route}) {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -54,17 +58,17 @@ export default function EditLineUpScreen({ navigation, route }) {
   const [selectedPosition, setSelectedPosition] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchNonRoster, setSearchNonRoster] = useState([]);
-  const [searchStarting, setSearchStarting] = useState([]);
-  const [searchSubs, setSearchSubs] = useState([]);
   const [tempararyNonRoster, setTempararyNonRoster] = useState([]);
   const [tempararyStarting, setTempararyStarting] = useState([]);
   const [tempararySubs, setTempararySubs] = useState([]);
+  const [search, setSearch] = useState(false);
+
   useEffect(() => {
     if (
-      route
-      && route.params
-      && route.params.gameObj
-      && route.params.selectedTeam
+      route &&
+      route.params &&
+      route.params.gameObj &&
+      route.params.selectedTeam
     ) {
       getLineUpOfTeams(
         route.params.selectedTeam === 'home'
@@ -78,14 +82,14 @@ export default function EditLineUpScreen({ navigation, route }) {
     setLoading(loader);
     getGameLineUp(teamID, gameID, authContext).then((response) => {
       const nonRosterData = response.payload.non_roster.map((el) => {
-        const o = { ...el };
+        const o = {...el};
         o.modified = false;
         o.selected = false;
         return o;
       });
 
       const rosterData = response.payload.roster.map((el) => {
-        const o = { ...el };
+        const o = {...el};
         o.modified = false;
         o.selected = false;
         return o;
@@ -103,12 +107,11 @@ export default function EditLineUpScreen({ navigation, route }) {
         rosterData.filter((el) => el.role === 'player' && el.lineup === 'subs'),
       );
       setSearchNonRoster(nonRosterData);
-      setSearchStarting(starting);
-      setSearchSubs(subs);
+      
 
-      setTempararyNonRoster(nonRosterData)
-      setTempararyStarting(starting)
-      setTempararySubs(subs)
+      setTempararyNonRoster(nonRosterData);
+      setTempararyStarting(starting);
+      setTempararySubs(subs);
       console.log('roseter api data:: ', JSON.stringify(response.payload));
     });
   };
@@ -124,7 +127,20 @@ export default function EditLineUpScreen({ navigation, route }) {
         </TouchableOpacity>
       ),
     });
-  }, [starting, subs, nonRoster, roster, enabledSection, selected, selectedSection, selectedMember, searchStarting, searchSubs, searchNonRoster, tempararyNonRoster, tempararyStarting, tempararySubs]);
+  }, [
+    starting,
+    subs,
+    nonRoster,
+    roster,
+    enabledSection,
+    selected,
+    selectedSection,
+    selectedMember,
+    searchNonRoster,
+    tempararyNonRoster,
+    tempararyStarting,
+    tempararySubs,
+  ]);
   const toggleModal = () => {
     console.log('Pressed Toggel::');
     setModalVisible(!isModalVisible);
@@ -145,7 +161,7 @@ export default function EditLineUpScreen({ navigation, route }) {
     }
     return 0;
   };
-  const renderNonRoster = ({ item }) => (
+  const renderNonRoster = ({item}) => (
     <LineUpPlayerView
       buttonType={'move'}
       userData={item}
@@ -159,11 +175,10 @@ export default function EditLineUpScreen({ navigation, route }) {
         console.log('ITEM BTYPE::', bType);
         console.log('ITEM PRESSED::', item);
       }}
-      OnRowPress={() => {
-      }}
+      OnRowPress={() => {}}
     />
   );
-  const renderNonRosterMultiple = ({ item }) => (
+  const renderNonRosterMultiple = ({item}) => (
     <LineUpPlayerMultiSelectionView
       userData={item}
       enable={enabledSection === 1 || enabledSection === 2}
@@ -181,7 +196,7 @@ export default function EditLineUpScreen({ navigation, route }) {
       }}
     />
   );
-  const renderStarting = ({ item }) => (
+  const renderStarting = ({item}) => (
     <LineUpPlayerView
       buttonType={'move'}
       userData={item}
@@ -200,12 +215,12 @@ export default function EditLineUpScreen({ navigation, route }) {
             backButtonVisible: true,
             role: 'user',
             menuBtnVisible: false,
-          })
+          });
         }
       }}
     />
   );
-  const renderStartingMultiple = ({ item }) => (
+  const renderStartingMultiple = ({item}) => (
     <LineUpPlayerMultiSelectionView
       userData={item}
       enable={enabledSection === 2 || enabledSection === 3 || false}
@@ -227,7 +242,7 @@ export default function EditLineUpScreen({ navigation, route }) {
       }}
     />
   );
-  const renderSubs = ({ item }) => (
+  const renderSubs = ({item}) => (
     <LineUpPlayerView
       buttonType={'move'}
       userData={item}
@@ -246,12 +261,12 @@ export default function EditLineUpScreen({ navigation, route }) {
             backButtonVisible: true,
             role: 'user',
             menuBtnVisible: false,
-          })
+          });
         }
       }}
     />
   );
-  const renderSubsMultiple = ({ item }) => (
+  const renderSubsMultiple = ({item}) => (
     <LineUpPlayerMultiSelectionView
       userData={item}
       enable={enabledSection === 1 || enabledSection === 3}
@@ -273,9 +288,12 @@ export default function EditLineUpScreen({ navigation, route }) {
       }}
     />
   );
-  const renderMoveToView = ({ item, index }) => (
+  const renderMoveToView = ({item, index}) => (
     <TouchableOpacity
-      disabled={(selected === 1 && selectedSection === index + 1) || (selected === 2 && enabledSection === index + 1)}
+      disabled={
+        (selected === 1 && selectedSection === index + 1) ||
+        (selected === 2 && enabledSection === index + 1)
+      }
       onPress={() => {
         setSelectedPosition(index + 1);
       }}>
@@ -294,12 +312,13 @@ export default function EditLineUpScreen({ navigation, route }) {
       ) : (
         <View
           style={
-            (selected === 1 && selectedSection === index + 1) || (selected === 2 && enabledSection === index + 1)
+            (selected === 1 && selectedSection === index + 1) ||
+            (selected === 2 && enabledSection === index + 1)
               ? styles.topViewOpacityContainer
               : styles.topViewContainer
           }>
           <Text
-            style={[styles.radioText, { color: colors.lightBlackColor }]}
+            style={[styles.radioText, {color: colors.lightBlackColor}]}
             numberOfLines={1}>
             {item}
           </Text>
@@ -326,9 +345,7 @@ export default function EditLineUpScreen({ navigation, route }) {
       tempArray.push(body);
     });
 
-    const modifiedNonRosterData = nonRoster.filter(
-      (e) => e.modified === true,
-    );
+    const modifiedNonRosterData = nonRoster.filter((e) => e.modified === true);
     const tempNonRosterArray = [];
     // eslint-disable-next-line array-callback-return
     modifiedNonRosterData.map((e) => {
@@ -339,10 +356,10 @@ export default function EditLineUpScreen({ navigation, route }) {
 
     if (tempArray.length > 0) {
       if (
-        route
-        && route.params
-        && route.params.gameObj
-        && route.params.selectedTeam
+        route &&
+        route.params &&
+        route.params.gameObj &&
+        route.params.selectedTeam
       ) {
         setLoading(true);
         createGameLineUp(
@@ -352,27 +369,32 @@ export default function EditLineUpScreen({ navigation, route }) {
           route.params.gameObj.game_id,
           tempArray,
           authContext,
-        ).then(() => {
-          if (tempNonRosterArray.length > 0) {
-            deleteGameLineUp(
-              route.params.selectedTeam === 'home'
-                ? route.params.gameObj.home_team.group_id
-                : route.params.gameObj.away_team.group_id,
-              route.params.gameObj.game_id,
-              tempNonRosterArray,
-              authContext,
-            ).then(() => {
+        )
+          .then(() => {
+            if (tempNonRosterArray.length > 0) {
+              deleteGameLineUp(
+                route.params.selectedTeam === 'home'
+                  ? route.params.gameObj.home_team.group_id
+                  : route.params.gameObj.away_team.group_id,
+                route.params.gameObj.game_id,
+                tempNonRosterArray,
+                authContext,
+              ).then(() => {
+                setLoading(false);
+                navigation.goBack();
+              });
+            } else {
               setLoading(false);
               navigation.goBack();
-            })
-          } else {
+            }
+          })
+          .catch((error) => {
             setLoading(false);
-            navigation.goBack();
-          }
-        }).catch((error) => {
-          setLoading(false)
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, `${error}`), 10)
-        });
+            setTimeout(
+              () => Alert.alert(strings.alertmessagetitle, `${error}`),
+              10,
+            );
+          });
       }
     } else if (tempNonRosterArray.length > 0) {
       setLoading(true);
@@ -383,41 +405,30 @@ export default function EditLineUpScreen({ navigation, route }) {
         route.params.gameObj.game_id,
         tempNonRosterArray,
         authContext,
-      ).then(() => {
-        setLoading(false);
-        navigation.goBack();
-      }).catch((error) => {
-        setLoading(false)
-        setTimeout(() => Alert.alert(strings.alertmessagetitle, error), 10)
-      });
+      )
+        .then(() => {
+          setLoading(false);
+          navigation.goBack();
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error), 10);
+        });
     } else {
       setLoading(false);
       Alert.alert('Please modify lineup first');
     }
-  }
-
-  const searchFilterFunction = (text) => {
-      setStarting(searchStarting.filter(
-        (x) => x.profile.first_name.includes(text) || x.profile.last_name.includes(text),
-      ));
-      setSubs(searchSubs.filter(
-        (x) => x.profile.first_name.includes(text) || x.profile.last_name.includes(text),
-      ));
-      setNonRoster(searchNonRoster.filter(
-        (x) => x.profile.first_name.includes(text) || x.profile.last_name.includes(text),
-      ));
-
-      console.log('STARTING::', starting);
-    console.log('SUBS::', subs);
-    console.log('NON_ROSTER::', nonRoster);
   };
+
+  
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
       <View style={styles.mainContainer}>
-        <TCSearchBox
-        style={{ alignSelf: 'center', marginTop: 15 }}
-        onChangeText={ (text) => searchFilterFunction(text) }/>
+        {/* <TCSearchBox
+          style={{alignSelf: 'center', marginTop: 15}}
+          onChangeText={(text) => searchFilterFunction(text)}
+        /> */}
         <TCGreenSwitcher
           firstTabText={'Single selection'}
           secondTabText={'Multi Selection'}
@@ -426,80 +437,122 @@ export default function EditLineUpScreen({ navigation, route }) {
           onSecondTabPress={() => setSelected(2)}
         />
         {selected === 1 ? (
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             <ScrollView>
-              <TCLabel title={'Roster'} />
+              <TCLabel title={'Roster'} style={{marginBottom: 15}} />
               <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-                marginLeft: 25,
-              }}>
+                style={{
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.lightBlackColor,
+                  marginLeft: 25,
+                }}>
                 Starting
               </Text>
               {starting.length === 0 ? (
                 <Text style={styles.noDataView}>No Player</Text>
               ) : (
                 <FlatList
-                data={starting}
-                renderItem={renderStarting}
-                keyExtractor={(item, index) => index.toString()}
-                scrollEnabled={false}
-              />
+                  data={starting}
+                  renderItem={renderStarting}
+                  keyExtractor={(item, index) => index.toString()}
+                  scrollEnabled={false}
+                />
               )}
               <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-                marginLeft: 25,
-                marginTop: 20,
-              }}>
+                style={{
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.lightBlackColor,
+                  marginLeft: 25,
+                  marginTop: 20,
+                }}>
                 Subs
               </Text>
               {subs.length === 0 ? (
                 <Text style={styles.noDataView}>No Player</Text>
               ) : (
                 <FlatList
-                data={subs}
-                renderItem={renderSubs}
-                keyExtractor={(item, index) => index.toString()}
-                scrollEnabled={false}
-              />
+                  data={subs}
+                  renderItem={renderSubs}
+                  keyExtractor={(item, index) => index.toString()}
+                  scrollEnabled={false}
+                />
               )}
 
-              <TCLabel title={'Non-Roster'} />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  
+                  alignItems: 'center',
+                  
+                }}>
+                <TCLabel title={'Non-Roster'} style={{height:50}} />
+
+                {search ? (
+                  <View style={{flex:1, marginLeft: 15, marginRight: 15,}}>
+                    <TextInput
+                    style={{marginLeft: 10, marginRight: 10,height:30}}
+                    value={nonRoster}
+                    onChangeText={(text) => {
+                      setNonRoster(
+                        searchNonRoster.filter(
+                          (x) =>
+                            x.profile.first_name.toLowerCase().includes(text.toLowerCase()) ||
+                            x.profile.last_name.toLowerCase().includes(text.toLowerCase()) 
+                        ),
+
+                      );
+                      setSearchNonRoster(
+                        searchNonRoster.filter(n => !roster.includes(n))
+                      )
+                      if(text.length <= 0){
+                        setSearch(false)
+                        
+                      }
+                    }}
+                  />
+                    <View style={{height:1,backgroundColor:'gray'}}/>
+                  </View>
+                ) : (
+                  <TouchableOpacity onPress={() => {setSearch(true)}}>
+                    <Image
+                      source={images.searchLocation}
+                      style={styles.searchImg}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
               {nonRoster.length === 0 ? (
                 <Text style={styles.noDataView}>No Player</Text>
               ) : (
                 <FlatList
-                data={nonRoster}
-                renderItem={renderNonRoster}
-                keyExtractor={(item, index) => index.toString()}
-                scrollEnabled={false}
-              />
+                  data={nonRoster}
+                  renderItem={renderNonRoster}
+                  keyExtractor={(item, index) => index.toString()}
+                  scrollEnabled={false}
+                />
               )}
             </ScrollView>
             <TCGradientButton
-            title={strings.saveTitle}
-            onPress={() => {
-              saveButtonPress()
-            }}
-          />
-
+              title={strings.saveTitle}
+              onPress={() => {
+                saveButtonPress();
+              }}
+            />
           </View>
         ) : (
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             <ScrollView>
               <TCLabel title={'Roster'} />
               <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-                marginLeft: 25,
-              }}>
+                style={{
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.lightBlackColor,
+                  marginLeft: 25,
+                }}>
                 Starting
               </Text>
 
@@ -507,66 +560,112 @@ export default function EditLineUpScreen({ navigation, route }) {
                 <Text style={styles.noDataView}>No Player</Text>
               ) : (
                 <FlatList
-                data={starting}
-                renderItem={renderStartingMultiple}
-                keyExtractor={(item, index) => index.toString()}
-                scrollEnabled={false}
-              />
+                  data={starting}
+                  renderItem={renderStartingMultiple}
+                  keyExtractor={(item, index) => index.toString()}
+                  scrollEnabled={false}
+                />
               )}
               {/* <LineUpPlayerMultiSelectionView/> */}
               <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-                marginLeft: 25,
-                marginTop: 20,
-              }}>
+                style={{
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.lightBlackColor,
+                  marginLeft: 25,
+                  marginTop: 20,
+                }}>
                 Subs
               </Text>
               {subs.length === 0 ? (
                 <Text style={styles.noDataView}>No Player</Text>
               ) : (
                 <FlatList
-                data={subs}
-                renderItem={renderSubsMultiple}
-                keyExtractor={(item, index) => index.toString()}
-                scrollEnabled={false}
-              />
+                  data={subs}
+                  renderItem={renderSubsMultiple}
+                  keyExtractor={(item, index) => index.toString()}
+                  scrollEnabled={false}
+                />
               )}
 
-              <TCLabel title={'Non-Roster'} />
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  
+                  alignItems: 'center',
+                  
+                }}>
+                <TCLabel title={'Non-Roster'} style={{height:50}} />
+
+                {search ? (
+                  <View style={{flex:1, marginLeft: 15, marginRight: 15,}}>
+                    <TextInput
+                    style={{marginLeft: 10, marginRight: 10,height:30}}
+                    value={nonRoster}
+                    onChangeText={(text) => {
+                      setNonRoster(
+                        searchNonRoster.filter(
+                          (x) =>
+                            x.profile.first_name.toLowerCase().includes(text.toLowerCase()) ||
+                            x.profile.last_name.toLowerCase().includes(text.toLowerCase()) 
+                        ),
+
+                      );
+                      setSearchNonRoster(
+                        searchNonRoster.filter(n => !roster.includes(n))
+                      )
+                      if(text.length <= 0){
+                        setSearch(false)
+                        
+                      }
+                    }}
+                  />
+                    <View style={{height:1,backgroundColor:'gray'}}/>
+                  </View>
+                ) : (
+                  <TouchableOpacity onPress={() => {setSearch(true)}}>
+                    <Image
+                      source={images.searchLocation}
+                      style={styles.searchImg}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+
               {nonRoster.length === 0 ? (
                 <Text style={styles.noDataView}>No Player</Text>
               ) : (
                 <FlatList
-                data={nonRoster}
-                renderItem={renderNonRosterMultiple}
-                keyExtractor={(item, index) => index.toString()}
-                scrollEnabled={false}
-              />
+                  data={nonRoster}
+                  renderItem={renderNonRosterMultiple}
+                  keyExtractor={(item, index) => index.toString()}
+                  scrollEnabled={false}
+                />
               )}
             </ScrollView>
-            <TouchableWithoutFeedback onPress={toggleModal} disabled={enabledSection === 0}>
+            <TouchableWithoutFeedback
+              onPress={toggleModal}
+              disabled={enabledSection === 0}>
               <Image
-            source={images.moveFlottyButton}
-            style={{
-              width: 80,
-              height: 80,
-              resizeMode: 'cover',
-              position: 'absolute',
-              right: 0,
-              bottom: 50,
-
-            }}
-          />
+                source={images.moveFlottyButton}
+                style={{
+                  width: 80,
+                  height: 80,
+                  resizeMode: 'cover',
+                  position: 'absolute',
+                  right: 0,
+                  bottom: 50,
+                }}
+              />
             </TouchableWithoutFeedback>
             <TCGradientButton
-            title={strings.saveTitle}
-            onPress={() => {
-              saveButtonPress()
-            }}
-          />
+              title={strings.saveTitle}
+              onPress={() => {
+                saveButtonPress();
+              }}
+            />
           </View>
         )}
       </View>
@@ -574,7 +673,7 @@ export default function EditLineUpScreen({ navigation, route }) {
         isVisible={isModalVisible}
         backdropColor="black"
         backdropOpacity={0}
-        style={{ marginLeft: 0, marginRight: 0, marginBottom: 0 }}>
+        style={{marginLeft: 0, marginRight: 0, marginBottom: 0}}>
         <View style={styles.modelViewContainer}>
           <View
             style={{
@@ -582,7 +681,6 @@ export default function EditLineUpScreen({ navigation, route }) {
               justifyContent: 'space-between',
               marginLeft: 10,
               marginRight: 10,
-
             }}>
             <Text onPress={toggleModal} style={styles.cancelTitle}>
               Cancel
@@ -591,9 +689,10 @@ export default function EditLineUpScreen({ navigation, route }) {
             <TouchableOpacity
               disabled={
                 !(
-                  selectedPosition === 1
-                  || selectedPosition === 2
-                  || selectedPosition === 3)
+                  selectedPosition === 1 ||
+                  selectedPosition === 2 ||
+                  selectedPosition === 3
+              )
               }
               onPress={() => {
                 toggleModal();
@@ -609,6 +708,7 @@ export default function EditLineUpScreen({ navigation, route }) {
                       tempRoster[index].lineup = undefined;
                       nonRoster.unshift(tempRoster[index]);
                       setNonRoster([...nonRoster]);
+                      
                       roster.splice(index, 1);
                       setRoster([...roster]);
                       setStarting(
@@ -621,8 +721,9 @@ export default function EditLineUpScreen({ navigation, route }) {
                         (obj) => obj === selectedMember,
                       );
                       temp[index].modified = true;
-                      temp[index].lineup = (selectedPosition === 1 && 'starting')
-                  || (selectedPosition === 2 && 'subs');
+                      temp[index].lineup =
+                        (selectedPosition === 1 && 'starting') ||
+                        (selectedPosition === 2 && 'subs');
                       setRoster(temp);
                       setStarting(
                         roster.filter((el) => el.lineup === 'starting'),
@@ -644,9 +745,16 @@ export default function EditLineUpScreen({ navigation, route }) {
                     setRoster([...roster]);
                     nonRoster.splice(index, 1);
                     setNonRoster([...nonRoster]);
-                    setStarting(roster.filter((el) => el.lineup === 'starting'));
+                   
+
+                    setStarting(
+                      roster.filter((el) => el.lineup === 'starting'),
+                    );
                     setSubs(roster.filter((el) => el.lineup === 'subs'));
                   }
+                  console.log('NON',nonRoster);   
+                  console.log('ROS',roster);                 
+            
                 }
                 if (selected === 2) {
                   if (enabledSection === 1 || enabledSection === 2) {
@@ -659,19 +767,19 @@ export default function EditLineUpScreen({ navigation, route }) {
                           e.selected = false;
                           e.lineup = undefined;
                           nonRoster.unshift(e);
-                          tempArray.push(e)
+                          tempArray.push(e);
                         }
-                      })
+                      });
                       setNonRoster([...nonRoster]);
+                      
+
                       // eslint-disable-next-line array-callback-return
                       tempArray.map((e) => {
-                        const index = roster.findIndex(
-                          (obj) => obj === e,
-                        );
+                        const index = roster.findIndex((obj) => obj === e);
                         roster.splice(index, 1);
-                      })
+                      });
                       setRoster([...roster]);
-                      setEnabledSection(0)
+                      setEnabledSection(0);
                       setStarting(
                         roster.filter((el) => el.lineup === 'starting'),
                       );
@@ -682,11 +790,12 @@ export default function EditLineUpScreen({ navigation, route }) {
                         if (e.selected) {
                           e.modified = true;
                           e.selected = false;
-                          e.lineup = (selectedPosition === 1 && 'starting')
-                            || (selectedPosition === 2 && 'subs');
+                          e.lineup =
+                            (selectedPosition === 1 && 'starting') ||
+                            (selectedPosition === 2 && 'subs');
                         }
-                      })
-                      setEnabledSection(0)
+                      });
+                      setEnabledSection(0);
                       setRoster([...roster]);
                       setStarting(
                         roster.filter((el) => el.lineup === 'starting'),
@@ -700,27 +809,33 @@ export default function EditLineUpScreen({ navigation, route }) {
                       if (e.selected) {
                         e.modified = true;
                         e.selected = false;
-                        e.lineup = (selectedPosition === 1 && 'starting')
-                          || (selectedPosition === 2 && 'subs');
+                        e.lineup =
+                          (selectedPosition === 1 && 'starting') ||
+                          (selectedPosition === 2 && 'subs');
                         roster.unshift(e);
-                        tempArray.push(e)
+                        tempArray.push(e);
                       }
-                    })
+                    });
                     setRoster([...roster]);
                     // eslint-disable-next-line array-callback-return
                     tempArray.map((e) => {
-                      const index = nonRoster.findIndex(
-                        (obj) => obj === e,
-                      );
+                      const index = nonRoster.findIndex((obj) => obj === e);
                       nonRoster.splice(index, 1);
-                    })
-                    setEnabledSection(0)
-                    setNonRoster([...nonRoster])
+                    });
+                    setEnabledSection(0);
+                    setNonRoster([...nonRoster]);
+                    
+
                     setStarting(
                       roster.filter((el) => el.lineup === 'starting'),
                     );
                     setSubs(roster.filter((el) => el.lineup === 'subs'));
+
+                                    
+              
                   }
+                  console.log('NON',nonRoster);   
+                    console.log('ROS',roster); 
                 }
               }}>
               <Text style={styles.doneTitle}>Done</Text>
@@ -733,7 +848,6 @@ export default function EditLineUpScreen({ navigation, route }) {
             keyExtractor={(item, index) => index.toString()}
             scrollEnabled={false}
           />
-
         </View>
       </Modal>
       <ActionSheet
@@ -745,7 +859,7 @@ export default function EditLineUpScreen({ navigation, route }) {
         onPress={(index) => {
           if (index === 0) {
             const startingData = starting.map((el) => {
-              const o = { ...el };
+              const o = {...el};
               const i = roster.findIndex((obj) => obj === el);
               roster.splice(i, 1);
               o.modified = true;
@@ -753,9 +867,11 @@ export default function EditLineUpScreen({ navigation, route }) {
             });
             setStarting([]);
             setNonRoster([...startingData, ...nonRoster]);
+            
+
           } else if (index === 1) {
             const subsData = subs.map((el) => {
-              const o = { ...el };
+              const o = {...el};
               const i = roster.findIndex((obj) => obj === el);
               roster.splice(i, 1);
               o.modified = true;
@@ -763,6 +879,8 @@ export default function EditLineUpScreen({ navigation, route }) {
             });
             setSubs([]);
             setNonRoster([...subsData, ...nonRoster]);
+            
+
           }
         }}
       />
@@ -813,7 +931,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 8,
@@ -833,7 +951,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 5,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 3,
@@ -853,7 +971,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 5,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 3,
@@ -884,5 +1002,13 @@ const styles = StyleSheet.create({
     color: colors.grayColor,
     marginLeft: 35,
     marginTop: 10,
+  },
+  searchImg: {
+    alignSelf: 'center',
+    height: 15,
+    tintColor: colors.magnifyIconColor,
+    resizeMode: 'contain',
+    width: 15,
+    marginRight:25,
   },
 });

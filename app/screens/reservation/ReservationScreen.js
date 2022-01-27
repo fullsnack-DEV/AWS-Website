@@ -22,6 +22,7 @@ import { getGameHomeScreen } from '../../utils/gameUtils';
 import ReservationMainScreenShimmer from '../../components/shimmer/schedule/ReservationMainScreenShimmer';
 import ReservationCard from '../../components/reservations/ReservationCard';
 import ReservationStatus from '../../Constants/ReservationStatus';
+import GameStatus from '../../Constants/GameStatus';
 
 export default function ReservationScreen({ navigation }) {
   const [loading, setloading] = useState(false);
@@ -43,7 +44,7 @@ export default function ReservationScreen({ navigation }) {
       for (const temp of response.payload) {
         const date = temp?.start_datetime || temp?.game?.start_datetime;
         const curruentDate = new Date().getTime() / 1000;
-        if (curruentDate < date && temp.status !== ReservationStatus.completed) {
+        if (curruentDate < date && temp.status !== ReservationStatus.completed && temp?.game?.status !== GameStatus.ended) {
           upcomingData.push(temp);
         } else {
           pastData.push(temp);

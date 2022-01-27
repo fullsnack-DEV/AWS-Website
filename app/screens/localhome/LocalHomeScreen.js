@@ -8,9 +8,8 @@ import React, {
   useState,
   useContext,
   useEffect,
-  
   useRef,
-  useLayoutEffect
+  useLayoutEffect,
 } from 'react';
 import {
   View,
@@ -81,7 +80,7 @@ export default function LocalHomeScreen({navigation, route}) {
   const [selectedSettingOption, setSelectedSettingOption] = useState();
 
   const [location, setLocation] = useState(
-    authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+    authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
       authContext?.entity?.obj?.city.slice(1),
   );
 
@@ -115,48 +114,42 @@ export default function LocalHomeScreen({navigation, route}) {
     navigation.setOptions({
       headerTitle: () => (
         <TouchableOpacity
-              style={styles.titleHeaderView}
-              onPress={() => {
-                setLocationPopup(true);
-              }}
-              hitSlop={getHitSlop(15)}>
+          style={styles.titleHeaderView}
+          onPress={() => {
+            setLocationPopup(true);
+          }}
+          hitSlop={getHitSlop(15)}>
           <Text style={styles.headerTitle}>
-            {location.charAt(0).toUpperCase() + location.slice(1)}
+            {location?.charAt?.(0)?.toUpperCase() + location?.slice(1)}
           </Text>
           <Image source={images.home_gps} style={styles.gpsIconStyle} />
         </TouchableOpacity>
       ),
       headerLeft: () => (
-        <View style={{marginLeft:15}}>
+        <View style={{marginLeft: 15}}>
           <FastImage
-                source={images.tc_message_top_icon}
-                resizeMode={'contain'}
-                style={styles.backImageStyle}
-              />
+            source={images.tc_message_top_icon}
+            resizeMode={'contain'}
+            style={styles.backImageStyle}
+          />
         </View>
       ),
-      
+
       headerRight: () => (
         <View style={styles.rightHeaderView}>
           <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('SearchScreen', {
-                    isAdmin: true,
-                    galleryRef,
-                    entityType: authContext.entity?.role,
-                    entityID: authContext.entity?.uid,
-                  });
-                }}>
-            <Image
-                  source={images.home_search}
-                  style={styles.townsCupIcon}
-                />
+            onPress={() => {
+              navigation.navigate('SearchScreen', {
+                isAdmin: true,
+                galleryRef,
+                entityType: authContext.entity?.role,
+                entityID: authContext.entity?.uid,
+              });
+            }}>
+            <Image source={images.home_search} style={styles.townsCupIcon} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setSettingPopup(true)}>
-            <Image
-                  source={images.home_setting}
-                  style={styles.townsCupIcon}
-                />
+            <Image source={images.home_setting} style={styles.townsCupIcon} />
           </TouchableOpacity>
         </View>
       ),
@@ -206,15 +199,12 @@ export default function LocalHomeScreen({navigation, route}) {
     }
   }, [route?.params?.locationText]);
 
- 
-
   useEffect(() => {
     Utility.getStorage('sportSetting')
       .then((setting) => {
         console.log('Setting::1::=>', setting);
         if (setting === null) {
-          const playerSport =
-            authContext?.entity?.obj?.registered_sports || [];
+          const playerSport = authContext?.entity?.obj?.registered_sports || [];
           const result = (playerSport || []).map((obj) => ({
             sport: obj.sport,
             sport_type: obj.sport_type,
@@ -364,6 +354,7 @@ export default function LocalHomeScreen({navigation, route}) {
                   must: [
                     {match: {'setting.availibility': 'On'}},
                     {term: {entity_type: 'team'}},
+                    
                   ],
                 },
               },
@@ -388,6 +379,7 @@ export default function LocalHomeScreen({navigation, route}) {
                         },
                       },
                     },
+                    
                   ],
                 },
               },
@@ -397,6 +389,14 @@ export default function LocalHomeScreen({navigation, route}) {
       };
 
       if (location !== 'world') {
+        console.log('locationlocation', location);
+        availableForchallengeQuery.query.bool.should[0].bool.must.push({
+          multi_match: {
+            query: location,
+            fields: ['city', 'country', 'state', 'venue.address'],
+          },
+        });
+
         availableForchallengeQuery.query.bool.should[1].bool.must.push({
           multi_match: {
             query: location,
@@ -438,7 +438,7 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         );
       }
-      
+
       // Looking Challengee query
 
       // Hiring player query
@@ -478,7 +478,7 @@ export default function LocalHomeScreen({navigation, route}) {
       }
 
       console.log(
-        'Recruiting player  match Query:=>',
+        'availableForchallengeQuery:=>',
         JSON.stringify(availableForchallengeQuery),
       );
 
@@ -588,7 +588,9 @@ export default function LocalHomeScreen({navigation, route}) {
                 nested: {
                   path: 'scorekeeper_data',
                   query: {
-                    bool: {must: [{term: {'scorekeeper_data.is_published': true}}]},
+                    bool: {
+                      must: [{term: {'scorekeeper_data.is_published': true}}],
+                    },
                   },
                 },
               },
@@ -597,7 +599,6 @@ export default function LocalHomeScreen({navigation, route}) {
         },
       };
       if (location !== 'world') {
-        
         scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
           multi_match: {
             query: `${location}`,
@@ -632,7 +633,7 @@ export default function LocalHomeScreen({navigation, route}) {
         console.log('Upcoming match response :=>', games);
 
         Utility.getGamesList(games).then((gamedata) => {
-          if (games?.length ) {
+          if (games?.length) {
             setUpcomingMatch([]);
           } else {
             setUpcomingMatch(gamedata);
@@ -655,19 +656,15 @@ export default function LocalHomeScreen({navigation, route}) {
         setLookingTeam(players);
       });
 
-      getUserIndex(refereeQuery)
-        .then((res) => {
-          console.log('res referee list:=>', res);
-          setReferees([...res]);
-        })
-       
+      getUserIndex(refereeQuery).then((res) => {
+        console.log('res referee list:=>', res);
+        setReferees([...res]);
+      });
 
-      getUserIndex(scorekeeperQuery)
-        .then((res) => {
-          console.log('res scorekeeper list:=>', res);
-          setScorekeepers([...res]);
-        })
-        
+      getUserIndex(scorekeeperQuery).then((res) => {
+        console.log('res scorekeeper list:=>', res);
+        setScorekeepers([...res]);
+      });
 
       // });
     }
@@ -871,8 +868,6 @@ export default function LocalHomeScreen({navigation, route}) {
     />
   );
 
-  
-
   const getLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
@@ -895,12 +890,12 @@ export default function LocalHomeScreen({navigation, route}) {
           });
           console.log(
             'Location:=>',
-            city.charAt(0).toUpperCase() + city.slice(1),
+            city?.charAt(0).toUpperCase() + city?.slice(1),
           );
-          setLocation(city.charAt(0).toUpperCase() + city.slice(1));
+          setLocation(city?.charAt(0).toUpperCase() + city?.slice(1));
           setFilters({
             ...filters,
-            location: city.charAt(0).toUpperCase() + city.slice(1),
+            location: city?.charAt(0).toUpperCase() + city?.slice(1),
           });
         });
         console.log(position.coords.latitude);
@@ -919,45 +914,45 @@ export default function LocalHomeScreen({navigation, route}) {
       {/* <ActivityLoader visible={loading} /> */}
       <View style={styles.sportsListView}>
         <FlatList
-              ref={refContainer}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              data={[
-                ...[
-                  {
-                    sport: 'All',
-                  },
-                ],
-                ...sports,
-              ]}
-              keyExtractor={keyExtractor}
-              renderItem={sportsListView}
-              // initialScrollIndex={sports.indexOf(selectedSport)}
-              initialNumToRender={sports?.length}
-              onScrollToIndexFailed={(info) => {
-                const wait = new Promise((resolve) => setTimeout(resolve, 500));
-                wait.then(() => {
-                  refContainer.current.scrollToIndex({
-                    animated: true,
-                    index: info.index,
-                  });
-                });
-              }}
-              style={{
-                width: '100%',
-                height: 50,
-                alignContent: 'center',
-              }}
-            />
+          ref={refContainer}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          data={[
+            ...[
+              {
+                sport: 'All',
+              },
+            ],
+            ...sports,
+          ]}
+          keyExtractor={keyExtractor}
+          renderItem={sportsListView}
+          // initialScrollIndex={sports.indexOf(selectedSport)}
+          initialNumToRender={sports?.length}
+          onScrollToIndexFailed={(info) => {
+            const wait = new Promise((resolve) => setTimeout(resolve, 500));
+            wait.then(() => {
+              refContainer.current.scrollToIndex({
+                animated: true,
+                index: info.index,
+              });
+            });
+          }}
+          style={{
+            width: '100%',
+            height: 50,
+            alignContent: 'center',
+          }}
+        />
       </View>
       {loading ? (
         <LocalHomeScreenShimmer />
       ) : !recentMatch?.length &&
-        !upcomingMatch?.length  &&
-        !challengeeMatch?.length  &&
-        !hiringPlayers?.length  &&
-        !referees?.length  &&
-        !scorekeepers?.length  ? (
+        !upcomingMatch?.length &&
+        !challengeeMatch?.length &&
+        !hiringPlayers?.length &&
+        !referees?.length &&
+        !scorekeepers?.length ? (
           <View style={styles.placeholderContainer}>
             <Text style={styles.placeholderViewText}>
               Towns Cup Data Not Available
@@ -965,8 +960,6 @@ export default function LocalHomeScreen({navigation, route}) {
           </View>
       ) : (
         <Fragment>
-        
-
           <ScrollView>
             {recentMatch?.length > 0 && (
               <View>
@@ -1100,10 +1093,7 @@ export default function LocalHomeScreen({navigation, route}) {
                       data={gameData}
                       cardWidth={'94%'}
                       placeholderText={strings.challengerPlaceholderText}
-                      onStartPress={async () => {
-                        
-                      
-                      }}
+                      onStartPress={async () => {}}
                     />
                   )}
                 />
@@ -1298,17 +1288,19 @@ export default function LocalHomeScreen({navigation, route}) {
                     console.log(
                       'Location:=>',
                       authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
-                        authContext?.entity?.obj?.city.slice(1),
+                        authContext?.entity?.obj?.city?.slice(1),
                     );
                     setLocation(
-                      authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
-                        authContext?.entity?.obj?.city.slice(1),
+                      authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
+                        authContext?.entity?.obj?.city?.slice(1),
                     );
                     setFilters({
                       ...filters,
                       location:
-                        authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
-                        authContext?.entity?.obj?.city.slice(1),
+                        authContext?.entity?.obj?.city
+                          ?.charAt(0)
+                          .toUpperCase() +
+                        authContext?.entity?.obj?.city?.slice(1),
                     });
                     navigation.setParams({locationText: null});
                     setTimeout(() => {
