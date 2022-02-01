@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,6 +15,7 @@ import fonts from '../Constants/Fonts';
 import EventOfItem from './Schedule/EventOfItem';
 import EventBetweenUserItem from './Schedule/EventBetweenUserItem';
 import {getHitSlop} from '../utils';
+import AuthContext from '../auth/context';
 
 export default function TCEventView({
   onPress,
@@ -22,10 +23,12 @@ export default function TCEventView({
   onThreeDotPress,
   eventBetweenSection,
   eventOfSection,
-  entity,
+  // entity,
   profileID,
   
 }) {
+  const authContext  = useContext(AuthContext);
+
   console.log('data.game.referees', data);
   let showDot = false;
   let startDate = '';
@@ -108,19 +111,19 @@ export default function TCEventView({
     }
   }
   const refereeFound = (dataObj) =>
-    (dataObj?.game?.referees || []).some((e) => entity.uid === e.referee_id);
+    (dataObj?.game?.referees || []).some((e) => authContext.entity.uid === e.referee_id);
   const scorekeeperFound = (dataObj) =>
     (dataObj?.game?.scorekeepers || []).some(
-      (e) => entity.uid === e.scorekeeper_id,
+      (e) => authContext.entity.uid === e.scorekeeper_id,
     );
 
   
 
   if (
-    data?.game?.home_team?.group_id === entity.uid ||
-    data?.game?.away_team?.group_id === entity.uid ||
-    data?.game?.home_team?.user_id === entity.uid ||
-    data?.game?.away_team?.user_id === entity.uid ||
+    data?.game?.home_team?.group_id === authContext.entity.uid ||
+    data?.game?.away_team?.group_id === authContext.entity.uid ||
+    data?.game?.home_team?.user_id === authContext.entity.uid ||
+    data?.game?.away_team?.user_id === authContext.entity.uid ||
     refereeFound(data) ||
     scorekeeperFound(data)
   ) {

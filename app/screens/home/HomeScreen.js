@@ -710,7 +710,7 @@ const HomeScreen = ({navigation, route}) => {
         promises.push(getTeamsOfClub(uid, authContext));
       }
       Promise.all(promises)
-        .then(([res1, res2,res3]) => {
+        .then(([res1, res2, res3]) => {
           const groupDetails = res1.payload;
 
           console.log('res1:::=>', res1.payload);
@@ -735,10 +735,10 @@ const HomeScreen = ({navigation, route}) => {
           groupDetails.joined_leagues = league_Data;
           groupDetails.history = history_Data;
           groupDetails.joined_members = res2.payload;
-           if (res3 && clubHome) {
-             groupDetails.joined_teams = res3.payload;
-             console.log('Club teams list:=>',res3);
-           }
+          if (res3 && clubHome) {
+            groupDetails.joined_teams = res3.payload;
+            console.log('Club teams list:=>', res3);
+          }
           setCurrentUserData(groupDetails);
           setIsClubHome(clubHome);
           setIsTeamHome(teamHome);
@@ -1658,10 +1658,15 @@ const HomeScreen = ({navigation, route}) => {
       let user_id = authContext?.entity?.uid;
       if (route?.params?.role) entity_type = route?.params?.role;
       if (route?.params?.uid) user_id = route?.params?.uid;
-      if(tab === 'following'){
-        navigation.navigate('JoinedTeamsScreen');
-      }
-      else if (tab !== 'members') {
+      if (tab === 'following') {
+
+        console.log('route?.params?.uid',route?.params?.uid);
+        console.log('route?.params?.role',route?.params?.role);
+        navigation.navigate('JoinedTeamsScreen', {
+          uid: route?.params?.uid ,
+          role: route?.params?.role,
+        });
+      } else if (tab !== 'members') {
         navigation.navigate('UserConnections', {tab, entity_type, user_id});
       } else {
         navigation.navigate('GroupMembersScreen', {groupID: user_id});
@@ -2985,6 +2990,7 @@ const HomeScreen = ({navigation, route}) => {
     ) {
       return 'invite';
     }
+    return 'challenge';
   };
 
   const onChallengePress = () => {
@@ -5451,6 +5457,7 @@ const HomeScreen = ({navigation, route}) => {
               //   });
               // }, 300);
             }}>
+              
             {selectedChallengeOption === 0 ? (
               <LinearGradient
                 colors={[colors.yellowColor, colors.orangeGradientColor]}

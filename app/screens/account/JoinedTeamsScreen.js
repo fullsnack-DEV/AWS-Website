@@ -24,27 +24,28 @@ import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
 import strings from '../../Constants/String';
 
-export default function JoinedTeamsScreen() {
+export default function JoinedTeamsScreen({route}) {
   const [teamList, setTeamList] = useState([]);
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
 
+  console.log('route?.params?.uid', route?.params?.uid);
+  console.log('route?.params?.role', route?.params?.role);
 
   useEffect(() => {
     getTeamsList();
   }, []);
 
   const getTeamsList = () => {
-    setloading(true)
-    const entity = authContext.entity;
-    if (entity.role === 'club') {
-      getTeamsOfClub(entity.uid, authContext)
+    setloading(true);
+    if (route?.params?.role === 'club') {
+      getTeamsOfClub(route?.params?.uid, authContext)
         .then((response) => {
-          setloading(false)
+          setloading(false);
           setTeamList(response.payload);
         })
         .catch((e) => {
-          setloading(false)
+          setloading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -52,11 +53,11 @@ export default function JoinedTeamsScreen() {
     } else {
       getJoinedGroups('team', authContext)
         .then((response) => {
-          setloading(false)
+          setloading(false);
           setTeamList(response.payload);
         })
         .catch((e) => {
-          setloading(false)
+          setloading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -87,9 +88,7 @@ export default function JoinedTeamsScreen() {
   return (
     <SafeAreaView>
       <ActivityLoader visible={loading} />
-      <FlatList
-          data={teamList}
-          renderItem={renderTeams}/>
+      <FlatList data={teamList} renderItem={renderTeams} />
     </SafeAreaView>
   );
 }
@@ -121,8 +120,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-
-  
 
   textContainer: {
     height: 80,

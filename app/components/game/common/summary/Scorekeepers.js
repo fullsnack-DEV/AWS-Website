@@ -19,11 +19,11 @@ import {
 
 // import { useIsFocused } from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
-import { Portal } from 'react-native-portalize';
-import { Modalize } from 'react-native-modalize';
+import {Portal} from 'react-native-portalize';
+import {Modalize} from 'react-native-modalize';
 import LinearGradient from 'react-native-linear-gradient';
 
-import { getSetting } from '../../../../screens/challenge/manageChallenge/settingUtility';
+import {getSetting} from '../../../../screens/challenge/manageChallenge/settingUtility';
 
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
@@ -77,16 +77,18 @@ const Scorekeepers = ({
     getScorekeeperReservation(gameData?.game_id).then((res) => {
       console.log('Scorekeeper reservation::=>', res);
       const refData = res?.payload?.filter(
-        (item) => ![ScorekeeperReservationStatus.cancelled].includes(item?.status),
+        (item) =>
+          ![ScorekeeperReservationStatus.cancelled].includes(item?.status),
       );
       const cloneRefData = [];
       refData.map((item) => {
-        const isExpired = new Date(item?.expiry_datetime * 1000).getTime()
-          < new Date().getTime();
+        const isExpired =
+          new Date(item?.expiry_datetime * 1000).getTime() <
+          new Date().getTime();
         if (
-          item?.status === ScorekeeperReservationStatus.offered
-          && !isExpired
-          && item?.initiated_by === authContext?.entity?.uid
+          item?.status === ScorekeeperReservationStatus.offered &&
+          !isExpired &&
+          item?.initiated_by === authContext?.entity?.uid
         ) {
           cloneRefData.push(item);
         } else if (item?.status !== ScorekeeperReservationStatus.offered) {
@@ -120,7 +122,6 @@ const Scorekeepers = ({
 
   const onFollowPress = useCallback(
     (userID, status) => {
-     
       const index = scorekeeper.findIndex(
         (item) => item?.scorekeeper?.user_id === userID,
       );
@@ -130,43 +131,43 @@ const Scorekeepers = ({
     [scorekeeper],
   );
 
-  
   const getScorekeeperStatusMessage = useCallback((item, type) => {
     const status = item?.status;
     let statusData = '';
-    const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime();
+    const isExpired =
+      new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime();
     switch (status) {
       case ScorekeeperReservationStatus.accepted:
-        statusData = { status: 'Confirmed', color: colors.greeColor };
+        statusData = {status: 'Confirmed', color: colors.greeColor};
         break;
       case ScorekeeperReservationStatus.restored:
-        statusData = { status: 'Restored', color: colors.greeColor };
+        statusData = {status: 'Restored', color: colors.greeColor};
         break;
       case ScorekeeperReservationStatus.cancelled:
-        statusData = { status: 'Cancelled', color: colors.greeColor };
+        statusData = {status: 'Cancelled', color: colors.greeColor};
         break;
       case ScorekeeperReservationStatus.declined:
-        statusData = { status: 'Declined', color: colors.grayColor };
+        statusData = {status: 'Declined', color: colors.grayColor};
         break;
       case ScorekeeperReservationStatus.pendingpayment:
-        statusData = { status: 'Pending payment', color: colors.yellowColor };
+        statusData = {status: 'Pending payment', color: colors.yellowColor};
         break;
       case ScorekeeperReservationStatus.offered:
         if (isExpired) {
-          statusData = { status: 'Expired', color: colors.userPostTimeColor };
-        } else statusData = { status: 'Sent', color: colors.yellowColor };
+          statusData = {status: 'Expired', color: colors.userPostTimeColor};
+        } else statusData = {status: 'Sent', color: colors.yellowColor};
         break;
       case ScorekeeperReservationStatus.changeRequest:
-        statusData = { status: 'Change requested', color: colors.yellowColor };
+        statusData = {status: 'Change requested', color: colors.yellowColor};
         break;
       default:
-        statusData = { status: '' };
+        statusData = {status: ''};
     }
     return statusData[type];
   }, []);
 
   const renderScorekeepers = useCallback(
-    ({ item }) => {
+    ({item}) => {
       const entity = authContext?.entity;
       const reservationDetail = item;
 
@@ -176,14 +177,14 @@ const Scorekeepers = ({
           statusTitle={getScorekeeperStatusMessage(reservationDetail, 'status')}
           myUserId={myUserId}
           isShowReviewButton={
-            gameData?.status === 'ended'
-            && ![
+            gameData?.status === 'ended' &&
+            ![
               ScorekeeperReservationStatus.offered,
               ScorekeeperReservationStatus.cancelled,
               ScorekeeperReservationStatus.declined,
-            ].includes(reservationDetail?.status)
-            && !checkReviewExpired(gameData?.actual_enddatetime)
-            && isAdmin
+            ].includes(reservationDetail?.status) &&
+            !checkReviewExpired(gameData?.actual_enddatetime) &&
+          isAdmin
           }
           isReviewed={!!item?.scorekeeper?.review_id}
           followUser={followUser}
@@ -243,10 +244,10 @@ const Scorekeepers = ({
         setScorekeeperSetting(response);
 
         if (
-          response?.scorekeeperAvailibility
-          && response?.game_fee
-          && response?.refund_policy
-          && response?.available_area
+          response?.scorekeeperAvailibility &&
+          response?.game_fee &&
+          response?.refund_policy &&
+          response?.available_area
         ) {
           teamListModalRef.current.open();
 
@@ -284,12 +285,13 @@ const Scorekeepers = ({
 
   const scorekeeperOfferValidation = useCallback(() => {
     if (
-      authContext.entity.role === 'user'
-      && authContext?.entity?.auth?.user?.scorekeeper_data?.filter(
+      authContext.entity.role === 'user' &&
+      authContext?.entity?.auth?.user?.scorekeeper_data?.filter(
         (obj) => obj?.sport === gameData?.sport,
-      ).length > 0
-      && scorekeeper?.filter((obj) => obj?.scorekeeper_id === authContext?.entity?.uid)
-        .length === 0
+      ).length > 0 &&
+      scorekeeper?.filter(
+        (obj) => obj?.scorekeeper_id === authContext?.entity?.uid,
+      ).length === 0
     ) {
       return true;
     }
@@ -307,8 +309,9 @@ const Scorekeepers = ({
 
     if (
       // isAdmin
-      gameData?.challenge_scorekeeper?.who_secure?.[0]?.responsible_team_id  === authContext.entity.uid
-      && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status)
+      gameData?.challenge_scorekeepers?.who_secure?.[0]?.responsible_team_id ===
+        authContext.entity.uid &&
+      [GameStatus.accepted, GameStatus.reset].includes(gameData?.status)
     ) {
       return (
         <TCGradientButton
@@ -322,7 +325,7 @@ const Scorekeepers = ({
             borderColor: colors.greeColor,
             height: 28.5,
           }}
-          textStyle={{ color: colors.greeColor, fontSize: 12 }}
+          textStyle={{color: colors.greeColor, fontSize: 12}}
           outerContainerStyle={{
             marginHorizontal: 5,
             marginTop: 5,
@@ -381,8 +384,9 @@ const Scorekeepers = ({
   );
 
   const renderTeams = useCallback(
-    ({ item }) => (selectedTeam === item ? (
-      <TouchableOpacity
+    ({item}) =>
+      selectedTeam === item ? (
+        <TouchableOpacity
           style={styles.teamMainContainer}
           onPress={() => {
             setSelectedTeam(item);
@@ -398,33 +402,33 @@ const Scorekeepers = ({
               });
             }, 500);
           }}>
-        <LinearGradient
+          <LinearGradient
             colors={[colors.yellowColor, colors.orangeColor]}
             style={styles.teamContainer}>
-          <View style={styles.profileView}>
-            <Image
+            <View style={styles.profileView}>
+              <Image
                 source={
                   item?.thumbnail
-                    ? { uri: item?.thumbnail }
+                    ? {uri: item?.thumbnail}
                     : images.teamPlaceholder
                 }
                 style={styles.profileImage}
               />
-          </View>
-          <View style={styles.topTextContainer}>
-            <Text
-                style={[styles.nameText, { color: colors.whiteColor }]}
+            </View>
+            <View style={styles.topTextContainer}>
+              <Text
+                style={[styles.nameText, {color: colors.whiteColor}]}
                 numberOfLines={1}>
-              {item?.group_name}
-            </Text>
-            <Text
-                style={[styles.locationText, { color: colors.whiteColor }]}
+                {item?.group_name}
+              </Text>
+              <Text
+                style={[styles.locationText, {color: colors.whiteColor}]}
                 numberOfLines={1}>
-              {item?.city}
-            </Text>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
+                {item?.city}
+              </Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
       ) : (
         <TouchableOpacity
           style={styles.teamMainContainer}
@@ -449,7 +453,7 @@ const Scorekeepers = ({
               <Image
                 source={
                   item?.thumbnail
-                    ? { uri: item?.thumbnail }
+                    ? {uri: item?.thumbnail}
                     : images.teamPlaceholder
                 }
                 style={styles.profileImage}
@@ -465,7 +469,7 @@ const Scorekeepers = ({
             </View>
           </View>
         </TouchableOpacity>
-      )),
+      ),
     [gameData, navigation, scorekeeperSetting, selectedTeam],
   );
   const listEmptyComponent = () => (
@@ -483,7 +487,7 @@ const Scorekeepers = ({
     renderItem: renderTeams,
     keyExtractor: (index) => index.toString(),
     ListEmptyComponent: listEmptyComponent,
-    style: { marginTop: 15 },
+    style: {marginTop: 15},
   };
 
   return (
@@ -518,12 +522,12 @@ const Scorekeepers = ({
           onOpen={() => setTeamModalVisible(true)}
           snapPoint={hp(50)}
           withHandle={false}
-          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+          overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
           modalStyle={{
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
@@ -602,7 +606,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,
@@ -622,7 +626,7 @@ const styles = StyleSheet.create({
     width: '90%',
     backgroundColor: colors.whiteColor,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 5,
     borderRadius: 8,

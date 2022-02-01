@@ -119,6 +119,8 @@ export default function EditRefereeReservation({ navigation, route }) {
         total_amount: reservationObject?.total_amount,
         total_stripe_fee: reservationObject?.total_stripe_fee,
         total_payout: reservationObject?.total_payout,
+        international_card_fee : reservationObject?.international_card_fee,
+
         hourly_game_fee: reservationObject?.hourly_game_fee,
         manual_fee: reservationObject?.manual_fee,
       });
@@ -227,6 +229,8 @@ export default function EditRefereeReservation({ navigation, route }) {
           total_service_fee1: response.payload.total_service_fee1,
           total_service_fee2: response.payload.total_service_fee2,
           total_stripe_fee: response.payload.total_stripe_fee,
+          international_card_fee : response.payload.international_card_fee,
+
           hourly_game_fee: bodyParams?.hourly_game_fee,
           manual_fee: bodyParams?.manual_fee,
         });
@@ -497,6 +501,7 @@ export default function EditRefereeReservation({ navigation, route }) {
     body.total_service_fee2 = paymentCard?.total_service_fee2;
     body.total_amount = paymentCard?.total_amount;
     body.total_payout = paymentCard?.total_payout;
+    body.international_card_fee = paymentCard?.international_card_fee;
     body.manual_fee = bodyParams?.manual_fee;
     body.payment_method_type = 'card';
     body.currency_type = bodyParams?.currency_type;

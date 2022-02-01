@@ -239,7 +239,7 @@ export default function ChooseLocationScreen({navigation}) {
           must: [
             {
               multi_match: {
-                query: item?.terms?.[1]?.value,
+                query: item?.terms?.[0]?.value,
                 fields: ['city', 'country', 'state'],
               },
             },

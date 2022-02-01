@@ -77,11 +77,20 @@ function ChooseVenueScreen({ navigation, route }) {
                 } else {
                   Alert.alert('Please fill all details of venue.');
                 }
-              } else {
-                navigation.navigate(comeFrom, {
-                  selectedVenueObj: selectedVenue,
-                });
-              }
+              } else if(comeFrom === 'EditChallenge'){
+                  navigation.navigate(comeFrom, {
+                    selectedVenueObj: selectedVenue,
+                    groupObj: route?.params?.groupObj,
+                    sportName: route?.params?.challengeObj?.sport,
+                    challengeObj: route?.params?.challengeObj,
+                    lastConfirmVersion: route?.params?.challengeObj,
+                    settingObj: route?.params?.settingObj,
+                  });
+                }else{
+                  navigation.navigate(comeFrom, {
+                    selectedVenueObj: selectedVenue,
+                  });
+                }
             } else {
               Alert.alert('Please choose any one venue.');
             }
