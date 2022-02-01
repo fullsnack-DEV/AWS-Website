@@ -189,7 +189,7 @@ const Referees = ({
   const renderReferees = useCallback(
     ({item}) => {
       const reservationDetail = item; // item?.reservation
-      console.log('reservation detail::=>>>',reservationDetail);
+      console.log('reservation detail::=>>>', reservationDetail);
       return (
         <TCUserFollowUnfollowList
           statusColor={getRefereeStatusMessage(reservationDetail, 'color')}
@@ -205,7 +205,9 @@ const Referees = ({
           is_following={reservationDetail?.referee?.is_following}
           onFollowUnfollowPress={onFollowPress}
           profileImage={reservationDetail?.referee?.thumbnail}
-          isShowThreeDots={item?.initiated_by === authContext?.entity?.uid && !isAdmin}
+          isShowThreeDots={
+            item?.initiated_by === authContext?.entity?.uid && !isAdmin
+          }
           onThreeDotPress={() => {
             selectedRefereeData = item;
             actionSheet.current.show();
@@ -230,9 +232,9 @@ const Referees = ({
 
   const handleBookReferee = useCallback(() => {
     // navigation.navigate('BookReferee', { gameData });
-    console.log('gameData',gameData);
+    console.log('gameData', gameData);
 
-    console.log('gameData.city',gameData.city);
+    console.log('gameData.city', gameData.city);
     navigation.navigate('BookReferee', {
       filters: {
         location: gameData.city,
@@ -313,7 +315,8 @@ const Referees = ({
   const renderBookRefereeButton = useMemo(() => {
     console.log('Book referee,', gameData);
     if (
-      gameData?.challenge_referee?.who_secure?.[0]?.responsible_team_id === authContext.entity.uid &&
+      gameData?.challenge_referee?.who_secure?.[0]?.responsible_team_id ===
+        authContext.entity.uid &&
       // isAdmin
       [GameStatus.accepted, GameStatus.reset].includes(gameData?.status)
     ) {

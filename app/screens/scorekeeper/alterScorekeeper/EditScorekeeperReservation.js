@@ -107,6 +107,7 @@ import React, {
         total_game_fee: reservationObject?.total_game_fee,
         total_service_fee1: reservationObject?.total_service_fee1,
         total_service_fee2: reservationObject?.total_service_fee2,
+        international_card_fee : reservationObject?.international_card_fee,
         total_amount: reservationObject?.total_amount,
         total_stripe_fee: reservationObject?.total_stripe_fee,
         total_payout: reservationObject?.total_payout,
@@ -227,6 +228,8 @@ import React, {
            total_payout: response.payload.total_payout,
            total_service_fee1: response.payload.total_service_fee1,
            total_service_fee2: response.payload.total_service_fee2,
+           international_card_fee : response.payload.international_card_fee,
+
            total_stripe_fee: response.payload.total_stripe_fee,
            hourly_game_fee: bodyParams?.hourly_game_fee,
            manual_fee: bodyParams?.manual_fee,
@@ -497,6 +500,8 @@ import React, {
      body.total_amount = paymentCard?.total_amount;
      body.total_payout = paymentCard?.total_payout;
      body.manual_fee = bodyParams?.manual_fee;
+     body.international_card_fee = bodyParams?.international_card_fee;
+
      body.payment_method_type = 'card';
      body.currency_type = bodyParams?.currency_type;
 

@@ -111,10 +111,15 @@ export default function ChangePasswordScreen({navigation}) {
         .catch((error) => {
           setloading(false);
           if (error.code === 'auth/wrong-password') {
-            Alert.alert(
-              'Towns Cup',
-              'The password is invalid or the user does not have a password.',
-            );
+
+            setTimeout(() => {
+              Alert.alert(
+                'Towns Cup',
+                'The password is invalid or the user does not have a password.',
+              );
+            }, 10);
+
+           
           }
         });
     }

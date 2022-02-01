@@ -45,7 +45,6 @@ import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import EventScheduleScreen from './EventScheduleScreen';
 import fonts from '../../../Constants/Fonts';
-
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
 import CalendarTimeTableView from '../../../components/Schedule/CalendarTimeTableView';
 import AuthContext from '../../../auth/context';
@@ -85,7 +84,37 @@ let selectedCalendarDate = moment(new Date());
 const { width } = Dimensions.get('window');
 
 export default function ScheduleScreen({ navigation,route }) {
-  const authContext = useContext(AuthContext);
+  let authContext  = useContext(AuthContext);
+  if(route?.params?.isBackVisible) {
+    authContext = {
+      entity:{
+        role: route?.params?.role,
+        uid: route?.params?.uid,
+        
+      }
+    }
+    if(route?.params?.role === 'team' || route?.params?.role === 'club'){
+      authContext.entity.obj = {
+        group_id : route?.params?.uid,
+        entity_type: route?.params?.role,
+      }
+      authContext.entity.auth = {
+        group_id : route?.params?.uid,
+        entity_type: route?.params?.role,
+      }
+    }else{
+      authContext.entity.obj = {
+        user_id : route?.params?.uid,
+        entity_type:route?.params?.role,
+      }
+      authContext.entity.auth = {
+        user_id : route?.params?.uid,
+        entity_type:route?.params?.role,
+      }
+    }
+  }
+
+  
   const actionSheet = useRef();
   const isFocused = useIsFocused();
   
@@ -113,7 +142,7 @@ export default function ScheduleScreen({ navigation,route }) {
   const [notifAPI, setNotifAPI] = useState();
   const refContainer = useRef();
   const [selectedEntity, setSelectedEntity] = useState();
-  const [activeScreen, setActiveScreen] = useState(false);
+  const [activeScreen, setActiveScreen] = useState(!!route?.params?.isBackVisible);
   const [animatedOpacityValue] = useState(new Animated.Value(0));
   const [slots, setSlots] = useState();
   const [blockedGroups, setBlockedGroups] = useState([]);
@@ -162,6 +191,10 @@ export default function ScheduleScreen({ navigation,route }) {
 
   useEffect(() => {
     getBlockedSlots();
+    if(route?.params?.isBackVisible){
+      getEventsList(authContext.entity.obj);  
+    }
+   
   }, [isFocused]);
 
   const getSimpleDateFormat = (dateValue) => {
@@ -381,7 +414,7 @@ export default function ScheduleScreen({ navigation,route }) {
 
       let eventTimeTableData = [];
       Utility.getCalendar(
-        authContext?.entity?.obj?.group_id || authContext?.entity?.obj?.user_id,
+        selectedObj?.group_id || selectedObj?.user_id,
         new Date().getTime() / 1000,
       )
         // blockedSlots(entityRole, uid, authContext)
@@ -684,7 +717,7 @@ export default function ScheduleScreen({ navigation,route }) {
       index,
       viewPosition: 1,
     });
-    getEventsList(gList[index]);
+      getEventsList(gList[index]);   
   };
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
@@ -953,7 +986,7 @@ export default function ScheduleScreen({ navigation,route }) {
       style={[styles.mainContainer, { opacity: activeScreen ? 1.0 : 0.5 }]}
       needsOffscreenAlphaCompositing>
       
-      <View>
+      {!route?.params?.isBackVisible && <View>
         {groupList?.length <= 0 ? (
           <NotificationListTopHeaderShimmer />
         ) : (
@@ -983,7 +1016,7 @@ export default function ScheduleScreen({ navigation,route }) {
             />
           )
         )}
-      </View>
+      </View>}
 
       <View style={{ flex: 1 }}>
         <View

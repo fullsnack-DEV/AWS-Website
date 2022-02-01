@@ -719,6 +719,11 @@ export default function EditChallenge({navigation, route}) {
                   navigation.navigate('ChooseVenueScreen', {
                     venues: venueList || [],
                     comeFrom: 'EditChallenge',
+                    groupObj: route?.params?.groupObj,
+                    sportName: route?.params?.challengeObj?.sport,
+                    challengeObj : route?.params?.challengeObj,
+                    lastConfirmVersion: route?.params?.challengeObj,
+                    settingObj: route?.params?.settingObj,
                   });
                 }}
               />

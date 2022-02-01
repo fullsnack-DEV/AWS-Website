@@ -68,11 +68,17 @@ export default function CreateMemberProfileForm1({navigation}) {
     },
   ]);
 
-  const [memberInfo, setMemberInfo] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-  });
+  const [memberInfo, setMemberInfo] = useState({});
+  const [firstName, setFirstName] = useState();
+  const [lastName, setLastName] = useState();
+  const [email, setEmail] = useState();
+  const [gender, setGender] = useState();
+  const [streetAddress, setStreetAddress] = useState();
+  const [city, setCity] = useState();
+  const [state, setState] = useState();
+  const [country, setCountry] = useState();
+  const [postalCode, setPostalCode] = useState();
+  const [birthday, setBirthday] = useState();
 
   useEffect(() => {
     const getAuthEntity = async () => {
@@ -99,11 +105,34 @@ export default function CreateMemberProfileForm1({navigation}) {
             if (checkValidation()) {
               if (entity.role === 'team') {
                 navigation.navigate('CreateMemberProfileTeamForm2', {
-                  form1: memberInfo,
+                  form1: {
+                    ...memberInfo,
+                    first_name: firstName,
+                    last_name: lastName,
+                    email,
+                    street_address: streetAddress,
+                    city,
+                    state_abbr: state,
+                    country,
+                    postal_code: postalCode,
+                    birthday,
+                  },
                 });
               } else if (entity.role === 'club') {
                 navigation.navigate('CreateMemberProfileClubForm2', {
-                  form1: memberInfo,
+                  form1: {
+                    ...memberInfo,
+                    first_name: firstName,
+                    last_name: lastName,
+                    email,
+                    gender,
+                    street_address: streetAddress,
+                    city,
+                    state_abbr: state,
+                    country,
+                    postal_code: postalCode,
+                    birthday,
+                  },
                 });
               }
             }
@@ -112,22 +141,36 @@ export default function CreateMemberProfileForm1({navigation}) {
         </Text>
       ),
     });
-  }, [navigation, memberInfo, role, phoneNumber, show]);
+  }, [
+    navigation,
+    memberInfo,
+    role,
+    phoneNumber,
+    show,
+    firstName,
+    lastName,
+    email,
+    streetAddress,
+    city,
+    state,
+    country,
+    postalCode,
+  ]);
 
   const checkValidation = () => {
-    if (memberInfo.first_name === '') {
+    if (firstName === '') {
       Alert.alert('Towns Cup', 'First name cannot be blank');
       return false;
     }
-    if (memberInfo.last_name === '') {
+    if (lastName === '') {
       Alert.alert('Towns Cup', 'Last name cannot be blank');
       return false;
     }
-    if (memberInfo.email === '') {
+    if (email === '') {
       Alert.alert('Towns Cup', 'Email cannot be blank');
       return false;
     }
-    if (ValidateEmail(memberInfo.email) === false) {
+    if (ValidateEmail(email) === false) {
       Alert.alert('Towns Cup', 'You have entered an invalid email address!');
       return false;
     }
@@ -220,7 +263,7 @@ export default function CreateMemberProfileForm1({navigation}) {
   };
   const handleDonePress = ({date}) => {
     setShow(!show);
-    setMemberInfo({...memberInfo, birthday: new Date(date).getTime()});
+    setBirthday(new Date(date).getTime());
   };
   const handleCancelPress = () => {
     setShow(!show);
@@ -270,8 +313,6 @@ export default function CreateMemberProfileForm1({navigation}) {
     />
   );
 
-
-  
   return (
     <TCKeyboardView>
       <ScrollView style={{flex: 1}}>
@@ -303,21 +344,17 @@ export default function CreateMemberProfileForm1({navigation}) {
         <View>
           <TCLable title={'Name'} required={true} />
           <TCTextField
-            value={memberInfo.first_name}
+            value={firstName}
             autoCapitalize="none"
             autoCorrect={false}
-            onChangeText={(text) =>
-              setMemberInfo({...memberInfo, first_name: text})
-            }
+            onChangeText={(text) => setFirstName(text)}
             placeholder={strings.firstName}
           />
           <TCTextField
-            value={memberInfo.last_name}
+            value={lastName}
             autoCapitalize="none"
             autoCorrect={false}
-            onChangeText={(text) =>
-              setMemberInfo({...memberInfo, last_name: text})
-            }
+            onChangeText={(text) => setLastName(text)}
             placeholder={strings.lastName}
             style={{marginTop: 12}}
           />
@@ -326,10 +363,10 @@ export default function CreateMemberProfileForm1({navigation}) {
         <View>
           <TCLable title={'E-Mail'} required={true} />
           <TCTextField
-            value={memberInfo.email}
+            value={email}
             autoCapitalize="none"
             autoCorrect={false}
-            onChangeText={(text) => setMemberInfo({...memberInfo, email: text})}
+            onChangeText={(text) => setEmail(text)}
             placeholder={strings.addressPlaceholder}
             keyboardType={'email-address'}
           />
@@ -356,10 +393,8 @@ export default function CreateMemberProfileForm1({navigation}) {
         <View>
           <TCLable title={'Street Address'} />
           <TCTextField
-            value={memberInfo.street_address}
-            onChangeText={(text) =>
-              setMemberInfo({...memberInfo, street_address: text})
-            }
+            value={streetAddress}
+            onChangeText={(text) => setStreetAddress(text)}
             placeholder={strings.addressPlaceholder}
             keyboardType={'default'}
             autoCapitalize="none"
@@ -371,13 +406,11 @@ export default function CreateMemberProfileForm1({navigation}) {
           <View>
             <TCLable title={'city'} />
             <TCTextField
-              value={memberInfo.city}
-              onChangeText={(text) =>
-                setMemberInfo({...memberInfo, city: text})
-              }
+              value={city}
+              onChangeText={(text) => setCity(text)}
               placeholder={strings.cityText}
               autoCapitalize="none"
-            autoCorrect={false}
+              autoCorrect={false}
               keyboardType={'default'}
             />
           </View>
@@ -386,13 +419,11 @@ export default function CreateMemberProfileForm1({navigation}) {
           <View>
             <TCLable title={'State/Province/Region'} />
             <TCTextField
-              value={memberInfo.state_abbr}
-              onChangeText={(text) =>
-                setMemberInfo({...memberInfo, state_abbr: text})
-              }
+              value={state}
+              onChangeText={(text) => setState(text)}
               placeholder={strings.stateText}
               autoCapitalize="none"
-            autoCorrect={false}
+              autoCorrect={false}
               keyboardType={'default'}
             />
           </View>
@@ -401,13 +432,11 @@ export default function CreateMemberProfileForm1({navigation}) {
           <View>
             <TCLable title={'Country'} />
             <TCTextField
-              value={memberInfo.country}
-              onChangeText={(text) =>
-                setMemberInfo({...memberInfo, country: text})
-              }
+              value={country}
+              onChangeText={(text) => setCountry(text)}
               placeholder={strings.countryText}
               autoCapitalize="none"
-            autoCorrect={false}
+              autoCorrect={false}
               keyboardType={'default'}
             />
           </View>
@@ -416,10 +445,8 @@ export default function CreateMemberProfileForm1({navigation}) {
           <View>
             <TCLable title={'Postal Code/Zip'} />
             <TCTextField
-              value={memberInfo.postal_code}
-              onChangeText={(text) =>
-                setMemberInfo({...memberInfo, postal_code: text})
-              }
+              value={postalCode}
+              onChangeText={(text) => setPostalCode(text)}
               placeholder={strings.postalCodeText}
               keyboardType={'default'}
             />
@@ -431,12 +458,10 @@ export default function CreateMemberProfileForm1({navigation}) {
 
           <TCTouchableLabel
             title={
-              memberInfo.birthday &&
-              `${`${
-                monthNames[new Date(memberInfo.birthday).getMonth()]
-              } ${new Date(memberInfo.birthday).getDate()}`}, ${new Date(
-                memberInfo.birthday,
-              ).getFullYear()}`
+              birthday &&
+              `${`${monthNames[new Date(birthday).getMonth()]} ${new Date(
+                birthday,
+              ).getDate()}`}, ${new Date(birthday).getFullYear()}`
             }
             placeholder={strings.birthDatePlaceholder}
             onPress={() => setShow(!show)}
@@ -447,9 +472,9 @@ export default function CreateMemberProfileForm1({navigation}) {
           <TCPicker
             dataSource={DataSource.Gender}
             placeholder={strings.selectGenderPlaceholder}
-            value={memberInfo.gender}
+            value={gender}
             onValueChange={(value) => {
-              setMemberInfo({...memberInfo, gender: value});
+              setGender(value);
             }}
           />
         </View>

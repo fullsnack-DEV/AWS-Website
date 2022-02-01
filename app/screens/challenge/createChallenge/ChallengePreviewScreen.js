@@ -45,6 +45,7 @@ import * as Utility from '../../../utils';
 import {
   acceptDeclineChallenge,
   acceptDeclineAlterChallenge,
+  getFeesEstimation,
 } from '../../../api/Challenge';
 
 import GameStatus from '../../../Constants/GameStatus';
@@ -57,6 +58,7 @@ import TCTabView from '../../../components/TCTabView';
 import CurruentReservationView from '../alterChallenge/CurrentReservationView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
 import {paymentMethods} from '../../../api/Users';
+
 
 let entity = {};
 export default function ChallengePreviewScreen({navigation, route}) {
@@ -147,11 +149,13 @@ export default function ChallengePreviewScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
+      setloading(true);
       if (route?.params?.paymentMethod) {
         setDefaultCard(route?.params?.paymentMethod);
       } else if (!defaultCard && challengeData?.source) {
         getPaymentMethods(challengeData?.source);
       }
+      getFeeDetail()
     }
   }, [
     challengeData?.source,
@@ -181,6 +185,48 @@ export default function ChallengePreviewScreen({navigation, route}) {
         }, 10);
       });
   }, [authContext, challengeData?.challengee, challengeData?.sport]);
+
+
+
+  const getFeeDetail = () => {
+    const feeBody = {};
+    console.log('challengeObj check:=>', challengeData);
+    feeBody.challenge_id = challengeData?.challenge_id;
+    feeBody.payment_method_type = 'card';
+    feeBody.currency_type = challengeData?.game_fee?.currency_type?.toLowerCase();
+    feeBody.total_game_fee = Number(
+      parseFloat(challengeData?.game_fee?.fee).toFixed(2),
+    );
+    feeBody.source = defaultCard?.id;
+    setloading(true);
+    getFeesEstimation(feeBody, authContext)
+      .then((response) => {
+        
+        setChallengeData({
+          ...challengeData,
+          source:defaultCard?.id,
+          total_game_fee: response.payload?.total_game_fee,
+          total_service_fee1: response.payload?.total_service_fee1,
+          total_service_fee2: response.payload?.total_service_fee2,
+          international_card_fee: response.payload?.international_card_fee,
+          total_stripe_fee: response.payload?.total_stripe_fee,
+          total_payout: response.payload?.total_payout,
+          total_amount: response.payload?.total_amount,
+        });
+
+        console.log('Body estimate fee:=>', response.payload);
+
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+
 
   const checkSenderOrReceiver = (challengeObj) => {
     console.log('sender & receiver Obj', challengeObj);
@@ -335,6 +381,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
   ) => {
     setloading(true);
 
+    
     acceptDeclineAlterChallenge(
       teamID,
       ChallengeId,
@@ -678,19 +725,20 @@ export default function ChallengePreviewScreen({navigation, route}) {
               title={strings.acceptTitle}
               onPress={() => {
                 let paymentObj = {};
-                if (defaultCard) {
+               
                   paymentObj = {
                     source: defaultCard?.id,
                     payment_method_type: 'card',
-                    total_game_fee: defaultCard?.total_game_fee,
-                    total_service_fee1: defaultCard?.total_service_fee1,
-                    total_service_fee2: defaultCard?.total_service_fee2,
-                    total_stripe_fee: defaultCard?.total_stripe_fee,
-                    total_payout: defaultCard?.total_payout,
-                    total_amount: defaultCard?.total_amount,
+                    total_game_fee: challengeData?.total_game_fee,
+                    total_service_fee1: challengeData?.total_service_fee1,
+                    total_service_fee2: challengeData?.total_service_fee2,
+                    international_card_fee: challengeData?.international_card_fee,
+                    total_stripe_fee: challengeData?.total_stripe_fee,
+                    total_payout: challengeData?.total_payout,
+                    total_amount: challengeData?.total_amount,
                   };
-                }
-                console.log('paymentObj', defaultCard);
+                
+                console.log('paymentObj1:::', paymentObj);
                 alterChallengeOperation(
                   entity.uid,
                   challengeData?.challenge_id,
@@ -1201,6 +1249,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
               total_stripe_fee: challengeData?.total_stripe_fee,
               total_payout: challengeData?.total_payout,
               total_amount: challengeData?.total_amount,
+              international_card_fee: challengeData?.international_card_fee,
             }}
             currency={challengeData?.game_fee?.currency_type}
             isChallenger={challengeData?.challenger === entity.uid}

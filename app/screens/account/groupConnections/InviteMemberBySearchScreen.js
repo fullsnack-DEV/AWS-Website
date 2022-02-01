@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState, useEffect, useContext} from 'react';
+import React, {useLayoutEffect, useState, useEffect, useContext,useCallback} from 'react';
 import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -18,14 +18,14 @@ export default function InviteMembersBySearchScreen({navigation}) {
   const [loading, setloading] = useState(true);
   const authContext = useContext(AuthContext);
   const [players, setPlayers] = useState([]);
-  const [searchPlayers, setSearchPlayers] = useState([]);
   const [selectedList, setSelectedList] = useState([]);
   const [pageSize] = useState(10);
   const [pageFrom, setPageFrom] = useState(0);
+  const [filters, setFilters] = useState();
 
   const selectedPlayers = [];
   useEffect(() => {
-    getUsers();
+    getUsers(filters);
   }, []);
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -62,11 +62,11 @@ export default function InviteMembersBySearchScreen({navigation}) {
 
   const onScrollHandler = () => {
     if (!stopFetchMore) {
-      getUsers();
+      getUsers(filters);
       stopFetchMore = true;
     }
   };
-  const getUsers = () => {
+  const getUsers = useCallback((filterPlayer) => {
     const membersQuery = {
       size: pageSize,
       from: pageFrom,
@@ -76,6 +76,14 @@ export default function InviteMembersBySearchScreen({navigation}) {
         },
       },
     };
+    if (filterPlayer?.searchText?.length > 0) {
+      membersQuery.query.bool.must.push({
+        query_string: {
+          query: `*${filterPlayer?.searchText}*`,
+          fields: ['full_name'],
+        },
+      });
+    }
     getUserIndex(membersQuery)
       .then((response) => {
         console.log('User list:->', response);
@@ -87,7 +95,6 @@ export default function InviteMembersBySearchScreen({navigation}) {
             return obj;
           });
           setPlayers([...players, ...result]);
-          setSearchPlayers(result);
           setPageFrom(pageFrom + pageSize);
           stopFetchMore = true;
         }
@@ -96,7 +103,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
         setloading(false);
         Alert.alert(error);
       });
-  };
+  },[pageFrom, pageSize, players]);
   const selectPlayer = ({item, index}) => {
     players[index].isChecked = !item.isChecked;
     setPlayers([...players]);
@@ -109,12 +116,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
     setSelectedList(selectedPlayers);
     console.log('Selected Item:', selectedPlayers);
   };
-  const searchFilterFunction = (text) => {
-    const result = searchPlayers.filter(
-      (x) => x.first_name.includes(text) || x.last_name.includes(text),
-    );
-    setPlayers(result);
-  };
+  
   const renderPlayer = ({item, index}) => (
     <ProfileCheckView
       playerDetail={item}
@@ -132,6 +134,23 @@ export default function InviteMembersBySearchScreen({navigation}) {
       return obj;
     });
   };
+
+  const applyFilter = useCallback((fil) => {
+    getUsers(fil);
+  }, []);
+  const listEmptyComponent = () => (
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <Text
+        style={{
+          fontFamily: fonts.RRegular,
+          color: colors.grayColor,
+          fontSize: 26,
+        }}>
+        No Players
+      </Text>
+    </View>
+  );
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -139,14 +158,30 @@ export default function InviteMembersBySearchScreen({navigation}) {
       <TCSearchBox
         width={'90%'}
         alignSelf="center"
-        onChangeText={(text) => searchFilterFunction(text)}
+        onChangeText={(text) => {
+          // searchFilterFunction(text)
+          const tempFilter = {...filters};
+
+          if (text?.length > 0) {
+            tempFilter.searchText = text;
+          } else {
+            delete tempFilter.searchText;
+          }
+          setFilters({
+            ...tempFilter,
+          });
+          setPageFrom(0);
+          setPlayers([]);
+          applyFilter(tempFilter);
+        
+        }}
       />
       <TCTags
         dataSource={players}
         titleKey={'full_name'}
         onTagCancelPress={handleTagPress}
       />
-      <FlatList
+      {/* <FlatList
         data={players}
         renderItem={renderPlayer}
         keyExtractor={(item, index) => index.toString()}
@@ -155,6 +190,20 @@ export default function InviteMembersBySearchScreen({navigation}) {
         onScrollBeginDrag={() => {
           stopFetchMore = false;
         }}
+      /> */}
+
+      <FlatList
+        extraData={players}
+        showsVerticalScrollIndicator={false}
+        data={players}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderPlayer}
+        onScroll={onScrollHandler}
+        onEndReachedThreshold={0.01}
+        onScrollBeginDrag={() => {
+          stopFetchMore = false;
+        }}
+        ListEmptyComponent={listEmptyComponent}
       />
     </View>
   );

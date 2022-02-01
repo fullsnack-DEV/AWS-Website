@@ -60,7 +60,7 @@ export default function MatchFeesCard({
             <Text style={styles.matchServiceFeeText}>
               {senderOrReceiver === 'sender' ? '$' : '-$'}
               
-              {challengeObj?.international_card_fee?.toFixed(2)}
+              {challengeObj?.international_card_fee?.toFixed(2)}{' '}
                
               {(challengeObj?.currency_type)?.toUpperCase() || 'CAD'}
             </Text>

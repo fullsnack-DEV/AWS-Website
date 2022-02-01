@@ -86,6 +86,7 @@ import EntityScoreboardScreen from '../screens/home/EntityScoreboardScreen';
 import EntityGallaryScreen from '../screens/home/EntityGallaryScreen';
 import EntityReviewScreen from '../screens/home/EntityReviewScreen';
 import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInviteScreen';
+import JoinedTeamsScreen from '../screens/account/JoinedTeamsScreen';
 
 const Stack = createStackNavigator();
 
@@ -1277,6 +1278,23 @@ const NewsFeedNavigator = () => (
               },
             }}
         />
+
+    <Stack.Screen
+      name="JoinedTeamsScreen"
+      component={JoinedTeamsScreen}
+      options={{
+        title: 'Teams',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="WriteReviewScreen"
       component={WriteReviewScreen}
