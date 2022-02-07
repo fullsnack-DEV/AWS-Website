@@ -35,16 +35,16 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import { getSearchTags, getTaggedEntityData } from '../../utils';
-import { getPickedData, MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
+import {getTaggedEntityData} from '../../utils';
+import {getPickedData, MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
 import TCGameCard from '../../components/TCGameCard';
-import { getGroupList, getUserList } from '../../api/elasticSearch';
+import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
 const tagRegex = /(?!\w)@\w+/gim;
 
-export default function WritePostScreen({ navigation, route }) {
+export default function WritePostScreen({navigation, route}) {
   const textInputRef = useRef();
   const [currentTextInputIndex, setCurrentTextInputIndex] = useState(0);
   const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
@@ -62,7 +62,7 @@ export default function WritePostScreen({ navigation, route }) {
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
   const {
-    params: { postData, onPressDone },
+    params: {postData, onPressDone},
   } = route;
   let userImage = '';
   let userName = '';
@@ -92,7 +92,8 @@ export default function WritePostScreen({ navigation, route }) {
                 JSON.stringify(tagsOfEntity),
               );
               format_tagged_data.map(async (item, index) => {
-                const isThere = item?.entity_type !== 'game'
+                const isThere =
+                  item?.entity_type !== 'game'
                     ? searchText.includes(
                         item?.entity_data?.tagged_formatted_name?.replace(
                           / /g,
@@ -120,8 +121,12 @@ export default function WritePostScreen({ navigation, route }) {
   }, [navigation, onPressDone, searchText, selectImage, tagsOfEntity]);
 
   useEffect(() => {
-    if (searchText[currentTextInputIndex - 1] === '@') { setLastTagStartIndex(currentTextInputIndex - 1); }
-    if (searchText[currentTextInputIndex - 1] === ' ') { setLastTagStartIndex(null); }
+    if (searchText[currentTextInputIndex - 1] === '@') {
+      setLastTagStartIndex(currentTextInputIndex - 1);
+    }
+    if (searchText[currentTextInputIndex - 1] === ' ') {
+      setLastTagStartIndex(null);
+    }
   }, [searchText]);
 
   useEffect(() => {
@@ -140,7 +145,7 @@ export default function WritePostScreen({ navigation, route }) {
             (item) => item?.entity_id === tagItem[entity_text],
           );
 
-          const jsonData = { entity_type: '', entity_data, entity_id: '' };
+          const jsonData = {entity_type: '', entity_data, entity_id: ''};
           jsonData.entity_type = ['player', 'user']?.includes(
             tagItem.entity_type,
           )
@@ -167,12 +172,12 @@ export default function WritePostScreen({ navigation, route }) {
           entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
           entity_data = getTaggedEntityData(entity_data, tagItem);
           if (!isExist) {
- tagsArray.push({
+            tagsArray.push({
               entity_data,
               entity_id: jsonData?.entity_id,
               entity_type: jsonData?.entity_type,
             });
-}
+          }
           tagName = `${tagName} ${joinedString}`;
           textInputRef.current.focus();
           return null;
@@ -191,6 +196,7 @@ export default function WritePostScreen({ navigation, route }) {
   }, [route?.params]);
 
   useEffect(() => {
+    console.log('searchText',searchText);
     if (searchText?.length === 0) {
       setTagsOfEntity([]);
       setUsers([]);
@@ -199,13 +205,17 @@ export default function WritePostScreen({ navigation, route }) {
     }
     if (searchText) {
       if (
-        currentTextInputIndex === 1
-        && searchText[currentTextInputIndex - 2] === '@'
-        && searchText[currentTextInputIndex - 1] !== ' '
-      ) { setLetModalVisible(true); } else if (
-        searchText[currentTextInputIndex - 2] === '@'
-        && searchText[currentTextInputIndex - 1] !== ' '
-      ) { setLetModalVisible(true); }
+        currentTextInputIndex === 1 &&
+        searchText[currentTextInputIndex - 2] === '@' &&
+        searchText[currentTextInputIndex - 1] !== ' '
+      ) {
+        setLetModalVisible(true);
+      } else if (
+        searchText[currentTextInputIndex - 2] === '@' &&
+        searchText[currentTextInputIndex - 1] !== ' '
+      ) {
+        setLetModalVisible(true);
+      }
 
       const lastString = searchText.substr(0, currentTextInputIndex);
       if (lastString) setSearchTag(`@${lastString.split('@')?.reverse()?.[0]}`);
@@ -217,21 +227,37 @@ export default function WritePostScreen({ navigation, route }) {
   }, [letModalVisible, searchTag]);
 
   useEffect(() => {
-    getUserList()
+    const userQuery = {
+      size: 1000,
+      query: {
+        bool: {
+          must: [],
+        },
+      },
+    };
+
+    const groupQuery = {
+      size: 1000,
+      query: {
+        bool: {
+          must: [],
+        },
+      },
+    };
+
+    getUserIndex(userQuery)
       .then((response) => {
-        console.log('user res:=>', response);
         setUsers([...response]);
         setSearchUsers([...response]);
-        getGroupList()
-          .then((res) => {
-            console.log('group res:=>', res);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages);
+      });
 
-            setGroups([...res]);
-            setSearchGroups([...res]);
-          })
-          .catch((e) => {
-            Alert.alert('', e.messages);
-          });
+    getGroupIndex(groupQuery)
+      .then((response) => {
+        setGroups([...response]);
+        setSearchGroups([...response]);
       })
       .catch((e) => {
         Alert.alert('', e.messages);
@@ -241,16 +267,25 @@ export default function WritePostScreen({ navigation, route }) {
   const searchFilterFunction = useCallback(
     (text) => {
       if (text?.length > 0) {
-        const userData = getSearchTags(searchUsers, text);
-        const groupData = getSearchTags(searchGroups, text);
+        let userData = searchUsers.filter((a) => !tagsOfEntity.some((b) => a.user_id === b.entity_id));  
+        let groupData = searchGroups.filter((o1) => !tagsOfEntity.some((o2) => o1.group_id === o2?.entity_id));
+
+  
+         userData = userData.filter(
+          (x) => x?.full_name?.toLowerCase().includes(text?.toLowerCase()),
+        );
+         groupData = groupData.filter(
+          (x) =>  x?.group_name?.toLowerCase().includes(text?.toLowerCase()),
+        );
         setUsers([...userData]);
         setGroups([...groupData]);
       }
     },
-    [searchGroups, searchUsers],
+    [searchGroups, searchUsers, tagsOfEntity],
   );
 
-  const removeStr = (str, fromIndex, toIndex) => str.substring(0, fromIndex) + str.substring(toIndex, str.length);
+  const removeStr = (str, fromIndex, toIndex) =>
+    str.substring(0, fromIndex) + str.substring(toIndex, str.length);
 
   const addStringInCurrentText = useCallback(
     (str, fromIndex, toIndex, stringToAdd) => {
@@ -271,7 +306,7 @@ export default function WritePostScreen({ navigation, route }) {
       const entity_text = ['player', 'user']?.includes(item.entity_type)
         ? 'user_id'
         : 'group_id';
-      const jsonData = { entity_type: '', entity_data, entity_id: '' };
+      const jsonData = {entity_type: '', entity_data, entity_id: ''};
       jsonData.entity_type = ['player', 'user']?.includes(item.entity_type)
         ? 'player'
         : item?.entity_type;
@@ -307,12 +342,12 @@ export default function WritePostScreen({ navigation, route }) {
         (tagItem) => tagItem?.entity_id === item[entity_text],
       );
       if (!isExist) {
- tagsArray.push({
+        tagsArray.push({
           entity_data,
           entity_id: item?.[entity_text],
           entity_type: jsonData?.entity_type,
         });
-}
+      }
       setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
       setLetModalVisible(false);
       textInputRef.current.focus();
@@ -339,15 +374,15 @@ export default function WritePostScreen({ navigation, route }) {
   );
 
   const renderTagUsersAndGroups = useCallback(
-    ({ item }) => (
+    ({item}) => (
       <TouchableOpacity
         onPress={() => onTagPress(item)}
         style={styles.userListStyle}>
         <Image
           source={
-            item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder
+            item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
           }
-          style={{ borderRadius: 13, height: 25, width: 25 }}
+          style={{borderRadius: 13, height: 25, width: 25}}
         />
         <Text style={styles.userTextStyle}>
           {item?.group_name
@@ -368,7 +403,7 @@ export default function WritePostScreen({ navigation, route }) {
       <View style={styles.userDetailView}>
         <Image
           style={styles.background}
-          source={userImage ? { uri: userImage } : images.profilePlaceHolder}
+          source={userImage ? {uri: userImage} : images.profilePlaceHolder}
         />
         <View style={styles.userTxtView}>
           <Text style={styles.userTxt}>{userName}</Text>
@@ -379,10 +414,10 @@ export default function WritePostScreen({ navigation, route }) {
   );
 
   const onKeyPress = useCallback(
-    ({ nativeEvent }) => {
+    ({nativeEvent}) => {
       if (
-        nativeEvent.key === 'Backspace'
-        && searchText[currentTextInputIndex - 1] === '@'
+        nativeEvent.key === 'Backspace' &&
+        searchText[currentTextInputIndex - 1] === '@'
       ) {
         setLastTagStartIndex(null);
         setLetModalVisible(false);
@@ -396,19 +431,20 @@ export default function WritePostScreen({ navigation, route }) {
   }, []);
 
   const renderModalTagEntity = useMemo(
-    () => letModalVisible
-      && [...users, ...groups]?.length > 0 && (
+    () =>
+      letModalVisible &&
+      [...users, ...groups]?.length > 0 && (
         <View
           style={[
             styles.userListContainer,
-            { marginTop: searchFieldHeight + 20 },
+            {marginTop: searchFieldHeight + 20},
           ]}>
           <FlatList
             showsVerticalScrollIndicator={false}
             data={[...users, ...groups]}
             keyboardShouldPersistTaps={'always'}
-            style={{ paddingTop: hp(1) }}
-            ListFooterComponent={() => <View style={{ height: hp(6) }} />}
+            style={{paddingTop: hp(1)}}
+            ListFooterComponent={() => <View style={{height: hp(6)}} />}
             renderItem={renderTagUsersAndGroups}
             keyExtractor={(item, index) => index.toString()}
           />
@@ -423,12 +459,15 @@ export default function WritePostScreen({ navigation, route }) {
     ],
   );
 
-  const addStr = (str, index, stringToAdd) => str.substring(0, index) + stringToAdd + str.substring(index, str.length);
+  const addStr = (str, index, stringToAdd) =>
+    str.substring(0, index) + stringToAdd + str.substring(index, str.length);
   const renderUrlPreview = useMemo(() => {
     if (searchText?.length > 0) {
       let desc = searchText;
       const position = desc.search(urlRegex);
-      if (position !== -1 && desc.substring(position)?.startsWith('www')) { desc = addStr(desc, position, 'http://'); }
+      if (position !== -1 && desc.substring(position)?.startsWith('www')) {
+        desc = addStr(desc, position, 'http://');
+      }
       return (
         <UrlPreview text={desc} containerStyle={styles.previewContainerStyle} />
       );
@@ -449,7 +488,7 @@ export default function WritePostScreen({ navigation, route }) {
   );
 
   const renderSelectedImage = useCallback(
-    ({ item, index }) => (
+    ({item, index}) => (
       <SelectedImageList
         data={item}
         itemNumber={index + 1}
@@ -461,19 +500,20 @@ export default function WritePostScreen({ navigation, route }) {
   );
 
   const ItemSeparatorComponent = useCallback(
-    () => <View style={{ width: wp('1%') }} />,
+    () => <View style={{width: wp('1%')}} />,
     [],
   );
 
   const renderSelectedImageList = useMemo(
-    () => selectImage?.length > 0 && (
-      <FlatList
+    () =>
+      selectImage?.length > 0 && (
+        <FlatList
           data={selectImage}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           renderItem={renderSelectedImage}
           ItemSeparatorComponent={ItemSeparatorComponent}
-          style={{ paddingVertical: 10, marginHorizontal: wp('3%') }}
+          style={{paddingVertical: 10, marginHorizontal: wp('3%')}}
           keyExtractor={(item, index) => index.toString()}
         />
       ),
@@ -482,7 +522,7 @@ export default function WritePostScreen({ navigation, route }) {
 
   const onImagePress = () => {
     ImagePicker.openPicker({
-      showsSelectedCount:true,
+      showsSelectedCount: true,
       multiple: true,
       maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
     })
@@ -561,8 +601,8 @@ export default function WritePostScreen({ navigation, route }) {
   );
 
   const renderSelectedGame = useCallback(
-    ({ item }) => (
-      <View style={{ marginRight: 15 }}>
+    ({item}) => (
+      <View style={{marginRight: 15}}>
         <TCGameCard
           onPress={() => removeTaggedGame(item)}
           isSelected={true}
@@ -577,11 +617,11 @@ export default function WritePostScreen({ navigation, route }) {
   const renderGameTags = useMemo(
     () => (
       <FlatList
-        style={{ paddingVertical: 15 }}
+        style={{paddingVertical: 15}}
         bounces={false}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 15 }}
+        contentContainerStyle={{paddingHorizontal: 15}}
         pagingEnabled={true}
         horizontal={true}
         data={tagsOfEntity?.filter((item) => item?.entity_type === 'game')}
@@ -594,31 +634,32 @@ export default function WritePostScreen({ navigation, route }) {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <ActivityLoader visible={loading} />
       {renderCurrentUseProfile}
 
       <ScrollView
         bounces={false}
-        style={{ flex: 1, overflow: 'visible' }}
+        style={{flex: 1, overflow: 'visible'}}
         // onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
       >
         <TextInput
           ref={textInputRef}
-          onLayout={(event) => setSearchFieldHeight(event?.nativeEvent?.layout?.height)
+          onLayout={(event) =>
+            setSearchFieldHeight(event?.nativeEvent?.layout?.height)
           }
           placeholder="What's going on?"
           placeholderTextColor={colors.userPostTimeColor}
           onSelectionChange={onSelectionChange}
           onKeyPress={onKeyPress}
-          onChangeText={setSearchText}
+          onChangeText={(text) => setSearchText(text)}
           style={styles.textInputField}
           multiline={true}
           textAlignVertical={'top'}>
           <ParsedText
-            parse={[{ pattern: tagRegex, renderText: renderTagText }]}
-            childrenProps={{ allowFontScaling: false }}>
+            parse={[{pattern: tagRegex, renderText: renderTagText}]}
+            childrenProps={{allowFontScaling: false}}>
             {searchText}
           </ParsedText>
         </TextInput>
@@ -633,7 +674,7 @@ export default function WritePostScreen({ navigation, route }) {
           <View style={styles.onlyMeViewStyle}>
             <ImageButton
               source={images.lock}
-              imageStyle={{ width: 30, height: 30 }}
+              imageStyle={{width: 30, height: 30}}
               onImagePress={() => {}}
             />
             <Text style={styles.onlyMeTextStyle}>Only me</Text>
@@ -641,12 +682,12 @@ export default function WritePostScreen({ navigation, route }) {
           <View
             style={[
               styles.onlyMeViewStyle,
-              { flex: 1, justifyContent: 'flex-end' },
+              {flex: 1, justifyContent: 'flex-end'},
             ]}>
             {selectImage?.length < MAX_UPLOAD_POST_ASSETS && (
               <ImageButton
                 source={images.pickImage}
-                imageStyle={{ width: 30, height: 30 }}
+                imageStyle={{width: 30, height: 30}}
                 onImagePress={onImagePress}
               />
             )}
@@ -657,7 +698,7 @@ export default function WritePostScreen({ navigation, route }) {
             {/* /> */}
             <ImageButton
               source={images.tagImage}
-              imageStyle={{ width: 30, height: 30, marginLeft: 10 }}
+              imageStyle={{width: 30, height: 30, marginLeft: 10}}
               onImagePress={onSelectTagButtonPress}
             />
           </View>
@@ -766,7 +807,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     position: 'absolute',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 5,

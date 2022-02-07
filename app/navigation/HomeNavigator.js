@@ -189,6 +189,7 @@ import EntityScoreboardScreen from '../screens/home/EntityScoreboardScreen';
 import EntityGallaryScreen from '../screens/home/EntityGallaryScreen';
 import EntityReviewScreen from '../screens/home/EntityReviewScreen';
 import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInviteScreen';
+import EntityStatScreen from '../screens/home/EntityStatScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -443,6 +444,22 @@ const HomeNavigator = () => (
       component={EntityReviewScreen}
       options={{
         title: 'Review',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="EntityStatScreen"
+      component={EntityStatScreen}
+      options={{
+        title: 'Stats',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

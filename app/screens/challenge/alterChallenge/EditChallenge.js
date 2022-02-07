@@ -322,6 +322,8 @@ export default function EditChallenge({navigation, route}) {
   const getFeeDetail = () => {
     const feeBody = {};
     console.log('challengeObj check:=>', challengeObj);
+
+    feeBody.source = challengeObj?.source;
     feeBody.challenge_id = challengeObj?.challenge_id;
     feeBody.payment_method_type = 'card';
     feeBody.currency_type = challengeObj?.game_fee?.currency_type?.toLowerCase();
@@ -364,6 +366,7 @@ export default function EditChallenge({navigation, route}) {
       total_game_fee: feeObj?.total_game_fee,
       total_service_fee1: feeObj?.total_service_fee1,
       total_service_fee2: feeObj?.total_service_fee2,
+      international_card_fee: feeObj?.international_card_fee,
       total_stripe_fee: feeObj?.total_stripe_fee,
       total_payout: feeObj?.total_payout,
       total_amount: feeObj?.total_amount,
@@ -906,7 +909,6 @@ export default function EditChallenge({navigation, route}) {
                 });
               }}
             />
-
             <TCThickDivider />
 
             {/* <TCChallengeTitle
@@ -966,9 +968,7 @@ export default function EditChallenge({navigation, route}) {
                 });
               }}
             />
-
             <TCThickDivider />
-
             <TCChallengeTitle
               title={
                 challengeObj?.challenger === entity.uid ? 'Payment' : 'Earning'
@@ -987,6 +987,7 @@ export default function EditChallenge({navigation, route}) {
                   total_game_fee: challengeObj?.total_game_fee,
                   total_service_fee1: challengeObj?.total_service_fee1,
                   total_service_fee2: challengeObj?.total_service_fee2,
+                  international_card_fee: challengeObj?.international_card_fee,
                   total_stripe_fee: challengeObj?.total_stripe_fee,
                   total_payout: challengeObj?.total_payout,
                   total_amount: challengeObj?.total_amount,

@@ -76,6 +76,7 @@ export default function PayAgainScreen({ navigation, route }) {
       bodyParams.total_game_fee= challengeObj?.total_game_fee;
       bodyParams.total_service_fee1= challengeObj?.total_service_fee1;
       bodyParams.total_service_fee2= challengeObj?.total_service_fee2;
+      bodyParams.international_card_fee = challengeObj?.international_card_fee;
       bodyParams.total_stripe_fee= challengeObj?.total_stripe_fee;
       bodyParams.total_payout= challengeObj?.total_payout;
       bodyParams.total_amount= challengeObj?.total_amount;
@@ -169,6 +170,7 @@ export default function PayAgainScreen({ navigation, route }) {
           total_game_fee: challengeObj?.total_game_fee,
           total_service_fee1: challengeObj?.total_service_fee1,
           total_service_fee2: challengeObj?.total_service_fee2,
+          international_card_fee: challengeObj?.international_card_fee,
           total_stripe_fee: challengeObj?.total_stripe_fee,
           total_payout: challengeObj?.total_payout,
           total_amount: challengeObj?.total_amount,

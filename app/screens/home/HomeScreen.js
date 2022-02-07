@@ -1633,9 +1633,16 @@ const HomeScreen = ({navigation, route}) => {
   const playInModel = useCallback(
     (playInObject) => {
       if (playInObject) {
+        console.log('playInObject1::=>',playInObject);
         setSportName(Utility.getSportName(playInObject, authContext));
-        setCurrentPlayInObject({...playInObject});
-        setPlaysInModalVisible(!playsInModalVisible);
+
+        setTimeout(() => {
+          setCurrentPlayInObject({...playInObject});
+          setPlaysInModalVisible(!playsInModalVisible);
+        }, 10);
+
+       
+       
         getSettingOfBoth(playInObject);
       } else {
         navigation.navigate('RegisterPlayer');
@@ -2630,6 +2637,15 @@ const HomeScreen = ({navigation, route}) => {
     });
   };
 
+  const moveToStats = () => {
+    console.log('move to EntityStatScreen',currentUserData);
+    navigation.navigate('EntityStatScreen', {
+      userID,
+      currentUserData,
+    });
+  };
+
+
   const renderHomeMainTabContain = useMemo(
     () => (
       <View style={{flex: 1}}>
@@ -2924,6 +2940,10 @@ const HomeScreen = ({navigation, route}) => {
           if (index === 4) {
             moveToReview();
           }
+          if(index === 5){
+            moveToStats();
+          }
+          
         }}>
         <Text
           style={{
@@ -2938,6 +2958,9 @@ const HomeScreen = ({navigation, route}) => {
   }, []);
 
   const challengeButtonType = () => {
+    console.log('mySettingObject',mySettingObject);
+    console.log('settingObject',settingObject);
+
     if (
       mySettingObject !== null &&
       settingObject !== null &&
@@ -3008,7 +3031,8 @@ const HomeScreen = ({navigation, route}) => {
       if (mySettingObject.availibility === 'On') {
         navigation.navigate('InviteChallengeScreen', {
           setting: mySettingObject,
-          sportName: currentUserData.sport,
+          sportName: currentUserData?.sport,
+          sportType: currentUserData?.sport_type,
           groupObj: currentUserData,
         });
       } else {
@@ -3051,9 +3075,9 @@ const HomeScreen = ({navigation, route}) => {
                       challengeButtonType() === 'challenge') && (
                         <Text style={styles.challengeButtonTitle}>
                           {strings.challenge}
-                          <Text>{` $${settingObject?.game_fee?.fee} ${
+                          {settingObject?.game_fee?.fee && <Text>{` $${settingObject?.game_fee?.fee} ${
                           currentUserData?.currency_type ?? 'CAD'
-                        }${' / match'}`}</Text>
+                        }${' / match'}`}</Text>}
                         </Text>
                     )}
                     {challengeButtonType() === 'invite' && (
@@ -3126,7 +3150,7 @@ const HomeScreen = ({navigation, route}) => {
             showsHorizontalScrollIndicator={false}
             data={
               isTeamHome
-                ? ['Info', 'Scoreboard', 'Schedule', 'Gallery', 'Review']
+                ? ['Info', 'Scoreboard', 'Schedule', 'Gallery', 'Review', 'Stats']
                 : ['Info', 'Scoreboard', 'Schedule', 'Gallery']
             }
             horizontal
@@ -3339,10 +3363,9 @@ const HomeScreen = ({navigation, route}) => {
 
   const openPlayInModal = useCallback(() => setPlaysInModalVisible(true), []);
 
-  const onPlayInModalClose = useCallback(
-    () => setPlaysInModalVisible(false),
-    [],
-  );
+  const onPlayInModalClose = useCallback(()=>{
+    setPlaysInModalVisible(false)
+  },[]);
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
@@ -5438,7 +5461,8 @@ const HomeScreen = ({navigation, route}) => {
                   setChallengePopup(false);
                   navigation.navigate('ChallengeScreen', {
                     setting: obj,
-                    sportName: currentUserData.sport,
+                    sportName: currentUserData?.sport,
+                    sportType: currentUserData?.sport_type,
                     groupObj: currentUserData,
                   });
                 } else {
@@ -5500,6 +5524,7 @@ const HomeScreen = ({navigation, route}) => {
                   navigation.navigate('InviteChallengeScreen', {
                     setting: obj,
                     sportName: currentUserData.sport,
+                    sportType: currentUserData.sport_type,
                     groupObj: currentUserData,
                   });
                 } else {

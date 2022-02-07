@@ -275,22 +275,7 @@ export default function ScheduleScreen({ navigation,route }) {
 
         const markedDates = {};
 
-        // const start = new Date();
-        // start.setHours(0, 0, 0, 0);
-
-        // const end = new Date();
-        // end.setHours(23, 59, 59, 999);
-
-        // const timespan = 30 * 60; // 30 minutes
-
-        // const newArrayOfObj = bookSlots.map((e) => ({
-        //   ...e,
-        //   start: e.start_datetime,
-        //   end: e.end_datetime,
-        // }));
-
-        // const bookable = availability(start, end, timespan, newArrayOfObj);
-        // console.log('bookable:=>', bookable);
+       
 
         const group = bookSlots.reduce((groups, data) => {
           const title = moment(new Date(data.start_datetime * 1000)).format(
@@ -454,12 +439,25 @@ export default function ScheduleScreen({ navigation,route }) {
             };
 
             getGameIndex(gameList).then((games) => {
-              Utility.getGamesList(games).then((gamedata) => {
+              const listObj = response.map((obj) => {
+                if(obj.game_id === obj.challenge_id){
+                  return obj.game
+                }
+              })
+
+              const pendingChallenge = listObj.filter(( obj )=> {
+                return obj !== undefined;
+             });
+              console.log('listObj',pendingChallenge);
+
+             
+              Utility.getGamesList([...games, ...pendingChallenge]).then((gamedata) => {
+               console.log('gamedata',gamedata);
                 configureEvents(eventTimeTableData, gamedata);
               })
             });
           }
-          configureEvents(eventTimeTableData);
+          // configureEvents(eventTimeTableData);
           setloading(false);
         })
         .catch((e) => {
@@ -796,6 +794,7 @@ export default function ScheduleScreen({ navigation,route }) {
 
   const renderCalenderEvent = (event) => {
     console.log('renderCalenderEvent Event:', event);
+    const event_color = colors.themeColor;
 
     return (
       <View style={{ flex: 1 }}>

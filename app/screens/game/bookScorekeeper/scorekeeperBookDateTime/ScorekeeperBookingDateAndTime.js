@@ -146,6 +146,8 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
       total_game_fee: challengeObject?.total_game_fee,
       total_service_fee1: challengeObject?.total_service_fee1,
       total_service_fee2: challengeObject?.total_service_fee2,
+      international_card_fee: challengeObject?.international_card_fee,
+
       total_amount: challengeObject?.total_amount,
       // total_payout: challengeObject?.total_payout,
     };

@@ -133,6 +133,7 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
               navigation.navigate('EditChallenge', {
                 groupObj: getOpponentEntity(),
                 sportName: challengeObj?.sport,
+                sportType: challengeObj?.sport_type,
                 challengeObj,
                 lastConfirmVersion: challengeObj,
                 settingObj: route?.params?.settingObj,

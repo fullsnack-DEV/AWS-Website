@@ -17,6 +17,7 @@ import TCProfileButton from '../TCProfileButton';
 import TCMessageButton from '../TCMessageButton';
 
 export default function UserRoleView({ data, onPressProfile, onPressMessage }) {
+  console.log('Member data:',data);
   return (
     <>
       <View style={styles.roleViewContainer}>

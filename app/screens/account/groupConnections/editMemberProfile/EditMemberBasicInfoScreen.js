@@ -103,7 +103,7 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
     return (false)
   }
   const editMemberBasicInfo = () => {
-    // setloading(true)
+    setloading(true)
     const bodyParams = {};
     if (memberInfo.email && memberInfo.email !== '') {
       bodyParams.email = memberInfo.email;

@@ -441,7 +441,7 @@ const PersonalSportsInfo = ({
                   weight: info.weightText ? `${info.weightText}` : '',
                 }
                 onSavePress(params);
-                setEditModal(false)
+                // setEditModal(false)
               }}>
                 <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.whiteColor }}>{'Save'}</Text>
               </TouchableOpacity>

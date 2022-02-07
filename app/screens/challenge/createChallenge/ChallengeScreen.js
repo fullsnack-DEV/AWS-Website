@@ -42,7 +42,7 @@ import TCArrowView from '../../../components/TCArrowView';
 let entity = {};
 const bodyParams = {};
 export default function ChallengeScreen({ navigation, route }) {
-  const { sportName, setting, groupObj } = route?.params;
+  const { sportName,sportType, setting, groupObj } = route?.params;
 
   console.log('setting', setting);
   const authContext = useContext(AuthContext);
@@ -552,6 +552,8 @@ export default function ChallengeScreen({ navigation, route }) {
             ...settingObject,
             ...feeObj,
             venue,
+            sport:sportName,
+            sport_type: sportType,
             start_datetime: route?.params?.startTime / 1000,
             end_datetime: route?.params?.endTime / 1000,
             challenger: teams?.[0]?.group_id || teams?.[0]?.user_id,
@@ -562,6 +564,8 @@ export default function ChallengeScreen({ navigation, route }) {
               settingObject?.home_away === 'Home' ? entity?.obj : groupObj,
             user_challenge: !groupObj?.group_id,
           };
+
+          console.log('conti. challnege obj:=>',body);
           navigation.push('RefereeAgreementScreen', {
             challengeObj: body,
             groupObj,

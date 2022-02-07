@@ -173,6 +173,18 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
         data={members}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderMembers}
+        ListEmptyComponent={() => {
+          return ( <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text
+            style={{
+              fontFamily: fonts.RRegular,
+              color: colors.grayColor,
+              fontSize: 26,
+            }}>
+              No members
+            </Text>
+          </View>)
+        }}
        />
       </View>
     </View>
