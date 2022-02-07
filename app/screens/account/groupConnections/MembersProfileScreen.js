@@ -156,8 +156,9 @@ export default function MembersProfileScreen({navigation, route}) {
       });
   };
 
-  function MemberPhoneNumber() {
+  const getMemberPhoneNumber = () => {
     let numbersString;
+    console.log('memberDetail',memberDetail);
     if (memberDetail?.phone_numbers) {
       console.log('PHONE NUMBER ARRAY::', memberDetail?.phone_numbers);
       const numbers = memberDetail?.phone_numbers.map(
@@ -167,7 +168,7 @@ export default function MembersProfileScreen({navigation, route}) {
     } else {
       numbersString = 'N/A';
     }
-    return <TCInfoField title={'Phone'} value={numbersString} />;
+    return numbersString;
   }
 
   return (
@@ -292,7 +293,7 @@ export default function MembersProfileScreen({navigation, route}) {
               title={'E-mail'}
               value={memberDetail.email ? memberDetail.email : 'N/A'}
             />
-            <MemberPhoneNumber />
+            <TCInfoField title={'Phone'} value={getMemberPhoneNumber()} />
             <TCInfoField
               title={'Address'}
               value={

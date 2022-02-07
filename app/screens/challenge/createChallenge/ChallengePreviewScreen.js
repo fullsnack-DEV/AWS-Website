@@ -189,8 +189,9 @@ export default function ChallengePreviewScreen({navigation, route}) {
 
 
   const getFeeDetail = () => {
-    const feeBody = {};
-    console.log('challengeObj check:=>', challengeData);
+    if(defaultCard){
+      const feeBody = {};
+    console.log('challengeObj check:=>', defaultCard);
     feeBody.challenge_id = challengeData?.challenge_id;
     feeBody.payment_method_type = 'card';
     feeBody.currency_type = challengeData?.game_fee?.currency_type?.toLowerCase();
@@ -224,6 +225,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
+    }
   };
 
 

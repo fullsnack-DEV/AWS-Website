@@ -1,71 +1,126 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-shadow */
-import React, {
-  useState, useContext,
-} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
-  Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, Alert,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+  SafeAreaView,
 } from 'react-native';
 
-import { patchGroup } from '../../../api/Groups';
-import AuthContext from '../../../auth/context'
+import {getGroupDetails, patchGroup} from '../../../api/Groups';
+import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
-import colors from '../../../Constants/Colors'
-import fonts from '../../../Constants/Fonts'
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
 import strings from '../../../Constants/String';
 import TCGradientButton from '../../../components/TCGradientButton';
 
-export default function ClubSettingScreen({ navigation }) {
-  const [selected, setSelected] = useState(0);
+export default function ClubSettingScreen({navigation}) {
+  const [selected, setSelected] = useState();
   const [loading, setloading] = useState(false);
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
+
+  useEffect(() => {
+    setloading(true);
+    getGroupDetails(authContext?.entity?.obj?.group_id, authContext)
+      .then((response) => {
+        setloading(false);
+        console.log('group details:=>', response.payload);
+        setSelected(response.payload.allclubmembermannually_sync ? 0 : 1);
+      })
+      .catch((e) => {
+        setloading(false);
+
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext]);
+
   const sendClubSetting = async () => {
-    setloading(true)
-    const entity = authContext.entity
+    setloading(true);
+    const entity = authContext.entity;
     const bodyParams = {
       allclubmembermannually_sync: selected === 0,
-      allclubmemberautomatically_sync: selected === 1,
-    }
-    patchGroup(entity.uid, bodyParams, authContext).then((response) => {
-      setloading(false)
-      console.log('Response :', response.payload);
-      navigation.goBack()
-    })
+    };
+    patchGroup(entity.uid, bodyParams, authContext)
+      .then((response) => {
+        setloading(false);
+        console.log('Response :', response.payload);
+        navigation.goBack();
+      })
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }
+  };
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <ScrollView>
-        <Text style={styles.titleStyle}>Sync Info</Text>
-        <View style={styles.privacyCell}>
-          <Text style={styles.privacyNameStyle}>How do you like to update a member’s profile by
-            Importing member’s account info?</Text>
-          <View style={styles.radioMainView}>
-            <TouchableOpacity style={styles.radioButtonView} onPress={() => setSelected(0)}>
-              <Image source={ selected === 0 ? images.radioSelect : images.radioUnselect} style={styles.radioImage} />
-              <Text style={styles.radioText}>Mannually {'\n'}<Text style={styles.noteText}>A member’s profile is updated when you click the
-                “sync Info” button in each member’s profile.</Text></Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.radioMainView}>
-            <TouchableOpacity style={styles.radioButtonView} onPress={() => setSelected(1)}>
-              <Image source={ selected === 1 ? images.radioSelect : images.radioUnselect} style={styles.radioImage} />
-              <Text style={styles.radioText}>Automatically{'\n'}<Text style={styles.noteText}>A member’s profile is updated every time a member
-                changes his or her account info.</Text></Text>
-            </TouchableOpacity>
-          </View>
+      <Text style={styles.titleStyle}>Sync Info</Text>
+      <View style={styles.privacyCell}>
+        <Text style={styles.privacyNameStyle}>
+          How do you like to update a member’s profile by Importing member’s
+          account info?
+        </Text>
+        <View style={styles.radioMainView}>
+          <TouchableOpacity
+            style={styles.radioButtonView}
+            onPress={() => setSelected(0)}>
+            <Image
+              source={
+                selected === 0 ? images.radioSelect : images.radioUnselect
+              }
+              style={styles.radioImage}
+            />
+            <Text style={styles.radioText}>
+              Mannually {'\n'}
+              <Text style={styles.noteText}>
+                A member’s profile is updated when you click the “sync Info”
+                button in each member’s profile.
+              </Text>
+            </Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
-      <View style={{ flex: 1 }}/>
-      <Text style={styles.warning}>* Each team settings prevails over the club settings.</Text>
-      <TCGradientButton style={{ marginBottom: 0 }} title={strings.saveTitle} onPress={() => sendClubSetting()}/>
+        <View style={styles.radioMainView}>
+          <TouchableOpacity
+            style={styles.radioButtonView}
+            onPress={() => setSelected(1)}>
+            <Image
+              source={
+                selected === 1 ? images.radioSelect : images.radioUnselect
+              }
+              style={styles.radioImage}
+            />
+            <Text style={styles.radioText}>
+              Automatically{'\n'}
+              <Text style={styles.noteText}>
+                A member’s profile is updated every time a member changes his or
+                her account info.
+              </Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <Text style={styles.warning}>
+        * Each team settings prevails over the club settings.
+      </Text>
+
+      <View style={{flex: 1}} />
+      <SafeAreaView>
+        <TCGradientButton
+          style={{marginBottom: 0}}
+          title={strings.saveTitle}
+          onPress={() => sendClubSetting()}
+        />
+      </SafeAreaView>
     </View>
   );
 }
@@ -112,7 +167,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   noteText: {
-
     fontFamily: fonts.RRegular,
     fontSize: 12,
     color: colors.lightBlackColor,
@@ -124,4 +178,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.grayColor,
   },
-})
+});

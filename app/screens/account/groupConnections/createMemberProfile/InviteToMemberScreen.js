@@ -36,9 +36,11 @@ export default function InviteToMemberScreen({ navigation, route }) {
   }, [navigation]);
 
   const onAccept = (requestId) => {
+    setloading(true);
     acceptRequest(requestId, authContext)
       .then(() => {
         navigation.goBack();
+        setloading(false);
       })
       .catch((error) => {
         setloading(false);
@@ -50,10 +52,10 @@ export default function InviteToMemberScreen({ navigation, route }) {
 
   const onDecline = (requestId) => {
     setloading(true);
-
     declineRequest(requestId, authContext)
       .then(() => {
         navigation.goBack();
+        setloading(false);
       })
       .catch((error) => {
         setloading(false);
@@ -117,7 +119,7 @@ export default function InviteToMemberScreen({ navigation, route }) {
               textStyle={{ color: colors.whiteColor }}
               title={strings.declineTitle}
               onPress={() => {
-                onAccept(data.activities[0].id);
+                onDecline(data.activities[0].id);
               }}
               style={{ width: widthPercentageToDP('42%') }}
             />
@@ -125,7 +127,8 @@ export default function InviteToMemberScreen({ navigation, route }) {
               title={strings.acceptTitle}
               textStyle={{ color: colors.themeColor }}
               onPress={() => {
-                onDecline(data.activities[0].id);
+               
+                onAccept(data.activities[0].id);
               }}
               startGradientColor={colors.whiteColor}
               endGradientColor={colors.whiteColor}

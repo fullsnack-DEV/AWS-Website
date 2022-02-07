@@ -540,6 +540,7 @@ export default function CurruentReservationView({ reservationObj }) {
               total_game_fee: challengeObj?.total_game_fee,
               total_service_fee1: challengeObj?.total_service_fee1,
               total_service_fee2: challengeObj?.total_service_fee2,
+              international_card_fee: challengeObj?.international_card_fee,
               total_stripe_fee: challengeObj?.total_stripe_fee,
               total_payout: challengeObj?.total_payout,
               total_amount: challengeObj?.total_amount,

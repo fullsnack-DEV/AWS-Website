@@ -72,10 +72,10 @@ const PlayInModule = ({
   const [loading, setloading] = useState(false);
 
   const onClose = useCallback(() => {
+    onModalClose();
     setTimeout(() => {
       setCurrentTab(0);
     }, 10);
-    setTimeout(() => onModalClose(), 0);
   }, [onModalClose]);
 
   useEffect(() => {
@@ -115,13 +115,13 @@ const PlayInModule = ({
     (params) =>
       new Promise((resolve, reject) => {
         patchPlayer(params, authContext)
-          .then(async (res) => {
+          .then((res) => {
             const entity = authContext.entity;
             entity.auth.user = res.payload;
             entity.obj = res.payload;
-            authContext.setEntity({...entity});
-            await Utility.setStorage('authContextUser', res.payload);
-            authContext.setUser(res.payload);
+            // authContext.setEntity({...entity});
+            // await Utility.setStorage('authContextUser', res.payload);
+            // authContext.setUser(res.payload);
             setCurrentUserData({...res?.payload});
             resolve(res);
           })
@@ -252,7 +252,8 @@ const PlayInModule = ({
   const renderChallengeButton = () => {
     if (
       currentTab === 0 &&
-      authContext?.entity?.uid !== currentUserData?.user_id && authContext?.entity?.role === 'user'
+      authContext?.entity?.uid !== currentUserData?.user_id &&
+      authContext?.entity?.role === 'user'
     ) {
       return (
         playInObject?.sport_type !== 'double' &&
@@ -268,15 +269,19 @@ const PlayInModule = ({
                   flexDirection: 'row',
                   justifyContent: 'center',
                 }}>
-                {(challengeType === 'both' ||
-                  challengeType === 'challenge') && (
+                {(challengeType === 'both' || challengeType === 'challenge') &&
+                  (oppSetting?.game_fee?.fee ? (
                     <Text style={styles.challengeButtonTitle}>
                       {strings.challenge}
                       <Text>{` $${oppSetting?.game_fee?.fee} ${
-                      currentUserData?.currency_type ?? 'CAD'
-                    }${' / match'}`}</Text>
+                        currentUserData?.currency_type ?? 'CAD'
+                      }${' / match'}`}</Text>
                     </Text>
-                )}
+                  ) : (
+                    <Text style={styles.challengeButtonTitle}>
+                      {strings.challenge}
+                    </Text>
+                  ))}
                 {challengeType === 'invite' && (
                   <Text style={styles.challengeButtonTitle}>
                     {'Invite to challenge'}
@@ -307,6 +312,7 @@ const PlayInModule = ({
       oppSetting?.availibility === 'On' &&
       mySetting?.availibility === 'On'
     ) {
+      console.log('===1====');
       console.log('both123:=>');
       setChallengeType('both');
     } else if (
@@ -325,6 +331,7 @@ const PlayInModule = ({
       oppSetting?.home_away &&
       oppSetting?.game_type
     ) {
+      console.log('===2====');
       console.log('challenge123:=>');
       setChallengeType('challenge');
     } else if (
@@ -344,11 +351,15 @@ const PlayInModule = ({
       mySetting?.home_away &&
       mySetting?.game_type
     ) {
+      console.log('===3====');
       console.log('invite123:=>');
       setChallengeType('invite');
     } else if (oppSetting === undefined && mySetting === undefined) {
+      console.log('===4====');
       console.log('invite123:=>');
       setChallengeType('invite');
+    } else {
+      setChallengeType('challenge');
     }
   }, [
     authContext?.entity?.obj?.registered_sports,
@@ -405,7 +416,7 @@ const PlayInModule = ({
   return (
     <>
       <ActivityLoader visible={loading} />
-      
+
       <Modal
         isVisible={visible}
         backdropColor="black"

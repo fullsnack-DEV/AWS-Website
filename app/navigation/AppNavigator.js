@@ -219,19 +219,24 @@ const getTabBarVisibility = (route) => {
     routeName === 'EditRosterScreen' ||
     routeName === 'CreateEventScreen' ||
     routeName === 'EditLineUpScreen' ||
-    routeName === 'SearchScreen' || 
+    routeName === 'SearchScreen' ||
     routeName === 'MembersViewPrivacyScreen' ||
     routeName === 'NotificationsListScreen' ||
     routeName === 'GroupMembersScreen' ||
     routeName === 'UserConnections' ||
     routeName === 'EditGroupProfileScreen' ||
     routeName === 'EntityInfoScreen' ||
-routeName === 'EntityScoreboardScreen' || 
-routeName === 'EntityGallaryScreen' ||
-routeName === 'EntityReviewScreen' || 
-routeName === 'RespondForInviteScreen' || 
-routeName === 'JoinedTeamsScreen'
-
+    routeName === 'EntityScoreboardScreen' ||
+    routeName === 'EntityGallaryScreen' ||
+    routeName === 'EntityReviewScreen' ||
+    routeName === 'RespondForInviteScreen' ||
+    routeName === 'JoinedTeamsScreen' ||
+    routeName === 'ClubSettingScreen' || 
+    routeName === 'EditMemberBasicInfoScreen' || 
+    routeName === 'EditClubNotesScreen' || 
+    routeName === 'EditMemberClubInfoScreen' || 
+    routeName === 'EditMemberTeamInfoScreen' ||
+    routeName === 'EntityStatScreen'
   ) {
     return false;
   }

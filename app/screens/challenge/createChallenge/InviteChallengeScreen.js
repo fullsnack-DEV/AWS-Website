@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, { useEffect, useState, useContext } from 'react';
+import React, {useEffect, useState, useContext, useCallback} from 'react';
 import {
   StyleSheet,
   View,
@@ -11,13 +11,13 @@ import {
 } from 'react-native';
 import moment from 'moment';
 
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
-import { getFeesEstimation } from '../../../api/Challenge';
+import {getFeesEstimation} from '../../../api/Challenge';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
@@ -31,13 +31,13 @@ import images from '../../../Constants/ImagePath';
 import TCLabel from '../../../components/TCLabel';
 import AuthContext from '../../../auth/context';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
-import { getNumberSuffix } from '../../../utils/gameUtils';
+import {getNumberSuffix} from '../../../utils/gameUtils';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import TCFormProgress from '../../../components/TCFormProgress';
 
 let entity = {};
-export default function InviteChallengeScreen({ navigation, route }) {
-  const { setting, sportName, groupObj } = route?.params;
+export default function InviteChallengeScreen({navigation, route}) {
+  const {setting, sportName, sportType, groupObj} = route?.params;
 
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
@@ -56,6 +56,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
   const [settingObject, setSettingObject] = useState(setting);
 
   console.log('setting:=>', setting);
+  console.log('sportType1111', sportType);
   const [teams, setteams] = useState([]);
 
   useEffect(() => {
@@ -67,20 +68,56 @@ export default function InviteChallengeScreen({ navigation, route }) {
     }
   }, [route?.params?.selectedVenueObj, settingObject?.venue]);
 
+  const getFeeDetail = useCallback(() => {
+    const feeBody = {};
+    feeBody.payment_method_type = 'card';
+    feeBody.currency_type = settingObject?.game_fee?.currency_type?.toLowerCase();
+    feeBody.total_game_fee = Number(settingObject?.game_fee?.fee?.toString());
+    // setloading(true);
+
+    console.log('Body estimate fee:=>', feeBody);
+    getFeesEstimation(feeBody, authContext)
+      .then((response) => {
+        setloading(false);
+        setFeeObj(response.payload);
+        if (response.payload.total_game_fee === 0) {
+          setTotalZero(true);
+        } else {
+          setTotalZero(false);
+        }
+        console.log('Body estimate fee:=>', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [
+    authContext,
+    settingObject?.game_fee?.currency_type,
+    settingObject?.game_fee?.fee,
+  ]);
+
   useEffect(() => {
     entity = authContext.entity;
     if (groupObj) {
-      setteams([{ ...entity.obj }, { ...groupObj }]);
+      setteams([{...entity.obj}, {...groupObj}]);
     }
     if (settingObject?.game_fee?.fee || settingObject?.game_fee?.fee >= 0) {
       getFeeDetail();
     }
-  }, [authContext.entity, groupObj, settingObject?.game_fee?.fee]);
+  }, [
+    authContext.entity,
+    getFeeDetail,
+    groupObj,
+    settingObject?.game_fee?.fee,
+  ]);
 
   useEffect(() => {
     console.log('useEffect Called');
     if (isFocused) {
-      const settings = { ...settingObject };
+      const settings = {...settingObject};
       if (route?.params?.gameType) {
         console.log('route?.params?.gameType', route?.params?.gameType);
         settings.game_type = route?.params?.gameType;
@@ -113,7 +150,8 @@ export default function InviteChallengeScreen({ navigation, route }) {
         settings.responsible_for_referee = route?.params?.refereeSetting;
       }
       if (route?.params?.scorekeeperSetting) {
-        settings.responsible_for_scorekeeper = route?.params?.scorekeeperSetting;
+        settings.responsible_for_scorekeeper =
+          route?.params?.scorekeeperSetting;
       }
 
       setSettingObject(settings);
@@ -133,12 +171,12 @@ export default function InviteChallengeScreen({ navigation, route }) {
     route?.params?.scorekeeperSetting,
   ]);
 
-  const renderPeriod = ({ item, index }) => (
+  const renderPeriod = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -149,9 +187,9 @@ export default function InviteChallengeScreen({ navigation, route }) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 2)} Period`}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.period}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -164,12 +202,12 @@ export default function InviteChallengeScreen({ navigation, route }) {
     </>
   );
 
-  const renderOverTime = ({ item, index }) => (
+  const renderOverTime = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -180,9 +218,9 @@ export default function InviteChallengeScreen({ navigation, route }) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 1)} Over time`}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.overTime}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -194,33 +232,6 @@ export default function InviteChallengeScreen({ navigation, route }) {
       />
     </>
   );
-
-  const getFeeDetail = () => {
-    const feeBody = {};
-    feeBody.payment_method_type = 'card';
-    feeBody.currency_type = settingObject?.game_fee?.currency_type?.toLowerCase();
-    feeBody.total_game_fee = Number(settingObject?.game_fee?.fee?.toString());
-    setloading(true);
-
-    console.log('Body estimate fee:=>', feeBody);
-    getFeesEstimation(feeBody, authContext)
-      .then((response) => {
-        setloading(false);
-        setFeeObj(response.payload);
-        if (response.payload.total_game_fee === 0) {
-          setTotalZero(true);
-        } else {
-          setTotalZero(false);
-        }
-        console.log('Body estimate fee:=>', response.payload);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
 
   const onNextPress = () => {
     entity = authContext.entity;
@@ -244,11 +255,25 @@ export default function InviteChallengeScreen({ navigation, route }) {
 
     const res_secure_referee = [];
     const res_secure_scorekeeper = [];
-    for (let i = 0; i < settingObject?.responsible_for_referee?.who_secure?.length; i++) {
-      res_secure_referee.push({ ...settingObject?.responsible_for_referee?.who_secure[i], responsible_team_id: teams?.[0]?.group_id || teams?.[0]?.user_id })
+    for (
+      let i = 0;
+      i < settingObject?.responsible_for_referee?.who_secure?.length;
+      i++
+    ) {
+      res_secure_referee.push({
+        ...settingObject?.responsible_for_referee?.who_secure[i],
+        responsible_team_id: teams?.[0]?.group_id || teams?.[0]?.user_id,
+      });
     }
-    for (let i = 0; i < settingObject?.responsible_for_scorekeeper?.who_secure?.length; i++) {
-      res_secure_scorekeeper.push({ ...settingObject?.responsible_for_scorekeeper?.who_secure[i], responsible_team_id: teams?.[0]?.group_id || teams?.[0]?.user_id })
+    for (
+      let i = 0;
+      i < settingObject?.responsible_for_scorekeeper?.who_secure?.length;
+      i++
+    ) {
+      res_secure_scorekeeper.push({
+        ...settingObject?.responsible_for_scorekeeper?.who_secure[i],
+        responsible_team_id: teams?.[0]?.group_id || teams?.[0]?.user_id,
+      });
     }
 
     const body = {
@@ -272,6 +297,8 @@ export default function InviteChallengeScreen({ navigation, route }) {
 
     body.responsible_for_referee.who_secure = res_secure_referee;
     body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
+    body.sport = sportName;
+    body.sport_type = sportType;
 
     console.log('Challenge Object:=>', body);
 
@@ -281,71 +308,6 @@ export default function InviteChallengeScreen({ navigation, route }) {
       type: 'invite',
     });
   };
-
-  // const sendChallengeInvitation = () => {
-  //   entity = authContext.entity;
-  //   console.log('Entity:=>', entity);
-
-  //   const body = {
-  //     ...settingObject,
-  //     ...feeObj,
-  //     venue,
-  //     start_datetime: route?.params?.startTime / 1000,
-  //     end_datetime: route?.params?.endTime / 1000,
-  //     challenger: teams?.[1]?.group_id || teams?.[1]?.user_id,
-  //     challengee: teams?.[0]?.group_id || teams?.[0]?.user_id,
-  //     home_team:
-  //       settingObject?.home_away === 'Home'
-  //         ? entity?.uid
-  //         : groupObj?.group_id || groupObj?.user_id,
-  //     away_team:
-  //       settingObject?.home_away === 'Home'
-  //         ? groupObj?.group_id || groupObj?.user_id
-  //         : entity?.uid,
-  //     user_challenge: !groupObj?.group_id,
-  //   };
-
-  //   const res_secure_referee = settingObject.responsible_for_referee.who_secure.map(
-  //     (obj) => ({
-  //       ...obj,
-  //       responsible_team_id:
-  //         obj.responsible_to_secure_referee === 'challengee'
-  //           ? body.challengee
-  //           : body.challenger,
-  //     }),
-  //   );
-
-  //   const res_secure_scorekeeper = settingObject.responsible_for_scorekeeper.who_secure.map(
-  //     (obj) => ({
-  //       ...obj,
-  //       responsible_team_id:
-  //         obj.responsible_to_secure_scorekeeper === 'challengee'
-  //           ? body.challengee
-  //           : body.challenger,
-  //     }),
-  //   );
-
-  //   body.responsible_for_referee.who_secure = res_secure_referee;
-  //   body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
-
-  //   console.log('Challenge Object:=>', body);
-
-  //   setloading(true);
-  //   createChallenge(body, authContext)
-  //     .then((response) => {
-  //       console.log(' challenge response:=>', response.payload);
-  //       navigation.navigate('InviteToChallengeSentScreen', {
-  //         groupObj,
-  //       });
-  //       setloading(false);
-  //     })
-  //     .catch((e) => {
-  //       setloading(false);
-  //       setTimeout(() => {
-  //         Alert.alert(strings.alertmessagetitle, e.message);
-  //       }, 10);
-  //     });
-  // };
 
   return (
     <TCKeyboardView>
@@ -397,7 +359,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
                 <Image
                   source={
                     teams?.[1]?.thumbnail
-                      ? { uri: teams?.[1]?.thumbnail }
+                      ? {uri: teams?.[1]?.thumbnail}
                       : images.teamPlaceholder
                   }
                   style={styles.profileImage}
@@ -421,7 +383,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
                 <Image
                   source={
                     teams?.[0]?.thumbnail
-                      ? { uri: teams?.[0]?.thumbnail }
+                      ? {uri: teams?.[0]?.thumbnail}
                       : images.teamPlaceholder
                   }
                   style={styles.profileImage}
@@ -452,6 +414,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
               settingObj: settingObject,
               comeFrom: 'InviteChallengeScreen',
               sportName,
+              sportType,
             });
           }}
         />
@@ -475,6 +438,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
               settingObj: settingObject,
               comeFrom: 'InviteChallengeScreen',
               sportName,
+              sportType,
             });
           }}
         />
@@ -494,6 +458,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
               settingObj: settingObject,
               comeFrom: 'InviteChallengeScreen',
               sportName,
+              sportType,
             });
           }}
         />
@@ -518,12 +483,12 @@ export default function InviteChallengeScreen({ navigation, route }) {
               source={
                 settingObject?.home_away === 'Home'
                   ? authContext?.entity?.obj?.thumbnail
-                    ? { uri: authContext?.entity?.obj?.thumbnail }
+                    ? {uri: authContext?.entity?.obj?.thumbnail}
                     : authContext?.entity?.obj?.full_name
                     ? images.profilePlaceHolder
                     : images.teamPlaceholder
                   : groupObj?.thumbnail
-                  ? { uri: groupObj?.thumbnail }
+                  ? {uri: groupObj?.thumbnail}
                   : groupObj?.full_name
                   ? images.profilePlaceHolder
                   : images.teamPlaceholder
@@ -534,8 +499,8 @@ export default function InviteChallengeScreen({ navigation, route }) {
             <View style={styles.teamTextContainer}>
               <Text style={styles.teamNameLable}>
                 {settingObject?.home_away === 'Home'
-                  ? authContext?.entity?.obj?.full_name
-                    ?? authContext?.entity?.obj?.group_name
+                  ? authContext?.entity?.obj?.full_name ??
+                    authContext?.entity?.obj?.group_name
                   : groupObj?.full_name ?? groupObj?.group_name}
               </Text>
               <Text style={styles.locationLable}>
@@ -554,12 +519,12 @@ export default function InviteChallengeScreen({ navigation, route }) {
               source={
                 settingObject?.home_away === 'Home'
                   ? groupObj?.thumbnail
-                    ? { uri: groupObj?.thumbnail }
+                    ? {uri: groupObj?.thumbnail}
                     : groupObj?.full_name
                     ? images.profilePlaceHolder
                     : images.teamPlaceholder
                   : authContext?.entity?.obj?.thumbnail
-                  ? { uri: authContext?.entity?.obj?.thumbnail }
+                  ? {uri: authContext?.entity?.obj?.thumbnail}
                   : authContext?.entity?.obj?.full_name
                   ? images.profilePlaceHolder
                   : images.teamPlaceholder
@@ -571,8 +536,8 @@ export default function InviteChallengeScreen({ navigation, route }) {
               <Text style={styles.teamNameLable}>
                 {settingObject?.home_away === 'Home'
                   ? groupObj?.full_name ?? groupObj?.group_name
-                  : authContext?.entity?.obj?.full_name
-                    ?? authContext?.entity?.obj?.group_name}
+                  : authContext?.entity?.obj?.full_name ??
+                    authContext?.entity?.obj?.group_name}
               </Text>
               <Text style={styles.locationLable}>
                 {settingObject?.home_away === 'Home'
@@ -593,13 +558,14 @@ export default function InviteChallengeScreen({ navigation, route }) {
               settingObj: settingObject,
               comeFrom: 'InviteChallengeScreen',
               sportName,
+              sportType,
             });
           }}
         />
         <TCChallengeTitle
-          containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
+          containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
           title={'1st period'}
-          titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+          titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
           value={settingObject?.game_duration?.first_period}
           valueStyle={{
             fontFamily: fonts.RBold,
@@ -614,7 +580,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
           data={settingObject?.game_duration?.period}
           renderItem={renderPeriod}
           keyExtractor={(item, index) => index.toString()}
-          style={{ marginBottom: 15 }}
+          style={{marginBottom: 15}}
         />
         {settingObject?.game_duration?.period?.length > 0 && (
           <Text style={styles.normalTextStyle}>
@@ -626,7 +592,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
           data={settingObject?.game_duration?.overtime}
           renderItem={renderOverTime}
           keyExtractor={(item, index) => index.toString()}
-          style={{ marginBottom: 15 }}
+          style={{marginBottom: 15}}
         />
         <TCThickDivider marginTop={20} />
 
@@ -664,7 +630,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
                 <Text style={styles.dateTimeText}> </Text>
                 <Text style={styles.timeZoneText}>
                   Time zone{' '}
-                  <Text style={{ fontFamily: fonts.RRegular }}>Vancouver</Text>
+                  <Text style={{fontFamily: fonts.RRegular}}>Vancouver</Text>
                 </Text>
               </View>
             </View>
@@ -744,12 +710,13 @@ export default function InviteChallengeScreen({ navigation, route }) {
               settingObj: settingObject,
               comeFrom: 'InviteChallengeScreen',
               sportName,
+              sportType,
             });
           }}
         />
         <Text style={styles.rulesTitle}>General Rules</Text>
         <Text style={styles.rulesDetail}>{settingObject?.general_rules}</Text>
-        <View style={{ marginBottom: 10 }} />
+        <View style={{marginBottom: 10}} />
         <Text style={styles.rulesTitle}>Special Rules</Text>
         <Text style={styles.rulesDetail}>{settingObject?.special_rules}</Text>
         <TCThickDivider marginTop={20} />
@@ -854,7 +821,7 @@ export default function InviteChallengeScreen({ navigation, route }) {
 
         {!totalZero && (
           <View>
-            <TCLabel title={'Income'} style={{ marginBottom: 15 }} />
+            <TCLabel title={'Income'} style={{marginBottom: 15}} />
             <GameFeeCard
               feeObject={feeObj}
               currency={settingObject?.game_fee?.currency_type}
@@ -923,7 +890,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 20,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.4,
     shadowRadius: 1,
   },
@@ -1005,7 +972,7 @@ const styles = StyleSheet.create({
   },
   shadowView: {
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,
@@ -1074,7 +1041,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,

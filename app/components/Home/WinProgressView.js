@@ -21,7 +21,7 @@ export default function WinProgressView({
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <Text style={[styles.textStyle, textStyle]}>{titleText}</Text>
-      <Text style={[styles.percentageTextStyle, percentageTextStyle]}>{percentageCount}</Text>
+      
       <Progress.Bar
           animated={false}
           progress={progress}
@@ -31,6 +31,7 @@ export default function WinProgressView({
           style={[styles.progressBarStyle, progressBarStyle]}
           color={prgressColor}
         />
+      <Text style={[styles.percentageTextStyle, percentageTextStyle]}>{percentageCount}</Text>
     </View>
   );
 }

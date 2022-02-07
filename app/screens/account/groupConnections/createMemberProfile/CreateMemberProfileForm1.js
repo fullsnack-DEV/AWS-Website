@@ -6,6 +6,7 @@ import React, {
   useLayoutEffect,
   useRef,
   useContext,
+  useCallback,
 } from 'react';
 import {
   StyleSheet,
@@ -36,25 +37,12 @@ import TCDateTimePicker from '../../../../components/TCDateTimePicker';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import AuthContext from '../../../../auth/context';
 import DataSource from '../../../../Constants/DataSource';
+import { monthNames } from '../../../../utils';
 
 let entity = {};
 
 export default function CreateMemberProfileForm1({navigation}) {
   const authContext = useContext(AuthContext);
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
   const actionSheet = useRef();
   const [show, setShow] = useState(false);
   const [locationFieldVisible, setLocationFieldVisible] = useState(false);
@@ -80,6 +68,8 @@ export default function CreateMemberProfileForm1({navigation}) {
   const [postalCode, setPostalCode] = useState();
   const [birthday, setBirthday] = useState();
 
+  console.log('this value form1');
+
   useEffect(() => {
     const getAuthEntity = async () => {
       entity = authContext.entity;
@@ -95,6 +85,27 @@ export default function CreateMemberProfileForm1({navigation}) {
     };
     setPhoneNumber([...phoneNumber, obj]);
   };
+
+  const checkValidation = useCallback(() => {
+    if (firstName === '') {
+      Alert.alert('Towns Cup', 'First name cannot be blank');
+      return false;
+    }
+    if (lastName === '') {
+      Alert.alert('Towns Cup', 'Last name cannot be blank');
+      return false;
+    }
+    if (email === '') {
+      Alert.alert('Towns Cup', 'Email cannot be blank');
+      return false;
+    }
+    if (ValidateEmail(email) === false) {
+      Alert.alert('Towns Cup', 'You have entered an invalid email address!');
+      return false;
+    }
+
+    return true;
+  }, [email, firstName, lastName]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -155,28 +166,11 @@ export default function CreateMemberProfileForm1({navigation}) {
     state,
     country,
     postalCode,
+    checkValidation,
+    birthday,
+    gender,
   ]);
 
-  const checkValidation = () => {
-    if (firstName === '') {
-      Alert.alert('Towns Cup', 'First name cannot be blank');
-      return false;
-    }
-    if (lastName === '') {
-      Alert.alert('Towns Cup', 'Last name cannot be blank');
-      return false;
-    }
-    if (email === '') {
-      Alert.alert('Towns Cup', 'Email cannot be blank');
-      return false;
-    }
-    if (ValidateEmail(email) === false) {
-      Alert.alert('Towns Cup', 'You have entered an invalid email address!');
-      return false;
-    }
-
-    return true;
-  };
   // Email input format validation
   const ValidateEmail = (emailAddress) => {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

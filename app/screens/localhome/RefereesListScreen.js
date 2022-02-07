@@ -84,6 +84,7 @@ export default function RefereesListScreen({navigation, route}) {
       // navigation.setParams({ locationText: null });
     }
   }, [route?.params?.locationText]);
+  
   useEffect(() => {
     const list = [
       {
