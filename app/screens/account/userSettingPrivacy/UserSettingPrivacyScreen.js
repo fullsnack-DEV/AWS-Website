@@ -35,14 +35,14 @@ const [userSetting,setUserSetting] = useState();
      
       if(providerData.includes('password')){
        setUserSetting([
-        { key: 'Account', id: 1 },
+        { key: 'Profile', id: 1 },
         { key: 'Change Password', id: 2 },
         { key: 'Currency', id: 3 },
         // {key: 'Privacy Setting',id:3}
       ])
       }else{
         setUserSetting([
-          { key: 'Account', id: 1 },
+          { key: 'Profile', id: 1 },
           
           { key: 'Currency', id: 2},
           // {key: 'Privacy Setting',id:3}
@@ -79,7 +79,7 @@ const [userSetting,setUserSetting] = useState();
 
   
   const handleOpetions = async (opetions) => {
-    if (opetions === 'Account') {
+    if (opetions === 'Profile') {
       navigation.navigate('PersonalInformationScreen');
     } else if (opetions === 'Change Password') {
       navigation.navigate('ChangePasswordScreen');

@@ -1,5 +1,9 @@
 import React, {
-  useState, useLayoutEffect, useEffect, useContext,
+  useState,
+  useLayoutEffect,
+  useEffect,
+  useContext,
+  useCallback,
 } from 'react';
 import {
   StyleSheet,
@@ -9,10 +13,9 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
-
 } from 'react-native';
 
-import { patchMember } from '../../../../api/Groups';
+import {patchMember} from '../../../../api/Groups';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
@@ -21,55 +24,41 @@ import colors from '../../../../Constants/Colors';
 
 import TCLable from '../../../../components/TCLabel';
 import TCTextField from '../../../../components/TCTextField';
-import AuthContext from '../../../../auth/context'
+import AuthContext from '../../../../auth/context';
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCNavigationHeader from '../../../../components/TCNavigationHeader';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 let entity = {};
-export default function EditMemberTeamInfoScreen({ navigation, route }) {
+export default function EditMemberTeamInfoScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const [playerStatus, setPlayerStatus] = useState([]);
   const [role, setRole] = useState('');
-  const [switchUser, setSwitchUser] = useState({})
+  const [switchUser, setSwitchUser] = useState({});
 
-  const [groupMemberDetail, setGroupMemberDetail] = useState({
-
-  });
-  const [positions, setPositions] = useState([{}]);
+  const [groupMemberDetail, setGroupMemberDetail] = useState({});
+  const [positions, setPositions] = useState(route.params.groupMemberDetail.positions || [{}]);
 
   useEffect(() => {
-    setGroupMemberDetail(route.params.groupMemberDetail)
-    setPlayerStatus(route.params.groupMemberDetail.status)
-    setPositions(route.params.groupMemberDetail.positions || [{}])
+    setGroupMemberDetail(route.params.groupMemberDetail);
+    setPlayerStatus(route.params.groupMemberDetail.status);
     console.log('MEMBER DETAIL ::', groupMemberDetail);
     const getAuthEntity = async () => {
-      entity = authContext.entity
-      setSwitchUser(entity)
+      entity = authContext.entity;
+      setSwitchUser(entity);
       setRole(entity.role);
-    }
-    getAuthEntity()
-  }, [])
+    };
+    getAuthEntity();
+  }, []);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: (props) => (switchUser.obj && <TCNavigationHeader image ={switchUser.obj.thumbnail && switchUser.obj.thumbnail} name={switchUser.obj.group_name} groupType={switchUser.role} {...props}/>),
-      headerRight: () => (
-        <Text style={styles.nextButtonStyle} onPress={() => editTeamProfile()}>Done</Text>
-      ),
-    });
-  }, [navigation, groupMemberDetail, positions, role, playerStatus]);
-
-  const addPosition = () => {
-    const obj = {}
-    setPositions([...positions, obj]);
-  };
-
-  const editTeamProfile = () => {
-    setloading(true)
+  const editTeamProfile = useCallback(() => {
+    setloading(true);
     const bodyParams = {};
-    if (groupMemberDetail.jersey_number && groupMemberDetail.jersey_number !== '') {
+    if (
+      groupMemberDetail.jersey_number &&
+      groupMemberDetail.jersey_number !== ''
+    ) {
       bodyParams.jersey_number = groupMemberDetail.jersey_number;
     }
     if (groupMemberDetail.appearance && groupMemberDetail.appearance !== '') {
@@ -79,7 +68,7 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
       bodyParams.note = groupMemberDetail.note;
     }
     if (groupMemberDetail.positions) {
-      bodyParams.positions = groupMemberDetail.positions;
+      bodyParams.positions = positions;
     }
     if (groupMemberDetail.status) {
       bodyParams.status = groupMemberDetail.status;
@@ -90,76 +79,177 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
 
     const body = {
       group_member_detail: bodyParams,
-    }
+    };
 
-    patchMember(groupMemberDetail.group_id, groupMemberDetail.user_id, body, authContext).then(() => {
-      setloading(false);
-      navigation.goBack()
-    }).catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
+    patchMember(
+      groupMemberDetail.group_id,
+      groupMemberDetail.user_id,
+      body,
+      authContext,
+    )
+      .then(() => {
+        setloading(false);
+        navigation.goBack();
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext, groupMemberDetail.appearance, groupMemberDetail.group_id, groupMemberDetail.is_admin, groupMemberDetail.is_coach, groupMemberDetail.is_player, groupMemberDetail.jersey_number, groupMemberDetail.note, groupMemberDetail.positions, groupMemberDetail.status, groupMemberDetail.user_id, navigation, positions]);
+
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: (props) =>
+        switchUser.obj && (
+          <TCNavigationHeader
+            image={switchUser.obj.thumbnail && switchUser.obj.thumbnail}
+            name={switchUser.obj.group_name}
+            groupType={switchUser.role}
+            {...props}
+          />
+        ),
+      headerRight: () => (
+        <Text style={styles.nextButtonStyle} onPress={() => editTeamProfile()}>
+          Done
+        </Text>
+      ),
     });
-  }
-  const renderPosition = ({ item, index }) => (
+  }, [
+    navigation,
+    groupMemberDetail,
+    positions,
+    role,
+    playerStatus,
+    switchUser.obj,
+    switchUser.role,
+    editTeamProfile,
+  ]);
+
+  const addPosition = () => {
+    const obj = {};
+    setPositions([...positions, obj]);
+  };
+
+  
+  const renderPosition = ({ index}) => (
     <TCTextField
-    value={item}
-    onChangeText={(text) => {
-      const tempPosition = [...positions];
-      tempPosition[index] = text;
-      setPositions(tempPosition);
-      setGroupMemberDetail({ ...groupMemberDetail, positions })
-    }}
-    placeholder={strings.positionPlaceholder}
-     keyboardType={'default'}
-     style={{ marginBottom: 10 }}/>
+      value={positions[index]}
+      onChangeText={(text) => {
+        const tempPosition = [...positions];
+        tempPosition[index] = text;
+        setPositions(tempPosition);
+        // setGroupMemberDetail({...groupMemberDetail, positions});
+      }}
+      placeholder={strings.positionPlaceholder}
+      keyboardType={'default'}
+      style={{marginBottom: 10}}
+    />
   );
 
   return (
-
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
 
       <View style={styles.mainCheckBoxContainer}>
         <Text style={styles.checkBoxTitle}>Admin Authority And Role</Text>
         <View style={styles.checkBoxContainer}>
-          <TouchableOpacity onPress={() => { setGroupMemberDetail({ ...groupMemberDetail, is_admin: !groupMemberDetail.is_admin }) }}>
-            <Image source={groupMemberDetail.is_admin ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
+          <TouchableOpacity
+            onPress={() => {
+              setGroupMemberDetail({
+                ...groupMemberDetail,
+                is_admin: !groupMemberDetail.is_admin,
+              });
+            }}>
+            <Image
+              source={
+                groupMemberDetail.is_admin
+                  ? images.checkGreenBG
+                  : images.uncheckWhite
+              }
+              style={{height: 22, width: 22, resizeMode: 'contain'}}
+            />
           </TouchableOpacity>
           <Text style={styles.checkBoxItemText}>Admin</Text>
         </View>
         <View style={styles.checkBoxContainer}>
-          <TouchableOpacity onPress={() => { setGroupMemberDetail({ ...groupMemberDetail, is_coach: !groupMemberDetail.is_coach }) }}>
-            <Image source={groupMemberDetail.is_coach ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
+          <TouchableOpacity
+            onPress={() => {
+              setGroupMemberDetail({
+                ...groupMemberDetail,
+                is_coach: !groupMemberDetail.is_coach,
+              });
+            }}>
+            <Image
+              source={
+                groupMemberDetail.is_coach
+                  ? images.checkGreenBG
+                  : images.uncheckWhite
+              }
+              style={{height: 22, width: 22, resizeMode: 'contain'}}
+            />
           </TouchableOpacity>
           <Text style={styles.checkBoxItemText}>Coach</Text>
         </View>
         <View style={styles.checkBoxContainer}>
-          <TouchableOpacity onPress={() => { setGroupMemberDetail({ ...groupMemberDetail, is_player: !groupMemberDetail.is_player }) }}>
-            <Image source={groupMemberDetail.is_player ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
+          <TouchableOpacity
+            onPress={() => {
+              setGroupMemberDetail({
+                ...groupMemberDetail,
+                is_player: !groupMemberDetail.is_player,
+              });
+            }}>
+            <Image
+              source={
+                groupMemberDetail.is_player
+                  ? images.checkGreenBG
+                  : images.uncheckWhite
+              }
+              style={{height: 22, width: 22, resizeMode: 'contain'}}
+            />
           </TouchableOpacity>
           <Text style={styles.checkBoxItemText}>Player</Text>
         </View>
       </View>
       <View>
-        <TCLable title={'Position'}/>
+        <TCLable title={'Position'} />
         <FlatList
-                data={positions}
-                renderItem={renderPosition}
-                keyExtractor={(item, index) => index.toString()}
-                // style={styles.flateListStyle}
-                >
-        </FlatList>
+          data={positions}
+          renderItem={renderPosition}
+          keyExtractor={(item, index) => index.toString()}
+          // style={styles.flateListStyle}
+        ></FlatList>
       </View>
-      <TCMessageButton title={strings.addPosition} width={95} alignSelf = 'center' marginTop={15} onPress={() => addPosition()}/>
+      <TCMessageButton
+        title={strings.addPosition}
+        width={95}
+        alignSelf="center"
+        marginTop={15}
+        onPress={() => addPosition()}
+      />
       <View>
-        <TCLable title={'Jersey Number'}/>
-        <TCTextField value={groupMemberDetail.jersey_number} onChangeText={(text) => setGroupMemberDetail({ ...groupMemberDetail, jersey_number: text })} placeholder={strings.jerseyNumberPlaceholder} keyboardType={'number-pad'}/>
+        <TCLable title={'Jersey Number'} />
+        <TCTextField
+          value={groupMemberDetail.jersey_number}
+          onChangeText={(text) =>
+            setGroupMemberDetail({...groupMemberDetail, jersey_number: text})
+          }
+          placeholder={strings.jerseyNumberPlaceholder}
+          keyboardType={'number-pad'}
+        />
       </View>
       <View>
-        <TCLable title={'Appearance'}/>
-        <TCTextField value={groupMemberDetail.appearance} onChangeText={(text) => setGroupMemberDetail({ ...groupMemberDetail, appearance: text })} placeholder={strings.AppearancePlaceholder} keyboardType={'default'}/>
+        <TCLable title={'Appearance'} />
+        <TCTextField
+          value={groupMemberDetail.appearance}
+          onChangeText={(text) =>
+            setGroupMemberDetail({...groupMemberDetail, appearance: text})
+          }
+          placeholder={strings.AppearancePlaceholder}
+          keyboardType={'default'}
+        />
       </View>
       {/* <View style={styles.mainCheckBoxContainer}> */}
       {/*  <Text style={styles.checkBoxTitle}>Status</Text> */}
@@ -212,12 +302,20 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
       {/*  </View> */}
       {/* </View> */}
       <View>
-        <TCLable title={'Note'}/>
-        <TCTextField value={groupMemberDetail.note} height={100} multiline={true} onChangeText={(text) => setGroupMemberDetail({ ...groupMemberDetail, note: text })} placeholder={strings.writeNotesPlaceholder} keyboardType={'default'}/>
+        <TCLable title={'Note'} />
+        <TCTextField
+          value={groupMemberDetail.note}
+          height={100}
+          multiline={true}
+          onChangeText={(text) =>
+            setGroupMemberDetail({...groupMemberDetail, note: text})
+          }
+          placeholder={strings.writeNotesPlaceholder}
+          keyboardType={'default'}
+        />
       </View>
-      <View style={{ marginBottom: 20 }}/>
+      <View style={{marginBottom: 20}} />
     </TCKeyboardView>
-
   );
 }
 const styles = StyleSheet.create({
@@ -227,16 +325,25 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   checkBoxContainer: {
-    flexDirection: 'row', alignItems: 'center', height: 25, marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 25,
+    marginBottom: 10,
   },
   mainCheckBoxContainer: {
     marginLeft: 15,
     marginTop: 20,
   },
   checkBoxTitle: {
-    fontFamily: fonts.RRegular, fontSize: 20, color: colors.lightBlackColor, marginBottom: 10,
+    fontFamily: fonts.RRegular,
+    fontSize: 20,
+    color: colors.lightBlackColor,
+    marginBottom: 10,
   },
   checkBoxItemText: {
-    fontFamily: fonts.RRegular, fontSize: 16, color: colors.lightBlackColor, marginLeft: 10,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 10,
   },
 });

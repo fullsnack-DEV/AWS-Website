@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, {
   useState,
   useLayoutEffect,
@@ -13,6 +14,8 @@ import {
   TouchableWithoutFeedback,
   Alert,
   FlatList,
+  Text,
+  TouchableOpacity,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 
@@ -21,7 +24,6 @@ import ActionSheet from 'react-native-actionsheet';
 // import LinearGradient from 'react-native-linear-gradient';
 import QB from 'quickblox-react-native-sdk';
 import AuthContext from '../../../auth/context';
-import UserRoleView from '../../../components/groupConnections/UserRoleView';
 import TCSearchBox from '../../../components/TCSearchBox';
 import TCNoDataView from '../../../components/TCNoDataView';
 
@@ -34,13 +36,17 @@ import colors from '../../../Constants/Colors';
 // import TCThinDivider from '../../../components/TCThinDivider';
 import strings from '../../../Constants/String';
 import {
-  getQBAccountType,
   QB_DIALOG_TYPE,
   QBcreateDialog,
-  QBcreateUser,
   QBgetUserDetail,
 } from '../../../utils/QuickBlox';
 import UserListShimmer from '../../../components/shimmer/commonComponents/UserListShimmer';
+import fonts from '../../../Constants/Fonts';
+import TCUserRoleBadge from '../../../components/TCUserRoleBadge';
+import TCThinDivider from '../../../components/TCThinDivider';
+import {getHitSlop} from '../../../utils';
+import {followUser, unfollowUser} from '../../../api/Users';
+import TCFollowUnfollwButton from '../../../components/TCFollowUnfollwButton';
 
 let entity = {};
 export default function GroupMembersScreen({navigation, route}) {
@@ -204,35 +210,189 @@ export default function GroupMembersScreen({navigation, route}) {
     [navigation, route.params?.groupID],
   );
 
-  const onPressMessage = useCallback(
-    (item) => {
-      const accountType = getQBAccountType(item?.entity_type);
-      QBcreateUser(item?.user_id, item, accountType)
-        .then(() => {
-          navigation.navigate('MessageChat', {
-            screen: 'MessageChatRoom',
-            params: {userId: item.user_id},
-          });
-        })
-        .catch(() => {
-          navigation.navigate('MessageChat', {
-            screen: 'MessageChatRoom',
-            params: {userId: item.user_id},
-          });
-        });
+  // const onPressMessage = useCallback(
+  //   (item) => {
+  //     const accountType = getQBAccountType(item?.entity_type);
+  //     QBcreateUser(item?.user_id, item, accountType)
+  //       .then(() => {
+  //         navigation.navigate('MessageChat', {
+  //           screen: 'MessageChatRoom',
+  //           params: {userId: item.user_id},
+  //         });
+  //       })
+  //       .catch(() => {
+  //         navigation.navigate('MessageChat', {
+  //           screen: 'MessageChatRoom',
+  //           params: {userId: item.user_id},
+  //         });
+  //       });
+  //   },
+  //   [navigation],
+  // );
+
+  const callFollowUser = async (data, index) => {
+    const tempMember = [...members];
+    tempMember[index].is_following = true;
+    setMembers(tempMember);
+
+    const params = {
+      entity_type: 'player',
+    };
+    followUser(params, data.user_id, authContext)
+      .then(() => {
+        console.log('follow user');
+      })
+      .catch((error) => {
+        console.log('callFollowUser error with userID', error, data.user_id);
+        const tempMem = [...members];
+        tempMem[index].is_following = false;
+        setMembers(tempMem);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
+
+  const callUnfollowUser = async (data, index) => {
+    const tempMember = [...members];
+    tempMember[index].is_following = false;
+    setMembers(tempMember);
+
+    const params = {
+      entity_type: 'player',
+    };
+    unfollowUser(params, data.user_id, authContext)
+      .then(() => {
+        console.log('unfollow user');
+      })
+      .catch((error) => {
+        console.log('callUnfollowUser error with userID', error, data.user_id);
+        const tempMem = [...members];
+        tempMem[index].is_following = true;
+        setMembers(tempMem);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
+
+  const onUserAction = useCallback(
+    (action, data, index) => {
+      switch (action) {
+        case 'follow':
+          callFollowUser(data, index);
+          break;
+        case 'unfollow':
+          callUnfollowUser(data, index);
+          break;
+        default:
+      }
     },
-    [navigation],
+    [callFollowUser, callUnfollowUser, navigation],
   );
 
   const renderMembers = useCallback(
-    ({item}) => (
-      <UserRoleView
-        data={item}
-        onPressProfile={() => onPressProfile(item)}
-        onPressMessage={() => onPressMessage(item)}
-      />
+    ({item: data, index}) => (
+      // <UserRoleView
+      //   data={item}
+      //   onPressProfile={() => onPressProfile(item)}
+      //   onPressMessage={() => onPressMessage(item)}
+      // />
+      <>
+        <View style={styles.roleViewContainer}>
+          <View
+            style={{
+              width: 0,
+              flexGrow: 1,
+              flex: 1,
+            }}>
+            <View style={styles.topViewContainer}>
+              <View style={styles.profileView}>
+                <Image
+                  source={
+                    data.thumbnail
+                      ? {uri: data.thumbnail}
+                      : images.profilePlaceHolder
+                  }
+                  style={styles.profileImage}
+                />
+              </View>
+              <View style={styles.topTextContainer}>
+                <Text style={styles.nameText} numberOfLines={1}>
+                  {data.first_name} {data.last_name}
+                </Text>
+                <View style={{flexDirection: 'row'}}>
+                  {data?.group_member_detail?.is_admin && (
+                    <TCUserRoleBadge
+                      title="Admin"
+                      titleColor={colors.themeColor}
+                    />
+                  )}
+                  {data?.group_member_detail?.is_coach && (
+                    <TCUserRoleBadge
+                      title="Coach"
+                      titleColor={colors.greeColor}
+                    />
+                  )}
+                  {data?.group_member_detail?.is_player && (
+                    <TCUserRoleBadge
+                      title="Player"
+                      titleColor={colors.playerBadgeColor}
+                    />
+                  )}
+                </View>
+              </View>
+            </View>
+            <View>
+              <View style={styles.bottomViewContainer}>
+                {/* <Text style={styles.skillText} numberOfLines={2}>Forward, Midfielder, Goal Keeper</Text> */}
+                {data?.group_member_detail?.status && (
+                  <Text style={styles.awayStatusText} numberOfLines={1}>
+                    {data.group_member_detail.status.join(', ')}
+                  </Text>
+                )}
+              </View>
+            </View>
+          </View>
+          {authContext.entity.role === 'club' ||
+          authContext.entity.role === 'team' ? (
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => onPressProfile(data)}
+              hitSlop={getHitSlop(15)}>
+              <Image
+                source={images.arrowGraterthan}
+                style={styles.arrowStyle}
+              />
+            </TouchableOpacity>
+          ) : data.is_following ? (
+            <TCFollowUnfollwButton
+              outerContainerStyle={styles.firstButtonOuterStyle}
+              style={styles.firstButtonStyle}
+              
+              title={strings.following}
+              isFollowing={data.is_following}
+              onPress={() => {
+                onUserAction('following', data, index);
+              }}
+            />
+          ) : (
+            <TCFollowUnfollwButton
+              outerContainerStyle={styles.firstButtonOuterStyle}
+              style={styles.firstButtonStyle}
+              
+              title={strings.follow}
+              isFollowing={data.is_following}
+              onPress={() => {
+                onUserAction('follow', data, index);
+              }}
+            />
+          )}
+        </View>
+        <TCThinDivider marginTop={20} />
+      </>
     ),
-    [onPressMessage, onPressProfile],
+    [authContext.entity.role, onPressProfile, onUserAction],
   );
 
   return (
@@ -380,135 +540,72 @@ const styles = StyleSheet.create({
     tintColor: colors.blackColor,
     width: 15,
   },
-  // Model styles start from here
-  // modelHeaderContainer: {
-  //   width: '100%',
-  //   height: Dimensions.get('window').height / 1.5,
-  //   backgroundColor: colors.whiteColor,
-  //   position: 'absolute',
-  //   bottom: 0,
-  //   left: 0,
-  //   borderTopLeftRadius: 30,
-  //   borderTopRightRadius: 30,
-  //   shadowColor: colors.googleColor,
-  //   shadowOffset: { width: 0, height: 1 },
-  //   shadowOpacity: 0.5,
-  //   shadowRadius: 5,
-  // },
-  // headerView: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   height: 70,
-  //   alignItems: 'center',
-  //   marginLeft: 20,
-  //   marginRight: 20,
-  // },
-  // headerTitle: {
-  //   fontSize: 16,
-  //   fontWeight: 'bold',
-  //   fontFamily: fonts.RBold,
-  //   color: colors.lightBlackColor,
-  // },
-  // closeButtonView: {
-  //   width: 30,
-  //   height: 30,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   left: 0,
-  // },
-  // closeButton: {
-  //   width: 15,
-  //   height: 30,
-  //   resizeMode: 'contain',
-  // },
-
-  // doneButton: {
-  //   fontFamily: fonts.RRegular,
+  profileImage: {
+    alignSelf: 'center',
+    height: 40,
+    resizeMode: 'cover',
+    width: 40,
+    borderRadius: 80,
+  },
+  roleViewContainer: {
+    marginTop: 20,
+    marginLeft: 20,
+    marginRight: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  topViewContainer: {
+    flexDirection: 'row',
+  },
+  profileView: {
+    backgroundColor: colors.whiteColor,
+    height: 44,
+    width: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.grayColor,
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  topTextContainer: {
+    marginLeft: 10,
+    alignSelf: 'center',
+    flex: 1,
+  },
+  nameText: {
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RMedium,
+    marginRight: 10,
+  },
+  bottomViewContainer: {
+    marginLeft: 55,
+    marginTop: 5,
+  },
+  // skillText: {
   //   fontSize: 14,
   //   color: colors.lightBlackColor,
-  // },
-
-  // allTextButton: {
-  //   fontSize: 14,
-  //   fontFamily: fonts.RMedium,
-  //   marginRight: 10,
-  //   alignSelf: 'flex-end',
-  //   color: colors.lightBlackColor,
-  // },
-  // checkImage: {
-  //   height: 22,
-  //   width: 22,
-  //   resizeMode: 'contain',
-  // },
-  // sectionListStyle: {
-  //   marginLeft: 25,
-  //   marginRight: 25,
-  // },
-  // SectionHeaderStyle: {
-  //   fontWeight: '600',
-  //   fontFamily: fonts.RMedium,
-  //   color: colors.lightBlackColor,
-  //   fontSize: 14,
-  //   marginBottom: 8,
-  //   backgroundColor: colors.whiteColor,
-  // },
-  // rowStyleSelected: {
-  //   height: 45,
-  //   borderRadius: 6,
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   paddingLeft: 15,
-  //   paddingRight: 15,
-  //   marginBottom: 10,
-  //   resizeMode: 'contain',
-  //   justifyContent: 'space-between',
-
-  // },
-  // rowStyleUnSelected: {
-  //   height: 45,
-  //   backgroundColor: colors.offwhite,
-  //   borderRadius: 6,
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   paddingLeft: 15,
-  //   paddingRight: 15,
-  //   marginBottom: 10,
-  //   resizeMode: 'contain',
-  //   shadowColor: colors.blackColor,
-  //   shadowOffset: { width: 0, height: 1 },
-  //   shadowOpacity: 0.1,
-  //   shadowRadius: 1,
-  //   justifyContent: 'space-between',
-  // },
-  // rowTitle: {
-  //   fontSize: 16,
   //   fontFamily: fonts.RRegular,
-  //   color: colors.whiteColor,
+  //   flexShrink: 1,
   // },
-  // rowTitleBlack: {
-  //   fontSize: 16,
-  //   fontFamily: fonts.RRegular,
-  //   color: colors.lightBlackColor,
-  // },
-  // rowCheckImage: {
-  //   height: 22,
-  //   width: 22,
-  //   resizeMode: 'contain',
-  //   tintColor: colors.whiteColor,
-  //   shadowColor: colors.googleColor,
-  //   shadowOffset: { width: 0, height: 1 },
-  //   shadowOpacity: 0.5,
-  //   shadowRadius: 1,
-  // },
-  // checkGreenImage: {
-  //   height: 22,
-  //   width: 22,
-  //   resizeMode: 'contain',
-  // },
-  // allButtonContainer: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'flex-end',
-  //   marginRight: 30,
-  //   marginTop: 20,
-  // },
+  awayStatusText: {
+    fontSize: 12,
+    color: colors.themeColor,
+    fontFamily: fonts.RRegular,
+  },
+  buttonContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  arrowStyle: {
+    height: 15,
+    width: 15,
+    resizeMode: 'contain',
+    tintColor: colors.lightBlackColor,
+  },
+ 
+ 
 });

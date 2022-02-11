@@ -453,7 +453,6 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
             maxLength={150}
             value={profile.description}
             height={120}
-
             />
           </View>
         </ScrollView>

@@ -92,8 +92,8 @@ const TCWinDrawLooseChart = ({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 20,
-    borderBottomWidth: 0.3,
-    borderBottomColor: colors.thinDividerColor,
+    // borderBottomWidth: 0.3,
+    // borderBottomColor: colors.thinDividerColor,
     alignItems: 'center',
   },
   mainContainer: {

@@ -34,7 +34,7 @@ const PlayInTennisSingleHomeAwayMatch = () => {
     return (
       <View style={{ flex: 1 }}>
         {/*    Home And Away Matches */}
-        <TopHeader title={'Home & Away Matches'} selectWeekMonth={selectWeekMonth} setSelectWeekMonth={setSelectWeekMonth}/>
+        <TopHeader title={'Home & Away'} selectWeekMonth={selectWeekMonth} setSelectWeekMonth={setSelectWeekMonth}/>
 
         {/* Indicator */}
         <View style={styles.teamIndicatorContainer}>
@@ -94,8 +94,8 @@ const styles = StyleSheet.create({
     teamIndicatorContainer: {
         marginTop: hp(4),
         flexDirection: 'row',
-        alignItems: 'flex-end',
-        justifyContent: 'flex-end',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
     },
     teamIndicatorContentContainer: {
         marginHorizontal: 10,

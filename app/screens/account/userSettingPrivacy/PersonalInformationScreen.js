@@ -1,5 +1,10 @@
+/* eslint-disable default-case */
 import React, {
-  useState, useEffect, useLayoutEffect, useContext,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useContext,
+  useRef,
 } from 'react';
 import {
   StyleSheet,
@@ -12,18 +17,22 @@ import {
   ScrollView,
   Alert,
   FlatList,
-  Dimensions, Platform, SafeAreaView,
+  Dimensions,
+  Platform,
+  SafeAreaView,
 } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import ImagePicker from 'react-native-image-crop-picker';
+import ActionSheet from 'react-native-actionsheet';
 
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import moment from 'moment';
 import RNPickerSelect from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 
-import { updateUserProfile } from '../../../api/Users';
+import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+import {updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
@@ -35,32 +44,50 @@ import TCLabel from '../../../components/TCLabel';
 import TCMessageButton from '../../../components/TCMessageButton';
 import Header from '../../../components/Home/Header';
 import TCKeyboardView from '../../../components/TCKeyboardView';
-import { languageList } from '../../../utils';
+import {languageList} from '../../../utils';
+import TCTextField from '../../../components/TCTextField';
+import TCThickDivider from '../../../components/TCThickDivider';
+import TCImage from '../../../components/TCImage';
+import uploadImages from '../../../utils/imageAction';
 
-export default function PersonalInformationScreen({ navigation, route }) {
+export default function PersonalInformationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
-
+  const actionSheet = useRef();
+  const actionSheetWithDelete = useRef();
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [userInfo, setUserInfo] = useState(authContext.entity.obj)
-  const [languagesName, setLanguagesName] = useState('')
+  const [userInfo, setUserInfo] = useState(authContext.entity.obj);
+  const [languagesName, setLanguagesName] = useState('');
+  const [profileImageChanged, setProfileImageChanged] = useState(false);
 
-  const [phoneNumbers, setPhoneNumbers] = useState(authContext.entity.obj.phone_numbers || [{
-    id: 0,
-    phone_number: '',
-    country_code: '',
-  }]);
+  const [phoneNumbers, setPhoneNumbers] = useState(
+    authContext.entity.obj.phone_numbers || [
+      {
+        id: 0,
+        phone_number: '',
+        country_code: '',
+      },
+    ],
+  );
 
   const [languageData, setLanguageData] = useState(languageList);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [languages, setLanguages] = useState(authContext?.entity?.obj?.language);
+  const [languages, setLanguages] = useState(
+    authContext?.entity?.obj?.language,
+  );
   const selectedLanguage = [];
   useLayoutEffect(() => {
-      navigation.setOptions({
-        headerShown: false,
-      });
-  }, [navigation, editMode, languages, phoneNumbers]);
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [
+    navigation,
+    editMode,
+    languages,
+    phoneNumbers,
+    userInfo,
+  ]);
 
   useEffect(() => {
     let languageText = '';
@@ -68,7 +95,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
       userInfo.language.map((langItem, index) => {
         languageText = languageText + (index ? ', ' : '') + langItem;
         return null;
-      })
+      });
       setLanguagesName(languageText);
     }
   }, [userInfo?.language]);
@@ -78,11 +105,11 @@ export default function PersonalInformationScreen({ navigation, route }) {
     for (const temp of languageData) {
       if (userInfo.language) {
         if (userInfo.language.includes(temp.language)) {
-          temp.isChecked = true
+          temp.isChecked = true;
         } else {
-          temp.isChecked = false
+          temp.isChecked = false;
         }
-        arr.push(temp)
+        arr.push(temp);
       }
     }
     setLanguages(arr);
@@ -95,15 +122,15 @@ export default function PersonalInformationScreen({ navigation, route }) {
         city: route.params.city,
         state_abbr: route.params.state,
         country: route.params.country,
-      })
+      });
     }
-  }, [route.params])
+  }, [route.params]);
   const addPhoneNumber = () => {
     const obj = {
       id: phoneNumbers.length === 0 ? 0 : phoneNumbers.length,
       code: '',
       number: '',
-    }
+    };
     setPhoneNumbers([...phoneNumbers, obj]);
   };
   const toggleModal = () => {
@@ -111,26 +138,54 @@ export default function PersonalInformationScreen({ navigation, route }) {
   };
   // Form Validation
   const checkValidation = () => {
+    if (userInfo.email) {
+      if (!Utility.validateEmail(userInfo.email)) {
+        Alert.alert('Towns Cup', 'Please enter valid email address.');
+        return false;
+      }
+    }
     if (userInfo.first_name === '') {
       Alert.alert('Towns Cup', 'First name cannot be blank');
-      return false
-    } if (userInfo.last_name === '') {
+      return false;
+    }
+    if (userInfo.last_name === '') {
       Alert.alert('Towns Cup', 'Last name cannot be blank');
-      return false
-    } if (userInfo.city && userInfo.state_abbr && userInfo.country === '') {
+      return false;
+    }
+    if (userInfo.city && userInfo.state_abbr && userInfo.country === '') {
       Alert.alert('Towns Cup', 'Location cannot be blank');
-      return false
+      return false;
+    }
+    if (userInfo.height) {
+      if (!userInfo.height.height_type) {
+        Alert.alert('Towns Cup', 'Please select height measurement');
+        return false;
+      }
+      if (userInfo.height.height <= 0 || userInfo.height.height >= 1000) {
+        Alert.alert('Towns Cup', 'Please enter valid height.');
+        return false;
+      }
+    }
+    if (userInfo.weight) {
+      if (!userInfo.weight.weight_type) {
+        Alert.alert('Towns Cup', 'Please select weight measurement');
+        return false;
+      }
+      if (userInfo.weight.weight <= 0 || userInfo.weight.weight >= 1000) {
+        Alert.alert('Towns Cup', 'Please enter valid weight.');
+        return false;
+      }
     }
 
-    return true
+    return true;
   };
 
   // Change Edit mode states
   const changeEditMode = () => {
     setEditMode(!editMode);
-  }
+  };
 
-  const isIconCheckedOrNot = ({ item, index }) => {
+  const isIconCheckedOrNot = ({item, index}) => {
     console.log('SELECTED:::', index);
 
     languageData[index].isChecked = !item.isChecked;
@@ -142,7 +197,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
         selectedLanguage.push(temp.language);
       }
     }
-    setUserInfo({ ...userInfo, language: selectedLanguage })
+    setUserInfo({...userInfo, language: selectedLanguage});
     // setSelectedLanguages(selectedLanguage);
     console.log('language Checked :::', selectedLanguage);
   };
@@ -150,327 +205,767 @@ export default function PersonalInformationScreen({ navigation, route }) {
   const onSavePress = () => {
     if (checkValidation()) {
       const bodyParams = {};
-
       bodyParams.first_name = userInfo.first_name;
       bodyParams.last_name = userInfo.last_name;
       bodyParams.full_name = `${userInfo.first_name} ${userInfo.last_name}`;
       bodyParams.city = userInfo.city;
       bodyParams.state_abbr = userInfo.state_abbr;
       bodyParams.country = userInfo.country;
+      bodyParams.description = userInfo.description;
+      bodyParams.height = userInfo.height;
+      bodyParams.weight = userInfo.weight;
+
       if (userInfo.language) {
         bodyParams.language = userInfo.language;
       }
       if (phoneNumbers) {
         bodyParams.phone_numbers = userInfo.phone_numbers;
       }
-      console.log('bodyPARAMS:: ', bodyParams);
-      setloading(true);
-      updateUserProfile(bodyParams, authContext).then(async (response) => {
+
+      if (profileImageChanged) {
+        const imageArray = [];
+    imageArray.push({path: userInfo.thumbnail});   
+        uploadImages(imageArray, authContext)
+          .then((responses) => {
+            const attachments = responses.map((item) => ({
+              type: 'image',
+              url: item.fullImage,
+              thumbnail: item.thumbnail,
+            }));
+            if (profileImageChanged) {
+              setUserInfo({
+                ...userInfo,
+                thumbnail: attachments[0].thumbnail,
+                full_image: attachments[0].url,
+              });
+              setProfileImageChanged(false);
+              bodyParams.full_image = attachments[0].thumbnail;
+              bodyParams.thumbnail = attachments[0].url;
+            }
+
+           
+
+            updateUser(bodyParams);
+          })
+          .catch((e) => {
+            setTimeout(() => {
+              Alert.alert('Towns Cup', e.messages);
+            }, 0.1);
+            setloading(false);
+          });
+      } else {
+        bodyParams.full_image = '';
+              bodyParams.thumbnail = '';
+        updateUser(bodyParams);
+      }
+    }
+  };
+
+  const updateUser = (params) => {
+    console.log('bodyPARAMS:: ', params);
+    setloading(true);
+    updateUserProfile(params, authContext)
+      .then(async (response) => {
         const currentEntity = {
-          ...authContext.entity, obj: response.payload,
-        }
-        authContext.setEntity({ ...currentEntity })
-        Utility.setStorage('authContextEntity', { ...currentEntity })
+          ...authContext.entity,
+          obj: response.payload,
+        };
+        authContext.setEntity({...currentEntity});
+        Utility.setStorage('authContextEntity', {...currentEntity});
         setEditMode(false);
         setloading(false);
         setTimeout(() => {
           Alert.alert('Towns Cup', 'Profile changed sucessfully');
         }, 1000);
       })
-    }
-  }
-
-  const renderLanguage = ({ item, index }) => (
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert('Towns Cup', e.messages);
+        }, 0.1);
+        setloading(false);
+      });
+  };
+  const renderLanguage = ({item, index}) => (
     <TouchableWithoutFeedback
-            style={ styles.listItem }
-            onPress={ () => {
-              isIconCheckedOrNot({ item, index });
-            } }>
+      style={styles.listItem}
+      onPress={() => {
+        isIconCheckedOrNot({item, index});
+      }}>
       <View>
-        <Text style={ styles.languageData }>{item.language}</Text>
-        <View style={ styles.checkbox }>
+        <Text style={styles.languageData}>{item.language}</Text>
+        <View style={styles.checkbox}>
           {item.isChecked ? (
             <Image
-                      source={ images.checkWhiteLanguage }
-                      style={ styles.checkboxImg }
-                  />
+              source={images.checkWhiteLanguage}
+              style={styles.checkboxImg}
+            />
           ) : (
-            <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
+            <Image source={images.uncheckWhite} style={styles.checkboxImg} />
           )}
         </View>
-        <View style={ styles.shortSeparatorLine }></View>
+        <View style={styles.shortSeparatorLine}></View>
       </View>
     </TouchableWithoutFeedback>
-  )
-  const renderPhoneNumber = ({ item, index }) => (
+  );
 
-    <View style={ styles.fieldView }>
+  const heightView = () => (
+    <View style={styles.fieldView}>
       <View
-          style={ {
-            flexDirection: 'row',
-            marginTop: 12,
-            align: 'center',
-            marginLeft: 15,
-            marginRight: 15,
-            justifyContent: 'space-between',
-          } }>
-        <RNPickerSelect
-            placeholder={ {
-              label: strings.selectCode,
-              value: null,
-            } }
-            items={ [
-              { label: 'Canada(+1)', value: 'Canada(+1)' },
-              { label: 'United States(+1)', value: 'United States(+1)' },
-            ] }
-            onValueChange={ (value) => {
-              const tmpphoneNumbers = [...phoneNumbers];
-              tmpphoneNumbers[index].country_code = value;
-              setPhoneNumbers(tmpphoneNumbers);
-
-              const filteredNumber = phoneNumbers.filter((obj) => ![null, undefined, ''].includes(obj.phone_number && obj.country_code))
-              setUserInfo({ ...userInfo, phone_numbers: filteredNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
-            } }
-            value={ item.country_code }
-            disabled={ !editMode }
-            useNativeAndroidPickerStyle={ false }
-            style={ {
-              inputIOS: {
-                fontSize: wp('3.5%'),
-                paddingVertical: 12,
-                paddingHorizontal: 15,
-                width: wp('45%'),
-                color: 'black',
-                paddingRight: 30,
-                backgroundColor: colors.offwhite,
-                borderRadius: 5,
-                ...(editMode && shadowStyle),
-              },
-              inputAndroid: {
-                fontSize: wp('4%'),
-                paddingVertical: 12,
-                paddingHorizontal: 15,
-                width: wp('45%'),
-                color: 'black',
-                paddingRight: 30,
-                backgroundColor: colors.offwhite,
-                borderRadius: 5,
-                ...(editMode && shadowStyle),
-              },
-            } }
-            Icon={ () => (
-              <Image
-                  source={ images.dropDownArrow }
-                  style={ styles.miniDownArrow }
-                />
-            ) }
-          />
-        <View style={{ ...styles.halfMatchFeeView, ...(editMode && shadowStyle) }}>
+        style={{
+          flexDirection: 'row',
+          marginTop: 12,
+          align: 'center',
+          marginLeft: 15,
+          marginRight: 15,
+          justifyContent: 'space-between',
+        }}>
+        <View
+          style={{...styles.halfMatchFeeView, ...(editMode && shadowStyle)}}>
           <TextInput
-              placeholder={ 'Phone number' }
-              style={{ ...styles.halffeeText, ...(editMode && shadowStyle) }}
-              keyboardType={ 'phone-pad' }
-              onChangeText={ (text) => {
-                const tempphoneNumbers = [...phoneNumbers];
-                tempphoneNumbers[index].phone_number = text;
-                setPhoneNumbers(tempphoneNumbers);
-                const filteredNumber = phoneNumbers.filter((obj) => ![null, undefined, ''].includes(obj.phone_number && obj.country_code))
-                setUserInfo({ ...userInfo, phone_numbers: filteredNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
-              } }
-              editable={ editMode }
-              value={ item.phone_number }/>
+            placeholder={'Height'}
+            style={{...styles.halffeeText, ...(editMode && shadowStyle)}}
+            keyboardType={'phone-pad'}
+            onChangeText={(text) => {
+              setUserInfo({
+                ...userInfo,
+                height: {
+                  height: text,
+                },
+              });
+            }}
+            editable={editMode}
+            value={userInfo.height.height}
+          />
+        </View>
+        <RNPickerSelect
+          placeholder={{
+            label: 'Height type',
+            value: null,
+          }}
+          items={[
+            {label: 'cm', value: 'cm'},
+            {label: 'ft', value: 'ft'},
+          ]}
+          onValueChange={(value) => {
+            setUserInfo({
+              ...userInfo,
+              height: {
+                height: userInfo.height.height,
+                height_type: value,
+              },
+            });
+          }}
+          value={userInfo.height.height_type}
+          disabled={!editMode}
+          useNativeAndroidPickerStyle={false}
+          style={{
+            inputIOS: {
+              fontSize: wp('3.5%'),
+              paddingVertical: 12,
+              paddingHorizontal: 15,
+              width: wp('45%'),
+              color: 'black',
+              paddingRight: 30,
+              backgroundColor: colors.offwhite,
+              borderRadius: 5,
+              ...(editMode && shadowStyle),
+            },
+            inputAndroid: {
+              fontSize: wp('4%'),
+              paddingVertical: 12,
+              paddingHorizontal: 15,
+              width: wp('45%'),
+              color: 'black',
+              paddingRight: 30,
+              backgroundColor: colors.offwhite,
+              borderRadius: 5,
+              ...(editMode && shadowStyle),
+            },
+          }}
+          Icon={() => (
+            <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
+          )}
+        />
+      </View>
+    </View>
+  );
 
+  const weightView = () => (
+    <View style={styles.fieldView}>
+      <View
+        style={{
+          flexDirection: 'row',
+          marginTop: 12,
+          align: 'center',
+          marginLeft: 15,
+          marginRight: 15,
+          justifyContent: 'space-between',
+        }}>
+        <View
+          style={{...styles.halfMatchFeeView, ...(editMode && shadowStyle)}}>
+          <TextInput
+            placeholder={'Weight'}
+            style={{...styles.halffeeText, ...(editMode && shadowStyle)}}
+            keyboardType={'phone-pad'}
+            onChangeText={(text) => {
+              setUserInfo({
+                ...userInfo,
+                weight: {
+                  weight: text,
+                },
+              });
+            }}
+            editable={editMode}
+            value={userInfo.weight.weight}
+          />
+        </View>
+        <RNPickerSelect
+          placeholder={{
+            label: 'Weight type',
+            value: null,
+          }}
+          items={[
+            {label: 'kg', value: 'kg'},
+            {label: 'pound', value: 'pound'},
+          ]}
+          onValueChange={(value) => {
+            setUserInfo({
+              ...userInfo,
+              weight: {
+                weight: userInfo?.weight?.weight,
+                weight_type: value,
+              },
+            });
+          }}
+          value={userInfo?.weight?.weight_type}
+          disabled={!editMode}
+          useNativeAndroidPickerStyle={false}
+          style={{
+            inputIOS: {
+              fontSize: wp('3.5%'),
+              paddingVertical: 12,
+              paddingHorizontal: 15,
+              width: wp('45%'),
+              color: 'black',
+              paddingRight: 30,
+              backgroundColor: colors.offwhite,
+              borderRadius: 5,
+              ...(editMode && shadowStyle),
+            },
+            inputAndroid: {
+              fontSize: wp('4%'),
+              paddingVertical: 12,
+              paddingHorizontal: 15,
+              width: wp('45%'),
+              color: 'black',
+              paddingRight: 30,
+              backgroundColor: colors.offwhite,
+              borderRadius: 5,
+              ...(editMode && shadowStyle),
+            },
+          }}
+          Icon={() => (
+            <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
+          )}
+        />
+      </View>
+    </View>
+  );
+
+  const renderPhoneNumber = ({item, index}) => (
+    <View style={styles.fieldView}>
+      <View
+        style={{
+          flexDirection: 'row',
+          marginTop: 12,
+          align: 'center',
+          marginLeft: 15,
+          marginRight: 15,
+          justifyContent: 'space-between',
+        }}>
+        <RNPickerSelect
+          placeholder={{
+            label: strings.selectCode,
+            value: null,
+          }}
+          items={[
+            {label: 'Canada(+1)', value: 'Canada(+1)'},
+            {label: 'United States(+1)', value: 'United States(+1)'},
+          ]}
+          onValueChange={(value) => {
+            const tmpphoneNumbers = [...phoneNumbers];
+            tmpphoneNumbers[index].country_code = value;
+            setPhoneNumbers(tmpphoneNumbers);
+
+            const filteredNumber = phoneNumbers.filter(
+              (obj) =>
+                ![null, undefined, ''].includes(
+                  obj.phone_number && obj.country_code,
+                ),
+            );
+            setUserInfo({
+              ...userInfo,
+              phone_numbers: filteredNumber.map(
+                ({country_code, phone_number}) => ({
+                  country_code,
+                  phone_number,
+                }),
+              ),
+            });
+          }}
+          value={item.country_code}
+          disabled={!editMode}
+          useNativeAndroidPickerStyle={false}
+          style={{
+            inputIOS: {
+              fontSize: wp('3.5%'),
+              paddingVertical: 12,
+              paddingHorizontal: 15,
+              width: wp('45%'),
+              color: 'black',
+              paddingRight: 30,
+              backgroundColor: colors.offwhite,
+              borderRadius: 5,
+              ...(editMode && shadowStyle),
+            },
+            inputAndroid: {
+              fontSize: wp('4%'),
+              paddingVertical: 12,
+              paddingHorizontal: 15,
+              width: wp('45%'),
+              color: 'black',
+              paddingRight: 30,
+              backgroundColor: colors.offwhite,
+              borderRadius: 5,
+              ...(editMode && shadowStyle),
+            },
+          }}
+          Icon={() => (
+            <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
+          )}
+        />
+        <View
+          style={{...styles.halfMatchFeeView, ...(editMode && shadowStyle)}}>
+          <TextInput
+            placeholder={'Phone number'}
+            style={{...styles.halffeeText, ...(editMode && shadowStyle)}}
+            keyboardType={'phone-pad'}
+            onChangeText={(text) => {
+              const tempphoneNumbers = [...phoneNumbers];
+              tempphoneNumbers[index].phone_number = text;
+              setPhoneNumbers(tempphoneNumbers);
+              const filteredNumber = phoneNumbers.filter(
+                (obj) =>
+                  ![null, undefined, ''].includes(
+                    obj.phone_number && obj.country_code,
+                  ),
+              );
+              setUserInfo({
+                ...userInfo,
+                phone_numbers: filteredNumber.map(
+                  ({country_code, phone_number}) => ({
+                    country_code,
+                    phone_number,
+                  }),
+                ),
+              });
+            }}
+            editable={editMode}
+            value={item.phone_number}
+          />
         </View>
       </View>
     </View>
-  )
+  );
   const shadowStyle = {
-      elevation: 3,
-      shadowColor: colors.googleColor,
-      shadowOffset: { width: 0, height: 0.5 },
-      shadowOpacity: 0.16,
-      shadowRadius: 1,
-  }
+    elevation: 3,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 0.5},
+    shadowOpacity: 0.16,
+    shadowRadius: 1,
+  };
+
+  const onProfileImageClicked = () => {
+    setTimeout(() => {
+      if (userInfo?.thumbnail) {
+        actionSheetWithDelete.current.show();
+      } else {
+        actionSheet.current.show();
+      }
+    }, 0.1);
+  };
+
+  const openImagePicker = (width = 400, height = 400) => {
+    const cropCircle = true;
+    
+    ImagePicker.openPicker({
+      width,
+      height,
+      cropping: true,
+      cropperCircleOverlay: cropCircle,
+    }).then((data) => {
+      // 1 means profile, 0 - means background
+      
+        setUserInfo({...userInfo, thumbnail: data.path});
+        setProfileImageChanged(true);
+     
+    });
+  };
+
+  const openCamera = (width = 400, height = 400) => {
+    check(PERMISSIONS.IOS.CAMERA)
+      .then((result) => {
+        switch (result) {
+          case RESULTS.UNAVAILABLE:
+            Alert.alert(
+              'This feature is not available (on this device / in this context)',
+            );
+            break;
+          case RESULTS.DENIED:
+            request(PERMISSIONS.IOS.CAMERA).then(() => {
+              const cropCircle = true;
+             
+              ImagePicker.openCamera({
+                width,
+                height,
+                cropping: true,
+                cropperCircleOverlay: cropCircle,
+              })
+                .then((data) => {
+                  
+                    setUserInfo({...userInfo, thumbnail: data.path});
+                    setProfileImageChanged(true);
+                  
+                })
+                .catch((e) => {
+                  Alert.alert(e);
+                });
+            });
+            break;
+          case RESULTS.LIMITED:
+            console.log('The permission is limited: some actions are possible');
+            break;
+          case RESULTS.GRANTED:
+            {
+              const cropCircle = true;
+              
+              ImagePicker.openCamera({
+                width,
+                height,
+                cropping: true,
+                cropperCircleOverlay: cropCircle,
+              })
+                .then((data) => {
+                  
+                    setUserInfo({...userInfo, thumbnail: data.path});
+                    setProfileImageChanged(true);
+                  
+                })
+                .catch((e) => {
+                  Alert.alert(e);
+                });
+            }
+            break;
+          case RESULTS.BLOCKED:
+            console.log('The permission is denied and not requestable anymore');
+            break;
+        }
+      })
+      .catch((error) => {
+        Alert.alert(error);
+      });
+  };
+
+  const deleteImage = () => {
+      setUserInfo({...userInfo, thumbnail: '', full_image: ''});
+      setProfileImageChanged(false);
+  };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
       <Header
-            leftComponent={
-              <TouchableOpacity onPress={() => navigation.goBack() }>
-                <Image source={images.backArrow} style={styles.backImageStyle} />
-              </TouchableOpacity>
-            }
-            centerComponent={
-              <Text style={{
-                fontSize: 16,
-                color: colors.lightBlackColor,
-                textAlign: 'center',
-                fontFamily: fonts.RBold,
-              }}>
-                Personal Information
-              </Text>
-            }
-            rightComponent={
-              <Text style={ styles.headerRightButton } onPress={ () => {
-                if (!editMode) changeEditMode()
-                else onSavePress();
-              } }>
-                {!editMode ? 'Edit' : 'Done'}
-              </Text>
-            }
-        />
-      <View style={{ width: '100%', height: 0.5, backgroundColor: colors.writePostSepratorColor }}/>
-      <TCKeyboardView>
-        <ScrollView bounces={false} style={ styles.mainContainer }>
-          <ActivityLoader visible={ loading } />
-          <TCLabel title={'Name'}/>
-          {editMode && <View style={{ marginHorizontal: 15, flexDirection: 'row' }}><TextInput
-    placeholder={strings.fnameText}
-    style={{
- ...styles.matchFeeTxt, flex: 1, marginRight: 5, ...(editMode && shadowStyle),
-    }}
-    onChangeText={(text) => {
-      setUserInfo({ ...userInfo, first_name: text })
-    }}
-    editable={editMode}
-    value={userInfo.first_name}/>
-            <TextInput
-    placeholder={strings.lnameText}
-    style={{
- ...styles.matchFeeTxt, flex: 1, marginLeft: 5, ...(editMode && shadowStyle),
-    }}
-    onChangeText={(text) => {
-      setUserInfo({ ...userInfo, last_name: text })
-    }}
-    editable={editMode}
-    value={userInfo.last_name}/></View>}
-
-          {!editMode && <TextInput
-    placeholder={'Name'}
-    style={{ ...styles.matchFeeTxt, ...(editMode && shadowStyle) }}
-    editable={editMode}
-    value={`${userInfo.first_name} ${userInfo.last_name}`}/>
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image source={images.backArrow} style={styles.backImageStyle} />
+          </TouchableOpacity>
         }
+        centerComponent={
+          <Text
+            style={{
+              fontSize: 16,
+              color: colors.lightBlackColor,
+              textAlign: 'center',
+              fontFamily: fonts.RBold,
+            }}>
+            Profile
+          </Text>
+        }
+        rightComponent={
+          <Text
+            style={styles.headerRightButton}
+            onPress={() => {
+              if (!editMode) changeEditMode();
+              else onSavePress();
+            }}>
+            {!editMode ? 'Edit' : 'Done'}
+          </Text>
+        }
+      />
+      <View
+        style={{
+          width: '100%',
+          height: 0.5,
+          backgroundColor: colors.writePostSepratorColor,
+        }}
+      />
+      <TCKeyboardView>
+        <ScrollView bounces={false} style={styles.mainContainer}>
+          <ActivityLoader visible={loading} />
 
-          <TCLabel title={'E-mail'}/>
-          <TextInput
-            placeholder={ strings.emailPlaceHolder }
-            style={{ ...styles.matchFeeTxt, ...(editMode && shadowStyle) }}
-            editable={ false }
-            value={ userInfo.email }/>
+          <View style={{flex: 1}}>
+            <TCImage
+              imageStyle={[styles.profileImageStyle, {marginTop: 10}]}
+              source={
+                userInfo.thumbnail
+                  ? {uri: userInfo.thumbnail}
+                  : images.profilePlaceHolder
+              }
+              defaultSource={images.profilePlaceHolder}
+            />
 
-          <TCLabel title={'Phone'}/>
-          <FlatList
-            data={ phoneNumbers }
-            keyExtractor={(index) => index.toString()}
-            renderItem={ renderPhoneNumber }
-        />
-          {editMode && <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>}
-          <View style={ styles.fieldView }>
-
-            <TCLabel title={strings.locationTitle}/>
             <TouchableOpacity
               disabled={!editMode}
-              onPress={ () => {
-                // eslint-disable-next-line no-unused-expressions
-                editMode && navigation.navigate('SearchLocationScreen', {
-                  comeFrom: 'PersonalInformationScreen',
-                })
-              }}>
-              <TextInput
-                placeholder={ strings.searchCityPlaceholder }
-                style={{ ...styles.matchFeeTxt, ...(editMode && shadowStyle) }}
-                value={userInfo?.city && `${userInfo?.city?.trim()}, ${userInfo.state_abbr?.trim()}, ${userInfo.country?.trim()}`}
-                editable={ false }
-                pointerEvents="none"
-                />
+              style={styles.profileCameraButtonStyle}
+              onPress={() => onProfileImageClicked()}>
+              <Image
+                style={styles.profileImageButtonStyle}
+                source={images.certificateUpload}
+              />
             </TouchableOpacity>
           </View>
-          <TCLabel title={strings.languageTitle}/>
+
+          <TCLabel title={'Name'} />
+          {editMode && (
+            <View style={{marginHorizontal: 15, flexDirection: 'row'}}>
+              <TextInput
+                placeholder={strings.fnameText}
+                style={{
+                  ...styles.matchFeeTxt,
+                  flex: 1,
+                  marginRight: 5,
+                  ...(editMode && shadowStyle),
+                }}
+                onChangeText={(text) => {
+                  setUserInfo({...userInfo, first_name: text});
+                }}
+                editable={editMode}
+                value={userInfo.first_name}
+              />
+              <TextInput
+                placeholder={strings.lnameText}
+                style={{
+                  ...styles.matchFeeTxt,
+                  flex: 1,
+                  marginLeft: 5,
+                  ...(editMode && shadowStyle),
+                }}
+                onChangeText={(text) => {
+                  setUserInfo({...userInfo, last_name: text});
+                }}
+                editable={editMode}
+                value={userInfo.last_name}
+              />
+            </View>
+          )}
+
+          {!editMode && (
+            <TextInput
+              placeholder={'Name'}
+              style={{...styles.matchFeeTxt, ...(editMode && shadowStyle)}}
+              editable={editMode}
+              value={`${userInfo.first_name} ${userInfo.last_name}`}
+            />
+          )}
+
+          <View style={styles.fieldView}>
+            <TCLabel title={strings.locationTitle} />
+            <TouchableOpacity
+              disabled={!editMode}
+              onPress={() => {
+                // eslint-disable-next-line no-unused-expressions
+                editMode &&
+                  navigation.navigate('SearchLocationScreen', {
+                    comeFrom: 'PersonalInformationScreen',
+                  });
+              }}>
+              <TextInput
+                placeholder={strings.searchCityPlaceholder}
+                style={{...styles.matchFeeTxt, ...(editMode && shadowStyle)}}
+                value={
+                  userInfo?.city &&
+                  `${userInfo?.city?.trim()}, ${userInfo.state_abbr?.trim()}, ${userInfo.country?.trim()}`
+                }
+                editable={false}
+                pointerEvents="none"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View>
+            <TCLabel title={strings.slogan} />
+            <TCTextField
+              placeholder={'Slogan'}
+              onChangeText={(text) =>
+                setUserInfo({...userInfo, description: text})
+              }
+              editable={editMode}
+              multiline
+              maxLength={150}
+              value={userInfo.description}
+              height={120}
+            />
+          </View>
+
+          <TCThickDivider marginTop={25} marginBottom={15} />
+
+          <View>
+            <TCLabel title={strings.gender} />
+            <View style={styles.staticTextView}>
+              <Text style={styles.staticText}>{userInfo.gender}</Text>
+            </View>
+          </View>
+
+          <View>
+            <TCLabel title={strings.birthDatePlaceholder} />
+            <View style={styles.staticTextView}>
+              <Text style={styles.staticText}>
+                {moment(userInfo.birthday * 1000).format('MMM DD,YYYY')}
+              </Text>
+            </View>
+          </View>
+
+          <TCLabel title={'Height'} />
+          {heightView()}
+
+          <TCLabel title={'Weight'} />
+          {weightView()}
+
+          <TCLabel title={'Phone'} />
+          <FlatList
+            scrollEnabled={false}
+            data={phoneNumbers}
+            keyExtractor={(index) => index.toString()}
+            renderItem={renderPhoneNumber}
+          />
+          {editMode && (
+            <TCMessageButton
+              title={strings.addPhone}
+              width={85}
+              alignSelf="center"
+              marginTop={15}
+              onPress={() => addPhoneNumber()}
+            />
+          )}
+
+          <TCLabel title={strings.languageTitle} />
           <TouchableOpacity
-            style={{ ...styles.searchView, ...(editMode && shadowStyle) }}
+            style={{...styles.searchView, ...(editMode && shadowStyle)}}
             disabled={!editMode}
-            onPress={ () => {
+            onPress={() => {
               // eslint-disable-next-line no-unused-expressions
               editMode && toggleModal();
             }}>
             <TextInput
-            style={ styles.searchTextField }
-            placeholder={ strings.languagePlaceholder }
-            value={ userInfo.language ? languagesName : '' }
-            editable={ false }
-            pointerEvents="none"/>
-          </TouchableOpacity>
-          <Modal
-        isVisible={ isModalVisible }
-        backdropColor="black"
-        hasBackdrop={true}
-        onBackdropPress={() => {
-          setModalVisible(false)
-        }}
-        backdropOpacity={ 0 }
-        style={ { marginLeft: 0, marginRight: 0, marginBottom: 0 } }>
-            <View
-          style={ {
-            width: '100%',
-            height: Dimensions.get('window').height / 2,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 10,
-          } }>
-              <Header
-              mainContainerStyle={{ marginTop: 15 }}
-              centerComponent={
-                <Text style={styles.headerCenterStyle}>{'Languages'}</Text>
-              }
-              rightComponent={
-                <TouchableOpacity 
-                hitSlop={Utility.getHitSlop(15)}
-                onPress={() => {
-                  setModalVisible(false)
-                }}>
-                  <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
-                </TouchableOpacity>
-              }
+              style={styles.searchTextField}
+              placeholder={strings.languagePlaceholder}
+              value={userInfo.language ? languagesName : ''}
+              editable={false}
+              pointerEvents="none"
             />
-              <View style={styles.sepratorStyle} />
-              <View style={ styles.separatorLine }></View>
-              <FlatList
-            data={ languageData }
-            keyExtractor={(index) => index.toString()}
-            renderItem={ renderLanguage }
-            style={ { marginBottom: '25%' } }
+          </TouchableOpacity>
+          <TCLabel title={'E-mail'} />
+          <TextInput
+            placeholder={strings.emailPlaceHolder}
+            style={{...styles.matchFeeTxt, ...(editMode && shadowStyle)}}
+            editable={false}
+            value={userInfo.email}
           />
+          <Modal
+            isVisible={isModalVisible}
+            backdropColor="black"
+            hasBackdrop={true}
+            onBackdropPress={() => {
+              setModalVisible(false);
+            }}
+            backdropOpacity={0}
+            style={{marginLeft: 0, marginRight: 0, marginBottom: 0}}>
+            <View
+              style={{
+                width: '100%',
+                height: Dimensions.get('window').height / 2,
+                backgroundColor: 'white',
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                borderTopLeftRadius: 30,
+                borderTopRightRadius: 30,
+                shadowColor: '#000',
+                shadowOffset: {width: 0, height: 1},
+                shadowOpacity: 0.5,
+                shadowRadius: 5,
+                elevation: 10,
+              }}>
+              <Header
+                mainContainerStyle={{marginTop: 15}}
+                centerComponent={
+                  <Text style={styles.headerCenterStyle}>{'Languages'}</Text>
+                }
+                rightComponent={
+                  <TouchableOpacity
+                    hitSlop={Utility.getHitSlop(15)}
+                    onPress={() => {
+                      setModalVisible(false);
+                    }}>
+                    <Image
+                      source={images.cancelImage}
+                      style={styles.cancelImageStyle}
+                      resizeMode={'contain'}
+                    />
+                  </TouchableOpacity>
+                }
+              />
+              <View style={styles.sepratorStyle} />
+              <View style={styles.separatorLine}></View>
+              <FlatList
+                data={languageData}
+                keyExtractor={(index) => index.toString()}
+                renderItem={renderLanguage}
+                style={{marginBottom: '25%'}}
+              />
               <View
-            style={ {
-              width: '100%',
-              height: '25%',
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
+                style={{
+                  width: '100%',
+                  height: '25%',
+                  backgroundColor: 'white',
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
 
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-            } }>
+                  shadowColor: '#000',
+                  shadowOffset: {width: 0, height: 1},
+                  shadowOpacity: 0.5,
+                  shadowRadius: 5,
+                }}>
                 <TouchableOpacity
-              onPress={ () => {
-                toggleModal();
-              } }>
+                  onPress={() => {
+                    toggleModal();
+                  }}>
                   <LinearGradient
-                colors={ [colors.yellowColor, colors.themeColor] }
-                style={ styles.languageApplyButton }>
-                    <Text style={ styles.nextButtonText }>{strings.applyTitle}</Text>
+                    colors={[colors.yellowColor, colors.themeColor]}
+                    style={styles.languageApplyButton}>
+                    <Text style={styles.nextButtonText}>
+                      {strings.applyTitle}
+                    </Text>
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
@@ -478,11 +973,48 @@ export default function PersonalInformationScreen({ navigation, route }) {
           </Modal>
         </ScrollView>
       </TCKeyboardView>
+      <ActionSheet
+        ref={actionSheet}
+        // title={'News Feed Post'}
+        options={[strings.camera, strings.album, strings.cancelTitle]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            
+              openImagePicker();
+           
+          }
+        }}
+      />
+      <ActionSheet
+        ref={actionSheetWithDelete}
+        // title={'News Feed Post'}
+        options={[
+          strings.camera,
+          strings.album,
+          strings.deleteTitle,
+          strings.cancelTitle,
+        ]}
+        cancelButtonIndex={3}
+        destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            
+              openImagePicker();
+            
+          } else if (index === 2) {
+            deleteImage();
+          }
+        }}
+      />
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-
   checkbox: {
     alignSelf: 'center',
     position: 'absolute',
@@ -500,11 +1032,9 @@ const styles = StyleSheet.create({
     // paddingLeft: wp('25%'),
     resizeMode: 'contain',
     alignSelf: 'center',
-
   },
 
   fieldView: {
-
     marginBottom: 2,
   },
   halfMatchFeeView: {
@@ -616,5 +1146,34 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     alignSelf: 'center',
+  },
+  staticTextView: {
+    marginLeft: 25,
+    marginTop: 15,
+  },
+  staticText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  profileImageStyle: {
+    height: 71,
+    width: 71,
+    marginTop: -36,
+    borderRadius: 35.5,
+    borderWidth: 2,
+    alignSelf: 'center',
+    borderColor: colors.whiteColor,
+  },
+  profileCameraButtonStyle: {
+    height: 22,
+    width: 22,
+    marginTop: -22,
+    marginLeft: 48,
+    alignSelf: 'center',
+  },
+  profileImageButtonStyle: {
+    height: 22,
+    width: 22,
   },
 });

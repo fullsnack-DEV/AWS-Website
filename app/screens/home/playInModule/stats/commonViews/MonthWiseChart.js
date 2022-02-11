@@ -1,61 +1,65 @@
+/* eslint-disable prefer-spread */
+/* eslint-disable no-extend-native */
+/* eslint-disable no-multi-assign */
 /* eslint-disable import/no-extraneous-dependencies */
-import React from 'react';
+import React, {useEffect,useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import StatsSelectionView from '../../../../../components/Home/StatsSelectionView';
 
 import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 import strings from '../../../../../Constants/String';
+import { getMaxFromRange } from '../../../../../utils';
 import {monthsSelectionData} from '../../../../../utils/constant';
 
+
 export default function MonthWiseChart({
-  gameChartMonths = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'July',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ],
   gameChartData,
   selectMonth,
   setSelectMonth,
 }) {
+  console.log('gameChartData', gameChartData);
+const [maxValue,setMaxValue] = useState()
+  useEffect(() => {
+    const maxArray = gameChartData?.map((o) => { return o.value; });
+    const max_of_array = Math.max.apply(Math, maxArray);
+    setMaxValue(getMaxFromRange(max_of_array))
 
-  console.log('gameChartData',gameChartData);
+    console.log('maxmax', max_of_array);
+  }, [gameChartData]);
+
   const renderMonths = ({item}) => {
     console.log('Month ITEM', item);
     return (
-
-        
       <View
         style={{
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          // justifyContent: 'space-between',
           alignItems: 'center',
           marginLeft: 15,
           marginRight: 15,
         }}>
-        <Text style={styles.textRegularStyle}>{item}</Text>
-
+        <Text style={styles.textRegularStyle}>{item.month_name}</Text>
         <View
           style={{
-            height: 8,
-            backgroundColor: colors.themeColor,
             flex: 1,
-            marginLeft: 15,
-            marginRight: 15,
-            borderBottomRightRadius: 30,
-            borderTopRightRadius: 30,
-          }}
-        />
-        <Text>10</Text>
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <View
+            style={{
+              flex: item?.value > 0 ? (item?.value * 100 / maxValue) /100 : 0.01,
+              marginLeft: 15,
+              marginRight: 15,
+              height: 8,
+              backgroundColor: colors.themeColor,
+              borderBottomRightRadius: 30,
+              borderTopRightRadius: 30,
+            }}
+          />
+          <Text styl={styles.textRegularStyle}>{item.value}</Text>
+        </View>
       </View>
     );
   };
@@ -91,8 +95,9 @@ export default function MonthWiseChart({
 
       <FlatList
         horizontal={false}
+        scrollEnabled={false}
         showsHorizontalScrollIndicator={false}
-        data={gameChartMonths}
+        data={gameChartData}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderMonths}
         ItemSeparatorComponent={renderSeparator}
@@ -103,6 +108,7 @@ export default function MonthWiseChart({
 
 const styles = StyleSheet.create({
   textRegularStyle: {
+    width: 25,
     fontFamily: fonts.RRegular,
     fontSize: 12,
     color: colors.lightBlackColor,

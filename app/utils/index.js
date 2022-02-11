@@ -946,3 +946,46 @@ export const getGamesList = async (games) => {
   }
 };
 
+export const getMaxFromRange=(max_of_array)=>{
+  if(max_of_array <= 10){
+    return 10
+  }else if(max_of_array <= 20){
+    return 20
+  }else if(max_of_array <= 30){
+    return 30
+  }else if(max_of_array <= 40){
+    return 40
+  }else if(max_of_array <= 50){
+    return 50
+  }else if(max_of_array <= 100){
+    return 100
+  }else if(max_of_array <= 200){
+    return 200
+  }else if(max_of_array <= 300){
+    return 300
+  }else if(max_of_array <= 400){
+    return 400
+  }else if(max_of_array <= 500){
+    return 500
+  }else if(max_of_array <= 600){
+    return 600
+  }else if(max_of_array <= 700){
+    return 700
+  }else if(max_of_array <= 800){
+    return 800
+  }else if(max_of_array <= 900){
+    return 900
+  }
+}
+
+export const validateEmail = (emailText) => {
+  if (
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+      emailText,
+    )
+  ) {
+    return true;
+  }
+
+  return false;
+};
