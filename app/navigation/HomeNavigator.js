@@ -1496,7 +1496,7 @@ const HomeNavigator = () => (
       name="EditMemberBasicInfoScreen"
       component={EditMemberBasicInfoScreen}
       options={{
-        title: 'Basic Info',
+        title: 'Edit Basic Info',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

@@ -166,7 +166,7 @@ const strings = {
   membersAgeTitle: 'Range player\'s ages.',
   maxPlaceholder: 'Max',
   minPlaceholder: 'Min',
-  locationTitle: 'Where is the home city of the team?',
+  locationTitle: 'Current City',
 
   locationClubTitle: 'Where is the home city of the club?',
   currentCity: 'Home City',

@@ -88,6 +88,16 @@ const getGameStatsData = async (userID, params, authContext) => makeAPIRequest({
   authContext,
 })
 
+
+
+
+const getStatsRDMData = async (entityID, params, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/teams/${entityID}/games/stats/RDM`,
+  params,
+  authContext,
+})
+
 const getGameMatchRecords = async (gameId, authContext, extraQuery) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/games/${gameId}/records?fetchTeamObject=true&${extraQuery}`,
@@ -335,4 +345,5 @@ export {
   patchPlayerReview,
   getUserReviews,
   getGameMemberDetails,
+  getStatsRDMData
 }

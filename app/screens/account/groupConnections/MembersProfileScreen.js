@@ -68,16 +68,11 @@ export default function MembersProfileScreen({navigation, route}) {
   const [memberDetail, setMemberDetail] = useState();
   const [switchUser, setSwitchUser] = useState({});
 
-  useEffect(() => {
-    if (isFocused) {
-      getMemberInformation();
-    }
-  }, [isFocused]);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () =>
-        route?.params?.whoSeeID === entity.uid && (
-          <TouchableWithoutFeedback onPress={() => actionSheet.current.show()}>
+        ((route?.params?.whoSeeID === entity.uid) && !loading)  && (
+          <TouchableWithoutFeedback onPress={() => actionSheet?.current?.show()}>
             <Image
               source={images.horizontal3Dot}
               style={styles.navigationRightItem}
@@ -94,7 +89,15 @@ export default function MembersProfileScreen({navigation, route}) {
     switchUser,
     editProfile,
     loading,
+    route?.params?.whoSeeID,
   ]);
+
+  useEffect(() => {
+console.log('--useEffect called--');
+    getMemberInformation();
+   
+  }, [isFocused]);
+
   const getAge = (dateString) => {
     const today = new Date();
     const birthDate = new Date(dateString);
@@ -105,13 +108,19 @@ export default function MembersProfileScreen({navigation, route}) {
     }
     return age;
   };
-  const getMemberInformation = async () => {
+  const getMemberInformation =  () => {
     if (!firstTimeLoad) setloading(true);
     entity = authContext.entity;
     setSwitchUser(entity);
 
     // Setting of Edit option
-    if (entity.role === 'club') {
+    if(entity.role === 'team'){
+      setEditProfile(true);
+      setEditBasicInfo(true);
+      setEditTeam(true);
+      setEditMembership(true);
+    }
+    else if (entity.role === 'club') {
       setEditProfile(true);
       setEditBasicInfo(true);
       setEditTeam(true);
@@ -158,7 +167,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const getMemberPhoneNumber = () => {
     let numbersString;
-    console.log('memberDetail',memberDetail);
+    console.log('memberDetail', memberDetail);
     if (memberDetail?.phone_numbers) {
       console.log('PHONE NUMBER ARRAY::', memberDetail?.phone_numbers);
       const numbers = memberDetail?.phone_numbers.map(
@@ -169,7 +178,7 @@ export default function MembersProfileScreen({navigation, route}) {
       numbersString = 'N/A';
     }
     return numbersString;
-  }
+  };
 
   return (
     <SafeAreaView>
@@ -190,15 +199,10 @@ export default function MembersProfileScreen({navigation, route}) {
                     ? {uri: memberDetail?.thumbnail}
                     : images.profilePlaceHolder
                 }
-                name={`${memberDetail?.first_name} ${memberDetail?.last_name}`}
-                location={
-                  memberDetail?.city &&
-                  memberDetail?.state_abbr &&
-                  memberDetail?.country &&
-                  `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
-                }
+                name={`${memberDetail?.first_name} ${memberDetail?.last_name}` ?? ''}
+                location={`${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}` ?? ''}
               />
-              {/* {editProfile && (
+              {editProfile && (
                 <TouchableWithoutFeedback
                   onPress={() => {
                     navigation.navigate('EditMemberInfoScreen', {
@@ -207,7 +211,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   }}>
                   <Image source={images.editSection} style={styles.editImage} />
                 </TouchableWithoutFeedback>
-              )} */}
+              )}
             </View>
             {memberDetail?.group?.updatedBy && (
               <Text style={styles.undatedTimeText} numberOfLines={2}>
@@ -364,7 +368,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
             <View style={styles.sectionEditView}>
               <Text style={styles.basicInfoTitle}>Membership</Text>
-              {editMembership && (
+              {/* {editMembership && (
                 <TouchableWithoutFeedback
                   onPress={() =>
                     navigation.navigate('EditClubNotesScreen', {
@@ -373,7 +377,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   }>
                   <Image source={images.editSection} style={styles.editImage} />
                 </TouchableWithoutFeedback>
-              )}
+              )} */}
             </View>
             {memberDetail.group && (
               <GroupMembership
@@ -407,6 +411,24 @@ export default function MembersProfileScreen({navigation, route}) {
             />
           </View>
           <TCThickDivider marginTop={20} />
+          <View>
+            <View style={styles.sectionEditView}>
+              <Text style={styles.basicInfoTitle}>Note</Text>
+              {editMembership && (
+                <TouchableWithoutFeedback
+                  onPress={() =>
+                    navigation.navigate('EditClubNotesScreen', {
+                      memberInfo: memberDetail,
+                    })
+                  }>
+                  <Image source={images.editSection} style={styles.editImage} />
+                </TouchableWithoutFeedback>
+              )}
+            </View>
+            <Text style={styles.describeText} numberOfLines={50}>
+              {memberDetail?.note}
+            </Text>
+          </View>
           <ActionSheet
             ref={actionSheet}
             // title={'News Feed Post'}
@@ -477,7 +499,7 @@ const styles = StyleSheet.create({
   roleViewContainer: {
     marginTop: 20,
     marginLeft: 15,
-    marginRight: 15,
+     marginRight: 15,
     justifyContent: 'space-between',
   },
   undatedTimeText: {
@@ -512,5 +534,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     margin: 15,
     marginRight: 20,
+  },
+  describeText: {
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    marginTop: 5,
+    marginBottom: 3,
+    marginLeft: 25,
   },
 });

@@ -4,37 +4,24 @@ import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
-const TCGradientButton = ({
+const TCFollowUnfollowButton = ({
   title,
   onPress,
-  style,
-  textStyle,
+
   rightIcon,
   rightIconStyle,
-  startGradientColor = colors.orangeGradientColor,
-  endGradientColor = colors.yellowColor,
-  outerContainerStyle,
-  disabled = false,
-  isDisabled = false,
-
-  ...props
+  startGradientColor = colors.whiteColor,
+  endGradientColor = colors.whiteColor,
+  isFollowing,
 }) => (
-  <TouchableOpacity
-    disabled={disabled || isDisabled}
-    onPress={onPress}
-    style={[styles.outerContainerStyle, outerContainerStyle, props]}>
+  <TouchableOpacity onPress={onPress} style={styles.outerContainerStyle}>
     <LinearGradient
-      colors={
-        isDisabled
-          ? [colors.grayBackgroundColor, colors.grayBackgroundColor]
-          : [endGradientColor, startGradientColor]
-      }
-      style={[styles.containerStyle, style]}>
+      colors={[endGradientColor, startGradientColor]}
+      style={styles.containerStyle}>
       <Text
         style={[
           styles.buttonText,
-          {color: isDisabled ? colors.blocklightgraycolor : colors.whiteColor},
-          textStyle,
+          {color: isFollowing ? colors.lightBlackColor : colors.themeColor},
         ]}>
         {title}
       </Text>
@@ -50,7 +37,6 @@ const TCGradientButton = ({
 
 const styles = StyleSheet.create({
   outerContainerStyle: {
-    width: '92%',
     alignSelf: 'center',
     shadowColor: colors.blackColor,
     shadowOffset: {width: 0, height: 1},
@@ -60,13 +46,15 @@ const styles = StyleSheet.create({
   },
   containerStyle: {
     flexDirection: 'row',
-    height: 40,
-    borderRadius: 20,
+    borderRadius: 5,
     justifyContent: 'center',
+    margin: 0,
+    height: 24,
+    width: 80,
   },
   buttonText: {
     alignSelf: 'center',
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: fonts.RBold,
   },
   rightIconStyle: {
@@ -74,4 +62,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(TCGradientButton);
+export default memo(TCFollowUnfollowButton);

@@ -35,7 +35,7 @@ const TCRangeChart = ({
             }}
         />
           <Text style={{ ...styles.bottomText, flex: 1, textAlign: 'left' }}>
-            {`${Math.floor((100 * progressCount) / totalCount)}%`}
+            {`${Math.floor((100 * progressCount) / totalCount)}%` ?? '0%'}
           </Text>
         </View>
         <View style={{
@@ -46,7 +46,6 @@ const TCRangeChart = ({
         }}>
           <GradiantContainer
               gradiantColor={[colors.veryLightGray, colors.veryLightGray]}
-
               style={{
                 borderTopRightRadius: 15,
                 borderBottomRightRadius: 15,

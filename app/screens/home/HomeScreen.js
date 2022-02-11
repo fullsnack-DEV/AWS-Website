@@ -142,7 +142,7 @@ import TCGameCard from '../../components/TCGameCard';
 import * as settingUtils from '../challenge/manageChallenge/settingUtility';
 import {getCalendarIndex, getGameIndex} from '../../api/elasticSearch';
 // import { getSetting } from '../challenge/manageChallenge/settingUtility';
-
+let entityObject = {};
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews'];
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews'];
 
@@ -502,6 +502,7 @@ const HomeScreen = ({navigation, route}) => {
         Alert.alert(strings.alertmessagetitle, error.message);
       }, 10);
     });
+    
   }, [authContext.entity, route?.params]);
 
   useEffect(() => {
@@ -564,7 +565,10 @@ const HomeScreen = ({navigation, route}) => {
           userDetails.joined_teams = res2.payload.teams;
           userDetails.joined_clubs = res2.payload.clubs;
         }
-        setCurrentUserData({...userDetails});
+
+        
+          setCurrentUserData({...userDetails});
+          entityObject = userDetails;
         setIsClubHome(false);
         setIsTeamHome(false);
         setIsUserHome(true);
@@ -711,7 +715,8 @@ const HomeScreen = ({navigation, route}) => {
       }
       Promise.all(promises)
         .then(([res1, res2, res3]) => {
-          const groupDetails = res1.payload;
+          const groupDetails = {...res1.payload};
+          setCurrentUserData(res1.payload);
 
           console.log('res1:::=>', res1.payload);
           console.log('res2:::=>', res2.payload);
@@ -739,6 +744,9 @@ const HomeScreen = ({navigation, route}) => {
             groupDetails.joined_teams = res3.payload;
             console.log('Club teams list:=>', res3);
           }
+
+          console.log('groupDetailsgroupDetailsgroupDetails::',groupDetails);
+          entityObject = groupDetails;
           setCurrentUserData(groupDetails);
           setIsClubHome(clubHome);
           setIsTeamHome(teamHome);
@@ -821,7 +829,10 @@ const HomeScreen = ({navigation, route}) => {
   const callFollowUser = async () => {
     currentUserData.is_following = true;
     currentUserData.follower_count += 1;
-    setCurrentUserData({...currentUserData});
+    entityObject = currentUserData;
+
+      setCurrentUserData({...currentUserData});
+ 
 
     const params = {
       entity_type: 'player',
@@ -834,7 +845,9 @@ const HomeScreen = ({navigation, route}) => {
         console.log('callFollowUser error with userID', error, userID);
         currentUserData.is_following = false;
         currentUserData.follower_count -= 1;
-        setCurrentUserData({...currentUserData});
+        entityObject = currentUserData;
+
+          setCurrentUserData({...currentUserData});
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -846,6 +859,8 @@ const HomeScreen = ({navigation, route}) => {
     if (currentUserData.follower_count > 0) {
       currentUserData.follower_count -= 1;
     }
+    entityObject = currentUserData;
+
     setCurrentUserData({...currentUserData});
 
     const params = {
@@ -859,8 +874,10 @@ const HomeScreen = ({navigation, route}) => {
         console.log('callUnfollowUser error with userID', error, userID);
         currentUserData.is_following = true;
         currentUserData.follower_count += 1;
-        setCurrentUserData({...currentUserData});
-        setTimeout(() => {
+        entityObject = currentUserData;
+
+          setCurrentUserData({...currentUserData});
+              setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
       });
@@ -891,8 +908,10 @@ const HomeScreen = ({navigation, route}) => {
   const callFollowGroup = async (silentlyCall = false) => {
     currentUserData.is_following = true;
     currentUserData.follower_count += 1;
-    setCurrentUserData({...currentUserData});
+    entityObject = currentUserData;
 
+      setCurrentUserData({...currentUserData});
+   
     const params = {
       entity_type: currentUserData.entity_type,
     };
@@ -904,8 +923,10 @@ const HomeScreen = ({navigation, route}) => {
         console.log('callFollowGroup error with userID', error, userID);
         currentUserData.is_following = false;
         currentUserData.follower_count -= 1;
-        setCurrentUserData({...currentUserData});
-        if (silentlyCall === false) {
+        entityObject = currentUserData;
+
+          setCurrentUserData({...currentUserData});
+               if (silentlyCall === false) {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, error.message);
           }, 10);
@@ -918,8 +939,10 @@ const HomeScreen = ({navigation, route}) => {
     if (currentUserData.follower_count > 0) {
       currentUserData.follower_count -= 1;
     }
-    setCurrentUserData({...currentUserData});
+    entityObject = currentUserData;
 
+      setCurrentUserData({...currentUserData});
+  
     const params = {
       entity_type: currentUserData.entity_type,
     };
@@ -931,8 +954,10 @@ const HomeScreen = ({navigation, route}) => {
         console.log('callUnfollowGroup error with userID', error, userID);
         currentUserData.is_following = true;
         currentUserData.follower_count += 1;
-        setCurrentUserData({...currentUserData});
-        setTimeout(() => {
+        entityObject = currentUserData;
+
+          setCurrentUserData({...currentUserData});
+             setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
       });
@@ -944,8 +969,10 @@ const HomeScreen = ({navigation, route}) => {
     if (currentUserData.is_following === false) {
       callFollowGroup(true);
     }
-    setCurrentUserData({...currentUserData});
-    const params = {};
+    entityObject = currentUserData;
+
+      setCurrentUserData({...currentUserData});
+        const params = {};
     joinTeam(params, userID, authContext)
       .then(async (response) => {
         console.log('user join group');
@@ -965,8 +992,10 @@ const HomeScreen = ({navigation, route}) => {
         console.log('userJoinGroup error with userID', error, userID);
         currentUserData.is_joined = false;
         currentUserData.member_count -= 1;
-        setCurrentUserData({...currentUserData});
-        setTimeout(() => {
+        entityObject = currentUserData;
+
+          setCurrentUserData({...currentUserData});
+              setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
       });
@@ -977,8 +1006,10 @@ const HomeScreen = ({navigation, route}) => {
     if (currentUserData.member_count > 0) {
       currentUserData.member_count -= 1;
     }
-    setCurrentUserData({...currentUserData});
-    const params = {};
+    entityObject = currentUserData;
+
+      setCurrentUserData({...currentUserData});
+     const params = {};
     leaveTeam(params, userID, authContext)
       .then(() => {
         console.log('user leave group');
@@ -987,8 +1018,10 @@ const HomeScreen = ({navigation, route}) => {
         console.log('userLeaveGroup error with userID', error, userID);
         currentUserData.is_joined = true;
         currentUserData.member_count += 1;
-        setCurrentUserData({...currentUserData});
-        setTimeout(() => {
+        entityObject = currentUserData;
+
+          setCurrentUserData({...currentUserData});
+                  setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
       });
@@ -1025,8 +1058,10 @@ const HomeScreen = ({navigation, route}) => {
     } else {
       currentUserData.joined_teams = [e.obj];
     }
-    setCurrentUserData({...currentUserData});
-    joinTeam({}, userID, authContext)
+    entityObject = currentUserData;
+
+      setCurrentUserData({...currentUserData});
+        joinTeam({}, userID, authContext)
       .then(async (response) => {
         console.log('club join');
         const entity = authContext.entity;
@@ -1056,8 +1091,10 @@ const HomeScreen = ({navigation, route}) => {
       .finally(() => {
         authContext.setEntity({...e});
         Utility.setStorage('authContextEntity', {...e});
-        setCurrentUserData({...currentUserData});
-      });
+        entityObject = currentUserData;
+
+          setCurrentUserData({...currentUserData});
+            });
   };
 
   const onMessageButtonPress = (user) => {
@@ -1096,8 +1133,10 @@ const HomeScreen = ({navigation, route}) => {
         (team) => team.group_id !== e.uid,
       );
     }
-    setCurrentUserData({...currentUserData});
-    const params = {};
+    entityObject = currentUserData;
+
+      setCurrentUserData({...currentUserData});
+       const params = {};
     leaveTeam(params, userID, authContext)
       .then(() => {
         console.log('club leave');
@@ -1112,8 +1151,10 @@ const HomeScreen = ({navigation, route}) => {
         } else {
           currentUserData.joined_teams = [e.obj];
         }
-        setCurrentUserData({...currentUserData});
-        setTimeout(() => {
+        entityObject = currentUserData;
+
+          setCurrentUserData({...currentUserData});
+             setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
       });
@@ -2638,10 +2679,9 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const moveToStats = () => {
-    console.log('move to EntityStatScreen',currentUserData);
+    console.log('move to EntityStatScreen',userID);
     navigation.navigate('EntityStatScreen', {
-      userID,
-      currentUserData,
+     entityData:  entityObject,
     });
   };
 
@@ -3050,7 +3090,7 @@ const HomeScreen = ({navigation, route}) => {
       isTeamHome &&
       authContext.entity.role === 'team' &&
       authContext.entity.obj.sport.toLowerCase() ===
-        currentUserData.sport.toLowerCase()
+        currentUserData?.sport?.toLowerCase()
     ) {
       return (
         <View style={styles.challengeButtonStyle}>
@@ -4353,7 +4393,12 @@ const HomeScreen = ({navigation, route}) => {
                         changedata.referee_data = res.payload.referee_data;
                         changedata.gender = res.payload.gender;
                         changedata.birthday = res.payload.birthday;
-                        setCurrentUserData(changedata);
+
+                        entityObject = changedata;
+
+                          setCurrentUserData(changedata);
+                       
+
 
                         if (res.payload.referee_data) {
                           res.payload.referee_data.map((refereeItem) => {

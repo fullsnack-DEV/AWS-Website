@@ -18,6 +18,7 @@ function TCTextField({
   height = 40,
   multiline = false,
   leftView,
+  editable = true,
   ...otherProps
 }) {
   return (
@@ -27,6 +28,8 @@ function TCTextField({
       placeholder={ placeholder }
       placeholderTextColor={ placeholderTextColor }
       autoCapitalize={'none'}
+      autoCorrect={false}
+      editable={editable}
       secureTextEntry={ secureText }
       keyboardType={ keyboardType }
       multiline={multiline}

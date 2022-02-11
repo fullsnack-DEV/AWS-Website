@@ -156,11 +156,12 @@ export default function EditMemberInfoScreen({ navigation, route }) {
         </TouchableOpacity>
       </View>
 
-      <View>
+      {memberInfo?.connected ? <Text style={styles.fixedNameText}>{`${memberInfo.first_name} ${memberInfo.last_name}`}</Text> 
+      : <View>
         <TCLable title={'Name'} required={true}/>
         <TCTextField value={memberInfo.first_name} onChangeText={(text) => setMemberInfo({ ...memberInfo, first_name: text })} placeholder={strings.firstName}/>
         <TCTextField value={memberInfo.last_name} onChangeText={(text) => setMemberInfo({ ...memberInfo, last_name: text })} placeholder={strings.lastName} style={{ marginTop: 12 }}/>
-      </View>
+      </View>}
 
       <ActionSheet
                   ref={actionSheet}
@@ -222,4 +223,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 10,
   },
+  fixedNameText:{
+    marginTop:10,
+    textAlign:'center',
+    fontSize:20,
+    fontFamily:fonts.RMedium,
+    color:colors.lightBlackColor
+  }
 });
