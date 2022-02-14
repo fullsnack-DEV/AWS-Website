@@ -521,7 +521,8 @@ const PlayInModule = ({
                     onClose();
                     navigation.navigate('ChallengeScreen', {
                       setting: obj,
-                      sportName: currentUserData.sport,
+                      sportName: playInObject.sport,
+                      sportType: playInObject.sport_type,
                       groupObj: currentUserData,
                     });
                   } else {
@@ -571,9 +572,11 @@ const PlayInModule = ({
                     obj?.game_type
                   ) {
                     onClose();
+                    console.log('currentUserData->',playInObject);
                     navigation.navigate('InviteChallengeScreen', {
                       setting: obj,
-                      sportName: currentUserData.sport,
+                      sportName: playInObject.sport,
+                      sportType: playInObject.sport_type,
                       groupObj: currentUserData,
                     });
                   } else {
