@@ -100,7 +100,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
   const [loadMore, setLoadMore] = useState(false);
 
-  const [pageSize] = useState(1);
+  const [pageSize] = useState(10);
   const [pageFrom, setPageFrom] = useState(0);
   const [from, setFrom] = useState(0);
 
@@ -381,7 +381,6 @@ export default function EntitySearchScreen({navigation, route}) {
           'referee_data.setting.game_fee.fee': {
             gte: Number(refereeFilters.fee.split('-')[0]),
             lte: Number(refereeFilters.fee.split('-')[1]),
-            
           },
         },
       });
@@ -453,7 +452,6 @@ export default function EntitySearchScreen({navigation, route}) {
           'scorekeeper_data.setting.game_fee.fee': {
             gte: Number(scoreKeeperFilters.fee.split('-')[0]),
             lte: Number(scoreKeeperFilters.fee.split('-')[1]),
-           
           },
         },
       });
@@ -522,7 +520,6 @@ export default function EntitySearchScreen({navigation, route}) {
           'setting.game_fee.fee': {
             gte: Number(teamFilters.fee.split('-')[0]),
             lte: Number(teamFilters.fee.split('-')[1]),
-            
           },
         },
       });
@@ -595,7 +592,6 @@ export default function EntitySearchScreen({navigation, route}) {
           'setting.game_fee.fee': {
             gte: Number(clubFilters.fee.split('-')[0]),
             lte: Number(clubFilters.fee.split('-')[1]),
-           
           },
         },
       });

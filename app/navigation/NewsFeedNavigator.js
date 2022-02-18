@@ -4,7 +4,6 @@ import {createStackNavigator} from '@react-navigation/stack';
 import FeedsScreen from '../screens/newsfeeds/FeedsScreen';
 import NewsFeedVideoPlayer from '../screens/newsfeeds/NewsFeedVideoPlayer';
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
-import SearchScreen from '../screens/search/SearchScreen';
 
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import FullVideoScreen from '../screens/newsfeeds/FullVideoScreen';
@@ -107,23 +106,6 @@ const NewsFeedNavigator = () => (
       component={WritePostScreen}
       options={{
         title: 'Write Post',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-    <Stack.Screen
-      name="SearchScreen"
-      component={SearchScreen}
-      options={{
-        title: 'Search',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -326,21 +308,21 @@ const NewsFeedNavigator = () => (
       }}
     />
     <Stack.Screen
-        name="RespondForInviteScreen"
-        component={ RespondForInviteScreen}
-        options={ {
-          title: 'Respond',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
+      name="RespondForInviteScreen"
+      component={RespondForInviteScreen}
+      options={{
+        title: 'Respond',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="EntityGallaryScreen"
       component={EntityGallaryScreen}
@@ -1280,21 +1262,21 @@ const NewsFeedNavigator = () => (
       }}
     />
     <Stack.Screen
-            name="ScorekeeperReservationScreen"
-            component={ScorekeeperReservationScreen}
-            options={{
-              title: 'Scorekeeper Reservation',
-              headerTintColor: colors.blackColor,
-              headerTitleStyle: {
-                fontWeight: '500',
-              },
-              headerStyle: {
-                backgroundColor: colors.whiteColor,
-                borderBottomColor: colors.grayColor,
-                borderBottomWidth: 0.3,
-              },
-            }}
-        />
+      name="ScorekeeperReservationScreen"
+      component={ScorekeeperReservationScreen}
+      options={{
+        title: 'Scorekeeper Reservation',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
 
     <Stack.Screen
       name="JoinedTeamsScreen"
