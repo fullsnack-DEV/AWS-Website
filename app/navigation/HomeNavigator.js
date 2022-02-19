@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { createStackNavigator } from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
 
 import HomeScreen from '../screens/home/HomeScreen';
 import GroupListScreen from '../screens/home/GroupListScreen';
@@ -183,7 +183,8 @@ import LookingForSettingScreen from '../screens/home/playInModule/LookingForSett
 import SportActivityScreen from '../screens/home/SportActivityScreen';
 import SportActivityTagScreen from '../screens/home/SportActivityTagScreen';
 import DeactivateSportScreen from '../components/Home/DeactivateSportScreen';
-import SearchScreen from '../screens/search/SearchScreen';
+import EntitySearchScreen from '../screens/EntitySearchScreen';
+
 import EntityInfoScreen from '../screens/home/EntityInfoScreen';
 import EntityScoreboardScreen from '../screens/home/EntityScoreboardScreen';
 import EntityGallaryScreen from '../screens/home/EntityGallaryScreen';
@@ -206,7 +207,7 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
-      options={ { headerShown: false } }
+      options={{headerShown: false}}
     />
 
     <Stack.Screen
@@ -472,21 +473,21 @@ const HomeNavigator = () => (
       }}
     />
     <Stack.Screen
-        name="RespondForInviteScreen"
-        component={ RespondForInviteScreen}
-        options={ {
-          title: 'Respond',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
+      name="RespondForInviteScreen"
+      component={RespondForInviteScreen}
+      options={{
+        title: 'Respond',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="EntityScoreboardScreen"
       component={EntityScoreboardScreen}
@@ -1179,37 +1180,37 @@ const HomeNavigator = () => (
       }}
     />
     <Stack.Screen
-            name="RefereeApprovalScreen"
-            component={RefereeApprovalScreen}
-            options={{
-              title: 'Referee Approval Request',
-              headerTintColor: colors.blackColor,
-              headerTitleStyle: {
-                fontWeight: '500',
-              },
-              headerStyle: {
-                backgroundColor: colors.whiteColor,
-                borderBottomColor: colors.grayColor,
-                borderBottomWidth: 0.3,
-              },
-            }}
-        />
+      name="RefereeApprovalScreen"
+      component={RefereeApprovalScreen}
+      options={{
+        title: 'Referee Approval Request',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
-            name="ScorekeeperApprovalScreen"
-            component={ScorekeeperApprovalScreen}
-            options={{
-              title: 'Scorekeeper Approval Request',
-              headerTintColor: colors.blackColor,
-              headerTitleStyle: {
-                fontWeight: '500',
-              },
-              headerStyle: {
-                backgroundColor: colors.whiteColor,
-                borderBottomColor: colors.grayColor,
-                borderBottomWidth: 0.3,
-              },
-            }}
-        />
+      name="ScorekeeperApprovalScreen"
+      component={ScorekeeperApprovalScreen}
+      options={{
+        title: 'Scorekeeper Approval Request',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="GroupSettingPrivacyScreen"
       component={GroupSettingPrivacyScreen}
@@ -1326,7 +1327,7 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="InvitationSentScreen"
       component={InvitationSentScreen}
-      options={{ headerShown: false }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="UserNotFoundScreen"
@@ -1915,7 +1916,11 @@ const HomeNavigator = () => (
         },
       }}
     />
-    <Stack.Screen name={'FeedViewScreen'} component={FeedViewScreen} options={{ headerShown: false }} />
+    <Stack.Screen
+      name={'FeedViewScreen'}
+      component={FeedViewScreen}
+      options={{headerShown: false}}
+    />
     <Stack.Screen
       name="AlterRefereeScreen"
       component={AlterRefereeScreen}
@@ -1949,72 +1954,72 @@ const HomeNavigator = () => (
       }}
     />
     <Stack.Screen
-          name="RefereeAgreementScreen"
-          component={RefereeAgreementScreen}
-          options={{
-              title: 'Challenge',
-              headerTintColor: colors.blackColor,
-              headerTitleStyle: {
-                  fontWeight: '500',
-              },
-              headerStyle: {
-                  backgroundColor: colors.whiteColor,
-                  borderBottomColor: colors.grayColor,
-                  borderBottomWidth: 0.3,
-              },
-          }}
-      />
+      name="RefereeAgreementScreen"
+      component={RefereeAgreementScreen}
+      options={{
+        title: 'Challenge',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
 
     <Stack.Screen
-          name="ScorekeeperAgreementScreen"
-          component={ScorekeeperAgreementScreen}
-          options={{
-              title: 'Challenge',
-              headerTintColor: colors.blackColor,
-              headerTitleStyle: {
-                  fontWeight: '500',
-              },
-              headerStyle: {
-                  backgroundColor: colors.whiteColor,
-                  borderBottomColor: colors.grayColor,
-                  borderBottomWidth: 0.3,
-              },
-          }}
-      />
+      name="ScorekeeperAgreementScreen"
+      component={ScorekeeperAgreementScreen}
+      options={{
+        title: 'Challenge',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
 
     <Stack.Screen
-          name="RefereeInviteAgreementScreen"
-          component={RefereeInviteAgreementScreen}
-          options={{
-              title: 'Invite to Challenge',
-              headerTintColor: colors.blackColor,
-              headerTitleStyle: {
-                  fontWeight: '500',
-              },
-              headerStyle: {
-                  backgroundColor: colors.whiteColor,
-                  borderBottomColor: colors.grayColor,
-                  borderBottomWidth: 0.3,
-              },
-          }}
-      />
+      name="RefereeInviteAgreementScreen"
+      component={RefereeInviteAgreementScreen}
+      options={{
+        title: 'Invite to Challenge',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
 
     <Stack.Screen
-          name="ScorekeeperInviteAgreementScreen"
-          component={ScorekeeperInviteAgreementScreen}
-          options={{
-              title: 'Invite to Challenge',
-              headerTintColor: colors.blackColor,
-              headerTitleStyle: {
-                  fontWeight: '500',
-              },
-              headerStyle: {
-                  backgroundColor: colors.whiteColor,
-                  borderBottomColor: colors.grayColor,
-                  borderBottomWidth: 0.3,
-              },
-          }}
-      />
+      name="ScorekeeperInviteAgreementScreen"
+      component={ScorekeeperInviteAgreementScreen}
+      options={{
+        title: 'Invite to Challenge',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="CurrencySettingScreen"
       component={CurrencySettingScreen}
@@ -2126,12 +2131,12 @@ const HomeNavigator = () => (
     />
 
     <Stack.Screen
-          name="LeaveReviewTennis"
-          component={ LeaveReviewTennis }
-          options={ {
-              headerShown: false,
-          }}
-      />
+      name="LeaveReviewTennis"
+      component={LeaveReviewTennis}
+      options={{
+        headerShown: false,
+      }}
+    />
     {/* Scorekeeper screens */}
     <Stack.Screen
       name="ScorekeeperReservationScreen"
@@ -2297,7 +2302,7 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="ReservationNavigator"
       component={ReservationNavigator}
-      options={{ headerShown: false }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen
@@ -2448,15 +2453,15 @@ const HomeNavigator = () => (
       }}
     />
     <Stack.Screen
-         name="ReservationAcceptDeclineScreen"
-         component={ReservationAcceptDeclineScreen}
-         options={{
-           headerShown: false,
-         }}
-        />
+      name="ReservationAcceptDeclineScreen"
+      component={ReservationAcceptDeclineScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
     <Stack.Screen
-      name="SearchScreen"
-      component={SearchScreen}
+      name="EntitySearchScreen"
+      component={EntitySearchScreen}
       options={{
         title: 'Search',
         headerTintColor: colors.blackColor,

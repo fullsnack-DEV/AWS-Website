@@ -67,13 +67,13 @@ import {getGameHomeScreen} from '../../utils/gameUtils';
 const defaultPageSize = 5;
 export default function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
-  const galleryRef = useRef();
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
   const [sports, setSports] = useState([]);
+  const [customSports, setCustomSports] = useState([]);
 
   const [locationPopup, setLocationPopup] = useState(false);
   const [selectedLocationOption, setSelectedLocationOption] = useState();
@@ -110,6 +110,19 @@ export default function LocalHomeScreen({navigation, route}) {
 
   console.log('authContextttt::=>', authContext.entity.role);
 
+  useEffect(() => {
+    getSportsList(authContext).then((res) => {
+      const sport = [];
+      res.payload.map((item) =>
+        sport.push({
+          label: item?.sport_name,
+          value: item?.sport_name.toLowerCase(),
+        }),
+      );
+      setCustomSports([...sport]);
+    });
+  }, [authContext]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
@@ -139,11 +152,8 @@ export default function LocalHomeScreen({navigation, route}) {
         <View style={styles.rightHeaderView}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('SearchScreen', {
-                isAdmin: true,
-                galleryRef,
-                entityType: authContext.entity?.role,
-                entityID: authContext.entity?.uid,
+              navigation.navigate('EntitySearchScreen', {
+                sportsList: customSports,
               });
             }}>
             <Image source={images.home_search} style={styles.townsCupIcon} />
@@ -354,7 +364,6 @@ export default function LocalHomeScreen({navigation, route}) {
                   must: [
                     {match: {'setting.availibility': 'On'}},
                     {term: {entity_type: 'team'}},
-                    
                   ],
                 },
               },
@@ -379,7 +388,6 @@ export default function LocalHomeScreen({navigation, route}) {
                         },
                       },
                     },
-                    
                   ],
                 },
               },

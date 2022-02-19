@@ -8,10 +8,8 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import {
- StyleSheet, View, Alert, Text,
-} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {StyleSheet, View, Alert, Text} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
 import NewsFeedList from './NewsFeedList';
@@ -29,13 +27,14 @@ import colors from '../../Constants/Colors';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import AuthContext from '../../auth/context';
 import NewsFeedShimmer from '../../components/shimmer/newsFeed/NewsFeedShimmer';
-import { ImageUploadContext } from '../../context/GetContexts';
+import {ImageUploadContext} from '../../context/GetContexts';
 import Header from '../../components/Home/Header';
 import fonts from '../../Constants/Fonts';
-import { widthPercentageToDP as wp } from '../../utils';
+import {widthPercentageToDP as wp} from '../../utils';
 import strings from '../../Constants/String';
+import {getShortsList, getSportsList} from '../../api/Games'; // getRecentGameDetails
 
-const FeedsScreen = ({ navigation }) => {
+const FeedsScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
   const imageUploadContext = useContext(ImageUploadContext);
   const [postData, setPostData] = useState([]);
@@ -49,6 +48,7 @@ const FeedsScreen = ({ navigation }) => {
   const [feedCalled, setFeedCalled] = useState(false);
   const galleryRef = useRef();
   const [isAdmin, setIsAdmin] = useState(true);
+  const [sports, setSports] = useState([]);
 
   useEffect(() => {
     setFirstTimeLoading(true);
@@ -65,13 +65,22 @@ const FeedsScreen = ({ navigation }) => {
         setTimeout(() => Alert.alert('', e.message), 100);
       });
   }, [authContext, authContext.entity]);
+  useEffect(() => {
+    getSportsList(authContext).then((res) => {
+      const sport = [];
+      res.payload.map((item) =>
+        sport.push({
+          label: item?.sport_name,
+          value: item?.sport_name.toLowerCase(),
+        }),
+      );
+      setSports([...sport]);
+    });
+  }, [authContext]);
 
   const onThreeDotPress = useCallback(() => {
-    navigation.navigate('SearchScreen', {
-      isAdmin,
-      galleryRef,
-      entityType: authContext.entity?.role,
-      entityID: authContext.entity?.uid,
+    navigation.navigate('EntitySearchScreen', {
+      sportsList: sports,
     });
   }, [navigation]);
 
@@ -126,8 +135,8 @@ const FeedsScreen = ({ navigation }) => {
 
   const topRightButton = useMemo(
     () => (
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <TouchableOpacity style={{ marginRight: 10 }} onPress={onFeedPlusPress}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <TouchableOpacity style={{marginRight: 10}} onPress={onFeedPlusPress}>
           <FastImage
             source={images.feedPlusIcon}
             resizeMode={'contain'}
@@ -158,7 +167,6 @@ const FeedsScreen = ({ navigation }) => {
           setPostData([...pData]);
         })
         .catch((e) => {
-      
           Alert.alert(strings.alertmessagetitle, e.messages);
         });
     },
@@ -169,7 +177,7 @@ const FeedsScreen = ({ navigation }) => {
     (data, postDesc, selectEditItem, tagData, format_tagged_data) => {
       const alreadyUrlDone = [];
       const createUrlData = [];
-console.log('editPostDoneCall',editPostDoneCall);
+      console.log('editPostDoneCall', editPostDoneCall);
       if (postDesc.trim().length > 0 && data?.length === 0) {
         const dataParams = {
           activity_id: selectEditItem.id,
@@ -269,11 +277,12 @@ console.log('editPostDoneCall',editPostDoneCall);
         .then((res) => {
           const pData = _.cloneDeep(postData);
           const pIndex = pData.findIndex((pItem) => pItem?.id === item?.id);
-          const likeIndex = pData[pIndex].own_reactions?.clap?.findIndex(
+          const likeIndex =
+            pData[pIndex].own_reactions?.clap?.findIndex(
               (likeItem) => likeItem?.user_id === authContext?.entity?.uid,
             ) ?? -1;
           if (likeIndex === -1) {
-            pData[pIndex].own_reactions = { ...pData?.[pIndex]?.own_reactions };
+            pData[pIndex].own_reactions = {...pData?.[pIndex]?.own_reactions};
             pData[pIndex].own_reactions.clap = [
               ...pData?.[pIndex]?.own_reactions?.clap,
             ];
@@ -281,9 +290,10 @@ console.log('editPostDoneCall',editPostDoneCall);
             pData[pIndex].reaction_counts = {
               ...pData?.[pIndex]?.reaction_counts,
             };
-            pData[pIndex].reaction_counts.clap = pData?.[pIndex]?.reaction_counts?.clap + 1 ?? 0;
+            pData[pIndex].reaction_counts.clap =
+              pData?.[pIndex]?.reaction_counts?.clap + 1 ?? 0;
           } else {
-            pData[pIndex].own_reactions = { ...pData?.[pIndex]?.own_reactions };
+            pData[pIndex].own_reactions = {...pData?.[pIndex]?.own_reactions};
             pData[pIndex].own_reactions.clap = [
               ...pData?.[pIndex]?.own_reactions?.clap,
             ];
@@ -295,7 +305,8 @@ console.log('editPostDoneCall',editPostDoneCall);
             pData[pIndex].reaction_counts = {
               ...pData?.[pIndex]?.reaction_counts,
             };
-            pData[pIndex].reaction_counts.clap = pData?.[pIndex]?.reaction_counts?.clap - 1 ?? 0;
+            pData[pIndex].reaction_counts.clap =
+              pData?.[pIndex]?.reaction_counts?.clap - 1 ?? 0;
           }
           setPostData([...pData]);
         })
@@ -335,7 +346,7 @@ console.log('editPostDoneCall',editPostDoneCall);
         (item) => item?.id === updatedComment?.id,
       );
       if (pIndex !== -1) {
-        pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts };
+        pData[pIndex].reaction_counts = {...pData?.[pIndex]?.reaction_counts};
         pData[pIndex].reaction_counts.comment = updatedComment?.count;
         setPostData([...pData]);
       }

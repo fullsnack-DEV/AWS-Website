@@ -1,12 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Alert,
-  StyleSheet, Text,
+  StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 import firebase from '@react-native-firebase/app';
 
@@ -14,7 +18,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
 import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
-import { uploadImageOnPreSignedUrls } from '../../utils/imageAction';
+import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
@@ -25,14 +29,14 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
-import AuthContext from '../../auth/context'
+import AuthContext from '../../auth/context';
 import apiCall from '../../utils/apiCall';
-import { checkTownscupEmail, createUser } from '../../api/Users';
-import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
+import {checkTownscupEmail, createUser} from '../../api/Users';
+import {QBconnectAndSubscribe, QBlogin} from '../../utils/QuickBlox';
 
-export default function SignupScreen({ navigation }) {
-  const authContext = useContext(AuthContext)
-  const dummyAuthContext = { ...authContext }
+export default function SignupScreen({navigation}) {
+  const authContext = useContext(AuthContext);
+  const dummyAuthContext = {...authContext};
   const [fName, setFName] = useState('Kishan');
   const [lName, setLName] = useState('Makani');
   const [email, setEmail] = useState('makani20@gmail.com');
@@ -48,22 +52,28 @@ export default function SignupScreen({ navigation }) {
     if (fName === '') {
       Alert.alert('Towns Cup', 'First name cannot be blank');
       return false;
-    } if (lName === '') {
+    }
+    if (lName === '') {
       Alert.alert('Towns Cup', 'Last name cannot be blank');
       return false;
-    } if (email === '') {
+    }
+    if (email === '') {
       Alert.alert('Towns Cup', 'Email cannot be blank');
       return false;
-    } if (validateEmail(email) === false) {
+    }
+    if (validateEmail(email) === false) {
       Alert.alert('Towns Cup', 'You have entered an invalid email address!');
       return false;
-    } if (password === '') {
+    }
+    if (password === '') {
       Alert.alert('Towns Cup', 'Password cannot be blank');
       return false;
-    } if (cPassword === '') {
+    }
+    if (cPassword === '') {
       Alert.alert('Towns Cup', 'Conform password cannot be blank');
       return false;
-    } if (password !== cPassword) {
+    }
+    if (password !== cPassword) {
       Alert.alert('Towns Cup', 'Both password should be same');
       return false;
     }
@@ -81,65 +91,76 @@ export default function SignupScreen({ navigation }) {
     return false;
   };
 
-  useEffect(() => {
+  useEffect(() => {}, []);
 
-  }, [])
+  const checkUserIsRegistratedOrNotWithTownscup = () =>
+    new Promise((resolve) => {
+      checkTownscupEmail(encodeURIComponent(email))
+        .then(() => {
+          resolve(true);
+        })
+        .catch(() => {
+          resolve(false);
+        });
+    });
 
-  const checkUserIsRegistratedOrNotWithTownscup = () => new Promise((resolve) => {
-    checkTownscupEmail(encodeURIComponent(email)).then(() => {
-      resolve(true);
-    }).catch(() => {
-      resolve(false);
-    })
-  })
-
-  const checkUserIsRegistratedOrNotWithFirebase = () => new Promise((resolve, reject) => {
-    firebase.auth().fetchSignInMethodsForEmail(email).then((isAccountThereInFirebase) => {
-      if (isAccountThereInFirebase?.length > 0) {
-        resolve(isAccountThereInFirebase);
-      } else {
-        resolve(false);
-      }
-    }).catch((error) => {
-      reject(error);
-      console.log(error);
-    })
-  })
+  const checkUserIsRegistratedOrNotWithFirebase = () =>
+    new Promise((resolve, reject) => {
+      firebase
+        .auth()
+        .fetchSignInMethodsForEmail(email)
+        .then((isAccountThereInFirebase) => {
+          if (isAccountThereInFirebase?.length > 0) {
+            resolve(isAccountThereInFirebase);
+          } else {
+            resolve(false);
+          }
+        })
+        .catch((error) => {
+          reject(error);
+          console.log(error);
+        });
+    });
 
   const wholeSignUpProcessComplete = async (userData) => {
     const entity = dummyAuthContext?.entity;
     const tokenData = dummyAuthContext?.tokenData;
-    entity.auth.user = { ...userData }
-    entity.obj = { ...userData }
+    entity.auth.user = {...userData};
+    entity.obj = {...userData};
     entity.uid = userData?.user_id;
-    await Utility.setStorage('loggedInEntity', { ...entity })
-    await Utility.setStorage('authContextEntity', { ...entity })
-    await Utility.setStorage('authContextUser', { ...userData });
+    await Utility.setStorage('loggedInEntity', {...entity});
+    await Utility.setStorage('authContextEntity', {...entity});
+    await Utility.setStorage('authContextUser', {...userData});
     await authContext.setTokenData(tokenData);
-    await authContext.setUser({ ...userData });
-    await authContext.setEntity({ ...entity });
+    await authContext.setUser({...userData});
+    await authContext.setEntity({...entity});
     setloading(false);
     navigation.navigate('EmailVerificationScreen', {
       emailAddress: email,
       password,
       first_name: fName,
     });
-  }
+  };
 
   const signUpWithQB = (response) => {
-    let qbEntity = { ...dummyAuthContext.entity };
-    QBlogin(qbEntity.uid, response).then(async (res) => {
-      qbEntity = { ...qbEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
-      QBconnectAndSubscribe(qbEntity)
-      setDummyAuthContext('entity', qbEntity);
-      await wholeSignUpProcessComplete(response);
-    }).catch(async (error) => {
-      console.log('QB Login Error : ', error.message);
-      qbEntity = { ...qbEntity, QB: { connected: false } }
-      setDummyAuthContext('entity', qbEntity)
-      await wholeSignUpProcessComplete(response);
-    });
-  }
+    let qbEntity = {...dummyAuthContext.entity};
+    QBlogin(qbEntity.uid, response)
+      .then(async (res) => {
+        qbEntity = {
+          ...qbEntity,
+          QB: {...res.user, connected: true, token: res?.session?.token},
+        };
+        QBconnectAndSubscribe(qbEntity);
+        setDummyAuthContext('entity', qbEntity);
+        await wholeSignUpProcessComplete(response);
+      })
+      .catch(async (error) => {
+        console.log('QB Login Error : ', error.message);
+        qbEntity = {...qbEntity, QB: {connected: false}};
+        setDummyAuthContext('entity', qbEntity);
+        await wholeSignUpProcessComplete(response);
+      });
+  };
 
   const signUpToTownsCup = async (uploadedProfilePic) => {
     setloading(true);
@@ -151,86 +172,96 @@ export default function SignupScreen({ navigation }) {
       full_image: uploadedProfilePic?.full_image ?? '',
     };
 
-    createUser(data, dummyAuthContext).then((createdUser) => {
-      console.log('QB CreatedUser:',createdUser);
-      const authEntity = { ...dummyAuthContext.entity }
-      authEntity.obj = createdUser?.payload
-      authEntity.auth.user = createdUser?.payload
-      authEntity.role = 'user'
-      setDummyAuthContext('entity', authEntity);
-      setDummyAuthContext('user', createdUser?.payload);
-      signUpWithQB(createdUser?.payload);
-    }).catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
+    createUser(data, dummyAuthContext)
+      .then((createdUser) => {
+        console.log('QB CreatedUser:', createdUser);
+        const authEntity = {...dummyAuthContext.entity};
+        authEntity.obj = createdUser?.payload;
+        authEntity.auth.user = createdUser?.payload;
+        authEntity.role = 'user';
+        setDummyAuthContext('entity', authEntity);
+        setDummyAuthContext('user', createdUser?.payload);
+        signUpWithQB(createdUser?.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
 
   const setDummyAuthContext = (key, value) => {
-      dummyAuthContext[key] = value;
-  }
+    dummyAuthContext[key] = value;
+  };
   const saveUserDetails = async (user) => {
     if (user) {
-      user.getIdTokenResult().then(async (idTokenResult) => {
-      console.log('idTokenResult',idTokenResult);
+      user
+        .getIdTokenResult()
+        .then(async (idTokenResult) => {
+          console.log('idTokenResult', idTokenResult);
 
-        const token = {
-          token: idTokenResult.token,
-          expirationTime: idTokenResult.expirationTime,
-        };
-        const uploadImageConfig = {
-          method: 'get',
-          url: `${Config.BASE_URL}/pre-signed-url?count=2`,
-          headers: { Authorization: `Bearer ${token?.token}` },
-        }
-        const entity = {
-          auth: { user_id: user.uid },
-          uid: user.uid,
-          role: 'user',
-        };
-        setDummyAuthContext('tokenData', token)
-        if (profilePic) {
-          const apiResponse = await apiCall(uploadImageConfig);
-          const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
-          Promise.all([
-            uploadImageOnPreSignedUrls({
-              url: preSignedUrls?.[0],
-              uri: profilePic.path,
-              type: profilePic.path.split('.')[1] || 'jpeg',
-            }),
-            uploadImageOnPreSignedUrls({
-              url: preSignedUrls?.[1],
-              uri: profilePic?.path,
-              type: profilePic?.path.split('.')[1] || 'jpeg',
-            }),
-          ]).then(async ([fullImage, thumbnail]) => {
-            setDummyAuthContext('entity', entity)
-            const uploadedProfilePic = { full_image: fullImage, thumbnail }
-            await signUpToTownsCup(uploadedProfilePic);
-          }).catch(async () => {
-            setDummyAuthContext('entity', entity)
+          const token = {
+            token: idTokenResult.token,
+            expirationTime: idTokenResult.expirationTime,
+          };
+          const uploadImageConfig = {
+            method: 'get',
+            url: `${Config.BASE_URL}/pre-signed-url?count=2`,
+            headers: {Authorization: `Bearer ${token?.token}`},
+          };
+          const entity = {
+            auth: {user_id: user.uid},
+            uid: user.uid,
+            role: 'user',
+          };
+          setDummyAuthContext('tokenData', token);
+          if (profilePic) {
+            const apiResponse = await apiCall(uploadImageConfig);
+            const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
+            Promise.all([
+              uploadImageOnPreSignedUrls({
+                url: preSignedUrls?.[0],
+                uri: profilePic.path,
+                type: profilePic.path.split('.')[1] || 'jpeg',
+              }),
+              uploadImageOnPreSignedUrls({
+                url: preSignedUrls?.[1],
+                uri: profilePic?.path,
+                type: profilePic?.path.split('.')[1] || 'jpeg',
+              }),
+            ])
+              .then(async ([fullImage, thumbnail]) => {
+                setDummyAuthContext('entity', entity);
+                const uploadedProfilePic = {full_image: fullImage, thumbnail};
+                await signUpToTownsCup(uploadedProfilePic);
+              })
+              .catch(async () => {
+                setDummyAuthContext('entity', entity);
+                await signUpToTownsCup();
+              });
+          } else {
+            setDummyAuthContext('entity', entity);
             await signUpToTownsCup();
-          })
-        } else {
-          setDummyAuthContext('entity', entity)
-          await signUpToTownsCup();
-        }
-      }).catch(() => setloading(false));
+          }
+        })
+        .catch(() => setloading(false));
     }
   };
 
   const signUpWithFirebase = () => {
-    firebase.auth()
+    firebase
+      .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(async () => {
-        const signUpOnAuthChanged = firebase.auth().onAuthStateChanged((user) => {
-          if (user) {
-            user.sendEmailVerification();
-            saveUserDetails(user);
-          }
-        });
+        const signUpOnAuthChanged = firebase
+          .auth()
+          .onAuthStateChanged((user) => {
+            if (user) {
+              user.sendEmailVerification();
+              saveUserDetails(user);
+            }
+          });
         signUpOnAuthChanged();
       })
       .catch((e) => {
@@ -251,23 +282,27 @@ export default function SignupScreen({ navigation }) {
         if (e.code === 'auth/network-request-failed') {
           message = strings.networkConnectivityErrorMessage;
         }
-        if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 50);
+        if (message !== '')
+          setTimeout(() => Alert.alert('Towns Cup', message), 50);
       });
   };
 
-  const registerWithAnotherProvider = (param) => new Promise((resolve, reject) => {
-    if (param[0].includes('facebook')) {
-      // eslint-disable-next-line prefer-promise-reject-errors
-      reject({ provider: 'facebook' });
-    } if (param[0].includes('google')) {
-      // eslint-disable-next-line prefer-promise-reject-errors
-      reject({ provider: 'google' });
-    } if (param[0].includes('apple.com')) {
-      // eslint-disable-next-line prefer-promise-reject-errors
-      reject({ provider: 'apple' });
-    }
-    resolve(true);
-  })
+  const registerWithAnotherProvider = (param) =>
+    new Promise((resolve, reject) => {
+      if (param[0].includes('facebook')) {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject({provider: 'facebook'});
+      }
+      if (param[0].includes('google')) {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject({provider: 'google'});
+      }
+      if (param[0].includes('apple.com')) {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject({provider: 'apple'});
+      }
+      resolve(true);
+    });
   const signupUser = () => {
     setloading(true);
     checkUserIsRegistratedOrNotWithTownscup().then((userExist) => {
@@ -275,95 +310,123 @@ export default function SignupScreen({ navigation }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert('User is already registered with townscup!');
-        }, 100)
+        }, 100);
       } else {
-        checkUserIsRegistratedOrNotWithFirebase().then((firebaseUserExist) => {
-          if (firebaseUserExist) {
-            registerWithAnotherProvider(firebaseUserExist).then(() => {
+        checkUserIsRegistratedOrNotWithFirebase()
+          .then((firebaseUserExist) => {
+            if (firebaseUserExist) {
+              registerWithAnotherProvider(firebaseUserExist)
+                .then(() => {
+                  signUpWithFirebase();
+                })
+                .catch((error) => {
+                  console.log(error);
+                  setloading(false);
+                  setTimeout(() => {
+                    Alert.alert(
+                      'Townscup',
+                      `This email is already registrated with ${error?.provider}`,
+                    );
+                  }, 100);
+                });
+            } else {
               signUpWithFirebase();
-            }).catch((error) => {
-              console.log(error)
-              setloading(false)
-              setTimeout(() => {
-                Alert.alert('Townscup', `This email is already registrated with ${error?.provider}`)
-              }, 100)
-            })
-          } else {
+            }
+          })
+          .catch(() => {
             signUpWithFirebase();
-          }
-        }).catch(() => {
-          signUpWithFirebase();
-        });
+          });
       }
-    })
-  }
+    });
+  };
   const hideShowPassword = () => {
     setHidePassword(!hidePassword);
   };
+
   return (
     <LinearGradient
-          colors={[colors.themeColor1, colors.themeColor3]}
-          style={styles.mainContainer}>
+      colors={[colors.themeColor1, colors.themeColor3]}
+      style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
+      <FastImage
+        resizeMode={'stretch'}
+        style={styles.background}
+        source={images.loginBg}
+      />
       <TCKeyboardView>
-        <View style={{ marginVertical: 20 }}>
+        <View style={{marginVertical: 20}}>
           <FastImage
-                  source={profilePic?.path ? { uri: profilePic?.path } : images.profilePlaceHolder}
-                  style={styles.profile}
-              />
+            source={
+              profilePic?.path
+                ? {uri: profilePic?.path}
+                : images.profilePlaceHolder
+            }
+            style={styles.profile}
+          />
           <TouchableOpacity
-                  style={styles.profileCameraButtonStyle}
-                  onPress={() => {
-                    ImagePicker.openPicker({
-                      width: 300,
-                      height: 400,
-                      cropping: true,
-                      cropperCircleOverlay: true,
-                    }).then((pickImages) => {
-                      setProfilePic(pickImages);
-                    });
-                  }}>
+            style={styles.profileCameraButtonStyle}
+            onPress={() => {
+              ImagePicker.openPicker({
+                width: 300,
+                height: 400,
+                cropping: true,
+                cropperCircleOverlay: true,
+              }).then((pickImages) => {
+                setProfilePic(pickImages);
+              });
+            }}>
             <FastImage
-                    source={images.certificateUpload}
-                    style={styles.cameraIcon}
-                />
+              source={images.certificateUpload}
+              style={styles.cameraIcon}
+            />
           </TouchableOpacity>
         </View>
         <TCTextField
-                placeholderTextColor={colors.darkYellowColor}
-                style={styles.textFieldStyle}
-                placeholder={strings.fnameText}
-                onChangeText={(text) => setFName(text)}
-                value={fName}
-            />
+          placeholderTextColor={colors.darkYellowColor}
+          style={styles.textFieldStyle}
+          placeholder={strings.fnameText}
+          value={fName}
+          onChangeText={(name) => {
+            if (Utility.validatedName(name)) {
+              setFName(name);
+            }
+          }}
+          //  onChangeText={(text) => setFName(text)}
+        />
         <TCTextField
-                placeholderTextColor={colors.darkYellowColor}
-                style={styles.textFieldStyle}
-                placeholder={strings.lnameText}
-                onChangeText={(text) => setLName(text)}
-                value={lName}
-            />
+          placeholderTextColor={colors.darkYellowColor}
+          style={styles.textFieldStyle}
+          placeholder={strings.lnameText}
+          // onChangeText={(text) => setLName(text)}
+          onChangeText={(lastName) => {
+            if (Utility.validatedName(lastName) === true) {
+              setLName(lastName);
+            }
+          }}
+          value={lName}
+        />
         <TCTextField
-                placeholderTextColor={colors.darkYellowColor}
-                style={styles.textFieldStyle}
-                placeholder={strings.emailPlaceHolder}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                onChangeText={(text) => setEmail(text)}
-                value={email}
-            />
+          placeholderTextColor={colors.darkYellowColor}
+          style={styles.textFieldStyle}
+          placeholder={strings.emailPlaceHolder}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          onChangeText={(text) => setEmail(text)}
+          value={email}
+        />
         <View style={styles.passwordView}>
           <TextInput
-                  style={{ ...styles.textInput, zIndex: 100 }}
-                  placeholder={strings.passwordText}
-                  onChangeText={(text) => setPassword(text)}
-                  value={password}
-                  placeholderTextColor={colors.darkYellowColor}
-                  secureTextEntry={hidePassword}
-                  keyboardType={'default'}
-              />
-          <TouchableOpacity onPress={() => hideShowPassword()} style={{ alignItems: 'center', justifyContent: 'center' }}>
+            style={{...styles.textInput, zIndex: 100}}
+            placeholder={strings.passwordText}
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+            placeholderTextColor={colors.darkYellowColor}
+            secureTextEntry={hidePassword}
+            keyboardType={'default'}
+          />
+          <TouchableOpacity
+            onPress={() => hideShowPassword()}
+            style={{alignItems: 'center', justifyContent: 'center'}}>
             {hidePassword ? (
               <Text style={styles.passwordEyes}>SHOW</Text>
             ) : (
@@ -374,16 +437,18 @@ export default function SignupScreen({ navigation }) {
 
         <View style={styles.passwordView}>
           <TextInput
-              autoCapitalize="none"
-              style={{ ...styles.textInput, zIndex: 100 }}
-              placeholder={strings.confirmPasswordText}
-              onChangeText={setCPassword}
-              value={cPassword}
-              placeholderTextColor={colors.darkYellowColor}
-              secureTextEntry={hidePassword}
-              keyboardType={'default'}
+            autoCapitalize="none"
+            style={{...styles.textInput, zIndex: 100}}
+            placeholder={strings.confirmPasswordText}
+            onChangeText={setCPassword}
+            value={cPassword}
+            placeholderTextColor={colors.darkYellowColor}
+            secureTextEntry={hidePassword}
+            keyboardType={'default'}
           />
-          <TouchableOpacity onPress={() => hideShowPassword()} style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <TouchableOpacity
+            onPress={() => hideShowPassword()}
+            style={{alignItems: 'center', justifyContent: 'center'}}>
             {hidePassword ? (
               <Text style={styles.passwordEyes}>SHOW</Text>
             ) : (
@@ -393,18 +458,18 @@ export default function SignupScreen({ navigation }) {
         </View>
 
         <TCButton
-                title={strings.signUpCapitalText}
-                extraStyle={{ marginTop: hp('10%') }}
-                onPress={() => {
-                  if (validate()) {
-                    if (authContext.networkConnected) {
-                      signupUser();
-                    } else {
-                      authContext.showNetworkAlert();
-                    }
-                  }
-                }}
-            />
+          title={strings.signUpCapitalText}
+          extraStyle={{marginTop: hp('10%')}}
+          onPress={() => {
+            if (validate()) {
+              if (authContext.networkConnected) {
+                signupUser();
+              } else {
+                authContext.showNetworkAlert();
+              }
+            }
+          }}
+        />
       </TCKeyboardView>
     </LinearGradient>
   );
@@ -436,7 +501,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     width: wp('85%'),
@@ -464,7 +529,7 @@ const styles = StyleSheet.create({
     width: wp('85%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
   },

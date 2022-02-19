@@ -835,7 +835,8 @@ export const getSportImage = (sportName, type, authContext) => {
         (obj) => obj.sport === sportName,
       )[0];
       return tempObj?.referee_image;
-    }if(type === 'scorekeeper'){
+    }
+    if (type === 'scorekeeper') {
       const tempObj = authContext.sports.filter(
         (obj) => obj.sport === sportName,
       )[0];
@@ -946,37 +947,37 @@ export const getGamesList = async (games) => {
   }
 };
 
-export const getMaxFromRange=(max_of_array)=>{
-  if(max_of_array <= 10){
-    return 10
-  }else if(max_of_array <= 20){
-    return 20
-  }else if(max_of_array <= 30){
-    return 30
-  }else if(max_of_array <= 40){
-    return 40
-  }else if(max_of_array <= 50){
-    return 50
-  }else if(max_of_array <= 100){
-    return 100
-  }else if(max_of_array <= 200){
-    return 200
-  }else if(max_of_array <= 300){
-    return 300
-  }else if(max_of_array <= 400){
-    return 400
-  }else if(max_of_array <= 500){
-    return 500
-  }else if(max_of_array <= 600){
-    return 600
-  }else if(max_of_array <= 700){
-    return 700
-  }else if(max_of_array <= 800){
-    return 800
-  }else if(max_of_array <= 900){
-    return 900
+export const getMaxFromRange = (max_of_array) => {
+  if (max_of_array <= 10) {
+    return 10;
+  } else if (max_of_array <= 20) {
+    return 20;
+  } else if (max_of_array <= 30) {
+    return 30;
+  } else if (max_of_array <= 40) {
+    return 40;
+  } else if (max_of_array <= 50) {
+    return 50;
+  } else if (max_of_array <= 100) {
+    return 100;
+  } else if (max_of_array <= 200) {
+    return 200;
+  } else if (max_of_array <= 300) {
+    return 300;
+  } else if (max_of_array <= 400) {
+    return 400;
+  } else if (max_of_array <= 500) {
+    return 500;
+  } else if (max_of_array <= 600) {
+    return 600;
+  } else if (max_of_array <= 700) {
+    return 700;
+  } else if (max_of_array <= 800) {
+    return 800;
+  } else if (max_of_array <= 900) {
+    return 900;
   }
-}
+};
 
 export const validateEmail = (emailText) => {
   if (
@@ -987,5 +988,11 @@ export const validateEmail = (emailText) => {
     return true;
   }
 
+  return false;
+};
+export const validatedName = (name) => {
+  if (/^[a-zA-Z0-9]+$/.test(name)) {
+    return true;
+  }
   return false;
 };
