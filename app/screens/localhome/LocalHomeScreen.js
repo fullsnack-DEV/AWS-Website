@@ -67,6 +67,7 @@ import {getGameHomeScreen} from '../../utils/gameUtils';
 const defaultPageSize = 5;
 export default function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
+
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
@@ -1236,203 +1237,201 @@ export default function LocalHomeScreen({navigation, route}) {
                 />
               </View>
             )}
-            <Modal
-              onBackdropPress={() => setLocationPopup(false)}
-              backdropOpacity={1}
-              animationType="slide"
-              hasBackdrop
-              style={{
-                margin: 0,
-                backgroundColor: colors.blackOpacityColor,
-              }}
-              visible={locationPopup}>
-              <View style={styles.bottomPopupContainer}>
-                <View style={styles.viewsContainer}>
-                  <Text
-                    onPress={() => setLocationPopup(false)}
-                    style={styles.cancelText}>
-                    Cancel
-                  </Text>
-                  <Text style={styles.locationText}>Location</Text>
-                  <Text style={styles.doneText}>{'            '}</Text>
-                </View>
-                <TCThinDivider width={'100%'} marginBottom={15} />
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    // Geolocation.getCurrentPosition((info) => console.log('Location info:=>', info));
+          </ScrollView>
+        </Fragment>
+      )}
+      <Modal
+        onBackdropPress={() => setLocationPopup(false)}
+        backdropOpacity={1}
+        animationType="slide"
+        hasBackdrop
+        style={{
+          margin: 0,
+          backgroundColor: colors.blackOpacityColor,
+        }}
+        visible={locationPopup}>
+        <View style={styles.bottomPopupContainer}>
+          <View style={styles.viewsContainer}>
+            <Text
+              onPress={() => setLocationPopup(false)}
+              style={styles.cancelText}>
+              Cancel
+            </Text>
+            <Text style={styles.locationText}>Location</Text>
+            <Text style={styles.doneText}>{'            '}</Text>
+          </View>
+          <TCThinDivider width={'100%'} marginBottom={15} />
+          <TouchableWithoutFeedback
+            onPress={() => {
+              // Geolocation.getCurrentPosition((info) => console.log('Location info:=>', info));
 
-                    setSelectedLocationOption(0);
-                    navigation.setParams({locationText: null});
-                    getLocation();
-                    // setLocation('India');
+              setSelectedLocationOption(0);
+              navigation.setParams({locationText: null});
+              getLocation();
+              // setLocation('India');
 
-                    setTimeout(() => {
-                      setLocationPopup(false);
-                    }, 300);
-                  }}>
-                  {selectedLocationOption === 0 ? (
-                    <LinearGradient
-                      colors={[colors.yellowColor, colors.orangeGradientColor]}
-                      style={styles.backgroundView}>
-                      <Text
-                        style={[
-                          styles.curruentLocationText,
-                          {color: colors.whiteColor},
-                        ]}>
-                        Current city
-                      </Text>
-                    </LinearGradient>
-                  ) : (
-                    <View style={styles.backgroundView}>
-                      <Text style={styles.curruentLocationText}>
-                        Current city
-                      </Text>
-                    </View>
-                  )}
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    setSelectedLocationOption(1);
-                    console.log(
-                      'Location:=>',
-                      authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
-                        authContext?.entity?.obj?.city?.slice(1),
-                    );
-                    setLocation(
-                      authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
-                        authContext?.entity?.obj?.city?.slice(1),
-                    );
-                    setFilters({
-                      ...filters,
-                      location:
-                        authContext?.entity?.obj?.city
-                          ?.charAt(0)
-                          .toUpperCase() +
-                        authContext?.entity?.obj?.city?.slice(1),
-                    });
-                    navigation.setParams({locationText: null});
-                    setTimeout(() => {
-                      setLocationPopup(false);
-                    }, 300);
-                  }}>
-                  {selectedLocationOption === 1 ? (
-                    <LinearGradient
-                      colors={[colors.yellowColor, colors.orangeGradientColor]}
-                      style={styles.backgroundView}>
-                      <Text
-                        style={[styles.myCityText, {color: colors.whiteColor}]}>
-                        Home city
-                      </Text>
-                    </LinearGradient>
-                  ) : (
-                    <View style={styles.backgroundView}>
-                      <Text style={styles.myCityText}>Home city</Text>
-                    </View>
-                  )}
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    setSelectedLocationOption(2);
-                    navigation.setParams({locationText: null});
-                    setLocation('world');
-                    setFilters({
-                      ...filters,
-                      location: 'world',
-                    });
-
-                    setTimeout(() => {
-                      setLocationPopup(false);
-                    }, 300);
-                  }}>
-                  {selectedLocationOption === 2 ? (
-                    <LinearGradient
-                      colors={[colors.yellowColor, colors.orangeGradientColor]}
-                      style={styles.backgroundView}>
-                      <Text
-                        style={[styles.worldText, {color: colors.whiteColor}]}>
-                        World
-                      </Text>
-                    </LinearGradient>
-                  ) : (
-                    <View style={styles.backgroundView}>
-                      <Text style={styles.worldText}>World</Text>
-                    </View>
-                  )}
-                </TouchableWithoutFeedback>
-                <Text style={styles.orText}>Or</Text>
-
-                <TouchableOpacity
-                  style={styles.sectionStyle}
-                  onPress={() => {
-                    setLocationPopup(false);
-                    navigation.navigate('SearchCityScreen', {
-                      comeFrom: 'LocalHomeScreen',
-                    });
-                  }}>
-                  <Text style={styles.searchText}>{strings.searchTitle}</Text>
-                </TouchableOpacity>
+              setTimeout(() => {
+                setLocationPopup(false);
+              }, 300);
+            }}>
+            {selectedLocationOption === 0 ? (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
+                <Text
+                  style={[
+                    styles.curruentLocationText,
+                    {color: colors.whiteColor},
+                  ]}>
+                  Current city
+                </Text>
+              </LinearGradient>
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.curruentLocationText}>Current city</Text>
               </View>
-            </Modal>
-            <Modal
-              onBackdropPress={() => setSettingPopup(false)}
-              backdropOpacity={1}
-              animationType="slide"
-              hasBackdrop
-              style={{
-                margin: 0,
-                backgroundColor: colors.blackOpacityColor,
-              }}
-              visible={settingPopup}>
-              <View style={styles.bottomPopupContainer}>
-                <View style={styles.viewsContainer}>
-                  <Text
-                    onPress={() => setSettingPopup(false)}
-                    style={styles.cancelText}>
-                    Cancel
-                  </Text>
-                  <Text style={styles.locationText}>Setting</Text>
-                  <Text style={styles.doneText}>{'    '}</Text>
-                </View>
-                <TCThinDivider width={'100%'} marginBottom={15} />
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    setSelectedSettingOption(0);
-                    setTimeout(() => {
-                      setLocationPopup(false);
-                      setSettingPopup(false);
-                    }, 100);
-                    if (selectedSettingOption === 1) {
-                      setSettingPopup(false);
-                      setLocationPopup(true);
-                    } else {
-                      setSettingPopup(false);
+            )}
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              setSelectedLocationOption(1);
+              console.log(
+                'Location:=>',
+                authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+                  authContext?.entity?.obj?.city?.slice(1),
+              );
+              setLocation(
+                authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
+                  authContext?.entity?.obj?.city?.slice(1),
+              );
+              setFilters({
+                ...filters,
+                location:
+                  authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
+                  authContext?.entity?.obj?.city?.slice(1),
+              });
+              navigation.setParams({locationText: null});
+              setTimeout(() => {
+                setLocationPopup(false);
+              }, 300);
+            }}>
+            {selectedLocationOption === 1 ? (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
+                <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
+                  Home city
+                </Text>
+              </LinearGradient>
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.myCityText}>Home city</Text>
+              </View>
+            )}
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              setSelectedLocationOption(2);
+              navigation.setParams({locationText: null});
+              setLocation('world');
+              setFilters({
+                ...filters,
+                location: 'world',
+              });
 
-                      setTimeout(() => {
-                        navigation.navigate('SportSettingScreen', {
-                          sports,
-                        });
-                      }, 10);
-                    }
-                  }}>
-                  {selectedSettingOption === 0 ? (
-                    <LinearGradient
-                      colors={[colors.yellowColor, colors.orangeGradientColor]}
-                      style={styles.backgroundView}>
-                      <Text
-                        style={[
-                          styles.curruentLocationText,
-                          {color: colors.whiteColor},
-                        ]}>
-                        Sports
-                      </Text>
-                    </LinearGradient>
-                  ) : (
-                    <View style={styles.backgroundView}>
-                      <Text style={styles.curruentLocationText}>Sports</Text>
-                    </View>
-                  )}
-                </TouchableWithoutFeedback>
-                {/* <TouchableWithoutFeedback
+              setTimeout(() => {
+                setLocationPopup(false);
+              }, 300);
+            }}>
+            {selectedLocationOption === 2 ? (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
+                <Text style={[styles.worldText, {color: colors.whiteColor}]}>
+                  World
+                </Text>
+              </LinearGradient>
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.worldText}>World</Text>
+              </View>
+            )}
+          </TouchableWithoutFeedback>
+          <Text style={styles.orText}>Or</Text>
+
+          <TouchableOpacity
+            style={styles.sectionStyle}
+            onPress={() => {
+              setLocationPopup(false);
+
+              navigation.navigate('SearchCityScreen', {
+                comeFrom: 'LocalHomeScreen',
+              });
+            }}>
+            <Text style={styles.searchText}>{strings.searchTitle}</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+      <Modal
+        onBackdropPress={() => setSettingPopup(false)}
+        backdropOpacity={1}
+        animationType="slide"
+        hasBackdrop
+        style={{
+          margin: 0,
+          backgroundColor: colors.blackOpacityColor,
+        }}
+        visible={settingPopup}>
+        <View style={styles.bottomPopupContainer}>
+          <View style={styles.viewsContainer}>
+            <Text
+              onPress={() => setSettingPopup(false)}
+              style={styles.cancelText}>
+              Cancel
+            </Text>
+            <Text style={styles.locationText}>Setting</Text>
+            <Text style={styles.doneText}>{'    '}</Text>
+          </View>
+          <TCThinDivider width={'100%'} marginBottom={15} />
+          <TouchableWithoutFeedback
+            onPress={() => {
+              setSelectedSettingOption(0);
+              setTimeout(() => {
+                setLocationPopup(false);
+                setSettingPopup(false);
+              }, 100);
+              if (selectedSettingOption === 1) {
+                setSettingPopup(false);
+                setLocationPopup(true);
+              } else {
+                setSettingPopup(false);
+
+                setTimeout(() => {
+                  navigation.navigate('SportSettingScreen', {
+                    sports,
+                  });
+                }, 10);
+              }
+            }}>
+            {selectedSettingOption === 0 ? (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
+                <Text
+                  style={[
+                    styles.curruentLocationText,
+                    {color: colors.whiteColor},
+                  ]}>
+                  Sports
+                </Text>
+              </LinearGradient>
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.curruentLocationText}>Sports</Text>
+              </View>
+            )}
+          </TouchableWithoutFeedback>
+          {/* <TouchableWithoutFeedback
                   onPress={() => setSelectedSettingOption(1)}>
                   {selectedSettingOption === 1 ? (
                     <LinearGradient
@@ -1449,11 +1448,8 @@ export default function LocalHomeScreen({navigation, route}) {
                     </View>
                   )}
                 </TouchableWithoutFeedback> */}
-              </View>
-            </Modal>
-          </ScrollView>
-        </Fragment>
-      )}
+        </View>
+      </Modal>
     </View>
   );
 }

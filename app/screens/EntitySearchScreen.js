@@ -7,6 +7,7 @@ import React, {
   useContext,
   useCallback,
   useMemo,
+  useRef,
 } from 'react';
 import {
   View,
@@ -164,6 +165,7 @@ export default function EntitySearchScreen({navigation, route}) {
   const [toDate, setToDate] = useState();
   const {sportsList} = route?.params ?? {};
   const [search, setSearch] = useState('');
+  const searchBoxRef = useRef();
 
   useEffect(() => {
     if (route?.params?.locationText) {
@@ -1278,7 +1280,8 @@ export default function EntitySearchScreen({navigation, route}) {
 
   const tabChangePress = useCallback((changeTab) => {
     console.log('change tab value ', changeTab);
-
+    searchFilterFunction('');
+    searchBoxRef.current.clear();
     switch (changeTab.i) {
       case 0:
         setCurrentSubTab('General');
@@ -1655,6 +1658,7 @@ export default function EntitySearchScreen({navigation, route}) {
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.searchBarView}>
         <TCSearchBox
+          textInputRef={searchBoxRef}
           editable={true}
           onChangeText={(text) => {
             searchFilterFunction(text);
