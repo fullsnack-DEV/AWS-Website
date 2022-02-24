@@ -10,10 +10,11 @@ import fonts from '../Constants/Fonts'
 import images from '../Constants/ImagePath'
 
 export default function TCPicker({
-  dataSource, placeholder, value = '', onValueChange = () => {}, onDonePress = () => {},
+  dataSource, placeholder, value = '', onValueChange = () => {}, onDonePress = () => {},disabled=false
 }) {
   return (
     <RNPickerSelect
+              disabled={disabled}
               onDonePress={onDonePress}
               placeholder={{
                 label: placeholder,

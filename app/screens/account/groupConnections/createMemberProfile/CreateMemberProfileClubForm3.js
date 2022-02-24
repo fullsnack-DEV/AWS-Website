@@ -1,16 +1,7 @@
-import React, {
-  useState, useLayoutEffect, useEffect, useContext,
-} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import React, {useState, useLayoutEffect, useEffect, useContext} from 'react';
+import {StyleSheet, View, Text, Image, ScrollView, Alert} from 'react-native';
 
-import { createMemberProfile } from '../../../../api/Groups';
+import {createMemberProfile} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
@@ -18,14 +9,15 @@ import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCTextField from '../../../../components/TCTextField';
-import AuthContext from '../../../../auth/context'
+import AuthContext from '../../../../auth/context';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
+import TCFormProgress from '../../../../components/TCFormProgress';
 
 let entity = {};
-export default function CreateMemberProfileClubForm3({ navigation, route }) {
+export default function CreateMemberProfileClubForm3({navigation, route}) {
   const [note, setNote] = useState('');
-  const authContext = useContext(AuthContext)
-  const [auth, setAuth] = useState({})
+  const authContext = useContext(AuthContext);
+  const [auth, setAuth] = useState({});
   const [loading, setloading] = useState(false);
   const [groups, setGroups] = useState({
     createdAt: 0.0,
@@ -47,15 +39,16 @@ export default function CreateMemberProfileClubForm3({ navigation, route }) {
     privacy_followers: 'everyone',
     join_type: 'anyone',
     is_joined: false,
-
-  })
+  });
   useEffect(() => {
-    getAuthEntity()
-  }, [])
+    getAuthEntity();
+  }, []);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={styles.nextButtonStyle} onPress={() => createMember()}>Done</Text>
+        <Text style={styles.nextButtonStyle} onPress={() => createMember()}>
+          Done
+        </Text>
       ),
     });
   }, [navigation]);
@@ -64,31 +57,39 @@ export default function CreateMemberProfileClubForm3({ navigation, route }) {
   //   navigation.navigate('CreateMemberProfileClubForm3', { form2: membersAuthority })
   // }
   const getAuthEntity = async () => {
-    entity = authContext.entity
+    entity = authContext.entity;
     setAuth(entity);
-    setGroups({ ...groups, entity_type: entity.role })
-  }
+    setGroups({...groups, entity_type: entity.role});
+  };
   const createMember = () => {
-    setloading(true)
+    setloading(true);
     let bodyParams = {};
     if (route.params.form2.full_image) {
-      const imageArray = []
+      const imageArray = [];
 
-      imageArray.push({ path: route.params.form2.full_image });
-      uploadImages(imageArray, authContext).then((responses) => {
-        const attachments = responses.map((item) => ({
-          type: 'image',
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-        }))
+      imageArray.push({path: route.params.form2.full_image});
+      uploadImages(imageArray, authContext)
+        .then((responses) => {
+          const attachments = responses.map((item) => ({
+            type: 'image',
+            url: item.fullImage,
+            thumbnail: item.thumbnail,
+          }));
 
-        bodyParams = {
-          ...route.params.form2, full_image: attachments[0].url, thumbnail: attachments[0].thumbnail, group: groups,
-        }
-        bodyParams.group_member_detail = { ...route.params.form2.group_member_detail, group_id: entity.uid, note };
-        console.log('BODY PARAMS:', bodyParams);
-        createProfile(bodyParams)
-      })
+          bodyParams = {
+            ...route.params.form2,
+            full_image: attachments[0].url,
+            thumbnail: attachments[0].thumbnail,
+            group: groups,
+          };
+          bodyParams = {
+            ...route.params.form2,
+            group_id: entity.uid,
+            note,
+          };
+          console.log('BODY PARAMS:', bodyParams);
+          createProfile(bodyParams);
+        })
         .catch((e) => {
           setloading(false);
           setTimeout(() => {
@@ -97,88 +98,86 @@ export default function CreateMemberProfileClubForm3({ navigation, route }) {
         });
     } else {
       bodyParams = {
-        ...route.params.form2, group: groups,
-      }
-      bodyParams.group_member_detail = { ...route.params.form2.group_member_detail, group_id: entity.uid, note };
+        ...route.params.form2,
+        group: groups,
+      };
+      bodyParams = {
+        ...route.params.form2,
+        group_id: entity.uid,
+        note,
+      };
       console.log('BODY PARAMS:', bodyParams);
-      createProfile(bodyParams)
+      createProfile(bodyParams);
     }
-  }
+  };
   const createProfile = (params) => {
-    createMemberProfile(entity.uid, params, authContext).then((response) => {
-      setloading(false);
-      console.log('Response :', response.payload);
+    createMemberProfile(entity.uid, params, authContext)
+      .then((response) => {
+        setloading(false);
+        console.log('Response :', response.payload);
 
-      if (response.payload.group_member_detail.canConnect === true && response.payload.group_member_detail.connected === false) {
-        const title = strings.connectMemberProfile
-        navigation.navigate('MemberProfileCreatedScreen', { memberObj: response.payload, buttonTitle: title })
-      } else {
-        const title = strings.sendInvite
-        navigation.navigate('MemberProfileCreatedScreen', { memberObj: response.payload, buttonTitle: title })
-      }
-    })
+        if (
+          response.payload.canConnect === true &&
+          response.payload.connected === false
+        ) {
+          const title = strings.connectMemberProfile;
+          navigation.navigate('MemberProfileCreatedScreen', {
+            memberObj: response.payload,
+            buttonTitle: title,
+          });
+        } else {
+          const title = strings.sendInvite;
+          navigation.navigate('MemberProfileCreatedScreen', {
+            memberObj: response.payload,
+            buttonTitle: title,
+          });
+        }
+      })
       .catch((e) => {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }
+  };
   return (
-
     <ScrollView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <View style={styles.formSteps}>
-        <View style={styles.form1}></View>
-        <View style={styles.form2}></View>
-        <View style={styles.form3}></View>
-      </View>
+      <TCFormProgress totalSteps={3} curruentStep={3} />
 
       <View>
-        <View style={{
-          flexDirection: 'row', alignItems: 'center', marginLeft: 15, marginRight: 15, marginBottom: 15,
-        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            margin:15
+          }}>
           <View style={styles.profileView}>
-            <Image source={ images.clubPlaceholder } style={ styles.profileImage } />
+            <Image
+              source={images.clubPlaceholder}
+              style={styles.profileImage}
+            />
           </View>
-          <TCGroupNameBadge name={((auth || {}).obj || {}).group_name || ''} groupType={'club'}/>
+          <TCGroupNameBadge
+            name={((auth || {}).obj || {}).group_name || ''}
+            groupType={'club'}
+          />
         </View>
-        <TCTextField value={note} height={100} multiline={true} onChangeText={(text) => setNote(text)} placeholder={strings.writeNotesPlaceholder} keyboardType={'default'}/>
+        <TCTextField
+          value={note}
+          height={100}
+          multiline={true}
+          onChangeText={(text) => setNote(text)}
+          placeholder={strings.writeNotesPlaceholder}
+          keyboardType={'default'}
+        />
       </View>
-      <View style={{ marginBottom: 20 }}/>
+      <View style={{marginBottom: 20}} />
     </ScrollView>
-
   );
 }
 const styles = StyleSheet.create({
-
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form2: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form3: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  formSteps: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    marginRight: 15,
-    marginTop: 15,
-  },
+  
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -194,11 +193,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,
-
   },
   profileImage: {
     alignSelf: 'center',
@@ -213,5 +211,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 10,
   },
-
 });

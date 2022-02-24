@@ -17,11 +17,13 @@ import {
   Alert,
   FlatList,
   ScrollView,
+  TextInput
 } from 'react-native';
 
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+import { useIsFocused } from '@react-navigation/native';
 
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
@@ -37,16 +39,19 @@ import TCDateTimePicker from '../../../../components/TCDateTimePicker';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import AuthContext from '../../../../auth/context';
 import DataSource from '../../../../Constants/DataSource';
-import { monthNames } from '../../../../utils';
+import { monthNames, widthPercentageToDP } from '../../../../utils';
+import TCFormProgress from '../../../../components/TCFormProgress';
 
 let entity = {};
 
-export default function CreateMemberProfileForm1({navigation}) {
+export default function CreateMemberProfileForm1({navigation,route}) {
   const authContext = useContext(AuthContext);
+  const isFocused = useIsFocused();
+
   const actionSheet = useRef();
   const [show, setShow] = useState(false);
-  const [locationFieldVisible, setLocationFieldVisible] = useState(false);
   const [role, setRole] = useState('');
+  const [location, setLocation] = useState('');
 
   const [phoneNumber, setPhoneNumber] = useState([
     {
@@ -77,6 +82,28 @@ export default function CreateMemberProfileForm1({navigation}) {
     };
     getAuthEntity();
   }, []);
+
+  useEffect(() => {
+    if (isFocused) {
+     
+
+     
+      if (route?.params?.city) {
+        setCity(route?.params?.city);
+        setState(route?.params?.state);
+        setCountry(route?.params?.country);
+        setLocation(
+          `${route?.params?.city}, ${route?.params?.state}, ${route?.params?.country}`,
+        );
+      } else {
+        setCity('');
+        setState('');
+        setCountry('');
+        setLocation('');
+      }
+    }
+  }, [isFocused]);
+
   const addPhoneNumber = () => {
     const obj = {
       id: phoneNumber.length === 0 ? 0 : phoneNumber.length,
@@ -118,6 +145,7 @@ export default function CreateMemberProfileForm1({navigation}) {
                 navigation.navigate('CreateMemberProfileTeamForm2', {
                   form1: {
                     ...memberInfo,
+                    is_member: true,
                     first_name: firstName,
                     last_name: lastName,
                     email,
@@ -127,12 +155,14 @@ export default function CreateMemberProfileForm1({navigation}) {
                     country,
                     postal_code: postalCode,
                     birthday,
+                    gender,
                   },
                 });
               } else if (entity.role === 'club') {
                 navigation.navigate('CreateMemberProfileClubForm2', {
                   form1: {
                     ...memberInfo,
+                    is_member: true,
                     first_name: firstName,
                     last_name: lastName,
                     email,
@@ -310,11 +340,8 @@ export default function CreateMemberProfileForm1({navigation}) {
   return (
     <TCKeyboardView>
       <ScrollView style={{flex: 1}}>
-        <View style={styles.formSteps}>
-          <View style={styles.form1}></View>
-          <View style={styles.form2}></View>
-          {role === 'club' && <View style={styles.form3}></View>}
-        </View>
+        <TCFormProgress totalSteps={role === 'club' ?  3 : 2} curruentStep={1} />
+        
 
         <View style={styles.profileView}>
           <Image
@@ -393,59 +420,35 @@ export default function CreateMemberProfileForm1({navigation}) {
             keyboardType={'default'}
             autoCapitalize="none"
             autoCorrect={false}
-            onFocus={() => setLocationFieldVisible(true)}
+            // onFocus={() => setLocationFieldVisible(true)}
           />
         </View>
-        {locationFieldVisible && (
-          <View>
-            <TCLable title={'city'} />
-            <TCTextField
-              value={city}
-              onChangeText={(text) => setCity(text)}
-              placeholder={strings.cityText}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType={'default'}
-            />
-          </View>
-        )}
-        {locationFieldVisible && (
-          <View>
-            <TCLable title={'State/Province/Region'} />
-            <TCTextField
-              value={state}
-              onChangeText={(text) => setState(text)}
-              placeholder={strings.stateText}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType={'default'}
-            />
-          </View>
-        )}
-        {locationFieldVisible && (
-          <View>
-            <TCLable title={'Country'} />
-            <TCTextField
-              value={country}
-              onChangeText={(text) => setCountry(text)}
-              placeholder={strings.countryText}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType={'default'}
-            />
-          </View>
-        )}
-        {locationFieldVisible && (
-          <View>
-            <TCLable title={'Postal Code/Zip'} />
-            <TCTextField
+        <View style={styles.fieldView}>
+          <TCLable title={strings.locationTitle} required={false} />
+          <TouchableOpacity
+            onPress={() => navigation.navigate('SearchLocationScreen', {
+                comeFrom: 'CreateMemberProfileForm1',
+              })
+            }>
+            <TextInput
+              placeholder={strings.searchCityPlaceholder}
+              style={[styles.matchFeeTxt, { marginBottom: 5 }]}
+              value={location}
+              editable={false}
+              pointerEvents="none"></TextInput>
+          </TouchableOpacity>
+        </View>
+     
+        <View>
+          <TCLable title={'Postal Code/Zip'} />
+          <TCTextField
               value={postalCode}
               onChangeText={(text) => setPostalCode(text)}
               placeholder={strings.postalCodeText}
               keyboardType={'default'}
             />
-          </View>
-        )}
+        </View>
+    
         <View>
           <TCLable title={'Birthday'} />
           {/* <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.addressPlaceholder} keyboardType={'default'}/> */}
@@ -515,34 +518,7 @@ export default function CreateMemberProfileForm1({navigation}) {
   );
 }
 const styles = StyleSheet.create({
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form2: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form3: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-
-  formSteps: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    marginRight: 15,
-    marginTop: 15,
-  },
+ 
   profileChoose: {
     height: 70,
     width: 70,
@@ -586,5 +562,27 @@ const styles = StyleSheet.create({
   },
   mendatory: {
     color: 'red',
+  },
+  fieldView: {
+    marginTop: 15,
+  },
+  matchFeeTxt: {
+    alignSelf: 'center',
+    backgroundColor: colors.offwhite,
+    borderRadius: 5,
+    color: 'black',
+    elevation: 3,
+    fontSize: widthPercentageToDP('3.8%'),
+    height: 40,
+
+    marginTop: 12,
+    paddingHorizontal: 15,
+    paddingRight: 30,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+
+    width: widthPercentageToDP('92%'),
   },
 });

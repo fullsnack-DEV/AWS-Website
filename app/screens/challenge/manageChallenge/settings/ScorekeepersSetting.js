@@ -39,21 +39,16 @@ export default function ScorekeepersSetting({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
 
-  console.log('route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure',route?.params?.settingObj);
   const [selection, setSelection] = useState(
     
-    route?.params?.settingObj && route?.params?.settingObj?.responsible_for_scorekeeper && (route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure !==
-        'None' ||
-        route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
-          ?.length > 0)
+    route?.params?.settingObj && route?.params?.settingObj?.responsible_for_scorekeeper && route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
       ? route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure?.length
       : 'None',
   );
 
   const [scorekeeper, setScorekeeper] = useState(
     route?.params?.settingObj?.responsible_for_scorekeeper &&
-      route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure !==
-        'None'
+      route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
       ? route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
       : [],
   );
@@ -139,9 +134,7 @@ export default function ScorekeepersSetting({navigation, route}) {
         sport: sportName,
         sport_type: sportType,
         entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-        responsible_for_scorekeeper: {
-          who_secure: 'None',
-        },
+        responsible_for_scorekeeper: {},
       };
     } else {
       let score;
@@ -231,9 +224,7 @@ export default function ScorekeepersSetting({navigation, route}) {
         sport: sportName,
         sport_type: sportType,
         entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-        responsible_for_scorekeeper: {
-          who_secure: 'None',
-        },
+        responsible_for_scorekeeper: {},
       };
     } else {
       let score;
@@ -303,9 +294,7 @@ export default function ScorekeepersSetting({navigation, route}) {
                   return e;
                 }),
               }
-            : {
-                who_secure: 'None',
-              },
+            : {},
       });
     } else if (authContext.entity.role === 'team') {
       saveTeam();

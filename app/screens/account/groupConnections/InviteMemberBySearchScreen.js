@@ -11,6 +11,7 @@ import AuthContext from '../../../auth/context';
 import ProfileCheckView from '../../../components/groupConnections/ProfileCheckView';
 import TCTags from '../../../components/TCTags';
 import {getUserIndex} from '../../../api/elasticSearch';
+import TCThinDivider from '../../../components/TCThinDivider';
 
 let stopFetchMore = true;
 
@@ -151,6 +152,10 @@ export default function InviteMembersBySearchScreen({navigation}) {
     </View>
   );
 
+  const ItemSeparatorComponent = useCallback(() => (
+    <TCThinDivider/>
+  ), [])
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -192,11 +197,13 @@ export default function InviteMembersBySearchScreen({navigation}) {
         }}
       /> */}
 
+      
       <FlatList
         extraData={players}
         showsVerticalScrollIndicator={false}
         data={players}
         keyExtractor={(item, index) => index.toString()}
+        ItemSeparatorComponent={ItemSeparatorComponent}
         renderItem={renderPlayer}
         onScroll={onScrollHandler}
         onEndReachedThreshold={0.01}
@@ -205,6 +212,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
         }}
         ListEmptyComponent={listEmptyComponent}
       />
+      
     </View>
   );
 }

@@ -16,6 +16,7 @@ import {
   SafeAreaView,
   Alert,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 
@@ -29,7 +30,6 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCProfileView from '../../../components/TCProfileView';
 import TCThickDivider from '../../../components/TCThickDivider';
-import TCBorderButton from '../../../components/TCBorderButton';
 import TCInfoField from '../../../components/TCInfoField';
 import strings from '../../../Constants/String';
 import TCMessageButton from '../../../components/TCMessageButton';
@@ -71,8 +71,10 @@ export default function MembersProfileScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () =>
-        ((route?.params?.whoSeeID === entity.uid) && !loading)  && (
-          <TouchableWithoutFeedback onPress={() => actionSheet?.current?.show()}>
+        route?.params?.whoSeeID === entity.uid &&
+        !loading && (
+          <TouchableWithoutFeedback
+            onPress={() => actionSheet?.current?.show()}>
             <Image
               source={images.horizontal3Dot}
               style={styles.navigationRightItem}
@@ -92,11 +94,21 @@ export default function MembersProfileScreen({navigation, route}) {
     route?.params?.whoSeeID,
   ]);
 
+  
+
   useEffect(() => {
-console.log('--useEffect called--');
-    getMemberInformation();
-   
+    if(isFocused){
+      console.log('--useEffect called--');
+      getMemberInformation();
+    }
+    
   }, [isFocused]);
+
+  // useEffect(() => {
+  //   if(route?.params?.modifiedMemberDetail){
+  //     setMemberDetail({...memberDetail,...route?.params?.modifiedMemberDetail})
+  //   }
+  // }, [memberDetail, route?.params?.modifiedMemberDetail]);
 
   const getAge = (dateString) => {
     const today = new Date();
@@ -108,22 +120,21 @@ console.log('--useEffect called--');
     }
     return age;
   };
-  const getMemberInformation =  () => {
+  const getMemberInformation = () => {
     if (!firstTimeLoad) setloading(true);
     entity = authContext.entity;
     setSwitchUser(entity);
 
     // Setting of Edit option
-    if(entity.role === 'team'){
+    if (entity.role === 'team') {
       setEditProfile(true);
       setEditBasicInfo(true);
       setEditTeam(true);
       setEditMembership(true);
-    }
-    else if (entity.role === 'club') {
+    } else if (entity.role === 'club') {
       setEditProfile(true);
       setEditBasicInfo(true);
-      setEditTeam(true);
+      setEditTeam(false);
       setEditMembership(true);
     } else if (route.params.whoSeeID === entity.uid) {
       setEditProfile(true);
@@ -136,7 +147,7 @@ console.log('--useEffect called--');
       authContext,
     )
       .then((response) => {
-        console.log('PROFILE RESPONSE::', response.payload);
+        console.log('PROFILE RESPONSE11::', response.payload);
         setMemberDetail(response?.payload);
         setloading(false);
         if (firstTimeLoad) setFirstTimeLoad(false);
@@ -179,6 +190,24 @@ console.log('--useEffect called--');
     }
     return numbersString;
   };
+  const listEmptyView = () => {
+    return (
+      <View style={{margin: 15, marginLeft: 25}}>
+        <Text
+          style={{
+            fontFamily: fonts.RMedium,
+            fontSize: 18,
+            color: colors.userPostTimeColor,
+          }}>
+          No Joined Teams Available
+        </Text>
+      </View>
+    );
+  };
+
+  const renderSeparator = () => {
+    return <TCThinDivider marginTop={20} width={'100%'} />;
+  };
 
   return (
     <SafeAreaView>
@@ -199,8 +228,13 @@ console.log('--useEffect called--');
                     ? {uri: memberDetail?.thumbnail}
                     : images.profilePlaceHolder
                 }
-                name={`${memberDetail?.first_name} ${memberDetail?.last_name}` ?? ''}
-                location={`${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}` ?? ''}
+                name={
+                  `${memberDetail?.first_name} ${memberDetail?.last_name}` ?? ''
+                }
+                location={
+                  `${memberDetail?.city ?? ''}, ${memberDetail?.state_abbr ?? ''}, ${memberDetail?.country ?? ''}` ??
+                ''
+                }
               />
               {editProfile && (
                 <TouchableWithoutFeedback
@@ -235,9 +269,7 @@ console.log('--useEffect called--');
               </Text>
             )}
             {!memberDetail.connected && (
-              <TCBorderButton
-                title={strings.connectAccountText}
-                marginTop={20}
+              <TouchableOpacity
                 onPress={() => {
                   setloading(true);
 
@@ -260,7 +292,7 @@ console.log('--useEffect called--');
                   getUserIndex(getUserByEmailQuery).then((players) => {
                     console.log('getUserByEmailQuery', players);
                     setloading(false);
-                    if (players.length > 0) {
+                    if (players?.length > 0) {
                       // const signUpUser = players.filter((e) => e.signedup_user)
                       navigation.navigate('UserFoundScreen', {
                         signUpObj: players[0],
@@ -274,9 +306,17 @@ console.log('--useEffect called--');
                       });
                     }
                   });
-                }}
-              />
+                }}>
+                <View
+                  style={styles.inviteButtonContainer}>
+                  <Text
+                    style={styles.inviteTextStyle}>
+                    Invite or Connect to an Account
+                  </Text>
+                </View>
+              </TouchableOpacity>
             )}
+            
           </View>
           <TCThickDivider marginTop={20} />
           <View>
@@ -367,7 +407,9 @@ console.log('--useEffect called--');
           </View> */}
 
             <View style={styles.sectionEditView}>
-              <Text style={styles.basicInfoTitle}>Membership</Text>
+              <Text style={styles.basicInfoTitle}>
+                {entity.role === 'team' ? 'Roles & Status' : 'Membership'}
+              </Text>
               {/* {editMembership && (
                 <TouchableWithoutFeedback
                   onPress={() =>
@@ -379,20 +421,51 @@ console.log('--useEffect called--');
                 </TouchableWithoutFeedback>
               )} */}
             </View>
-            {memberDetail.group && (
+            {memberDetail.group && entity.role === 'club' && (
               <GroupMembership
                 groupData={memberDetail.group}
                 switchID={entity.uid}
-                edit={editTeam}
+                edit={!editTeam}
                 onEditPressed={() =>
                   navigation.navigate('EditMemberClubInfoScreen', {
-                    groupMemberDetail: memberDetail.group,
+                    groupMemberDetail: {
+                      ...memberDetail.group,
+                      positions: memberDetail?.positions,
+                      jersey_number: memberDetail?.jersey_number,
+                      appearance: memberDetail?.appearance,
+                      status: memberDetail?.status,
+                      is_admin: memberDetail?.is_admin,
+                      is_others: memberDetail?.is_others,
+                      is_member: memberDetail?.is_member,
+                      is_coach: memberDetail?.is_coach,
+                      note: memberDetail?.note,
+                      user_id : memberDetail?.user_id
+                    },
                   })
                 }
               />
             )}
+            {memberDetail?.teams?.length > 0 && (
+              <TCThinDivider marginTop={20} width={'100%'} />
+            )}
             <FlatList
-              data={memberDetail.teams}
+              data={entity.role === 'club' ? memberDetail?.teams : [
+                {
+                  ...memberDetail.group,
+                  positions: memberDetail?.positions,
+                  jersey_number: memberDetail?.jersey_number,
+                  appearance: memberDetail?.appearance,
+                  status: memberDetail?.status,
+                  is_admin: memberDetail?.is_admin,
+                  is_others: memberDetail?.is_others,
+                  is_member: memberDetail?.is_member,
+                  is_coach: memberDetail?.is_coach,
+                  note: memberDetail?.note,
+                  user_id : memberDetail?.user_id
+                },
+              ]}
+              ListEmptyComponent={listEmptyView}
+              ItemSeparatorComponent={renderSeparator}
               renderItem={({item}) => (
                 <GroupMembership
                   groupData={item}
@@ -434,31 +507,45 @@ console.log('--useEffect called--');
             // title={'News Feed Post'}
             options={
               switchUser.role === 'team'
-                ? ['Sync Info', 'Delete Member from Team', 'Cancel']
-                : ['Sync Info', 'Delete Member from Club', 'Cancel']
+                ? [
+                    'Membership & Admin Authority',
+                    'Delete Member from Team',
+                    'Cancel',
+                  ]
+                : [
+                    'Membership & Admin Authority',
+                    'Delete Member from Club',
+                    'Cancel',
+            ]
             }
             cancelButtonIndex={2}
             destructiveButtonIndex={1}
             onPress={(index) => {
               if (index === 0) {
-                Alert.alert(
-                  'The basic info in this profile will be updated with the info in the member’s account.',
-                  '',
-                  [
-                    {
-                      text: 'Yes',
-                      onPress: async () => {
-                        getMemberInformation();
-                      },
-                    },
-                    {
-                      text: 'Cancel',
-                      style: 'cancel',
-                    },
-                  ],
-                  {cancelable: false},
-                );
-              } else if (index === 1) {
+                navigation.navigate('EditMemberClubInfoScreen', {
+                  groupMemberDetail: memberDetail,
+                });
+              } 
+              // else if (index === 1) {
+              //   Alert.alert(
+              //     'The basic info in this profile will be updated with the info in the member’s account.',
+              //     '',
+              //     [
+              //       {
+              //         text: 'Yes',
+              //         onPress: async () => {
+              //           getMemberInformation();
+              //         },
+              //       },
+              //       {
+              //         text: 'Cancel',
+              //         style: 'cancel',
+              //       },
+              //     ],
+              //     {cancelable: false},
+              //   );
+              // }
+               else if (index === 1) {
                 // Alert.alert('ok')
                 Alert.alert(
                   strings.alertmessagetitle,
@@ -499,7 +586,7 @@ const styles = StyleSheet.create({
   roleViewContainer: {
     marginTop: 20,
     marginLeft: 15,
-     marginRight: 15,
+    marginRight: 15,
     justifyContent: 'space-between',
   },
   undatedTimeText: {
@@ -543,4 +630,23 @@ const styles = StyleSheet.create({
     marginBottom: 3,
     marginLeft: 25,
   },
+  inviteButtonContainer:{
+    height: 35,
+    alignItems: 'center',
+    justifyContent:'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 8,
+    elevation: 5,
+    shadowOpacity: 0.5,
+    shadowColor: colors.grayColor,
+    shadowOffset: {width: 0, height: 5},
+    shadowRadius: 5,
+    marginTop:20
+  },
+  inviteTextStyle:{
+    fontFamily: fonts.RBold,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    
+  }
 });

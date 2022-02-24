@@ -178,6 +178,8 @@ import EntityScoreboardScreen from '../screens/home/EntityScoreboardScreen';
 import EntityGallaryScreen from '../screens/home/EntityGallaryScreen';
 import EntityReviewScreen from '../screens/home/EntityReviewScreen';
 import EntityStatScreen from '../screens/home/EntityStatScreen';
+import RequestBasicInfoScreen from '../screens/account/groupConnections/RequestBasicInfoScreen';
+import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/RequestMultipleBasicInfoScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1106,6 +1108,22 @@ const ScheduleNavigator = () => (
         } }
       />
     <Stack.Screen
+      name="RequestMultipleBasicInfoScreen"
+      component={RequestMultipleBasicInfoScreen}
+      options={{
+        title: 'Send request for basic info',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
         name="InvitationSentScreen"
         component={ InvitationSentScreen }
         options={ { headerShown: false } }
@@ -1290,6 +1308,22 @@ const ScheduleNavigator = () => (
           },
         } }
       />
+    <Stack.Screen
+      name="RequestBasicInfoScreen"
+      component={RequestBasicInfoScreen}
+      options={{
+        title: 'Request Basic Info',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
         name="EditMemberTeamInfoScreen"
         component={ EditMemberTeamInfoScreen }

@@ -294,9 +294,14 @@ export default function InviteChallengeScreen({navigation, route}) {
           : entity?.uid,
       user_challenge: !groupObj?.group_id,
     };
+    if(res_secure_referee?.length > 0){
+      body.responsible_for_referee.who_secure = res_secure_referee;
 
-    body.responsible_for_referee.who_secure = res_secure_referee;
-    body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
+    }
+    if(res_secure_scorekeeper?.length > 0){
+      body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
+
+    }
     body.sport = sportName;
     body.sport_type = sportType;
 

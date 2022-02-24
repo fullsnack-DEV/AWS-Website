@@ -279,9 +279,9 @@ export default function ManageChallengeScreen({ navigation, route }) {
     if (item.key === 'Referees') {
       if (settingObject?.responsible_for_referee) {
         return `${
-          settingObject?.responsible_for_referee?.who_secure === 'None'
-            ? 'No'
-            : settingObject?.responsible_for_referee?.who_secure?.length
+          settingObject?.responsible_for_referee?.who_secure
+            ? settingObject?.responsible_for_referee?.who_secure?.length
+            : 'No'
         } Referees`;
       }
     }
@@ -289,9 +289,9 @@ export default function ManageChallengeScreen({ navigation, route }) {
     if (item.key === 'Scorekeepers') {
       if (settingObject?.responsible_for_scorekeeper) {
         return `${
-          settingObject?.responsible_for_scorekeeper?.who_secure === 'None'
-            ? 'No'
-            : settingObject?.responsible_for_scorekeeper?.who_secure?.length
+          settingObject?.responsible_for_scorekeeper?.who_secure
+            ? settingObject?.responsible_for_scorekeeper?.who_secure?.length
+            : 'No'
         } Scorekeepers`;
       }
     }

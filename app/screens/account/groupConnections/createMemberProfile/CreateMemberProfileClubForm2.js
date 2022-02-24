@@ -1,42 +1,36 @@
-import React, {useLayoutEffect, useState, useEffect, useContext} from 'react';
+import React, {useLayoutEffect, useState, useContext} from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Image,
   ScrollView,
-  Alert,
-  FlatList,
+ 
   TouchableOpacity,
 } from 'react-native';
 import images from '../../../../Constants/ImagePath';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import AuthContext from '../../../../auth/context';
-import {getTeamsOfClub} from '../../../../api/Groups';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCThinDivider from '../../../../components/TCThinDivider';
-import strings from '../../../../Constants/String';
+import TCFormProgress from '../../../../components/TCFormProgress';
 
 let entity = {};
 export default function CreateMemberProfileClubForm2({navigation, route}) {
-  const [auth, setAuth] = useState({});
   const authContext = useContext(AuthContext);
-  const [teamList, setTeamList] = useState([]);
-  const [groupAdmin, setGroupAdmin] = useState(false);
+  entity = authContext.entity;
+  const [setting, setSetting] = useState({
+    is_member:  true,
+    is_admin: true,
+  });
+
   // const [memberDetail, setMemberDetail] = useState({
   //   group_id: entity.uid,
   //   is_admin: false,
   // });
 
-  useEffect(() => {
-    getAuthEntity();
-  }, []);
-  const getAuthEntity = async () => {
-    entity = authContext.entity;
-    setAuth(entity);
-    getTeamsList();
-  };
+  
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -45,45 +39,24 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
         </Text>
       ),
     });
-  }, [navigation, auth, groupAdmin, teamList]);
+  }, [navigation,setting]);
 
   const pressedNext = () => {
     const membersAuthority = {
       ...route.params.form1,
-      group_member_detail: {group_id: entity.uid, is_admin: groupAdmin},
-      teams: teamList.map(({group_id, is_admin, is_member}) => ({
-        group_id,
-        is_admin,
-        is_member,
-      })),
+      group_id: entity.uid,
+      is_admin: setting.is_admin,
+      is_member: setting.is_member
     };
+    console.log('membersAuthority',membersAuthority);
     navigation.navigate('CreateMemberProfileClubForm3', {
       form2: membersAuthority,
     });
   };
-  const getTeamsList = async () => {
-    getTeamsOfClub(entity.uid, authContext)
-      .then((response) => {
-        // eslint-disable-next-line array-callback-return
-        response.payload.map((e) => {
-          e.is_admin = false;
-          e.is_member = false;
-        });
-        setTeamList(response.payload);
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
+  
   return (
     <ScrollView style={styles.mainContainer}>
-      <View style={styles.formSteps}>
-        <View style={styles.form1}></View>
-        <View style={styles.form2}></View>
-        <View style={styles.form3}></View>
-      </View>
+      <TCFormProgress totalSteps={3} curruentStep={2} />
 
       <Text style={styles.checkBoxTitle}>
         Team Membership {'&'} Admin Authority
@@ -94,132 +67,73 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
             flexDirection: 'row',
             alignItems: 'center',
             marginRight: 15,
-            marginBottom: 15,
+            
           }}>
           <View style={styles.profileView}>
             <Image
               source={
-                ((auth || {}).obj || {}).thumbnail
-                  ? {uri: auth.obj.thumbnail}
+                ((entity || {}).obj || {}).thumbnail
+                  ? {uri: entity.obj.thumbnail}
                   : images.clubPlaceholder
               }
               style={styles.profileImage}
             />
           </View>
           <TCGroupNameBadge
-            name={((auth || {}).obj || {}).group_name || ''}
+            name={((entity || {}).obj || {}).group_name || ''}
             groupType={'club'}
           />
         </View>
-        <View style={styles.checkBoxContainer}>
-          <TouchableOpacity
+        <View style={styles.mainCheckBoxContainer}>
+          <View style={[styles.checkBoxContainer,{opacity:0.5}]}>
+            <Text style={styles.checkBoxItemText}>Member</Text>
+            <TouchableOpacity
+            disabled={true}
             onPress={() => {
-              setGroupAdmin(!groupAdmin);
+              const member_setting = !setting.is_member;
+              setSetting({
+                ...setting,
+                is_member: member_setting,
+              });
             }}>
-            <Image
-              source={groupAdmin ? images.uncheckWhite : images.checkGreenBG}
+              <Image
+              source={
+                // item.join_membership_acceptedadmin === false
+                setting.is_member ? images.orangeCheckBox : images.uncheckWhite
+              }
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
-          </TouchableOpacity>
-          <Text style={styles.checkBoxItemText}>Admin</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.checkBoxContainer}>
+            <Text style={[styles.checkBoxItemText,{marginLeft:0}]}>{`${entity.role.charAt(0).toUpperCase() + entity.role.slice(1)} Admin`}</Text>
+            <TouchableOpacity
+            onPress={() => {
+              const admin_setting = !setting.is_admin;
+              setSetting({
+                ...setting,
+                is_admin: admin_setting,
+              });
+            }}>
+              <Image
+              source={
+                setting.is_admin ? images.orangeCheckBox : images.uncheckWhite
+              }
+              style={{height: 22, width: 22, resizeMode: 'contain'}}
+            />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
       <TCThinDivider />
-      <FlatList
-        data={teamList}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({item, index}) => (
-          <>
-            <View style={styles.mainCheckBoxContainer}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginRight: 15,
-                  marginBottom: 15,
-                }}>
-                <View style={styles.profileView}>
-                  <Image
-                    source={
-                      item.thumbnail
-                        ? {uri: item.thumbnail}
-                        : images.teamPlaceholder
-                    }
-                    style={styles.profileImage}
-                  />
-                </View>
-                <TCGroupNameBadge name={item.group_name} groupType={'team'} />
-              </View>
-              <View style={styles.checkBoxContainer}>
-                <TouchableOpacity
-                  onPress={() => {
-                    const tempList = [...teamList];
-                    tempList[index].is_member = !item.is_member;
-                    setTeamList(tempList);
-                  }}>
-                  <Image
-                    source={
-                      item.is_member ? images.checkGreenBG : images.uncheckWhite
-                    }
-                    style={{height: 22, width: 22, resizeMode: 'contain'}}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.checkBoxItemText}>Member</Text>
-              </View>
-              <View style={styles.checkBoxContainer}>
-                <TouchableOpacity
-                  onPress={() => {
-                    const tempList = [...teamList];
-                    tempList[index].is_admin = !item.is_admin;
-                    setTeamList(tempList);
-                  }}>
-                  <Image
-                    source={
-                      item.is_admin ? images.checkGreenBG : images.uncheckWhite
-                    }
-                    style={{height: 22, width: 22, resizeMode: 'contain'}}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.checkBoxItemText}>Admin</Text>
-              </View>
-            </View>
-            <TCThinDivider />
-          </>
-        )}
-      />
+      
 
-      <View style={{marginBottom: 20}} />
+     
     </ScrollView>
   );
 }
 const styles = StyleSheet.create({
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form2: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form3: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  formSteps: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    marginRight: 15,
-    marginTop: 15,
-  },
+  
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -257,7 +171,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: 25,
-    marginBottom: 10,
+    marginBottom: 15,
+    marginRight:15,
+    justifyContent:'space-between'
+    
   },
   mainCheckBoxContainer: {
     marginLeft: 15,
@@ -269,11 +186,13 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 20,
     marginBottom: 10,
+    marginTop:15,
   },
   checkBoxItemText: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
-    marginLeft: 10,
   },
+
+  
 });

@@ -12,12 +12,13 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
 export default function ProfileCheckView({ isChecked, onPress, playerDetail }) {
+  console.log('player detail :=>',playerDetail);
   return (
     <>
       {isChecked
         ? <TouchableWithoutFeedback onPress = {onPress}>
           <LinearGradient
-       colors={[colors.greenGradientStart, colors.greenGradientEnd]}
+       colors={[colors.whiteColor, colors.whiteColor]}
        style={styles.topViewContainer}>
             <View style={{ flexDirection: 'row' }}>
               <View style={styles.profileView}>
@@ -28,7 +29,7 @@ export default function ProfileCheckView({ isChecked, onPress, playerDetail }) {
                 <Text style={styles.whiteLocationText} numberOfLines={1}>{playerDetail.city}</Text>
               </View>
             </View>
-            <Image source={images.checkGreen} style={styles.checkGreenImage}/>
+            <Image source={images.orangeCheckBox} style={styles.checkGreenImage}/>
           </LinearGradient></TouchableWithoutFeedback> : <TouchableWithoutFeedback onPress = {onPress}>
             <View style={styles.topViewContainer}>
               <View style={{ flexDirection: 'row' }}>
@@ -58,7 +59,6 @@ const styles = StyleSheet.create({
 
   topViewContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.offwhite,
     height: 60,
     width: ('90%'),
     alignSelf: 'center',
@@ -68,11 +68,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
 
     borderRadius: 10,
-    shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 3,
+ 
   },
   profileView: {
     backgroundColor: colors.whiteColor,
@@ -100,7 +96,7 @@ const styles = StyleSheet.create({
   },
   whiteNameText: {
     fontSize: 16,
-    color: colors.whiteColor,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
   },
   locationText: {
@@ -110,7 +106,7 @@ const styles = StyleSheet.create({
   },
   whiteLocationText: {
     fontSize: 14,
-    color: colors.whiteColor,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
   },
   checkImage: {

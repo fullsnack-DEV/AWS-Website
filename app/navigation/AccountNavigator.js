@@ -231,6 +231,8 @@ import EntityStatScreen from '../screens/home/EntityStatScreen';
 
 
 import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInviteScreen';
+import RequestBasicInfoScreen from '../screens/account/groupConnections/RequestBasicInfoScreen';
+import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/RequestMultipleBasicInfoScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1348,6 +1350,23 @@ const AccountNavigator = () => (
         },
       }}
     />
+
+    <Stack.Screen
+      name="RequestMultipleBasicInfoScreen"
+      component={RequestMultipleBasicInfoScreen}
+      options={{
+        title: 'Send request for basic info',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="InvitationSentScreen"
       component={InvitationSentScreen}
@@ -1522,6 +1541,22 @@ const AccountNavigator = () => (
       component={EditMemberBasicInfoScreen}
       options={{
         title: 'Edit Basic Info',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="RequestBasicInfoScreen"
+      component={RequestBasicInfoScreen}
+      options={{
+        title: 'Request Basic Info',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

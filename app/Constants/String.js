@@ -301,6 +301,7 @@ const strings = {
   languagePlaceholder: 'Select Language',
   refereeFeesTitle: 'Referee Fee',
   deleteTitle: 'Delete',
+  profilePhotoUser: 'Profile Photo Of User Account',
   titleOrDescriptionText: 'Title or Description',
   title: 'Title',
   titlePlaceholder: 'Enter Title',

@@ -51,6 +51,10 @@ const NotificationType = {
   comment: 'comment',
 
   inviteToConnectMember: 'inviteToConnectMember',
+
+  // request for basic info
+
+  sendBasicInfoToMember : 'sendBasicInfoToMember',
 };
 
 export default NotificationType
