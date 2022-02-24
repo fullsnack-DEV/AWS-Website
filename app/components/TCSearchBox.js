@@ -14,12 +14,14 @@ export default function TCSearchBox({
   value,
   placeholderText = strings.searchHereText,
   editable = true,
+  textInputRef,
   ...props
 }) {
   return (
     <View style={{...styles.sectionStyle, ...style}} {...props}>
       <Image source={images.searchLocation} style={styles.searchImg} />
       <TextInput
+        ref={textInputRef}
         editable={editable}
         autoCapitalize={'none'}
         autoCompleteType={'off'}
