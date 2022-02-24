@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable no-param-reassign */
+import React,{useContext} from 'react';
 import {
   Text,
   View,
@@ -12,8 +13,8 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 import TCInfoField from '../TCInfoField';
-import TCThinDivider from '../TCThinDivider';
 import TCUserRoleBadge from '../TCUserRoleBadge';
+import AuthContext from '../../auth/context';
 
 const GroupMembership = ({
   groupData,
@@ -22,10 +23,32 @@ const GroupMembership = ({
   onEditPressed,
 }) => {
   let typeImage = '';
+  const authContext = useContext(AuthContext);
+
+
+  if(groupData?.group?.entity_type === 'team'){
+    const a = {
+      ...groupData.group,
+      positions: groupData?.positions,
+      jersey_number: groupData?.jersey_number,
+      appearance: groupData?.appearance,
+      status: groupData?.status,
+      is_admin: groupData?.is_admin,
+      is_member: groupData?.is_member,
+      is_coach: groupData?.is_coach,
+      note: groupData?.note,
+      user_id : groupData?.user_id
+    }
+    groupData = a
+  }
+
   if (groupData.entity_type === 'player') typeImage = '';
   else if (groupData.entity_type === 'club') typeImage = images.clubC;
   else if (groupData.entity_type === 'team') typeImage = images.teamT;
   else if (groupData.entity_type === 'league') typeImage = images.clubC;
+
+
+
 
   return (
     <>
@@ -56,7 +79,7 @@ const GroupMembership = ({
               {groupData.is_coach && (
                 <TCUserRoleBadge title="Coach" titleColor={colors.greeColor} />
               )}
-              {groupData.is_player && (
+              {groupData.is_member && (
                 <TCUserRoleBadge
                   title="Player"
                   titleColor={colors.playerBadgeColor}
@@ -65,13 +88,13 @@ const GroupMembership = ({
             </View>
           </View>
         </View>
-        {edit || groupData.group_id === switchID ? (
+        {(edit || groupData.group_id === switchID) && authContext.entity.role === groupData?.entity_type ? (
           <TouchableWithoutFeedback onPress={onEditPressed}>
             <Image source={images.editSection} style={styles.editImage} />
           </TouchableWithoutFeedback>
         ) : null}
       </View>
-      {groupData.entity_type === 'team' && (
+      {authContext.entity.role === 'team' && (
         <>
           <TCInfoField
             title={'Position'}
@@ -97,10 +120,10 @@ const GroupMembership = ({
           />
         </>
       )}
-      {groupData.note ? (
+      {/* {groupData.note ? (
         <Text style={styles.groupDescriptionText}>{groupData.note}</Text>
-      ) : null}
-      <TCThinDivider marginTop={20} width={'100%'} />
+      ) : null} */}
+      
     </>
   );
 };
@@ -145,14 +168,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     alignSelf: 'center',
   },
-  groupDescriptionText: {
-    marginTop: 10,
-    marginLeft: 20,
-    marginRight: 20,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-  },
+  // groupDescriptionText: {
+  //   marginTop: 10,
+  //   marginLeft: 20,
+  //   marginRight: 20,
+  //   fontSize: 16,
+  //   color: colors.lightBlackColor,
+  //   fontFamily: fonts.RRegular,
+  // },
   editImage: {
     alignSelf: 'center',
     height: 18,

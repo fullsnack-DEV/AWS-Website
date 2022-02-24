@@ -166,7 +166,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
   const sendChallenge = () => {
     entity = authContext.entity;
     console.log('Entity:=>', entity);
-    const res_secure_referee = challengeData.responsible_for_referee.who_secure.map(
+    const res_secure_referee = challengeData?.responsible_for_referee?.who_secure?.map(
       (obj) => ({
         ...obj,
         responsible_team_id:
@@ -176,7 +176,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
       }),
     );
 
-    const res_secure_scorekeeper = challengeData.responsible_for_scorekeeper.who_secure.map(
+    const res_secure_scorekeeper = challengeData?.responsible_for_scorekeeper?.who_secure?.map(
       (obj) => ({
         ...obj,
         responsible_team_id:
@@ -194,8 +194,15 @@ export default function ChallengePaymentScreen({route, navigation}) {
       ),
       end_datetime: Number(parseFloat(challengeData?.end_datetime).toFixed(0)),
     };
-    body.responsible_for_referee.who_secure = res_secure_referee;
-    body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
+    console.log('res_secure_referee?.length',res_secure_referee?.length);
+    if(res_secure_referee?.length > 0){
+      body.responsible_for_referee.who_secure = res_secure_referee;
+
+    }
+    if(res_secure_scorekeeper?.length > 0){
+      body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
+
+    }
     console.log('body:=>', body);
     const homeID = body.home_team.group_id ?? body.home_team.user_id;
     const awayID = body.away_team.group_id ?? body.away_team.user_id;

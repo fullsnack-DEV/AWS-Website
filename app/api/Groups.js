@@ -179,3 +179,18 @@ export const patchGroup = (groupID, params, authContext) => makeAPIRequest({
   data: params,
   authContext,
 })
+export const approveBasicInfoRequest = (groupID, requestId,params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}groups/${groupID}/basicinfo/${requestId}`,
+  data:params,
+  authContext
+})
+
+export const sendBasicInfoRequest = (groupID, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}groups/${groupID}/basicinfo`,
+  data:params,
+  authContext,
+})
+
+

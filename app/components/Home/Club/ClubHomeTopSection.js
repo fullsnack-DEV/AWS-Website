@@ -21,8 +21,7 @@ export default function ClubHomeTopSection({
     messageButtonWidth = '32%';
   }
   if (
-    clubDetails &&
-    clubDetails.group_id === loggedInEntity.obj.parent_group_id
+    clubDetails && loggedInEntity.obj.parent_groups?.includes(clubDetails.group_id)
   ) {
     isMember = true;
   }

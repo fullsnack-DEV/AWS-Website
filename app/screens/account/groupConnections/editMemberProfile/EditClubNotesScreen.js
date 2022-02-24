@@ -61,7 +61,7 @@ export default function EditClubNotesScreen({navigation, route}) {
     )
       .then(() => {
         setloading(false);
-        // navigation.goBack();
+        navigation.goBack();
       })
       .catch((e) => {
         setloading(false);

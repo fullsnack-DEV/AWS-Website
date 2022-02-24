@@ -383,7 +383,7 @@ export default function EditChallenge({navigation, route}) {
       body.end_datetime = route?.params?.endTime / 1000;
     }
 
-    const res_secure_referee = challengeObj.responsible_for_referee.who_secure.map(
+    const res_secure_referee = challengeObj?.responsible_for_referee?.who_secure?.map(
       (obj) => ({
         ...obj,
         responsible_team_id:
@@ -393,7 +393,7 @@ export default function EditChallenge({navigation, route}) {
       }),
     );
 
-    const res_secure_scorekeeper = challengeObj.responsible_for_scorekeeper.who_secure.map(
+    const res_secure_scorekeeper = challengeObj?.responsible_for_scorekeeper?.who_secure?.map(
       (obj) => ({
         ...obj,
         responsible_team_id:

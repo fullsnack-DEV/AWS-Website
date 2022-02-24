@@ -1,0 +1,217 @@
+import React, {
+  useLayoutEffect,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+} from 'react';
+import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
+
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import strings from '../../../Constants/String';
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
+import TCSearchBox from '../../../components/TCSearchBox';
+import AuthContext from '../../../auth/context';
+import TCTags from '../../../components/TCTags';
+import TCThinDivider from '../../../components/TCThinDivider';
+import TCThickDivider from '../../../components/TCThickDivider';
+import {getGroupMembers, sendBasicInfoRequest} from '../../../api/Groups';
+import MemberProfile from '../../../components/groupConnections/MemberProfile';
+
+
+export default function RequestMultipleBasicInfoScreen({navigation, route}) {
+  const [loading, setloading] = useState(false);
+  const authContext = useContext(AuthContext);
+  const [players, setPlayers] = useState([]);
+  const [searchPlayers, setSearchPlayers] = useState([]);
+
+
+  const [selectedList, setSelectedList] = useState([]);
+
+  const selectedPlayers = [];
+  useEffect(() => {
+    setloading(true);
+
+    getGroupMembers(route.params?.groupID, authContext)
+      .then((response) => {
+        setloading(false);
+        const result = response.payload.map((obj) => {
+          // eslint-disable-next-line no-param-reassign
+          obj.isChecked = false;
+          return obj;
+        });
+        console.log('result:=>',response.payload);
+        setPlayers(result);
+        setSearchPlayers(result);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, []);
+
+
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Text style={styles.sendButtonStyle} onPress={() => sendRequestForBasicInfo()}>
+          Send
+        </Text>
+      ),
+    });
+  }, [navigation, selectedList,searchPlayers]);
+
+ 
+
+
+
+  const selectPlayer = ({item, index}) => {
+    players[index].isChecked = !item.isChecked;
+    players.map((obj) => {
+      if (obj.isChecked) {
+        selectedPlayers.push(obj.user_id);
+      }
+      return obj;
+    });
+    setSelectedList(selectedPlayers);
+    console.log('Selected Item:', selectedPlayers);
+  };
+
+  const renderPlayer = ({item, index}) => (
+    <MemberProfile
+      playerDetail={item}
+      isChecked={item.isChecked}
+      onPress={() => selectPlayer({item, index})}
+    />
+  );
+  const handleTagPress = ({index}) => {
+    players[index].isChecked = false;
+    setPlayers([...players]);
+    players.map((obj) => {
+      if (obj.isChecked) {
+        selectedPlayers.push(obj.user_id);
+      }
+      return obj;
+    });
+  };
+
+  
+  const listEmptyComponent = () => (
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <Text
+        style={{
+          fontFamily: fonts.RRegular,
+          color: colors.grayColor,
+          fontSize: 26,
+        }}>
+        No Players
+      </Text>
+    </View>
+  );
+
+  const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
+  const searchFilterFunction = (text) => {
+    const result = players.filter(
+      (x) => x?.first_name?.toLowerCase().includes(text.toLowerCase())
+        || x?.last_name?.toLowerCase().includes(text.toLowerCase()),
+    );
+    if(text.length > 0){
+        setPlayers(result);
+    }else{
+        setPlayers(searchPlayers);
+    }
+    
+  };
+
+
+  const sendRequestForBasicInfo=()=>{
+        if(selectedList.length > 0){
+            setloading(true)
+    
+    sendBasicInfoRequest(route?.params?.groupID,selectedList ,authContext).then((response)=>{
+      setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, `Requests for basic info were sent to ${selectedList?.length} members.`);
+            }, 10);
+      console.log('sendBasicInfoRequest',response);
+    
+      }) .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+        }else{
+            Alert.alert(strings.alertmessagetitle, 'Please select members first.');
+ 
+        }
+    }
+    
+
+  return (
+    <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
+      <Text style={styles.infoTextStyle}>
+        You can send a request to collect a member’s basic info. When it is
+        accepted, this basic info will be updated with the information provided
+        by the member.
+      </Text>
+
+      <TCThickDivider marginBottom={15} />
+      <TCSearchBox
+        width={'90%'}
+        alignSelf="center"
+        onChangeText={(text) => {
+           
+            searchFilterFunction(text)
+        }}
+      />
+      <TCTags
+        dataSource={players}
+        titleKey={'first_name'}
+        onTagCancelPress={handleTagPress}
+      />
+      {/* <FlatList
+        data={players}
+        renderItem={renderPlayer}
+        keyExtractor={(item, index) => index.toString()}
+        onScroll={onScrollHandler}
+        onEndReachedThreshold={0.01}
+        onScrollBeginDrag={() => {
+          stopFetchMore = false;
+        }}
+      /> */}
+
+      <FlatList
+        extraData={players}
+        showsVerticalScrollIndicator={false}
+        data={players}
+        keyExtractor={(item, index) => index.toString()}
+        ItemSeparatorComponent={ItemSeparatorComponent}
+        renderItem={renderPlayer}
+        
+        ListEmptyComponent={listEmptyComponent}
+      />
+    </View>
+  );
+}
+const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+  },
+  infoTextStyle: {
+    margin: 15,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+  },
+  sendButtonStyle: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    marginRight: 10,
+  },
+});

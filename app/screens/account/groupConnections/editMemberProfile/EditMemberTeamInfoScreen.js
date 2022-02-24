@@ -37,11 +37,11 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
   const [role, setRole] = useState('');
   const [switchUser, setSwitchUser] = useState({});
 
-  const [groupMemberDetail, setGroupMemberDetail] = useState({});
+  const [groupMemberDetail, setGroupMemberDetail] = useState(route?.params?.groupMemberDetail);
   const [positions, setPositions] = useState(route.params.groupMemberDetail.positions || [{}]);
 
   useEffect(() => {
-    setGroupMemberDetail(route.params.groupMemberDetail);
+    
     setPlayerStatus(route.params.groupMemberDetail.status);
     console.log('MEMBER DETAIL ::', groupMemberDetail);
     const getAuthEntity = async () => {
@@ -73,12 +73,12 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
     if (groupMemberDetail.status) {
       bodyParams.status = groupMemberDetail.status;
     }
-    bodyParams.is_admin = groupMemberDetail.is_admin;
+    bodyParams.is_others = groupMemberDetail.is_others;
     bodyParams.is_coach = groupMemberDetail.is_coach;
-    bodyParams.is_player = groupMemberDetail.is_player;
+    bodyParams.is_member = groupMemberDetail.is_member;
 
     const body = {
-      group_member_detail: bodyParams,
+      ...bodyParams,
     };
 
     patchMember(
@@ -87,9 +87,11 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
       body,
       authContext,
     )
-      .then(() => {
+      .then((response) => {
         setloading(false);
-        navigation.goBack();
+        navigation.navigate('MembersProfileScreen',{
+          modifiedMemberDetail: response.payload
+        });
       })
       .catch((e) => {
         setloading(false);
@@ -97,7 +99,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext, groupMemberDetail.appearance, groupMemberDetail.group_id, groupMemberDetail.is_admin, groupMemberDetail.is_coach, groupMemberDetail.is_player, groupMemberDetail.jersey_number, groupMemberDetail.note, groupMemberDetail.positions, groupMemberDetail.status, groupMemberDetail.user_id, navigation, positions]);
+  }, [authContext, groupMemberDetail.appearance, groupMemberDetail.group_id, groupMemberDetail.is_others, groupMemberDetail.is_coach, groupMemberDetail.is_member, groupMemberDetail.jersey_number, groupMemberDetail.note, groupMemberDetail.positions, groupMemberDetail.status, groupMemberDetail.user_id, navigation, positions]);
 
 
   useLayoutEffect(() => {
@@ -155,26 +157,30 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
 
       <View style={styles.mainCheckBoxContainer}>
         <Text style={styles.checkBoxTitle}>Admin Authority And Role</Text>
+        
         <View style={styles.checkBoxContainer}>
+          <Text style={styles.checkBoxItemText}>Player</Text>
+
           <TouchableOpacity
             onPress={() => {
               setGroupMemberDetail({
                 ...groupMemberDetail,
-                is_admin: !groupMemberDetail.is_admin,
+                is_member: !groupMemberDetail.is_member,
               });
             }}>
             <Image
               source={
-                groupMemberDetail.is_admin
-                  ? images.checkGreenBG
+                groupMemberDetail.is_member
+                  ? images.orangeCheckBox
                   : images.uncheckWhite
               }
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-          <Text style={styles.checkBoxItemText}>Admin</Text>
         </View>
         <View style={styles.checkBoxContainer}>
+          <Text style={styles.checkBoxItemText}>Coach</Text>
+
           <TouchableOpacity
             onPress={() => {
               setGroupMemberDetail({
@@ -185,32 +191,32 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
             <Image
               source={
                 groupMemberDetail.is_coach
-                  ? images.checkGreenBG
+                  ? images.orangeCheckBox
                   : images.uncheckWhite
               }
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-          <Text style={styles.checkBoxItemText}>Coach</Text>
         </View>
         <View style={styles.checkBoxContainer}>
+          <Text style={styles.checkBoxItemText}>Others</Text>
+
           <TouchableOpacity
             onPress={() => {
               setGroupMemberDetail({
                 ...groupMemberDetail,
-                is_player: !groupMemberDetail.is_player,
+                is_others: !groupMemberDetail.is_others,
               });
             }}>
             <Image
               source={
-                groupMemberDetail.is_player
-                  ? images.checkGreenBG
+                groupMemberDetail.is_others
+                  ? images.orangeCheckBox
                   : images.uncheckWhite
               }
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-          <Text style={styles.checkBoxItemText}>Player</Text>
         </View>
       </View>
       <View>
@@ -329,6 +335,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 25,
     marginBottom: 10,
+    justifyContent:'space-between',
+    marginRight:15,
   },
   mainCheckBoxContainer: {
     marginLeft: 15,

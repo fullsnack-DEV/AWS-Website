@@ -240,7 +240,15 @@ const getTabBarVisibility = (route) => {
     routeName === 'CreateMemberProfileForm1' ||
     routeName === 'CreateMemberProfileForm2' ||
     routeName === 'CreateMemberProfileForm3' ||
-    routeName === 'EditMemberInfoScreen'
+    routeName === 'EditMemberInfoScreen' || 
+    routeName === 'CreateMemberProfileClubForm2' ||
+    routeName === 'CreateMemberProfileClubForm3' || 
+    routeName === 'CreateMemberProfileTeamForm2' ||
+    routeName === 'InviteMembersBySearchScreen' ||
+    routeName === 'RequestBasicInfoScreen' || 
+    routeName === 'RequestMultipleBasicInfoScreen'
+
+
   ) {
     return false;
   }
