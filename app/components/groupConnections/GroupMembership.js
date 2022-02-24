@@ -168,14 +168,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     alignSelf: 'center',
   },
-  groupDescriptionText: {
-    marginTop: 10,
-    marginLeft: 20,
-    marginRight: 20,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-  },
+  // groupDescriptionText: {
+  //   marginTop: 10,
+  //   marginLeft: 20,
+  //   marginRight: 20,
+  //   fontSize: 16,
+  //   color: colors.lightBlackColor,
+  //   fontFamily: fonts.RRegular,
+  // },
   editImage: {
     alignSelf: 'center',
     height: 18,
