@@ -24,6 +24,7 @@ import {
 
 import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from 'react-native-actionsheet';
+import {useIsFocused} from '@react-navigation/native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
@@ -53,6 +54,8 @@ import uploadImages from '../../../utils/imageAction';
 export default function PersonalInformationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const actionSheet = useRef();
+  const isFocused = useIsFocused();
+
   const actionSheetWithDelete = useRef();
   // For activity indigator
   const [loading, setloading] = useState(false);
@@ -60,6 +63,15 @@ export default function PersonalInformationScreen({navigation, route}) {
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [languagesName, setLanguagesName] = useState('');
   const [profileImageChanged, setProfileImageChanged] = useState(false);
+  const [streetAddress, setStreetAddress] = useState(
+    authContext?.entity?.obj?.street_address,
+  );
+  const [city, setCity] = useState(authContext?.entity?.obj?.city);
+  const [state, setState] = useState(authContext?.entity?.obj?.state_abbr);
+  const [country, setCountry] = useState(authContext?.entity?.obj?.country);
+  const [postalCode, setPostalCode] = useState(
+    authContext?.entity?.obj?.postal_code,
+  );
 
   const [phoneNumbers, setPhoneNumbers] = useState(
     authContext.entity.obj.phone_numbers || [
@@ -87,6 +99,11 @@ export default function PersonalInformationScreen({navigation, route}) {
     languages,
     phoneNumbers,
     userInfo,
+    city,
+    state,
+    country,
+    postalCode,
+    streetAddress,
   ]);
 
   useEffect(() => {
@@ -99,6 +116,20 @@ export default function PersonalInformationScreen({navigation, route}) {
       setLanguagesName(languageText);
     }
   }, [userInfo?.language]);
+
+  useEffect(() => {
+    if (isFocused) {
+      if (
+        route?.params?.city &&
+        route?.params?.state &&
+        route?.params?.country
+      ) {
+        setCity(route?.params?.city);
+        setState(route?.params?.state);
+        setCountry(route?.params?.country);
+      }
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     const arr = [];
@@ -115,16 +146,6 @@ export default function PersonalInformationScreen({navigation, route}) {
     setLanguages(arr);
   }, []);
 
-  useEffect(() => {
-    if (route.params && route.params.city) {
-      setUserInfo({
-        ...userInfo,
-        city: route.params.city,
-        state_abbr: route.params.state,
-        country: route.params.country,
-      });
-    }
-  }, [route.params]);
   const addPhoneNumber = () => {
     const obj = {
       id: phoneNumbers.length === 0 ? 0 : phoneNumbers.length,
@@ -138,6 +159,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
   // Form Validation
   const checkValidation = () => {
+    console.log('userInfo', userInfo);
     if (userInfo.email) {
       if (!Utility.validateEmail(userInfo.email)) {
         Alert.alert('Towns Cup', 'Please enter valid email address.');
@@ -168,7 +190,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     }
     if (userInfo.weight) {
       if (!userInfo.weight.weight_type) {
-        Alert.alert('Towns Cup', 'Please select weight measurement');
+        Alert.alert('Towns Cup', 'Please select weight measurement.');
         return false;
       }
       if (userInfo.weight.weight <= 0 || userInfo.weight.weight >= 1000) {
@@ -176,7 +198,6 @@ export default function PersonalInformationScreen({navigation, route}) {
         return false;
       }
     }
-
     return true;
   };
 
@@ -203,14 +224,21 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const onSavePress = () => {
+    console.log('checkValidation()', checkValidation());
+   
     if (checkValidation()) {
       const bodyParams = {};
       bodyParams.first_name = userInfo.first_name;
       bodyParams.last_name = userInfo.last_name;
       bodyParams.full_name = `${userInfo.first_name} ${userInfo.last_name}`;
-      bodyParams.city = userInfo.city;
-      bodyParams.state_abbr = userInfo.state_abbr;
-      bodyParams.country = userInfo.country;
+      if (city && state && country && streetAddress && postalCode) {
+        bodyParams.city = city;
+        bodyParams.state_abbr = state;
+        bodyParams.country = country;
+        bodyParams.street_address = streetAddress;
+        bodyParams.postal_code = postalCode;
+      }
+
       bodyParams.description = userInfo.description;
       bodyParams.height = userInfo.height;
       bodyParams.weight = userInfo.weight;
@@ -224,7 +252,7 @@ export default function PersonalInformationScreen({navigation, route}) {
 
       if (profileImageChanged) {
         const imageArray = [];
-    imageArray.push({path: userInfo.thumbnail});   
+        imageArray.push({path: userInfo.thumbnail});
         uploadImages(imageArray, authContext)
           .then((responses) => {
             const attachments = responses.map((item) => ({
@@ -243,8 +271,6 @@ export default function PersonalInformationScreen({navigation, route}) {
               bodyParams.thumbnail = attachments[0].url;
             }
 
-           
-
             updateUser(bodyParams);
           })
           .catch((e) => {
@@ -255,7 +281,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           });
       } else {
         bodyParams.full_image = '';
-              bodyParams.thumbnail = '';
+        bodyParams.thumbnail = '';
         updateUser(bodyParams);
       }
     }
@@ -334,7 +360,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               });
             }}
             editable={editMode}
-            value={userInfo.height.height}
+            value={userInfo?.height?.height}
           />
         </View>
         <RNPickerSelect
@@ -350,12 +376,12 @@ export default function PersonalInformationScreen({navigation, route}) {
             setUserInfo({
               ...userInfo,
               height: {
-                height: userInfo.height.height,
+                height: userInfo?.height?.height,
                 height_type: value,
               },
             });
           }}
-          value={userInfo.height.height_type}
+          value={userInfo?.height?.height_type}
           disabled={!editMode}
           useNativeAndroidPickerStyle={false}
           style={{
@@ -416,7 +442,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               });
             }}
             editable={editMode}
-            value={userInfo.weight.weight}
+            value={userInfo?.weight?.weight}
           />
         </View>
         <RNPickerSelect
@@ -597,7 +623,7 @@ export default function PersonalInformationScreen({navigation, route}) {
 
   const openImagePicker = (width = 400, height = 400) => {
     const cropCircle = true;
-    
+
     ImagePicker.openPicker({
       width,
       height,
@@ -605,10 +631,9 @@ export default function PersonalInformationScreen({navigation, route}) {
       cropperCircleOverlay: cropCircle,
     }).then((data) => {
       // 1 means profile, 0 - means background
-      
-        setUserInfo({...userInfo, thumbnail: data.path});
-        setProfileImageChanged(true);
-     
+
+      setUserInfo({...userInfo, thumbnail: data.path});
+      setProfileImageChanged(true);
     });
   };
 
@@ -624,7 +649,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           case RESULTS.DENIED:
             request(PERMISSIONS.IOS.CAMERA).then(() => {
               const cropCircle = true;
-             
+
               ImagePicker.openCamera({
                 width,
                 height,
@@ -632,10 +657,8 @@ export default function PersonalInformationScreen({navigation, route}) {
                 cropperCircleOverlay: cropCircle,
               })
                 .then((data) => {
-                  
-                    setUserInfo({...userInfo, thumbnail: data.path});
-                    setProfileImageChanged(true);
-                  
+                  setUserInfo({...userInfo, thumbnail: data.path});
+                  setProfileImageChanged(true);
                 })
                 .catch((e) => {
                   Alert.alert(e);
@@ -648,7 +671,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           case RESULTS.GRANTED:
             {
               const cropCircle = true;
-              
+
               ImagePicker.openCamera({
                 width,
                 height,
@@ -656,10 +679,8 @@ export default function PersonalInformationScreen({navigation, route}) {
                 cropperCircleOverlay: cropCircle,
               })
                 .then((data) => {
-                  
-                    setUserInfo({...userInfo, thumbnail: data.path});
-                    setProfileImageChanged(true);
-                  
+                  setUserInfo({...userInfo, thumbnail: data.path});
+                  setProfileImageChanged(true);
                 })
                 .catch((e) => {
                   Alert.alert(e);
@@ -677,8 +698,8 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const deleteImage = () => {
-      setUserInfo({...userInfo, thumbnail: '', full_image: ''});
-      setProfileImageChanged(false);
+    setUserInfo({...userInfo, thumbnail: '', full_image: ''});
+    setProfileImageChanged(false);
   };
 
   return (
@@ -839,7 +860,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             <TCLabel title={strings.birthDatePlaceholder} />
             <View style={styles.staticTextView}>
               <Text style={styles.staticText}>
-                {moment(userInfo.birthday * 1000).format('MMM DD,YYYY')}
+                {moment(userInfo?.birthday * 1000).format('MMM DD,YYYY')}
               </Text>
             </View>
           </View>
@@ -890,6 +911,46 @@ export default function PersonalInformationScreen({navigation, route}) {
             editable={false}
             value={userInfo.email}
           />
+
+          <View>
+            <TCLabel title={'Address'} />
+            <TCTextField
+              editable={editMode}
+              value={streetAddress}
+              onChangeText={(text) => setStreetAddress(text)}
+              placeholder={strings.addressPlaceholder}
+              keyboardType={'default'}
+              autoCapitalize="none"
+              autoCorrect={false}
+              // onFocus={() => setLocationFieldVisible(true)}
+            />
+          </View>
+
+          <TouchableOpacity
+            disabled={!editMode}
+            onPress={() =>
+              navigation.navigate('SearchLocationScreen', {
+                comeFrom: 'PersonalInformationScreen',
+              })
+            }>
+            <TextInput
+              placeholder={strings.searchCityPlaceholder}
+              placeholderTextColor={colors.userPostTimeColor}
+              style={[styles.matchFeeTxt, {marginBottom: 5}]}
+              value={city && `${city}, ${state}, ${country}`}
+              editable={false}
+              pointerEvents="none"></TextInput>
+          </TouchableOpacity>
+
+          <View>
+            <TCTextField
+              editable={editMode}
+              value={postalCode}
+              onChangeText={(text) => setPostalCode(text)}
+              placeholder={strings.postalCodeText}
+              keyboardType={'default'}
+            />
+          </View>
           <Modal
             isVisible={isModalVisible}
             backdropColor="black"
@@ -982,9 +1043,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           if (index === 0) {
             openCamera();
           } else if (index === 1) {
-            
-              openImagePicker();
-           
+            openImagePicker();
           }
         }}
       />
@@ -1003,9 +1062,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           if (index === 0) {
             openCamera();
           } else if (index === 1) {
-            
-              openImagePicker();
-            
+            openImagePicker();
           } else if (index === 2) {
             deleteImage();
           }

@@ -89,7 +89,7 @@ export default function SearchLocationScreen({ navigation, route }) {
           });
         } 
         else if (route.params.comeFrom === 'EditPersonalProfileScreen') {
-          navigation.navigate('EditPersonalProfileScreen', {
+          navigation.navigate(route.params.comeFrom, {
             city: item.terms[0].value,
             state: item.terms[1].value,
             country: item.terms[2].value,

@@ -412,7 +412,7 @@ export default function CreateMemberProfileForm1({navigation,route}) {
         )}
 
         <View>
-          <TCLable title={'Street Address'} />
+          <TCLable title={'Address'} />
           <TCTextField
             value={streetAddress}
             onChangeText={(text) => setStreetAddress(text)}
@@ -423,24 +423,25 @@ export default function CreateMemberProfileForm1({navigation,route}) {
             // onFocus={() => setLocationFieldVisible(true)}
           />
         </View>
-        <View style={styles.fieldView}>
-          <TCLable title={strings.locationTitle} required={false} />
-          <TouchableOpacity
+       
+          
+        <TouchableOpacity
             onPress={() => navigation.navigate('SearchLocationScreen', {
                 comeFrom: 'CreateMemberProfileForm1',
               })
             }>
-            <TextInput
+          <TextInput
               placeholder={strings.searchCityPlaceholder}
+              placeholderTextColor={colors.userPostTimeColor}
               style={[styles.matchFeeTxt, { marginBottom: 5 }]}
               value={location}
               editable={false}
               pointerEvents="none"></TextInput>
-          </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
+        
      
         <View>
-          <TCLable title={'Postal Code/Zip'} />
+        
           <TCTextField
               value={postalCode}
               onChangeText={(text) => setPostalCode(text)}
@@ -563,9 +564,7 @@ const styles = StyleSheet.create({
   mendatory: {
     color: 'red',
   },
-  fieldView: {
-    marginTop: 15,
-  },
+  
   matchFeeTxt: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
@@ -580,7 +579,7 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.3,
     shadowRadius: 1,
 
     width: widthPercentageToDP('92%'),

@@ -187,6 +187,9 @@ export default function WelcomeScreen({navigation}) {
           ...qbEntity,
           QB: {...res?.user, connected: true, token: res?.session?.token},
         };
+
+        console.log('QB qbEntity : ', qbEntity);
+
         QBconnectAndSubscribe(qbEntity);
         dummyAuthContext.entity = qbEntity;
         await wholeSignUpProcessComplete(response, dummyAuthContext);

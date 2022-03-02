@@ -18,7 +18,10 @@ import {
 } from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {approveBasicInfoRequest, getGroupMembersInfo} from '../../../api/Groups';
+import {
+  approveBasicInfoRequest,
+  getGroupMembersInfo,
+} from '../../../api/Groups';
 import strings from '../../../Constants/String';
 import images from '../../../Constants/ImagePath';
 
@@ -144,11 +147,14 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             !!response?.payload?.country &&
             !!response?.payload?.postal_code,
         });
-        if(response?.payload?.phone_numbers?.length > 0){
-            setPhoneNumber(response?.payload?.phone_numbers)
+        if (response?.payload?.phone_numbers?.length > 0) {
+          setPhoneNumber(response?.payload?.phone_numbers);
         }
-        if(response?.payload?.city){
-            setLocation(memberInfo?.city && `${memberInfo?.city}, ${memberInfo?.state_abbr}, ${memberInfo?.country}`)
+        if (response?.payload?.city) {
+          setLocation(
+            memberInfo?.city &&
+              `${memberInfo?.city}, ${memberInfo?.state_abbr}, ${memberInfo?.country}`,
+          );
         }
         setloading(false);
       })
@@ -192,16 +198,15 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         </Text>
       ),
     });
-  }, [navigation, memberInfo, role, phoneNumber, show,setting]);
+  }, [navigation, memberInfo, role, phoneNumber, show, setting]);
 
   // Form Validation
   const checkValidation = () => {
-    if (setting.birthday &&  memberInfo?.birthday === '') {
-        Alert.alert('Towns Cup', 'Please fill birthday.');
-        return false;
-      }
-   
-   
+    if (setting.birthday && memberInfo?.birthday === '') {
+      Alert.alert('Towns Cup', 'Please fill birthday.');
+      return false;
+    }
+
     if (setting?.height && memberInfo.height) {
       if (!memberInfo.height.height_type) {
         Alert.alert('Towns Cup', 'Please select height measurement');
@@ -222,28 +227,31 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         return false;
       }
     }
-    
-    if (setting.phone){
-        if(memberInfo?.phone_numbers?.length <= 0) {
-            Alert.alert('Towns Cup', 'Please enter phone number.');
-            return false;
-        }
-        const filteredNumber = memberInfo?.phone_numbers?.filter(
-            (obj) =>
-              ![null, undefined, ''].includes(
-                obj.phone_number && obj.country_code,
-              ),
-          );
-          console.log('filteredNumber',filteredNumber);
-        if(filteredNumber?.length <= 0) {
-            Alert.alert('Towns Cup', 'Please fill all phone number parameter.');
-            return false;
-        }
-      }
-    if (setting.address && !location && memberInfo?.street_address === '' && memberInfo?.postal_code === '') {
-        Alert.alert('Towns Cup', 'Please enter all location parameter.');
+
+    if (setting.phone) {
+      if (memberInfo?.phone_numbers?.length <= 0) {
+        Alert.alert('Towns Cup', 'Please enter phone number.');
         return false;
       }
+      const filteredNumber = memberInfo?.phone_numbers?.filter(
+        (obj) =>
+          ![null, undefined, ''].includes(obj.phone_number && obj.country_code),
+      );
+      console.log('filteredNumber', filteredNumber);
+      if (filteredNumber?.length <= 0) {
+        Alert.alert('Towns Cup', 'Please fill all phone number parameter.');
+        return false;
+      }
+    }
+    if (
+      setting.address &&
+      !location &&
+      memberInfo?.street_address === '' &&
+      memberInfo?.postal_code === ''
+    ) {
+      Alert.alert('Towns Cup', 'Please enter all location parameter.');
+      return false;
+    }
     return true;
   };
 
@@ -252,37 +260,38 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     const bodyParams = {};
     console.log('SETTING PARAMS::', setting);
     bodyParams.gender = memberInfo?.gender;
-    if(setting?.birthday === true){
-        bodyParams.birthday = memberInfo?.birthday;
+    if (setting?.birthday === true) {
+      bodyParams.birthday = memberInfo?.birthday;
     }
-    if(setting?.height === true){
-        bodyParams.height = memberInfo?.height;
+    if (setting?.height === true) {
+      bodyParams.height = memberInfo?.height;
     }
-    if(setting?.weight === true){
-        bodyParams.weight = memberInfo?.weight;
+    if (setting?.weight === true) {
+      bodyParams.weight = memberInfo?.weight;
     }
-    if(setting?.phone === true){
-        bodyParams.phone_numbers = memberInfo?.phone_numbers;
+    if (setting?.phone === true) {
+      bodyParams.phone_numbers = memberInfo?.phone_numbers;
     }
-    if(setting?.address === true){
-        bodyParams.street_address = memberInfo?.street_address;
-        bodyParams.city = memberInfo?.city;
-        bodyParams.state_abbr = memberInfo?.state_abbr;
-        bodyParams.country = memberInfo?.country;
-        bodyParams.postal_code = memberInfo?.postal_code;
+    if (setting?.address === true) {
+      bodyParams.street_address = memberInfo?.street_address;
+      bodyParams.city = memberInfo?.city;
+      bodyParams.state_abbr = memberInfo?.state_abbr;
+      bodyParams.country = memberInfo?.country;
+      bodyParams.postal_code = memberInfo?.postal_code;
     }
-    
-
 
     console.log('BODY PARAMS::', bodyParams);
-    
-    approveBasicInfoRequest(route?.params?.groupID, route?.params?.requestID, bodyParams, authContext)
+
+    approveBasicInfoRequest(
+      route?.params?.groupID,
+      route?.params?.requestID,
+      bodyParams,
+      authContext,
+    )
       .then((response) => {
-       
-          console.log('BASIC INFO RESPONSE::', response);
-          setloading(false);
-          navigation.goBack();
-        
+        console.log('BASIC INFO RESPONSE::', response);
+        setloading(false);
+        navigation.goBack();
       })
       .catch((e) => {
         setloading(false);
@@ -696,9 +705,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         <Text style={styles.checkBoxText}>Address</Text>
       </View>
       <View>
-        <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxText}>Street Address</Text>
-        </View>
         <TCTextField
           value={memberInfo?.street_address}
           onChangeText={(text) =>
@@ -709,29 +715,22 @@ export default function RequestBasicInfoScreen({navigation, route}) {
         />
       </View>
 
-      <View style={styles.fieldView}>
-        <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxText}>State/Province/Region</Text>
-        </View>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('SearchLocationScreen', {
-              comeFrom: 'RequestBasicInfoScreen',
-            })
-          }>
-          <TextInput
-            placeholder={strings.searchCityPlaceholder}
-            style={[styles.matchFeeTxt, {marginBottom: 5}]}
-            value={location}
-            editable={false}
-            pointerEvents="none"></TextInput>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('SearchLocationScreen', {
+            comeFrom: 'RequestBasicInfoScreen',
+          })
+        }>
+        <TextInput
+          placeholder={strings.searchCityPlaceholder}
+          placeholderTextColor={colors.userPostTimeColor}
+          style={[styles.matchFeeTxt, {marginBottom: 5}]}
+          value={location}
+          editable={false}
+          pointerEvents="none"></TextInput>
+      </TouchableOpacity>
 
       <View>
-        <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxText}>Postal Code/Zip</Text>
-        </View>
         <TCTextField
           value={memberInfo?.postal_code}
           onChangeText={(text) =>
