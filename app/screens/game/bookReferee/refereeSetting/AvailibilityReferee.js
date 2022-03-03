@@ -1,7 +1,5 @@
-import React, { useState, useLayoutEffect, useContext } from 'react';
-import {
- StyleSheet, View, Text, Alert, SafeAreaView,
- } from 'react-native';
+import React, {useState, useLayoutEffect, useContext} from 'react';
+import {StyleSheet, View, Text, Alert, SafeAreaView} from 'react-native';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import AuthContext from '../../../../auth/context';
 
@@ -11,10 +9,10 @@ import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
 import ToggleView from '../../../../components/Schedule/ToggleView';
 import * as Utility from '../../../../utils';
-import { patchPlayer } from '../../../../api/Users';
+import {patchPlayer} from '../../../../api/Users';
 
-export default function AvailibilityReferee({ navigation, route }) {
-  const { comeFrom, sportName } = route?.params;
+export default function AvailibilityReferee({navigation, route}) {
+  const {comeFrom, sportName} = route?.params;
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -58,11 +56,14 @@ export default function AvailibilityReferee({ navigation, route }) {
 
     selectedSport = {
       ...selectedSport,
-      setting: { ...selectedSport?.setting, ...bodyParams },
-    }
+      setting: {...selectedSport?.setting, ...bodyParams},
+    };
     registerdRefereeData.push(selectedSport);
 
-    const body = { ...authContext?.entity?.obj, referee_data: registerdRefereeData };
+    const body = {
+      ...authContext?.entity?.obj,
+      referee_data: registerdRefereeData,
+    };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
@@ -73,17 +74,17 @@ export default function AvailibilityReferee({ navigation, route }) {
           console.log('Register referee response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
           authContext.setUser(response.payload);
           await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.referee_data.filter(
               (obj) => obj.sport === sportName,
             )[0].setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         console.log('RESPONSE IS:: ', response);
         setloading(false);
@@ -102,7 +103,7 @@ export default function AvailibilityReferee({ navigation, route }) {
       <View>
         <TCLabel
           title={strings.availibilityRefereeTitle}
-          style={{ marginRight: 15 }}
+          style={{marginRight: 15}}
         />
 
         <View

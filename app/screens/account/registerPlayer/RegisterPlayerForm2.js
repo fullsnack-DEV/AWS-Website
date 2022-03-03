@@ -158,7 +158,7 @@ export default function RegisterPlayerForm2({navigation, route}) {
             sportType: route?.params?.bodyParams?.sport_type,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         console.log('RESPONSE IS:: ', response);
         setloading(false);

@@ -1,16 +1,18 @@
 const strings = {
-  townsCupTitle: 'TOWNSCUP',
-  alertmessagetitle: 'Towns Cup',
+  townsCupTitle: 'TownsCup',
+  alertmessagetitle: 'TownsCup',
   defaultError: 'Something went wrong',
   titleBasic: 'Townscup',
-  townsCupTagLine: 'All teams in the world.',
+  townsCupTagLine: 'All teams in the world',
   welCome: 'Welcome',
   welcomeText: 'You\'re only a few steps away from joining Townscup.',
   fbText: 'Continue with Facebook',
   googleText: 'Continue with Google',
   appleText: 'Continue with Apple',
-  signUpText: 'Signup with email',
-  alreadyMember: 'Already a member yet? Log In',
+  signUpText: 'Sign up with email',
+  alreadyRegisteredMessage: 'Email address is already registered.',
+  validEmailMessage: 'Please use a valid email address.',
+  alreadyMember: 'Already a member?',
   loginText: 'Log in',
   orText: 'OR',
   emailPlaceHolder: 'Email',
@@ -45,6 +47,7 @@ const strings = {
     'By continuing you agree to Towny\'s Terms of Service, We will manage information about you as described in our PrivacyPolicy and Cookie Policy.',
   resetText: 'Reset your password.',
   nextTitle: 'NEXT',
+  varificationLinkSend: 'Verification email was sent successfully.',
   deactivateTitle: 'DEACTIVATE ACTIVITY',
   acceptTitle: 'ACCEPT',
   declineTitle: 'DECLINE',
@@ -68,6 +71,11 @@ const strings = {
   yes: 'Yes',
   passwordText: 'Password (at least 8 characters)',
   confirmPasswordText: 'Confirm Password',
+  // Password message
+  passwordCanNotBlank: 'Password cannot be blank.',
+  cofirmpPswCanNotBlank: 'Confirm Password cannot be blank.',
+  confirmAndPasswordNotMatch: 'Password and Confirm Password do not match.',
+  appName: 'TownsCup',
 
   awaitingPayment: 'Awaiting Payment',
   pendingPayment: 'pendingpayment',
@@ -113,14 +121,16 @@ const strings = {
   clubTeamTitle3: 'FC Barcelona',
   leagueTeamTitle: 'UEFA Champions League',
 
-  locationText: 'Your Location',
-  locationPlaceholderText: 'Search city or postal code',
+  locationText: 'Choose your current city.',
+  locationPlaceholderText: 'Search by city or postal code',
   sportText: 'Select your favourite sports.',
 
   // Add Birthday screen
   addBirthdayText: 'Add your birthday.',
-  notDisplayText: 'This won’t be displayed on your public profile.',
+  notDisplayText: 'This won’t be displayed in your public profile.',
   whyAskingText: 'Why is TownsCup asking for my birthday?',
+  birthDateChangeNote:
+    'You can’t change your birthday once you have completed the sign-up process.',
   birthdatText:
     'You must be at least 13 years old to have a TownsCup account in most countries.\n\nIf account represents someone under the age of 13, the user must clearly state in the account’s bio that the account is managed by a parent or manager.\n\nThis information also helps TownsCup provide age-appropriate services to its users. Furthermore, this information is required when you join a group or sports game which has age requirements in the TownsCup Community.',
 
@@ -133,7 +143,8 @@ const strings = {
   maleRadioText: 'Male',
   femaleRadioText: 'Female',
   otherRadioText: 'Other',
-
+  canNotChangeGender:
+    'You can’t change your gender once you have completed the sign-up process.',
   // CreateTeam Screen 1
   star: '*',
   newText: 'new',
@@ -517,7 +528,7 @@ const strings = {
   enterBylawPlaceholder: 'Enter Bylaw',
   leagues: 'Leagues',
   tcpoint: 'TC Points',
-  matchAmountTitle:'Match Fee',
+  matchAmountTitle: 'Match Fee',
   tcranking: 'TC Ranking',
   history: 'History',
   addrole: 'Add',
@@ -614,7 +625,8 @@ const strings = {
   gamePaused: 'Game is paused.',
   gameEnded: 'Game is ended.',
   selectTeam: 'Please Select Team',
-  deactiveConfirmationText: 'Are you sure you want to deactivate Tennis singles?',
+  deactiveConfirmationText:
+    'Are you sure you want to deactivate Tennis singles?',
   resetMatchRecord: 'Do you want to reset all the match records?',
   reviewForTeams: 'Review for Teams',
   reviewForPlayers: 'Review for Players',
@@ -780,11 +792,11 @@ const strings = {
   refereeRules2:
     '• If your team isn’t reserving the following number of referees 5 days after the challenge is accepted, the confirmed game may be canceled.',
   scorekeeperSettingTitle:
-  'How many scorekeepers will your team hire for a game at its own cost?',
+    'How many scorekeepers will your team hire for a game at its own cost?',
   scorekeeperSettingNote:
     'Which team will secure the scorekeeper at its own expense?',
 
-    scorekeeperRules1:
+  scorekeeperRules1:
     '• Your team must secure the follwing number of scorekeepers for a game at its own cost within 5 days after the challenge is accepted.',
   scorekeeperRules2:
     '• If your team isn’t reserving the following number of scorekeepers 5 days after the challenge is accepted, the confirmed game may be canceled.',

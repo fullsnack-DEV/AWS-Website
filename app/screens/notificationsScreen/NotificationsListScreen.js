@@ -474,7 +474,7 @@ function NotificationsListScreen({navigation}) {
               .then((qbRes) => {
                 setloading(false);
                 if (qbRes?.error) {
-                  console.log('Towns Cup', qbRes?.error);
+                  console.log(strings.appName, qbRes?.error);
                 }
               })
               .catch(() => {
@@ -586,16 +586,15 @@ function NotificationsListScreen({navigation}) {
   };
 
   const onRespond = (groupObj) => {
-    console.log('groupObj:=>',groupObj);
-    const groupId =  JSON.parse(groupObj.activities[0].object).group.group_id
-    console.log('groupId:=>',groupId);
+    console.log('groupObj:=>', groupObj);
+    const groupId = JSON.parse(groupObj.activities[0].object).group.group_id;
+    console.log('groupId:=>', groupId);
 
-    
     if (activeScreen) {
       if (
         groupObj.activities[0].verb.includes(NotificationType.inviteToJoinClub)
       ) {
-        navigation.navigate('RespondForInviteScreen',{groupObj});
+        navigation.navigate('RespondForInviteScreen', {groupObj});
       } else {
         setloading(true);
         getRequestDetail(groupId, authContext)

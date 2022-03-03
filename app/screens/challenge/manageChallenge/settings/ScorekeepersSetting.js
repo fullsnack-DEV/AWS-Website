@@ -39,14 +39,19 @@ export default function ScorekeepersSetting({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
 
-  console.log('route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure',route?.params?.settingObj);
+  console.log(
+    'route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure',
+    route?.params?.settingObj,
+  );
   const [selection, setSelection] = useState(
-    
-    route?.params?.settingObj && route?.params?.settingObj?.responsible_for_scorekeeper && (route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure !==
+    route?.params?.settingObj &&
+      route?.params?.settingObj?.responsible_for_scorekeeper &&
+      (route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure !==
         'None' ||
         route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
           ?.length > 0)
-      ? route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure?.length
+      ? route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
+          ?.length
       : 'None',
   );
 
@@ -210,7 +215,7 @@ export default function ScorekeepersSetting({navigation, route}) {
             )[0].setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         console.log('RESPONSE IS:: ', response);
         setloading(false);
@@ -225,7 +230,7 @@ export default function ScorekeepersSetting({navigation, route}) {
 
   const saveTeam = () => {
     let bodyParams;
-    console.log('selection',selection);
+    console.log('selection', selection);
     if (selection === 'None') {
       bodyParams = {
         sport: sportName,
@@ -258,7 +263,7 @@ export default function ScorekeepersSetting({navigation, route}) {
     }
 
     console.log('scorekeeper secure:=>', bodyParams);
-    
+
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
@@ -280,7 +285,7 @@ export default function ScorekeepersSetting({navigation, route}) {
             settingObj: response.payload.setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         setloading(false);
       })

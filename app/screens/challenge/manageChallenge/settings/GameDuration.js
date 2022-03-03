@@ -349,7 +349,7 @@ export default function GameDuration({navigation, route}) {
               )[0].setting,
             });
           } else {
-            Alert.alert('Towns Cup', response.messages);
+            Alert.alert(strings.appName, response.messages);
           }
           console.log('RESPONSE IS:: ', response);
           setloading(false);
@@ -413,7 +413,7 @@ export default function GameDuration({navigation, route}) {
               settingObj: response.payload.setting,
             });
           } else {
-            Alert.alert('Towns Cup', response.messages);
+            Alert.alert(strings.appName, response.messages);
           }
           setloading(false);
         })

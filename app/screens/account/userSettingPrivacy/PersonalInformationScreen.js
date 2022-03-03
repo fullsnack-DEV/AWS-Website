@@ -81,13 +81,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     navigation.setOptions({
       headerShown: false,
     });
-  }, [
-    navigation,
-    editMode,
-    languages,
-    phoneNumbers,
-    userInfo,
-  ]);
+  }, [navigation, editMode, languages, phoneNumbers, userInfo]);
 
   useEffect(() => {
     let languageText = '';
@@ -140,39 +134,39 @@ export default function PersonalInformationScreen({navigation, route}) {
   const checkValidation = () => {
     if (userInfo.email) {
       if (!Utility.validateEmail(userInfo.email)) {
-        Alert.alert('Towns Cup', 'Please enter valid email address.');
+        Alert.alert(strings.appName, 'Please enter valid email address.');
         return false;
       }
     }
     if (userInfo.first_name === '') {
-      Alert.alert('Towns Cup', 'First name cannot be blank');
+      Alert.alert(strings.appName, 'First name cannot be blank');
       return false;
     }
     if (userInfo.last_name === '') {
-      Alert.alert('Towns Cup', 'Last name cannot be blank');
+      Alert.alert(strings.appName, 'Last name cannot be blank');
       return false;
     }
     if (userInfo.city && userInfo.state_abbr && userInfo.country === '') {
-      Alert.alert('Towns Cup', 'Location cannot be blank');
+      Alert.alert(strings.appName, 'Location cannot be blank');
       return false;
     }
     if (userInfo.height) {
       if (!userInfo.height.height_type) {
-        Alert.alert('Towns Cup', 'Please select height measurement');
+        Alert.alert(strings.appName, 'Please select height measurement');
         return false;
       }
       if (userInfo.height.height <= 0 || userInfo.height.height >= 1000) {
-        Alert.alert('Towns Cup', 'Please enter valid height.');
+        Alert.alert(strings.appName, 'Please enter valid height.');
         return false;
       }
     }
     if (userInfo.weight) {
       if (!userInfo.weight.weight_type) {
-        Alert.alert('Towns Cup', 'Please select weight measurement');
+        Alert.alert(strings.appName, 'Please select weight measurement');
         return false;
       }
       if (userInfo.weight.weight <= 0 || userInfo.weight.weight >= 1000) {
-        Alert.alert('Towns Cup', 'Please enter valid weight.');
+        Alert.alert(strings.appName, 'Please enter valid weight.');
         return false;
       }
     }
@@ -224,7 +218,7 @@ export default function PersonalInformationScreen({navigation, route}) {
 
       if (profileImageChanged) {
         const imageArray = [];
-    imageArray.push({path: userInfo.thumbnail});   
+        imageArray.push({path: userInfo.thumbnail});
         uploadImages(imageArray, authContext)
           .then((responses) => {
             const attachments = responses.map((item) => ({
@@ -243,19 +237,17 @@ export default function PersonalInformationScreen({navigation, route}) {
               bodyParams.thumbnail = attachments[0].url;
             }
 
-           
-
             updateUser(bodyParams);
           })
           .catch((e) => {
             setTimeout(() => {
-              Alert.alert('Towns Cup', e.messages);
+              Alert.alert(strings.appName, e.messages);
             }, 0.1);
             setloading(false);
           });
       } else {
         bodyParams.full_image = '';
-              bodyParams.thumbnail = '';
+        bodyParams.thumbnail = '';
         updateUser(bodyParams);
       }
     }
@@ -275,12 +267,12 @@ export default function PersonalInformationScreen({navigation, route}) {
         setEditMode(false);
         setloading(false);
         setTimeout(() => {
-          Alert.alert('Towns Cup', 'Profile changed sucessfully');
+          Alert.alert(strings.appName, 'Profile changed sucessfully');
         }, 1000);
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert('Towns Cup', e.messages);
+          Alert.alert(strings.appName, e.messages);
         }, 0.1);
         setloading(false);
       });
@@ -597,7 +589,7 @@ export default function PersonalInformationScreen({navigation, route}) {
 
   const openImagePicker = (width = 400, height = 400) => {
     const cropCircle = true;
-    
+
     ImagePicker.openPicker({
       width,
       height,
@@ -605,10 +597,9 @@ export default function PersonalInformationScreen({navigation, route}) {
       cropperCircleOverlay: cropCircle,
     }).then((data) => {
       // 1 means profile, 0 - means background
-      
-        setUserInfo({...userInfo, thumbnail: data.path});
-        setProfileImageChanged(true);
-     
+
+      setUserInfo({...userInfo, thumbnail: data.path});
+      setProfileImageChanged(true);
     });
   };
 
@@ -624,7 +615,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           case RESULTS.DENIED:
             request(PERMISSIONS.IOS.CAMERA).then(() => {
               const cropCircle = true;
-             
+
               ImagePicker.openCamera({
                 width,
                 height,
@@ -632,10 +623,8 @@ export default function PersonalInformationScreen({navigation, route}) {
                 cropperCircleOverlay: cropCircle,
               })
                 .then((data) => {
-                  
-                    setUserInfo({...userInfo, thumbnail: data.path});
-                    setProfileImageChanged(true);
-                  
+                  setUserInfo({...userInfo, thumbnail: data.path});
+                  setProfileImageChanged(true);
                 })
                 .catch((e) => {
                   Alert.alert(e);
@@ -648,7 +637,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           case RESULTS.GRANTED:
             {
               const cropCircle = true;
-              
+
               ImagePicker.openCamera({
                 width,
                 height,
@@ -656,10 +645,8 @@ export default function PersonalInformationScreen({navigation, route}) {
                 cropperCircleOverlay: cropCircle,
               })
                 .then((data) => {
-                  
-                    setUserInfo({...userInfo, thumbnail: data.path});
-                    setProfileImageChanged(true);
-                  
+                  setUserInfo({...userInfo, thumbnail: data.path});
+                  setProfileImageChanged(true);
                 })
                 .catch((e) => {
                   Alert.alert(e);
@@ -677,8 +664,8 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const deleteImage = () => {
-      setUserInfo({...userInfo, thumbnail: '', full_image: ''});
-      setProfileImageChanged(false);
+    setUserInfo({...userInfo, thumbnail: '', full_image: ''});
+    setProfileImageChanged(false);
   };
 
   return (
@@ -982,9 +969,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           if (index === 0) {
             openCamera();
           } else if (index === 1) {
-            
-              openImagePicker();
-           
+            openImagePicker();
           }
         }}
       />
@@ -1003,9 +988,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           if (index === 0) {
             openCamera();
           } else if (index === 1) {
-            
-              openImagePicker();
-            
+            openImagePicker();
           } else if (index === 2) {
             deleteImage();
           }

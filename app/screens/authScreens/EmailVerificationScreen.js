@@ -58,10 +58,7 @@ export default function EmailVerificationScreen({navigation, route}) {
       .then(() => {
         setLoading(false);
         setTimer(60);
-        setTimeout(
-          () => Alert.alert('Verification Link send sucessfully'),
-          100,
-        );
+        setTimeout(() => Alert.alert(strings.varificationLinkSend), 100);
       })
       .catch((e) => {
         let message = '';
@@ -132,7 +129,7 @@ export default function EmailVerificationScreen({navigation, route}) {
             fontWeight: '700',
           }}>
           {timer !== 0
-            ? `YOU CAN SEND VERIFICATION EMAIL AGAIN AFTER ${timer}s`
+            ? `YOU CAN SEND VERIFICATION EMAIL AGAIN AFTER ${timer} SECONDS.`
             : 'SEND VERIFICATION EMAIL AGAIN'}
         </Text>
       </TouchableOpacity>

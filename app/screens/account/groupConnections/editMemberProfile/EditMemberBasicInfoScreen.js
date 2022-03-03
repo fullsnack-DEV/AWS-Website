@@ -117,39 +117,39 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   const checkValidation = () => {
     if (memberInfo.email) {
       if (!Utility.validateEmail(memberInfo.email)) {
-        Alert.alert('Towns Cup', 'Please enter valid email address.');
+        Alert.alert(strings.appName, 'Please enter valid email address.');
         return false;
       }
     }
     if (memberInfo.first_name === '') {
-      Alert.alert('Towns Cup', 'First name cannot be blank');
+      Alert.alert(strings.appName, 'First name cannot be blank');
       return false;
     }
     if (memberInfo.last_name === '') {
-      Alert.alert('Towns Cup', 'Last name cannot be blank');
+      Alert.alert(strings.appName, 'Last name cannot be blank');
       return false;
     }
     if (memberInfo.city && memberInfo.state_abbr && memberInfo.country === '') {
-      Alert.alert('Towns Cup', 'Location cannot be blank');
+      Alert.alert(strings.appName, 'Location cannot be blank');
       return false;
     }
     if (memberInfo.height) {
       if (!memberInfo.height.height_type) {
-        Alert.alert('Towns Cup', 'Please select height measurement');
+        Alert.alert(strings.appName, 'Please select height measurement');
         return false;
       }
       if (memberInfo.height.height <= 0 || memberInfo.height.height >= 1000) {
-        Alert.alert('Towns Cup', 'Please enter valid height.');
+        Alert.alert(strings.appName, 'Please enter valid height.');
         return false;
       }
     }
     if (memberInfo.weight) {
       if (!memberInfo.weight.weight_type) {
-        Alert.alert('Towns Cup', 'Please select weight measurement');
+        Alert.alert(strings.appName, 'Please select weight measurement');
         return false;
       }
       if (memberInfo.weight.weight <= 0 || memberInfo.weight.weight >= 1000) {
-        Alert.alert('Towns Cup', 'Please enter valid weight.');
+        Alert.alert(strings.appName, 'Please enter valid weight.');
         return false;
       }
     }
@@ -432,7 +432,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         </View>
       )}
 
-      
       <View>
         <TCLabel title={'Gender'} />
         <TCPicker
@@ -599,19 +598,19 @@ const styles = StyleSheet.create({
   outerContainerStyle: {
     width: '80%',
     alignSelf: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     shadowColor: colors.blackColor,
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.16,
     shadowRadius: 3,
     elevation: 1.5,
-    marginTop:15
+    marginTop: 15,
   },
   containerStyle: {
     flexDirection: 'row',
     borderRadius: 5,
-    alignItems:'center',
-    justifyContent:'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     height: 34,
     width: '100%',
   },

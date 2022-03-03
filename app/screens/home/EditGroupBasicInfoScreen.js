@@ -85,7 +85,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
       groupProfile.membership_fee = groupData.membership_fee;
       groupProfile.membership_fee_type = groupData.membership_fee_type;
       groupProfile.office_address =
-      groupData.office_address && groupData.office_address;
+        groupData.office_address && groupData.office_address;
 
       console.log('updating values', groupProfile);
 
@@ -236,23 +236,29 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
       return false;
     }
     if (groupData.registration_fee >= 1000) {
-      Alert.alert(strings.alertmessagetitle, 'Membership Registration fee can not be biggger than 1000.');
+      Alert.alert(
+        strings.alertmessagetitle,
+        'Membership Registration fee can not be biggger than 1000.',
+      );
       return false;
     }
     if (groupData.membership_fee >= 1000) {
-      Alert.alert(strings.alertmessagetitle, 'Membership fee can not be biggger than 1000.');
+      Alert.alert(
+        strings.alertmessagetitle,
+        'Membership fee can not be biggger than 1000.',
+      );
       return false;
     }
-    
+
     // else if (player1ID === player2ID) {
     //   if (player1ID !== '' && player2ID !== '') {
-    //     Alert.alert('Towns Cup', 'Both player cannot be same');
+    //     Alert.alert(strings.appName, 'Both player cannot be same');
     //   }
     // } else if (
     //   (player1ID === '' && player2ID !== '')
     //   || (player1ID !== '' && player2ID === '')
     // ) {
-    //   Alert.alert('Towns Cup', 'One player cannot be blank');
+    //   Alert.alert(strings.appName, 'One player cannot be blank');
     // }
     return true;
   };

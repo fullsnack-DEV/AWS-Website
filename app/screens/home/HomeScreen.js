@@ -502,7 +502,6 @@ const HomeScreen = ({navigation, route}) => {
         Alert.alert(strings.alertmessagetitle, error.message);
       }, 10);
     });
-    
   }, [authContext.entity, route?.params]);
 
   useEffect(() => {
@@ -566,9 +565,8 @@ const HomeScreen = ({navigation, route}) => {
           userDetails.joined_clubs = res2.payload.clubs;
         }
 
-        
-          setCurrentUserData({...userDetails});
-          entityObject = userDetails;
+        setCurrentUserData({...userDetails});
+        entityObject = userDetails;
         setIsClubHome(false);
         setIsTeamHome(false);
         setIsUserHome(true);
@@ -745,7 +743,7 @@ const HomeScreen = ({navigation, route}) => {
             console.log('Club teams list:=>', res3);
           }
 
-          console.log('groupDetailsgroupDetailsgroupDetails::',groupDetails);
+          console.log('groupDetailsgroupDetailsgroupDetails::', groupDetails);
           entityObject = groupDetails;
           setCurrentUserData(groupDetails);
           setIsClubHome(clubHome);
@@ -831,8 +829,7 @@ const HomeScreen = ({navigation, route}) => {
     currentUserData.follower_count += 1;
     entityObject = currentUserData;
 
-      setCurrentUserData({...currentUserData});
- 
+    setCurrentUserData({...currentUserData});
 
     const params = {
       entity_type: 'player',
@@ -847,7 +844,7 @@ const HomeScreen = ({navigation, route}) => {
         currentUserData.follower_count -= 1;
         entityObject = currentUserData;
 
-          setCurrentUserData({...currentUserData});
+        setCurrentUserData({...currentUserData});
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -876,8 +873,8 @@ const HomeScreen = ({navigation, route}) => {
         currentUserData.follower_count += 1;
         entityObject = currentUserData;
 
-          setCurrentUserData({...currentUserData});
-              setTimeout(() => {
+        setCurrentUserData({...currentUserData});
+        setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
       });
@@ -910,8 +907,8 @@ const HomeScreen = ({navigation, route}) => {
     currentUserData.follower_count += 1;
     entityObject = currentUserData;
 
-      setCurrentUserData({...currentUserData});
-   
+    setCurrentUserData({...currentUserData});
+
     const params = {
       entity_type: currentUserData.entity_type,
     };
@@ -925,8 +922,8 @@ const HomeScreen = ({navigation, route}) => {
         currentUserData.follower_count -= 1;
         entityObject = currentUserData;
 
-          setCurrentUserData({...currentUserData});
-               if (silentlyCall === false) {
+        setCurrentUserData({...currentUserData});
+        if (silentlyCall === false) {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, error.message);
           }, 10);
@@ -941,8 +938,8 @@ const HomeScreen = ({navigation, route}) => {
     }
     entityObject = currentUserData;
 
-      setCurrentUserData({...currentUserData});
-  
+    setCurrentUserData({...currentUserData});
+
     const params = {
       entity_type: currentUserData.entity_type,
     };
@@ -956,8 +953,8 @@ const HomeScreen = ({navigation, route}) => {
         currentUserData.follower_count += 1;
         entityObject = currentUserData;
 
-          setCurrentUserData({...currentUserData});
-             setTimeout(() => {
+        setCurrentUserData({...currentUserData});
+        setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
       });
@@ -971,8 +968,8 @@ const HomeScreen = ({navigation, route}) => {
     }
     entityObject = currentUserData;
 
-      setCurrentUserData({...currentUserData});
-        const params = {};
+    setCurrentUserData({...currentUserData});
+    const params = {};
     joinTeam(params, userID, authContext)
       .then(async (response) => {
         console.log('user join group');
@@ -994,8 +991,8 @@ const HomeScreen = ({navigation, route}) => {
         currentUserData.member_count -= 1;
         entityObject = currentUserData;
 
-          setCurrentUserData({...currentUserData});
-              setTimeout(() => {
+        setCurrentUserData({...currentUserData});
+        setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
       });
@@ -1008,8 +1005,8 @@ const HomeScreen = ({navigation, route}) => {
     }
     entityObject = currentUserData;
 
-      setCurrentUserData({...currentUserData});
-     const params = {};
+    setCurrentUserData({...currentUserData});
+    const params = {};
     leaveTeam(params, userID, authContext)
       .then(() => {
         console.log('user leave group');
@@ -1020,8 +1017,8 @@ const HomeScreen = ({navigation, route}) => {
         currentUserData.member_count += 1;
         entityObject = currentUserData;
 
-          setCurrentUserData({...currentUserData});
-                  setTimeout(() => {
+        setCurrentUserData({...currentUserData});
+        setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
       });
@@ -1060,8 +1057,8 @@ const HomeScreen = ({navigation, route}) => {
     }
     entityObject = currentUserData;
 
-      setCurrentUserData({...currentUserData});
-        joinTeam({}, userID, authContext)
+    setCurrentUserData({...currentUserData});
+    joinTeam({}, userID, authContext)
       .then(async (response) => {
         console.log('club join');
         const entity = authContext.entity;
@@ -1093,8 +1090,8 @@ const HomeScreen = ({navigation, route}) => {
         Utility.setStorage('authContextEntity', {...e});
         entityObject = currentUserData;
 
-          setCurrentUserData({...currentUserData});
-            });
+        setCurrentUserData({...currentUserData});
+      });
   };
 
   const onMessageButtonPress = (user) => {
@@ -1135,8 +1132,8 @@ const HomeScreen = ({navigation, route}) => {
     }
     entityObject = currentUserData;
 
-      setCurrentUserData({...currentUserData});
-       const params = {};
+    setCurrentUserData({...currentUserData});
+    const params = {};
     leaveTeam(params, userID, authContext)
       .then(() => {
         console.log('club leave');
@@ -1153,8 +1150,8 @@ const HomeScreen = ({navigation, route}) => {
         }
         entityObject = currentUserData;
 
-          setCurrentUserData({...currentUserData});
-             setTimeout(() => {
+        setCurrentUserData({...currentUserData});
+        setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
       });
@@ -1674,7 +1671,7 @@ const HomeScreen = ({navigation, route}) => {
   const playInModel = useCallback(
     (playInObject) => {
       if (playInObject) {
-        console.log('playInObject1::=>',playInObject);
+        console.log('playInObject1::=>', playInObject);
         setSportName(Utility.getSportName(playInObject, authContext));
 
         setTimeout(() => {
@@ -1682,8 +1679,6 @@ const HomeScreen = ({navigation, route}) => {
           setPlaysInModalVisible(!playsInModalVisible);
         }, 10);
 
-       
-       
         getSettingOfBoth(playInObject);
       } else {
         navigation.navigate('RegisterPlayer');
@@ -1707,11 +1702,10 @@ const HomeScreen = ({navigation, route}) => {
       if (route?.params?.role) entity_type = route?.params?.role;
       if (route?.params?.uid) user_id = route?.params?.uid;
       if (tab === 'following') {
-
-        console.log('route?.params?.uid',route?.params?.uid);
-        console.log('route?.params?.role',route?.params?.role);
+        console.log('route?.params?.uid', route?.params?.uid);
+        console.log('route?.params?.role', route?.params?.role);
         navigation.navigate('JoinedTeamsScreen', {
-          uid: route?.params?.uid ,
+          uid: route?.params?.uid,
           role: route?.params?.role,
         });
       } else if (tab !== 'members') {
@@ -2465,7 +2459,7 @@ const HomeScreen = ({navigation, route}) => {
               if (index === 1 && selectedEventItem.game) {
                 if (refereeFound(selectedEventItem)) {
                   Alert.alert(
-                    'Towns Cup',
+                    strings.appName,
                     'Change Event color feature is pending',
                     [
                       {
@@ -2500,7 +2494,7 @@ const HomeScreen = ({navigation, route}) => {
                         setloading(false);
                         setTimeout(() => {
                           Alert.alert(
-                            'Towns Cup',
+                            strings.appName,
                             'No referees invited or booked by you for this game',
                             [
                               {
@@ -2568,7 +2562,7 @@ const HomeScreen = ({navigation, route}) => {
                   console.log('Pressed cancel button.');
                 } else {
                   Alert.alert(
-                    'Towns Cup',
+                    strings.appName,
                     'Change Event color feature is pending',
                     [
                       {
@@ -2679,12 +2673,11 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const moveToStats = () => {
-    console.log('move to EntityStatScreen',userID);
+    console.log('move to EntityStatScreen', userID);
     navigation.navigate('EntityStatScreen', {
-     entityData:  entityObject,
+      entityData: entityObject,
     });
   };
-
 
   const renderHomeMainTabContain = useMemo(
     () => (
@@ -2980,10 +2973,9 @@ const HomeScreen = ({navigation, route}) => {
           if (index === 4) {
             moveToReview();
           }
-          if(index === 5){
+          if (index === 5) {
             moveToStats();
           }
-          
         }}>
         <Text
           style={{
@@ -2998,8 +2990,8 @@ const HomeScreen = ({navigation, route}) => {
   }, []);
 
   const challengeButtonType = () => {
-    console.log('mySettingObject',mySettingObject);
-    console.log('settingObject',settingObject);
+    console.log('mySettingObject', mySettingObject);
+    console.log('settingObject', settingObject);
 
     if (
       mySettingObject !== null &&
@@ -3115,9 +3107,11 @@ const HomeScreen = ({navigation, route}) => {
                       challengeButtonType() === 'challenge') && (
                         <Text style={styles.challengeButtonTitle}>
                           {strings.challenge}
-                          {settingObject?.game_fee?.fee && <Text>{` $${settingObject?.game_fee?.fee} ${
-                          currentUserData?.currency_type ?? 'CAD'
-                        }${' / match'}`}</Text>}
+                          {settingObject?.game_fee?.fee && (
+                            <Text>{` $${settingObject?.game_fee?.fee} ${
+                            currentUserData?.currency_type ?? 'CAD'
+                          }${' / match'}`}</Text>
+                        )}
                         </Text>
                     )}
                     {challengeButtonType() === 'invite' && (
@@ -3190,7 +3184,14 @@ const HomeScreen = ({navigation, route}) => {
             showsHorizontalScrollIndicator={false}
             data={
               isTeamHome
-                ? ['Info', 'Scoreboard', 'Schedule', 'Gallery', 'Review', 'Stats']
+                ? [
+                    'Info',
+                    'Scoreboard',
+                    'Schedule',
+                    'Gallery',
+                    'Review',
+                    'Stats',
+                  ]
                 : ['Info', 'Scoreboard', 'Schedule', 'Gallery']
             }
             horizontal
@@ -3403,9 +3404,9 @@ const HomeScreen = ({navigation, route}) => {
 
   const openPlayInModal = useCallback(() => setPlaysInModalVisible(true), []);
 
-  const onPlayInModalClose = useCallback(()=>{
-    setPlaysInModalVisible(false)
-  },[]);
+  const onPlayInModalClose = useCallback(() => {
+    setPlaysInModalVisible(false);
+  }, []);
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
@@ -3440,7 +3441,7 @@ const HomeScreen = ({navigation, route}) => {
               .then((qbRes) => {
                 setloading(false);
                 if (qbRes?.error) {
-                  console.log('Towns Cup', qbRes?.error);
+                  console.log(strings.appName, qbRes?.error);
                 }
               })
               .catch(() => {
@@ -3612,7 +3613,7 @@ const HomeScreen = ({navigation, route}) => {
               sportName,
             });
           } else {
-            setTimeout(() => Alert.alert('Towns Cup', message));
+            setTimeout(() => Alert.alert(strings.appName, message));
           }
         }}
       />
@@ -4396,9 +4397,7 @@ const HomeScreen = ({navigation, route}) => {
 
                         entityObject = changedata;
 
-                          setCurrentUserData(changedata);
-                       
-
+                        setCurrentUserData(changedata);
 
                         if (res.payload.referee_data) {
                           res.payload.referee_data.map((refereeItem) => {
@@ -5526,7 +5525,6 @@ const HomeScreen = ({navigation, route}) => {
               //   });
               // }, 300);
             }}>
-              
             {selectedChallengeOption === 0 ? (
               <LinearGradient
                 colors={[colors.yellowColor, colors.orangeGradientColor]}

@@ -116,7 +116,7 @@
 //         })
 //         .catch((e) => {
 //           setTimeout(() => {
-//             Alert.alert('Towns Cup', e.messages);
+//             Alert.alert(strings.appName, e.messages);
 //           }, 0.1);
 //         })
 //         .finally(() => {
@@ -385,10 +385,8 @@
 
 // });
 
-import React, { useState, useContext, useRef } from 'react';
-import {
- StyleSheet, View, Text, ScrollView, Alert,
- } from 'react-native';
+import React, {useState, useContext, useRef} from 'react';
+import {StyleSheet, View, Text, ScrollView, Alert} from 'react-native';
 
 // import {
 //   widthPercentageToDP as wp,
@@ -396,11 +394,9 @@ import {
 // } from 'react-native-responsive-screen';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
-import {
- check, PERMISSIONS, RESULTS, request,
-} from 'react-native-permissions';
+import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import TCInfoField from '../../../../components/TCInfoField';
-import { createGroup } from '../../../../api/Groups';
+import {createGroup} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 
 import AuthContext from '../../../../auth/context';
@@ -415,8 +411,8 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCThinDivider from '../../../../components/TCThinDivider';
 
-export default function CreateClubForm3({ navigation, route }) {
-  const { createClubForm2 } = route?.params;
+export default function CreateClubForm3({navigation, route}) {
+  const {createClubForm2} = route?.params;
   console.log('createClubForm2:=>', createClubForm2);
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
@@ -450,29 +446,25 @@ export default function CreateClubForm3({ navigation, route }) {
   };
 
   const openImagePicker = (width = 400, height = 400) => {
-    
-      let cropCircle = false;
+    let cropCircle = false;
+    if (currentImageSelection === 1) {
+      cropCircle = true;
+    }
+    ImagePicker.openPicker({
+      width,
+      height,
+      cropping: true,
+      cropperCircleOverlay: cropCircle,
+    }).then((data) => {
+      // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
-        cropCircle = true;
+        // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+        setThumbnail(data.path);
+      } else {
+        // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+        setBackgroundThumbnail(data.path);
       }
-      ImagePicker.openPicker({
-        width,
-        height,
-        cropping: true,
-        cropperCircleOverlay: cropCircle,
-      }).then((data) => {
-        // 1 means profile, 0 - means background
-        if (currentImageSelection === 1) {
-          // setGroupProfile({ ...groupProfile, thumbnail: data.path })
-          setThumbnail(data.path);
-        } else {
-          // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
-          setBackgroundThumbnail(data.path);
-        }
-      })
-
-    
-    
+    });
   };
 
   const deleteImage = () => {
@@ -488,63 +480,67 @@ export default function CreateClubForm3({ navigation, route }) {
   };
 
   const openCamera = (width = 400, height = 400) => {
-    check(PERMISSIONS.IOS.CAMERA)
-  .then((result) => {
-    switch (result) {
-      case RESULTS.UNAVAILABLE:
-        Alert.alert('This feature is not available (on this device / in this context)')
-        break;
-      case RESULTS.DENIED:
-        request(PERMISSIONS.IOS.CAMERA).then(() => {
+    check(PERMISSIONS.IOS.CAMERA).then((result) => {
+      switch (result) {
+        case RESULTS.UNAVAILABLE:
+          Alert.alert(
+            'This feature is not available (on this device / in this context)',
+          );
+          break;
+        case RESULTS.DENIED:
+          request(PERMISSIONS.IOS.CAMERA).then(() => {
+            ImagePicker.openCamera({
+              width,
+              height,
+              cropping: true,
+            })
+              .then((data) => {
+                // 1 means profile, 0 - means background
+                if (currentImageSelection === 1) {
+                  // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+                  setThumbnail(data.path);
+                } else {
+                  // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+                  setBackgroundThumbnail(data.path);
+                }
+              })
+              .catch((e) => {
+                Alert.alert(e);
+              });
+          });
+          break;
+        case RESULTS.LIMITED:
+          console.log('The permission is limited: some actions are possible');
+          break;
+        case RESULTS.GRANTED:
           ImagePicker.openCamera({
             width,
             height,
             cropping: true,
-          }).then((data) => {
-            // 1 means profile, 0 - means background
-            if (currentImageSelection === 1) {
-              // setGroupProfile({ ...groupProfile, thumbnail: data.path })
-              setThumbnail(data.path);
-            } else {
-              // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
-              setBackgroundThumbnail(data.path);
-            }
-          }).catch((e) => {
-            Alert.alert(e)
-          });
-        })
-        break;
-      case RESULTS.LIMITED:
-        console.log('The permission is limited: some actions are possible');
-        break;
-      case RESULTS.GRANTED:
-        ImagePicker.openCamera({
-          width,
-          height,
-          cropping: true,
-        }).then((data) => {
-          // 1 means profile, 0 - means background
-          if (currentImageSelection === 1) {
-            // setGroupProfile({ ...groupProfile, thumbnail: data.path })
-            setThumbnail(data.path);
-          } else {
-            // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
-            setBackgroundThumbnail(data.path);
-          }
-        }).catch((e) => {
-          Alert.alert(e)
-        });
-        break;
-      case RESULTS.BLOCKED:
-        console.log('The permission is denied and not requestable anymore');
-        break;
-    }
-  })
-  
+          })
+            .then((data) => {
+              // 1 means profile, 0 - means background
+              if (currentImageSelection === 1) {
+                // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+                setThumbnail(data.path);
+              } else {
+                // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+                setBackgroundThumbnail(data.path);
+              }
+            })
+            .catch((e) => {
+              Alert.alert(e);
+            });
+          break;
+        case RESULTS.BLOCKED:
+          console.log('The permission is denied and not requestable anymore');
+          break;
+      }
+    });
   };
 
   const nextOnPress = () => {
-   setloading(true);
+    setloading(true);
     const bodyParams = {
       ...createClubForm2,
       entity_type: 'club',
@@ -569,15 +565,14 @@ export default function CreateClubForm3({ navigation, route }) {
 
     console.log('bodyPARAMS:: ', bodyParams);
 
-    
     const entity = authContext.entity;
     if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
       const imageArray = [];
       if (bodyParams?.thumbnail) {
-        imageArray.push({ path: bodyParams?.thumbnail });
+        imageArray.push({path: bodyParams?.thumbnail});
       }
       if (bodyParams?.background_thumbnail) {
-        imageArray.push({ path: bodyParams?.background_thumbnail });
+        imageArray.push({path: bodyParams?.background_thumbnail});
       }
       uploadImages(imageArray, authContext)
         .then((responses) => {
@@ -628,7 +623,7 @@ export default function CreateClubForm3({ navigation, route }) {
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert('Towns Cup', e.messages);
+            Alert.alert(strings.appName, e.messages);
           }, 0.1);
         });
     } else {
@@ -637,7 +632,7 @@ export default function CreateClubForm3({ navigation, route }) {
         // entity.uid,
         // entity.role === 'team' ? 'team' : 'user',
         entity.role === 'team' && entity.uid,
-            entity.role === 'team' && 'team',
+        entity.role === 'team' && 'team',
         authContext,
       )
         .then((response) => {
@@ -671,12 +666,12 @@ export default function CreateClubForm3({ navigation, route }) {
 
         <TCLabel
           title={strings.photoUploadClubTitle}
-          style={{ marginBottom: 10 }}
+          style={{marginBottom: 10}}
         />
         <TCProfileImageControl
-          profileImage={thumbnail ? { uri: thumbnail } : images.clubPlaceholder}
+          profileImage={thumbnail ? {uri: thumbnail} : images.clubPlaceholder}
           profileImagePlaceholder={images.clubPlaceholder}
-          bgImage={backgroundThumbnail ? { uri: backgroundThumbnail } : undefined}
+          bgImage={backgroundThumbnail ? {uri: backgroundThumbnail} : undefined}
           onPressBGImage={() => onBGImageClicked()}
           onPressProfileImage={() => onProfileImageClicked()}
           showEditButtons
@@ -718,12 +713,12 @@ export default function CreateClubForm3({ navigation, route }) {
         <Text style={styles.describeText} numberOfLines={50}>
           {createClubForm2?.descriptions}
         </Text>
-        <View style={{ flex: 1 }} />
+        <View style={{flex: 1}} />
       </ScrollView>
       <TCGradientButton
         isDisabled={false}
         title={strings.doneTitle}
-        style={{ marginBottom: 30 }}
+        style={{marginBottom: 30}}
         onPress={nextOnPress}
       />
       <ActionSheet
