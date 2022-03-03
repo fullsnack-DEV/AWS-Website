@@ -586,15 +586,26 @@ function NotificationsListScreen({navigation}) {
   };
 
   const onRespond = (groupObj) => {
-    console.log('groupObj:=>', groupObj);
-    const groupId = JSON.parse(groupObj.activities[0].object).group.group_id;
-    console.log('groupId:=>', groupId);
+    console.log('groupObj11:=>', groupObj);
+    const groupId = JSON.parse(groupObj.activities[0].object).groupData
+      .group_id;
+    console.log('groupObject:=>', JSON.parse(groupObj.activities[0].object));
 
     if (activeScreen) {
       if (
         groupObj.activities[0].verb.includes(NotificationType.inviteToJoinClub)
       ) {
         navigation.navigate('RespondForInviteScreen', {groupObj});
+      } else if (
+        groupObj.activities[0].verb.includes(
+          NotificationType.sendBasicInfoToMember,
+        )
+      ) {
+        navigation.navigate('RequestBasicInfoScreen', {
+          groupID: groupId,
+          memberID: authContext.entity.uid,
+          requestID: groupObj.activities[0].id,
+        });
       } else {
         setloading(true);
         getRequestDetail(groupId, authContext)
@@ -624,8 +635,8 @@ function NotificationsListScreen({navigation}) {
     verb.includes(NotificationType.invitePlayerToJoinClub) ||
     verb.includes(NotificationType.inviteToConnectProfile) ||
     verb.includes(NotificationType.invitePlayerToJoingame) ||
-    verb.includes(NotificationType.inviteToDoubleTeam);
-
+    verb.includes(NotificationType.inviteToDoubleTeam) ||
+    verb.includes(NotificationType.sendBasicInfoToMember);
   const openHomePage = (item) => {
     if (activeScreen) {
       if (item?.entityType && item?.entityId) {
@@ -741,7 +752,7 @@ function NotificationsListScreen({navigation}) {
   const notificationComponentType = (item) => {
     console.log('VERB::=>', item);
     if (isInvite(item.activities[0].verb)) {
-      console.log('Ok ok1');
+      console.log('Ok ok12');
       if (
         item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
         item.activities[0].verb.includes(NotificationType.inviteToJoinClub)
@@ -757,7 +768,21 @@ function NotificationsListScreen({navigation}) {
           />
         );
       }
-      console.log('Ok ok3');
+      if (
+        item.activities[0].verb.includes(NotificationType.sendBasicInfoToMember)
+      ) {
+        console.log('Ok ok3');
+        return (
+          <PRNotificationTeamInvite
+            item={item}
+            selectedEntity={selectedEntity}
+            // onAccept={() => onAccept(item.activities[0].id)}
+            onRespond={() => onRespond(item)} // JSON.parse(item.activities[0].object))
+            onPress={() => onNotificationClick(item)}
+            onPressFirstEntity={openHomePage}
+          />
+        );
+      }
       return (
         <PRNotificationInviteCell
           item={item}

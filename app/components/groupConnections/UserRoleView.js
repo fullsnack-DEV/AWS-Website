@@ -8,7 +8,6 @@ import TCThinDivider from '../TCThinDivider';
 import TCUserRoleBadge from '../TCUserRoleBadge';
 import TCProfileButton from '../TCProfileButton';
 import TCMessageButton from '../TCMessageButton';
-import strings from '../../Constants/String';
 
 export default function UserRoleView({data, onPressProfile, onPressMessage}) {
   console.log('Member data:', data);
@@ -37,19 +36,19 @@ export default function UserRoleView({data, onPressProfile, onPressMessage}) {
                 {data.first_name} {data.last_name}
               </Text>
               <View style={{flexDirection: 'row'}}>
-                {data?.group_member_detail?.is_admin && (
+                {data?.is_admin && (
                   <TCUserRoleBadge
                     title="Admin"
                     titleColor={colors.themeColor}
                   />
                 )}
-                {data?.group_member_detail?.is_coach && (
+                {data?.is_coach && (
                   <TCUserRoleBadge
                     title="Coach"
                     titleColor={colors.greeColor}
                   />
                 )}
-                {data?.group_member_detail?.is_player && (
+                {data?.is_member && (
                   <TCUserRoleBadge
                     title="Player"
                     titleColor={colors.playerBadgeColor}
@@ -61,16 +60,16 @@ export default function UserRoleView({data, onPressProfile, onPressMessage}) {
           <View>
             <View style={styles.bottomViewContainer}>
               {/* <Text style={styles.skillText} numberOfLines={2}>Forward, Midfielder, Goal Keeper</Text> */}
-              {data?.group_member_detail?.status && (
+              {data?.status && (
                 <Text style={styles.awayStatusText} numberOfLines={1}>
-                  {data.group_member_detail.status.join(', ')}
+                  {data.status.join(', ')}
                 </Text>
               )}
             </View>
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          {data?.group_member_detail?.connected ? (
+          {data?.connected ? (
             <TCMessageButton
               title="Message"
               color={colors.greeColor}
@@ -87,7 +86,7 @@ export default function UserRoleView({data, onPressProfile, onPressMessage}) {
                     if (!supported) {
                       // Linking.openURL(`mailto:${data.email}`)
                       Alert.alert(
-                        strings.appName,
+                        'Towns Cup',
                         'Please configure email in your device',
                       );
                     } else {

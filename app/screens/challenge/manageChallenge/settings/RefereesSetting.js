@@ -43,17 +43,14 @@ export default function RefereesSetting({navigation, route}) {
   const [selection, setSelection] = useState(
     route?.params?.settingObj &&
       route?.params?.settingObj?.responsible_for_referee &&
-      (route?.params?.settingObj?.responsible_for_referee?.who_secure !==
-        'None' ||
-        route?.params?.settingObj?.responsible_for_referee?.who_secure?.length >
-          0)
+      route?.params?.settingObj?.responsible_for_referee?.who_secure
       ? route?.params?.settingObj?.responsible_for_referee?.who_secure?.length
       : 'None',
   );
 
   const [referee, setReferee] = useState(
     route?.params?.settingObj?.responsible_for_referee &&
-      route?.params?.settingObj?.responsible_for_referee?.who_secure !== 'None'
+      route?.params?.settingObj?.responsible_for_referee?.who_secure
       ? route?.params?.settingObj?.responsible_for_referee?.who_secure
       : [],
   );
@@ -144,9 +141,7 @@ export default function RefereesSetting({navigation, route}) {
         sport: sportName,
         sport_type: sportType,
         entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-        responsible_for_referee: {
-          who_secure: 'None',
-        },
+        responsible_for_referee: {},
       };
     } else {
       let ref;
@@ -237,9 +232,7 @@ export default function RefereesSetting({navigation, route}) {
         sport: sportName,
         sport_type: sportType,
         entity_type: authContext.entity.role === 'user' ? 'player' : 'team',
-        responsible_for_referee: {
-          who_secure: 'None',
-        },
+        responsible_for_referee: {},
       };
     } else {
       let ref;
@@ -310,9 +303,7 @@ export default function RefereesSetting({navigation, route}) {
                 }),
                 // details: detail,
               }
-            : {
-                who_secure: 'None',
-              },
+            : {},
       });
     } else if (authContext.entity.role === 'team') {
       saveTeam();

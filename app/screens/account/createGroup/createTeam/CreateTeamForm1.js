@@ -54,19 +54,21 @@ export default function CreateTeamForm1({ navigation, route }) {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
 
+
+  console.log('route.params && route.params.clubObject',route.params && route.params.clubObject);
   useEffect(() => {
     if (isFocused) {
       getSports();
 
-      if (route.params && route.params.clubObject) {
+      if (route?.params?.clubObject) {
         setParentGroupID(route.params.clubObject.group_id);
       }
-      if (route.params && route.params.city) {
-        setCity(route.params.city);
-        setState(route.params.state);
-        setCountry(route.params.country);
+      if (route?.params?.city) {
+        setCity(route?.params?.city);
+        setState(route?.params?.state);
+        setCountry(route?.params?.country);
         setLocation(
-          `${route.params.city}, ${route.params.state}, ${route.params.country}`,
+          `${route?.params?.city}, ${route?.params?.state}, ${route?.params?.country}`,
         );
       } else {
         setCity('');
@@ -173,7 +175,9 @@ export default function CreateTeamForm1({ navigation, route }) {
           currency_type: authContext?.entity?.obj?.currency_type,
         };
         if (parentGroupID) {
-          obj.parent_group_id = parentGroupID;
+          const tempIds = []
+          tempIds.push(parentGroupID)
+          obj.parent_groups = tempIds;
         }
         console.log('Form1 Object:=>', obj);
 

@@ -132,8 +132,8 @@ export default function GroupMembersScreen({navigation, route}) {
   //   setFilter(arr);
   // }
   const searchFilterFunction = (text) => {
-    const result = searchMember.filter(
-      (x) => x.first_name.includes(text) || x.last_name.includes(text),
+    const result = (searchMember ?? []).filter(
+      (x) => x?.first_name?.includes(text) || x?.last_name?.includes(text),
     );
     setMembers(result);
   };
@@ -162,7 +162,7 @@ export default function GroupMembersScreen({navigation, route}) {
     const UIDs = [];
     if (members.length) {
       members.filter((data) => {
-        if (data?.group_member_detail?.connected) {
+        if (data?.connected) {
           UIDs.push(data?.user_id);
           return data;
         }
@@ -202,8 +202,8 @@ export default function GroupMembersScreen({navigation, route}) {
   const onPressProfile = useCallback(
     (item) => {
       navigation.navigate('MembersProfileScreen', {
-        memberID: item.user_id,
-        whoSeeID: item.group_member_detail.group_id,
+        memberID: item?.user_id,
+        whoSeeID: item?.group_id,
         groupID: route.params?.groupID,
       });
     },
@@ -322,19 +322,19 @@ export default function GroupMembersScreen({navigation, route}) {
                   {data.first_name} {data.last_name}
                 </Text>
                 <View style={{flexDirection: 'row'}}>
-                  {data?.group_member_detail?.is_admin && (
+                  {data?.is_admin && (
                     <TCUserRoleBadge
                       title="Admin"
                       titleColor={colors.themeColor}
                     />
                   )}
-                  {data?.group_member_detail?.is_coach && (
+                  {data?.is_coach && (
                     <TCUserRoleBadge
                       title="Coach"
                       titleColor={colors.greeColor}
                     />
                   )}
-                  {data?.group_member_detail?.is_player && (
+                  {data?.is_member && (
                     <TCUserRoleBadge
                       title="Player"
                       titleColor={colors.playerBadgeColor}
@@ -346,9 +346,9 @@ export default function GroupMembersScreen({navigation, route}) {
             <View>
               <View style={styles.bottomViewContainer}>
                 {/* <Text style={styles.skillText} numberOfLines={2}>Forward, Midfielder, Goal Keeper</Text> */}
-                {data?.group_member_detail?.status && (
+                {data?.status && (
                   <Text style={styles.awayStatusText} numberOfLines={1}>
-                    {data.group_member_detail.status.join(', ')}
+                    {data?.status.join(', ')}
                   </Text>
                 )}
               </View>
@@ -369,7 +369,6 @@ export default function GroupMembersScreen({navigation, route}) {
             <TCFollowUnfollwButton
               outerContainerStyle={styles.firstButtonOuterStyle}
               style={styles.firstButtonStyle}
-              
               title={strings.following}
               isFollowing={data.is_following}
               onPress={() => {
@@ -380,7 +379,6 @@ export default function GroupMembersScreen({navigation, route}) {
             <TCFollowUnfollwButton
               outerContainerStyle={styles.firstButtonOuterStyle}
               style={styles.firstButtonStyle}
-              
               title={strings.follow}
               isFollowing={data.is_following}
               onPress={() => {
@@ -429,6 +427,7 @@ export default function GroupMembersScreen({navigation, route}) {
                 'Invite Member',
                 'Create Member Profile',
                 'Connect Member Account',
+                'Send Request For Basic Info',
                 'Privacy Setting',
                 'Setting',
                 'Cancel',
@@ -438,6 +437,7 @@ export default function GroupMembersScreen({navigation, route}) {
                 'Invite Member',
                 'Create Member Profile',
                 'Connect Member Account',
+                'Send Request For Basic Info',
                 'Privacy Setting',
                 'Cancel',
         ]
@@ -456,8 +456,10 @@ export default function GroupMembersScreen({navigation, route}) {
               groupID: route.params?.groupID,
             });
           } else if (index === 4) {
-            navigation.navigate('MembersViewPrivacyScreen');
+            navigation.navigate('RequestMultipleBasicInfoScreen',{groupID: route.params?.groupID});
           } else if (index === 5) {
+            navigation.navigate('MembersViewPrivacyScreen');
+          } else if (index === 6) {
             if (switchUser.role === 'club') {
               navigation.navigate('ClubSettingScreen');
             }
@@ -606,6 +608,4 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: colors.lightBlackColor,
   },
- 
- 
 });

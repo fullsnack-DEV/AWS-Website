@@ -1,4 +1,4 @@
-import React, {memo, useEffect, useState, useContext} from 'react';
+import React, { useEffect, useState, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,13 +15,13 @@ import strings from '../../Constants/String';
 import * as Utility from '../../utils';
 import AuthContext from '../../auth/context';
 
-const BackgroundProfile = ({
+export default function BackgroundProfile  ({
   currentUserData,
   onAction,
   loggedInEntity,
   onConnectionButtonPress,
   imageSize = 60,
-}) => {
+}){
   const authContext = useContext(AuthContext);
   const [entityData, setEntityData] = useState(null);
 
@@ -277,4 +277,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(BackgroundProfile);
+

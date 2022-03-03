@@ -694,6 +694,9 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
+
+
+
   const getData = async (uid, role, admin) => {
     const userHome = role === 'user';
     const clubHome = role === 'club';
@@ -738,14 +741,14 @@ const HomeScreen = ({navigation, route}) => {
           groupDetails.joined_leagues = league_Data;
           groupDetails.history = history_Data;
           groupDetails.joined_members = res2.payload;
-          if (res3 && clubHome) {
+          if (clubHome) {
             groupDetails.joined_teams = res3.payload;
             console.log('Club teams list:=>', res3);
           }
 
           console.log('groupDetailsgroupDetailsgroupDetails::', groupDetails);
           entityObject = groupDetails;
-          setCurrentUserData(groupDetails);
+          setCurrentUserData({...groupDetails});
           setIsClubHome(clubHome);
           setIsTeamHome(teamHome);
           setIsUserHome(userHome);
@@ -1047,9 +1050,12 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
-  const clubJoinTeam = async () => {
+  const clubJoinTeam =  () => {
     const e = authContext.entity;
-    e.obj.parent_group_id = currentUserData.group_id;
+    const tempIds = [];
+    tempIds.push(currentUserData.group_id);
+    e.obj.parent_groups = tempIds;
+
     if (currentUserData.joined_teams) {
       currentUserData.joined_teams.push(e.obj);
     } else {
@@ -1076,6 +1082,7 @@ const HomeScreen = ({navigation, route}) => {
       .catch((error) => {
         console.log('clubJoinTeam error with userID', error, userID);
         delete e.obj.parent_group_id;
+
         if (currentUserData.joined_teams) {
           currentUserData.joined_teams = currentUserData.joined_teams.filter(
             (team) => team.group_id !== e.uid,
@@ -1120,14 +1127,14 @@ const HomeScreen = ({navigation, route}) => {
   const onDotPress = () => {
     offerActionSheet.current.show();
   };
-  const clubLeaveTeam = async () => {
+  const clubLeaveTeam =  () => {
     const e = authContext.entity;
-    e.obj.parent_group_id = '';
+    e.obj.parent_groups = [];
     authContext.setEntity({...e});
     Utility.setStorage('authContextEntity', {...e});
-    if (currentUserData.joined_teams) {
-      currentUserData.joined_teams = currentUserData.joined_teams.filter(
-        (team) => team.group_id !== e.uid,
+    if (currentUserData.parent_groups) {
+      currentUserData.parent_groups = currentUserData.parent_groups.filter(
+        (team) => team.group_id !== userID,
       );
     }
     entityObject = currentUserData;
@@ -1154,6 +1161,11 @@ const HomeScreen = ({navigation, route}) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
+      }) .finally(() => {
+       authContext.setEntity({...e});
+        Utility.setStorage('authContextEntity', {...e});
+        entityObject = currentUserData;
+        setCurrentUserData({...currentUserData});
       });
   };
 
@@ -1204,14 +1216,22 @@ const HomeScreen = ({navigation, route}) => {
           userLeaveGroup();
           break;
         case 'joinTeam':
-          if (authContext.entity.obj.parent_group_id) {
-            Alert.alert(
-              strings.alertmessagetitle,
-              strings.alreadyjoinclubmessage,
-            );
-          } else {
-            clubJoinTeam();
-          }
+          // console.log('authContext?.entity?.obj?.parent_groups',authContext?.entity?.obj?.parent_groups);
+          // console.log('currentUserData?.group_id',currentUserData?.group_id);
+          // if (
+          //   authContext?.entity?.obj?.parent_groups?.includes(
+          //     currentUserData?.group_id,
+          //   )
+          // ) {
+          //   clubJoinTeam();
+          //   Alert.alert(
+          //     strings.alertmessagetitle,
+          //     strings.alreadyjoinclubmessage,
+          //   );
+          // } else {
+          //   clubJoinTeam();
+          // }
+          clubJoinTeam();
           break;
         case 'leaveTeam':
           clubLeaveTeam();
@@ -1235,7 +1255,7 @@ const HomeScreen = ({navigation, route}) => {
       }
     },
     [
-      authContext.entity.obj.parent_group_id,
+      authContext.entity.obj.parent_groups,
       authContext.entity.role,
       callFollowGroup,
       callUnfollowGroup,

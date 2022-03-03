@@ -82,6 +82,7 @@ export default function EditMemberInfoScreen({navigation, route}) {
             thumbnail: attachments[0].thumbnail,
             first_name: memberInfo.first_name,
             last_name: memberInfo.last_name,
+            use_profile_pic: false,
           };
           console.log('BODY PARAMS:', bodyParams);
           editMemberInfo(
@@ -97,10 +98,19 @@ export default function EditMemberInfoScreen({navigation, route}) {
           }, 10);
         });
     } else {
-      bodyParams = {
-        first_name: memberInfo.first_name,
-        last_name: memberInfo.last_name,
-      };
+      if (memberInfo.connected) {
+        bodyParams = {
+          first_name: memberInfo.first_name,
+          last_name: memberInfo.last_name,
+          use_profile_pic: true,
+        };
+      } else {
+        bodyParams = {
+          first_name: memberInfo.first_name,
+          last_name: memberInfo.last_name,
+          use_profile_pic: false,
+        };
+      }
 
       editMemberInfo(
         memberInfo?.group?.group_id,
@@ -133,10 +143,10 @@ export default function EditMemberInfoScreen({navigation, route}) {
     }
     return true;
   };
-  const deleteImage = () => {
-    setEditPhoto(false);
-    setMemberInfo({...memberInfo, full_image: undefined});
-  };
+  // const deleteImage = () => {
+  //   setEditPhoto(false);
+  //   setMemberInfo({...memberInfo, full_image: undefined});
+  // };
 
   const onProfileImageClicked = () => {
     setTimeout(() => {
@@ -163,6 +173,18 @@ export default function EditMemberInfoScreen({navigation, route}) {
       setEditPhoto(true);
       setMemberInfo({...memberInfo, full_image: data.path});
     });
+  };
+
+  const actionSheetOpetions = () => {
+    if (memberInfo?.connected) {
+      return [
+        strings.camera,
+        strings.album,
+        strings.profilePhotoUser,
+        strings.cancelTitle,
+      ];
+    }
+    return [strings.camera, strings.album, strings.cancelTitle];
   };
 
   return (
@@ -212,25 +234,19 @@ export default function EditMemberInfoScreen({navigation, route}) {
 
       <ActionSheet
         ref={actionSheet}
-        options={
-          memberInfo.full_image
-            ? [
-                strings.camera,
-                strings.album,
-                strings.deleteTitle,
-                strings.cancelTitle,
-              ]
-            : [strings.camera, strings.album, strings.cancelTitle]
-        }
-        destructiveButtonIndex={memberInfo.full_image && 2}
-        cancelButtonIndex={memberInfo.full_image ? 3 : 2}
+        options={actionSheetOpetions()}
+        cancelButtonIndex={memberInfo.connected ? 3 : 2}
         onPress={(index) => {
           if (index === 0) {
             openCamera();
           } else if (index === 1) {
             openImagePicker();
           } else if (index === 2) {
-            deleteImage();
+            if (memberInfo.connected) {
+              if (checkValidation()) {
+                editInfo();
+              }
+            }
           }
         }}
       />
