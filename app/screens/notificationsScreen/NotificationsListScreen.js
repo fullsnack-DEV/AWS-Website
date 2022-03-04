@@ -474,7 +474,7 @@ function NotificationsListScreen({navigation}) {
               .then((qbRes) => {
                 setloading(false);
                 if (qbRes?.error) {
-                  console.log('Towns Cup', qbRes?.error);
+                  console.log(strings.appName, qbRes?.error);
                 }
               })
               .catch(() => {
@@ -596,12 +596,17 @@ function NotificationsListScreen({navigation}) {
         groupObj.activities[0].verb.includes(NotificationType.inviteToJoinClub)
       ) {
         navigation.navigate('RespondForInviteScreen', {groupObj});
-      }else if (
-        groupObj.activities[0].verb.includes(NotificationType.sendBasicInfoToMember)
+      } else if (
+        groupObj.activities[0].verb.includes(
+          NotificationType.sendBasicInfoToMember,
+        )
       ) {
-        navigation.navigate('RequestBasicInfoScreen',{groupID : groupId, memberID: authContext.entity.uid,requestID: groupObj.activities[0].id});
-      }
-       else {
+        navigation.navigate('RequestBasicInfoScreen', {
+          groupID: groupId,
+          memberID: authContext.entity.uid,
+          requestID: groupObj.activities[0].id,
+        });
+      } else {
         setloading(true);
         getRequestDetail(groupId, authContext)
           .then((response) => {
@@ -750,8 +755,7 @@ function NotificationsListScreen({navigation}) {
       console.log('Ok ok12');
       if (
         item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
-        item.activities[0].verb.includes(
-          NotificationType.inviteToJoinClub )
+        item.activities[0].verb.includes(NotificationType.inviteToJoinClub)
       ) {
         return (
           <PRNotificationTeamInvite
@@ -764,9 +768,9 @@ function NotificationsListScreen({navigation}) {
           />
         );
       }
-      if (item.activities[0].verb.includes(
-              NotificationType.sendBasicInfoToMember,
-            )) {
+      if (
+        item.activities[0].verb.includes(NotificationType.sendBasicInfoToMember)
+      ) {
         console.log('Ok ok3');
         return (
           <PRNotificationTeamInvite

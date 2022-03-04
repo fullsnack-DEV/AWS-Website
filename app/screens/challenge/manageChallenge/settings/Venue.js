@@ -1,7 +1,5 @@
 /* eslint-disable array-callback-return */
-import React, {
- useState, useContext, useLayoutEffect, useEffect,
- } from 'react';
+import React, {useState, useContext, useLayoutEffect, useEffect} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -14,11 +12,11 @@ import {
 } from 'react-native';
 
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
-import { patchPlayer } from '../../../../api/Users';
-import { patchGroup } from '../../../../api/Groups';
+import {patchPlayer} from '../../../../api/Users';
+import {patchGroup} from '../../../../api/Groups';
 
-   import * as Utility from '../../../../utils';
-   import { getLatLong } from '../../../../api/External';
+import * as Utility from '../../../../utils';
+import {getLatLong} from '../../../../api/External';
 
 import AuthContext from '../../../../auth/context';
 import strings from '../../../../Constants/String';
@@ -29,8 +27,8 @@ import TCLabel from '../../../../components/TCLabel';
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTextInputClear from '../../../../components/TCTextInputClear';
 
-export default function Venue({ navigation, route }) {
-  const { comeFrom, sportName, sportType } = route?.params;
+export default function Venue({navigation, route}) {
+  const {comeFrom, sportName, sportType} = route?.params;
 
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
@@ -91,7 +89,7 @@ export default function Venue({ navigation, route }) {
     }
   };
 
-  const renderVenue = ({ index }) => (
+  const renderVenue = ({index}) => (
     <View>
       <View style={styles.viewTitleContainer}>
         <ActivityLoader visible={loading} />
@@ -251,84 +249,87 @@ pointerEvents="none"
     </View>
   );
 
-const saveUser = () => {
-  const bodyParams = {
-    sport: sportName,
-    sport_type: sportType,
-    entity_type: 'player',
-    venue: venue.map((e) => {
-      delete e.id;
-      return e;
-    }),
-  };
-  setloading(true);
-  const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
-    (obj) => {
-      if (obj.sport === sportName && obj.sport_type === sportType) {
-        return null
-      }
-      return obj
-    },
-);
+  const saveUser = () => {
+    const bodyParams = {
+      sport: sportName,
+      sport_type: sportType,
+      entity_type: 'player',
+      venue: venue.map((e) => {
+        delete e.id;
+        return e;
+      }),
+    };
+    setloading(true);
+    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => {
+        if (obj.sport === sportName && obj.sport_type === sportType) {
+          return null;
+        }
+        return obj;
+      },
+    );
 
-  let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-    (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
-  )[0];
+    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
+    )[0];
 
-  selectedSport = {
-    ...selectedSport,
-    setting: { ...selectedSport?.setting, ...bodyParams },
-  }
-  registerdPlayerData.push(selectedSport);
+    selectedSport = {
+      ...selectedSport,
+      setting: {...selectedSport?.setting, ...bodyParams},
+    };
+    registerdPlayerData.push(selectedSport);
 
-  const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
-  console.log('Body::::--->', body);
+    const body = {
+      ...authContext?.entity?.obj,
+      registered_sports: registerdPlayerData,
+    };
+    console.log('Body::::--->', body);
 
-  patchPlayer(body, authContext)
-    .then(async (response) => {
-      if (response.status === true) {
+    patchPlayer(body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          setloading(false);
+          const entity = authContext.entity;
+          console.log('Register player response IS:: ', response.payload);
+          entity.auth.user = response.payload;
+          entity.obj = response.payload;
+          authContext.setEntity({...entity});
+          authContext.setUser(response.payload);
+          await Utility.setStorage('authContextUser', response.payload);
+          await Utility.setStorage('authContextEntity', {...entity});
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.registered_sports.filter(
+              (obj) => obj.sport === sportName && obj.sport_type === sportType,
+            )[0].setting,
+          });
+        } else {
+          Alert.alert(strings.appName, response.messages);
+        }
+        console.log('RESPONSE IS:: ', response);
         setloading(false);
-        const entity = authContext.entity;
-        console.log('Register player response IS:: ', response.payload);
-        entity.auth.user = response.payload;
-        entity.obj = response.payload;
-        authContext.setEntity({ ...entity });
-        authContext.setUser(response.payload);
-        await Utility.setStorage('authContextUser', response.payload);
-        await Utility.setStorage('authContextEntity', { ...entity });
-        navigation.navigate(comeFrom, {
-          settingObj: response.payload.registered_sports.filter(
-            (obj) => obj.sport === sportName && obj.sport_type === sportType,
-          )[0].setting,
-        });
-      } else {
-        Alert.alert('Towns Cup', response.messages);
-      }
-      console.log('RESPONSE IS:: ', response);
-      setloading(false);
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
-}
-
-const saveTeam = () => {
-  const bodyParams = {
-    sport: sportName,
-    sport_type: sportType,
-    entity_type: 'team',
-    venue: venue.map((e) => {
-      delete e.id;
-      return e;
-    }),
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
-  setloading(true);
+
+  const saveTeam = () => {
+    const bodyParams = {
+      sport: sportName,
+      sport_type: sportType,
+      entity_type: 'team',
+      venue: venue.map((e) => {
+        delete e.id;
+        return e;
+      }),
+    };
+    setloading(true);
     const selectedTeam = authContext?.entity?.obj;
-    selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
-    const body = { ...selectedTeam };
+    selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
+    const body = {...selectedTeam};
     console.log('Body Team::::--->', body);
 
     patchGroup(authContext.entity.uid, body, authContext)
@@ -339,14 +340,14 @@ const saveTeam = () => {
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
 
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         setloading(false);
       })
@@ -356,13 +357,13 @@ const saveTeam = () => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-}
+  };
   const onSavePressed = () => {
-   if (authContext.entity.role === 'team') {
-     saveTeam()
-   } else {
-     saveUser()
-   }
+    if (authContext.entity.role === 'team') {
+      saveTeam();
+    } else {
+      saveUser();
+    }
   };
 
   const getLatLongData = (addressDescription) => {
@@ -376,9 +377,9 @@ const saveTeam = () => {
           country = e.long_name;
         }
 
-       if (e?.types?.includes('administrative_area_level_1')) {
-         state = e.long_name;
-       }
+        if (e?.types?.includes('administrative_area_level_1')) {
+          state = e.long_name;
+        }
 
         if (e?.types?.includes('administrative_area_level_2')) {
           city = e.long_name;
@@ -413,13 +414,13 @@ const saveTeam = () => {
 
       <SafeAreaView>
         <View>
-          <TCLabel title={strings.venueTitle} style={{ marginRight: 15 }} />
+          <TCLabel title={strings.venueTitle} style={{marginRight: 15}} />
 
           <FlatList
             data={venue}
             renderItem={renderVenue}
             keyExtractor={(item, index) => index.toString()}
-            style={{ marginBottom: 15 }}
+            style={{marginBottom: 15}}
           />
           <TCMessageButton
             title={'+ Add Venue'}
@@ -431,7 +432,6 @@ const saveTeam = () => {
           />
         </View>
       </SafeAreaView>
-
     </TCKeyboardView>
   );
 }
@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,

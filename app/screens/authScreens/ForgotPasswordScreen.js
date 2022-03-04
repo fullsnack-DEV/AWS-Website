@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import {
-  View, Text, Alert, StyleSheet,
-} from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, Alert, StyleSheet} from 'react-native';
 
 import {
-  heightPercentageToDP as hp, widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
 import firebase from '@react-native-firebase/app';
@@ -13,92 +12,103 @@ import LinearGradient from 'react-native-linear-gradient';
 import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import strings from '../../Constants/String';
-import images from '../../Constants/ImagePath'
+import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
-export default function ForgotPasswordScreen({ navigation }) {
+export default function ForgotPasswordScreen({navigation}) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   // Basic input validation
   const checkValidation = () => {
     if (email === '') {
-      Alert.alert('Towns Cup', 'Email cannot be blank');
-      return false
-    } if (ValidateEmail(email) === false) {
-      Alert.alert('Towns Cup', 'You have entered an invalid email address!');
-      return false
+      Alert.alert(strings.appName, 'Email cannot be blank');
+      return false;
     }
-    return true
+    if (ValidateEmail(email) === false) {
+      Alert.alert('', strings.validEmailMessage);
+      return false;
+    }
+    return true;
   };
 
   // Email input format validation
   const ValidateEmail = (emailAddress) => {
-    if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(emailAddress)) {
-      return (true)
+    if (
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+        emailAddress,
+      )
+    ) {
+      return true;
     }
 
-    return (false)
-  }
+    return false;
+  };
   // Firebase forgot pasword function
   const forgotPassword = (emailText) => {
     setLoading(true);
-    firebase.auth().sendPasswordResetEmail(emailText)
+    firebase
+      .auth()
+      .sendPasswordResetEmail(emailText)
       .then(() => {
         setLoading(false);
         navigation.navigate('ForgotPasswordLinkSentScreen');
-      }).catch((e) => {
+      })
+      .catch((e) => {
         setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }
+  };
   return (
     <LinearGradient
-          colors={[colors.themeColor1, colors.themeColor3]}
-          style={styles.mainContainer}>
-      <ActivityLoader visible={loading}/>
-      <FastImage resizeMode={'stretch'} style={ styles.background } source={ images.loginBg } />
-      <Text style={ styles.forgotText }>{strings.forgotPassword}</Text>
-      <Text style={ styles.resetText }>{strings.resetText}</Text>
+      colors={[colors.themeColor1, colors.themeColor3]}
+      style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
+      <FastImage
+        resizeMode={'stretch'}
+        style={styles.background}
+        source={images.loginBg}
+      />
+      <Text style={styles.forgotText}>{strings.forgotPassword}</Text>
+      <Text style={styles.resetText}>{strings.resetText}</Text>
       <TCTextField
-          placeholderTextColor={colors.darkYellowColor}
-          style={{ ...styles.textFieldStyle }}
-          placeholder={ strings.enterEmailPlaceholder }
-          secureText={ false }
-          autoCapitalize="none"
-          keyboardType="email-address"
-          onChangeText={ (text) => setEmail(text) } value={ email }
+        placeholderTextColor={colors.darkYellowColor}
+        style={{...styles.textFieldStyle}}
+        placeholder={strings.enterEmailPlaceholder}
+        secureText={false}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        onChangeText={(text) => setEmail(text)}
+        value={email}
       />
-      <View style={{ flex: 1 }}/>
+      <View style={{flex: 1}} />
 
-      <View style={{ marginBottom: 20 }}>
+      <View style={{marginBottom: 20}}>
         <TCButton
-        title={ strings.nextTitle }
-        onPress={ () => {
-          if (checkValidation()) {
-            forgotPassword(email);
-          }
-        } }
-        extraStyle={{ marginBottom: 10 }}
-      />
+          title={strings.nextTitle}
+          onPress={() => {
+            if (checkValidation()) {
+              forgotPassword(email);
+            }
+          }}
+          extraStyle={{marginBottom: 10}}
+        />
         <TCButton
-              title={ strings.cancelTitle }
-              onPress={ () => navigation.goBack() }
-              textColor={ { color: colors.whiteColor } }
-              extraStyle={ {
+          title={strings.cancelTitle}
+          onPress={() => navigation.goBack()}
+          textColor={{color: colors.whiteColor}}
+          extraStyle={{
+            borderColor: colors.whiteColor,
+            borderWidth: 1,
 
-                borderColor: colors.whiteColor,
-                borderWidth: 1,
-
-                backgroundColor: 'transparent',
-              } }
-              />
+            backgroundColor: 'transparent',
+          }}
+        />
       </View>
     </LinearGradient>
-
   );
 }
 
@@ -139,7 +149,7 @@ const styles = StyleSheet.create({
 
     paddingLeft: 8,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.4,
     shadowRadius: 4,
   },

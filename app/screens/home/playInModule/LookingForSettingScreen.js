@@ -1,11 +1,7 @@
-import React, {
- useState, useContext, useLayoutEffect, useEffect,
- } from 'react';
-import {
- StyleSheet, Text, Alert, View, SafeAreaView,
- } from 'react-native';
+import React, {useState, useContext, useLayoutEffect, useEffect} from 'react';
+import {StyleSheet, Text, Alert, View, SafeAreaView} from 'react-native';
 
-import { patchPlayer } from '../../../api/Users';
+import {patchPlayer} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import * as Utility from '../../../utils';
@@ -15,11 +11,11 @@ import TCLabel from '../../../components/TCLabel';
 import ToggleView from '../../../components/Schedule/ToggleView';
 import strings from '../../../Constants/String';
 
-export default function LookingForSettingScreen({ navigation, route }) {
+export default function LookingForSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [lookingFor, setLookingFor] = useState(false);
-  const { sportName,sportType } = route?.params ?? {};
+  const {sportName, sportType} = route?.params ?? {};
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -48,13 +44,16 @@ export default function LookingForSettingScreen({ navigation, route }) {
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
     )[0];
 
-    selectedSport = { ...selectedSport, lookingForTeamClub: lookingFor };
+    selectedSport = {...selectedSport, lookingForTeamClub: lookingFor};
     console.log('selectedSport:', selectedSport);
 
     registerdPlayerData.push(selectedSport);
     console.log('Final data:', registerdPlayerData);
 
-    const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
+    const body = {
+      ...authContext?.entity?.obj,
+      registered_sports: registerdPlayerData,
+    };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
@@ -65,13 +64,13 @@ export default function LookingForSettingScreen({ navigation, route }) {
           console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
           authContext.setUser(response.payload);
           await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.goBack();
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         console.log('RESPONSE IS:: ', response);
         setloading(false);
@@ -85,7 +84,7 @@ export default function LookingForSettingScreen({ navigation, route }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
 
       <View
@@ -95,7 +94,13 @@ export default function LookingForSettingScreen({ navigation, route }) {
           justifyContent: 'space-between',
           marginRight: 15,
         }}>
-        <TCLabel title={sportName.toLowerCase() === 'tennis' ? 'Looking for Club' : 'Looking for Team'} />
+        <TCLabel
+          title={
+            sportName.toLowerCase() === 'tennis'
+              ? 'Looking for Club'
+              : 'Looking for Team'
+          }
+        />
         <ToggleView
           isOn={lookingFor}
           onToggle={() => {
@@ -105,7 +110,7 @@ export default function LookingForSettingScreen({ navigation, route }) {
           offColor={colors.grayBackgroundColor}
         />
       </View>
-      <View style={{ flex: 1 }} />
+      <View style={{flex: 1}} />
     </SafeAreaView>
   );
 }

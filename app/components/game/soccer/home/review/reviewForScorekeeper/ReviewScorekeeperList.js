@@ -1,23 +1,26 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
-  View, StyleSheet, FlatList, TouchableOpacity,
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
   Text,
   Image,
   Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import AuthContext from '../../../../../../auth/context'
+import AuthContext from '../../../../../../auth/context';
 import TCSwitcher from '../../../../../TCSwitcher';
 import ActivityLoader from '../../../../../loader/ActivityLoader';
-import { getGameLineUp, getGameReview } from '../../../../../../api/Games';
+import {getGameLineUp, getGameReview} from '../../../../../../api/Games';
 
 import colors from '../../../../../../Constants/Colors';
 // import TCMessageButton from '../../../../../TCMessageButton';
 import images from '../../../../../../Constants/ImagePath';
 import fonts from '../../../../../../Constants/Fonts';
 
-export default function ReviewRefereeList({ navigation, route }) {
-  const authContext = useContext(AuthContext)
+export default function ReviewRefereeList({navigation, route}) {
+  const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [players, setPlayers] = useState();
   const [selectedTeamTab, setSelectedTeamTab] = useState(1);
@@ -29,20 +32,26 @@ export default function ReviewRefereeList({ navigation, route }) {
     } else {
       getLineUpOfTeams(gameData.away_team.group_id, gameData.game_id);
     }
-  }, [])
+  }, []);
 
   const getGameReviewsData = (item) => {
-    setLoading(true)
-    getGameReview(gameData?.game_id, gameData?.review_id, authContext).then((response) => {
-      navigation.navigate('PlayerReviewScreen', {
-        gameReviewData: response.payload, gameData, userData: item, sliderAttributesForPlayer: route?.params?.sliderAttributesForPlayer, starAttributesForPlayer: route?.params?.starAttributesForPlayer,
+    setLoading(true);
+    getGameReview(gameData?.game_id, gameData?.review_id, authContext)
+      .then((response) => {
+        navigation.navigate('PlayerReviewScreen', {
+          gameReviewData: response.payload,
+          gameData,
+          userData: item,
+          sliderAttributesForPlayer: route?.params?.sliderAttributesForPlayer,
+          starAttributesForPlayer: route?.params?.starAttributesForPlayer,
+        });
+        setLoading(false);
       })
-      setLoading(false)
-    }).catch((error) => {
-      setLoading(false);
-      setTimeout(() => Alert.alert('TownsCup', error?.message), 100)
-    })
-  }
+      .catch((error) => {
+        setLoading(false);
+        setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
+      });
+  };
 
   const getLineUpOfTeams = (teamID, gameID) => {
     setLoading(true);
@@ -50,27 +59,23 @@ export default function ReviewRefereeList({ navigation, route }) {
       const rosterData = response.payload.roster;
       setLoading(false);
 
-      setPlayers(
-        rosterData.filter(
-          (el) => el.role === 'player',
-        ),
-      );
+      setPlayers(rosterData.filter((el) => el.role === 'player'));
 
       console.log(JSON.stringify(response.payload));
     });
   };
-  const renderRoster = ({ item: userData }) => (
-    <TouchableOpacity onPress={() => {
-      console.log('row pressed');
-    }}>
-
+  const renderRoster = ({item: userData}) => (
+    <TouchableOpacity
+      onPress={() => {
+        console.log('row pressed');
+      }}>
       <View style={styles.topViewContainer}>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{flexDirection: 'row'}}>
           <View style={styles.profileView}>
             <Image
               source={
                 userData.profile.thumbnail
-                  ? { uri: userData.profile.thumbnail }
+                  ? {uri: userData.profile.thumbnail}
                   : images.profilePlaceHolder
               }
               style={styles.profileImage}
@@ -83,63 +88,70 @@ export default function ReviewRefereeList({ navigation, route }) {
               1
               }>{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
             <Text style={styles.locationText} numberOfLines={1}>
-              {`${userData.profile.jersey_number || ''} ${userData.profile.positions || ''}`}
+              {`${userData.profile.jersey_number || ''} ${
+                userData.profile.positions || ''
+              }`}
             </Text>
           </View>
         </View>
-        {userData.profile.user_id !== authContext.entity.obj.user_id && <View style={styles.buttonStyle}>
-          <TouchableOpacity onPress={() => {
-            console.log('gameData::=>', gameData);
-            if (userData?.review_id) {
-              getGameReviewsData(userData)
-            } else {
-              navigation.navigate('RefereeReviewScreen', {
-                gameData, userData, sliderAttributesForReferee: route?.params?.sliderAttributesForReferee, starAttributesForReferee: route?.params?.starAttributesForReferee,
-              })
-            }
-          }}>
-            <LinearGradient
+        {userData.profile.user_id !== authContext.entity.obj.user_id && (
+          <View style={styles.buttonStyle}>
+            <TouchableOpacity
+              onPress={() => {
+                console.log('gameData::=>', gameData);
+                if (userData?.review_id) {
+                  getGameReviewsData(userData);
+                } else {
+                  navigation.navigate('RefereeReviewScreen', {
+                    gameData,
+                    userData,
+                    sliderAttributesForReferee:
+                      route?.params?.sliderAttributesForReferee,
+                    starAttributesForReferee:
+                      route?.params?.starAttributesForReferee,
+                  });
+                }
+              }}>
+              <LinearGradient
                 colors={[colors.yellowColor, colors.themeColor]}
                 style={styles.buttonStyle}>
-              <Text style={styles.buttonText}>{userData?.review_id ? 'Edit Review' : 'Review'}</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>}
-
+                <Text style={styles.buttonText}>
+                  {userData?.review_id ? 'Edit Review' : 'Review'}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
-
     </TouchableOpacity>
   );
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <TCSwitcher
-        tabs={
-           [
-             gameData.home_team.group_name,
-             gameData.away_team.group_name]
-        }
+        tabs={[gameData.home_team.group_name, gameData.away_team.group_name]}
         selectedTab={selectedTeamTab === 1 ? 0 : 1}
         onTabPress={(index) => {
           if (index === 0) {
-            setSelectedTeamTab(1)
+            setSelectedTeamTab(1);
             // setSelected(1);
             getLineUpOfTeams(gameData.home_team.group_id, gameData.game_id);
           } else {
-            setSelectedTeamTab(2)
+            setSelectedTeamTab(2);
             // setSelected(2);
             getLineUpOfTeams(gameData.away_team.group_id, gameData.game_id);
           }
         }}
-        style={{ height: 40 }}
+        style={{height: 40}}
       />
       <FlatList
-              data={players}
-              renderItem={renderRoster}
-              keyExtractor={(item, index) => index.toString()}
-              scrollEnabled={false}
-            />
-    </View>)
+        data={players}
+        renderItem={renderRoster}
+        keyExtractor={(item, index) => index.toString()}
+        scrollEnabled={false}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -169,7 +181,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 10,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 3,
@@ -182,7 +194,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,
@@ -216,4 +228,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.whiteColor,
   },
-})
+});

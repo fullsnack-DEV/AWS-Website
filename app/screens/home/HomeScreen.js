@@ -2479,7 +2479,7 @@ const HomeScreen = ({navigation, route}) => {
               if (index === 1 && selectedEventItem.game) {
                 if (refereeFound(selectedEventItem)) {
                   Alert.alert(
-                    'Towns Cup',
+                    strings.appName,
                     'Change Event color feature is pending',
                     [
                       {
@@ -2514,7 +2514,7 @@ const HomeScreen = ({navigation, route}) => {
                         setloading(false);
                         setTimeout(() => {
                           Alert.alert(
-                            'Towns Cup',
+                            strings.appName,
                             'No referees invited or booked by you for this game',
                             [
                               {
@@ -2582,7 +2582,7 @@ const HomeScreen = ({navigation, route}) => {
                   console.log('Pressed cancel button.');
                 } else {
                   Alert.alert(
-                    'Towns Cup',
+                    strings.appName,
                     'Change Event color feature is pending',
                     [
                       {
@@ -3461,7 +3461,7 @@ const HomeScreen = ({navigation, route}) => {
               .then((qbRes) => {
                 setloading(false);
                 if (qbRes?.error) {
-                  console.log('Towns Cup', qbRes?.error);
+                  console.log(strings.appName, qbRes?.error);
                 }
               })
               .catch(() => {
@@ -3633,7 +3633,7 @@ const HomeScreen = ({navigation, route}) => {
               sportName,
             });
           } else {
-            setTimeout(() => Alert.alert('Towns Cup', message));
+            setTimeout(() => Alert.alert(strings.appName, message));
           }
         }}
       />

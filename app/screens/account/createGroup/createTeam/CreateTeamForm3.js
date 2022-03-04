@@ -1,15 +1,6 @@
 /* eslint-disable default-case */
-import React, {
- useState, useContext, useRef,
- } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  ScrollView,
-  Alert,
-
-} from 'react-native';
+import React, {useState, useContext, useRef} from 'react';
+import {StyleSheet, View, Text, ScrollView, Alert} from 'react-native';
 
 // import {
 //   widthPercentageToDP as wp,
@@ -17,11 +8,9 @@ import {
 // } from 'react-native-responsive-screen';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
-import {
-  check, PERMISSIONS, RESULTS, request,
- } from 'react-native-permissions';
+import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import TCInfoField from '../../../../components/TCInfoField';
-import { createGroup, createGroupRequest } from '../../../../api/Groups';
+import {createGroup, createGroupRequest} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 
 import AuthContext from '../../../../auth/context';
@@ -36,10 +25,10 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import TCPlayerImageInfo from '../../../../components/TCPlayerImageInfo';
-import { getSportName } from '../../../../utils';
+import {getSportName} from '../../../../utils';
 
-export default function CreateTeamForm3({ navigation, route }) {
-  const { createTeamForm2 } = route?.params;
+export default function CreateTeamForm3({navigation, route}) {
+  const {createTeamForm2} = route?.params;
 
   console.log('createTeamForm2:=>', createTeamForm2);
   const actionSheet = useRef();
@@ -110,60 +99,66 @@ export default function CreateTeamForm3({ navigation, route }) {
 
   const openCamera = (width = 400, height = 400) => {
     check(PERMISSIONS.IOS.CAMERA)
-  .then((result) => {
-    switch (result) {
-      case RESULTS.UNAVAILABLE:
-        Alert.alert('This feature is not available (on this device / in this context)')
-        break;
-      case RESULTS.DENIED:
-        request(PERMISSIONS.IOS.CAMERA).then(() => {
-          ImagePicker.openCamera({
-            width,
-            height,
-            cropping: true,
-          }).then((data) => {
-            // 1 means profile, 0 - means background
-            if (currentImageSelection === 1) {
-              // setGroupProfile({ ...groupProfile, thumbnail: data.path })
-              setThumbnail(data.path);
-            } else {
-              // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
-              setBackgroundThumbnail(data.path);
-            }
-          }).catch((e) => {
-            Alert.alert(e)
-          });
-        })
-        break;
-      case RESULTS.LIMITED:
-        console.log('The permission is limited: some actions are possible');
-        break;
-      case RESULTS.GRANTED:
-        ImagePicker.openCamera({
-          width,
-          height,
-          cropping: true,
-        }).then((data) => {
-          // 1 means profile, 0 - means background
-          if (currentImageSelection === 1) {
-            // setGroupProfile({ ...groupProfile, thumbnail: data.path })
-            setThumbnail(data.path);
-          } else {
-            // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
-            setBackgroundThumbnail(data.path);
-          }
-        }).catch((e) => {
-          Alert.alert(e)
-        });
-        break;
-      case RESULTS.BLOCKED:
-        console.log('The permission is denied and not requestable anymore');
-        break;
-    }
-  })
-  .catch((error) => {
-    Alert.alert(error)
-  });
+      .then((result) => {
+        switch (result) {
+          case RESULTS.UNAVAILABLE:
+            Alert.alert(
+              'This feature is not available (on this device / in this context)',
+            );
+            break;
+          case RESULTS.DENIED:
+            request(PERMISSIONS.IOS.CAMERA).then(() => {
+              ImagePicker.openCamera({
+                width,
+                height,
+                cropping: true,
+              })
+                .then((data) => {
+                  // 1 means profile, 0 - means background
+                  if (currentImageSelection === 1) {
+                    // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+                    setThumbnail(data.path);
+                  } else {
+                    // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+                    setBackgroundThumbnail(data.path);
+                  }
+                })
+                .catch((e) => {
+                  Alert.alert(e);
+                });
+            });
+            break;
+          case RESULTS.LIMITED:
+            console.log('The permission is limited: some actions are possible');
+            break;
+          case RESULTS.GRANTED:
+            ImagePicker.openCamera({
+              width,
+              height,
+              cropping: true,
+            })
+              .then((data) => {
+                // 1 means profile, 0 - means background
+                if (currentImageSelection === 1) {
+                  // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+                  setThumbnail(data.path);
+                } else {
+                  // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+                  setBackgroundThumbnail(data.path);
+                }
+              })
+              .catch((e) => {
+                Alert.alert(e);
+              });
+            break;
+          case RESULTS.BLOCKED:
+            console.log('The permission is denied and not requestable anymore');
+            break;
+        }
+      })
+      .catch((error) => {
+        Alert.alert(error);
+      });
   };
 
   const doubleNextPressed = () => {
@@ -175,14 +170,14 @@ export default function CreateTeamForm3({ navigation, route }) {
       entity_type: 'team',
     };
 
-  if (bodyParams?.player1) {
-     player1 = bodyParams?.player1;
-    player2 = bodyParams?.player2;
-    delete bodyParams.player1;
-    delete bodyParams.player2;
-    bodyParams.player1 = player1.user_id;
-    bodyParams.player2 = player2.user_id;
-  }
+    if (bodyParams?.player1) {
+      player1 = bodyParams?.player1;
+      player2 = bodyParams?.player2;
+      delete bodyParams.player1;
+      delete bodyParams.player2;
+      bodyParams.player1 = player1.user_id;
+      bodyParams.player2 = player2.user_id;
+    }
 
     if (thumbnail) {
       bodyParams.thumbnail = thumbnail;
@@ -196,10 +191,10 @@ export default function CreateTeamForm3({ navigation, route }) {
     if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
       const imageArray = [];
       if (bodyParams?.thumbnail) {
-        imageArray.push({ path: bodyParams?.thumbnail });
+        imageArray.push({path: bodyParams?.thumbnail});
       }
       if (bodyParams?.background_thumbnail) {
-        imageArray.push({ path: bodyParams?.background_thumbnail });
+        imageArray.push({path: bodyParams?.background_thumbnail});
       }
       uploadImages(imageArray, authContext)
         .then((responses) => {
@@ -231,15 +226,14 @@ export default function CreateTeamForm3({ navigation, route }) {
             .then(() => {
               setloading(false);
 
-                navigation.push('HomeScreen', {
-                  uid: entity.uid,
-                  role: entity.role,
-                  backButtonVisible: false,
-                  menuBtnVisible: false,
-                  isDoubleSportTeamCreated: true,
-                  name: player2?.full_name,
-
-                });
+              navigation.push('HomeScreen', {
+                uid: entity.uid,
+                role: entity.role,
+                backButtonVisible: false,
+                menuBtnVisible: false,
+                isDoubleSportTeamCreated: true,
+                name: player2?.full_name,
+              });
             })
             .catch((e) => {
               setloading(false);
@@ -250,7 +244,7 @@ export default function CreateTeamForm3({ navigation, route }) {
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert('Towns Cup', e.messages);
+            Alert.alert(strings.appName, e.messages);
           }, 0.1);
         });
     } else {
@@ -269,15 +263,14 @@ export default function CreateTeamForm3({ navigation, route }) {
         .then(() => {
           setloading(false);
 
-            navigation.push('HomeScreen', {
-              uid: entity.uid,
-              role: entity.role,
-              backButtonVisible: false,
-              menuBtnVisible: false,
-              isDoubleSportTeamCreated: true,
-              name: player2?.full_name,
-
-            });
+          navigation.push('HomeScreen', {
+            uid: entity.uid,
+            role: entity.role,
+            backButtonVisible: false,
+            menuBtnVisible: false,
+            isDoubleSportTeamCreated: true,
+            name: player2?.full_name,
+          });
         })
         .catch((e) => {
           setloading(false);
@@ -307,10 +300,10 @@ export default function CreateTeamForm3({ navigation, route }) {
     if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
       const imageArray = [];
       if (bodyParams?.thumbnail) {
-        imageArray.push({ path: bodyParams?.thumbnail });
+        imageArray.push({path: bodyParams?.thumbnail});
       }
       if (bodyParams?.background_thumbnail) {
-        imageArray.push({ path: bodyParams?.background_thumbnail });
+        imageArray.push({path: bodyParams?.background_thumbnail});
       }
       uploadImages(imageArray, authContext)
         .then((responses) => {
@@ -333,30 +326,25 @@ export default function CreateTeamForm3({ navigation, route }) {
             bodyParams.background_full_image = bgInfo.url;
           }
 
-          createGroup(
-            bodyParams,
-            entity.uid,
-            entity.obj.role,
-            authContext,
-          )
-          // createGroupRequest(
-          //   bodyParams,
-          //   entity.uid,
-          //   entity.role === 'club' ? 'club' : 'user',
-          //   authContext,
-          // )
+          createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
+            // createGroupRequest(
+            //   bodyParams,
+            //   entity.uid,
+            //   entity.role === 'club' ? 'club' : 'user',
+            //   authContext,
+            // )
             .then((response) => {
               setloading(false);
 
-                navigation.push('HomeScreen', {
-                  uid: response.payload.group_id,
-                  role: response.payload.entity_type,
-                  backButtonVisible: false,
-                  menuBtnVisible: false,
-                  isEntityCreated: true,
-                  groupName: response.payload.group_name,
-                  entityObj: response.payload,
-                });
+              navigation.push('HomeScreen', {
+                uid: response.payload.group_id,
+                role: response.payload.entity_type,
+                backButtonVisible: false,
+                menuBtnVisible: false,
+                isEntityCreated: true,
+                groupName: response.payload.group_name,
+                entityObj: response.payload,
+              });
             })
             .catch((e) => {
               setloading(false);
@@ -367,34 +355,29 @@ export default function CreateTeamForm3({ navigation, route }) {
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert('Towns Cup', e.messages);
+            Alert.alert(strings.appName, e.messages);
           }, 0.1);
         });
     } else {
-      createGroup(
-        bodyParams,
-        entity.uid,
-        entity.obj.role,
-        authContext,
-      )
-      // createGroupRequest(
-      //   bodyParams,
-      //   entity.uid,
-      //   entity.role === 'club' ? 'club' : 'user',
-      //   authContext,
-      // )
+      createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
+        // createGroupRequest(
+        //   bodyParams,
+        //   entity.uid,
+        //   entity.role === 'club' ? 'club' : 'user',
+        //   authContext,
+        // )
         .then((response) => {
           setloading(false);
 
-            navigation.push('HomeScreen', {
-              uid: response.payload.group_id,
-              role: response.payload.entity_type,
-              backButtonVisible: false,
-              menuBtnVisible: false,
-              isEntityCreated: true,
-              groupName: response.payload.group_name,
-              entityObj: response.payload,
-            });
+          navigation.push('HomeScreen', {
+            uid: response.payload.group_id,
+            role: response.payload.entity_type,
+            backButtonVisible: false,
+            menuBtnVisible: false,
+            isEntityCreated: true,
+            groupName: response.payload.group_name,
+            entityObj: response.payload,
+          });
         })
         .catch((e) => {
           setloading(false);
@@ -415,9 +398,13 @@ export default function CreateTeamForm3({ navigation, route }) {
 
         <TCLabel title={strings.photoUploadTitle} />
         <TCProfileImageControl
-          profileImage={thumbnail ? { uri: thumbnail } : undefined}
+          profileImage={thumbnail ? {uri: thumbnail} : undefined}
           profileImagePlaceholder={images.teamPlaceholder}
-          bgImage={backgroundThumbnail ? { uri: backgroundThumbnail } : images.backgroundGrayPlceholder}
+          bgImage={
+            backgroundThumbnail
+              ? {uri: backgroundThumbnail}
+              : images.backgroundGrayPlceholder
+          }
           onPressBGImage={() => onBGImageClicked()}
           onPressProfileImage={() => onProfileImageClicked()}
           showEditButtons
@@ -430,20 +417,22 @@ export default function CreateTeamForm3({ navigation, route }) {
         />
         <TCThinDivider marginTop={5} marginBottom={3} />
 
-        {createTeamForm2?.sport?.toLowerCase() === 'Tennis Double'.toLowerCase() && <View>
-          <TCPlayerImageInfo
-          title={'Players'}
-          player1Image={createTeamForm2?.player1?.thumbnail}
-          player2Image={createTeamForm2?.player2?.thumbnail}
-          player1Name={createTeamForm2?.player1?.full_name}
-          player2Name={createTeamForm2?.player2?.full_name}
-          marginLeft={25}
-          marginRight={25}
-          marginTop={10}
-        />
-          <TCThinDivider marginTop={10} marginBottom={5} />
-        </View>
-        }
+        {createTeamForm2?.sport?.toLowerCase() ===
+          'Tennis Double'.toLowerCase() && (
+            <View>
+              <TCPlayerImageInfo
+              title={'Players'}
+              player1Image={createTeamForm2?.player1?.thumbnail}
+              player2Image={createTeamForm2?.player2?.thumbnail}
+              player1Name={createTeamForm2?.player1?.full_name}
+              player2Name={createTeamForm2?.player2?.full_name}
+              marginLeft={25}
+              marginRight={25}
+              marginTop={10}
+            />
+              <TCThinDivider marginTop={10} marginBottom={5} />
+            </View>
+        )}
 
         <TCInfoField
           title={'Team name'}
@@ -459,21 +448,29 @@ export default function CreateTeamForm3({ navigation, route }) {
         />
         <TCThinDivider marginTop={5} marginBottom={3} />
 
-        {createTeamForm2?.sport?.toLowerCase() !== 'Tennis Double'.toLowerCase() && <View>
-          <TCInfoField
-          title={'Members’ gender'}
-          value={createTeamForm2?.gender?.charAt(0)?.toUpperCase() + createTeamForm2?.gender?.slice(1)}
-          marginLeft={25}
-        />
-          <TCThinDivider marginTop={5} marginBottom={3} />
+        {createTeamForm2?.sport?.toLowerCase() !==
+          'Tennis Double'.toLowerCase() && (
+            <View>
+              <TCInfoField
+              title={'Members’ gender'}
+              value={
+                createTeamForm2?.gender?.charAt(0)?.toUpperCase() +
+                createTeamForm2?.gender?.slice(1)
+              }
+              marginLeft={25}
+            />
+              <TCThinDivider marginTop={5} marginBottom={3} />
 
-          <TCInfoField
-          title={'Members’ ages'}
-          value={`Min ${createTeamForm2?.min_age ?? 'N/A'} Max ${createTeamForm2?.max_age ?? 'N/A'}`}
-          marginLeft={25}
-        />
-          <TCThinDivider marginTop={5} marginBottom={3} />
-        </View>}
+              <TCInfoField
+              title={'Members’ ages'}
+              value={`Min ${createTeamForm2?.min_age ?? 'N/A'} Max ${
+                createTeamForm2?.max_age ?? 'N/A'
+              }`}
+              marginLeft={25}
+            />
+              <TCThinDivider marginTop={5} marginBottom={3} />
+            </View>
+        )}
 
         <TCInfoField
           title={'Language'}
@@ -488,18 +485,19 @@ export default function CreateTeamForm3({ navigation, route }) {
         <Text style={styles.describeText} numberOfLines={50}>
           {createTeamForm2?.descriptions}
         </Text>
-        <View style={{ flex: 1 }} />
-
+        <View style={{flex: 1}} />
       </ScrollView>
       <TCGradientButton
         isDisabled={false}
         title={strings.doneTitle}
-        style={{ marginBottom: 30, marginTop: 20 }}
+        style={{marginBottom: 30, marginTop: 20}}
         onPress={
-          createTeamForm2?.sport === 'tennis' && createTeamForm2?.sport_type === 'double' ? doubleNextPressed : singleNextPressed
-         // entity.role === 'club' ? clubNextPressed : userNextPressed
+          createTeamForm2?.sport === 'tennis' &&
+          createTeamForm2?.sport_type === 'double'
+            ? doubleNextPressed
+            : singleNextPressed
+          // entity.role === 'club' ? clubNextPressed : userNextPressed
         }
-
       />
       <ActionSheet
         ref={actionSheet}

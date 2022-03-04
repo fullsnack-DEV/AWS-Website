@@ -115,19 +115,19 @@ export default function CreateMemberProfileForm1({navigation,route}) {
 
   const checkValidation = useCallback(() => {
     if (firstName === '') {
-      Alert.alert('Towns Cup', 'First name cannot be blank');
+      Alert.alert(strings.appName, 'First name cannot be blank');
       return false;
     }
     if (lastName === '') {
-      Alert.alert('Towns Cup', 'Last name cannot be blank');
+      Alert.alert(strings.appName, 'Last name cannot be blank');
       return false;
     }
     if (email === '') {
-      Alert.alert('Towns Cup', 'Email cannot be blank');
+      Alert.alert(strings.appName, 'Email cannot be blank');
       return false;
     }
     if (ValidateEmail(email) === false) {
-      Alert.alert('Towns Cup', 'You have entered an invalid email address!');
+      Alert.alert('', strings.validEmailMessage);
       return false;
     }
 

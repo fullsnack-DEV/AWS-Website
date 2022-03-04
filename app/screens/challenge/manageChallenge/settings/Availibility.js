@@ -1,7 +1,5 @@
-import React, { useState, useLayoutEffect, useContext } from 'react';
-import {
- StyleSheet, View, Text, Alert, SafeAreaView,
- } from 'react-native';
+import React, {useState, useLayoutEffect, useContext} from 'react';
+import {StyleSheet, View, Text, Alert, SafeAreaView} from 'react-native';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import AuthContext from '../../../../auth/context';
 
@@ -12,11 +10,11 @@ import TCLabel from '../../../../components/TCLabel';
 import ToggleView from '../../../../components/Schedule/ToggleView';
 import * as Utility from '../../../../utils';
 
-import { patchPlayer } from '../../../../api/Users';
-import { patchGroup } from '../../../../api/Groups';
+import {patchPlayer} from '../../../../api/Users';
+import {patchGroup} from '../../../../api/Groups';
 
-export default function Availibility({ navigation, route }) {
-  const { comeFrom, sportName, sportType } = route?.params;
+export default function Availibility({navigation, route}) {
+  const {comeFrom, sportName, sportType} = route?.params;
 
   const authContext = useContext(AuthContext);
 
@@ -56,11 +54,11 @@ export default function Availibility({ navigation, route }) {
     const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null
+          return null;
         }
-        return obj
+        return obj;
       },
-  );
+    );
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -68,11 +66,14 @@ export default function Availibility({ navigation, route }) {
 
     selectedSport = {
       ...selectedSport,
-      setting: { ...selectedSport?.setting, ...bodyParams },
-    }
+      setting: {...selectedSport?.setting, ...bodyParams},
+    };
     registerdPlayerData.push(selectedSport);
 
-    const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
+    const body = {
+      ...authContext?.entity?.obj,
+      registered_sports: registerdPlayerData,
+    };
     console.log('Body::::--->', body);
 
     console.log('registerdPlayerData::::--->', registerdPlayerData);
@@ -86,17 +87,17 @@ export default function Availibility({ navigation, route }) {
           console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
           authContext.setUser(response.payload);
           await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response?.payload?.registered_sports?.filter(
               (obj) => obj.sport === sportName && obj.sport_type === sportType,
-              )[0]?.setting,
+            )[0]?.setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         console.log('RESPONSE IS:: ', response);
         setloading(false);
@@ -117,12 +118,12 @@ export default function Availibility({ navigation, route }) {
       availibility: acceptChallenge ? 'On' : 'Off',
     };
     setloading(true);
-    let selectedTeam = { ...authContext?.entity?.obj };
+    let selectedTeam = {...authContext?.entity?.obj};
     selectedTeam = {
       ...selectedTeam,
-      setting: { ...selectedTeam?.setting, ...bodyParams },
+      setting: {...selectedTeam?.setting, ...bodyParams},
     };
-    const body = { ...selectedTeam };
+    const body = {...selectedTeam};
     console.log('Body Team::::--->', body);
 
     patchGroup(authContext.entity.uid, body, authContext)
@@ -133,14 +134,14 @@ export default function Availibility({ navigation, route }) {
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
 
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         setloading(false);
       })
@@ -165,7 +166,7 @@ export default function Availibility({ navigation, route }) {
     <SafeAreaView>
       <ActivityLoader visible={loading} />
       <View>
-        <TCLabel title={strings.availibilityTitle} style={{ marginRight: 15 }} />
+        <TCLabel title={strings.availibilityTitle} style={{marginRight: 15}} />
 
         <View
           style={{

@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-nested-ternary */
-import React, { useState, useLayoutEffect, useContext } from 'react';
+import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -17,8 +17,8 @@ import Modal from 'react-native-modal';
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
-import { patchPlayer } from '../../../../api/Users';
-import { patchGroup } from '../../../../api/Groups';
+import {patchPlayer} from '../../../../api/Users';
+import {patchGroup} from '../../../../api/Groups';
 
 import * as Utility from '../../../../utils';
 import strings from '../../../../Constants/String';
@@ -29,27 +29,28 @@ import TCThinDivider from '../../../../components/TCThinDivider';
 import images from '../../../../Constants/ImagePath';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 
-export default function RefereesSetting({ navigation, route }) {
+export default function RefereesSetting({navigation, route}) {
   console.log(
     'route?.params?.settingObj?.responsible_for_referee',
     route?.params?.settingObj?.responsible_for_referee,
   );
-  const { comeFrom, sportName, sportType } = route?.params;
+  const {comeFrom, sportName, sportType} = route?.params;
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
 
   const [selection, setSelection] = useState(
-    route?.params?.settingObj && route?.params?.settingObj?.responsible_for_referee && route?.params?.settingObj?.responsible_for_referee?.who_secure
-    ? route?.params?.settingObj?.responsible_for_referee?.who_secure?.length
-    : 'None',
+    route?.params?.settingObj &&
+      route?.params?.settingObj?.responsible_for_referee &&
+      route?.params?.settingObj?.responsible_for_referee?.who_secure
+      ? route?.params?.settingObj?.responsible_for_referee?.who_secure?.length
+      : 'None',
   );
 
- 
   const [referee, setReferee] = useState(
-    route?.params?.settingObj?.responsible_for_referee
-      && route?.params?.settingObj?.responsible_for_referee?.who_secure
+    route?.params?.settingObj?.responsible_for_referee &&
+      route?.params?.settingObj?.responsible_for_referee?.who_secure
       ? route?.params?.settingObj?.responsible_for_referee?.who_secure
       : [],
   );
@@ -73,7 +74,7 @@ export default function RefereesSetting({ navigation, route }) {
     });
   }, [comeFrom, navigation, referee, selection]);
 
-  const renderNumbersOf = ({ item }) => (
+  const renderNumbersOf = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
@@ -133,8 +134,6 @@ export default function RefereesSetting({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 
-  
-
   const saveUser = () => {
     let bodyParams;
     if (selection === 'None') {
@@ -147,9 +146,9 @@ export default function RefereesSetting({ navigation, route }) {
     } else {
       let ref;
       for (let i = 0; i < selection; i++) {
-       ref = [...referee]
-       ref[i].responsible_to_secure_referee = 'challengee';
-       ref[i].is_chief = i === 0;
+        ref = [...referee];
+        ref[i].responsible_to_secure_referee = 'challengee';
+        ref[i].is_chief = i === 0;
       }
       setReferee(ref);
 
@@ -169,16 +168,15 @@ export default function RefereesSetting({ navigation, route }) {
 
     console.log('Referee secure:=>', bodyParams);
 
-    
     setloading(true);
     const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null
+          return null;
         }
-        return obj
+        return obj;
       },
-  );
+    );
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -186,11 +184,14 @@ export default function RefereesSetting({ navigation, route }) {
 
     selectedSport = {
       ...selectedSport,
-      setting: { ...selectedSport?.setting, ...bodyParams },
-    }
+      setting: {...selectedSport?.setting, ...bodyParams},
+    };
     registerdPlayerData.push(selectedSport);
 
-    const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
+    const body = {
+      ...authContext?.entity?.obj,
+      registered_sports: registerdPlayerData,
+    };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
@@ -201,17 +202,17 @@ export default function RefereesSetting({ navigation, route }) {
           console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
           authContext.setUser(response.payload);
           await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.registered_sports.filter(
               (obj) => obj.sport === sportName && obj.sport_type === sportType,
-              )[0].setting,
+            )[0].setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         console.log('RESPONSE IS:: ', response);
         setloading(false);
@@ -236,9 +237,9 @@ export default function RefereesSetting({ navigation, route }) {
     } else {
       let ref;
       for (let i = 0; i < selection; i++) {
-       ref = [...referee]
-       ref[i].responsible_to_secure_referee = 'challengee';
-       ref[i].is_chief = i === 0;
+        ref = [...referee];
+        ref[i].responsible_to_secure_referee = 'challengee';
+        ref[i].is_chief = i === 0;
       }
       setReferee(ref);
       bodyParams = {
@@ -259,8 +260,8 @@ export default function RefereesSetting({ navigation, route }) {
 
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
-    selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
-    const body = { ...selectedTeam };
+    selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
+    const body = {...selectedTeam};
     console.log('Body Team::::--->', body);
 
     patchGroup(authContext.entity.uid, body, authContext)
@@ -271,14 +272,14 @@ export default function RefereesSetting({ navigation, route }) {
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
 
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         setloading(false);
       })
@@ -312,13 +313,13 @@ export default function RefereesSetting({ navigation, route }) {
   };
 
   return (
-    <TCKeyboardView style={{ flex: 1 }}>
+    <TCKeyboardView style={{flex: 1}}>
       <SafeAreaView>
         <ActivityLoader visible={loading} />
 
         <TCLabel
           title={strings.refereeSettingTitle}
-          style={{ marginRight: 15 }}
+          style={{marginRight: 15}}
         />
         <Text
           style={{
@@ -344,7 +345,7 @@ export default function RefereesSetting({ navigation, route }) {
           style={styles.viewContainer}
           onPress={() => setVisibleModal(true)}>
           <Text style={styles.itemView}> {selection || '-'}</Text>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{flexDirection: 'row'}}>
             <Text style={styles.itemView}>{'Referee(s)'}</Text>
             <Image
               source={images.dropDownArrow}
@@ -378,7 +379,9 @@ export default function RefereesSetting({ navigation, route }) {
             color: colors.darkThemeColor,
             margin: 15,
           }}>
-          {'In order to complete this part, please click the Save button on the right top after choosing your preference.'}
+          {
+            'In order to complete this part, please click the Save button on the right top after choosing your preference.'
+          }
         </Text>
 
         <Modal
@@ -391,7 +394,7 @@ export default function RefereesSetting({ navigation, route }) {
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
               <TouchableOpacity
-               hitSlop={Utility.getHitSlop(15)}
+                hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
                 onPress={() => setVisibleModal(false)}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
@@ -437,7 +440,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
   },
@@ -487,7 +490,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 15,
@@ -509,5 +512,4 @@ const styles = StyleSheet.create({
     margin: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
-
 });

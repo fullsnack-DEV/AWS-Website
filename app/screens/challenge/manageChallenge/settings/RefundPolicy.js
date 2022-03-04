@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useContext } from 'react';
+import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -10,13 +10,13 @@ import {
   Alert,
 } from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import AuthContext from '../../../../auth/context';
 
 import images from '../../../../Constants/ImagePath';
-import { patchPlayer } from '../../../../api/Users';
-import { patchGroup } from '../../../../api/Groups';
+import {patchPlayer} from '../../../../api/Users';
+import {patchGroup} from '../../../../api/Groups';
 
 import * as Utility from '../../../../utils';
 
@@ -25,24 +25,24 @@ import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
 import strings from '../../../../Constants/String';
 
-export default function RefundPolicy({ navigation, route }) {
+export default function RefundPolicy({navigation, route}) {
   const policiesTypeList = [
-    { key: strings.strictText, id: 1 },
-    { key: strings.moderateText, id: 2 },
-    { key: strings.flexibleText, id: 3 },
+    {key: strings.strictText, id: 1},
+    {key: strings.moderateText, id: 2},
+    {key: strings.flexibleText, id: 3},
   ];
-  const { comeFrom, sportName, sportType } = route?.params;
+  const {comeFrom, sportName, sportType} = route?.params;
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
 
   const [typeSelection, setTypeSelection] = useState(
-    (route?.params?.settingObj?.refund_policy === strings.strictText
-      && policiesTypeList[0])
-      || (route?.params?.settingObj?.refund_policy === strings.moderateText
-        && policiesTypeList[1])
-      || (route?.params?.settingObj?.refund_policy === strings.flexibleText
-        && policiesTypeList[2]),
+    (route?.params?.settingObj?.refund_policy === strings.strictText &&
+      policiesTypeList[0]) ||
+      (route?.params?.settingObj?.refund_policy === strings.moderateText &&
+        policiesTypeList[1]) ||
+      (route?.params?.settingObj?.refund_policy === strings.flexibleText &&
+        policiesTypeList[2]),
   );
 
   useLayoutEffect(() => {
@@ -59,7 +59,7 @@ export default function RefundPolicy({ navigation, route }) {
     });
   }, [comeFrom, navigation, typeSelection.key]);
 
-  const renderPolicyTypes = ({ item }) => (
+  const renderPolicyTypes = ({item}) => (
     <TouchableWithoutFeedback
       onPress={() => {
         setTypeSelection(item);
@@ -91,11 +91,11 @@ export default function RefundPolicy({ navigation, route }) {
     const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null
+          return null;
         }
-        return obj
+        return obj;
       },
-  );
+    );
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -103,11 +103,14 @@ export default function RefundPolicy({ navigation, route }) {
 
     selectedSport = {
       ...selectedSport,
-      setting: { ...selectedSport?.setting, ...bodyParams },
-    }
+      setting: {...selectedSport?.setting, ...bodyParams},
+    };
     registerdPlayerData.push(selectedSport);
 
-    const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
+    const body = {
+      ...authContext?.entity?.obj,
+      registered_sports: registerdPlayerData,
+    };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
@@ -118,17 +121,17 @@ export default function RefundPolicy({ navigation, route }) {
           console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
           authContext.setUser(response.payload);
           await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.registered_sports.filter(
               (obj) => obj.sport === sportName && obj.sport_type === sportType,
-              )[0].setting,
+            )[0].setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         console.log('RESPONSE IS:: ', response);
         setloading(false);
@@ -150,8 +153,8 @@ export default function RefundPolicy({ navigation, route }) {
     };
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
-    selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
-    const body = { ...selectedTeam };
+    selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
+    const body = {...selectedTeam};
     console.log('Body Team::::--->', body);
 
     patchGroup(authContext.entity.uid, body, authContext)
@@ -162,14 +165,14 @@ export default function RefundPolicy({ navigation, route }) {
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
 
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         setloading(false);
       })
@@ -214,13 +217,13 @@ export default function RefundPolicy({ navigation, route }) {
           <Text style={styles.policyTypeDetail}>
             {strings.strictPoint1Desc}
           </Text>
-          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+          <Text style={[styles.policyTypeTitle, {marginTop: 25}]}>
             {strings.strictPoint2Title}
           </Text>
           <Text style={styles.policyTypeDetail}>
             {strings.strictPoint2Desc}
           </Text>
-          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+          <Text style={[styles.policyTypeTitle, {marginTop: 25}]}>
             {strings.strictPoint3Title}
           </Text>
           <Text style={styles.policyTypeDetail}>
@@ -239,14 +242,14 @@ export default function RefundPolicy({ navigation, route }) {
             {strings.moderatePoint1Desc}
           </Text>
 
-          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+          <Text style={[styles.policyTypeTitle, {marginTop: 25}]}>
             {strings.moderatePoint2Title}
           </Text>
           <Text style={styles.policyTypeDetail}>
             {strings.moderatePoint2Desc}
           </Text>
 
-          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+          <Text style={[styles.policyTypeTitle, {marginTop: 25}]}>
             {strings.moderatePoint3Title}
           </Text>
           <Text style={styles.policyTypeDetail}>
@@ -264,7 +267,7 @@ export default function RefundPolicy({ navigation, route }) {
           <Text style={styles.policyTypeDetail}>
             {strings.flexiblePoint1Desc}
           </Text>
-          <Text style={[styles.policyTypeTitle, { marginTop: 25 }]}>
+          <Text style={[styles.policyTypeTitle, {marginTop: 25}]}>
             {strings.flexiblePoint2Title}
           </Text>
           <Text style={styles.policyTypeDetail}>
@@ -310,7 +313,7 @@ const styles = StyleSheet.create({
 
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('92%'),
@@ -346,7 +349,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 15,

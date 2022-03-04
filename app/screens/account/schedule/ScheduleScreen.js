@@ -652,7 +652,7 @@ export default function ScheduleScreen({ navigation,route }) {
               .then((qbRes) => {
                 setloading(false);
                 if (qbRes?.error) {
-                  console.log('Towns Cup', qbRes?.error);
+                  console.log(strings.appName, qbRes?.error);
                 }
               })
               .catch(() => {
@@ -1550,7 +1550,7 @@ export default function ScheduleScreen({ navigation,route }) {
                     setloading(false);
                     setTimeout(() => {
                       Alert.alert(
-                        'Towns Cup',
+                        strings.appName,
                         'No referees invited or booked by you for this game',
                         [
                           {
@@ -1598,7 +1598,7 @@ export default function ScheduleScreen({ navigation,route }) {
                     setloading(false);
                     setTimeout(() => {
                       Alert.alert(
-                        'Towns Cup',
+                        strings.appName,
                         'No scorekeepers invited or booked by you for this game',
                         [
                           {

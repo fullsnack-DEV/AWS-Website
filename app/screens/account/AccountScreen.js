@@ -508,7 +508,7 @@ export default function AccountScreen({navigation}) {
                 .then((qbRes) => {
                   setloading(false);
                   console.log('switch QB done Called..');
-                  if (qbRes?.error) console.log('Towns Cup', qbRes?.error);
+                  if (qbRes?.error) console.log(strings.appName, qbRes?.error);
                 })
                 .catch(async () => {
                   authContext.setEntity({...currentEntity});
@@ -561,13 +561,11 @@ export default function AccountScreen({navigation}) {
     await Utility.clearStorage();
     await authContext.setUser(null);
     await authContext.setEntity(null);
-
-   
   }, [authContext]);
 
   const handleLogOut = useCallback(async () => {
     Alert.alert(
-      'Towns Cup',
+      strings.appName,
       'Are you sure want to logout?',
       [
         {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Alert,
   Dimensions,
@@ -13,9 +13,7 @@ import {
   View,
   SafeAreaView,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import Modal from 'react-native-modal';
 
@@ -24,15 +22,15 @@ import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
-import { getUserDetails } from '../../../api/Users';
+import {getUserDetails} from '../../../api/Users';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThinDivider from '../../../components/TCThinDivider';
-import { getHitSlop, getSportName, languageList } from '../../../utils';
+import {getHitSlop, getSportName, languageList} from '../../../utils';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCLabel from '../../../components/TCLabel';
 import TCGradientButton from '../../../components/TCGradientButton';
 
-export default function RegisterScorekeeper({ navigation }) {
+export default function RegisterScorekeeper({navigation}) {
   const authContext = useContext(AuthContext);
   const [isModalVisible, setModalVisible] = useState(false);
   const [scorekeepersData, setScorekeepersData] = useState([]);
@@ -48,7 +46,7 @@ export default function RegisterScorekeeper({ navigation }) {
 
   const selectedLanguage = [];
   useEffect(() => {
-      setSportList(authContext.sports);
+    setSportList(authContext.sports);
     getUserDetails(authContext?.entity?.uid, authContext).then((res) => {
       setScorekeepersData(res?.payload?.scorekeeper_data);
     });
@@ -75,7 +73,7 @@ export default function RegisterScorekeeper({ navigation }) {
     setModalVisible(!isModalVisible);
   };
 
-  const isIconCheckedOrNot = ({ item, index }) => {
+  const isIconCheckedOrNot = ({item, index}) => {
     languages[index].isChecked = !item.isChecked;
 
     setLanguages([...languages]);
@@ -87,11 +85,11 @@ export default function RegisterScorekeeper({ navigation }) {
     }
     setSelectedLanguages(selectedLanguage);
   };
-  const renderLanguage = ({ item, index }) => (
+  const renderLanguage = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-        isIconCheckedOrNot({ item, index });
+        isIconCheckedOrNot({item, index});
       }}>
       <View
         style={{
@@ -114,23 +112,21 @@ export default function RegisterScorekeeper({ navigation }) {
 
   const checkValidation = () => {
     if (!sports) {
-      Alert.alert('Towns Cup', 'Sports cannot be blank');
+      Alert.alert(strings.appName, 'Sports cannot be blank');
       return false;
     }
 
-    const isExist = scorekeepersData?.filter(
-      (item) => item?.sport === sports,
-    );
+    const isExist = scorekeepersData?.filter((item) => item?.sport === sports);
     if (isExist?.length) {
       Alert.alert(
-        'Towns Cup',
+        strings.appName,
         `You are already registrated as a scorekeeper in ${sports}`,
       );
       return false;
     }
     return true;
   };
-  const renderSports = ({ item }) => (
+  const renderSports = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => setSportsSelection(item)}>
@@ -141,7 +137,9 @@ export default function RegisterScorekeeper({ navigation }) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{getSportName(item, authContext)}</Text>
+        <Text style={styles.languageList}>
+          {getSportName(item, authContext)}
+        </Text>
         <View style={styles.checkbox}>
           {sportsSelection?.sport === item?.sport ? (
             <Image
@@ -164,12 +162,14 @@ export default function RegisterScorekeeper({ navigation }) {
       bodyParams.descriptions = description;
       const languageData = [];
       if (selectedLanguages?.length) {
-        selectedLanguages.map((item) => languageData.push({ language_name: item }));
+        selectedLanguages.map((item) =>
+          languageData.push({language_name: item}),
+        );
       }
       bodyParams.language = languageData;
       // bodyParams.certificates = certificate;
       scorekeeper_data[0] = bodyParams;
-      bodyParams = { scorekeeper_data };
+      bodyParams = {scorekeeper_data};
       console.log('Body::=>', bodyParams);
 
       navigation.navigate('RegisterScorekeeperForm2', {
@@ -181,7 +181,7 @@ export default function RegisterScorekeeper({ navigation }) {
 
   return (
     <>
-      <TCKeyboardView style={{ flex: 1 }}>
+      <TCKeyboardView style={{flex: 1}}>
         <ScrollView>
           <TCFormProgress totalSteps={2} curruentStep={1} />
 
@@ -190,12 +190,12 @@ export default function RegisterScorekeeper({ navigation }) {
             <TouchableOpacity onPress={() => setVisibleSportsModal(true)}>
               <View style={styles.searchView}>
                 <TextInput
-                style={styles.searchTextField}
-                placeholder={strings.selectSportPlaceholder}
-                value={getSportName(sportsSelection, authContext)}
-                editable={false}
-                pointerEvents="none"
-              />
+                  style={styles.searchTextField}
+                  placeholder={strings.selectSportPlaceholder}
+                  value={getSportName(sportsSelection, authContext)}
+                  editable={false}
+                  pointerEvents="none"
+                />
               </View>
             </TouchableOpacity>
           </View>
@@ -215,7 +215,7 @@ export default function RegisterScorekeeper({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          <View style={{ marginBottom: 10 }}>
+          <View style={{marginBottom: 10}}>
             <TCLabel title={strings.describeSelf} required={false} />
             <TextInput
               style={styles.descriptionTxt}
@@ -232,11 +232,11 @@ export default function RegisterScorekeeper({ navigation }) {
 
       <SafeAreaView>
         <TCGradientButton
-            isDisabled={sports === '' || selectedLanguages?.length <= 0}
-            title={strings.nextTitle}
-            style={{ marginBottom: 5 }}
-            onPress={nextOnPress}
-          />
+          isDisabled={sports === '' || selectedLanguages?.length <= 0}
+          title={strings.nextTitle}
+          style={{marginBottom: 5}}
+          onPress={nextOnPress}
+        />
       </SafeAreaView>
 
       <Modal
@@ -262,7 +262,7 @@ export default function RegisterScorekeeper({ navigation }) {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: {width: 0, height: 1},
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
@@ -275,7 +275,7 @@ export default function RegisterScorekeeper({ navigation }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
-             hitSlop={getHitSlop(15)}
+              hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setModalVisible(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -345,7 +345,7 @@ export default function RegisterScorekeeper({ navigation }) {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: {width: 0, height: 1},
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
@@ -358,7 +358,7 @@ export default function RegisterScorekeeper({ navigation }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
-             hitSlop={getHitSlop(15)}
+              hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -403,7 +403,6 @@ export default function RegisterScorekeeper({ navigation }) {
   );
 }
 const styles = StyleSheet.create({
-
   separatorLine: {
     alignSelf: 'center',
     backgroundColor: colors.grayColor,
@@ -428,7 +427,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingLeft: 15,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
 
@@ -467,7 +466,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,

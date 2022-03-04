@@ -1,14 +1,20 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {
-  Text, View, StyleSheet, Image, TouchableOpacity, Alert,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import images from '../Constants/ImagePath';
 import fonts from '../Constants/Fonts';
 import colors from '../Constants/Colors';
 import TCGradientButton from './TCGradientButton';
-import { getHitSlop, heightPercentageToDP as hp } from '../utils';
+import {getHitSlop, heightPercentageToDP as hp} from '../utils';
 import TCInnerLoader from './TCInnerLoader';
+import strings from '../Constants/String';
 
 const TCUserFollowUnfollowList = ({
   followUser,
@@ -37,37 +43,46 @@ const TCUserFollowUnfollowList = ({
       entity_type: 'player',
     };
     if (!is_following) {
-      followUser(params, userID).then(() => {
-        setLoading(false);
-        onFollowUnfollowPress(userID, true)
-      }).catch((error) => {
-        setLoading(false);
-        console.log('Follow ERROR:=>',error);
-          Alert.alert('Towns Cup', error.messages);
-       
-      });
+      followUser(params, userID)
+        .then(() => {
+          setLoading(false);
+          onFollowUnfollowPress(userID, true);
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log('Follow ERROR:=>', error);
+          Alert.alert(strings.appName, error.messages);
+        });
     } else {
-      unFollowUser(params, userID).then(() => {
-        setLoading(false);
-        onFollowUnfollowPress(userID, false);
-      }).catch((error) => {
-        setLoading(false);
-        console.log('UnFollow ERROR:=>',error);
+      unFollowUser(params, userID)
+        .then(() => {
+          setLoading(false);
+          onFollowUnfollowPress(userID, false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log('UnFollow ERROR:=>', error);
 
-          Alert.alert('Towns Cup', error.messages);
-       
-      });
+          Alert.alert(strings.appName, error.messages);
+        });
     }
   }, [followUser, is_following, onFollowUnfollowPress, unFollowUser, userID]);
 
   const renderButtons = useMemo(() => {
     if (isShowReviewButton) {
-      return (<TCGradientButton
+      return (
+        <TCGradientButton
           onPress={onReviewPress}
           title={!isReviewed ? 'Review' : 'Edit Review'}
-          startGradientColor={isReviewed ? colors.yellowColor : colors.whiteColor}
+          startGradientColor={
+            isReviewed ? colors.yellowColor : colors.whiteColor
+          }
           endGradientColor={isReviewed ? colors.themeColor : colors.whiteColor}
-          textStyle={{ color: isReviewed ? colors.whiteColor : colors.themeColor, fontSize: 11, fontFamily: fonts.RBold }}
+          textStyle={{
+            color: isReviewed ? colors.whiteColor : colors.themeColor,
+            fontSize: 11,
+            fontFamily: fonts.RBold,
+          }}
           style={{
             display: myUserId === userID ? 'none' : 'flex',
             borderRadius: 5,
@@ -75,82 +90,122 @@ const TCUserFollowUnfollowList = ({
             width: 75,
             borderWidth: 1,
             borderColor: colors.yellowColor,
-          }} />)
+          }}
+        />
+      );
     }
     return (
       <>
-        {!loading && userRole === 'user' && myUserId !== userID && (<TCGradientButton
-                    onPress={onFollowPress}
-                    title={is_following ? 'Following' : 'Follow'}
-                    startGradientColor={!is_following ? colors.yellowColor : colors.whiteColor}
-                    endGradientColor={!is_following ? colors.themeColor : colors.whiteColor}
-                    outerContainerStyle={{
-                      borderRadius: 5,
-                      height: 25,
-                      width: 75,
-                      borderWidth: 1,
-                      borderColor: is_following ? colors.yellowColor : colors.whiteColor,
-                    }}
-                    textStyle={{ color: !is_following ? colors.whiteColor : colors.themeColor, fontSize: 11, fontFamily: fonts.RBold }}
-                    style={{
-                      display: myUserId === userID ? 'none' : 'flex',
-                      borderRadius: 5,
-                      height: '100%',
-                      width: '100%',
-                    }} />
+        {!loading && userRole === 'user' && myUserId !== userID && (
+          <TCGradientButton
+            onPress={onFollowPress}
+            title={is_following ? 'Following' : 'Follow'}
+            startGradientColor={
+              !is_following ? colors.yellowColor : colors.whiteColor
+            }
+            endGradientColor={
+              !is_following ? colors.themeColor : colors.whiteColor
+            }
+            outerContainerStyle={{
+              borderRadius: 5,
+              height: 25,
+              width: 75,
+              borderWidth: 1,
+              borderColor: is_following
+                ? colors.yellowColor
+                : colors.whiteColor,
+            }}
+            textStyle={{
+              color: !is_following ? colors.whiteColor : colors.themeColor,
+              fontSize: 11,
+              fontFamily: fonts.RBold,
+            }}
+            style={{
+              display: myUserId === userID ? 'none' : 'flex',
+              borderRadius: 5,
+              height: '100%',
+              width: '100%',
+            }}
+          />
         )}
         {loading && userRole === 'user' && (
-          <View style={{
-            borderRadius: 5,
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: 25,
-            width: 75,
-            borderWidth: 1,
-            borderColor: colors.yellowColor,
-          }}>
-            <TCInnerLoader allowMargin={true} size={20} visible={loading}/>
+          <View
+            style={{
+              borderRadius: 5,
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: 25,
+              width: 75,
+              borderWidth: 1,
+              borderColor: colors.yellowColor,
+            }}>
+            <TCInnerLoader allowMargin={true} size={20} visible={loading} />
           </View>
         )}
       </>
-    )
-  }, [isReviewed, isShowReviewButton, is_following, loading, myUserId, onFollowPress, onReviewPress, userID, userRole])
+    );
+  }, [
+    isReviewed,
+    isShowReviewButton,
+    is_following,
+    loading,
+    myUserId,
+    onFollowPress,
+    onReviewPress,
+    userID,
+    userRole,
+  ]);
 
   return (
     <View>
-      <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-        <View style={{ flex: 0.15, alignItems: 'center' }}>
+      <View style={{alignItems: 'center', flexDirection: 'row'}}>
+        <View style={{flex: 0.15, alignItems: 'center'}}>
           <FastImage
-                resizeMode={'cover'}
-                source={profileImage ? { uri: profileImage } : images.profilePlaceHolder}
-                style={{ width: 30, height: 30, borderRadius: 25 }}
-            />
+            resizeMode={'cover'}
+            source={
+              profileImage ? {uri: profileImage} : images.profilePlaceHolder
+            }
+            style={{width: 30, height: 30, borderRadius: 25}}
+          />
         </View>
-        <View style={{ flex: 0.60, paddingVertical: 10, justifyContent: 'center' }}>
-          <Text style={{ fontSize: 16, fontFamily: fonts.RMedium }}>{title}</Text>
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={{ fontSize: 14, fontFamily: fonts.RRegular, color: colors.userPostTimeColor }}>
+        <View
+          style={{flex: 0.6, paddingVertical: 10, justifyContent: 'center'}}>
+          <Text style={{fontSize: 16, fontFamily: fonts.RMedium}}>{title}</Text>
+          <View style={{flexDirection: 'row'}}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: fonts.RRegular,
+                color: colors.userPostTimeColor,
+              }}>
               {subTitle !== '' ? `${subTitle} ` : ''}
-              {statusTitle !== '' && <Text style={{ color: statusColor ?? colors.userPostTimeColor, fontFamily: fonts.RBold }}>{`${statusTitle} `}</Text>}
+              {statusTitle !== '' && (
+                <Text
+                  style={{
+                    color: statusColor ?? colors.userPostTimeColor,
+                    fontFamily: fonts.RBold,
+                  }}>{`${statusTitle} `}</Text>
+              )}
             </Text>
           </View>
         </View>
-        <View style={{ flex: 0.25, alignItems: 'center' }}>
+        <View style={{flex: 0.25, alignItems: 'center'}}>
           {isShowThreeDots ? (
-            <TouchableOpacity onPress={onThreeDotPress} style={{ alignSelf: 'flex-end', right: 10 }} hitSlop={getHitSlop(15)}>
-              <Image source={ images.vertical3Dot } style={ styles.threedot } />
+            <TouchableOpacity
+              onPress={onThreeDotPress}
+              style={{alignSelf: 'flex-end', right: 10}}
+              hitSlop={getHitSlop(15)}>
+              <Image source={images.vertical3Dot} style={styles.threedot} />
             </TouchableOpacity>
           ) : (
-            <View>
-              {renderButtons}
-            </View>
+            <View>{renderButtons}</View>
           )}
         </View>
       </View>
-      <View style={styles.seperateContainer}/>
+      <View style={styles.seperateContainer} />
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   seperateContainer: {
@@ -166,5 +221,5 @@ const styles = StyleSheet.create({
     tintColor: colors.grayColor,
     width: 12,
   },
-})
+});
 export default TCUserFollowUnfollowList;
