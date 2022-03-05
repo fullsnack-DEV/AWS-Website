@@ -562,7 +562,7 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
         onPress={() => addPhoneNumber()}
       />
         <View>
-          <TCLabel title={'Street Address'} />
+          <TCLabel title={'Address'} />
           <TCTextField
           value={memberInfo.street_address}
           onChangeText={(text) =>
@@ -572,25 +572,25 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
           keyboardType={'default'}
         />
         </View>
-        <View style={styles.fieldView}>
-          <TCLabel title={strings.locationTitle} required={false} />
-          <TouchableOpacity
+      
+        <TouchableOpacity
           onPress={() =>
             navigation.navigate('SearchLocationScreen', {
               comeFrom: 'EditMemberBasicInfoScreen',
             })
           }>
-            <TextInput
+          <TextInput
             placeholder={strings.searchCityPlaceholder}
+            placeholderTextColor={colors.userPostTimeColor}
             style={[styles.matchFeeTxt, {marginBottom: 5}]}
             value={location}
             editable={false}
             pointerEvents="none"></TextInput>
-          </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
+       
 
         <View>
-          <TCLabel title={'Postal Code/Zip'} />
+          
           <TCTextField
           value={memberInfo.postal_code}
           onChangeText={(text) =>

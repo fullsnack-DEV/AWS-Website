@@ -67,7 +67,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
     if (groupMemberDetail.note && groupMemberDetail.note !== '') {
       bodyParams.note = groupMemberDetail.note;
     }
-    if (groupMemberDetail.positions) {
+    if (positions?.length > 0) {
       bodyParams.positions = positions;
     }
     if (groupMemberDetail.status) {
@@ -81,6 +81,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
       ...bodyParams,
     };
 
+    console.log('groupMemberDetail:=>',body);
     patchMember(
       groupMemberDetail.group_id,
       groupMemberDetail.user_id,

@@ -4,16 +4,13 @@ import {View, StyleSheet, Alert, Text, Image, FlatList} from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import stripe from 'tipsi-stripe';
+// import stripe from 'tipsi-stripe';
+
 import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AppleStyleSwipeableRow from '../../../components/notificationComponent/AppleStyleSwipeableRow';
-import {
-  paymentMethods,
-  attachPaymentMethod,
-  deletePaymentMethod,
-} from '../../../api/Users';
+import {paymentMethods, deletePaymentMethod} from '../../../api/Users';
 import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -32,7 +29,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
 
   useEffect(() => {
     Utility.getStorage('paymentSetting').then((setting) => {
-      console.log('paymentSetting:=>',setting);
+      console.log('paymentSetting:=>', setting);
       setSelectedCard(setting);
     });
   }, []);
@@ -94,7 +91,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
     });
 
   const onCardSelected = async (item) => {
-    if(route?.params?.comeFrom === 'AccountScreen'){
+    if (route?.params?.comeFrom === 'AccountScreen') {
       await Utility.setStorage('paymentSetting', item);
     }
     navigation.navigate(route?.params?.comeFrom, {
@@ -270,64 +267,42 @@ export default function PaymentMethodsScreen({navigation, route}) {
     </AppleStyleSwipeableRow>
   );
 
-  const onSaveCard = async (paymentMethod) => {
-    setloading(true);
-    const params = {
-      payment_method: paymentMethod.id,
-    };
-    attachPaymentMethod(params, authContext)
-      .then(() => {
-        getPaymentMethods()
-          .then(() => {
-            setloading(false);
-          })
-          .catch(() => {
-            setloading(false);
-          });
-      })
-      .catch((e) => {
-        console.log('error in onSaveCard', e);
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3);
-      });
-  };
-
   const openNewCardScreen = () => {
-    Utility.getStorage('appSetting').then((setting) => {
-      stripe.setOptions({
-        publishableKey: setting.publishableKey,
-      });
-      stripe
-        .paymentRequestWithCardForm({
-          requiredBillingAddressFields: 'zip',
-          theme: {
-            accentColor: colors.orangeColor,
-          },
-        })
-        .then((token) => {
-          console.log('card/Token:=>', token);
+    // Utility.getStorage('appSetting').then((setting) => {
+    //   stripe.setOptions({
+    //     publishableKey: setting.publishableKey,
+    //   });
+    //   stripe
+    //     .paymentRequestWithCardForm({
+    //       requiredBillingAddressFields: 'zip',
+    //       theme: {
+    //         accentColor: colors.orangeColor,
+    //       },
+    //     })
+    //     .then((token) => {
+    //       console.log('card/Token:=>', token);
 
-          const result = cards.filter(
-            (obj) => obj.card.fingerprint === token?.card?.fingerprint,
-          );
-          if (result.length > 0) {
-            Alert.alert('You already have added this card.');
-          } else {
-            onSaveCard(token);
-          }
-        })
-        .catch((e) => {
-          console.log('error in openNewCardScreen', e);
-          setloading(false);
-          if (e.message !== 'Cancelled by user') {
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 0.3);
-          }
-        });
-    });
+    //       const result = cards.filter(
+    //         (obj) => obj.card.fingerprint === token?.card?.fingerprint,
+    //       );
+    //       if (result.length > 0) {
+    //         Alert.alert('You already have added this card.');
+    //       } else {
+    //         onSaveCard(token);
+    //       }
+    //     })
+    //     .catch((e) => {
+    //       console.log('error in openNewCardScreen', e);
+    //       setloading(false);
+    //       if (e.message !== 'Cancelled by user') {
+    //         setTimeout(() => {
+    //           Alert.alert(strings.alertmessagetitle, e.message);
+    //         }, 0.3);
+    //       }
+    //     });
+    // });
+
+    navigation.navigate('AddCardScreen');
   };
 
   const renderFooter = () => (
@@ -335,9 +310,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
       <TCTouchableLabel
         title={strings.addOptionMessage}
         showNextArrow={true}
-        onPress={() => {
-          openNewCardScreen();
-        }}
+        onPress={openNewCardScreen}
       />
     </View>
   );

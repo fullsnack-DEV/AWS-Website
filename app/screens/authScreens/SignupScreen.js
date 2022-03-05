@@ -13,6 +13,8 @@ import {
 } from 'react-native-responsive-screen';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
+import QB from 'quickblox-react-native-sdk';
+
 import firebase from '@react-native-firebase/app';
 import ActionSheet from 'react-native-actionsheet';
 
@@ -34,7 +36,7 @@ import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context';
 import apiCall from '../../utils/apiCall';
 import {checkTownscupEmail, createUser} from '../../api/Users';
-import {QBconnectAndSubscribe, QBlogin} from '../../utils/QuickBlox';
+import { QBconnectAndSubscribe, QBcreateUser, QBlogin, QB_ACCOUNT_TYPE} from '../../utils/QuickBlox';
 
 export default function SignupScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -151,24 +153,63 @@ export default function SignupScreen({navigation}) {
     });
   };
 
-  const signUpWithQB = (response) => {
+  const signUpWithQB = async (response) => {
+    
+    console.log('QB signUpWithQB : ', response);
+
     let qbEntity = {...dummyAuthContext.entity};
-    QBlogin(qbEntity.uid, response)
-      .then(async (res) => {
-        qbEntity = {
-          ...qbEntity,
-          QB: {...res.user, connected: true, token: res?.session?.token},
-        };
-        QBconnectAndSubscribe(qbEntity);
-        setDummyAuthContext('entity', qbEntity);
-        await wholeSignUpProcessComplete(response);
-      })
-      .catch(async (error) => {
-        console.log('QB Login Error : ', error.message);
-        qbEntity = {...qbEntity, QB: {connected: false}};
-        setDummyAuthContext('entity', qbEntity);
-        await wholeSignUpProcessComplete(response);
-      });
+    console.log('QB qbEntity : ', qbEntity);
+ 
+        const setting = await Utility.getStorage('appSetting')
+        console.log('App QB Setting:=>', setting);
+
+        authContext.setQBCredential(setting)
+        QB.settings
+          .init({
+            appId: setting?.quickblox?.appId,
+            authKey: setting?.quickblox?.authKey,
+            authSecret: setting?.quickblox?.authSecret,
+            accountKey: setting?.quickblox?.accountKey,
+          })
+          .then(async () => {
+            QB.settings.enableAutoReconnect({ enable: true });
+            QBlogin(qbEntity.uid, response)
+            .then(async (res) => {
+              qbEntity = {
+                ...qbEntity,
+                QB: {...res.user, connected: true, token: res?.session?.token},
+              };
+              QBconnectAndSubscribe(qbEntity);
+              setDummyAuthContext('entity', qbEntity);
+              await wholeSignUpProcessComplete(response);
+            })
+            .catch(async (error) => {
+              console.log('QB Login Error : ', error.message);
+              qbEntity = {...qbEntity, QB: {connected: false}};
+              setDummyAuthContext('entity', qbEntity);
+              QBcreateUser(qbEntity.uid, response, QB_ACCOUNT_TYPE.USER)
+              .then(() => {
+                QBlogin(qbEntity.uid).then((loginRes) => {
+                console.log('QB loginRes',loginRes);
+                });
+              })
+              .catch((e) => {
+                console.log('QB error',e);
+      
+              });
+              await wholeSignUpProcessComplete(response);
+            });
+          })
+          .catch((e) => {
+            console.log('QB ERROR:=>', e);
+            // Some error occured, look at the exception message for more details
+          });
+      
+      
+
+
+    
+   
   };
 
   const signUpToTownsCup = async (uploadedProfilePic) => {

@@ -52,7 +52,7 @@ export const getQBSetting = async () => {
         USERS_LIST_LIMIT = response.data.payload.app.quickblox.USERS_LIST_LIMIT;
         await Utility.setStorage('appSetting', response.data.payload.app);
 
-        return response.data.payload.app;
+        // return response.data.payload.app;
       }
     });
 }
@@ -256,6 +256,7 @@ export const QBcreateUser = (uniqueID, customData, userAccountType) => {
     group_name,
   };
   custData.full_name = pureName;
+  console.log('create user call');
   return QB.users.create({
     fullName,
     login: uniqueID.trim(),

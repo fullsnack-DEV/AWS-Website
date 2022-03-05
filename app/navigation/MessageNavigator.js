@@ -27,7 +27,7 @@ const MessageNavigator = () => (
       name="MessageMainScreen"
       component={MessageMainScreen}
       options={{
-        title: 'Neymar JR',
+        
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

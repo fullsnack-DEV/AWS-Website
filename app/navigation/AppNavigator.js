@@ -234,7 +234,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'ClubSettingScreen' || 
     routeName === 'EditMemberBasicInfoScreen' || 
     routeName === 'EditClubNotesScreen' || 
-    routeName === 'EditMemberClubInfoScreen' || 
+    routeName === 'EditMemberAuthInfoScreen' || 
     routeName === 'EditMemberTeamInfoScreen' ||
     routeName === 'EntityStatScreen' || 
     routeName === 'CreateMemberProfileForm1' ||
@@ -246,7 +246,10 @@ const getTabBarVisibility = (route) => {
     routeName === 'CreateMemberProfileTeamForm2' ||
     routeName === 'InviteMembersBySearchScreen' ||
     routeName === 'RequestBasicInfoScreen' || 
-    routeName === 'RequestMultipleBasicInfoScreen'
+    routeName === 'RequestMultipleBasicInfoScreen' || 
+    routeName === 'EditPersonalProfileScreen' || 
+    routeName === 'AddCardScreen' ||
+    routeName === 'PaymentMethodsScreen'
 
 
   ) {

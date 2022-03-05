@@ -694,9 +694,6 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
-
-
-
   const getData = async (uid, role, admin) => {
     const userHome = role === 'user';
     const clubHome = role === 'club';
@@ -1050,7 +1047,7 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
-  const clubJoinTeam =  () => {
+  const clubJoinTeam = () => {
     const e = authContext.entity;
     const tempIds = [];
     tempIds.push(currentUserData.group_id);
@@ -1127,7 +1124,7 @@ const HomeScreen = ({navigation, route}) => {
   const onDotPress = () => {
     offerActionSheet.current.show();
   };
-  const clubLeaveTeam =  () => {
+  const clubLeaveTeam = () => {
     const e = authContext.entity;
     e.obj.parent_groups = [];
     authContext.setEntity({...e});
@@ -1161,8 +1158,9 @@ const HomeScreen = ({navigation, route}) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
-      }) .finally(() => {
-       authContext.setEntity({...e});
+      })
+      .finally(() => {
+        authContext.setEntity({...e});
         Utility.setStorage('authContextEntity', {...e});
         entityObject = currentUserData;
         setCurrentUserData({...currentUserData});
@@ -1185,7 +1183,8 @@ const HomeScreen = ({navigation, route}) => {
           onMessageButtonPress(currentUserData);
           break;
         case 'edit':
-          navigation.navigate('EditPersonalProfileScreen');
+          // navigation.navigate('EditPersonalProfileScreen');
+          navigation.navigate('PersonalInformationScreen');
           break;
         default:
       }
