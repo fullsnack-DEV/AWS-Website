@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext} from 'react';
 import {
   StyleSheet,
   Alert,
@@ -12,10 +12,10 @@ import {
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
-import { createGroup } from '../../../../api/Groups';
+import {createGroup} from '../../../../api/Groups';
 import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
@@ -25,15 +25,15 @@ import TCKeyboardView from '../../../../components/TCKeyboardView';
 import uploadImages from '../../../../utils/imageAction';
 import TCFormProgress from '../../../../components/TCFormProgress';
 
-export default function CreateTeamForm4({ navigation, route }) {
+export default function CreateTeamForm4({navigation, route}) {
   const [selected, setSelected] = useState(0);
   const authContext = useContext(AuthContext);
   const [matchFee, setMatchFee] = useState(0.0);
   const [loading, setloading] = useState(false);
 
   const creatTeamCall = async () => {
-     setloading(true)
-    const bodyParams = { ...route.params.createTeamForm3 };
+    setloading(true);
+    const bodyParams = {...route.params.createTeamForm3};
 
     if (selected === 0) {
       bodyParams.cancellation_policy = 'strict';
@@ -68,10 +68,10 @@ export default function CreateTeamForm4({ navigation, route }) {
     if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
       const imageArray = [];
       if (bodyParams?.thumbnail) {
-        imageArray.push({ path: bodyParams?.thumbnail });
+        imageArray.push({path: bodyParams?.thumbnail});
       }
       if (bodyParams?.background_thumbnail) {
-        imageArray.push({ path: bodyParams?.background_thumbnail });
+        imageArray.push({path: bodyParams?.background_thumbnail});
       }
       uploadImages(imageArray, authContext)
         .then((responses) => {
@@ -98,23 +98,25 @@ export default function CreateTeamForm4({ navigation, route }) {
             entity.role === 'club' && entity.uid,
             entity.role === 'club' && 'club',
             authContext,
-          ).then((response) => {
-            setloading(false);
-            navigation.navigate('TeamCreatedScreen', {
-              groupName: response.payload.group_name,
-              group_id: response.payload.group_id,
-              entity_type: response.payload.entity_type,
+          )
+            .then((response) => {
+              setloading(false);
+              navigation.navigate('TeamCreatedScreen', {
+                groupName: response.payload.group_name,
+                group_id: response.payload.group_id,
+                entity_type: response.payload.entity_type,
+              });
+            })
+            .catch((e) => {
+              setloading(false);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
             });
-          }).catch((e) => {
-            setloading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert('Towns Cup', e.messages);
+            Alert.alert(strings.appName, e.messages);
           }, 0.1);
         })
         .finally(() => {
@@ -126,34 +128,36 @@ export default function CreateTeamForm4({ navigation, route }) {
         entity.role === 'club' && entity.uid,
         entity.role === 'club' && 'club',
         authContext,
-      ).then((response) => {
-        setloading(false);
-        // navigation.navigate('TeamCreatedScreen', {
-        //   groupName: response.payload.group_name,
-        //   group_id: response.payload.group_id,
-        //   entity_type: response.payload.entity_type,
-        // });
-        navigation.push('HomeScreen', {
-          uid: response.payload.group_id,
-          role: response.payload.entity_type,
-          backButtonVisible: false,
-          menuBtnVisible: false,
-          isEntityCreated: true,
-          groupName: response.payload.group_name,
-          entityObj: response.payload,
+      )
+        .then((response) => {
+          setloading(false);
+          // navigation.navigate('TeamCreatedScreen', {
+          //   groupName: response.payload.group_name,
+          //   group_id: response.payload.group_id,
+          //   entity_type: response.payload.entity_type,
+          // });
+          navigation.push('HomeScreen', {
+            uid: response.payload.group_id,
+            role: response.payload.entity_type,
+            backButtonVisible: false,
+            menuBtnVisible: false,
+            isEntityCreated: true,
+            groupName: response.payload.group_name,
+            entityObj: response.payload,
+          });
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
         });
-      }).catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
     }
   };
 
   return (
     <>
-      <TCFormProgress totalSteps={4} curruentStep={4}/>
+      <TCFormProgress totalSteps={4} curruentStep={4} />
       <TCKeyboardView>
         <ScrollView style={styles.mainContainer}>
           <ActivityLoader visible={loading} />
@@ -165,11 +169,11 @@ export default function CreateTeamForm4({ navigation, route }) {
 
           <View style={styles.matchFeeView}>
             <TextInput
-            placeholder={strings.enterFeePlaceholder}
-            style={styles.feeText}
-            keyboardType={'decimal-pad'}
-            onChangeText={(text) => setMatchFee(text)}
-            value={matchFee}></TextInput>
+              placeholder={strings.enterFeePlaceholder}
+              style={styles.feeText}
+              keyboardType={'decimal-pad'}
+              onChangeText={(text) => setMatchFee(text)}
+              value={matchFee}></TextInput>
             <Text style={styles.curruency}>
               {route?.params?.createTeamForm3?.currency_type}
             </Text>
@@ -187,12 +191,12 @@ export default function CreateTeamForm4({ navigation, route }) {
             <TouchableWithoutFeedback onPress={() => setSelected(0)}>
               {selected === 0 ? (
                 <Image source={images.radioSelect} style={styles.radioImage} />
-            ) : (
-              <Image
-                source={images.radioUnselect}
-                style={styles.unSelectRadioImage}
-              />
-            )}
+              ) : (
+                <Image
+                  source={images.radioUnselect}
+                  style={styles.unSelectRadioImage}
+                />
+              )}
             </TouchableWithoutFeedback>
             <Text style={styles.radioText}>{strings.strictText}</Text>
           </View>
@@ -200,12 +204,12 @@ export default function CreateTeamForm4({ navigation, route }) {
             <TouchableWithoutFeedback onPress={() => setSelected(1)}>
               {selected === 1 ? (
                 <Image source={images.radioSelect} style={styles.radioImage} />
-            ) : (
-              <Image
-                source={images.radioUnselect}
-                style={styles.unSelectRadioImage}
-              />
-            )}
+              ) : (
+                <Image
+                  source={images.radioUnselect}
+                  style={styles.unSelectRadioImage}
+                />
+              )}
             </TouchableWithoutFeedback>
             <Text style={styles.radioText}>{strings.moderateText}</Text>
           </View>
@@ -213,12 +217,12 @@ export default function CreateTeamForm4({ navigation, route }) {
             <TouchableWithoutFeedback onPress={() => setSelected(2)}>
               {selected === 2 ? (
                 <Image source={images.radioSelect} style={styles.radioImage} />
-            ) : (
-              <Image
-                source={images.radioUnselect}
-                style={styles.unSelectRadioImage}
-              />
-            )}
+              ) : (
+                <Image
+                  source={images.radioUnselect}
+                  style={styles.unSelectRadioImage}
+                />
+              )}
             </TouchableWithoutFeedback>
             <Text style={styles.radioText}>{strings.flexibleText}</Text>
           </View>
@@ -244,7 +248,7 @@ export default function CreateTeamForm4({ navigation, route }) {
                 {strings.strictPoint2Desc}
               </Text>
             </View>
-        )}
+          )}
           {selected === 1 && (
             <View>
               <Text style={styles.membershipText}>{strings.moderateText} </Text>
@@ -269,7 +273,7 @@ export default function CreateTeamForm4({ navigation, route }) {
                 {strings.moderatePoint3Desc}
               </Text>
             </View>
-        )}
+          )}
           {selected === 2 && (
             <View>
               <Text style={styles.membershipText}>{strings.flexibleText} </Text>
@@ -288,12 +292,12 @@ export default function CreateTeamForm4({ navigation, route }) {
                 {strings.flexiblePoint2Desc}
               </Text>
             </View>
-        )}
+          )}
 
           <TouchableOpacity onPress={() => creatTeamCall()}>
             <LinearGradient
-            colors={[colors.yellowColor, colors.themeColor]}
-            style={styles.nextButton}>
+              colors={[colors.yellowColor, colors.themeColor]}
+              style={styles.nextButton}>
               <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -337,7 +341,7 @@ const styles = StyleSheet.create({
 
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('92%'),

@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, { useState, useLayoutEffect, useContext } from 'react';
+import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -10,8 +10,8 @@ import {
   Alert,
 } from 'react-native';
 import AuthContext from '../../../../auth/context';
-import { patchPlayer } from '../../../../api/Users';
-import { patchGroup } from '../../../../api/Groups';
+import {patchPlayer} from '../../../../api/Users';
+import {patchGroup} from '../../../../api/Groups';
 
 import * as Utility from '../../../../utils';
 
@@ -23,10 +23,10 @@ import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
 import images from '../../../../Constants/ImagePath';
 
-export default function HomeAway({ navigation, route }) {
+export default function HomeAway({navigation, route}) {
   const authContext = useContext(AuthContext);
   console.log('Auth:=>', authContext);
-  const { comeFrom, sportName, sportType } = route?.params;
+  const {comeFrom, sportName, sportType} = route?.params;
 
   const [loading, setloading] = useState(false);
 
@@ -34,9 +34,9 @@ export default function HomeAway({ navigation, route }) {
   const [teams, setteams] = useState(
     route?.params?.settingObj?.home_away
       ? route?.params?.settingObj?.home_away === 'Home'
-        ? [{ name: 'Challenger' }, authContext?.entity?.obj]
-        : [authContext?.entity?.obj, { name: 'Challenger' }]
-      : [authContext?.entity?.obj, { name: 'Challenger' }],
+        ? [{name: 'Challenger'}, authContext?.entity?.obj]
+        : [authContext?.entity?.obj, {name: 'Challenger'}]
+      : [authContext?.entity?.obj, {name: 'Challenger'}],
   );
 
   useLayoutEffect(() => {
@@ -66,8 +66,8 @@ export default function HomeAway({ navigation, route }) {
       sport_type: sportType,
       entity_type: 'player',
       home_away:
-        authContext?.entity?.uid === teams?.[0]?.user_id
-        || authContext?.entity?.uid === teams?.[0]?.group_id
+        authContext?.entity?.uid === teams?.[0]?.user_id ||
+        authContext?.entity?.uid === teams?.[0]?.group_id
           ? 'Home'
           : 'Away',
     };
@@ -75,11 +75,11 @@ export default function HomeAway({ navigation, route }) {
     const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null
+          return null;
         }
-        return obj
+        return obj;
       },
-  );
+    );
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -87,11 +87,14 @@ export default function HomeAway({ navigation, route }) {
 
     selectedSport = {
       ...selectedSport,
-      setting: { ...selectedSport?.setting, ...bodyParams },
-    }
+      setting: {...selectedSport?.setting, ...bodyParams},
+    };
     registerdPlayerData.push(selectedSport);
 
-    const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
+    const body = {
+      ...authContext?.entity?.obj,
+      registered_sports: registerdPlayerData,
+    };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
@@ -102,17 +105,17 @@ export default function HomeAway({ navigation, route }) {
           console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
           authContext.setUser(response.payload);
           await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.registered_sports.filter(
               (obj) => obj.sport === sportName && obj.sport_type === sportType,
-              )[0].setting,
+            )[0].setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         console.log('RESPONSE IS:: ', response);
         setloading(false);
@@ -131,15 +134,15 @@ export default function HomeAway({ navigation, route }) {
       sport_type: sportType,
       entity_type: 'team',
       home_away:
-        authContext?.entity?.uid === teams?.[0]?.user_id
-        || authContext?.entity?.uid === teams?.[0]?.group_id
+        authContext?.entity?.uid === teams?.[0]?.user_id ||
+        authContext?.entity?.uid === teams?.[0]?.group_id
           ? 'Home'
           : 'Away',
     };
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
-    selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
-    const body = { ...selectedTeam };
+    selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
+    const body = {...selectedTeam};
     console.log('Body Team::::--->', body);
 
     patchGroup(authContext.entity.uid, body, authContext)
@@ -150,14 +153,14 @@ export default function HomeAway({ navigation, route }) {
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
 
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         setloading(false);
       })
@@ -172,8 +175,8 @@ export default function HomeAway({ navigation, route }) {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       navigation.navigate(comeFrom, {
         homeAway:
-          authContext?.entity?.uid === teams?.[0]?.user_id
-          ?? authContext?.entity?.uid === teams?.[0]?.group_id
+          authContext?.entity?.uid === teams?.[0]?.user_id ??
+          authContext?.entity?.uid === teams?.[0]?.group_id
             ? 'Home'
             : 'Away',
         home_team: teams[0],
@@ -191,7 +194,7 @@ export default function HomeAway({ navigation, route }) {
       <View>
         <ActivityLoader visible={loading} />
 
-        <TCLabel title={strings.homeAwayTitle} style={{ marginRight: 15 }} />
+        <TCLabel title={strings.homeAwayTitle} style={{marginRight: 15}} />
 
         <View>
           <View style={styles.teamContainer}>
@@ -201,7 +204,7 @@ export default function HomeAway({ navigation, route }) {
                 <Image
                   source={
                     teams[0]?.thumbnail
-                      ? { uri: teams[0]?.thumbnail }
+                      ? {uri: teams[0]?.thumbnail}
                       : images.teamPlaceholder
                   }
                   style={styles.imageView}
@@ -211,8 +214,8 @@ export default function HomeAway({ navigation, route }) {
                 <Text style={styles.teamNameLable}>
                   {teams[0]?.name
                     ? 'Challenger'
-                    : teams[0]?.entity_type === 'user'
-                      || teams[0]?.entity_type === 'player'
+                    : teams[0]?.entity_type === 'user' ||
+                      teams[0]?.entity_type === 'player'
                     ? teams[0]?.full_name
                     : teams[0]?.group_name}
                 </Text>
@@ -236,7 +239,7 @@ export default function HomeAway({ navigation, route }) {
                 <Image
                   source={
                     teams[1]?.thumbnail
-                      ? { uri: teams[1]?.thumbnail }
+                      ? {uri: teams[1]?.thumbnail}
                       : images.teamPlaceholder
                   }
                   style={styles.imageView}
@@ -246,8 +249,8 @@ export default function HomeAway({ navigation, route }) {
                 <Text style={styles.teamNameLable}>
                   {teams[1]?.name
                     ? 'Challenger'
-                    : teams[1]?.entity_type === 'user'
-                      || teams[1]?.entity_type === 'player'
+                    : teams[1]?.entity_type === 'user' ||
+                      teams[1]?.entity_type === 'player'
                     ? teams[1]?.full_name
                     : teams[1]?.group_name}
                 </Text>
@@ -291,7 +294,7 @@ const styles = StyleSheet.create({
   },
   imageShadowView: {
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.4,
     shadowRadius: 1,
   },

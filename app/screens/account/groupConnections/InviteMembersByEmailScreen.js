@@ -58,7 +58,7 @@ export default function InviteMembersByEmailScreen({navigation}) {
     if (resultEmails.length > 0) {
       Alert.alert('Please fill all email fields.');
     } else if (invalidEmails.length > 0) {
-      Alert.alert('Towns Cup', 'You have entered an invalid email address!');
+      Alert.alert('', strings.validEmailMessage);
     } else {
       const emails = email.map((i) => i.email);
       const obj = {

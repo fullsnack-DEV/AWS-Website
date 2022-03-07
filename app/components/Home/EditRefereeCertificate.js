@@ -1,11 +1,22 @@
 import {
-  Alert, FlatList, Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  Alert,
+  FlatList,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import React, { useContext, useEffect, useState } from 'react';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+import React, {useContext, useEffect, useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
 import strings from '../../Constants/String';
@@ -40,89 +51,103 @@ const EditRefereeCertificate = ({
   }, [certifiData]);
 
   const checkValidation = () => {
-    const findCertiTitleIndex = certificatesData?.findIndex((item) => item?.title && (!item?.thumbnail || !item?.url))
+    const findCertiTitleIndex = certificatesData?.findIndex(
+      (item) => item?.title && (!item?.thumbnail || !item?.url),
+    );
     if (findCertiTitleIndex !== -1) {
-      setError({ certificate: findCertiTitleIndex })
-      Alert.alert('Towns Cup', 'Add certificate')
+      setError({certificate: findCertiTitleIndex});
+      Alert.alert(strings.appName, 'Add certificate');
       return false;
     }
 
-    const findIndex = certificatesData?.findIndex((item) => !item?.title && (item?.thumbnail || item?.url))
+    const findIndex = certificatesData?.findIndex(
+      (item) => !item?.title && (item?.thumbnail || item?.url),
+    );
     if (findIndex !== -1) {
-      setError({ certificate: findIndex })
-      Alert.alert('Towns Cup', 'Add title for certificate')
+      setError({certificate: findIndex});
+      Alert.alert(strings.appName, 'Add title for certificate');
       return false;
     }
     setError(null);
-    return true
+    return true;
   };
 
   const addMore = () => {
     setCertificatesData([...certificatesData, {}]);
   };
 
-  const renderCertificates = ({ item, index }) => (
-    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-      <View style={{ flexDirection: 'column' }}>
+  const renderCertificates = ({item, index}) => (
+    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+      <View style={{flexDirection: 'column'}}>
         <View style={styles.addCertificateView}>
           <TextInput
-                  placeholder={strings.titleOrDescriptionText}
-                  style={{
-                    ...styles.certificateDescription,
-                    borderWidth: validationError?.certificate === index ? 1 : 0,
-                    borderColor: colors.redDelColor,
-                  }}
-                  onChangeText={(text) => {
-                    const certi = certificatesData;
-                    certi[index] = {
-                      ...certi[index],
-                      title: text,
-                    }
-                    setCertificatesData([...certi])
-                  }}
-                  value={certificatesData?.[index]?.title}/>
+            placeholder={strings.titleOrDescriptionText}
+            style={{
+              ...styles.certificateDescription,
+              borderWidth: validationError?.certificate === index ? 1 : 0,
+              borderColor: colors.redDelColor,
+            }}
+            onChangeText={(text) => {
+              const certi = certificatesData;
+              certi[index] = {
+                ...certi[index],
+                title: text,
+              };
+              setCertificatesData([...certi]);
+            }}
+            value={certificatesData?.[index]?.title}
+          />
         </View>
-        <TouchableOpacity onPress={() => {
-          if (certificatesData?.length === 1) {
-            setCertificatesData([{}]);
-          } else if (index !== (certificatesData?.length - 1)) {
-            const certiUrl = certificatesData;
-            certiUrl.splice(index, 1);
-            setCertificatesData([...certiUrl]);
-          }
-        }}>
+        <TouchableOpacity
+          onPress={() => {
+            if (certificatesData?.length === 1) {
+              setCertificatesData([{}]);
+            } else if (index !== certificatesData?.length - 1) {
+              const certiUrl = certificatesData;
+              certiUrl.splice(index, 1);
+              setCertificatesData([...certiUrl]);
+            }
+          }}>
           <Text style={styles.delete}>{strings.deleteTitle}</Text>
         </TouchableOpacity>
         {!item?.url && (
-          <TouchableOpacity onPress={() => {
-            ImagePicker.openPicker({
-              width: 300,
-              height: 400,
-              cropping: true,
-              maxFiles: 10,
-            }).then((pickImages) => {
-              setImageUploadingLoader(index);
-              const certiUrl = certificatesData;
-              certiUrl[index] = { ...certiUrl[index], url: pickImages?.sourceURL };
-              setCertificatesData([...certiUrl])
-              uploadImages([pickImages], authContext).then((responses) => {
+          <TouchableOpacity
+            onPress={() => {
+              ImagePicker.openPicker({
+                width: 300,
+                height: 400,
+                cropping: true,
+                maxFiles: 10,
+              }).then((pickImages) => {
+                setImageUploadingLoader(index);
+                const certiUrl = certificatesData;
                 certiUrl[index] = {
                   ...certiUrl[index],
-                  url: responses?.[0].fullImage ?? '',
-                  thumbnail: responses?.[0].thumbnail ?? '',
+                  url: pickImages?.sourceURL,
                 };
-                setCertificatesData([...certiUrl])
-              }).catch(() => {
-                certiUrl.splice(index, 1);
                 setCertificatesData([...certiUrl]);
-              }).finally(() => {
-                setTimeout(() => setImageUploadingLoader(null), 1500);
-                if (certificatesData?.length < MAX_CERTIFICATE_UPLOAD) {
-                  addMore();
-                }
-              })
-            });
-          }} style={styles.addCertificateButton}>
+                uploadImages([pickImages], authContext)
+                  .then((responses) => {
+                    certiUrl[index] = {
+                      ...certiUrl[index],
+                      url: responses?.[0].fullImage ?? '',
+                      thumbnail: responses?.[0].thumbnail ?? '',
+                    };
+                    setCertificatesData([...certiUrl]);
+                  })
+                  .catch(() => {
+                    certiUrl.splice(index, 1);
+                    setCertificatesData([...certiUrl]);
+                  })
+                  .finally(() => {
+                    setTimeout(() => setImageUploadingLoader(null), 1500);
+                    if (certificatesData?.length < MAX_CERTIFICATE_UPLOAD) {
+                      addMore();
+                    }
+                  });
+              });
+            }}
+            style={styles.addCertificateButton}>
             <Text style={styles.addCertificateText}>
               {strings.addCertificateTitle}
             </Text>
@@ -130,137 +155,173 @@ const EditRefereeCertificate = ({
         )}
       </View>
       {item?.url && (
-        <View style={{
-          padding: 15, alignSelf: 'flex-start',
-        }}>
+        <View
+          style={{
+            padding: 15,
+            alignSelf: 'flex-start',
+          }}>
           <View>
             <FastImage
-                      resizeMode={FastImage.resizeMode.cover}
-                      source={{ uri: certificatesData?.[index]?.url }}
-                      style={{ width: 195, height: 150, borderRadius: 10 }}
-                  />
+              resizeMode={FastImage.resizeMode.cover}
+              source={{uri: certificatesData?.[index]?.url}}
+              style={{width: 195, height: 150, borderRadius: 10}}
+            />
             {imageUploadingLoader !== index && (
-              <TouchableOpacity style={{
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                position: 'absolute',
-                height: 22,
-                width: 22,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 50,
-                right: -10,
-                top: -5,
-              }}
-                                    onPress={() => {
-                                      const certi = certificatesData;
-                                      delete certi[index].url;
-                                      delete certi[index].thumbnail;
-                                      setCertificatesData([...certi]);
-                                    }}
-                  >
+              <TouchableOpacity
+                style={{
+                  backgroundColor: 'rgba(0,0,0,0.5)',
+                  position: 'absolute',
+                  height: 22,
+                  width: 22,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 50,
+                  right: -10,
+                  top: -5,
+                }}
+                onPress={() => {
+                  const certi = certificatesData;
+                  delete certi[index].url;
+                  delete certi[index].thumbnail;
+                  setCertificatesData([...certi]);
+                }}>
                 <Image
-                        source={images.menuClose}
-                        style={{
-                          zIndex: 100, tintColor: colors.whiteColor, height: 15, width: 15,
-                        }}
-                    />
+                  source={images.menuClose}
+                  style={{
+                    zIndex: 100,
+                    tintColor: colors.whiteColor,
+                    height: 15,
+                    width: 15,
+                  }}
+                />
               </TouchableOpacity>
             )}
             {index === imageUploadingLoader && (
-              <View style={{
-                alignSelf: 'center',
-                position: 'absolute',
-                height: 150,
-                width: 195,
-                borderRadius: 10,
-                backgroundColor: 'rgba(0,0,0,0.7)',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'row',
-              }}>
+              <View
+                style={{
+                  alignSelf: 'center',
+                  position: 'absolute',
+                  height: 150,
+                  width: 195,
+                  borderRadius: 10,
+                  backgroundColor: 'rgba(0,0,0,0.7)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                }}>
                 <TCInnerLoader visible={index === imageUploadingLoader} />
-                <Text style={{
-                  fontFamily: fonts.RLight, fontSize: 20, color: colors.yellowColor, marginLeft: 5,
-                }}>Uploading...</Text>
+                <Text
+                  style={{
+                    fontFamily: fonts.RLight,
+                    fontSize: 20,
+                    color: colors.yellowColor,
+                    marginLeft: 5,
+                  }}>
+                  Uploading...
+                </Text>
               </View>
             )}
-
           </View>
         </View>
       )}
     </View>
-  )
+  );
 
   return (
     <View>
       <Modal
-      isVisible={visible}
-      backdropColor="black"
-      style={{
-        margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0)',
-      }}
-      hasBackdrop
-      onBackdropPress={onClose}
-      backdropOpacity={0}
-    >
-
-        <SafeAreaView style={{ ...styles.modalContainerViewStyle, backgroundColor: colors.whiteColor }}>
+        isVisible={visible}
+        backdropColor="black"
+        style={{
+          margin: 0,
+          justifyContent: 'flex-end',
+          backgroundColor: 'rgba(0,0,0,0)',
+        }}
+        hasBackdrop
+        onBackdropPress={onClose}
+        backdropOpacity={0}>
+        <SafeAreaView
+          style={{
+            ...styles.modalContainerViewStyle,
+            backgroundColor: colors.whiteColor,
+          }}>
           <LinearGradient
-                    colors={[colors.whiteColor, colors.whiteColor]}
-                    end={{ x: 0.0, y: 0.25 }}
-                    start={{ x: 1, y: 0.5 }}
-                    style={styles.gradiantHeaderViewStyle}>
-          </LinearGradient>
+            colors={[colors.whiteColor, colors.whiteColor]}
+            end={{x: 0.0, y: 0.25}}
+            start={{x: 1, y: 0.5}}
+            style={styles.gradiantHeaderViewStyle}></LinearGradient>
           <Header
-                    mainContainerStyle={styles.headerMainContainerStyle}
-                    leftComponent={
-                      <TouchableOpacity onPress={onClose}>
-                        <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
-                      </TouchableOpacity>
-                    }
-                    centerComponent={
-                      <View style={styles.headerCenterViewStyle}>
-                        <Image source={images.refereesInImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
-                        <Text style={styles.playInTextStyle}>Edit {strings.certificateTitle}</Text>
-                      </View>
-                    }
-                    rightComponent={
-                      <TouchableOpacity
-                          onPress={() => {
-                            if (checkValidation()) {
-                              const certiData = certificatesData;
-                              const finalCerti = JSON.parse(JSON.stringify(certificatesData));
-                              if (certiData?.length > 0) {
-                                certiData.map((item, index) => {
-                                  if (!item?.title) finalCerti.splice(index, 1);
-                                  return true;
-                                })
-                              }
-                              onSavePress(finalCerti);
-                            }
-                          }}>
-                        <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.lightBlackColor }}>{'Save'}</Text>
-                      </TouchableOpacity>
-                    }
+            mainContainerStyle={styles.headerMainContainerStyle}
+            leftComponent={
+              <TouchableOpacity onPress={onClose}>
+                <Image
+                  source={images.backArrow}
+                  style={styles.cancelImageStyle}
+                  resizeMode={'contain'}
                 />
-          <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={1}/>
+              </TouchableOpacity>
+            }
+            centerComponent={
+              <View style={styles.headerCenterViewStyle}>
+                <Image
+                  source={images.refereesInImage}
+                  style={styles.soccerImageStyle}
+                  resizeMode={'contain'}
+                />
+                <Text style={styles.playInTextStyle}>
+                  Edit {strings.certificateTitle}
+                </Text>
+              </View>
+            }
+            rightComponent={
+              <TouchableOpacity
+                onPress={() => {
+                  if (checkValidation()) {
+                    const certiData = certificatesData;
+                    const finalCerti = JSON.parse(
+                      JSON.stringify(certificatesData),
+                    );
+                    if (certiData?.length > 0) {
+                      certiData.map((item, index) => {
+                        if (!item?.title) finalCerti.splice(index, 1);
+                        return true;
+                      });
+                    }
+                    onSavePress(finalCerti);
+                  }
+                }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontFamily: fonts.RLight,
+                    color: colors.lightBlackColor,
+                  }}>
+                  {'Save'}
+                </Text>
+              </TouchableOpacity>
+            }
+          />
+          <TCThinDivider
+            backgroundColor={colors.refereeHomeDividerColor}
+            width={'100%'}
+            height={1}
+          />
           <KeyboardAwareScrollView enableOnAndroid={false}>
             <EventItemRender
-                       title={strings.addCertiMainTitle}
-                       headerTextStyle={{ fontSize: 16 }}
-                   >
+              title={strings.addCertiMainTitle}
+              headerTextStyle={{fontSize: 16}}>
               <FlatList
-               scrollEnabled={true}
-               data={certificatesData}
-               renderItem={renderCertificates}
-            />
+                scrollEnabled={true}
+                data={certificatesData}
+                renderItem={renderCertificates}
+              />
             </EventItemRender>
           </KeyboardAwareScrollView>
         </SafeAreaView>
       </Modal>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   addCertificateView: {
@@ -304,7 +365,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,

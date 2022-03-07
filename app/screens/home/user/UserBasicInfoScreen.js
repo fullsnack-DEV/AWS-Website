@@ -1,14 +1,12 @@
-import React, { useState, useLayoutEffect, useContext } from 'react';
+import React, {useState, useLayoutEffect, useContext} from 'react';
 
-import {
-  View, Text, Alert,
-} from 'react-native';
+import {View, Text, Alert} from 'react-native';
 
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCTextField from '../../../components/TCTextField';
 import TCLabel from '../../../components/TCLabel';
 import TCPhoneNumber from '../../../components/TCPhoneNumber';
-import { updateUserProfile } from '../../../api/Users';
+import {updateUserProfile} from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
 import * as Utility from '../../../utils';
@@ -20,7 +18,7 @@ import AuthContext from '../../../auth/context';
 import DataSource from '../../../Constants/DataSource';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 
-export default function UserBasicInfoScreen({ navigation, route }) {
+export default function UserBasicInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   // For activity indicator
   const [loading, setloading] = useState(false);
@@ -65,16 +63,16 @@ export default function UserBasicInfoScreen({ navigation, route }) {
       setloading(false);
       if (response && response.status === true) {
         // setTimeout(() => {
-        //   Alert.alert('Towns Cup', 'Profile changed sucessfully');
+        //   Alert.alert(strings.appName, 'Profile changed sucessfully');
         // }, 0.1)
-        const entity = authContext.entity
+        const entity = authContext.entity;
         entity.obj = response.payload;
         entity.auth.user = response.payload;
-        authContext.setEntity({ ...entity })
+        authContext.setEntity({...entity});
         navigation.goBack();
       } else {
         setTimeout(() => {
-          Alert.alert('Towns Cup', 'Something went wrong');
+          Alert.alert(strings.appName, 'Something went wrong');
         }, 0.1);
       }
     });
@@ -85,95 +83,97 @@ export default function UserBasicInfoScreen({ navigation, route }) {
     setShow(!show);
   };
 
-  const handleDonePress = ({ date }) => {
+  const handleDonePress = ({date}) => {
     setShow(!show);
-    setUserData({ ...userData, birthday: new Date(date).getTime() / 1000 });
+    setUserData({...userData, birthday: new Date(date).getTime() / 1000});
   };
   const handleCancelPress = () => {
     setShow(!show);
   };
 
-  const birthdayInString = (birthDate) => `${Utility.monthNames[new Date(birthDate * 1000).getMonth()]} ${new Date(
-    birthDate * 1000,
-  ).getDate()}, ${new Date(birthDate * 1000).getFullYear()}`;
+  const birthdayInString = (birthDate) =>
+    `${Utility.monthNames[new Date(birthDate * 1000).getMonth()]} ${new Date(
+      birthDate * 1000,
+    ).getDate()}, ${new Date(birthDate * 1000).getFullYear()}`;
 
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
       <View>
-        <TCLabel title={strings.emailPlaceHolder} style={{ marginTop: 37 }} />
+        <TCLabel title={strings.emailPlaceHolder} style={{marginTop: 37}} />
         <TCTextField
-            placeholder={strings.enterEmailPlaceholder}
-            onChangeText={(text) => setUserData({ ...userData, email: text })}
-            value={userData.email}
-          />
+          placeholder={strings.enterEmailPlaceholder}
+          onChangeText={(text) => setUserData({...userData, email: text})}
+          value={userData.email}
+        />
       </View>
 
       <View>
         <TCLabel title={strings.phone} />
         <TCPhoneNumber
-            marginBottom={2}
-            placeholder={strings.selectCode}
-            value={userData.phone_country}
-            numberValue={userData.phone}
-            onValueChange={(value) => {
-              setUserData({ ...userData, phone_country: value });
-            }}
-            onChangeText={(text) => {
-              setUserData({ ...userData, phone: text });
-            }}
-          />
+          marginBottom={2}
+          placeholder={strings.selectCode}
+          value={userData.phone_country}
+          numberValue={userData.phone}
+          onValueChange={(value) => {
+            setUserData({...userData, phone_country: value});
+          }}
+          onChangeText={(text) => {
+            setUserData({...userData, phone: text});
+          }}
+        />
       </View>
 
       <View>
         <TCLabel title={strings.addressPlaceholder} />
-        <TCTextField placeholder={strings.addressPlaceholder}
-          onChangeText={(text) => setUserData({ ...userData, address: text })}
-            value={userData.address}
-            />
+        <TCTextField
+          placeholder={strings.addressPlaceholder}
+          onChangeText={(text) => setUserData({...userData, address: text})}
+          value={userData.address}
+        />
       </View>
 
       <View>
         <TCLabel title={strings.birth} />
         <TCTouchableLabel
-            onPress={() => onBirthDayClicked()}
-            placeholder={strings.addBirthdayText}
-            title={birthdayInString(userData.birthday)}
-            showDownArrow={true}
-          />
+          onPress={() => onBirthDayClicked()}
+          placeholder={strings.addBirthdayText}
+          title={birthdayInString(userData.birthday)}
+          showDownArrow={true}
+        />
       </View>
 
       <View>
         <TCLabel title={strings.gender} />
         <TCPicker
-            dataSource={DataSource.Gender}
-            placeholder={strings.selectGenderPlaceholder}
-            value={userData.gender}
-            onValueChange={(value) => {
-              setUserData({ ...userData, gender: value });
-            }}
-          />
+          dataSource={DataSource.Gender}
+          placeholder={strings.selectGenderPlaceholder}
+          value={userData.gender}
+          onValueChange={(value) => {
+            setUserData({...userData, gender: value});
+          }}
+        />
       </View>
 
       <View>
-        <TCLabel title={strings.height} style={{ marginTop: 37 }} />
+        <TCLabel title={strings.height} style={{marginTop: 37}} />
         <TCTextField
-            placeholder={strings.heightplaceholder}
-            onChangeText={(text) => setUserData({ ...userData, height: text })}
-            value={userData.height}
-          />
+          placeholder={strings.heightplaceholder}
+          onChangeText={(text) => setUserData({...userData, height: text})}
+          value={userData.height}
+        />
       </View>
 
       <View>
-        <TCLabel title={strings.weight} style={{ marginTop: 37 }} />
+        <TCLabel title={strings.weight} style={{marginTop: 37}} />
         <TCTextField
-            placeholder={strings.weightplaceholder}
-            onChangeText={(text) => setUserData({ ...userData, weight: text })}
-            value={userData.weight}
-          />
+          placeholder={strings.weightplaceholder}
+          onChangeText={(text) => setUserData({...userData, weight: text})}
+          value={userData.weight}
+        />
       </View>
 
-      <View style={{ height: 50 }} />
+      <View style={{height: 50}} />
       <TCDateTimePicker
         title={'Choose Birthday'}
         visible={show}

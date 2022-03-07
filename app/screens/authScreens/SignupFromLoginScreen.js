@@ -34,11 +34,11 @@ export default function SignupFromLoginScreen({navigation, route}) {
 
   const validate = () => {
     if (fName === '') {
-      Alert.alert('Towns Cup', 'First name cannot be blank');
+      Alert.alert(strings.appName, 'First name cannot be blank');
       return false;
     }
     if (lName === '') {
-      Alert.alert('Towns Cup', 'Last name cannot be blank');
+      Alert.alert(strings.appName, 'Last name cannot be blank');
       return false;
     }
     return true;

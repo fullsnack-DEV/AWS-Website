@@ -203,7 +203,7 @@ export default function ScorekeepersSetting({navigation, route}) {
             )[0].setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         console.log('RESPONSE IS:: ', response);
         setloading(false);
@@ -218,7 +218,7 @@ export default function ScorekeepersSetting({navigation, route}) {
 
   const saveTeam = () => {
     let bodyParams;
-    console.log('selection',selection);
+    console.log('selection', selection);
     if (selection === 'None') {
       bodyParams = {
         sport: sportName,
@@ -249,7 +249,7 @@ export default function ScorekeepersSetting({navigation, route}) {
     }
 
     console.log('scorekeeper secure:=>', bodyParams);
-    
+
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
@@ -271,7 +271,7 @@ export default function ScorekeepersSetting({navigation, route}) {
             settingObj: response.payload.setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         setloading(false);
       })

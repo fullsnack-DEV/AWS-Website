@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState, useRef} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -11,8 +11,10 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
 import firebase from '@react-native-firebase/app';
+import ActionSheet from 'react-native-actionsheet';
 
 import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
@@ -43,38 +45,45 @@ export default function SignupScreen({navigation}) {
   const [password, setPassword] = useState('123456');
   const [cPassword, setCPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(false);
+  const [hideConfirmPassword, setHideConfirmPassword] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
+  const actionSheetWithDelete = useRef();
+  const actionSheet = useRef();
 
   // For activity indigator
   const [loading, setloading] = useState(false);
 
   const validate = () => {
     if (fName === '') {
-      Alert.alert('Towns Cup', 'First name cannot be blank');
+      Alert.alert(strings.appName, 'First name cannot be blank');
       return false;
     }
     if (lName === '') {
-      Alert.alert('Towns Cup', 'Last name cannot be blank');
+      Alert.alert(strings.appName, 'Last name cannot be blank');
       return false;
     }
     if (email === '') {
-      Alert.alert('Towns Cup', 'Email cannot be blank');
+      Alert.alert(strings.appName, 'Email cannot be blank');
       return false;
     }
     if (validateEmail(email) === false) {
-      Alert.alert('Towns Cup', 'You have entered an invalid email address!');
+      Alert.alert('', strings.validEmailMessage);
       return false;
     }
     if (password === '') {
-      Alert.alert('Towns Cup', 'Password cannot be blank');
+      Alert.alert(strings.appName, strings.passwordCanNotBlank);
       return false;
     }
     if (cPassword === '') {
-      Alert.alert('Towns Cup', 'Conform password cannot be blank');
+      Alert.alert(strings.appName, strings.cofirmpPswCanNotBlank);
       return false;
     }
     if (password !== cPassword) {
-      Alert.alert('Towns Cup', 'Both password should be same');
+      Alert.alert(strings.appName, strings.confirmAndPasswordNotMatch);
+      return false;
+    }
+    if (password.length < 6) {
+      Alert.alert(strings.appName, 'Password should be atleast 6 characters.');
       return false;
     }
     return true;
@@ -279,7 +288,7 @@ export default function SignupScreen({navigation}) {
           message = 'That email address is already registrated! please login';
         }
         if (e.code === 'auth/invalid-email') {
-          message = 'That email address is invalid!';
+          message = strings.validEmailMessage;
         }
         if (e.code === 'auth/too-many-requests') {
           message = 'Too many request for signup ,try after sometime';
@@ -288,7 +297,7 @@ export default function SignupScreen({navigation}) {
           message = strings.networkConnectivityErrorMessage;
         }
         if (message !== '')
-          setTimeout(() => Alert.alert('Towns Cup', message), 50);
+          setTimeout(() => Alert.alert(strings.appName, message), 50);
       });
   };
 
@@ -314,7 +323,7 @@ export default function SignupScreen({navigation}) {
       if (userExist) {
         setloading(false);
         setTimeout(() => {
-          Alert.alert('User is already registered with townscup!');
+          Alert.alert(strings.alreadyRegisteredMessage);
         }, 100);
       } else {
         checkUserIsRegistratedOrNotWithFirebase()
@@ -347,136 +356,258 @@ export default function SignupScreen({navigation}) {
   const hideShowPassword = () => {
     setHidePassword(!hidePassword);
   };
+  const hideShowConfirmPassword = () => {
+    setHideConfirmPassword(!hideConfirmPassword);
+  };
+
+  const openImagePicker = (width = 400, height = 400) => {
+    const cropCircle = true;
+    ImagePicker.openPicker({
+      width,
+      height,
+      cropping: true,
+      cropperCircleOverlay: cropCircle,
+    }).then((pickImages) => {
+      setProfilePic(pickImages);
+    });
+  };
+
+  const deleteImage = () => {
+    setProfilePic('');
+  };
+
+  const openCamera = (width = 400, height = 400) => {
+    check(PERMISSIONS.IOS.CAMERA)
+      .then((result) => {
+        switch (result) {
+          case RESULTS.UNAVAILABLE:
+            Alert.alert(
+              'This feature is not available (on this device / in this context)',
+            );
+            break;
+          case RESULTS.DENIED:
+            request(PERMISSIONS.IOS.CAMERA).then(() => {
+              const cropCircle = true;
+              ImagePicker.openCamera({
+                width,
+                height,
+                cropping: true,
+                cropperCircleOverlay: cropCircle,
+              })
+                .then((pickImages) => {
+                  setProfilePic(pickImages);
+                })
+                .catch((e) => {
+                  Alert.alert(e);
+                });
+            });
+            break;
+          case RESULTS.LIMITED:
+            console.log('The permission is limited: some actions are possible');
+            break;
+          case RESULTS.GRANTED:
+            {
+              const cropCircle = true;
+              ImagePicker.openCamera({
+                width,
+                height,
+                cropping: true,
+                cropperCircleOverlay: cropCircle,
+              })
+                .then((pickImages) => {
+                  setProfilePic(pickImages);
+                })
+                .catch((e) => {
+                  Alert.alert(e);
+                });
+            }
+            break;
+          case RESULTS.BLOCKED:
+            console.log('The permission is denied and not requestable anymore');
+            break;
+          default:
+        }
+      })
+      .catch((error) => {
+        Alert.alert(error);
+      });
+  };
+  const onProfileImageClicked = () => {
+    setTimeout(() => {
+      if (profilePic) {
+        actionSheetWithDelete.current.show();
+      } else {
+        actionSheet.current.show();
+      }
+    }, 0.1);
+  };
 
   return (
-    <LinearGradient
-      colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
-      <FastImage
-        resizeMode={'stretch'}
-        style={styles.background}
-        source={images.loginBg}
+    <>
+      <ActionSheet
+        ref={actionSheet}
+        // title={'News Feed Post'}
+        options={[strings.camera, strings.album, strings.cancelTitle]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker();
+          }
+        }}
       />
-      <TCKeyboardView>
-        <View style={{marginVertical: 20}}>
-          <FastImage
-            source={
-              profilePic?.path
-                ? {uri: profilePic?.path}
-                : images.profilePlaceHolder
-            }
-            style={styles.profile}
-          />
-          <TouchableOpacity
-            style={styles.profileCameraButtonStyle}
-            onPress={() => {
-              ImagePicker.openPicker({
-                width: 300,
-                height: 400,
-                cropping: true,
-                cropperCircleOverlay: true,
-              }).then((pickImages) => {
-                setProfilePic(pickImages);
-              });
-            }}>
+      <ActionSheet
+        ref={actionSheetWithDelete}
+        // title={'News Feed Post'}
+        options={[
+          strings.camera,
+          strings.album,
+          strings.deleteTitle,
+          strings.cancelTitle,
+        ]}
+        cancelButtonIndex={3}
+        destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker();
+          } else if (index === 2) {
+            deleteImage();
+          }
+        }}
+      />
+      <LinearGradient
+        colors={[colors.themeColor1, colors.themeColor3]}
+        style={styles.mainContainer}>
+        <ActivityLoader visible={loading} />
+        <FastImage
+          resizeMode={'stretch'}
+          style={styles.background}
+          source={images.loginBg}
+        />
+        <TCKeyboardView>
+          <View style={{marginVertical: 20}}>
             <FastImage
-              source={images.certificateUpload}
-              style={styles.cameraIcon}
-            />
-          </TouchableOpacity>
-        </View>
-        <TCTextField
-          placeholderTextColor={colors.darkYellowColor}
-          style={styles.textFieldStyle}
-          placeholder={strings.fnameText}
-          value={fName}
-          onChangeText={(name) => {
-            if (Utility.validatedName(name)) {
-              setFName(name);
-            }
-          }}
-          //  onChangeText={(text) => setFName(text)}
-        />
-        <TCTextField
-          placeholderTextColor={colors.darkYellowColor}
-          style={styles.textFieldStyle}
-          placeholder={strings.lnameText}
-          // onChangeText={(text) => setLName(text)}
-          onChangeText={(lastName) => {
-            if (Utility.validatedName(lastName) === true) {
-              setLName(lastName);
-            }
-          }}
-          value={lName}
-        />
-        <TCTextField
-          placeholderTextColor={colors.darkYellowColor}
-          style={styles.textFieldStyle}
-          placeholder={strings.emailPlaceHolder}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          onChangeText={(text) => setEmail(text)}
-          value={email}
-        />
-        <View style={styles.passwordView}>
-          <TextInput
-            style={{...styles.textInput, zIndex: 100}}
-            placeholder={strings.passwordText}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            placeholderTextColor={colors.darkYellowColor}
-            secureTextEntry={hidePassword}
-            keyboardType={'default'}
-          />
-          <TouchableOpacity
-            onPress={() => hideShowPassword()}
-            style={{alignItems: 'center', justifyContent: 'center'}}>
-            {hidePassword ? (
-              <Text style={styles.passwordEyes}>SHOW</Text>
-            ) : (
-              <Text style={styles.passwordEyes}>HIDE</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.passwordView}>
-          <TextInput
-            autoCapitalize="none"
-            style={{...styles.textInput, zIndex: 100}}
-            placeholder={strings.confirmPasswordText}
-            onChangeText={setCPassword}
-            value={cPassword}
-            placeholderTextColor={colors.darkYellowColor}
-            secureTextEntry={hidePassword}
-            keyboardType={'default'}
-          />
-          <TouchableOpacity
-            onPress={() => hideShowPassword()}
-            style={{alignItems: 'center', justifyContent: 'center'}}>
-            {hidePassword ? (
-              <Text style={styles.passwordEyes}>SHOW</Text>
-            ) : (
-              <Text style={styles.passwordEyes}>HIDE</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-
-        <TCButton
-          title={strings.signUpCapitalText}
-          extraStyle={{marginTop: hp('10%')}}
-          onPress={() => {
-            if (validate()) {
-              if (authContext.networkConnected) {
-                signupUser();
-              } else {
-                authContext.showNetworkAlert();
+              source={
+                profilePic?.path
+                  ? {uri: profilePic?.path}
+                  : images.profilePlaceHolder
               }
-            }
-          }}
-        />
-      </TCKeyboardView>
-    </LinearGradient>
+              style={styles.profile}
+            />
+            <TouchableOpacity
+              style={styles.profileCameraButtonStyle}
+              onPress={() => {
+                // ImagePicker.openPicker({
+                //   width: 300,
+                //   height: 400,
+                //   cropping: true,
+                //   cropperCircleOverlay: true,
+                // }).then((pickImages) => {
+                //   setProfilePic(pickImages);
+                // });
+                onProfileImageClicked();
+              }}>
+              <FastImage
+                source={images.certificateUpload}
+                style={styles.cameraIcon}
+              />
+            </TouchableOpacity>
+          </View>
+          <TCTextField
+            placeholderTextColor={colors.darkYellowColor}
+            style={styles.textFieldStyle}
+            placeholder={strings.fnameText}
+            value={fName}
+            onChangeText={(name) => {
+              if (Utility.validatedName(name)) {
+                setFName(name);
+              }
+            }}
+            //  onChangeText={(text) => setFName(text)}
+          />
+          <TCTextField
+            placeholderTextColor={colors.darkYellowColor}
+            style={styles.textFieldStyle}
+            placeholder={strings.lnameText}
+            // onChangeText={(text) => setLName(text)}
+            onChangeText={(lastName) => {
+              if (Utility.validatedName(lastName) === true) {
+                setLName(lastName);
+              }
+            }}
+            value={lName}
+          />
+          <TCTextField
+            placeholderTextColor={colors.darkYellowColor}
+            style={styles.textFieldStyle}
+            placeholder={strings.emailPlaceHolder}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+          />
+          <View style={styles.passwordView}>
+            <TextInput
+              style={{...styles.textInput, zIndex: 100}}
+              placeholder={strings.passwordText}
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              placeholderTextColor={colors.darkYellowColor}
+              secureTextEntry={hidePassword}
+              keyboardType={'default'}
+            />
+            <TouchableOpacity
+              onPress={() => hideShowPassword()}
+              style={{alignItems: 'center', justifyContent: 'center'}}>
+              {hidePassword ? (
+                <Text style={styles.passwordEyes}>SHOW</Text>
+              ) : (
+                <Text style={styles.passwordEyes}>HIDE</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.passwordView}>
+            <TextInput
+              autoCapitalize="none"
+              style={{...styles.textInput, zIndex: 100}}
+              placeholder={strings.confirmPasswordText}
+              onChangeText={setCPassword}
+              value={cPassword}
+              placeholderTextColor={colors.darkYellowColor}
+              secureTextEntry={hideConfirmPassword}
+              keyboardType={'default'}
+            />
+            <TouchableOpacity
+              onPress={() => hideShowConfirmPassword()}
+              style={{alignItems: 'center', justifyContent: 'center'}}>
+              {hideConfirmPassword ? (
+                <Text style={styles.passwordEyes}>SHOW</Text>
+              ) : (
+                <Text style={styles.passwordEyes}>HIDE</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          <TCButton
+            title={strings.signUpCapitalText}
+            extraStyle={{marginTop: hp('10%')}}
+            onPress={() => {
+              if (validate()) {
+                if (authContext.networkConnected) {
+                  signupUser();
+                } else {
+                  authContext.showNetworkAlert();
+                }
+              }
+            }}
+          />
+        </TCKeyboardView>
+      </LinearGradient>
+    </>
   );
 }
 

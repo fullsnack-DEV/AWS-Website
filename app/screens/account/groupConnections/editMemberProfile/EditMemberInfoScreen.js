@@ -82,7 +82,7 @@ export default function EditMemberInfoScreen({navigation, route}) {
             thumbnail: attachments[0].thumbnail,
             first_name: memberInfo.first_name,
             last_name: memberInfo.last_name,
-            use_profile_pic : false
+            use_profile_pic: false,
           };
           console.log('BODY PARAMS:', bodyParams);
           editMemberInfo(
@@ -98,22 +98,19 @@ export default function EditMemberInfoScreen({navigation, route}) {
           }, 10);
         });
     } else {
-      if(memberInfo.connected){
-        
+      if (memberInfo.connected) {
         bodyParams = {
           first_name: memberInfo.first_name,
           last_name: memberInfo.last_name,
-          use_profile_pic : true
+          use_profile_pic: true,
         };
-      }else{
-        
+      } else {
         bodyParams = {
           first_name: memberInfo.first_name,
           last_name: memberInfo.last_name,
-          use_profile_pic : false
+          use_profile_pic: false,
         };
       }
-     
 
       editMemberInfo(
         memberInfo?.group?.group_id,
@@ -137,11 +134,11 @@ export default function EditMemberInfoScreen({navigation, route}) {
   };
   const checkValidation = () => {
     if (memberInfo.first_name === '') {
-      Alert.alert('Towns Cup', 'First name cannot be blank');
+      Alert.alert(strings.appName, 'First name cannot be blank');
       return false;
     }
     if (memberInfo.last_name === '') {
-      Alert.alert('Towns Cup', 'Last name cannot be blank');
+      Alert.alert(strings.appName, 'Last name cannot be blank');
       return false;
     }
     return true;
@@ -245,10 +242,9 @@ export default function EditMemberInfoScreen({navigation, route}) {
           } else if (index === 1) {
             openImagePicker();
           } else if (index === 2) {
-            if(memberInfo.connected){
+            if (memberInfo.connected) {
               if (checkValidation()) {
                 editInfo();
-                
               }
             }
           }

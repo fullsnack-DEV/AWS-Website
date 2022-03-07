@@ -44,9 +44,7 @@ export default function AvailableAreaReferee({navigation, route}) {
     route?.params?.settingObj?.available_area?.address,
   );
   const [loading, setloading] = useState(false);
-  const [areaRadio, setAreaRadio] = useState(
-    0,
-  );
+  const [areaRadio, setAreaRadio] = useState(0);
   const [addressType, setAddressType] = useState();
   const [searchAddress, setSearchAddress] = useState(
     route?.params?.settingObj?.available_area,
@@ -111,7 +109,7 @@ export default function AvailableAreaReferee({navigation, route}) {
               searchAddress?.description === ''
             ) {
               Alert.alert('Please selected address for calculate range.');
-            }  else {
+            } else {
               onSavePressed();
             }
           }}>
@@ -124,7 +122,7 @@ export default function AvailableAreaReferee({navigation, route}) {
     areaRadio,
     selectedDistanceOption,
     searchAddress,
-    
+
     addressList,
     route?.params?.settingObj?.available_area?.address,
   ]);
@@ -145,7 +143,6 @@ export default function AvailableAreaReferee({navigation, route}) {
         address_list: list,
       };
     }
-    
 
     console.log('availableArea', availableArea);
     const bodyParams = {};
@@ -192,7 +189,7 @@ export default function AvailableAreaReferee({navigation, route}) {
             )[0].setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         console.log('RESPONSE IS:: ', response);
         setloading(false);
@@ -308,7 +305,6 @@ export default function AvailableAreaReferee({navigation, route}) {
               </Text>
             </TouchableOpacity>
           </View>
-          
         </View>
         {/* Distance modal modal */}
         <Modal
@@ -458,7 +454,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  
+
   detailsSingleText: {
     alignSelf: 'center',
     color: colors.lightBlackColor,
@@ -498,8 +494,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginRight: 15,
   },
-
-  
 
   bottomPopupContainer: {
     paddingBottom: Platform.OS === 'ios' ? 34 : 0,

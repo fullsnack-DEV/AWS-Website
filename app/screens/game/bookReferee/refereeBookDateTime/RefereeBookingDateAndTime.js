@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useEffect, useState, useContext,useCallback } from 'react';
+import React, {useEffect, useState, useContext, useCallback} from 'react';
 import {
   View,
   StyleSheet,
@@ -27,21 +27,20 @@ import {
   getGameHomeScreen,
 } from '../../../../utils/gameUtils';
 
-import { getRefereeGameFeeEstimation } from '../../../../api/Challenge';
+import {getRefereeGameFeeEstimation} from '../../../../api/Challenge';
 import MatchFeesCard from '../../../../components/challenge/MatchFeesCard';
-import { createUserReservation } from '../../../../api/Reservations';
+import {createUserReservation} from '../../../../api/Reservations';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import * as Utility from '../../../../utils';
 import strings from '../../../../Constants/String';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import TCChallengeTitle from '../../../../components/TCChallengeTitle';
 import TCThickDivider from '../../../../components/TCThickDivider';
-import { getGameRefereeReservation } from '../../../../api/Games';
+import {getGameRefereeReservation} from '../../../../api/Games';
 import TCFormProgress from '../../../../components/TCFormProgress';
 
 let body = {};
-const RefereeBookingDateAndTime = ({ navigation, route }) => {
-
+const RefereeBookingDateAndTime = ({navigation, route}) => {
   const sportName = route?.params?.sportName;
   const userData = route?.params?.userData;
   const [gameData, setGameData] = useState(route?.params?.gameData ?? null);
@@ -55,20 +54,18 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
 
   useEffect(() => {
     setGameData(route?.params?.gameData);
-      if (route?.params?.paymentMethod) {
-        setDefaultCard(route?.params?.paymentMethod);
-        console.log('route?.params?.paymentMethod',route?.params?.paymentMethod);
-      }
-      getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
-  }, [  route?.params?.gameData, route?.params?.paymentMethod]);
+    if (route?.params?.paymentMethod) {
+      setDefaultCard(route?.params?.paymentMethod);
+      console.log('route?.params?.paymentMethod', route?.params?.paymentMethod);
+    }
+    getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
+  }, [route?.params?.gameData, route?.params?.paymentMethod]);
 
   useEffect(() => {
     Utility.getStorage('paymentSetting').then((setting) => {
       setDefaultCard(setting);
     });
   }, []);
-
- 
 
   useEffect(() => {
     if (gameData) {
@@ -91,63 +88,72 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     }
   }, [authContext, gameData, route?.params?.gameData?.game_id]);
 
+  const getFeeDetail = useCallback(
+    (paymentObj) => {
+      const gData = route?.params?.gameData;
+      if (gData) {
+        setLoading(true);
+        body = {
+          sport: gData?.sport,
+          manual_fee: false,
+          start_datetime: gData?.start_datetime,
+          end_datetime: gData?.end_datetime,
+          source: paymentObj?.id,
+        };
 
-  
+        console.log('Body', body);
+        getRefereeGameFeeEstimation(
+          route?.params?.isHirer ? authContext.entity.uid : userData?.user_id,
+          body,
+          authContext,
+        )
+          .then((response) => {
+            console.log('Estimate referee::=>', response.payload);
 
-  const getFeeDetail = useCallback((paymentObj) => {
-    const gData = route?.params?.gameData;
-    if (gData) {
-      setLoading(true);
-      body = {
-        sport: gData?.sport,
-        manual_fee: false,
-        start_datetime: gData?.start_datetime,
-        end_datetime: gData?.end_datetime,
-        source: paymentObj?.id,
-      };
-
-      console.log('Body',body);
-      getRefereeGameFeeEstimation(
-        route?.params?.isHirer ? authContext.entity.uid : userData?.user_id,
-        body,
-        authContext,
-      )
-        .then((response) => {
-          console.log('Estimate referee::=>',response.payload);
-
-          body.hourly_game_fee = response?.payload?.hourly_game_fee ?? 0;
-          body.currency_type = 'CAD';
-          body.total_payout = response?.payload?.total_payout ?? 0;
-          body.total_service_fee1 = response?.payload?.total_service_fee1 ?? 0;
-          body.total_service_fee2 = response?.payload?.total_service_fee2 ?? 0;
-          body.total_amount = response?.payload?.total_amount ?? 0;
-          body.total_game_fee = response?.payload?.total_game_fee ?? 0;
-          body.international_card_fee = response?.payload?.international_card_fee ?? 0;
-          body.payment_method_type = 'card';
-          // body = { ...body, hourly_game_fee: hFee, currency_type: cType };
-          setChallengeObject(body);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.log('Estimate Error::=>',error);
-          setLoading(false);
+            body.hourly_game_fee = response?.payload?.hourly_game_fee ?? 0;
+            body.currency_type = 'CAD';
+            body.total_payout = response?.payload?.total_payout ?? 0;
+            body.total_service_fee1 =
+              response?.payload?.total_service_fee1 ?? 0;
+            body.total_service_fee2 =
+              response?.payload?.total_service_fee2 ?? 0;
+            body.total_amount = response?.payload?.total_amount ?? 0;
+            body.total_game_fee = response?.payload?.total_game_fee ?? 0;
+            body.international_card_fee =
+              response?.payload?.international_card_fee ?? 0;
+            body.payment_method_type = 'card';
+            // body = { ...body, hourly_game_fee: hFee, currency_type: cType };
+            setChallengeObject(body);
+            setLoading(false);
+          })
+          .catch((error) => {
+            console.log('Estimate Error::=>', error);
+            setLoading(false);
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, error);
             }, 10);
-        });
-    } else {
-      setLoading(false);
-    }
-  },[authContext, defaultCard?.id, route?.params?.gameData, route?.params?.isHirer, userData?.user_id]);
+          });
+      } else {
+        setLoading(false);
+      }
+    },
+    [
+      authContext,
+      defaultCard?.id,
+      route?.params?.gameData,
+      route?.params?.isHirer,
+      userData?.user_id,
+    ],
+  );
 
-  const Title = ({ text, required }) => (
+  const Title = ({text, required}) => (
     <Text style={styles.titleText}>
       {text}
-      {required && <Text style={{ color: colors.redDelColor }}> * </Text>}
+      {required && <Text style={{color: colors.redDelColor}}> * </Text>}
     </Text>
   );
 
-  const Seperator = ({ height = 7 }) => (
+  const Seperator = ({height = 7}) => (
     <View
       style={{
         width: '100%',
@@ -168,7 +174,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
 
   const handleOnNext = () => {
     if (!gameData?.game_id) {
-      Alert.alert('Towns Cup', 'You don\'t have any selected match');
+      Alert.alert(strings.appName, 'You don\'t have any selected match');
       return false;
     }
 
@@ -177,7 +183,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     //   && !gameData?.challenge_referee?.who_secure?.[0]?.is_chief
     // ) {
     //   Alert.alert(
-    //     'Towns Cup',
+    //     strings.appName,
     //     'You can’t book the chief referee for this match.',
     //   );
     //   return false;
@@ -217,11 +223,11 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     // delete bodyParams.total_payout;
 
     if (
-      Number(bodyParams.hourly_game_fee) > 0
-      && !bodyParams?.source
-      && !route?.params?.isHirer
+      Number(bodyParams.hourly_game_fee) > 0 &&
+      !bodyParams?.source &&
+      !route?.params?.isHirer
     ) {
-      Alert.alert('Towns Cup', 'Select Payment Method');
+      Alert.alert(strings.appName, 'Select Payment Method');
       return false;
     }
     if (Number(bodyParams.hourly_game_fee) === 0) delete bodyParams.source;
@@ -233,13 +239,14 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     setLoading(true);
     createUserReservation('referees', bodyParams, authContext)
       .then(() => {
-        const navigationName = route?.params?.navigationName ?? getGameHomeScreen(gameData?.sport);
+        const navigationName =
+          route?.params?.navigationName ?? getGameHomeScreen(gameData?.sport);
         navigation.navigate('BookRefereeSuccess', {
           navigationScreenName: navigationName,
         });
       })
       .catch((error) => {
-        setTimeout(() => Alert.alert('Towns Cup', error?.message), 200);
+        setTimeout(() => Alert.alert(strings.appName, error?.message), 200);
       })
       .finally(() => setLoading(false));
     return true;
@@ -247,7 +254,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
   console.log('GD : ', sportName);
   return (
     <>
-      <ScrollView bounces={false} style={{ flex: 1 }}>
+      <ScrollView bounces={false} style={{flex: 1}}>
         {/*  Steps */}
         <TCFormProgress totalSteps={2} curruentStep={2} />
         <ActivityLoader visible={loading} />
@@ -255,13 +262,13 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
         {/* Name and country */}
         <View style={styles.contentContainer}>
           <Title text={route?.params?.isHirer ? 'Hirer' : 'Referee'} />
-          <View style={{ marginVertical: 10 }}>
+          <View style={{marginVertical: 10}}>
             <View style={styles.topViewContainer}>
               <View style={styles.profileView}>
                 <Image
                   source={
                     userData?.full_image
-                      ? { uri: userData?.full_image }
+                      ? {uri: userData?.full_image}
                       : images.profilePlaceHolder
                   }
                   style={styles.profileImage}
@@ -314,7 +321,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                 }}>
                 <FastImage
                   source={images.arrowGT}
-                  style={{ width: 8, height: 12 }}
+                  style={{width: 8, height: 12}}
                 />
               </View>
             )}
@@ -325,7 +332,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               data={gameData}
               onPress={() => {
                 const routeName = getGameHomeScreen(gameData?.sport);
-                navigation.push(routeName, { gameId: gameData?.game_id });
+                navigation.push(routeName, {gameId: gameData?.game_id});
               }}
               cardWidth={'88%'}
             />
@@ -340,8 +347,8 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               <TCInfoField
                 title={'Date'}
                 value={
-                  gameData?.start_datetime
-                  && moment(gameData?.start_datetime * 1000).format('MMM DD, YYYY')
+                  gameData?.start_datetime &&
+                  moment(gameData?.start_datetime * 1000).format('MMM DD, YYYY')
                 }
                 titleStyle={{
                   alignSelf: 'flex-start',
@@ -405,9 +412,9 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
         <TCChallengeTitle title={'Game Rules'} />
         <Text style={styles.rulesTitle}>General Rules</Text>
         <Text style={styles.rulesDetail}>{gameData?.general_rules}</Text>
-        <View style={{ marginBottom: 10 }} />
+        <View style={{marginBottom: 10}} />
         <Text style={styles.rulesTitle}>Special Rules</Text>
-        <Text style={[styles.rulesDetail, { marginBottom: 10 }]}>
+        <Text style={[styles.rulesDetail, {marginBottom: 10}]}>
           {gameData?.special_rules}
         </Text>
         <Seperator />
@@ -456,8 +463,8 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                       setChiefOrAssistant(item);
                     }
                   } else if (
-                    gameData?.challenge_referee?.who_secure?.length - 1
-                    === refereeReservationList.filter((obj) => !obj.chief_referee)
+                    gameData?.challenge_referee?.who_secure?.length - 1 ===
+                    refereeReservationList.filter((obj) => !obj.chief_referee)
                       .length
                   ) {
                     Alert.alert(
@@ -474,8 +481,8 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                 {item === chiefOrAssistant && (
                   <LinearGradient
                     colors={[colors.orangeColor, colors.yellowColor]}
-                    end={{ x: 0.0, y: 0.25 }}
-                    start={{ x: 1, y: 0.5 }}
+                    end={{x: 0.0, y: 0.25}}
+                    start={{x: 1, y: 0.5}}
                     style={{
                       height: 13,
                       width: 13,
@@ -505,7 +512,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
         {gameData && (
           <View style={styles.contentContainer}>
             <Title text={route?.params?.isHirer ? 'Earning' : 'payment'} />
-            <View style={{ marginTop: 10 }}>
+            <View style={{marginTop: 10}}>
               <MatchFeesCard
                 challengeObj={challengeObject}
                 senderOrReceiver={
@@ -518,11 +525,11 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
         )}
 
         {/* Payment Method */}
-        {Number(challengeObject?.hourly_game_fee) > 0
-          && !route?.params?.isHirer && (
+        {Number(challengeObject?.hourly_game_fee) > 0 &&
+          !route?.params?.isHirer && (
             <View style={styles.contentContainer}>
               <Title text={'Payment Method'} />
-              <View style={{ marginTop: 10 }}>
+              <View style={{marginTop: 10}}>
                 <TCTouchableLabel
                   title={
                     defaultCard &&
@@ -533,7 +540,6 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                         }`
                       : strings.addOptionMessage
                   }
-                  
                   showNextArrow={true}
                   onPress={() => {
                     navigation.navigate('PaymentMethodsScreen', {
@@ -550,7 +556,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
         <TCGradientButton
           isDisabled={!gameData} // || (Number(hourly_game_fee) >= 0 && !route.params.paymentMethod)
           title={strings.doneTitle}
-          style={{ marginBottom: 15 }}
+          style={{marginBottom: 15}}
           onPress={handleOnNext}
         />
       </SafeAreaView>
@@ -587,7 +593,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,

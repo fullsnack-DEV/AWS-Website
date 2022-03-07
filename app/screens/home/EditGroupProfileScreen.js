@@ -16,14 +16,14 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from 'react-native-actionsheet';
 import TCTouchableLabel from '../../components/TCTouchableLabel';
 import TCTextField from '../../components/TCTextField';
 import TCLabel from '../../components/TCLabel';
 import TCProfileImageControl from '../../components/TCProfileImageControl';
-import { patchGroup } from '../../api/Groups';
+import {patchGroup} from '../../api/Groups';
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
@@ -34,10 +34,10 @@ import uploadImages from '../../utils/imageAction';
 import images from '../../Constants/ImagePath';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import * as Utility from '../../utils';
-import { getQBAccountType, QBupdateUser } from '../../utils/QuickBlox';
+import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 import ToggleView from '../../components/Schedule/ToggleView';
 
-export default function EditGroupProfileScreen({ navigation, route }) {
+export default function EditGroupProfileScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
@@ -68,8 +68,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
             color: colors.lightBlackColor,
           }}
           onPress={() => {
-             
-             onSaveButtonClicked()
+            onSaveButtonClicked();
           }}>
           {strings.save}
         </Text>
@@ -103,11 +102,11 @@ export default function EditGroupProfileScreen({ navigation, route }) {
   // Form Validation
   const checkValidation = () => {
     if (groupProfile.group_name === '') {
-      Alert.alert('Towns Cup', 'First name cannot be blank');
+      Alert.alert(strings.appName, 'First name cannot be blank');
       return false;
     }
     if (groupProfile.location === '') {
-      Alert.alert('Towns Cup', 'Location cannot be blank');
+      Alert.alert(strings.appName, 'Location cannot be blank');
       return false;
     }
     return true;
@@ -122,20 +121,18 @@ export default function EditGroupProfileScreen({ navigation, route }) {
     });
   };
 
-  
-
   const onSaveButtonClicked = () => {
     Keyboard.dismiss();
     if (checkValidation()) {
       setloading(true);
-      const userProfile = { ...groupProfile };
+      const userProfile = {...groupProfile};
       if (profileImageChanged || backgroundImageChanged) {
         const imageArray = [];
         if (profileImageChanged) {
-          imageArray.push({ path: groupProfile.thumbnail });
+          imageArray.push({path: groupProfile.thumbnail});
         }
         if (backgroundImageChanged) {
-          imageArray.push({ path: groupProfile.background_thumbnail });
+          imageArray.push({path: groupProfile.background_thumbnail});
         }
         uploadImages(imageArray, authContext)
           .then((responses) => {
@@ -173,7 +170,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
           })
           .catch((e) => {
             setTimeout(() => {
-              Alert.alert('Towns Cup', e.messages);
+              Alert.alert(strings.appName, e.messages);
             }, 0.1);
           })
           .finally(() => {
@@ -187,7 +184,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
 
   const callUpdateUserAPI = (userProfile, paramGroupID) => {
     setloading(true);
-    patchGroup(paramGroupID,userProfile, authContext)
+    patchGroup(paramGroupID, userProfile, authContext)
       .then(async (response) => {
         const entity = authContext.entity;
         entity.obj = response.payload;
@@ -207,15 +204,15 @@ export default function EditGroupProfileScreen({ navigation, route }) {
               customData: qbUser?.custom_data,
               lastRequestAt: qbUser?.last_request_at,
             };
-            authContext.setEntity({ ...entity });
-            await Utility.setStorage('authContextEntity', { ...entity });
+            authContext.setEntity({...entity});
+            await Utility.setStorage('authContextEntity', {...entity});
             setloading(false);
             navigation.goBack();
           })
           .catch(async (error) => {
             console.log('QB error : ', error);
-            authContext.setEntity({ ...entity });
-            await Utility.setStorage('authContextEntity', { ...entity });
+            authContext.setEntity({...entity});
+            await Utility.setStorage('authContextEntity', {...entity});
             setloading(false);
             navigation.goBack();
           });
@@ -223,7 +220,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
       .catch((error) => {
         setloading(false);
         setTimeout(() => {
-          Alert.alert('Towns Cup', error.message);
+          Alert.alert(strings.appName, error.message);
         }, 0.1);
       });
   };
@@ -248,10 +245,10 @@ export default function EditGroupProfileScreen({ navigation, route }) {
     }).then((data) => {
       // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
-        setGroupProfile({ ...groupProfile, thumbnail: data.path });
+        setGroupProfile({...groupProfile, thumbnail: data.path});
         setProfileImageChanged(true);
       } else {
-        setGroupProfile({ ...groupProfile, background_thumbnail: data.path });
+        setGroupProfile({...groupProfile, background_thumbnail: data.path});
         setBackgroundImageChanged(true);
       }
     });
@@ -260,7 +257,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
   const deleteImage = () => {
     if (currentImageSelection) {
       // 1 means profile image
-      setGroupProfile({ ...groupProfile, thumbnail: '', full_image: '' });
+      setGroupProfile({...groupProfile, thumbnail: '', full_image: ''});
       setProfileImageChanged(false);
     } else {
       // 0 means profile image
@@ -281,10 +278,10 @@ export default function EditGroupProfileScreen({ navigation, route }) {
     }).then((data) => {
       // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
-        setGroupProfile({ ...groupProfile, thumbnail: data.path });
+        setGroupProfile({...groupProfile, thumbnail: data.path});
         setProfileImageChanged(true);
       } else {
-        setGroupProfile({ ...groupProfile, background_thumbnail: data.path });
+        setGroupProfile({...groupProfile, background_thumbnail: data.path});
         setBackgroundImageChanged(true);
       }
     });
@@ -362,12 +359,12 @@ export default function EditGroupProfileScreen({ navigation, route }) {
           <ActivityLoader visible={loading} />
           <TCProfileImageControl
             profileImage={
-              groupProfile.thumbnail ? { uri: groupProfile.thumbnail } : undefined
+              groupProfile.thumbnail ? {uri: groupProfile.thumbnail} : undefined
             }
             profileImagePlaceholder={images.teamPlaceholder}
             bgImage={
               groupProfile.background_thumbnail
-                ? { uri: groupProfile.background_thumbnail }
+                ? {uri: groupProfile.background_thumbnail}
                 : undefined
             }
             onPressBGImage={() => onBGImageClicked()}
@@ -377,12 +374,13 @@ export default function EditGroupProfileScreen({ navigation, route }) {
           <View>
             <TCLabel
               title={route.params.nameTitle}
-              style={{ marginTop: 37 }}
+              style={{marginTop: 37}}
               required={true}
             />
             <TCTextField
               placeholder={route.params.placeholder}
-              onChangeText={(text) => setGroupProfile({ ...groupProfile, group_name: text })
+              onChangeText={(text) =>
+                setGroupProfile({...groupProfile, group_name: text})
               }
               value={groupProfile.group_name}
             />
@@ -403,7 +401,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
               justifyContent: 'space-between',
               marginRight: 15,
             }}>
-            <TCLabel title={strings.hiringPlayers} style={{ marginTop: 15 }} />
+            <TCLabel title={strings.hiringPlayers} style={{marginTop: 15}} />
             <ToggleView
               isOn={groupProfile?.hiringPlayers}
               onToggle={() => {
@@ -421,7 +419,8 @@ export default function EditGroupProfileScreen({ navigation, route }) {
             <TCLabel title={strings.slogan} />
             <TCTextField
               placeholder={'Enter your slogan'}
-              onChangeText={(text) => setGroupProfile({ ...groupProfile, description: text })
+              onChangeText={(text) =>
+                setGroupProfile({...groupProfile, description: text})
               }
               multiline
               maxLength={150}

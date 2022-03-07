@@ -162,39 +162,40 @@ export default function PersonalInformationScreen({navigation, route}) {
     console.log('userInfo', userInfo);
     if (userInfo.email) {
       if (!Utility.validateEmail(userInfo.email)) {
-        Alert.alert('Towns Cup', 'Please enter valid email address.');
+        Alert.alert(strings.appName, 'Please enter valid email address.');
         return false;
       }
     }
     if (userInfo.first_name === '') {
-      Alert.alert('Towns Cup', 'First name cannot be blank');
+      Alert.alert(strings.appName, 'First name cannot be blank');
       return false;
     }
     if (userInfo.last_name === '') {
-      Alert.alert('Towns Cup', 'Last name cannot be blank');
+      Alert.alert(strings.appName, 'Last name cannot be blank');
       return false;
     }
     if (userInfo.city && userInfo.state_abbr && userInfo.country === '') {
-      Alert.alert('Towns Cup', 'Location cannot be blank');
+      Alert.alert(strings.appName, 'Location cannot be blank');
       return false;
     }
     if (userInfo.height) {
       if (!userInfo.height.height_type) {
-        Alert.alert('Towns Cup', 'Please select height measurement');
+        Alert.alert(strings.appName, 'Please select height measurement');
         return false;
       }
       if (userInfo.height.height <= 0 || userInfo.height.height >= 1000) {
-        Alert.alert('Towns Cup', 'Please enter valid height.');
+        Alert.alert(strings.appName, 'Please enter valid height.');
         return false;
       }
     }
     if (userInfo.weight) {
       if (!userInfo.weight.weight_type) {
         Alert.alert('Towns Cup', 'Please select weight measurement.');
+
         return false;
       }
       if (userInfo.weight.weight <= 0 || userInfo.weight.weight >= 1000) {
-        Alert.alert('Towns Cup', 'Please enter valid weight.');
+        Alert.alert(strings.appName, 'Please enter valid weight.');
         return false;
       }
     }
@@ -275,7 +276,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           })
           .catch((e) => {
             setTimeout(() => {
-              Alert.alert('Towns Cup', e.messages);
+              Alert.alert(strings.appName, e.messages);
             }, 0.1);
             setloading(false);
           });
@@ -301,12 +302,12 @@ export default function PersonalInformationScreen({navigation, route}) {
         setEditMode(false);
         setloading(false);
         setTimeout(() => {
-          Alert.alert('Towns Cup', 'Profile changed sucessfully');
+          Alert.alert(strings.appName, 'Profile changed sucessfully');
         }, 1000);
       })
       .catch((e) => {
         setTimeout(() => {
-          Alert.alert('Towns Cup', e.messages);
+          Alert.alert(strings.appName, e.messages);
         }, 0.1);
         setloading(false);
       });

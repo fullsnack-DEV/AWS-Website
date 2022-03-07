@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useContext } from 'react';
+import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -10,13 +10,13 @@ import {
   Alert,
 } from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
 import * as Utility from '../../../../utils';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
-import { patchPlayer } from '../../../../api/Users';
-import { patchGroup } from '../../../../api/Groups';
+import {patchPlayer} from '../../../../api/Users';
+import {patchGroup} from '../../../../api/Groups';
 
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
@@ -24,20 +24,20 @@ import TCLable from '../../../../components/TCLabel';
 import strings from '../../../../Constants/String';
 
 const gameTypeList = [
-  { key: strings.officialOnly, id: 1 },
-  { key: strings.friendlyOnly, id: 2 },
-  { key: strings.allType, id: 3 },
+  {key: strings.officialOnly, id: 1},
+  {key: strings.friendlyOnly, id: 2},
+  {key: strings.allType, id: 3},
 ];
-export default function GameType({ navigation, route }) {
-  const { comeFrom, sportName, sportType } = route?.params;
+export default function GameType({navigation, route}) {
+  const {comeFrom, sportName, sportType} = route?.params;
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
   const [typeSelection, setTypeSelection] = useState(
-    (route?.params?.settingObj?.game_type === 'Official' && gameTypeList[0])
-      || (route?.params?.settingObj?.game_type === 'Friendly'
-        && gameTypeList[1])
-      || (route?.params?.settingObj?.game_type === 'All' && gameTypeList[2]),
+    (route?.params?.settingObj?.game_type === 'Official' && gameTypeList[0]) ||
+      (route?.params?.settingObj?.game_type === 'Friendly' &&
+        gameTypeList[1]) ||
+      (route?.params?.settingObj?.game_type === 'All' && gameTypeList[2]),
   );
 
   useLayoutEffect(() => {
@@ -60,19 +60,19 @@ export default function GameType({ navigation, route }) {
       sport_type: sportType,
       entity_type: 'player',
       game_type:
-        (typeSelection.key === strings.officialOnly && 'Official')
-        || (typeSelection.key === strings.friendlyOnly && 'Friendly')
-        || (typeSelection.key === strings.allType && 'All'),
+        (typeSelection.key === strings.officialOnly && 'Official') ||
+        (typeSelection.key === strings.friendlyOnly && 'Friendly') ||
+        (typeSelection.key === strings.allType && 'All'),
     };
     setloading(true);
     const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null
+          return null;
         }
-        return obj
+        return obj;
       },
-  );
+    );
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -80,11 +80,14 @@ export default function GameType({ navigation, route }) {
 
     selectedSport = {
       ...selectedSport,
-      setting: { ...selectedSport?.setting, ...bodyParams },
-    }
+      setting: {...selectedSport?.setting, ...bodyParams},
+    };
     registerdPlayerData.push(selectedSport);
 
-    const body = { ...authContext?.entity?.obj, registered_sports: registerdPlayerData };
+    const body = {
+      ...authContext?.entity?.obj,
+      registered_sports: registerdPlayerData,
+    };
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
@@ -95,17 +98,17 @@ export default function GameType({ navigation, route }) {
           console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
           authContext.setUser(response.payload);
           await Utility.setStorage('authContextUser', response.payload);
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.registered_sports.filter(
               (obj) => obj.sport === sportName && obj.sport_type === sportType,
-              )[0].setting,
+            )[0].setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         console.log('RESPONSE IS:: ', response);
         setloading(false);
@@ -124,14 +127,14 @@ export default function GameType({ navigation, route }) {
       sport_type: sportType,
       entity_type: 'team',
       game_type:
-        (typeSelection.key === strings.officialOnly && 'Official')
-        || (typeSelection.key === strings.friendlyOnly && 'Friendly')
-        || (typeSelection.key === strings.allType && 'All'),
+        (typeSelection.key === strings.officialOnly && 'Official') ||
+        (typeSelection.key === strings.friendlyOnly && 'Friendly') ||
+        (typeSelection.key === strings.allType && 'All'),
     };
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
-    selectedTeam.setting = { ...selectedTeam.setting, ...bodyParams };
-    const body = { ...selectedTeam };
+    selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
+    const body = {...selectedTeam};
     console.log('Body Team::::--->', body);
 
     patchGroup(authContext.entity.uid, body, authContext)
@@ -142,14 +145,14 @@ export default function GameType({ navigation, route }) {
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
-          authContext.setEntity({ ...entity });
+          authContext.setEntity({...entity});
 
-          await Utility.setStorage('authContextEntity', { ...entity });
+          await Utility.setStorage('authContextEntity', {...entity});
           navigation.navigate(comeFrom, {
             settingObj: response.payload.setting,
           });
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          Alert.alert(strings.appName, response.messages);
         }
         setloading(false);
       })
@@ -165,9 +168,9 @@ export default function GameType({ navigation, route }) {
     if (comeFrom === 'InviteChallengeScreen' || comeFrom === 'EditChallenge') {
       navigation.navigate(comeFrom, {
         gameType:
-          (typeSelection.key === strings.officialOnly && 'Official')
-          || (typeSelection.key === strings.friendlyOnly && 'Friendly')
-          || (typeSelection.key === strings.allType && 'All'),
+          (typeSelection.key === strings.officialOnly && 'Official') ||
+          (typeSelection.key === strings.friendlyOnly && 'Friendly') ||
+          (typeSelection.key === strings.allType && 'All'),
       });
     } else if (authContext.entity.role === 'team') {
       saveTeam();
@@ -176,7 +179,7 @@ export default function GameType({ navigation, route }) {
     }
   };
 
-  const renderGameTypes = ({ item }) => (
+  const renderGameTypes = ({item}) => (
     <TouchableWithoutFeedback
       onPress={() => {
         setTypeSelection(item);
@@ -209,8 +212,8 @@ export default function GameType({ navigation, route }) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderGameTypes}
       />
-      {(typeSelection.key === strings.officialOnly
-        || typeSelection.key === strings.allType) && (
+      {(typeSelection.key === strings.officialOnly ||
+        typeSelection.key === strings.allType) && (
           <View style={styles.gameTypeNotes}>
             <Text style={styles.gameTypeTitle}>{strings.officialGameType}</Text>
             <Text style={styles.gameTypeNotesDetail}>
@@ -219,8 +222,8 @@ export default function GameType({ navigation, route }) {
           </View>
       )}
 
-      {(typeSelection.key === strings.friendlyOnly
-        || typeSelection.key === strings.allType) && (
+      {(typeSelection.key === strings.friendlyOnly ||
+        typeSelection.key === strings.allType) && (
           <View style={styles.gameTypeNotes}>
             <Text style={styles.gameTypeTitle}>{strings.friendlyGameType}</Text>
             <Text style={styles.gameTypeNotesDetail}>
@@ -266,7 +269,7 @@ const styles = StyleSheet.create({
 
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('92%'),
@@ -302,7 +305,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 15,

@@ -83,8 +83,7 @@ export default function WelcomeScreen({navigation}) {
 
   // Google sign-in configuration initialization
   GoogleSignin.configure({
-    webClientId:
-     Config.WEB_CLIENT_FIREBASE,
+    webClientId: Config.WEB_CLIENT_FIREBASE,
     offlineAccess: false,
   });
 
@@ -362,7 +361,7 @@ export default function WelcomeScreen({navigation}) {
           message = 'That email address is already in use!';
         }
         if (error.code === 'auth/invalid-email') {
-          message = 'That email address is invalid!';
+          message = strings.validEmailMessage;
         }
         if (error.code === 'auth/account-exists-with-different-credential') {
           message = 'You are already registrated with different login method ';
@@ -371,7 +370,7 @@ export default function WelcomeScreen({navigation}) {
           message = strings.networkConnectivityErrorMessage;
         }
         if (message !== '') {
-          setTimeout(() => Alert.alert('Towns Cup', message), 500);
+          setTimeout(() => Alert.alert(strings.appName, message), 500);
         }
       });
   };
@@ -406,15 +405,14 @@ export default function WelcomeScreen({navigation}) {
 
       await GoogleSignin.hasPlayServices();
       const {idToken} = await GoogleSignin.signIn();
-      console.log('idToken',idToken);
+      console.log('idToken', idToken);
 
       const googleCredential = await auth.GoogleAuthProvider.credential(
         idToken,
       );
-      console.log('googleCredential',googleCredential);
+      console.log('googleCredential', googleCredential);
       await signInSignUpWithSocialCredential(googleCredential, 'GOOGLE | ');
     } catch (error) {
-      
       setloading(false);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // sign in was cancelled
@@ -425,9 +423,8 @@ export default function WelcomeScreen({navigation}) {
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         Alert.alert('play services not available or outdated');
       } else {
-        console.log('Something went wrong:',error);
+        console.log('Something went wrong:', error);
         Alert.alert('Something went wrong', error.toString());
-        
       }
     }
   };
@@ -572,7 +569,7 @@ export default function WelcomeScreen({navigation}) {
         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
       });
       console.log(' appleAuthRequestResponse', appleAuthRequestResponse);
-      const { email } = await jwtDecode(appleAuthRequestResponse.identityToken);
+      const {email} = await jwtDecode(appleAuthRequestResponse.identityToken);
 
       if (!appleAuthRequestResponse?.identityToken) {
         setloading(false);
@@ -624,10 +621,10 @@ export default function WelcomeScreen({navigation}) {
 
       const appleAuthRequestResponse = await appleAuthAndroid.signIn();
       console.log('4::=>:');
-      const { email } = await jwtDecode(appleAuthRequestResponse.id_token);
+      const {email} = await jwtDecode(appleAuthRequestResponse.id_token);
 
       console.log(appleAuthRequestResponse);
-      console.log('email:',email);
+      console.log('email:', email);
 
       setloading(true);
       const {id_token, nonce} = appleAuthRequestResponse;
@@ -747,6 +744,14 @@ export default function WelcomeScreen({navigation}) {
             style={styles.alreadyView}>
             <Text style={styles.alreadyMemberText}>
               {strings.alreadyMember}
+              <Text
+                style={{
+                  textDecorationLine: 'underline',
+                  fontFamily: fonts.RBold,
+                }}>
+                {' '}
+                Log In
+              </Text>
             </Text>
           </TouchableOpacity>
         </View>

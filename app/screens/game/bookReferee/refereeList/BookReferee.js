@@ -30,17 +30,17 @@ import Geolocation from '@react-native-community/geolocation';
 import * as Utils from '../../../challenge/manageChallenge/settingUtility';
 import AuthContext from '../../../../auth/context';
 
-import { getLocationNameWithLatLong } from '../../../../api/External';
+import {getLocationNameWithLatLong} from '../../../../api/External';
 import * as Utility from '../../../../utils';
 import colors from '../../../../Constants/Colors';
 import images from '../../../../Constants/ImagePath';
-import { widthPercentageToDP } from '../../../../utils';
+import {widthPercentageToDP} from '../../../../utils';
 import DateTimePickerView from '../../../../components/Schedule/DateTimePickerModal';
 import fonts from '../../../../Constants/Fonts';
 import TCThinDivider from '../../../../components/TCThinDivider';
 
 import strings from '../../../../Constants/String';
-import { getUserIndex } from '../../../../api/elasticSearch';
+import {getUserIndex} from '../../../../api/elasticSearch';
 import RenderReferee from './RenderReferee';
 import TCTagsFilter from '../../../../components/TCTagsFilter';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -48,7 +48,7 @@ import ActivityLoader from '../../../../components/loader/ActivityLoader';
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
-export default function BookReferee({ navigation, route }) {
+export default function BookReferee({navigation, route}) {
   const gameData = route?.params?.gameData;
 
   const [loading, setLoading] = useState(false);
@@ -87,14 +87,13 @@ export default function BookReferee({ navigation, route }) {
   }, [navigation, selectedReferee]);
 
   useEffect(() => {
-    if( route?.params?.filters.location !== 'world'){
-      setLocationFilterOpetion(3)
-    }else{
-      setLocationFilterOpetion(0)
-
+    if (route?.params?.filters.location !== 'world') {
+      setLocationFilterOpetion(3);
+    } else {
+      setLocationFilterOpetion(0);
     }
     if (route?.params?.locationText) {
-      console.log('route?.params?.locationText',route?.params?.locationText);
+      console.log('route?.params?.locationText', route?.params?.locationText);
       setSettingPopup(true);
       setTimeout(() => {
         setLocation(route?.params?.locationText);
@@ -109,26 +108,25 @@ export default function BookReferee({ navigation, route }) {
 
   const getReferees = useCallback(
     (filerReferee) => {
-      const refereeQuery = 
-        {
-          size: pageSize,
-          from: pageFrom,
-          query: {
-            bool: {
-              must: [
-                {
-                  nested: {
-                    path: 'referee_data',
-                    query: {
-                      bool: {must: [{term: {'referee_data.is_published': true}}]},
-                    },
+      const refereeQuery = {
+        size: pageSize,
+        from: pageFrom,
+        query: {
+          bool: {
+            must: [
+              {
+                nested: {
+                  path: 'referee_data',
+                  query: {
+                    bool: {must: [{term: {'referee_data.is_published': true}}]},
                   },
                 },
-              ],
-            },
+              },
+            ],
           },
-        };
-    
+        },
+      };
+
       if (filerReferee.location !== 'world') {
         refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           multi_match: {
@@ -142,7 +140,6 @@ export default function BookReferee({ navigation, route }) {
           term: {
             'referee_data.sport.keyword': {
               value: route?.params?.sport,
-              
             },
           },
         });
@@ -153,7 +150,6 @@ export default function BookReferee({ navigation, route }) {
             'referee_data.setting.game_fee.fee': {
               gte: Number(filerReferee.refereeFee.split('-')[0]),
               lte: Number(filerReferee.refereeFee.split('-')[1]),
-             
             },
           },
         });
@@ -189,8 +185,8 @@ export default function BookReferee({ navigation, route }) {
   const onPressNext = () => {
     if (gameData?.referees) {
       if (
-        gameData?.referees?.length
-        < gameData?.challenge_referee?.who_secure?.length
+        gameData?.referees?.length <
+        gameData?.challenge_referee?.who_secure?.length
       ) {
         setLoading(true);
         Utils.getSetting(
@@ -203,10 +199,10 @@ export default function BookReferee({ navigation, route }) {
             setLoading(false);
             console.log('res3:::=>', response);
             if (
-              response?.refereeAvailibility
-              && response?.game_fee
-              && response?.refund_policy
-              && response?.available_area
+              response?.refereeAvailibility &&
+              response?.game_fee &&
+              response?.refund_policy &&
+              response?.available_area
             ) {
               navigation.navigate('RefereeBookingDateAndTime', {
                 settingObj: response,
@@ -229,7 +225,7 @@ export default function BookReferee({ navigation, route }) {
           });
       } else {
         Alert.alert(
-          'Towns Cup',
+          strings.appName,
           `You can't book more than ${gameData?.challenge_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
         );
       }
@@ -245,10 +241,10 @@ export default function BookReferee({ navigation, route }) {
           setLoading(false);
           console.log('res3:::=>', response);
           if (
-            response?.refereeAvailibility
-            && response?.game_fee
-            && response?.refund_policy
-            && response?.available_area
+            response?.refereeAvailibility &&
+            response?.game_fee &&
+            response?.refund_policy &&
+            response?.available_area
           ) {
             navigation.navigate('RefereeBookingDateAndTime', {
               settingObj: response,
@@ -271,17 +267,16 @@ export default function BookReferee({ navigation, route }) {
         });
     } else {
       Alert.alert(
-        'Towns Cup',
+        strings.appName,
         `You can’t book more than ${gameData?.challenge_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
       );
     }
   };
 
-  const renderRefereeData = ({ item }) => {
+  const renderRefereeData = ({item}) => {
     const referee = item;
     const refereeObject = referee?.referee_data?.filter(
-      (refereeItem) => refereeItem?.sport
-        === gameData?.sport,
+      (refereeItem) => refereeItem?.sport === gameData?.sport,
     );
 
     console.log('setting1:=>', refereeObject);
@@ -320,9 +315,9 @@ export default function BookReferee({ navigation, route }) {
     }
     setLoadMore(false);
   };
-  const handleTagPress = ({ item }) => {
+  const handleTagPress = ({item}) => {
     const tempFilter = filters;
-    console.log('tempFilter',tempFilter);
+    console.log('tempFilter', tempFilter);
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
         if (Object.keys(item)[0] === 'location') {
@@ -336,7 +331,7 @@ export default function BookReferee({ navigation, route }) {
       }
     });
     console.log('Temp filter', tempFilter);
-    setFilters({ ...tempFilter });
+    setFilters({...tempFilter});
     // applyFilter();
     setTimeout(() => {
       setPageFrom(0);
@@ -381,7 +376,7 @@ export default function BookReferee({ navigation, route }) {
         // See error code charts below.
         console.log(error.code, error.message);
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };
 
@@ -405,7 +400,7 @@ export default function BookReferee({ navigation, route }) {
     return true;
   }, [maxFee, minFee]);
   const listEmptyComponent = () => (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text
         style={{
           fontFamily: fonts.RRegular,
@@ -418,8 +413,9 @@ export default function BookReferee({ navigation, route }) {
   );
   const searchFilterFunction = (text) => {
     const result = referees.filter(
-      (x) => x.full_name.toLowerCase().includes(text.toLowerCase())
-        || x.city.toLowerCase().includes(text.toLowerCase()),
+      (x) =>
+        x.full_name.toLowerCase().includes(text.toLowerCase()) ||
+        x.city.toLowerCase().includes(text.toLowerCase()),
     );
     if (text.length > 0) {
       setReferees(result);
@@ -458,8 +454,8 @@ export default function BookReferee({ navigation, route }) {
         </View>
       </View>
       <TCTagsFilter
-      filter={filters}
-      authContext={authContext}
+        filter={filters}
+        authContext={authContext}
         dataSource={Utility.getFiltersOpetions(filters)}
         onTagCancelPress={handleTagPress}
       />
@@ -470,7 +466,7 @@ export default function BookReferee({ navigation, route }) {
         keyExtractor={keyExtractor}
         renderItem={renderRefereeData}
         style={styles.listStyle}
-        contentContainerStyle={{ paddingBottom: 1 }}
+        contentContainerStyle={{paddingBottom: 1}}
         onEndReached={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
@@ -492,13 +488,13 @@ export default function BookReferee({ navigation, route }) {
         <View
           style={[
             styles.bottomPopupContainer,
-            { height: Dimensions.get('window').height - 100 },
+            {height: Dimensions.get('window').height - 100},
           ]}>
           <KeyboardAvoidingView
-            style={{ flex: 1 }}
+            style={{flex: 1}}
             keyboardVerticalOffset={keyboardVerticalOffset}
             behavior={Platform.OS === 'ios' ? 'padding' : null}>
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
                   onPress={() => setSettingPopup(false)}
@@ -512,7 +508,7 @@ export default function BookReferee({ navigation, route }) {
                     if (applyValidation()) {
                       setSettingPopup(false);
                       setTimeout(() => {
-                        const tempFilter = { ...filters };
+                        const tempFilter = {...filters};
                         // tempFilter.sport = selectedSport;
                         tempFilter.location = location;
 
@@ -534,11 +530,11 @@ export default function BookReferee({ navigation, route }) {
               </View>
               <TCThinDivider width={'100%'} marginBottom={15} />
               <View>
-                <View style={{ flexDirection: 'column', margin: 15 }}>
+                <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
                     <Text style={styles.filterTitle}>Location</Text>
                   </View>
-                  <View style={{ marginTop: 10, marginLeft: 10 }}>
+                  <View style={{marginTop: 10, marginLeft: 10}}>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -578,8 +574,8 @@ export default function BookReferee({ navigation, route }) {
                           setLocation(
                             authContext?.entity?.obj?.city
                               .charAt(0)
-                              .toUpperCase()
-                              + authContext?.entity?.obj?.city.slice(1),
+                              .toUpperCase() +
+                              authContext?.entity?.obj?.city.slice(1),
                           );
                           // setFilters({
                           //   ...filters,
@@ -646,7 +642,9 @@ export default function BookReferee({ navigation, route }) {
 
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
-                            {route?.params?.locationText || (location !== 'world' && location) || 'Search City'}
+                            {route?.params?.locationText ||
+                              (location !== 'world' && location) ||
+                              'Search City'}
                           </Text>
                         </View>
                         <View
@@ -667,12 +665,12 @@ export default function BookReferee({ navigation, route }) {
                   </View>
                 </View>
 
-                <View style={{ flexDirection: 'column', margin: 15 }}>
+                <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
                     <Text style={styles.filterTitle}>Available Time</Text>
                   </View>
-                  <View style={{ marginTop: 10 }}>
-                    <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+                  <View style={{marginTop: 10}}>
+                    <View style={{flexDirection: 'row', marginBottom: 10}}>
                       <TouchableOpacity
                         style={styles.fieldView}
                         onPress={() => {
@@ -688,7 +686,7 @@ export default function BookReferee({ navigation, route }) {
                             From
                           </Text>
                         </View>
-                        <View style={{ marginRight: 15, flexDirection: 'row' }}>
+                        <View style={{marginRight: 15, flexDirection: 'row'}}>
                           <Text style={styles.fieldValue} numberOfLines={1}>
                             {moment(fromDate).format('MMM DD, YYYY')} {'   '}
                           </Text>
@@ -698,7 +696,7 @@ export default function BookReferee({ navigation, route }) {
                         </View>
                       </TouchableOpacity>
                     </View>
-                    <View style={{ flexDirection: 'row' }}>
+                    <View style={{flexDirection: 'row'}}>
                       <TouchableOpacity
                         style={styles.fieldView}
                         onPress={() => {
@@ -714,7 +712,7 @@ export default function BookReferee({ navigation, route }) {
                             To
                           </Text>
                         </View>
-                        <View style={{ marginRight: 15, flexDirection: 'row' }}>
+                        <View style={{marginRight: 15, flexDirection: 'row'}}>
                           <Text style={styles.fieldValue} numberOfLines={1}>
                             {moment(toDate).format('MMM DD, YYYY')} {'   '}
                           </Text>
@@ -816,7 +814,7 @@ export default function BookReferee({ navigation, route }) {
                 <View style={{}}>
                   <Text style={styles.filterTitle}>Referee fee</Text>
                 </View>
-                <View style={{ marginTop: 10 }}>
+                <View style={{marginTop: 10}}>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -846,7 +844,7 @@ export default function BookReferee({ navigation, route }) {
                 </View>
               </View>
 
-              <View style={{ flex: 1 }} />
+              <View style={{flex: 1}} />
             </ScrollView>
           </KeyboardAvoidingView>
 
@@ -867,7 +865,7 @@ export default function BookReferee({ navigation, route }) {
                     onPress: () => onPressReset(),
                   },
                 ],
-                { cancelable: false },
+                {cancelable: false},
               );
             }}>
             <Text style={styles.resetTitle}>Reset</Text>
@@ -898,7 +896,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('92%'),
     borderRadius: 20,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -955,7 +953,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },
@@ -997,7 +995,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.3,
     shadowRadius: 1,
     elevation: 1,
@@ -1024,7 +1022,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
     flexDirection: 'row',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1046,7 +1044,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     width: widthPercentageToDP('75%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -1060,7 +1058,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     width: widthPercentageToDP('45%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,

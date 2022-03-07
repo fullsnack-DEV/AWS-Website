@@ -22,7 +22,6 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import Header from '../../../components/Home/Header';
 
 export default function ChangePasswordScreen({navigation}) {
-  
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
@@ -43,25 +42,25 @@ export default function ChangePasswordScreen({navigation}) {
   };
   const checkValidation = () => {
     if (oldPassword === '') {
-      Alert.alert('Towns Cup', 'Old password cannot be blank');
+      Alert.alert(strings.appName, 'Old Password cannot be blank.');
       return false;
     }
     if (newPassword === '') {
-      Alert.alert('Towns Cup', 'New password cannot be blank');
+      Alert.alert(strings.appName, 'New Password cannot be blank.');
       return false;
     }
     if (confirmPassword === '') {
-      Alert.alert('Towns Cup', 'Confirm password cannot be blank');
+      Alert.alert(strings.appName, strings.cofirmpPswCanNotBlank);
       return false;
     }
     if (newPassword.length < 6) {
-      Alert.alert('Towns Cup', 'Password should be atleast 6 characters');
+      Alert.alert(strings.appName, 'Password should be atleast 6 characters.');
       return false;
     }
     if (newPassword !== confirmPassword) {
       Alert.alert(
-        'Towns Cup',
-        'New password and confirm password should be same',
+        strings.appName,
+        'New Password and Confirm Password should be same.',
       );
       return false;
     }
@@ -101,7 +100,7 @@ export default function ChangePasswordScreen({navigation}) {
               setloading(false);
               setTimeout(() => {
                 Alert.alert(
-                  'Towns Cup',
+                  strings.appName,
                   'Your new password has beed set successfully',
                 );
               }, 10);
@@ -111,15 +110,12 @@ export default function ChangePasswordScreen({navigation}) {
         .catch((error) => {
           setloading(false);
           if (error.code === 'auth/wrong-password') {
-
             setTimeout(() => {
               Alert.alert(
-                'Towns Cup',
+                'TownsCup',
                 'The password is invalid or the user does not have a password.',
               );
             }, 10);
-
-           
           }
         });
     }

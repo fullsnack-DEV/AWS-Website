@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
-import React, { useEffect, useState, useContext } from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -19,7 +19,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import Geolocation from '@react-native-community/geolocation';
 import AuthContext from '../../../auth/context';
 import Header from '../../../components/Home/Header';
@@ -36,9 +36,9 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
-import { createEvent } from '../../../api/Schedule';
+import {createEvent} from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import { getLocationNameWithLatLong } from '../../../api/External';
+import {getLocationNameWithLatLong} from '../../../api/External';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 import * as Utility from '../../../utils/index';
 import TCKeyboardView from '../../../components/TCKeyboardView';
@@ -51,7 +51,7 @@ const getNearDateTime = (date) => {
   console.log('Start date/Time::=>', dateTime);
   return dateTime;
 };
-export default function CreateEventScreen({ navigation, route }) {
+export default function CreateEventScreen({navigation, route}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [eventTitle, setEventTitle] = useState('');
@@ -59,7 +59,9 @@ export default function CreateEventScreen({ navigation, route }) {
   const [singleSelectEventColor, setSingleSelectEventColor] = useState();
   const [toggle, setToggle] = useState(true);
   const [eventStartDateTime, setEventStartdateTime] = useState(
-    toggle ? new Date().setDate(new Date().getDate() + 1) : getNearDateTime(new Date()),
+    toggle
+      ? new Date().setDate(new Date().getDate() + 1)
+      : getNearDateTime(new Date()),
   );
 
   const [eventEndDateTime, setEventEnddateTime] = useState(
@@ -249,7 +251,7 @@ export default function CreateEventScreen({ navigation, route }) {
     setSelectedEventColors([]);
   };
 
-  const renderColorItem = ({ item }) => {
+  const renderColorItem = ({item}) => {
     if (item.isNew) {
       return (
         <EventColorItem
@@ -299,7 +301,7 @@ export default function CreateEventScreen({ navigation, route }) {
     return (
       <EventColorItem
         source={item.isSelected ? images.check : null}
-        imageStyle={{ tintColor: colors.whiteColor }}
+        imageStyle={{tintColor: colors.whiteColor}}
         onItemPress={() => {
           eventColors.map(async (createEventItem) => {
             const createEventData = createEventItem;
@@ -343,29 +345,29 @@ export default function CreateEventScreen({ navigation, route }) {
         }
         rightComponent={
           <TouchableOpacity
-            style={{ padding: 2 }}
+            style={{padding: 2}}
             onPress={async () => {
               const entity = authContext.entity;
               const uid = entity.uid || entity.auth.user_id;
               const entityRole = entity.role === 'user' ? 'users' : 'groups';
 
               if (eventTitle === '') {
-                Alert.alert('Towns Cup', 'Please Enter Event Title.');
+                Alert.alert(strings.appName, 'Please Enter Event Title.');
               } else if (eventDescription === '') {
-                Alert.alert('Towns Cup', 'Please Enter Event Description.');
+                Alert.alert(strings.appName, 'Please Enter Event Description.');
               } else if (eventStartDateTime === '') {
                 Alert.alert(
-                  'Towns Cup',
+                  strings.appName,
                   'Please Select Event Start Date and Time.',
                 );
               } else if (eventEndDateTime === '') {
                 Alert.alert(
-                  'Towns Cup',
+                  strings.appName,
                   'Please Select Event End Date and Time.',
                 );
               } else if (eventEndDateTime === '') {
                 Alert.alert(
-                  'Towns Cup',
+                  strings.appName,
                   'Please Select Event End Date and Time.',
                 );
               } else {
@@ -380,14 +382,12 @@ export default function CreateEventScreen({ navigation, route }) {
                       allDay: toggle,
                       start_datetime: Number(
                         parseFloat(
-                          new Date(eventStartDateTime).getTime()
-                            / 1000,
+                          new Date(eventStartDateTime).getTime() / 1000,
                         ).toFixed(0),
                       ),
                       end_datetime: Number(
                         parseFloat(
-                          new Date(eventEndDateTime).getTime()
-                            / 1000,
+                          new Date(eventEndDateTime).getTime() / 1000,
                         ).toFixed(0),
                       ),
                       is_recurring: selectWeekMonth !== '',
@@ -395,11 +395,14 @@ export default function CreateEventScreen({ navigation, route }) {
                       latitude: locationDetail.lat,
                       longitude: locationDetail.lng,
                       blocked: is_Blocked,
-                      participants: [{
-                        entity_id: authContext.entity.obj.user_id
-                        || authContext.entity.obj.group_id,
-                      entity_type: entityRole,
-                      }],
+                      participants: [
+                        {
+                          entity_id:
+                            authContext.entity.obj.user_id ||
+                            authContext.entity.obj.group_id,
+                          entity_type: entityRole,
+                        },
+                      ],
                     },
                   ];
                 } else {
@@ -411,45 +414,50 @@ export default function CreateEventScreen({ navigation, route }) {
                       allDay: toggle,
                       start_datetime: Number(
                         parseFloat(
-                          new Date(convertDateToUTC(eventStartDateTime)).getTime()
-                            / 1000,
+                          new Date(
+                            convertDateToUTC(eventStartDateTime),
+                          ).getTime() / 1000,
                         ).toFixed(0),
                       ),
                       end_datetime: Number(
                         parseFloat(
-                          new Date(convertDateToUTC(eventEndDateTime)).getTime()
-                            / 1000,
+                          new Date(
+                            convertDateToUTC(eventEndDateTime),
+                          ).getTime() / 1000,
                         ).toFixed(0),
                       ),
                       is_recurring: selectWeekMonth !== '',
                       blocked: is_Blocked,
-                      participants: [{
-                        entity_id: authContext.entity.obj.user_id
-                        || authContext.entity.obj.group_id,
-                      entity_type: entityRole,
-                      }],
+                      participants: [
+                        {
+                          entity_id:
+                            authContext.entity.obj.user_id ||
+                            authContext.entity.obj.group_id,
+                          entity_type: entityRole,
+                        },
+                      ],
                     },
                   ];
                 }
 
                 let rule = '';
                 if (
-                  selectWeekMonth === 'Daily'
-                  || selectWeekMonth === 'Weekly'
-                  || selectWeekMonth === 'Monthly'
-                  || selectWeekMonth === 'Yearly'
+                  selectWeekMonth === 'Daily' ||
+                  selectWeekMonth === 'Weekly' ||
+                  selectWeekMonth === 'Monthly' ||
+                  selectWeekMonth === 'Yearly'
                 ) {
                   rule = selectWeekMonth.toUpperCase();
                 } else if (
-                  selectWeekMonth
-                  === `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`
+                  selectWeekMonth ===
+                  `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`
                 ) {
                   rule = `MONTHLY;BYDAY=${getTodayDay()
                     .substring(0, 2)
                     .toUpperCase()};BYSETPOS=${countNumberOfWeeks()}`;
                 } else if (
-                  selectWeekMonth
-                  === `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`
+                  selectWeekMonth ===
+                  `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`
                 ) {
                   rule = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`;
                 }
@@ -466,9 +474,9 @@ export default function CreateEventScreen({ navigation, route }) {
                   .then((response) => {
                     console.log('Response :-', response);
                     setTimeout(() => {
-                      setloading(false)
+                      setloading(false);
                       navigation.goBack();
-                  }, 5000);
+                    }, 5000);
                   })
                   .catch((e) => {
                     setloading(false);
@@ -546,14 +554,14 @@ export default function CreateEventScreen({ navigation, route }) {
                     ? moment(eventEndDateTime).format('h:mm a')
                     : moment(new Date()).format('h:mm a')
                 }
-                containerStyle={{ marginBottom: 8 }}
+                containerStyle={{marginBottom: 8}}
                 onDatePress={() => setEndDateVisible(!endDateVisible)}
               />
               <EventMonthlySelection
                 title={strings.repeat}
                 dataSource={[
-                  { label: 'Daily', value: 'Daily' },
-                  { label: 'Weekly', value: 'Weekly' },
+                  {label: 'Daily', value: 'Daily'},
+                  {label: 'Weekly', value: 'Weekly'},
                   {
                     label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
                     value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
@@ -566,7 +574,7 @@ export default function CreateEventScreen({ navigation, route }) {
                       new Date().getDate(),
                     )} day`,
                   },
-                  { label: 'Yearly', value: 'Yearly' },
+                  {label: 'Yearly', value: 'Yearly'},
                 ]}
                 placeholder={'Does not repeat'}
                 value={selectWeekMonth}
@@ -588,7 +596,7 @@ export default function CreateEventScreen({ navigation, route }) {
                       ? moment(eventUntilDateTime).format('h:mm a')
                       : moment(new Date()).format('h:mm a')
                   }
-                  containerStyle={{ marginBottom: 12 }}
+                  containerStyle={{marginBottom: 12}}
                   onDatePress={() => setUntilDateVisible(!untilDateVisible)}
                 />
               )}
@@ -603,9 +611,9 @@ export default function CreateEventScreen({ navigation, route }) {
                   navigation.navigate('SearchLocationScreen', {
                     comeFrom: 'CreateEventScreen',
                   });
-                  navigation.setParams({ comeName: null });
+                  navigation.setParams({comeName: null});
                 }}
-                style={{ width: '98%', alignSelf: 'center' }}
+                style={{width: '98%', alignSelf: 'center'}}
               />
               <EventMapView
                 region={{
@@ -623,7 +631,7 @@ export default function CreateEventScreen({ navigation, route }) {
 
             <EventItemRender
               title={strings.availableTitle}
-              containerStyle={{ marginTop: 10 }}>
+              containerStyle={{marginTop: 10}}>
               <Text style={styles.availableSubHeader}>
                 {strings.availableSubTitle}
               </Text>
@@ -641,7 +649,7 @@ export default function CreateEventScreen({ navigation, route }) {
                 scrollEnabled={false}
                 data={eventColors}
                 ItemSeparatorComponent={() => (
-                  <View style={{ width: wp('1%') }} />
+                  <View style={{width: wp('1%')}} />
                 )}
                 renderItem={renderColorItem}
                 keyExtractor={(item, index) => index.toString()}
@@ -653,7 +661,11 @@ export default function CreateEventScreen({ navigation, route }) {
               onDone={handleStartDatePress}
               onCancel={handleCancelPress}
               onHide={handleCancelPress}
-              minimumDate={toggle ? new Date().setDate(new Date().getDate() + 1) : getNearDateTime(new Date())}
+              minimumDate={
+                toggle
+                  ? new Date().setDate(new Date().getDate() + 1)
+                  : getNearDateTime(new Date())
+              }
               minutesGap={5}
               mode={toggle ? 'date' : 'datetime'}
             />
@@ -683,7 +695,7 @@ export default function CreateEventScreen({ navigation, route }) {
               isModalVisible={isColorPickerModal}
               onBackdropPress={() => setIsColorPickerModal(false)}
               cancelImageSource={images.cancelImage}
-              containerStyle={{ height: hp('55%') }}
+              containerStyle={{height: hp('55%')}}
               onCancelImagePress={() => setIsColorPickerModal(false)}
               headerCenterText={'Add color'}
               onColorSelected={(selectColor) => {

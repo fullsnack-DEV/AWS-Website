@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -12,7 +12,7 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
 import * as Utility from '../../../utils';
@@ -23,7 +23,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
 import uploadImages from '../../../utils/imageAction';
 
-import { getUserDetails, patchRegisterRefereeDetails } from '../../../api/Users';
+import {getUserDetails, patchRegisterRefereeDetails} from '../../../api/Users';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCKeyboardView from '../../../components/TCKeyboardView';
@@ -34,11 +34,11 @@ import TCLabel from '../../../components/TCLabel';
 
 const MAX_CERTIFICATE_UPLOAD = 5;
 
-export default function RegisterRefereeForm2({ navigation, route }) {
+export default function RegisterRefereeForm2({navigation, route}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
 
-  const [certificate, setCertificate] = useState([{ title: '' }]);
+  const [certificate, setCertificate] = useState([{title: ''}]);
   const [validationError, setError] = useState(null);
 
   const [imageUploadingLoader, setImageUploadingLoader] = useState(null);
@@ -58,8 +58,8 @@ export default function RegisterRefereeForm2({ navigation, route }) {
       (item) => item?.title && (!item?.thumbnail || !item?.url),
     );
     if (findCertiTitleIndex !== -1) {
-      setError({ certificate: findCertiTitleIndex });
-      Alert.alert('Towns Cup', 'Add certificate');
+      setError({certificate: findCertiTitleIndex});
+      Alert.alert(strings.appName, 'Add certificate');
       return false;
     }
 
@@ -67,8 +67,8 @@ export default function RegisterRefereeForm2({ navigation, route }) {
       (item) => !item?.title && (item?.thumbnail || item?.url),
     );
     if (findIndex !== -1) {
-      setError({ certificate: findIndex });
-      Alert.alert('Towns Cup', 'Add title for certificate');
+      setError({certificate: findIndex});
+      Alert.alert(strings.appName, 'Add title for certificate');
       return false;
     }
     setError(null);
@@ -81,7 +81,7 @@ export default function RegisterRefereeForm2({ navigation, route }) {
     if (isValid) {
       setloading(true);
       if (route?.params?.bodyParams) {
-        const bodyParams = { ...route?.params?.bodyParams };
+        const bodyParams = {...route?.params?.bodyParams};
         bodyParams.referee_data[0].certificates = certificate;
         bodyParams.referee_data[0].is_published = true;
         bodyParams.referee_data[0].type = 'referee';
@@ -107,9 +107,9 @@ export default function RegisterRefereeForm2({ navigation, route }) {
             entity.auth.user = res.payload;
             entity.obj = res.payload;
 
-            authContext.setEntity({ ...entity });
+            authContext.setEntity({...entity});
             await Utility.setStorage('authContextUser', res.payload);
-            await Utility.setStorage('authContextEntity', { ...entity });
+            await Utility.setStorage('authContextEntity', {...entity});
             navigation.navigate('RegisterRefereeSuccess');
           })
           .catch((error) => {
@@ -123,9 +123,9 @@ export default function RegisterRefereeForm2({ navigation, route }) {
   const addMore = () => {
     setCertificate([...certificate, {}]);
   };
-  const renderItem = ({ item, index }) => (
-    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-      <View style={{ flexDirection: 'column' }}>
+  const renderItem = ({item, index}) => (
+    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+      <View style={{flexDirection: 'column'}}>
         <View style={styles.addCertificateView}>
           <TextInput
             placeholder={strings.titleOrDescriptionText}
@@ -215,8 +215,8 @@ export default function RegisterRefereeForm2({ navigation, route }) {
           <View>
             <FastImage
               resizeMode={FastImage.resizeMode.cover}
-              source={{ uri: certificate?.[index]?.url }}
-              style={{ width: 195, height: 150, borderRadius: 10 }}
+              source={{uri: certificate?.[index]?.url}}
+              style={{width: 195, height: 150, borderRadius: 10}}
             />
 
             <TouchableOpacity
@@ -297,7 +297,7 @@ export default function RegisterRefereeForm2({ navigation, route }) {
         <TCGradientButton
           isDisabled={false}
           title={strings.doneTitle}
-          style={{ marginBottom: 5 }}
+          style={{marginBottom: 5}}
           onPress={() => registerRefereeCall()}
         />
       </SafeAreaView>
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     paddingHorizontal: 5,
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,
