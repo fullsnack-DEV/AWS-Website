@@ -19,13 +19,11 @@ import {
   Dimensions,
   SafeAreaView,
 } from 'react-native';
-import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
 import Moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
-import NotificationProfileItem from '../../components/notificationComponent/NotificationProfileItem';
 import NotificationItem from '../../components/notificationComponent/NotificationItem';
 import PRNotificationInviteCell from '../../components/notificationComponent/PRNotificationInviteCell';
 import NotificationType from '../../Constants/NotificationType';
@@ -60,7 +58,6 @@ import {
 import {getUserDetails} from '../../api/Users';
 import {getGroupDetails} from '../../api/Groups';
 import NotificationListShimmer from '../../components/shimmer/account/NotificationListShimmer';
-import NotificationListTopHeaderShimmer from '../../components/shimmer/account/NotificationListTopHeaderShimmer';
 import TCGradientButton from '../../components/TCGradientButton';
 import PRNotificationTeamInvite from '../../components/notificationComponent/PRNotificationTeamInvite';
 import PRNotificationDetailItem from '../../components/notificationComponent/PRNotificationDetailItem';
@@ -72,7 +69,6 @@ function NotificationsListScreen({navigation}) {
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
   const [notifAPI, setNotifAPI] = useState();
-  const refContainer = useRef();
   const authContext = useContext(AuthContext);
   const [mainNotificationsList, setMainNotificationsList] = useState();
   const currentDate = new Date();
@@ -869,18 +865,7 @@ function NotificationsListScreen({navigation}) {
     return null;
   };
 
-  const activeTab = async (index) => {
-    const gList = JSON.parse(JSON.stringify(groupList));
-    gList[index].unread = 0;
-    setGroupList(gList);
-    checkActiveScreen(gList[index]);
-    setCurrentTab(index);
-    refContainer.current.scrollToIndex({
-      animated: true,
-      index,
-      viewPosition: 1,
-    });
-  };
+  
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -1001,38 +986,6 @@ function NotificationsListScreen({navigation}) {
     return <View style={styles.listItemSeparatorStyle} />;
   };
 
-  const renderGroupItem = ({item, index}) => (
-    <TouchableOpacity
-      onPress={() => {
-        if (groupList.length === 2) {
-          if (index !== 2) {
-            activeTab(index);
-          }
-        } else {
-          activeTab(index);
-        }
-      }}
-      key={index}>
-      <NotificationProfileItem
-        data={item}
-        indexNumber={index}
-        selectedIndex={currentTab}
-      />
-      {index !== currentTab && (
-        <View
-          style={{
-            backgroundColor: colors.grayColor,
-            opacity: 0.2,
-            height: 2,
-            shadowColor: colors.grayColor,
-            shadowOffset: {width: 0, height: -2},
-            shadowOpacity: 0.8,
-            shadowRadius: 5,
-            elevation: 3,
-          }}></View>
-      )}
-    </TouchableOpacity>
-  );
 
   const checkActiveScreen = async (entity) => {
     const loggedInEntity = authContext.entity;
@@ -1055,39 +1008,7 @@ function NotificationsListScreen({navigation}) {
       <View
         style={[styles.rowViewStyle, {opacity: activeScreen ? 1.0 : 0.5}]}
         needsOffscreenAlphaCompositing>
-        <View>
-          {groupList?.length <= 0 ? (
-            <NotificationListTopHeaderShimmer />
-          ) : (
-            groupList?.length > 1 && (
-              <FlatList
-                ref={refContainer}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                data={groupList.length === 2 ? [...groupList, {}] : groupList}
-                renderItem={renderGroupItem}
-                keyExtractor={keyExtractor}
-                initialScrollIndex={currentTab}
-                initialNumToRender={30}
-                style={{
-                  paddingTop: 8,
-                  backgroundColor: colors.grayBackgroundColor,
-                }}
-                onScrollToIndexFailed={(info) => {
-                  const wait = new Promise((resolve) =>
-                    setTimeout(resolve, 100),
-                  );
-                  wait.then(() => {
-                    refContainer.current.scrollToIndex({
-                      animated: true,
-                      index: info.index,
-                    });
-                  });
-                }}
-              />
-            )
-          )}
-        </View>
+   
         <ActivityLoader visible={loading} />
         {/* eslint-disable-next-line no-nested-ternary */}
         {firstTimeLoading ? (

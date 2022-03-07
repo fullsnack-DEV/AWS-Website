@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-import ScrollableTabView, { ScrollableTabBar } from 'react-native-scrollable-tab-view';
+import ScrollableTabView, { ScrollableTabBar } from 'react-native-scrollable-tab-view-forked';
 
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'

@@ -16,13 +16,16 @@ import {
   TouchableOpacity,
   Alert,
   FlatList,
-  TextInput
+  TextInput,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
@@ -35,15 +38,16 @@ import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import TCDateTimePicker from '../../../../components/TCDateTimePicker';
-import TCKeyboardView from '../../../../components/TCKeyboardView';
 import AuthContext from '../../../../auth/context';
 import DataSource from '../../../../Constants/DataSource';
-import { monthNames, widthPercentageToDP } from '../../../../utils';
+import {monthNames, widthPercentageToDP} from '../../../../utils';
 import TCFormProgress from '../../../../components/TCFormProgress';
 
 let entity = {};
 
-export default function CreateMemberProfileForm1({navigation,route}) {
+export default function CreateMemberProfileForm1({navigation, route}) {
+  const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0;
+
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
@@ -84,9 +88,6 @@ export default function CreateMemberProfileForm1({navigation,route}) {
 
   useEffect(() => {
     if (isFocused) {
-     
-
-     
       if (route?.params?.city) {
         setCity(route?.params?.city);
         setState(route?.params?.state);
@@ -337,13 +338,14 @@ export default function CreateMemberProfileForm1({navigation,route}) {
   );
 
   return (
-    <TCKeyboardView>
-     
-     
+    <ScrollView style={{backgroundColor: 'white', flex: 1}}>
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={keyboardVerticalOffset}>
+        <TCFormProgress totalSteps={role === 'club' ? 3 : 2} curruentStep={1} />
 
-      <TCFormProgress totalSteps={role === 'club' ?  3 : 2} curruentStep={1} />
-      <View style={styles.profileView}>
-        <Image
+        <View style={styles.profileView}>
+          <Image
             source={
               memberInfo.full_image
                 ? {uri: memberInfo.full_image}
@@ -351,26 +353,26 @@ export default function CreateMemberProfileForm1({navigation,route}) {
             }
             style={styles.profileChoose}
           />
-        <TouchableOpacity
+          <TouchableOpacity
             style={styles.choosePhoto}
             onPress={() => onProfileImageClicked()}>
-          <Image
+            <Image
               source={images.certificateUpload}
               style={styles.choosePhoto}
             />
-        </TouchableOpacity>
-      </View>
+          </TouchableOpacity>
+        </View>
 
-      <View>
-        <TCLable title={'Name'} required={true} />
-        <TCTextField
+        <View>
+          <TCLable title={'Name'} required={true} />
+          <TCTextField
             value={firstName}
             autoCapitalize="none"
             autoCorrect={false}
             onChangeText={(text) => setFirstName(text)}
             placeholder={strings.firstName}
           />
-        <TCTextField
+          <TCTextField
             value={lastName}
             autoCapitalize="none"
             autoCorrect={false}
@@ -378,11 +380,11 @@ export default function CreateMemberProfileForm1({navigation,route}) {
             placeholder={strings.lastName}
             style={{marginTop: 12}}
           />
-      </View>
+        </View>
 
-      <View>
-        <TCLable title={'E-Mail'} required={true} />
-        <TCTextField
+        <View>
+          <TCLable title={'E-Mail'} required={true} />
+          <TCTextField
             value={email}
             autoCapitalize="none"
             autoCorrect={false}
@@ -390,16 +392,16 @@ export default function CreateMemberProfileForm1({navigation,route}) {
             placeholder={strings.addressPlaceholder}
             keyboardType={'email-address'}
           />
-      </View>
-      <View>
-        <TCLable title={'Phone'} />
-        <FlatList
+        </View>
+        <View>
+          <TCLable title={'Phone'} />
+          <FlatList
             data={phoneNumber}
             renderItem={renderPhoneNumber}
             keyExtractor={(item, index) => index.toString()}></FlatList>
-      </View>
-      {phoneNumber?.length < 5 && (
-        <TCMessageButton
+        </View>
+        {phoneNumber?.length < 5 && (
+          <TCMessageButton
             title={strings.addPhone}
             width={85}
             alignSelf="center"
@@ -408,9 +410,9 @@ export default function CreateMemberProfileForm1({navigation,route}) {
           />
         )}
 
-      <View>
-        <TCLable title={'Address'} />
-        <TCTextField
+        <View>
+          <TCLable title={'Address'} />
+          <TCTextField
             value={streetAddress}
             onChangeText={(text) => setStreetAddress(text)}
             placeholder={strings.addressPlaceholder}
@@ -419,39 +421,37 @@ export default function CreateMemberProfileForm1({navigation,route}) {
             autoCorrect={false}
             // onFocus={() => setLocationFieldVisible(true)}
           />
-      </View>
-       
-          
-      <TouchableOpacity
-            onPress={() => navigation.navigate('SearchLocationScreen', {
-                comeFrom: 'CreateMemberProfileForm1',
-              })
-            }>
-        <TextInput
-              placeholder={strings.searchCityPlaceholder}
-              placeholderTextColor={colors.userPostTimeColor}
-              style={[styles.matchFeeTxt, { marginBottom: 5 }]}
-              value={location}
-              editable={false}
-              pointerEvents="none"></TextInput>
-      </TouchableOpacity>
-        
-     
-      <View>
-        
-        <TCTextField
-              value={postalCode}
-              onChangeText={(text) => setPostalCode(text)}
-              placeholder={strings.postalCodeText}
-              keyboardType={'default'}
-            />
-      </View>
-    
-      <View>
-        <TCLable title={'Birthday'} />
-        {/* <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.addressPlaceholder} keyboardType={'default'}/> */}
+        </View>
 
-        <TCTouchableLabel
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('SearchLocationScreen', {
+              comeFrom: 'CreateMemberProfileForm1',
+            })
+          }>
+          <TextInput
+            placeholder={strings.searchCityPlaceholder}
+            placeholderTextColor={colors.userPostTimeColor}
+            style={[styles.matchFeeTxt, {marginBottom: 5}]}
+            value={location}
+            editable={false}
+            pointerEvents="none"></TextInput>
+        </TouchableOpacity>
+
+        <View>
+          <TCTextField
+            value={postalCode}
+            onChangeText={(text) => setPostalCode(text)}
+            placeholder={strings.postalCodeText}
+            keyboardType={'default'}
+          />
+        </View>
+
+        <View>
+          <TCLable title={'Birthday'} />
+          {/* <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.addressPlaceholder} keyboardType={'default'}/> */}
+
+          <TCTouchableLabel
             title={
               birthday &&
               `${`${monthNames[new Date(birthday).getMonth()]} ${new Date(
@@ -461,10 +461,10 @@ export default function CreateMemberProfileForm1({navigation,route}) {
             placeholder={strings.birthDatePlaceholder}
             onPress={() => setShow(!show)}
           />
-      </View>
-      <View>
-        <TCLable title={'Gender'} />
-        <TCPicker
+        </View>
+        <View>
+          <TCLable title={'Gender'} />
+          <TCPicker
             dataSource={DataSource.Gender}
             placeholder={strings.selectGenderPlaceholder}
             value={gender}
@@ -472,15 +472,15 @@ export default function CreateMemberProfileForm1({navigation,route}) {
               setGender(value);
             }}
           />
-      </View>
-      <View style={{marginLeft: 15, marginTop: 15}}>
-        <Text style={styles.smallTxt}>
-          (<Text style={styles.mendatory}>{strings.star} </Text>
-          {strings.requiredText})
-        </Text>
-      </View>
-      <View style={{marginBottom: 20}} />
-      <ActionSheet
+        </View>
+        <View style={{marginLeft: 15, marginTop: 15}}>
+          <Text style={styles.smallTxt}>
+            (<Text style={styles.mendatory}>{strings.star} </Text>
+            {strings.requiredText})
+          </Text>
+        </View>
+        <View style={{marginBottom: 20}} />
+        <ActionSheet
           ref={actionSheet}
           options={
             memberInfo.full_image
@@ -505,19 +505,17 @@ export default function CreateMemberProfileForm1({navigation,route}) {
           }}
         />
 
-      <TCDateTimePicker
+        <TCDateTimePicker
           title={'Choose Birthday'}
           visible={show}
           onDone={handleDonePress}
           onCancel={handleCancelPress}
         />
-     
-    </TCKeyboardView>
-
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
- 
   profileChoose: {
     height: 70,
     width: 70,
@@ -562,7 +560,7 @@ const styles = StyleSheet.create({
   mendatory: {
     color: 'red',
   },
-  
+
   matchFeeTxt: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
@@ -576,7 +574,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingRight: 30,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.3,
     shadowRadius: 1,
 

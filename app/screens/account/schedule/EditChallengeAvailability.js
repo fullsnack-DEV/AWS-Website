@@ -100,7 +100,6 @@ export default function EditChallengeAvailability({ navigation }) {
       <View style={ styles.sperateLine } />
       <ScrollView bounces={false}>
         <SafeAreaView>
-
           <EventItemRender
             title={strings.editChallengeTitle}
           >

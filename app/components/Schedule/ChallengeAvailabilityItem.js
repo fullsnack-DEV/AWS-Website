@@ -21,18 +21,25 @@ function ChallengeAvailabilityItem({
 }) {
   const [toggle, setToggle] = useState(data.allDay);
   const [is_Blocked, setIsBlocked] = useState(data.isBlock);
-  const [eventStartDateTime, setEventStartdateTime] = useState('');
-  const [eventEndDateTime, setEventEnddateTime] = useState('');
+  const [eventStartDateTime, setEventStartdateTime] = useState(new Date());
+  const [eventEndDateTime, setEventEnddateTime] = useState(new Date());
 
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
 
   const handleStateDatePress = (date) => {
+    console.log('Start date:=>',date);
     const startDate = moment(date).format('YYYY-MM-DD hh:mm:ss');
     const obj = { ...data };
     obj.startDateTime = startDate;
     changeAvailablilityItem(obj);
     setEventStartdateTime(date);
+    if(new Date(date).getTime() > new Date(eventEndDateTime).getTime()){
+      const d1 = new Date (date);
+       const d2 = new Date ( d1 );
+      d2.setMinutes ( d1.getMinutes() + 5 );
+      setEventEnddateTime(d2);
+    }
     setStartDateVisible(!startDateVisible)
   }
   const handleCancelPress = () => {
@@ -41,11 +48,19 @@ function ChallengeAvailabilityItem({
   }
 
   const handleEndDatePress = (date) => {
+    console.log('End date:=>',date);
+
     const endDate = moment(date).format('YYYY-MM-DD hh:mm:ss');
     const obj = { ...data };
     obj.endDateTime = endDate;
     changeAvailablilityItem(obj);
     setEventEnddateTime(date);
+    if(new Date(date).getTime() < new Date(eventStartDateTime).getTime()){
+      const d1 = new Date (date);
+       const d2 = new Date ( d1 );
+      d2.setMinutes ( d1.getMinutes() + 5 );
+      setEventStartdateTime(date);
+    }
     setEndDateVisible(!endDateVisible)
   }
 
@@ -111,18 +126,24 @@ function ChallengeAvailabilityItem({
         <Text style={styles.deleteTextStyle} onPress={onDeletePress}>Delete</Text>
       </View>
       <DateTimePickerView
+            title={toggle ? 'Choose a date' : 'Choose a date & time'}
+           // date={new Date(eventStartDateTime)}
             visible={startDateVisible}
             onDone={handleStateDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            mode={toggle ? 'date' : 'datetime'}
+           // minimumDate={new Date()}
+            mode={toggle ? 'date' : 'datetime'}      
       />
       <DateTimePickerView
+           title={toggle ? 'Choose a date' : 'Choose a date & time'}
+            // date={new Date(eventEndDateTime)}
             visible={endDateVisible}
             onDone={handleEndDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={eventStartDateTime || new Date()}
+            minimumDate={eventStartDateTime}
+            
             mode={toggle ? 'date' : 'datetime'}
       />
     </View>
