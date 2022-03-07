@@ -20,7 +20,7 @@
 // import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 // let entity = {};
-// export default function EditMemberClubInfoScreen({navigation}) {
+// export default function EditMemberAuthInfoScreen({navigation}) {
 //   const [auth, setAuth] = useState({});
 //   const [loading, setLoading] = useState(false);
 
@@ -267,7 +267,7 @@ import strings from '../../../../Constants/String';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 let entity = {};
-export default function EditMemberClubInfoScreen({navigation, route}) {
+export default function EditMemberAuthInfoScreen({navigation, route}) {
   const {groupMemberDetail} = route?.params;
   console.log('groupMemberDetail1', groupMemberDetail);
   const authContext = useContext(AuthContext);
@@ -275,7 +275,7 @@ export default function EditMemberClubInfoScreen({navigation, route}) {
 
   const [loading, setLoading] = useState(false);
   const [setting, setSetting] = useState({
-    is_member: groupMemberDetail?.is_member === true,
+    is_member:  true,
     is_admin: groupMemberDetail.is_admin,
   });
 
@@ -293,7 +293,7 @@ export default function EditMemberClubInfoScreen({navigation, route}) {
       ),
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => pressedNext()}>
-          Done
+          Save
         </Text>
       ),
     });
@@ -466,17 +466,27 @@ export default function EditMemberClubInfoScreen({navigation, route}) {
               style={styles.profileImage}
             />
           </View>
-          <TCGroupNameBadge name={entity.obj.group_name} groupType={'team'} />
+          <TCGroupNameBadge name={entity.obj.group_name} groupType={entity.role} />
         </View>
-        <View style={styles.checkBoxContainer}>
+        <View style={[styles.checkBoxContainer,{opacity: groupMemberDetail?.teams ? 0.5 : 1 }]}>
           <Text style={styles.checkBoxItemText}>Member</Text>
           <TouchableOpacity
+            disabled  ={!!groupMemberDetail?.teams}
             onPress={() => {
               const member_setting = !setting.is_member;
-              setSetting({
-                ...setting,
-                is_member: member_setting,
-              });
+              if(member_setting){
+                setSetting({
+                  ...setting,
+                  is_member: member_setting,
+                });
+              }else{
+                setSetting({
+                  ...setting,
+                  is_member: false,
+                  is_admin: false,
+                });
+              }
+             
             }}>
             <Image
               source={
@@ -492,10 +502,18 @@ export default function EditMemberClubInfoScreen({navigation, route}) {
           <TouchableOpacity
             onPress={() => {
               const admin_setting = !setting.is_admin;
-              setSetting({
-                ...setting,
-                is_admin: admin_setting,
-              });
+              if(admin_setting){
+                setSetting({
+                  ...setting,
+                  is_member:true,
+                  is_admin: admin_setting,
+                });
+              }else{
+                setSetting({
+                  ...setting,
+                  is_admin: false,
+                });
+              }
             }}>
             <Image
               source={

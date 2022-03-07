@@ -24,6 +24,7 @@ import {
 
 import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from 'react-native-actionsheet';
+import {useIsFocused} from '@react-navigation/native';
 
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
@@ -53,6 +54,8 @@ import uploadImages from '../../../utils/imageAction';
 export default function PersonalInformationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const actionSheet = useRef();
+  const isFocused = useIsFocused();
+
   const actionSheetWithDelete = useRef();
   // For activity indigator
   const [loading, setloading] = useState(false);
@@ -60,6 +63,15 @@ export default function PersonalInformationScreen({navigation, route}) {
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [languagesName, setLanguagesName] = useState('');
   const [profileImageChanged, setProfileImageChanged] = useState(false);
+  const [streetAddress, setStreetAddress] = useState(
+    authContext?.entity?.obj?.street_address,
+  );
+  const [city, setCity] = useState(authContext?.entity?.obj?.city);
+  const [state, setState] = useState(authContext?.entity?.obj?.state_abbr);
+  const [country, setCountry] = useState(authContext?.entity?.obj?.country);
+  const [postalCode, setPostalCode] = useState(
+    authContext?.entity?.obj?.postal_code,
+  );
 
   const [phoneNumbers, setPhoneNumbers] = useState(
     authContext.entity.obj.phone_numbers || [
@@ -81,7 +93,18 @@ export default function PersonalInformationScreen({navigation, route}) {
     navigation.setOptions({
       headerShown: false,
     });
-  }, [navigation, editMode, languages, phoneNumbers, userInfo]);
+  }, [
+    navigation,
+    editMode,
+    languages,
+    phoneNumbers,
+    userInfo,
+    city,
+    state,
+    country,
+    postalCode,
+    streetAddress,
+  ]);
 
   useEffect(() => {
     let languageText = '';
@@ -93,6 +116,20 @@ export default function PersonalInformationScreen({navigation, route}) {
       setLanguagesName(languageText);
     }
   }, [userInfo?.language]);
+
+  useEffect(() => {
+    if (isFocused) {
+      if (
+        route?.params?.city &&
+        route?.params?.state &&
+        route?.params?.country
+      ) {
+        setCity(route?.params?.city);
+        setState(route?.params?.state);
+        setCountry(route?.params?.country);
+      }
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     const arr = [];
@@ -109,16 +146,6 @@ export default function PersonalInformationScreen({navigation, route}) {
     setLanguages(arr);
   }, []);
 
-  useEffect(() => {
-    if (route.params && route.params.city) {
-      setUserInfo({
-        ...userInfo,
-        city: route.params.city,
-        state_abbr: route.params.state,
-        country: route.params.country,
-      });
-    }
-  }, [route.params]);
   const addPhoneNumber = () => {
     const obj = {
       id: phoneNumbers.length === 0 ? 0 : phoneNumbers.length,
@@ -132,6 +159,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
   // Form Validation
   const checkValidation = () => {
+    console.log('userInfo', userInfo);
     if (userInfo.email) {
       if (!Utility.validateEmail(userInfo.email)) {
         Alert.alert(strings.appName, 'Please enter valid email address.');
@@ -162,7 +190,8 @@ export default function PersonalInformationScreen({navigation, route}) {
     }
     if (userInfo.weight) {
       if (!userInfo.weight.weight_type) {
-        Alert.alert(strings.appName, 'Please select weight measurement');
+        Alert.alert('Towns Cup', 'Please select weight measurement.');
+
         return false;
       }
       if (userInfo.weight.weight <= 0 || userInfo.weight.weight >= 1000) {
@@ -170,7 +199,6 @@ export default function PersonalInformationScreen({navigation, route}) {
         return false;
       }
     }
-
     return true;
   };
 
@@ -197,14 +225,21 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const onSavePress = () => {
+    console.log('checkValidation()', checkValidation());
+   
     if (checkValidation()) {
       const bodyParams = {};
       bodyParams.first_name = userInfo.first_name;
       bodyParams.last_name = userInfo.last_name;
       bodyParams.full_name = `${userInfo.first_name} ${userInfo.last_name}`;
-      bodyParams.city = userInfo.city;
-      bodyParams.state_abbr = userInfo.state_abbr;
-      bodyParams.country = userInfo.country;
+      if (city && state && country && streetAddress && postalCode) {
+        bodyParams.city = city;
+        bodyParams.state_abbr = state;
+        bodyParams.country = country;
+        bodyParams.street_address = streetAddress;
+        bodyParams.postal_code = postalCode;
+      }
+
       bodyParams.description = userInfo.description;
       bodyParams.height = userInfo.height;
       bodyParams.weight = userInfo.weight;
@@ -326,7 +361,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               });
             }}
             editable={editMode}
-            value={userInfo.height.height}
+            value={userInfo?.height?.height}
           />
         </View>
         <RNPickerSelect
@@ -342,12 +377,12 @@ export default function PersonalInformationScreen({navigation, route}) {
             setUserInfo({
               ...userInfo,
               height: {
-                height: userInfo.height.height,
+                height: userInfo?.height?.height,
                 height_type: value,
               },
             });
           }}
-          value={userInfo.height.height_type}
+          value={userInfo?.height?.height_type}
           disabled={!editMode}
           useNativeAndroidPickerStyle={false}
           style={{
@@ -408,7 +443,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               });
             }}
             editable={editMode}
-            value={userInfo.weight.weight}
+            value={userInfo?.weight?.weight}
           />
         </View>
         <RNPickerSelect
@@ -826,7 +861,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             <TCLabel title={strings.birthDatePlaceholder} />
             <View style={styles.staticTextView}>
               <Text style={styles.staticText}>
-                {moment(userInfo.birthday * 1000).format('MMM DD,YYYY')}
+                {moment(userInfo?.birthday * 1000).format('MMM DD,YYYY')}
               </Text>
             </View>
           </View>
@@ -877,6 +912,46 @@ export default function PersonalInformationScreen({navigation, route}) {
             editable={false}
             value={userInfo.email}
           />
+
+          <View>
+            <TCLabel title={'Address'} />
+            <TCTextField
+              editable={editMode}
+              value={streetAddress}
+              onChangeText={(text) => setStreetAddress(text)}
+              placeholder={strings.addressPlaceholder}
+              keyboardType={'default'}
+              autoCapitalize="none"
+              autoCorrect={false}
+              // onFocus={() => setLocationFieldVisible(true)}
+            />
+          </View>
+
+          <TouchableOpacity
+            disabled={!editMode}
+            onPress={() =>
+              navigation.navigate('SearchLocationScreen', {
+                comeFrom: 'PersonalInformationScreen',
+              })
+            }>
+            <TextInput
+              placeholder={strings.searchCityPlaceholder}
+              placeholderTextColor={colors.userPostTimeColor}
+              style={[styles.matchFeeTxt, {marginBottom: 5}]}
+              value={city && `${city}, ${state}, ${country}`}
+              editable={false}
+              pointerEvents="none"></TextInput>
+          </TouchableOpacity>
+
+          <View>
+            <TCTextField
+              editable={editMode}
+              value={postalCode}
+              onChangeText={(text) => setPostalCode(text)}
+              placeholder={strings.postalCodeText}
+              keyboardType={'default'}
+            />
+          </View>
           <Modal
             isVisible={isModalVisible}
             backdropColor="black"

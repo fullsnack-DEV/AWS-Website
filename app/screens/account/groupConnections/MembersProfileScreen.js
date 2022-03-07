@@ -94,14 +94,11 @@ export default function MembersProfileScreen({navigation, route}) {
     route?.params?.whoSeeID,
   ]);
 
-  
-
   useEffect(() => {
-    if(isFocused){
+    if (isFocused) {
       console.log('--useEffect called--');
       getMemberInformation();
     }
-    
   }, [isFocused]);
 
   // useEffect(() => {
@@ -209,6 +206,19 @@ export default function MembersProfileScreen({navigation, route}) {
     return <TCThinDivider marginTop={20} width={'100%'} />;
   };
 
+const getLocation=()=>{
+  let locationString =  '';
+
+  if(memberDetail?.connected){
+    if(memberDetail?.user_city && memberDetail?.user_country && memberDetail?.user_state_abbr){
+      locationString = `${memberDetail?.user_city  }, ${  memberDetail?.user_state_abbr  }, ${  memberDetail?.user_country}`
+    }
+  }else if(memberDetail?.city && memberDetail?.country && memberDetail?.state_abbr){
+      locationString = `${memberDetail?.city  }, ${  memberDetail?.state_abbr  }, ${  memberDetail?.country}`
+    }
+ return locationString
+}
+
   return (
     <SafeAreaView>
       <ActivityLoader visible={loading} />
@@ -231,10 +241,7 @@ export default function MembersProfileScreen({navigation, route}) {
                 name={
                   `${memberDetail?.first_name} ${memberDetail?.last_name}` ?? ''
                 }
-                location={
-                  `${memberDetail?.city ?? ''}, ${memberDetail?.state_abbr ?? ''}, ${memberDetail?.country ?? ''}` ??
-                ''
-                }
+                location={getLocation()}
               />
               {editProfile && (
                 <TouchableWithoutFeedback
@@ -307,16 +314,13 @@ export default function MembersProfileScreen({navigation, route}) {
                     }
                   });
                 }}>
-                <View
-                  style={styles.inviteButtonContainer}>
-                  <Text
-                    style={styles.inviteTextStyle}>
+                <View style={styles.inviteButtonContainer}>
+                  <Text style={styles.inviteTextStyle}>
                     Invite or Connect to an Account
                   </Text>
                 </View>
               </TouchableOpacity>
             )}
-            
           </View>
           <TCThickDivider marginTop={20} />
           <View>
@@ -427,7 +431,7 @@ export default function MembersProfileScreen({navigation, route}) {
                 switchID={entity.uid}
                 edit={!editTeam}
                 onEditPressed={() =>
-                  navigation.navigate('EditMemberClubInfoScreen', {
+                  navigation.navigate('EditMemberAuthInfoScreen', {
                     groupMemberDetail: {
                       ...memberDetail.group,
                       positions: memberDetail?.positions,
@@ -439,7 +443,7 @@ export default function MembersProfileScreen({navigation, route}) {
                       is_member: memberDetail?.is_member,
                       is_coach: memberDetail?.is_coach,
                       note: memberDetail?.note,
-                      user_id : memberDetail?.user_id
+                      user_id: memberDetail?.user_id,
                     },
                   })
                 }
@@ -449,21 +453,25 @@ export default function MembersProfileScreen({navigation, route}) {
               <TCThinDivider marginTop={20} width={'100%'} />
             )}
             <FlatList
-              data={entity.role === 'club' ? memberDetail?.teams : [
-                {
-                  ...memberDetail.group,
-                  positions: memberDetail?.positions,
-                  jersey_number: memberDetail?.jersey_number,
-                  appearance: memberDetail?.appearance,
-                  status: memberDetail?.status,
-                  is_admin: memberDetail?.is_admin,
-                  is_others: memberDetail?.is_others,
-                  is_member: memberDetail?.is_member,
-                  is_coach: memberDetail?.is_coach,
-                  note: memberDetail?.note,
-                  user_id : memberDetail?.user_id
-                },
-              ]}
+              data={
+                entity.role === 'club'
+                  ? memberDetail?.teams
+                  : [
+                      {
+                        ...memberDetail.group,
+                        positions: memberDetail?.positions,
+                        jersey_number: memberDetail?.jersey_number,
+                        appearance: memberDetail?.appearance,
+                        status: memberDetail?.status,
+                        is_admin: memberDetail?.is_admin,
+                        is_others: memberDetail?.is_others,
+                        is_member: memberDetail?.is_member,
+                        is_coach: memberDetail?.is_coach,
+                        note: memberDetail?.note,
+                        user_id: memberDetail?.user_id,
+                      },
+              ]
+              }
               ListEmptyComponent={listEmptyView}
               ItemSeparatorComponent={renderSeparator}
               renderItem={({item}) => (
@@ -522,10 +530,10 @@ export default function MembersProfileScreen({navigation, route}) {
             destructiveButtonIndex={1}
             onPress={(index) => {
               if (index === 0) {
-                navigation.navigate('EditMemberClubInfoScreen', {
+                navigation.navigate('EditMemberAuthInfoScreen', {
                   groupMemberDetail: memberDetail,
                 });
-              } 
+              }
               // else if (index === 1) {
               //   Alert.alert(
               //     'The basic info in this profile will be updated with the info in the member’s account.',
@@ -545,7 +553,7 @@ export default function MembersProfileScreen({navigation, route}) {
               //     {cancelable: false},
               //   );
               // }
-               else if (index === 1) {
+              else if (index === 1) {
                 // Alert.alert('ok')
                 Alert.alert(
                   strings.alertmessagetitle,
@@ -630,10 +638,10 @@ const styles = StyleSheet.create({
     marginBottom: 3,
     marginLeft: 25,
   },
-  inviteButtonContainer:{
+  inviteButtonContainer: {
     height: 35,
     alignItems: 'center',
-    justifyContent:'center',
+    justifyContent: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 8,
     elevation: 5,
@@ -641,12 +649,11 @@ const styles = StyleSheet.create({
     shadowColor: colors.grayColor,
     shadowOffset: {width: 0, height: 5},
     shadowRadius: 5,
-    marginTop:20
+    marginTop: 20,
   },
-  inviteTextStyle:{
+  inviteTextStyle: {
     fontFamily: fonts.RBold,
     fontSize: 14,
     color: colors.lightBlackColor,
-    
-  }
+  },
 });

@@ -25,7 +25,7 @@ export default function TCMemberProfile({
       <Image source={image} style={ styles.profileImage } />
       <View style={styles.topTextContainer}>
         {type === 'large' && name && <Text style={[styles.nameText, { color }]} numberOfLines={1}>{name}</Text>}
-        {location && <Text style={[styles.locationText, { color }]} numberOfLines={1}>{location}</Text>}
+        {location !== '' && <Text style={[styles.locationText, { color }]} numberOfLines={1}>{location}</Text>}
       </View>
     </View>
 

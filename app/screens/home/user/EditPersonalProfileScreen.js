@@ -84,10 +84,8 @@ export default function EditPersonalProfileScreen({navigation, route}) {
 
   useEffect(() => {
     if (route.params && route.params.city) {
-      const newLocation = `${route.params.city}, ${route.params.state}, ${route.params.country}`;
       setProfile({
         ...profile,
-        location: newLocation,
         city: route.params.city,
         state_abbr: route.params.state,
         country: route.params.country,
@@ -172,21 +170,46 @@ export default function EditPersonalProfileScreen({navigation, route}) {
               userProfile.background_full_image = bgInfo.url;
               userProfile.background_thumbnail = bgInfo.thumbnail;
             }
-            callUpdateUserAPI(userProfile);
+
+            const body = {
+              background_thumbnail: userProfile.background_thumbnail,
+              background_full_image: userProfile.background_full_image,
+              full_image: userProfile.thumbnail,
+              thumbnail: userProfile.url,
+              first_name: userProfile.first_name,
+              last_name: userProfile.last_name,
+              full_name: `${userProfile.first_name} ${userProfile.last_name}`,
+              city: userProfile.city,
+              state_abbr: userProfile.state_abbr,
+              country: userProfile.state_abbr,
+              description: userProfile.description,
+            };
+            callUpdateUserAPI(body);
           })
           .catch((e) => {
             setTimeout(() => {
-              Alert.alert(strings.appName, e.messages);
+              Alert.alert('Towns Cup', e.messages);
             }, 0.1);
             setloading(false);
           });
       } else {
-        callUpdateUserAPI(userProfile);
+        const body = {
+          first_name: userProfile.first_name,
+          last_name: userProfile.last_name,
+          full_name: `${userProfile.first_name} ${userProfile.last_name}`,
+          city: userProfile.city,
+          state_abbr: userProfile.state_abbr,
+          country: userProfile.state_abbr,
+          description: userProfile.description,
+        };
+        callUpdateUserAPI(body);
       }
     }
   };
 
   const callUpdateUserAPI = (userProfile) => {
+    console.log('userProfileuserProfile', userProfile);
+
     updateUserProfile(userProfile, authContext).then(async (response) => {
       if (response && response.status === true) {
         const entity = authContext.entity;
@@ -222,7 +245,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
       } else {
         setloading(false);
         setTimeout(() => {
-          Alert.alert(strings.appName, 'Something went wrong');
+          Alert.alert('Towns Cup', 'Something went wrong');
         }, 0.1);
       }
     });
@@ -451,21 +474,15 @@ export default function EditPersonalProfileScreen({navigation, route}) {
             </View>
             <TCTextField
               placeholder={strings.enterFirstNamePlaceholder}
-              onChangeText={(text) => {
-                if (Utility.validatedName(text)) {
-                  setProfile({...profile, first_name: text});
-                }
-              }}
+              onChangeText={(text) =>
+                setProfile({...profile, first_name: text})
+              }
               value={profile.first_name}
             />
             <TCTextField
               placeholder={strings.enterLastNamePlaceholder}
               style={{marginTop: 8}}
-              onChangeText={(text) => {
-                if (Utility.validatedName(text)) {
-                  setProfile({...profile, last_name: text});
-                }
-              }}
+              onChangeText={(text) => setProfile({...profile, last_name: text})}
               value={profile.last_name}
             />
           </View>
@@ -473,7 +490,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
           <View>
             <TCLabel title={strings.currentCity} required={true} />
             <TCTouchableLabel
-              title={profile.location}
+              title={`${profile?.city}, ${profile?.state_abbr}, ${profile?.country}`}
               onPress={() => onLocationClicked()}
               placeholder={strings.searchCityPlaceholder}
               showNextArrow={true}

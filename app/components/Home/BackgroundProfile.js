@@ -199,7 +199,7 @@ export default function BackgroundProfile  ({
                   </TouchableOpacity>
                 )}
 
-              {loggedInEntity.role !== 'team' && (
+              {loggedInEntity.role !== 'team' && currentUserData?.createdBy?.uid !== loggedInEntity.uid && (
                 <TouchableOpacity
                   onPress={() => onAction('message')}
                   style={styles.statusInnerViewStyle}>

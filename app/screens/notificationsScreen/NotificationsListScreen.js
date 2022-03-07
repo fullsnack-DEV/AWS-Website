@@ -587,9 +587,8 @@ function NotificationsListScreen({navigation}) {
 
   const onRespond = (groupObj) => {
     console.log('groupObj11:=>', groupObj);
-    const groupId = JSON.parse(groupObj.activities[0].object).groupData
-      .group_id;
-    console.log('groupObject:=>', JSON.parse(groupObj.activities[0].object));
+    const groupId = JSON.parse(groupObj?.activities?.[0]?.object).groupData?.group_id;
+    console.log('groupObject:=>', JSON.parse(groupObj?.activities?.[0]?.object));
 
     if (activeScreen) {
       if (

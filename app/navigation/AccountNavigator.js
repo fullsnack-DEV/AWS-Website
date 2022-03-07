@@ -75,7 +75,6 @@ import ConnectMemberAccountScreen from '../screens/account/groupConnections/Conn
 import EditMemberInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberInfoScreen';
 import EditMemberBasicInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberBasicInfoScreen';
 import EditMemberTeamInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberTeamInfoScreen';
-import EditMemberClubInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberClubInfoScreen';
 import EditClubNotesScreen from '../screens/account/groupConnections/editMemberProfile/EditClubNotesScreen';
 
 import EventScreen from '../screens/account/schedule/EventScreen';
@@ -233,6 +232,7 @@ import EntityStatScreen from '../screens/home/EntityStatScreen';
 import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInviteScreen';
 import RequestBasicInfoScreen from '../screens/account/groupConnections/RequestBasicInfoScreen';
 import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/RequestMultipleBasicInfoScreen';
+import EditMemberAuthInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberAuthInfoScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1585,8 +1585,8 @@ const AccountNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="EditMemberClubInfoScreen"
-      component={EditMemberClubInfoScreen}
+      name="EditMemberAuthInfoScreen"
+      component={EditMemberAuthInfoScreen}
       options={{
         title: '',
         headerTintColor: colors.blackColor,

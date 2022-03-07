@@ -152,7 +152,12 @@ export default function SignupScreen({navigation}) {
   };
 
   const signUpWithQB = (response) => {
+    
+    console.log('QB signUpWithQB : ', response);
+
     let qbEntity = {...dummyAuthContext.entity};
+    console.log('QB qbEntity : ', qbEntity);
+
     QBlogin(qbEntity.uid, response)
       .then(async (res) => {
         qbEntity = {
