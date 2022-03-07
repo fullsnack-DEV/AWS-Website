@@ -153,8 +153,8 @@ export default function SignupScreen({navigation}) {
     });
   };
 
-  const signUpWithQB = async (response) => {
-    
+
+  const signUpWithQB = async (response) => {    
     console.log('QB signUpWithQB : ', response);
 
     let qbEntity = {...dummyAuthContext.entity};
@@ -204,12 +204,6 @@ export default function SignupScreen({navigation}) {
             console.log('QB ERROR:=>', e);
             // Some error occured, look at the exception message for more details
           });
-      
-      
-
-
-    
-   
   };
 
   const signUpToTownsCup = async (uploadedProfilePic) => {
