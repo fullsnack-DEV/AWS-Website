@@ -3,7 +3,7 @@ import { ScrollView, View } from 'react-native';
 
 import ScrollableTabView, {
   ScrollableTabBar,
-} from 'react-native-scrollable-tab-view';
+} from 'react-native-scrollable-tab-view-forked';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -11,9 +11,9 @@ import fonts from '../Constants/Fonts';
 const TCScrollableProfileTabs = ({
   onChangeTab, currentTab = 0, renderTabContain = () => {}, bounces = true, tabItem, customStyle,
 }) => (
-  <ScrollView style={customStyle} nestedScrollEnabled={false} bounces={bounces}>
+  <ScrollView style={customStyle} nestedScrollEnabled={true} bounces={bounces}>
     <ScrollableTabView
-          locked={true}
+        locked={true}
         onChangeTab={onChangeTab}
         style={{ marginTop: 5 }}
         tabBarTextStyle={{
@@ -24,7 +24,8 @@ const TCScrollableProfileTabs = ({
         tabBarInactiveTextColor={colors.lightBlackColor}
         tabBarUnderlineStyle={{ backgroundColor: colors.themeColor }}
         initialPage={0}
-        renderTabBar={() => <ScrollableTabBar />}>
+        renderTabBar={() => <ScrollableTabBar />}
+        >
       {tabItem.map((item, key) => (<View key={key} tabLabel={item}/>))}
     </ScrollableTabView>
 

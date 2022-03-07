@@ -10,7 +10,6 @@ import React, {
   useEffect,
   useContext,
   useCallback,
-  
 } from 'react';
 import {
   StyleSheet,
@@ -27,17 +26,14 @@ import {
   Platform,
   SectionList,
 } from 'react-native';
-import {
-  
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 // import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { RRule } from 'rrule';
+import {RRule} from 'rrule';
 
-import { SpringScrollView } from 'react-native-spring-scrollview';
+import {SpringScrollView} from 'react-native-spring-scrollview';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import moment from 'moment';
 import FastImage from 'react-native-fast-image';
 import EventCalendar from '../../../components/Schedule/EventCalendar/EventCalendar';
@@ -51,7 +47,7 @@ import AuthContext from '../../../auth/context';
 import * as RefereeUtils from '../../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../../scorekeeper/ScorekeeperUtility';
 import * as Utils from '../../challenge/ChallengeUtility';
-import { getEventById } from '../../../api/Schedule';
+import {getEventById} from '../../../api/Schedule';
 import CreateEventButton from '../../../components/Schedule/CreateEventButton';
 import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModal';
 import strings from '../../../Constants/String';
@@ -61,63 +57,54 @@ import {
 } from '../../../api/Reservations';
 import Header from '../../../components/Home/Header';
 import RefereeReservationItem from '../../../components/Schedule/RefereeReservationItem';
-import { getGameHomeScreen } from '../../../utils/gameUtils';
+import {getGameHomeScreen} from '../../../utils/gameUtils';
 import TCInnerLoader from '../../../components/TCInnerLoader';
 import ScorekeeperReservationItem from '../../../components/Schedule/ScorekeeperReservationItem';
-import { getHitSlop } from '../../../utils';
-import NotificationProfileItem from '../../../components/notificationComponent/NotificationProfileItem';
-import { getUnreadCount } from '../../../api/Notificaitons';
+import {getHitSlop} from '../../../utils';
+import {getUnreadCount} from '../../../api/Notificaitons';
 import * as Utility from '../../../utils/index';
-import {
-  QB_ACCOUNT_TYPE,
-  QBconnectAndSubscribe,
-  QBlogin,
-  QBLogout,
-} from '../../../utils/QuickBlox';
-import NotificationListTopHeaderShimmer from '../../../components/shimmer/account/NotificationListTopHeaderShimmer';
+
 import TCThinDivider from '../../../components/TCThinDivider';
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import MonthHeader from '../../../components/Schedule/Monthheader';
-import { getGameIndex } from '../../../api/elasticSearch';
+import {getGameIndex} from '../../../api/elasticSearch';
 
 let selectedCalendarDate = moment(new Date());
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
-export default function ScheduleScreen({ navigation,route }) {
-  let authContext  = useContext(AuthContext);
-  if(route?.params?.isBackVisible) {
+export default function ScheduleScreen({navigation, route}) {
+  let authContext = useContext(AuthContext);
+  if (route?.params?.isBackVisible) {
     authContext = {
-      entity:{
+      entity: {
         role: route?.params?.role,
         uid: route?.params?.uid,
-        
-      }
-    }
-    if(route?.params?.role === 'team' || route?.params?.role === 'club'){
+      },
+    };
+    if (route?.params?.role === 'team' || route?.params?.role === 'club') {
       authContext.entity.obj = {
-        group_id : route?.params?.uid,
+        group_id: route?.params?.uid,
         entity_type: route?.params?.role,
-      }
+      };
       authContext.entity.auth = {
-        group_id : route?.params?.uid,
+        group_id: route?.params?.uid,
         entity_type: route?.params?.role,
-      }
-    }else{
+      };
+    } else {
       authContext.entity.obj = {
-        user_id : route?.params?.uid,
-        entity_type:route?.params?.role,
-      }
+        user_id: route?.params?.uid,
+        entity_type: route?.params?.role,
+      };
       authContext.entity.auth = {
-        user_id : route?.params?.uid,
-        entity_type:route?.params?.role,
-      }
+        user_id: route?.params?.uid,
+        entity_type: route?.params?.role,
+      };
     }
   }
 
-  
   const actionSheet = useRef();
   const isFocused = useIsFocused();
-  
+
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [eventData, setEventData] = useState([]);
   const [timeTable, setTimeTable] = useState([]);
@@ -140,9 +127,8 @@ export default function ScheduleScreen({ navigation,route }) {
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
   const [notifAPI, setNotifAPI] = useState();
-  const refContainer = useRef();
-  const [selectedEntity, setSelectedEntity] = useState();
-  const [activeScreen, setActiveScreen] = useState(!!route?.params?.isBackVisible);
+
+
   const [animatedOpacityValue] = useState(new Animated.Value(0));
   const [slots, setSlots] = useState();
   const [blockedGroups, setBlockedGroups] = useState([]);
@@ -151,31 +137,42 @@ export default function ScheduleScreen({ navigation,route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.eventTitleTextStyle}>
-          Schedule
-        </Text> 
+        <Text style={styles.eventTitleTextStyle}>Schedule</Text>
       ),
       headerLeft: () => (
-        <TouchableOpacity style={{marginLeft:15}} onPress={()=>{
-          if(route?.params?.isBackVisible){
-            navigation.navigate('HomeScreen', {
-              uid: route?.params?.uid,
-              role: route?.params?.role,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-            });
-          }
-        }}>
+        <TouchableOpacity
+          style={{marginLeft: 15}}
+          onPress={() => {
+            if (route?.params?.isBackVisible) {
+              navigation.navigate('HomeScreen', {
+                uid: route?.params?.uid,
+                role: route?.params?.role,
+                backButtonVisible: true,
+                menuBtnVisible: false,
+              });
+            }
+          }}>
           <FastImage
-                source={route?.params?.isBackVisible ? images.backArrow : images.tc_message_top_icon}
-                resizeMode={'contain'}
-                style={route?.params?.isBackVisible ? styles.backStyle : styles.backImageStyle}
-              />
+            source={
+              route?.params?.isBackVisible
+                ? images.backArrow
+                : images.tc_message_top_icon
+            }
+            resizeMode={'contain'}
+            style={
+              route?.params?.isBackVisible
+                ? styles.backStyle
+                : styles.backImageStyle
+            }
+          />
         </TouchableOpacity>
       ),
       headerRight: () => (
         <TouchableOpacity onPress={onThreeDotPress}>
-          <Image source={images.scheduleThreeDot} style={styles.headerRightImg} />
+          <Image
+            source={images.scheduleThreeDot}
+            style={styles.headerRightImg}
+          />
         </TouchableOpacity>
       ),
       headerStyle: {
@@ -187,14 +184,11 @@ export default function ScheduleScreen({ navigation,route }) {
     });
   }, [authContext.entity.role, authContext.entity.uid, navigation]);
 
-
-
   useEffect(() => {
     getBlockedSlots();
-    if(route?.params?.isBackVisible){
-      getEventsList(authContext.entity.obj);  
+    if (route?.params?.isBackVisible) {
+      getEventsList(authContext.entity.obj);
     }
-   
   }, [isFocused]);
 
   const getSimpleDateFormat = (dateValue) => {
@@ -234,7 +228,7 @@ export default function ScheduleScreen({ navigation,route }) {
       //   item.toLocaleDateString(),
       //   item.toLocaleTimeString(),
       // );
-      const newEvent = { ...event };
+      const newEvent = {...event};
       const date = new Date(item);
       newEvent.start_datetime = Math.round(date.getTime() / 1000);
       newEvent.end_datetime = newEvent.start_datetime + duration;
@@ -254,7 +248,7 @@ export default function ScheduleScreen({ navigation,route }) {
     // )
 
     Utility.getCalendar(
-      authContext?.entity?.obj?.group_id || authContext?.entity?.obj?.user_id,
+      authContext?.entity?.uid,
       new Date().getTime() / 1000,
     )
       .then((response) => {
@@ -274,8 +268,6 @@ export default function ScheduleScreen({ navigation,route }) {
         setSlots(bookSlots);
 
         const markedDates = {};
-
-       
 
         const group = bookSlots.reduce((groups, data) => {
           const title = moment(new Date(data.start_datetime * 1000)).format(
@@ -340,7 +332,8 @@ export default function ScheduleScreen({ navigation,route }) {
     (eventsData, games) => {
       const eventTimeTableData = eventsData.map((item) => {
         if (item?.game_id) {
-          const gameObj = (games || []).filter((game) => game.game_id === item.game_id) ?? [];
+          const gameObj =
+            (games || []).filter((game) => game.game_id === item.game_id) ?? [];
 
           if (gameObj.length > 0) {
             item.game = gameObj[0];
@@ -354,8 +347,9 @@ export default function ScheduleScreen({ navigation,route }) {
 
       setEventData(
         (eventTimeTableData || []).sort(
-          (a, b) => new Date(a.start_datetime * 1000)
-            - new Date(b.start_datetime * 1000),
+          (a, b) =>
+            new Date(a.start_datetime * 1000) -
+            new Date(b.start_datetime * 1000),
         ),
       );
 
@@ -399,7 +393,7 @@ export default function ScheduleScreen({ navigation,route }) {
 
       let eventTimeTableData = [];
       Utility.getCalendar(
-        selectedObj?.group_id || selectedObj?.user_id,
+        authContext?.entity?.uid,
         new Date().getTime() / 1000,
       )
         // blockedSlots(entityRole, uid, authContext)
@@ -412,12 +406,14 @@ export default function ScheduleScreen({ navigation,route }) {
             }
             if (obj.cal_type === 'event') {
               if (obj?.expiry_datetime) {
-                if (obj?.expiry_datetime >= parseFloat(new Date().getTime() / 1000).toFixed(0)
+                if (
+                  obj?.expiry_datetime >=
+                  parseFloat(new Date().getTime() / 1000).toFixed(0)
                 ) {
                   return obj;
                 }
               } else {
-                return obj
+                return obj;
               }
             }
           });
@@ -440,24 +436,25 @@ export default function ScheduleScreen({ navigation,route }) {
 
             getGameIndex(gameList).then((games) => {
               const listObj = response.map((obj) => {
-                if(obj.game_id === obj.challenge_id){
-                  return obj.game
+                if (obj.game_id === obj.challenge_id) {
+                  return obj.game;
                 }
-              })
+              });
 
-              const pendingChallenge = listObj.filter(( obj )=> {
+              const pendingChallenge = listObj.filter((obj) => {
                 return obj !== undefined;
-             });
-              console.log('listObj',pendingChallenge);
+              });
+              console.log('listObj', pendingChallenge);
 
-             
-              Utility.getGamesList([...games, ...pendingChallenge]).then((gamedata) => {
-               console.log('gamedata',gamedata);
-                configureEvents(eventTimeTableData, gamedata);
-              })
+              Utility.getGamesList([...games, ...pendingChallenge]).then(
+                (gamedata) => {
+                  console.log('gamedata', gamedata);
+                  configureEvents(eventTimeTableData, gamedata);
+                },
+              );
             });
           }
-          // configureEvents(eventTimeTableData);
+          configureEvents(eventTimeTableData);
           setloading(false);
         })
         .catch((e) => {
@@ -465,7 +462,6 @@ export default function ScheduleScreen({ navigation,route }) {
           console.log('Error::=>', e);
           Alert.alert(strings.alertmessagetitle, e.messages);
         });
-      return null;
     },
     [
       authContext?.entity?.obj?.group_id,
@@ -484,10 +480,12 @@ export default function ScheduleScreen({ navigation,route }) {
     }
   }, [selectedEventItem]);
 
-  const refereeFound = (data) => (data?.game?.referees || []).some(
+  const refereeFound = (data) =>
+    (data?.game?.referees || []).some(
       (e) => authContext.entity.uid === e.referee_id,
     );
-  const scorekeeperFound = (data) => (data?.game?.scorekeepers || []).some(
+  const scorekeeperFound = (data) =>
+    (data?.game?.scorekeepers || []).some(
       (e) => authContext.entity.uid === e.scorekeeper_id,
     );
 
@@ -543,7 +541,7 @@ export default function ScheduleScreen({ navigation,route }) {
           'Cancel',
         ];
       }
-      
+
       return [
         'Game Reservation Details',
         'Referee Reservation Details',
@@ -590,145 +588,26 @@ export default function ScheduleScreen({ navigation,route }) {
       .catch(() => setloading(false));
   };
 
-  const switchProfile = async (item) => {
-    let currentEntity = authContext.entity;
+  
 
-    if (item.entity_type === 'player') {
-      currentEntity = {
-        ...currentEntity,
-        uid: item.user_id,
-        role: 'user',
-        obj: item,
-      };
-    } else if (item.entity_type === 'team') {
-      currentEntity = {
-        ...currentEntity,
-        uid: item.group_id,
-        role: 'team',
-        obj: item,
-      };
-    } else if (item.entity_type === 'club') {
-      currentEntity = {
-        ...currentEntity,
-        uid: item.group_id,
-        role: 'club',
-        obj: item,
-      };
-    }
-    authContext.setEntity({ ...currentEntity });
-    await Utility.setStorage('authContextEntity', { ...currentEntity });
-    return currentEntity;
-  };
 
-  const switchQBAccount = async (accountData, entity) => {
-    let currentEntity = entity;
-    const entityType = accountData?.entity_type;
-    const uid = entityType === 'player' ? 'user_id' : 'group_id';
-    QBLogout()
-      .then(() => {
-        const {
- USER, CLUB, LEAGUE, TEAM,
- } = QB_ACCOUNT_TYPE;
-        let accountType = USER;
-        if (entityType === 'club') accountType = CLUB;
-        else if (entityType === 'team') accountType = TEAM;
-        else if (entityType === 'league') accountType = LEAGUE;
-        QBlogin(
-          accountData[uid],
-          {
-            ...accountData,
-            full_name: accountData.group_name,
-          },
-          accountType,
-        )
-          .then(async (res) => {
-            currentEntity = {
-              ...currentEntity,
-              QB: { ...res.user, connected: true, token: res?.session?.token },
-            };
-            authContext.setEntity({ ...currentEntity });
-            await Utility.setStorage('authContextEntity', { ...currentEntity });
-            QBconnectAndSubscribe(currentEntity)
-              .then((qbRes) => {
-                setloading(false);
-                if (qbRes?.error) {
-                  console.log(strings.appName, qbRes?.error);
-                }
-              })
-              .catch(() => {
-                setloading(false);
-              });
-          })
-          .catch(() => {
-            setloading(false);
-          });
-      })
-      .catch(() => {
-        setloading(false);
-      });
-  };
+  
 
-  const onSwitchProfile = async (item) => {
-    setloading(true);
-    switchProfile(item)
-      .then((currentEntity) => {
-        setActiveScreen(true);
-        switchQBAccount(item, currentEntity);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
+  
 
-  const showSwitchProfilePopup = () => {
-    const name = selectedEntity.entity_type === 'player'
-        ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
-        : selectedEntity.group_name;
-    Alert.alert(
-      `Do you want to switch account to ${name}?`,
-      '',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'Yes', onPress: () => onSwitchProfile(selectedEntity) },
-      ],
-      { cancelable: true },
-    );
-  };
 
-  const activeTab = async (index) => {
-    const gList = JSON.parse(JSON.stringify(groupList));
-    console.log('ActiveTab called..=>', gList[index]);
-    setSelectedEntity(gList[index]);
-    setGroupList(gList);
-    setScheduleIndexCounter(0);
-    checkActiveScreen(gList[index]);
-    setCurrentTab(index);
-    refContainer.current.scrollToIndex({
-      animated: true,
-      index,
-      viewPosition: 1,
-    });
-      getEventsList(gList[index]);   
-  };
 
-  const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   useEffect(() => {
     if (isFocused) {
       if (notifAPI !== 1) {
         getUnreadCount(authContext).then((response) => {
           if (response.status === true) {
-            const { teams } = response.payload;
-            const { clubs } = response.payload;
+            const {teams} = response.payload;
+            const {clubs} = response.payload;
             const groups = [authContext.entity.auth.user, ...clubs, ...teams];
-            const entityId = authContext?.entity?.role === 'user'
+            const entityId =
+              authContext?.entity?.role === 'user'
                 ? authContext?.entity?.obj?.user_id
                 : authContext?.entity?.obj?.group_id;
             const tabIndex = groups.findIndex(
@@ -737,67 +616,26 @@ export default function ScheduleScreen({ navigation,route }) {
             setGroupList(groups);
             setNotifAPI(1);
             setCurrentTab(tabIndex !== -1 ? tabIndex : 0);
-            checkActiveScreen(groups[0]);
             getEventsList(groups[tabIndex]);
           }
         });
       }
       if (notifAPI === 1) {
-        checkActiveScreen(groupList[currentTab]);
         getEventsList(groupList[currentTab]);
       }
     }
   }, [currentTab, isFocused]);
 
-  const renderGroupItem = ({ item, index }) => (
-    <TouchableOpacity
-      onPress={() => {
-        if (groupList.length === 2) {
-          if (index !== 2) {
-            activeTab(index);
-          }
-        } else {
-          activeTab(index);
-        }
-      }}
-      key={index}>
-      <NotificationProfileItem
-        data={item}
-        indexNumber={index}
-        selectedIndex={currentTab}
-      />
-      {index !== currentTab && (
-        <View
-          style={{
-            backgroundColor: colors.grayColor,
-            opacity: 0.2,
-            height: 2,
-            shadowColor: colors.grayColor,
-            shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.8,
-            shadowRadius: 5,
-            elevation: 3,
-          }}></View>
-      )}
-    </TouchableOpacity>
-  );
 
-  const checkActiveScreen = async (entity) => {
-    const loggedInEntity = authContext.entity;
-    const currentID = entity.entity_type === 'player' ? entity.user_id : entity.group_id;
-    if (loggedInEntity.uid === currentID) {
-      setActiveScreen(true);
-    } else {
-      setActiveScreen(false);
-    }
-  };
+
+ 
 
   const renderCalenderEvent = (event) => {
     console.log('renderCalenderEvent Event:', event);
     const event_color = colors.themeColor;
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         {event?.cal_type === 'event' && event?.game && (
           <CalendarTimeTableView
             type="game"
@@ -806,7 +644,7 @@ export default function ScheduleScreen({ navigation,route }) {
               borderLeftColor: event_color,
               width: event.width,
             }}
-            eventTitleStyle={{ color: event_color }}
+            eventTitleStyle={{color: event_color}}
             onPress={() => {
               const gameHome = getGameHomeScreen(event?.game?.sport);
               console.log('gameHome', gameHome);
@@ -825,7 +663,7 @@ export default function ScheduleScreen({ navigation,route }) {
               borderLeftColor: event_color,
               width: event.width,
             }}
-            eventTitleStyle={{ color: event_color }}
+            eventTitleStyle={{color: event_color}}
             onPress={() => {
               Alert.alert('This is normal event');
             }}
@@ -850,9 +688,7 @@ export default function ScheduleScreen({ navigation,route }) {
     actionSheet.current.show();
   }, []);
 
-
-
-    const onPressListView = useCallback((value, buttonIndex) => {
+  const onPressListView = useCallback((value, buttonIndex) => {
     console.log('List view Pressed:=>', value, buttonIndex);
     if (buttonIndex === 2) {
       setListView(value);
@@ -894,7 +730,7 @@ export default function ScheduleScreen({ navigation,route }) {
 
   const getSelectedDayEvents = useCallback(
     (date) => {
-      const markedDates = { ...markingDays };
+      const markedDates = {...markingDays};
       console.log('MARKED::', Object.keys(markedDates));
 
       Object.keys(markedDates).forEach((e) => {
@@ -910,7 +746,7 @@ export default function ScheduleScreen({ navigation,route }) {
       if (markedDates[date]) {
         markedDates[date].selected = true;
       } else {
-        markedDates[date] = { selected: true };
+        markedDates[date] = {selected: true};
       }
       setMarkingDays(markedDates);
 
@@ -946,8 +782,8 @@ export default function ScheduleScreen({ navigation,route }) {
     const temp = [];
     (slots || []).map((e) => {
       if (
-        getSimpleDateFormat(new Date(e.start_datetime))
-        === getSimpleDateFormat(new Date(dateObj.dateString))
+        getSimpleDateFormat(new Date(e.start_datetime)) ===
+        getSimpleDateFormat(new Date(dateObj.dateString))
       ) {
         temp.push(e);
       }
@@ -957,7 +793,7 @@ export default function ScheduleScreen({ navigation,route }) {
     return null;
   };
 
-  const onReachedCalenderTop = ({ nativeEvent: e }) => {
+  const onReachedCalenderTop = ({nativeEvent: e}) => {
     const offset = e?.contentOffset?.y;
     console.log('Offset calender:=>', offset);
 
@@ -982,49 +818,18 @@ export default function ScheduleScreen({ navigation,route }) {
 
   return (
     <View
-      style={[styles.mainContainer, { opacity: activeScreen ? 1.0 : 0.5 }]}
+      style={styles.mainContainer}
       needsOffscreenAlphaCompositing>
       
-      {!route?.params?.isBackVisible && <View>
-        {groupList?.length <= 0 ? (
-          <NotificationListTopHeaderShimmer />
-        ) : (
-          groupList?.length > 1 && (
-            <FlatList
-              ref={refContainer}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              data={groupList.length === 2 ? [...groupList, {}] : groupList}
-              renderItem={renderGroupItem}
-              keyExtractor={keyExtractor}
-              initialScrollIndex={currentTab}
-              initialNumToRender={30}
-              style={{
-                paddingTop: 8,
-                backgroundColor: colors.grayBackgroundColor,
-              }}
-              onScrollToIndexFailed={(info) => {
-                const wait = new Promise((resolve) => setTimeout(resolve, 500));
-                wait.then(() => {
-                  refContainer.current.scrollToIndex({
-                    animated: true,
-                    index: info.index,
-                  });
-                });
-              }}
-            />
-          )
-        )}
-      </View>}
 
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         <View
           style={{
             flexDirection: 'row',
             margin: 15,
             justifyContent: 'space-between',
           }}>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{flexDirection: 'row'}}>
             <Text
               style={
                 scheduleIndexCounter === 0
@@ -1032,11 +837,9 @@ export default function ScheduleScreen({ navigation,route }) {
                   : styles.inActiveButton
               }
               onPress={() => {
-                if (activeScreen) {
+               
                   setScheduleIndexCounter(0);
-                } else {
-                  showSwitchProfilePopup();
-                }
+               
               }}>
               Events
             </Text>
@@ -1047,20 +850,18 @@ export default function ScheduleScreen({ navigation,route }) {
                   : styles.inActiveButton
               }
               onPress={() => {
-                if (activeScreen) {
+               
                   setScheduleIndexCounter(1);
-                } else {
-                  showSwitchProfilePopup();
-                }
+               
               }}>
               Availability
             </Text>
           </View>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{flexDirection: 'row'}}>
             {!isMenu && scheduleIndexCounter !== 1 && (
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
-                style={{ marginRight: 15 }}
+                style={{marginRight: 15}}
                 onPress={() => {
                   setShowTimeTable(!showTimeTable);
                 }}>
@@ -1096,10 +897,10 @@ export default function ScheduleScreen({ navigation,route }) {
         <TCThinDivider width={'100%'} marginBottom={12} />
         <TCInnerLoader visible={loading} />
         {!loading && scheduleIndexCounter === 0 && (
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             {Platform.OS === 'android' ? (
               <SpringScrollView
-                style={{ flex: 1 }}
+                style={{flex: 1}}
                 onScroll={onScrollCalender}
                 nestedScrollEnabled
                 stickyHeaderIndices={[0]}>
@@ -1118,7 +919,7 @@ export default function ScheduleScreen({ navigation,route }) {
                 )}
 
                 {showTimeTable ? (
-                  <View style={{ marginBottom: 100 }}>
+                  <View style={{marginBottom: 100}}>
                     <EventCalendar
                       eventTapped={(event) => {
                         console.log('Event ::--', event);
@@ -1130,7 +931,7 @@ export default function ScheduleScreen({ navigation,route }) {
                       renderEvent={(event) => renderCalenderEvent(event)}
                       styles={{
                         event: styles.eventViewStyle,
-                        line: { backgroundColor: colors.lightgrayColor },
+                        line: {backgroundColor: colors.lightgrayColor},
                       }}
                     />
                   </View>
@@ -1139,8 +940,9 @@ export default function ScheduleScreen({ navigation,route }) {
                     eventData={
                       eventSelectDate
                         ? (eventData || []).filter(
-                            (e) => moment(eventSelectDate).format('YYYY-MM-DD')
-                              === moment(e.start_datetime * 1000).format(
+                            (e) =>
+                              moment(eventSelectDate).format('YYYY-MM-DD') ===
+                              moment(e.start_datetime * 1000).format(
                                 'YYYY-MM-DD',
                               ),
                           )
@@ -1149,14 +951,12 @@ export default function ScheduleScreen({ navigation,route }) {
                     navigation={navigation}
                     profileID={authContext.entity.uid}
                     onThreeDotPress={(item) => {
-                      if (activeScreen) {
+                     
                         setSelectedEventItem(item);
-                      } else {
-                        showSwitchProfilePopup();
-                      }
+                      
                     }}
                     onItemPress={async (item) => {
-                      if (activeScreen) {
+                      
                         const entity = authContext.entity;
                         if (item?.game_id) {
                           if (item?.game?.sport) {
@@ -1181,10 +981,8 @@ export default function ScheduleScreen({ navigation,route }) {
                             .catch((e) => {
                               console.log('Error :-', e);
                             });
-                        }
-                      } else {
-                        showSwitchProfilePopup();
-                      }
+                        
+                          }
                     }}
                     entity={authContext.entity}
                   />
@@ -1192,7 +990,7 @@ export default function ScheduleScreen({ navigation,route }) {
               </SpringScrollView>
             ) : (
               <ScrollView
-                style={{ flex: 1 }}
+                style={{flex: 1}}
                 onScroll={onScrollCalender}
                 nestedScrollEnabled
                 stickyHeaderIndices={[0]}>
@@ -1211,7 +1009,7 @@ export default function ScheduleScreen({ navigation,route }) {
                 )}
 
                 {showTimeTable ? (
-                  <View style={{ marginBottom: 100 }}>
+                  <View style={{marginBottom: 100}}>
                     <EventCalendar
                       eventTapped={(event) => {
                         console.log('Event ::--', event);
@@ -1223,7 +1021,7 @@ export default function ScheduleScreen({ navigation,route }) {
                       renderEvent={(event) => renderCalenderEvent(event)}
                       styles={{
                         event: styles.eventViewStyle,
-                        line: { backgroundColor: colors.lightgrayColor },
+                        line: {backgroundColor: colors.lightgrayColor},
                       }}
                     />
                   </View>
@@ -1232,8 +1030,9 @@ export default function ScheduleScreen({ navigation,route }) {
                     eventData={
                       eventSelectDate
                         ? (eventData || []).filter(
-                            (e) => moment(eventSelectDate).format('YYYY-MM-DD')
-                              === moment(e.start_datetime * 1000).format(
+                            (e) =>
+                              moment(eventSelectDate).format('YYYY-MM-DD') ===
+                              moment(e.start_datetime * 1000).format(
                                 'YYYY-MM-DD',
                               ),
                           )
@@ -1242,15 +1041,13 @@ export default function ScheduleScreen({ navigation,route }) {
                     navigation={navigation}
                     profileID={authContext.entity.uid}
                     onThreeDotPress={(item) => {
-                      if (activeScreen) {
+                     
                         setSelectedEventItem(item);
-                      } else {
-                        showSwitchProfilePopup();
-                      }
+                      
                     }}
                     onItemPress={async (item) => {
                       console.log('Clicked ITEM:=>', item);
-                      if (activeScreen) {
+                      
                         const entity = authContext.entity;
                         if (item?.game_id) {
                           if (item?.game?.sport) {
@@ -1278,9 +1075,7 @@ export default function ScheduleScreen({ navigation,route }) {
                               console.log('Error :-', e);
                             });
                         }
-                      } else {
-                        showSwitchProfilePopup();
-                      }
+                     
                     }}
                     entity={authContext.entity}
                   />
@@ -1291,20 +1086,18 @@ export default function ScheduleScreen({ navigation,route }) {
               <CreateEventButton
                 source={images.plus}
                 onPress={() => {
-                  if (activeScreen) {
+                 
                     setCreateEventModal(true);
-                  } else {
-                    showSwitchProfilePopup();
-                  }
+                 
                 }}
               />
             )}
           </View>
         )}
         {!loading && scheduleIndexCounter === 1 && (
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             <ScrollView
-              style={{ flex: 1 }}
+              style={{flex: 1}}
               onScroll={onScrollCalender}
               nestedScrollEnabled
               stickyHeaderIndices={[0]}>
@@ -1339,7 +1132,7 @@ export default function ScheduleScreen({ navigation,route }) {
               </Text> */}
                 <SectionList
                   sections={blockedGroups}
-                  renderItem={({ item }) => (
+                  renderItem={({item}) => (
                     <BlockSlotView
                       startDate={item.start_datetime}
                       endDate={item.end_datetime}
@@ -1347,7 +1140,7 @@ export default function ScheduleScreen({ navigation,route }) {
                     />
                   )}
                   keyExtractor={(item, index) => index.toString()}
-                  renderSectionHeader={({ section: { title } }) => (
+                  renderSectionHeader={({section: {title}}) => (
                     <Text style={styles.sectionHeader}>
                       {moment(new Date(title)).format('dddd, MMM DD, YYYY')}
                     </Text>
@@ -1380,29 +1173,36 @@ export default function ScheduleScreen({ navigation,route }) {
       />
       <ActionSheet
         ref={actionSheet}
-        options={authContext.entity.role === 'player' || authContext.entity.role === 'user' ? [
-          'Default Color',
-          'Group Events Display',
-          'View Privacy',
-          'Cancel',
-        ] : [
-          'Default Color',
-          
-          'View Privacy',
-          'Cancel',
-        ]}
-        cancelButtonIndex={authContext.entity.role === 'player' || authContext.entity.role === 'user' ? 3 : 2}
+        options={
+          authContext.entity.role === 'player' ||
+          authContext.entity.role === 'user'
+            ? [
+                'Default Color',
+                'Group Events Display',
+                'View Privacy',
+                'Cancel',
+              ]
+            : ['Default Color', 'View Privacy', 'Cancel']
+        }
+        cancelButtonIndex={
+          authContext.entity.role === 'player' ||
+          authContext.entity.role === 'user'
+            ? 3
+            : 2
+        }
         // destructiveButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
             navigation.navigate('DefaultColorScreen');
           } else if (index === 1) {
-            if(authContext.entity.role === 'player' || authContext.entity.role === 'user'){
+            if (
+              authContext.entity.role === 'player' ||
+              authContext.entity.role === 'user'
+            ) {
               navigation.navigate('GroupEventScreen');
-            }else{
+            } else {
               navigation.navigate('ViewPrivacyScreen');
             }
-            
           } else if (index === 2) {
             navigation.navigate('ViewPrivacyScreen');
           }
@@ -1412,7 +1212,7 @@ export default function ScheduleScreen({ navigation,route }) {
       <Modal
         isVisible={isRefereeModal}
         backdropColor="black"
-        style={{ margin: 0, justifyContent: 'flex-end' }}
+        style={{margin: 0, justifyContent: 'flex-end'}}
         hasBackdrop
         onBackdropPress={() => {
           setIsRefereeModal(false);
@@ -1443,9 +1243,9 @@ export default function ScheduleScreen({ navigation,route }) {
             bounces={false}
             showsHorizontalScrollIndicator={false}
             ItemSeparatorComponent={() => (
-              <View style={[styles.sepratorStyle, { marginHorizontal: 15 }]} />
+              <View style={[styles.sepratorStyle, {marginHorizontal: 15}]} />
             )}
-            renderItem={({ item }) => (
+            renderItem={({item}) => (
               <RefereeReservationItem
                 data={item}
                 onPressButton={() => {
@@ -1463,7 +1263,7 @@ export default function ScheduleScreen({ navigation,route }) {
       <Modal
         isVisible={isScorekeeperModal}
         backdropColor="black"
-        style={{ margin: 0, justifyContent: 'flex-end' }}
+        style={{margin: 0, justifyContent: 'flex-end'}}
         hasBackdrop
         onBackdropPress={() => {
           setIsScorekeeperModal(false);
@@ -1478,7 +1278,7 @@ export default function ScheduleScreen({ navigation,route }) {
                   setIsScorekeeperModal(false);
                 }}>
                 <Image
-                 hitSlop={getHitSlop(15)}
+                  hitSlop={getHitSlop(15)}
                   source={images.cancelImage}
                   style={styles.cancelImageStyle}
                   resizeMode={'contain'}
@@ -1497,9 +1297,9 @@ export default function ScheduleScreen({ navigation,route }) {
             bounces={false}
             showsHorizontalScrollIndicator={false}
             ItemSeparatorComponent={() => (
-              <View style={[styles.sepratorStyle, { marginHorizontal: 15 }]} />
+              <View style={[styles.sepratorStyle, {marginHorizontal: 15}]} />
             )}
-            renderItem={({ item }) => (
+            renderItem={({item}) => (
               <ScorekeeperReservationItem
                 data={item}
                 onPressButton={() => {
@@ -1558,7 +1358,7 @@ export default function ScheduleScreen({ navigation,route }) {
                             onPress: async () => {},
                           },
                         ],
-                        { cancelable: false },
+                        {cancelable: false},
                       );
                     }, 0);
                   }
@@ -1606,7 +1406,7 @@ export default function ScheduleScreen({ navigation,route }) {
                             onPress: async () => {},
                           },
                         ],
-                        { cancelable: false },
+                        {cancelable: false},
                       );
                     }, 0);
                   }
@@ -1742,7 +1542,7 @@ const styles = StyleSheet.create({
     height: 25,
     resizeMode: 'contain',
     width: 25,
-    marginRight:15
+    marginRight: 15,
   },
   eventTitleTextStyle: {
     fontSize: 16,
@@ -1750,7 +1550,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     alignSelf: 'center',
   },
-  
 
   sectionHeader: {
     fontSize: 16,
@@ -1764,8 +1563,8 @@ const styles = StyleSheet.create({
     height: 35,
     width: 35,
   },
-  backStyle:{
+  backStyle: {
     height: 20,
     width: 35,
-  }
+  },
 });

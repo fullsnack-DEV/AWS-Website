@@ -212,7 +212,7 @@ export default function LoginScreen({navigation}) {
   );
 
   const login = useCallback(async () => {
-    setloading(true);
+    
     await Utility.clearStorage();
     console.log('firebase:=>', firebase);
     firebase
@@ -220,7 +220,7 @@ export default function LoginScreen({navigation}) {
       .signInWithEmailAndPassword(email, password)
       .then(() => {
         console.log('then:=>');
-        setloading(true);
+       
         const loginOnAuthStateChanged = firebase
           .auth()
           .onAuthStateChanged(onAuthStateChanged);
@@ -302,11 +302,16 @@ export default function LoginScreen({navigation}) {
   );
 
   const onLogin = useCallback(async () => {
+    setloading(true)
     if (validate()) {
-      if (authContext.networkConnected) login();
-      else authContext.showNetworkAlert();
+      if (authContext.networkConnected){
+        login()
+      }
+      else {
+        authContext.showNetworkAlert();
+      }
     }
-  }, [authContext, email, login, password, validate]);
+  }, [authContext, login, validate]);
 
   const renderLoginAndForgotPasswordButtons = useMemo(
     () => (

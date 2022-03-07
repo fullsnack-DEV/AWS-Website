@@ -733,26 +733,7 @@ export const getCalendar = async (
       },
     };
 
-    if (ids && ids.length > 0) {
-      body.query.bool.must[0].bool.should.push({
-        bool: {
-          must: [
-            {
-              terms: {
-                'participants.entity_id.keyword': ids,
-              },
-            },
-
-            {
-              bool: {
-                must_not: {exists: {field: 'expiry_datetime'}},
-              },
-            },
-          ],
-        },
-      });
-    }
-
+    
     if (type) {
       body.query.bool.must.push({
         term: {

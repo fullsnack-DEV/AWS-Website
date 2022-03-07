@@ -10,6 +10,7 @@ import {
   Platform,
   TouchableOpacity,
   ScrollView,
+  KeyboardAvoidingView
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
@@ -35,7 +36,6 @@ import TCThickDivider from '../../../../components/TCThickDivider';
 
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import TCDateTimePicker from '../../../../components/TCDateTimePicker';
-import TCKeyboardView from '../../../../components/TCKeyboardView';
 import AuthContext from '../../../../auth/context';
 import DataSource from '../../../../Constants/DataSource';
 import colors from '../../../../Constants/Colors';
@@ -43,6 +43,8 @@ import colors from '../../../../Constants/Colors';
 let entity = {};
 
 export default function EditMemberBasicInfoScreen({navigation, route}) {
+  const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0;
+
   const monthNames = [
     'January',
     'February',
@@ -471,9 +473,12 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
 }
 
   return (
-    <TCKeyboardView>
-      <ActivityLoader visible={loading} />
-      <ScrollView>
+    <ScrollView style={{backgroundColor: 'white', flex: 1}}>
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={keyboardVerticalOffset}>
+        <ActivityLoader visible={loading} />
+      
         {memberInfo.connected && (
           <View>
             <TouchableOpacity
@@ -504,10 +509,10 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
         <View>
           <TCLabel title={'Gender'} />
           <TCPicker
-          disabled={true}
+          // disabled={!!memberInfo.gender}
           dataSource={DataSource.Gender}
           placeholder={strings.selectGenderPlaceholder}
-          value={memberInfo.gender}
+          value={memberInfo?.gender}
           onValueChange={(value) =>
             value !== '' && setMemberInfo({...memberInfo, gender: value})
           }
@@ -609,8 +614,9 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
         onDone={handleDonePress}
         onCancel={handleCancelPress}
       />
-      </ScrollView>
-    </TCKeyboardView>
+      
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
