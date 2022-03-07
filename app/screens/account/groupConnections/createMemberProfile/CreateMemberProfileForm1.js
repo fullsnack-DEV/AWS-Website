@@ -410,6 +410,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
           />
         )}
 
+
         <View>
           <TCLable title={'Address'} />
           <TCTextField
@@ -421,8 +422,8 @@ export default function CreateMemberProfileForm1({navigation, route}) {
             autoCorrect={false}
             // onFocus={() => setLocationFieldVisible(true)}
           />
-        </View>
 
+        </View>
         <TouchableOpacity
           onPress={() =>
             navigation.navigate('SearchLocationScreen', {
