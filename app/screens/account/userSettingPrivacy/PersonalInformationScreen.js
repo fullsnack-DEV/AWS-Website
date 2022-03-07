@@ -191,7 +191,6 @@ export default function PersonalInformationScreen({navigation, route}) {
     if (userInfo.weight) {
       if (!userInfo.weight.weight_type) {
         Alert.alert('Towns Cup', 'Please select weight measurement.');
-
         return false;
       }
       if (userInfo.weight.weight <= 0 || userInfo.weight.weight >= 1000) {

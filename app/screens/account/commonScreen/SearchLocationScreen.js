@@ -69,58 +69,58 @@ export default function SearchLocationScreen({ navigation, route }) {
         }
         else if (route.params.comeFrom === 'CreateTeamForm1') {
           navigation.navigate('CreateTeamForm1', {
-            city: item.terms[0].value,
-            state: item.terms[1].value,
-            country: item?.terms?.[2]?.value,
+            city: item?.terms?.[0]?.value ?? '',
+            state: item?.terms?.[1]?.value ?? '',
+            country: item?.terms?.[2]?.value ?? '',
           });
         } 
         else if (route.params.comeFrom === 'CreateClubForm1') {
           navigation.navigate('CreateClubForm1', {
-            city: item.terms[0].value ?? '',
-            state: item.terms[1].value ?? '',
+            city: item?.terms?.[0]?.value ?? '',
+            state: item?.terms?.[1]?.value ?? '',
             country: item?.terms?.[2]?.value ?? '',
           });
         } 
         else if (route.params.comeFrom === 'PersonalInformationScreen') {
           navigation.navigate('PersonalInformationScreen', {
-            city: item.terms[0].value,
-            state: item.terms[1].value,
-            country: item.terms[2].value,
+            city: item?.terms?.[0]?.value ?? '',
+            state: item?.terms?.[1]?.value ?? '',
+            country: item?.terms?.[2]?.value ?? '',
           });
         } 
         else if (route.params.comeFrom === 'EditPersonalProfileScreen') {
           navigation.navigate(route.params.comeFrom, {
-            city: item.terms[0].value,
-            state: item.terms[1].value,
-            country: item.terms[2].value,
+            city: item?.terms?.[0]?.value ?? '',
+            state: item?.terms?.[1]?.value ?? '',
+            country: item?.terms?.[2]?.value ?? '',
           });
         } 
         else if (route.params.comeFrom === 'EditGroupProfileScreen') {
           navigation.navigate('EditGroupProfileScreen', {
-            city: item.terms[0].value,
-            state: item.terms[1].value,
-            country: item.terms[2].value,
+            city: item?.terms?.[0]?.value ?? '',
+            state: item?.terms?.[1]?.value ?? '',
+            country: item?.terms?.[2]?.value ?? '',
           });
         }
         else if (route.params.comeFrom === 'CreateMemberProfileForm1') {
           navigation.navigate('CreateMemberProfileForm1', {
-            city: item.terms[0].value,
-            state: item.terms[1].value,
-            country: item.terms[2].value,
+            city: item?.terms?.[0]?.value ?? '',
+            state: item?.terms?.[1]?.value ?? '',
+            country: item?.terms?.[2]?.value ?? '',
           });
         }
         else if (route.params.comeFrom === 'EditMemberBasicInfoScreen') {
           navigation.navigate('EditMemberBasicInfoScreen', {
-            city: item.terms[0].value,
-            state: item.terms[1].value,
-            country: item.terms[2].value,
+            city: item?.terms?.[0]?.value ?? '',
+            state: item?.terms?.[1]?.value ?? '',
+            country: item?.terms?.[2]?.value ?? '',
           });
         }
         else if (route.params.comeFrom === 'RequestBasicInfoScreen') {
           navigation.navigate('RequestBasicInfoScreen', {
-            city: item.terms[0].value,
-            state: item.terms[1].value,
-            country: item.terms[2].value,
+            city: item?.terms?.[0]?.value ?? '',
+            state: item?.terms?.[1]?.value ?? '',
+            country: item?.terms?.[2]?.value ?? '',
           });
         }
       }

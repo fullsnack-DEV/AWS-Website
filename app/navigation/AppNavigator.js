@@ -247,7 +247,9 @@ const getTabBarVisibility = (route) => {
     routeName === 'InviteMembersBySearchScreen' ||
     routeName === 'RequestBasicInfoScreen' || 
     routeName === 'RequestMultipleBasicInfoScreen' || 
-    routeName === 'EditPersonalProfileScreen'
+    routeName === 'EditPersonalProfileScreen' || 
+    routeName === 'AddCardScreen' ||
+    routeName === 'PaymentMethodsScreen'
 
 
   ) {

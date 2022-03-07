@@ -29,7 +29,7 @@ import { widthPercentageToDP as wp } from '../../utils';
 import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 
-const QbMessageEmitter = new NativeEventEmitter(QB.chat)
+const QbMessageEmitter = new NativeEventEmitter(QB)
 
 const MessageMainScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext);

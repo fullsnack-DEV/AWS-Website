@@ -1,100 +1,162 @@
-import React, {
-  useState, useLayoutEffect, useContext,
-} from 'react';
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-console */
+import React, {useState, useLayoutEffect, useContext, useEffect} from 'react';
+import {View, StyleSheet, Text, Image, Alert, Button} from 'react-native';
+
+// import { PaymentCardTextField } from 'tipsi-stripe'
+
 import {
-  View, StyleSheet, Text, Image, Alert,
-} from 'react-native';
-
-import { PaymentCardTextField } from 'tipsi-stripe'
-
-import AuthContext from '../../../auth/context'
+  CardField,
+  initStripe,
+  CardFieldInput,
+  useStripe,
+} from '@stripe/stripe-react-native';
+import * as Utility from '../../../utils';
+import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import { createPaymentMethod } from '../../../api/Users';
-import strings from '../../../Constants/String'
-import colors from '../../../Constants/Colors'
+import {attachPaymentMethod, paymentMethods} from '../../../api/Users';
+import strings from '../../../Constants/String';
+import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 // import * as Utility from '../../../utils';
 // import images from '../../../Constants/ImagePath';
 
-export default function AddCardScreen({ navigation }) {
+export default function AddCardScreen({navigation}) {
   const [loading, setloading] = useState(false);
-  const authContext = useContext(AuthContext)
-  const [card, setCard] = useState({ valid: false, params: {} })
+  const authContext = useContext(AuthContext);
+  const [card, setCard] = useState({valid: false, params: {}});
+  const [valid, setValid] = useState(false);
+
+  const {createPaymentMethod} = useStripe();
+
+  const createPaymentMethodByCard = async () => {
+    const {paymentMethod, error} = await createPaymentMethod({type: 'Card'});
+
+    if (error) {
+      Alert.alert(`Error code: ${error.code}`, error.message);
+      console.log(`Error: ${JSON.stringify(error)}`);
+      setloading(false);
+    } else if (paymentMethod) {
+      console.log('createPaymentMethod ', paymentMethod);
+      setCard(paymentMethod?.card);
+      onSaveCard(paymentMethod);
+    }
+  };
+
+  useEffect(() => {
+    Utility.getStorage('appSetting').then(async (setting) => {
+      console.log('paymentsetting:=>', setting);
+
+      initStripe({
+        publishableKey: setting.publishableKey,
+      });
+    });
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: strings.addacard,
-      headerRight: () => (
-        card.valid ? <Text style={ {
-          marginEnd: 16,
-          fontSize: 14,
-          fontFamily: fonts.RRegular,
-          color: colors.lightBlackColor,
-        } } onPress={ () => {
-          onSaveCard();
-        } }>{strings.done}</Text> : <Text style={ {
-          marginEnd: 16,
-          fontSize: 14,
-          fontFamily: fonts.RRegular,
-          color: colors.lightgrayColor,
-        } } >{strings.done}</Text>
-      ),
+      headerRight: () =>
+        valid ? (
+          <Text
+            style={{
+              marginEnd: 16,
+              fontSize: 14,
+              fontFamily: fonts.RRegular,
+              color: colors.lightBlackColor,
+            }}
+            onPress={() => {
+              setloading(true);
+              createPaymentMethodByCard();
+            }}>
+            {strings.done}
+          </Text>
+        ) : (
+          <Text
+            style={{
+              marginEnd: 16,
+              fontSize: 14,
+              fontFamily: fonts.RRegular,
+              color: colors.lightgrayColor,
+            }}>
+            {strings.done}
+          </Text>
+        ),
     });
-  }, [navigation, card]);
+  }, [navigation, card, valid]);
 
-  const onSaveCard = async () => {
-    setloading(true)
+  const getPaymentMethods = () =>
+    new Promise((resolve, reject) => {
+      paymentMethods(authContext)
+        .then((response) => {
+          const newCards = response.payload.filter(
+            (v, i, a) =>
+              a.findIndex((t) => t.card.fingerprint === v.card.fingerprint) ===
+              i,
+          );
+
+          setCard([...newCards]);
+          // setloading(false)
+
+          resolve(true);
+        })
+        .catch((e) => {
+          reject(new Error(e.message));
+          // setloading(false)
+          // setTimeout(() => {
+          //   Alert.alert(strings.alertmessagetitle, e.message);
+          // }, 0.3)
+        });
+    });
+
+  const onSaveCard = async (paymentMethod) => {
+    setloading(true);
     const params = {
-      card_number: card.params.number,
-      expiry_month: card.params.expMonth,
-      expiry_year: card.params.expYear,
-      cvc: card.params.cvc,
-    }
-    createPaymentMethod(params, authContext)
+      payment_method: paymentMethod.id,
+    };
+    attachPaymentMethod(params, authContext)
       .then(() => {
+        setloading(false);
         navigation.goBack();
       })
       .catch((e) => {
-        Alert.alert(strings.alertmessagetitle, e.message)
-      })
-      .finally(() => setloading(false));
-  }
-
-  const handleFieldParamsChange = (valid, params) => {
-    card.valid = valid;
-    card.params = params;
-    setCard({ ...card })
-  }
+        console.log('error in onSaveCard', e);
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.3);
+      });
+  };
 
   return (
-    <View style={styles.mainContainer}>
+    <View>
       <ActivityLoader visible={loading} />
-      <Image style={{ width: '100%', height: 250 }}></Image>
-      <Text style={{ margin: 15, color: colors.darkGrayColor }}>Card</Text>
-      <PaymentCardTextField
-            accessible={false}
-            style={styles.field}
-            onParamsChange={handleFieldParamsChange}
-            numberPlaceholder="XXXX XXXX XXXX XXXX"
-            expirationPlaceholder="MM/YY"
-            cvcPlaceholder="CVC"
-            // {...testID('cardTextField')}
-          />
+      <CardField
+        postalCodeEnabled={false}
+        placeholder={{
+          number: 'XXXX XXXX XXXX XXXX',
+        }}
+        cardStyle={styles.cardStyle}
+        style={{
+          width: '100%',
+          height: 100,
+          marginVertical: 30,
+        }}
+        onCardChange={(cardDetails) => {
+          console.log('cardDetails', cardDetails);
+          setValid(cardDetails.complete);
+        }}
+        onFocus={(focusedField) => {
+          console.log('focusField', focusedField);
+        }}
+      />
     </View>
   );
 }
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    backgroundColor: colors.grayBackgroundColor,
-  },
-  field: {
-    width: '100%',
-    color: '#449aeb',
-    borderColor: colors.lightgrayColor,
-    borderWidth: 0.5,
-    borderRadius: 0,
+  cardStyle: {
     backgroundColor: colors.whiteColor,
-    overflow: 'hidden',
+    textColor: colors.lightBlackColor,
   },
-})
+});

@@ -62,7 +62,7 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
     setGroups({...groups, entity_type: entity.role});
   };
   const createMember = () => {
-    setloading(true);
+   setloading(true);
     let bodyParams = {};
     if (route.params.form2.full_image) {
       const imageArray = [];
@@ -81,12 +81,10 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
             full_image: attachments[0].url,
             thumbnail: attachments[0].thumbnail,
             group: groups,
-          };
-          bodyParams = {
-            ...route.params.form2,
             group_id: entity.uid,
             note,
           };
+         
           console.log('BODY PARAMS:', bodyParams);
           createProfile(bodyParams);
         })
@@ -97,16 +95,15 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
           }, 10);
         });
     } else {
+      
       bodyParams = {
         ...route.params.form2,
         group: groups,
-      };
-      bodyParams = {
-        ...route.params.form2,
         group_id: entity.uid,
         note,
       };
-      console.log('BODY PARAMS:', bodyParams);
+      console.log('BODY PARAMS11:', bodyParams);
+      
       createProfile(bodyParams);
     }
   };
