@@ -7,7 +7,7 @@ buildscript {
         googlePlayServicesIidVersion = "16.0.1"
         buildToolsVersion = "29.0.2"
         minSdkVersion = 21
-        compileSdkVersion = 29
+        compileSdkVersion = 31
         targetSdkVersion = 29
     }
     repositories {
@@ -16,7 +16,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.4")
+        classpath('com.android.tools.build:gradle:7.0.3')
         classpath 'com.google.gms:google-services:4.3.10'
         
         //classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.1'

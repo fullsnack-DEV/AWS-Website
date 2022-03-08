@@ -3,7 +3,7 @@ import { ScrollView, View } from 'react-native';
 
 import ScrollableTabView, {
   ScrollableTabBar,
-} from 'react-native-scrollable-tab-view-forked';
+} from 'react-native-scrollable-tab-view-forked'
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
