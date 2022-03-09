@@ -472,7 +472,11 @@ const AppNavigator = ({navigation}) => {
       lazy={true}
       backBehaviour="initialRoute"
       navigation={navigation}
+      options={() => ({
+        headerShown: false,
+      })}
       tabBarOptions={{
+        headerShown: false,
         showLabel: false,
         activeTintColor: colors.tabFontColor,
         inactiveTintColor: colors.userPostTimeColor,
@@ -500,6 +504,7 @@ const AppNavigator = ({navigation}) => {
         name="Local Home"
         component={LocalHomeNavigator}
         options={({route}) => ({
+          headerShown: false,
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
@@ -516,6 +521,7 @@ const AppNavigator = ({navigation}) => {
         name="News Feed"
         component={NewsFeedNavigator}
         options={({route}) => ({
+          headerShown: false,
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
@@ -532,6 +538,7 @@ const AppNavigator = ({navigation}) => {
         name="Message"
         component={MessageNavigator}
         options={({route}) => ({
+          headerShown: false,
           unmountOnBlur: true,
           ...(unreadCount > 0 && {
             tabBarBadge: unreadCount > 300 ? '300+' : unreadCount,
@@ -554,6 +561,7 @@ const AppNavigator = ({navigation}) => {
         name="Schedule"
         component={ScheduleNavigator}
         options={({route}) => ({
+          headerShown: false,
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
@@ -583,6 +591,7 @@ const AppNavigator = ({navigation}) => {
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: renderTabIcon,
+          headerShown: false,
         })}
       />
     </Tab.Navigator>
