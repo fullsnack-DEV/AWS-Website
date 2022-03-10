@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
 import React, {useState, useContext, useLayoutEffect, useEffect} from 'react';
 import {
@@ -28,7 +29,7 @@ import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTextInputClear from '../../../../components/TCTextInputClear';
 
 export default function Venue({navigation, route}) {
-  const {comeFrom, sportName, sportType} = route?.params;
+  const {comeFrom, sportName, sportType} = route?.params ?? {};
 
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);

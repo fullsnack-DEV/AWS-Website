@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
 import React, {
@@ -221,7 +222,7 @@ const LeaveReview = ({ navigation, route }) => {
   }
   const uploadMediaForTeamA = () => {
     setLoading(false) // CHANGED
-    const { onPressReviewDone } = route?.params;
+    const { onPressReviewDone } = route?.params ?? {};
     if (reviewsData?.attachments?.length) {
       onPressReviewDone(currentForm, !!route?.params?.gameReviewData, reviewsData);
       navigation.goBack();
@@ -231,7 +232,7 @@ const LeaveReview = ({ navigation, route }) => {
   }
   const uploadMediaForTeamB = () => {
     setLoading(false) // CHANGED
-    const { onPressReviewDone } = route?.params;
+    const { onPressReviewDone } = route?.params ?? {};
     if (reviewsData?.attachments?.length) {
       onPressReviewDone(currentForm, !!route?.params?.gameReviewData, reviewsData);
       navigation.goBack();

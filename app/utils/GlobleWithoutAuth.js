@@ -1,3 +1,4 @@
+/* eslint-disable no-promise-executor-return */
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 import firebase from '@react-native-firebase/app';

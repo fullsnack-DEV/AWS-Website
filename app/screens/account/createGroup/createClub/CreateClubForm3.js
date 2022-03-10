@@ -412,7 +412,7 @@ import TCGradientButton from '../../../../components/TCGradientButton';
 import TCThinDivider from '../../../../components/TCThinDivider';
 
 export default function CreateClubForm3({navigation, route}) {
-  const {createClubForm2} = route?.params;
+  const {createClubForm2} = route?.params ?? {};
   console.log('createClubForm2:=>', createClubForm2);
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();

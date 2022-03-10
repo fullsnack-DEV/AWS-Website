@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-native/no-raw-text */
 /* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */

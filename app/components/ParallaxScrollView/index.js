@@ -1,3 +1,4 @@
+/* eslint-disable import/no-import-module-exports */
 import React, {Component, createRef} from 'react';
 import {Animated, Dimensions, View, ViewPropTypes} from 'react-native';
 import {bool, func, number, string} from 'prop-types';

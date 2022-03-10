@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
 import React, {
@@ -56,7 +57,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     'route?.params?.isRefereeAvailable',
     route?.params?.isRefereeAvailable,
   );
-  const { selectedTeam } = route?.params;
+  const { selectedTeam } = route?.params ?? {};
   console.log('selectedTeam:=>', selectedTeam);
   console.log('route?.params?.gameReviewData', route?.params?.gameReviewData);
 
@@ -392,7 +393,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     if (reviewsData?.attachments?.length > 0) {
       console.log('Player A-1');
 
-      const { onPressReviewDone } = route?.params;
+      const { onPressReviewDone } = route?.params ?? {};
       onPressReviewDone(
         currentForm,
         !!route?.params?.gameReviewData,
@@ -414,7 +415,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     console.log('Player B');
 
     if (reviewsData?.attachments?.length > 0) {
-      const { onPressReviewDone } = route?.params;
+      const { onPressReviewDone } = route?.params ?? {};
 
       onPressReviewDone(
         currentForm,

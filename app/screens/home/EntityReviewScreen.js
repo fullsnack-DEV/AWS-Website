@@ -26,7 +26,7 @@ import fonts from '../../Constants/Fonts';
 
 // const entity = {};
 export default function EntityReviewScreen({navigation, route}) {
-  const {averageTeamReview, teamReviewData, userID} = route?.params;
+  const {averageTeamReview, teamReviewData, userID} = route?.params ?? {};
   const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(
     false,
   );

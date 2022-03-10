@@ -41,32 +41,32 @@ const AuthNavigator = () => (
     <Stack.Screen
         name="ForgotPasswordScreen"
         component={ ForgotPasswordScreen }
-        options={ { } }
+        options={ { title: ''} }
       />
     <Stack.Screen
         name="ForgotPasswordLinkSentScreen"
         component={ ForgotPasswordLinkSentScreen }
-        options={ { } }
+        options={ { title: '' } }
       />
-    <Stack.Screen name="SignupScreen" component={ SignupScreen } options={ {} } />
-    <Stack.Screen name="LoginScreen" component={ LoginScreen } options={ {} } />
-    <Stack.Screen name="SignUpFromLoginScreen" component={ SignupFromLoginScreen } options={ {} } />
+    <Stack.Screen name="SignupScreen" component={ SignupScreen } options={ {title: ''} } />
+    <Stack.Screen name="LoginScreen" component={ LoginScreen } options={ {title: ''} } />
+    <Stack.Screen name="SignUpFromLoginScreen" component={ SignupFromLoginScreen } options={ {title: ''} } />
     <Stack.Screen
         name="ChooseLocationScreen"
         component={ ChooseLocationScreen }
-        options={ {} }
+        options={ {title: ''} }
       />
     <Stack.Screen
         name="ChooseSportsScreen"
         component={ ChooseSportsScreen }
-        options={ {} }
+        options={ {title: ''} }
       />
     <Stack.Screen name="FollowTeams" component={ FollowTeams } options={ {} } />
     <Stack.Screen name="HomeScreen" component={ HomeScreen } options={ {} } />
     <Stack.Screen
         name="EmailVerificationScreen"
         component={ EmailVerificationScreen }
-        options={ {} }
+        options={ {title: ''} }
       />
     <Stack.Screen
         name="BottomTab"
@@ -76,7 +76,7 @@ const AuthNavigator = () => (
     <Stack.Screen
         name="TotalTeamsScreen"
         component={ TotalTeamsScreen }
-        options={ {} }
+        options={ {title: ''} }
       />
     <Stack.Screen
         name="AddBirthdayScreen"
@@ -86,7 +86,7 @@ const AuthNavigator = () => (
     <Stack.Screen
         name="ChooseGenderScreen"
         component={ ChooseGenderScreen }
-        options={ {} }
+        options={ {title: ''} }
       />
   </Stack.Navigator>
 );

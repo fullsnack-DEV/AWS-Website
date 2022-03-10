@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 /* eslint-disable consistent-return */
 /* eslint-disable import/no-cycle */
 import Config from 'react-native-config';

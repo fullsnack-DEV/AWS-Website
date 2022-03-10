@@ -10,7 +10,7 @@ import { getScroreboardGameDetails } from '../../api/Games';
 
 // const entity = {};
 export default function EntityScoreboardScreen({navigation, route}) {
-  const {uid, isAdmin,} = route?.params;
+  const {uid, isAdmin,} = route?.params ?? {};
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [scoreboardSearchText, setScoreboardSearchText] = useState([]);

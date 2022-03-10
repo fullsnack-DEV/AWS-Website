@@ -34,7 +34,7 @@ export default function RefereesSetting({navigation, route}) {
     'route?.params?.settingObj?.responsible_for_referee',
     route?.params?.settingObj?.responsible_for_referee,
   );
-  const {comeFrom, sportName, sportType} = route?.params;
+  const {comeFrom, sportName, sportType} = route?.params ?? {};
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);

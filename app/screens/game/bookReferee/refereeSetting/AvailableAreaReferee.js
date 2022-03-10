@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable guard-for-in */
 /* eslint-disable array-callback-return */
 import React, {useState, useLayoutEffect, useCallback, useContext} from 'react';
@@ -33,7 +34,7 @@ import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
 // const entity = {};
 export default function AvailableAreaReferee({navigation, route}) {
-  const {comeFrom, sportName} = route?.params;
+  const {comeFrom, sportName} = route?.params ?? {};
 
   // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);

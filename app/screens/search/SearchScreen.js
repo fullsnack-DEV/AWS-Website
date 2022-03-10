@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
 import React, {useState, useContext, useEffect} from 'react';
 import {View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
@@ -11,7 +12,7 @@ const SearchScreen = ({navigation, route}) => {
   console.log(route.params);
   const authContext = useContext(AuthContext);
 
-  const {isAdmin, galleryRef, entityType, entityID} = route?.params;
+  const {isAdmin, galleryRef, entityType, entityID} = route?.params ?? {};
   const [sports, setSports] = useState([]);
 
   useEffect(() => {

@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-else-if */
 /* eslint-disable brace-style */
 /* eslint-disable no-lonely-if */
 /* eslint-disable consistent-return */

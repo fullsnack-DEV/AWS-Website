@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import { View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { getGameStatsChartData, getGameStatsData } from '../../../../../api/Games';

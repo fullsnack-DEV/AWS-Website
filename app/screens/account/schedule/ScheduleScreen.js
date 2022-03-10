@@ -736,7 +736,8 @@ export default function ScheduleScreen({navigation, route}) {
       Object.keys(markedDates).forEach((e) => {
         if (markedDates[e].selected) {
           markedDates[e].selected = false;
-        } else if (markedDates[e].selected) {
+        } 
+         if (markedDates[e].selected) {
           if (!markedDates[e].event) {
             markedDates[e].selected = false;
             delete markedDates[e];

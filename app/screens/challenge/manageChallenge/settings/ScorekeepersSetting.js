@@ -33,7 +33,7 @@ export default function ScorekeepersSetting({navigation, route}) {
     'route?.params?.settingObj?.responsible_for_scorekeeper',
     route?.params?.settingObj?.responsible_for_scorekeeper,
   );
-  const {comeFrom, sportName, sportType} = route?.params;
+  const {comeFrom, sportName, sportType} = route?.params ?? {};
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);

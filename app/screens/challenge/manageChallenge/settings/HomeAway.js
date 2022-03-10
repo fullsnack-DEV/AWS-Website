@@ -26,7 +26,7 @@ import images from '../../../../Constants/ImagePath';
 export default function HomeAway({navigation, route}) {
   const authContext = useContext(AuthContext);
   console.log('Auth:=>', authContext);
-  const {comeFrom, sportName, sportType} = route?.params;
+  const {comeFrom, sportName, sportType} = route?.params ?? {};
 
   const [loading, setloading] = useState(false);
 

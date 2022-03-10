@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import React from 'react';
 
 import {
@@ -11,7 +12,7 @@ import AllInOneGallery from '../AllInOneGallery';
 export default function UserGalleryScreen({ navigation, route }) {
     const {
  isAdmin, galleryRef, entityType, entityID, currentUserData, callFunction,
- } = route?.params;
+ } = route?.params ?? {};
 
   return (
 

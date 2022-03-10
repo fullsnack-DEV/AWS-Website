@@ -277,7 +277,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
 
   const uploadMedia = () => {
     setLoading(false) // CHANGED
-    const { onPressRefereeReviewDone } = route?.params;
+    const { onPressRefereeReviewDone } = route?.params ?? {};
     if (reviewsData?.attachments?.length) {
       onPressRefereeReviewDone(1, !!route?.params?.gameReviewData, reviewsData, route?.params?.userData?.user_id);
       navigation.goBack();

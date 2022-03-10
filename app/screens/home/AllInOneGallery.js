@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import {
  FlatList, Text, TouchableOpacity, View,
 } from 'react-native';

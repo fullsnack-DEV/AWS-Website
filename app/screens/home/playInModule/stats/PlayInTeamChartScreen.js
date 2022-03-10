@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable import/no-extraneous-dependencies */
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';

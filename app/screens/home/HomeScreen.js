@@ -1,3 +1,5 @@
+/* eslint-disable no-unsafe-optional-chaining */
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -473,7 +475,7 @@ const HomeScreen = ({navigation, route}) => {
     if (route?.params?.fromAccountScreen) {
       const navigateScreen = route?.params?.navigateToScreen;
       const params = route?.params?.homeNavigateParams;
-      const allParams = route?.params;
+      const allParams = route?.params ?? {};
       delete allParams?.fromAccountScreen;
       delete allParams?.navigateToScreen;
       delete allParams?.homeNavigateParams;

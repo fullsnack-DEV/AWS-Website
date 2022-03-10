@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable react/no-unescaped-entities */
 import React, {
   useEffect, useState, useContext,

@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import React, {useState, useLayoutEffect, useContext} from 'react';
 import {StyleSheet, View, Text, TextInput, Alert} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
@@ -11,7 +12,7 @@ import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
 
 export default function RefereeFee({navigation, route}) {
-  const {comeFrom, sportName} = route?.params;
+  const {comeFrom, sportName} = route?.params ?? {};
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
