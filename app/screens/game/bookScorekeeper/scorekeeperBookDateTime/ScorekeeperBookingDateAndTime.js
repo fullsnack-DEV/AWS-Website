@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import React, {useEffect, useContext, useState, useCallback} from 'react';
 import {
   View,

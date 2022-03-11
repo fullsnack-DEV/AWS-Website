@@ -35,7 +35,7 @@ import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal
 
 let selectedDayMarking = {};
 export default function ChooseTimeSlotScreen({ navigation, route }) {
-  const { settingObject, comeFrom } = route?.params;
+  const { settingObject, comeFrom } = route?.params ?? {};
   console.log('settingObject :=>', settingObject);
   const authContext = useContext(AuthContext);
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-nested-ternary */
 import React, {
     useState, useEffect, useContext, useCallback,
@@ -26,7 +27,7 @@ import React, {
      const [showBottomNotes, setShowBottomNotes] = useState(true);
      const authContext = useContext(AuthContext);
 
-     const { sportName } = route?.params;
+     const { sportName } = route?.params ?? {};
 
      const getSettings = useCallback(() => {
       setSettingObject((authContext?.entity?.obj?.referee_data ?? []).filter((obj) => obj.sport === sportName)?.[0]?.setting);

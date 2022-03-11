@@ -15,7 +15,7 @@ export default function EntityGallaryScreen({navigation, route}) {
   const galleryRef = useRef();
   const imageUploadContext = useContext(ImageUploadContext);
 
-  const {currentUserData, isAdmin} = route?.params;
+  const {currentUserData, isAdmin} = route?.params ?? {};
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 

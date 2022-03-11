@@ -28,7 +28,7 @@ export default function RefundPolicyScorekeeper({navigation, route}) {
     {key: strings.moderateText, id: 2},
     {key: strings.flexibleText, id: 3},
   ];
-  const {comeFrom, sportName} = route?.params;
+  const {comeFrom, sportName} = route?.params ?? {};
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);

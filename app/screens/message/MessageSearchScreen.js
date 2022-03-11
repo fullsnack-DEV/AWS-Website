@@ -63,7 +63,7 @@ const MessageSearchScreen = ({ navigation }) => {
   }
 
   const onDialogPress = useCallback((dialog) => {
-    navigation.replace('MessageChat', {
+    navigation.replace('MessageChatRoom', {
       screen: 'MessageChatRoom',
       params: { dialog },
     });

@@ -97,11 +97,10 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
       selectedInvitees.filter((item) => occupantsIds.push(item.id))
       if (occupantsIds.length > 0) {
         QBcreateDialog(occupantsIds, QB_DIALOG_TYPE.GROUP, groupName).then((res) => {
+          console.log('rerererererer',res);
           setSelectedInvitees([]);
-          navigation.replace('MessageChat', {
-            screen: 'MessageChatRoom',
-            params: { dialog: res },
-          });
+          navigation.navigate('MessageChatRoom');
+          // navigation.navigate('MessageSearchScreen')
         }).catch((error) => {
           console.log(error);
         })

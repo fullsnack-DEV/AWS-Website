@@ -1,3 +1,5 @@
+/* eslint-disable no-unsafe-optional-chaining */
+/* eslint-disable no-promise-executor-return */
 import React, {
  useEffect, useRef, useState, useCallback,
  } from 'react';
@@ -15,7 +17,7 @@ const viewabilityConfig = {
 };
 
 function ShortsPlayScreen({ route }) {
-  const { caller_id, currentPage, shorts } = route?.params;
+  const { caller_id, currentPage, shorts } = route?.params ?? {};
 
   const carouselRef = useRef(0);
 

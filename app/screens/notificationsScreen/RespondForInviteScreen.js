@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import React, {useContext, useState, useCallback, useEffect} from 'react';
 import {
   SafeAreaView,

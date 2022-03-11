@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 import Config from 'react-native-config';
 
 import makeAPIRequest from '../utils/Global';

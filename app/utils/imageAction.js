@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import fs from 'react-native-fs';
 import axios from 'axios';
 import { decode as atob } from 'base-64';

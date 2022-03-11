@@ -32,6 +32,7 @@ const LocalHomeNavigator = () => (
       // headerTintColor: colors.blackColor,
       // headerTransparent: true,
       // headerTitle: true,
+
       gestureEnabled: false,
       headerBackTitleVisible: false,
       // <Image source={images.backArrow} style={{height:12,width:12,resizeMode:'contain'}} />,

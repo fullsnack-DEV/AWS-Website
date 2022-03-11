@@ -15,7 +15,7 @@ export default function DateTimePickerView({
 }) {
   return (
     <DateTimePickerModal
-    headerTextIOS={title}
+      headerTextIOS={title}
       isVisible={visible}
       mode={mode}
       onConfirm={onDone}

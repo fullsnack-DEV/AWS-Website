@@ -243,7 +243,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
 
   const uploadMedia = () => {
     setLoading(false); // CHANGED
-    const { onPressScorekeeperReviewDone } = route?.params;
+    const { onPressScorekeeperReviewDone } = route?.params ?? {};
     if (reviewsData?.attachments?.length) {
       onPressScorekeeperReviewDone(
         1,

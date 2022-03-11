@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
 /* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
@@ -20,6 +21,7 @@ import {
   // Platform,
 } from 'react-native';
 
+import {useNavigationState} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
 import QB from 'quickblox-react-native-sdk';
@@ -60,9 +62,15 @@ const Tab = createBottomTabNavigator();
 //   }
 // }
 
+
 const getTabBarVisibility = (route) => {
   // let routeName = '';
-  const routeName = route?.state?.routes?.[route?.state?.index]?.name ?? '';
+  const routeObj = route?.routes?.[route?.index] ?? {};
+
+  const routeName = routeObj?.state?.routes?.[routeObj?.state?.index]?.name
+
+
+  console.log('routeNamerouteNamerouteNamerouteName:=>',route);
   // if (route.name === 'Account') {
   //   const lastIndex = route?.state?.routes?.[0]?.state?.routes?.length - 1;
   //   routeName = route?.state?.routes?.[0]?.state?.routes?.[lastIndex]?.name;
@@ -109,7 +117,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'EditEventScreen' ||
     // || routeName === 'CreateEventScreen'
     routeName === 'EditChallengeAvailability' ||
-    routeName === 'MessageChat' ||
+    routeName === 'MessageChatRoom' ||
     routeName === 'MessageInviteScreen' ||
     routeName === 'MessageNewGroupScreen' ||
     routeName === 'MessageEditGroupScreen' ||
@@ -261,11 +269,16 @@ const getTabBarVisibility = (route) => {
 const QbMessageEmitter = new NativeEventEmitter(QB.chat);
 
 const AppNavigator = ({navigation}) => {
+  const routes = useNavigationState((state) => state);
+  console.log('routesLengthroutesLengthroutesLength',routes);
+
   const authContext = useContext(AuthContext);
   const count = useRef(0);
   const [role, setRole] = useState('user');
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+
+
   useEffect(() => {
     if (authContext?.entity?.QB) QBeventListeners();
     else setUnreadCount(0);
@@ -472,7 +485,11 @@ const AppNavigator = ({navigation}) => {
       lazy={true}
       backBehaviour="initialRoute"
       navigation={navigation}
+      options={() => ({
+        headerShown: false,
+      })}
       tabBarOptions={{
+        headerShown: false,
         showLabel: false,
         activeTintColor: colors.tabFontColor,
         inactiveTintColor: colors.userPostTimeColor,
@@ -500,7 +517,9 @@ const AppNavigator = ({navigation}) => {
         name="Local Home"
         component={LocalHomeNavigator}
         options={({route}) => ({
-          tabBarVisible: getTabBarVisibility(route),
+          headerShown: false,
+           // tabBarVisible: getTabBarVisibility(routes),
+          tabBarStyle: { display:  getTabBarVisibility(routes) ? 'flex' : 'none' },
           tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
             return (
@@ -516,7 +535,9 @@ const AppNavigator = ({navigation}) => {
         name="News Feed"
         component={NewsFeedNavigator}
         options={({route}) => ({
-          tabBarVisible: getTabBarVisibility(route),
+          headerShown: false,
+          // tabBarVisible: getTabBarVisibility(route),
+          tabBarStyle: { display:  getTabBarVisibility(routes) ? 'flex' : 'none' },
           tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
             return (
@@ -532,11 +553,13 @@ const AppNavigator = ({navigation}) => {
         name="Message"
         component={MessageNavigator}
         options={({route}) => ({
+          headerShown: false,
           unmountOnBlur: true,
           ...(unreadCount > 0 && {
             tabBarBadge: unreadCount > 300 ? '300+' : unreadCount,
           }),
-          tabBarVisible: getTabBarVisibility(route),
+         // tabBarVisible: getTabBarVisibility(route),
+         tabBarStyle: { display:  getTabBarVisibility(routes) ? 'flex' : 'none' },
           tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
             return (
@@ -554,7 +577,9 @@ const AppNavigator = ({navigation}) => {
         name="Schedule"
         component={ScheduleNavigator}
         options={({route}) => ({
-          tabBarVisible: getTabBarVisibility(route),
+          headerShown: false,
+          // tabBarVisible: getTabBarVisibility(route),
+          tabBarStyle: { display:  getTabBarVisibility(routes) ? 'flex' : 'none' },
           tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
             return (
@@ -581,8 +606,10 @@ const AppNavigator = ({navigation}) => {
               unreadNotificationCount > 300 ? '300+' : unreadNotificationCount,
           }),
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
-          tabBarVisible: getTabBarVisibility(route),
+         // tabBarVisible: getTabBarVisibility(route),
+         tabBarStyle: { display:  getTabBarVisibility(routes) ? 'flex' : 'none' },
           tabBarIcon: renderTabIcon,
+          headerShown: false,
         })}
       />
     </Tab.Navigator>

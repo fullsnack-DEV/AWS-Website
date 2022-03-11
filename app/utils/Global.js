@@ -1,3 +1,4 @@
+/* eslint-disable no-promise-executor-return */
 /* eslint-disable import/no-cycle */
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';

@@ -274,7 +274,7 @@ import React, {
  import TCGradientButton from '../../../../components/TCGradientButton';
 
  export default function CreateClubForm2({ navigation, route }) {
-   const { createClubForm1 } = route?.params;
+   const { createClubForm1 } = route?.params ?? {};
 
    const [languagesName, setLanguagesName] = useState('');
    const [selectedLanguages, setSelectedLanguages] = useState([]);

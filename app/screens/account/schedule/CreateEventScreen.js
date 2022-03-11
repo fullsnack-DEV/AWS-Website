@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-else-if */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
@@ -656,7 +657,7 @@ export default function CreateEventScreen({navigation, route}) {
               />
             </EventItemRender>
             <DateTimePickerView
-              date={eventStartDateTime}
+              // date={eventStartDateTime}
               visible={startDateVisible}
               onDone={handleStartDatePress}
               onCancel={handleCancelPress}
@@ -670,7 +671,7 @@ export default function CreateEventScreen({navigation, route}) {
               mode={toggle ? 'date' : 'datetime'}
             />
             <DateTimePickerView
-              date={eventEndDateTime}
+             // date={eventEndDateTime}
               visible={endDateVisible}
               onDone={handleEndDatePress}
               onCancel={handleCancelPress}
@@ -682,7 +683,7 @@ export default function CreateEventScreen({navigation, route}) {
               mode={toggle ? 'date' : 'datetime'}
             />
             <DateTimePickerView
-              date={eventUntilDateTime}
+              // date={eventUntilDateTime}
               visible={untilDateVisible}
               onDone={handleUntilDatePress}
               onCancel={handleCancelPress}

@@ -1,5 +1,5 @@
 module.exports = {
-  parser: 'babel-eslint',
+  parser: '@babel/eslint-parser',
   settings: {
     react: {
       version: 'detect',
@@ -15,11 +15,17 @@ module.exports = {
   ],
   plugins: ['react', 'react-native', 'react-hooks'],
   parserOptions: {
+    
+    requireConfigFile: false,
     ecmaFeatures: {
       jsx: true,
     },
+  
   },
   rules: {
+    // 'react-hooks/rules-of-hooks':'off',
+    'no-unsafe-optional-chaining' : 'off',
+    'no-console': 'off',
     'template-curly-spacing': 'off',
     indent: 'off',
     'prefer-destructuring': 0,
@@ -32,7 +38,7 @@ module.exports = {
     'react-native/split-platform-components': 2,
     'react-native/no-inline-styles': 0,
     'react-native/no-color-literals': 0,
-    'react-native/no-raw-text': 1,
+    'react-native/no-raw-text': 0,
     'react-native/no-single-element-style-arrays': 2,
     'react/prop-types': [0],
     'react/display-name': [0],
@@ -51,7 +57,7 @@ module.exports = {
     'one-var': [0],
     semi: [0, 'never'],
     camelcase: [0],
-    'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
+    'react-hooks/rules-of-hooks': ['warn'], // Checks rules of Hooks
     'react-hooks/exhaustive-deps': 'warn', // Checks effect dependencies
   },
   globals: {

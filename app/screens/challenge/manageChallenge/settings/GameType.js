@@ -29,7 +29,7 @@ const gameTypeList = [
   {key: strings.allType, id: 3},
 ];
 export default function GameType({navigation, route}) {
-  const {comeFrom, sportName, sportType} = route?.params;
+  const {comeFrom, sportName, sportType} = route?.params ?? {};
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);

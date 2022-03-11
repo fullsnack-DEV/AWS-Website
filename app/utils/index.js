@@ -1,3 +1,5 @@
+/* eslint-disable prefer-regex-literals */
+/* eslint-disable default-param-last */
 /* eslint-disable no-undef */
 /* eslint-disable no-bitwise */
 /* eslint-disable space-before-blocks */

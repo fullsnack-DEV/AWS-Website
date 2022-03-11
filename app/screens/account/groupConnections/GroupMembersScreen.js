@@ -182,7 +182,7 @@ export default function GroupMembersScreen({navigation, route}) {
           QBcreateDialog(IDs, QB_DIALOG_TYPE.GROUP, groupName)
             .then((dialog) => {
               setloading(false);
-              navigation.navigate('MessageChat', {
+              navigation.navigate('MessageChatRoom', {
                 screen: 'MessageChatRoom',
                 params: {dialog},
               });

@@ -37,7 +37,7 @@ import TCFormProgress from '../../../components/TCFormProgress';
 
 let entity = {};
 export default function InviteChallengeScreen({navigation, route}) {
-  const {setting, sportName, sportType, groupObj} = route?.params;
+  const {setting, sportName, sportType, groupObj} = route?.params ?? {};
 
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();

@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import React, {useState, useLayoutEffect, useContext} from 'react';
 import {StyleSheet, View, Text, Alert, SafeAreaView} from 'react-native';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -12,7 +13,7 @@ import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
 
 export default function AvailibilityReferee({navigation, route}) {
-  const {comeFrom, sportName} = route?.params;
+  const {comeFrom, sportName} = route?.params ?? {};
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);

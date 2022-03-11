@@ -12,7 +12,7 @@ import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
 
 export default function AvailibilityScorekeeoer({navigation, route}) {
-  const {comeFrom, sportName} = route?.params;
+  const {comeFrom, sportName} = route?.params ?? {};
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);

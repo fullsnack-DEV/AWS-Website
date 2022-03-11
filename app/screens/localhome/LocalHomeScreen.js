@@ -1,3 +1,5 @@
+/* eslint-disable no-promise-executor-return */
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-return-assign */
 /* eslint-disable array-callback-return */

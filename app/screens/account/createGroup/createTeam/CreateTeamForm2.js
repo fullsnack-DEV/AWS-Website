@@ -40,7 +40,7 @@ import TCSearchBox from '../../../../components/TCSearchBox';
 import TCFollowerList from '../../../../components/TCFollowerList';
 
 export default function CreateTeamForm2({ navigation, route }) {
-  const { createTeamForm1, followersList } = route?.params;
+  const { createTeamForm1, followersList } = route?.params ?? {};
 
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);

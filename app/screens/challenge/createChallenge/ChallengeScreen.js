@@ -42,7 +42,7 @@ import TCArrowView from '../../../components/TCArrowView';
 let entity = {};
 const bodyParams = {};
 export default function ChallengeScreen({ navigation, route }) {
-  const { sportName,sportType, setting, groupObj } = route?.params;
+  const { sportName,sportType, setting, groupObj } = route?.params ?? {};
 
   console.log('setting', setting);
   const authContext = useContext(AuthContext);

@@ -23,7 +23,7 @@ import images from '../../../Constants/ImagePath';
 import Header from '../../../components/Home/Header';
 
 export default function UserScoreboardScreen({ route, navigation }) {
-  const { uid } = route?.params;
+  const { uid } = route?.params ?? '';
   const authContext = useContext(AuthContext);
   const [scoreboardTabNumber, setScroboardTabNumber] = useState(0);
   const [upcomingMatchData, setUpcomingMatchData] = useState([]);

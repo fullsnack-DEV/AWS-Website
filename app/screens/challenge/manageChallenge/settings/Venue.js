@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
 import React, {useState, useContext, useLayoutEffect, useEffect} from 'react';
 import {
@@ -10,6 +11,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
+
 
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import {patchPlayer} from '../../../../api/Users';
@@ -28,7 +30,7 @@ import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTextInputClear from '../../../../components/TCTextInputClear';
 
 export default function Venue({navigation, route}) {
-  const {comeFrom, sportName, sportType} = route?.params;
+  const {comeFrom, sportName, sportType} = route?.params ?? {};
 
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
@@ -343,9 +345,12 @@ pointerEvents="none"
           authContext.setEntity({...entity});
 
           await Utility.setStorage('authContextEntity', {...entity});
+         
           navigation.navigate(comeFrom, {
-            settingObj: response.payload.setting,
+          settingObj: response.payload.setting,
           });
+         
+
         } else {
           Alert.alert(strings.appName, response.messages);
         }

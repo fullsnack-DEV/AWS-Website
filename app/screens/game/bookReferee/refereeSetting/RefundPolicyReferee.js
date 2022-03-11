@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   StyleSheet,
@@ -28,7 +29,7 @@ export default function RefundPolicyReferee({navigation, route}) {
     {key: strings.moderateText, id: 2},
     {key: strings.flexibleText, id: 3},
   ];
-  const {comeFrom, sportName} = route?.params;
+  const {comeFrom, sportName} = route?.params ?? {};
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
