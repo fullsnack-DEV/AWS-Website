@@ -15,7 +15,7 @@ module.exports = {
   ],
   plugins: ['react', 'react-native', 'react-hooks'],
   parserOptions: {
-    ecmaVersion: 2022,
+    
     requireConfigFile: false,
     ecmaFeatures: {
       jsx: true,

@@ -41,19 +41,51 @@ export const getQBSetting = async () => {
         setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
       },
     }).then(async (response) => {
+      console.log('setting response:=>', response);
+
       if (!response.data.status) {
         console.log('ERROR RESPONSE ::', response.data);
-        throw response.data.messages || response;
+        QB.settings
+          .init({
+            appId: response.data.payload.app.quickblox.appId,
+            authKey: response.data.payload.app.quickblox.authKey,
+            authSecret: response.data.payload.app.quickblox.authSecret,
+            accountKey: response.data.payload.app.quickblox.accountKey,
+          })
+          .then( () => {
+            console.log('QB init done..');
+
+            QB.settings.enableAutoReconnect({enable: true});
+          })
+          .catch((e) => {
+            console.log('QB ERROR:=>', e);
+            // Some error occured, look at the exception message for more details
+          });
+        throw response.data.messages || response.data.payload.app.quickblox;
       } else {
-        console.log('setting response:=>', response.data.payload.app.quickblox);
+        console.log('setting response111223:=>', response.data.payload.app.quickblox);
         QUICKBLOX_BASE_URL = response.data.payload.app.quickblox.QUICKBLOX_BASE_URL;
         QB_Auth_Password = response.data.payload.app.quickblox.QB_Auth_Password;
         MESSAGE_LIMIT = response.data.payload.app.quickblox.MESSAGE_LIMIT;
         DIALOG_LIST_LIMIT = response.data.payload.app.quickblox.DIALOG_LIST_LIMIT;
         USERS_LIST_LIMIT = response.data.payload.app.quickblox.USERS_LIST_LIMIT;
         await Utility.setStorage('appSetting', response.data.payload.app);
-
-        // return response.data.payload.app;
+        QB.settings
+        .init({
+          appId: response.data.payload.app.quickblox.appId,
+          authKey: response.data.payload.app.quickblox.authKey,
+          authSecret: response.data.payload.app.quickblox.authSecret,
+          accountKey: response.data.payload.app.quickblox.accountKey,
+        })
+        .then( () => {
+          console.log('QB init done..');
+          QB.settings.enableAutoReconnect({enable: true});
+        })
+        .catch((e) => {
+          console.log('QB ERROR:=>', e);
+          // Some error occured, look at the exception message for more details
+        });
+        return response.data.payload.app.quickblox;
       }
     });
 }
@@ -335,6 +367,8 @@ export const QBsetupSettings = async () => {
 
 export const QBgetDialogs = async (request = {}) => {
   const connected = await QBChatConnected();
+
+  console.log('QB connnn',connected);
   if (connected) {
     try {
       const { append, ...params } = request || {};
@@ -342,6 +376,8 @@ export const QBgetDialogs = async (request = {}) => {
         limit: DIALOG_LIST_LIMIT,
         ...params,
       });
+      console.log('QB get dialog',response);
+
       return { ...response, append };
     } catch (e) {
       return e;

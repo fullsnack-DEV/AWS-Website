@@ -44,7 +44,9 @@ const GradiantContainer = ({ style, ...props }) => (
   </LinearGradient>
 )
 
-const MessageChat = ({
+console.log('Welcome to message chat screen');
+
+const MessageChatRoom = ({
   route,
   navigation,
 }) => {
@@ -631,4 +633,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MessageChat;
+export default MessageChatRoom;

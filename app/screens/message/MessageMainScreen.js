@@ -76,6 +76,7 @@ console.log('Auth context:', authContext?.entity?.QB);
         operator: QB.chat.DIALOGS_FILTER.OPERATOR.CTN,
       },
     }).then((savedDialog) => {
+      console.log('savedDialog',savedDialog);
       _.map(savedDialog?.dialogs, (x) => {
         if (x?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && !x?.isJoined) {
           QB.chat.joinDialog({ dialogId: x?.id });
@@ -102,7 +103,7 @@ console.log('Auth context:', authContext?.entity?.QB);
   }
 
   const onDialogPress = (dialog) => {
-    navigation.navigate('MessageChat', {
+    navigation.navigate('MessageChatRoom', {
       screen: 'MessageChatRoom',
       params: { dialog },
     });

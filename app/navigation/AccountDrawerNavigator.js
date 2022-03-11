@@ -42,10 +42,10 @@ const Drawer = createDrawerNavigator();
 const AccountDrawerNavigator = () => (
   <Drawer.Navigator drawerContent={(props) => <AccountScreen {...props} />}
    drawerPosition={'right'}
-drawerContentOptions={{
+   screenOptions={{
   activeTintColor: 'red',
-}}
-   openByDefault={false}
+   }}
+   defaultStatus={'close'}
    overlayColor={'white'}
    drawerStyle={{
      width: '90%',

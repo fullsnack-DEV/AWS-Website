@@ -248,7 +248,7 @@ const MessageInviteScreen = ({ navigation }) => {
         if (occupantsIds.length === 1) {
           QBcreateDialog(occupantsIds).then((res) => {
             setSelectedInvitees([]);
-            navigation.replace('MessageChat', {
+            navigation.replace('MessageChatRoom', {
               screen: 'MessageChatRoom',
               params: { dialog: res },
             });

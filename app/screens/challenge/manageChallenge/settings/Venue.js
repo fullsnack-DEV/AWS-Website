@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import {patchPlayer} from '../../../../api/Users';
 import {patchGroup} from '../../../../api/Groups';
@@ -344,9 +345,12 @@ pointerEvents="none"
           authContext.setEntity({...entity});
 
           await Utility.setStorage('authContextEntity', {...entity});
+         
           navigation.navigate(comeFrom, {
-            settingObj: response.payload.setting,
+          settingObj: response.payload.setting,
           });
+         
+
         } else {
           Alert.alert(strings.appName, response.messages);
         }

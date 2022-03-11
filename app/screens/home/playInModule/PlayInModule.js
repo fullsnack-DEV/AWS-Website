@@ -370,7 +370,7 @@ const PlayInModule = ({
 
   const onMessageButtonPress = useCallback(() => {
     const navigateToMessage = (userId) => {
-      navigation.push('MessageChat', {
+      navigation.push('MessageChatRoom', {
         screen: 'MessageChatRoom',
         params: {userId},
       });

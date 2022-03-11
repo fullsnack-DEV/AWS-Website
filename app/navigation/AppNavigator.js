@@ -117,7 +117,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'EditEventScreen' ||
     // || routeName === 'CreateEventScreen'
     routeName === 'EditChallengeAvailability' ||
-    routeName === 'MessageChat' ||
+    routeName === 'MessageChatRoom' ||
     routeName === 'MessageInviteScreen' ||
     routeName === 'MessageNewGroupScreen' ||
     routeName === 'MessageEditGroupScreen' ||
