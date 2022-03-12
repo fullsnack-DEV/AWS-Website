@@ -1871,7 +1871,7 @@ const HomeNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="MessageChatRoom"
+      name="MessageChat"
       component={MessageDrawerNavigator}
       options={{
         title: 'Message Chat',

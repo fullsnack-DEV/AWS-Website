@@ -454,7 +454,7 @@ function NotificationNavigator() {
       />
 
       <Stack.Screen
-            name="MessageChatRoom"
+            name="MessageChat"
             component={MessageDrawerNavigator}
             options={{
 

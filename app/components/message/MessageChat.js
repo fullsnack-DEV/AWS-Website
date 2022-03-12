@@ -1,6 +1,7 @@
 import React, {
-  useEffect, useRef, useState, useContext, useMemo, useCallback,
+  useEffect, useRef, useState, useContext, useMemo, useCallback
 } from 'react';
+
 import {
   View,
   Platform,
@@ -26,6 +27,7 @@ import TCInputBox from '../TCInputBox';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils';
 import TCMessage from '../TCMessage';
 import AuthContext from '../../auth/context'
+
 import {
   QB_DIALOG_TYPE, QB_MAX_ASSET_SIZE_UPLOAD, QBcreateDialog, QBgetMessages, QBgetUserDetail, QBsendMessage,
 } from '../../utils/QuickBlox';
@@ -44,9 +46,8 @@ const GradiantContainer = ({ style, ...props }) => (
   </LinearGradient>
 )
 
-console.log('Welcome to message chat screen');
 
-const MessageChatRoom = ({
+const MessageChat = ({
   route,
   navigation,
 }) => {
@@ -174,9 +175,7 @@ const MessageChatRoom = ({
         newMessageHandler,
       )
     }
-    return () => {
-      QbMessageEmitter.removeListener(QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE)
-    }
+  
   }, [dialogData])
 
   const newMessageHandler = (event) => {
@@ -200,6 +199,7 @@ const MessageChatRoom = ({
   const getMessages = useCallback(async (onRefreshCalled = false) => {
     try {
       const response = await QBgetMessages(dialogData?.dialogId, savedMessagesData.length);
+      console.log('message list',response,dialogData?.dialogId,savedMessagesData.length);
       if (onRefreshCalled) {
         refSavedMessagesData.current = [...response.message, ...savedMessagesData]
         setSavedMessagesData((data) => [...response.message, ...data]);
@@ -215,6 +215,8 @@ const MessageChatRoom = ({
   }, [dialogData?.dialogId, savedMessagesData])
 
   const renderMessages = useCallback(({ item, index }) => {
+
+    console.log('Messsssages',item);
     const getDateTime = (compareFormat, outputFormat) => {
       const preveiousDate = index > 0 && savedMessagesData[index - 1].dateSent;
       const currentDate = item.dateSent;
@@ -353,6 +355,7 @@ const MessageChatRoom = ({
           centerComponent={headingTitle ? <Text style={styles.eventTextStyle}>{headingTitle}</Text> : <ShimmerView style={{ alignSelf: 'center' }} />}
           rightComponent={
             <TouchableOpacity style={{ padding: 2 }} onPress={() => {
+              console.log('navigationnavigation',navigation);
               navigation.openDrawer()
               navigation.setParams({ participants: [occupantsData] })
             }}>
@@ -633,4 +636,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MessageChatRoom;
+export default MessageChat;

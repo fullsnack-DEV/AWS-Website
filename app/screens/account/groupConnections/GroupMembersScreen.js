@@ -182,8 +182,8 @@ export default function GroupMembersScreen({navigation, route}) {
           QBcreateDialog(IDs, QB_DIALOG_TYPE.GROUP, groupName)
             .then((dialog) => {
               setloading(false);
-              navigation.navigate('MessageChatRoom', {
-                screen: 'MessageChatRoom',
+              navigation.navigate('MessageChat', {
+                screen: 'MessageChat',
                 params: {dialog},
               });
             })
@@ -216,13 +216,13 @@ export default function GroupMembersScreen({navigation, route}) {
   //     QBcreateUser(item?.user_id, item, accountType)
   //       .then(() => {
   //         navigation.navigate('MessageChat', {
-  //           screen: 'MessageChatRoom',
+  //           screen: 'MessageChat',
   //           params: {userId: item.user_id},
   //         });
   //       })
   //       .catch(() => {
   //         navigation.navigate('MessageChat', {
-  //           screen: 'MessageChatRoom',
+  //           screen: 'MessageChat',
   //           params: {userId: item.user_id},
   //         });
   //       });

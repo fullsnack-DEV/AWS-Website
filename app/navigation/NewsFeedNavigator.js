@@ -447,7 +447,7 @@ const NewsFeedNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="MessageChatRoom"
+      name="MessageChat"
       component={MessageDrawerNavigator}
       options={{
         title: 'Message Chat',

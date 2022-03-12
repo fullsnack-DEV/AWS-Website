@@ -1109,15 +1109,15 @@ const HomeScreen = ({navigation, route}) => {
     QBcreateUser(uid, user, accountType)
       .then((response) => {
         console.log('QB Res:=>', response);
-        navigation.navigate('MessageChatRoom', {
-          screen: 'MessageChatRoom',
+        navigation.navigate('MessageChat', {
+          screen: 'MessageChat',
           params: {userId: uid},
         });
         setloading(false);
       })
       .catch(() => {
-        navigation.navigate('MessageChatRoom', {
-          screen: 'MessageChatRoom',
+        navigation.navigate('MessageChat', {
+          screen: 'MessageChat',
           params: {userId: uid},
         });
         setloading(false);

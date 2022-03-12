@@ -1668,7 +1668,7 @@ const ScheduleNavigator = () => (
         } }
       />
     <Stack.Screen
-          name="MessageChatRoom"
+          name="MessageChat"
           component={MessageDrawerNavigator}
           options={{
 

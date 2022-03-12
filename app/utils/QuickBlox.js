@@ -387,7 +387,7 @@ export const QBgetDialogs = async (request = {}) => {
 };
 
 export const QBgetMessages = (dialogId, skipCount = 0) => {
-  QBChatConnected().then((connected) => {
+ return QBChatConnected().then((connected) => {
     if (connected) {
       const query = {
         dialogId,
