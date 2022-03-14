@@ -84,7 +84,7 @@ export default function ChallengeScreen({ navigation, route }) {
     feeBody.payment_method_type = 'card';
     feeBody.currency_type = settingObject?.game_fee?.currency_type?.toLowerCase();
     feeBody.total_game_fee = Number(settingObject?.game_fee?.fee?.toString());
-    setloading(true);
+   // setloading(true);
     getFeesEstimation(feeBody, authContext)
       .then((response) => {
         console.log('Body estimate fee:=>', response.payload);

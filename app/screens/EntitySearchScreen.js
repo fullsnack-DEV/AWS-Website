@@ -163,7 +163,7 @@ export default function EntitySearchScreen({navigation, route}) {
   const [show, setShow] = useState(false);
   const [fromDate, setFromDate] = useState();
   const [toDate, setToDate] = useState();
-  const {sportsList} = route?.params ?? {};
+  const [sportsList] = useState(route?.params?.sportsList);
   const [search, setSearch] = useState('');
   const searchBoxRef = useRef();
 
