@@ -44,6 +44,8 @@ const TCMessage = ({
     </LinearGradient>
   )
 
+
+  console.log('message chat data',body,fullName,type,messageStyle,attachments);
   useEffect(() => {
     attachments.map((item) => QBgetFileURL(item.id).then((fileUrl) => {
       setFileUrls((urls) => [...urls, fileUrl])
@@ -53,8 +55,8 @@ const TCMessage = ({
   return (
     <Fragment>
       <GradiantContainer
-            startGradiantColor={type === 'receiver' ? colors.whiteColor : colors.themeColor1}
-            endGradiantColor={type === 'receiver' ? colors.whiteColor : colors.themeColor3}
+            startGradiantColor={type === 'receiver' ? colors.whiteColor : colors.messageSenderColor}
+            endGradiantColor={type === 'receiver' ? colors.whiteColor : colors.messageSenderColor}
             style={{
               ...styles.messageContaienr,
               shadowColor: type === 'sender' ? colors.googleColor : '',
@@ -71,7 +73,7 @@ const TCMessage = ({
             <Text
                   style={{
                     ...styles.messageText,
-                    color: type === 'sender' ? colors.whiteColor : colors.lightBlackColor,
+                    color: type === 'sender' ? colors.lightBlackColor : colors.lightBlackColor,
                   }}>
               {body}
             </Text>

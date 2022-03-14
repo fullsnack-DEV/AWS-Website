@@ -9,6 +9,7 @@ const Drawer = createDrawerNavigator();
 
 const MessageDrawerNavigator = () => (
   <Drawer.Navigator
+  initialRouteName="MessageChat"
     drawerContent={(props) => (
       <MessageInviteeDrawerScreen
         {...props}

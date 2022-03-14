@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useContext } from 'react';
@@ -42,18 +43,22 @@ import TCArrowView from '../../../components/TCArrowView';
 let entity = {};
 const bodyParams = {};
 export default function ChallengeScreen({ navigation, route }) {
-  const { sportName,sportType, setting, groupObj } = route?.params ?? {};
 
-  console.log('setting', setting);
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
 
   const [venue, setVenue] = useState();
-  const [settingObject, setSettingObject] = useState(setting);
   const [teams, setteams] = useState([]);
   const [totalZero, setTotalZero] = useState(false);
   const [feeObj, setFeeObj] = useState();
+
+
+  const [sportName] = useState(route?.params?.sportName);
+  const [sportType] = useState(route?.params?.sportType);
+  const [settingObject] = useState(route?.params?.setting);
+  const [groupObj] = useState(route?.params?.groupObj);
+
 
   useEffect(() => {
     entity = authContext.entity;
@@ -181,7 +186,7 @@ export default function ChallengeScreen({ navigation, route }) {
   return (
     <TCKeyboardView>
       <TCFormProgress totalSteps={4} curruentStep={1} />
-
+      <ActivityLoader visible={loading} />
       <View>
         <View style={[styles.teamContainer, { marginTop: 15 }]}>
           <View

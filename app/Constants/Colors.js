@@ -129,5 +129,6 @@ opacityThemeColor: 'rgba(255,78,0,0.5)',
   lightYellowColorCard: '#FFCE01',
 lightGrayBackground: '#F8F8F8',
   completeTextColor: '#00c168',
+  messageSenderColor: '#FFD798',
 };
 export default colors;

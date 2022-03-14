@@ -5523,6 +5523,8 @@ const HomeScreen = ({navigation, route}) => {
                   obj?.home_away &&
                   obj?.game_type
                 ) {
+                  console.log('currentUserData1111',currentUserData);
+
                   setChallengePopup(false);
                   navigation.navigate('ChallengeScreen', {
                     setting: obj,
@@ -5587,8 +5589,8 @@ const HomeScreen = ({navigation, route}) => {
                   setChallengePopup(false);
                   navigation.navigate('InviteChallengeScreen', {
                     setting: obj,
-                    sportName: currentUserData.sport,
-                    sportType: currentUserData.sport_type,
+                    sportName: currentUserData?.sport,
+                    sportType: currentUserData?.sport_type,
                     groupObj: currentUserData,
                   });
                 } else {

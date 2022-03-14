@@ -164,14 +164,6 @@ export default function SignupScreen({navigation}) {
         console.log('App QB Setting:=>', setting);
 
         authContext.setQBCredential(setting)
-        QB.settings
-          .init({
-            appId: setting?.quickblox?.appId,
-            authKey: setting?.quickblox?.authKey,
-            authSecret: setting?.quickblox?.authSecret,
-            accountKey: setting?.quickblox?.accountKey,
-          })
-          .then(async () => {
             QB.settings.enableAutoReconnect({ enable: true });
             QBlogin(qbEntity.uid, response)
             .then(async (res) => {
@@ -199,11 +191,8 @@ export default function SignupScreen({navigation}) {
               });
               await wholeSignUpProcessComplete(response);
             });
-          })
-          .catch((e) => {
-            console.log('QB ERROR:=>', e);
-            // Some error occured, look at the exception message for more details
-          });
+        
+         
   };
 
   const signUpToTownsCup = async (uploadedProfilePic) => {

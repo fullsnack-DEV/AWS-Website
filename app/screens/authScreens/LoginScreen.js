@@ -33,7 +33,7 @@ import TCKeyboardView from '../../components/TCKeyboardView';
 import {getAppSettingsWithoutAuth} from '../../api/Users';
 
 export default function LoginScreen({navigation}) {
-  const [email, setEmail] = useState('patidar.arvind1+3@gmail.com');
+  const [email, setEmail] = useState('makani20@gmail.com');
   const [password, setPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);

@@ -418,7 +418,7 @@ export default function AccountScreen({navigation}) {
 
       let currentEntity = authContext.entity;
       delete currentEntity?.QB;
-      if (item?.entity_type === 'player') {
+      if (item?.entity_type === 'player' || item?.entity_type === 'user') {
         if (currentEntity.obj.entity_type === 'team') {
           team.push(currentEntity.obj);
         } else if (currentEntity.obj.entity_type === 'club') {
@@ -434,7 +434,10 @@ export default function AccountScreen({navigation}) {
         setParentGroup();
       } else if (item?.entity_type === 'team') {
         const i = team.indexOf(item);
-        if (currentEntity.obj.entity_type === 'player') {
+        if (
+          currentEntity.obj.entity_type === 'player' ||
+          currentEntity.obj.entity_type === 'user'
+        ) {
           team.splice(i, 1);
         } else if (currentEntity.obj.entity_type === 'team') {
           team.splice(i, 1, currentEntity.obj);
@@ -450,7 +453,10 @@ export default function AccountScreen({navigation}) {
         getParentClub(item);
       } else if (item?.entity_type === 'club') {
         const i = club.indexOf(item);
-        if (currentEntity.obj.entity_type === 'player') {
+        if (
+          currentEntity.obj.entity_type === 'player' ||
+          currentEntity.obj.entity_type === 'user'
+        ) {
           club.splice(i, 1);
         } else if (currentEntity.obj.entity_type === 'team') {
           club.splice(i, 1);
@@ -483,7 +489,10 @@ export default function AccountScreen({navigation}) {
 
       let currentEntity = entity;
       const entityType = accountData?.entity_type;
-      const uid = entityType === 'player' ? 'user_id' : 'group_id';
+      const uid =
+        entityType === 'player' || entityType === 'user'
+          ? 'user_id'
+          : 'group_id';
       QBLogout()
         .then(() => {
           const {USER, CLUB, LEAGUE, TEAM} = QB_ACCOUNT_TYPE;
@@ -505,7 +514,11 @@ export default function AccountScreen({navigation}) {
                 QB: {...res.user, connected: true, token: res?.session?.token},
               };
               QBconnectAndSubscribe(currentEntity)
-                .then((qbRes) => {
+                .then(async (qbRes) => {
+                  authContext.setEntity({...currentEntity});
+                  await Utility.setStorage('authContextEntity', {
+                    ...currentEntity,
+                  });
                   setloading(false);
                   console.log('switch QB done Called..');
                   if (qbRes?.error) console.log(strings.appName, qbRes?.error);
@@ -538,7 +551,7 @@ export default function AccountScreen({navigation}) {
       switchProfile(item)
         .then((currentEntity) => {
           scrollRef.current.scrollTo({x: 0, y: 0});
-
+          console.log('switch currentEntity', currentEntity);
           authContext.setEntity({...currentEntity});
           Utility.setStorage('authContextEntity', {...currentEntity});
           switchQBAccount(item, currentEntity);

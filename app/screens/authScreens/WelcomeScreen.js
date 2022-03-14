@@ -340,18 +340,39 @@ export default function WelcomeScreen({navigation}) {
     socialSignInSignUpOnAuthChanged();
   };
 
+
+
+
+  
   const signInSignUpWithSocialCredential = async (
     credential,
     provider,
     extraData = {},
   ) => {
-    console.log('google cred:=>', credential);
+    console.log('social cred:=>', credential);
+
     auth()
       .signInWithCredential(credential)
       .then(async (authResult) => {
+        console.log('social authResult:=>', authResult);
+        console.log('social provider:=>', provider);
+
+        console.log('social extraData:=>', extraData);
+
+
         socialSignInSignUp(authResult, provider, extraData);
       })
-      .catch((error) => {
+      .catch(async (error) => {
+        // console.log('error lors de l\'authentification firebase : ', error);
+        //   console.log('codeError : ', error.code);
+        //  // error.email is undefined
+        //   console.log('emailError : ', error.email);
+        //   const codeError = error.code;
+        // if (codeError === 'auth/account-exists-with-different-credential') {
+        //   const providers = await auth().fetchSignInMethodsForEmail(error.email);
+        //  console.log('providersproviders',providers);
+        // }
+        console.log('error.codeerror.code',error.code);
         setloading(false);
         let message = '';
         if (error.code === 'auth/user-not-found') {
@@ -377,6 +398,7 @@ export default function WelcomeScreen({navigation}) {
 
   // Login With Facebook manage function
   const onFacebookButtonPress = async () => {
+    try{
     setloading(true);
     const result = await LoginManager.logInWithPermissions([
       'public_profile',
@@ -388,6 +410,8 @@ export default function WelcomeScreen({navigation}) {
       throw new Error('User cancelled the login process');
     }
     const data = await AccessToken.getCurrentAccessToken();
+    console.log('facebook login data', data);
+
     if (!data) {
       setloading(false);
       throw new Error('Something went wrong obtaining access token');
@@ -395,7 +419,24 @@ export default function WelcomeScreen({navigation}) {
     const facebookCredential = await auth.FacebookAuthProvider.credential(
       data.accessToken,
     );
+    console.log('facebook facebookCredential', facebookCredential);
+
     await signInSignUpWithSocialCredential(facebookCredential, 'FACEBOOK | ');
+  } catch (error) {
+    setloading(false);
+    if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+      // sign in was cancelled
+      Alert.alert('cancelled');
+    } else if (error.code === statusCodes.IN_PROGRESS) {
+      // operation in progress already
+      Alert.alert('in progress');
+    } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+      Alert.alert('play services not available or outdated');
+    } else {
+      console.log('Something went wrong:', error);
+      Alert.alert('Something went wrong', error.toString());
+    }
+  }
   };
 
   // Login With Google manage function
@@ -457,8 +498,9 @@ export default function WelcomeScreen({navigation}) {
   }) => {
     checkUserIsRegistratedOrNotWithFirebase(email)
       .then(async (providerData) => {
+        console.log('provider::=>', provider);
         console.log('providerData::=>', providerData);
-        if (providerData?.length > 0) {
+        if (providerData?.length > 0 || !providerData) {
           successCallback();
           // registerWithAnotherProvider(providerData)
           //   .then(async () => {
@@ -560,92 +602,104 @@ export default function WelcomeScreen({navigation}) {
   // };
 
   const handleIOSAppleLogin = async () => {
-    if (!appleAuth.isSupported) {
-      alert('Apple Login not supported');
-    } else {
-      setloading(true);
-      const appleAuthRequestResponse = await appleAuth.performRequest({
-        requestedOperation: appleAuth.Operation.LOGIN,
-        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-      });
-      console.log(' appleAuthRequestResponse', appleAuthRequestResponse);
-      const {email} = await jwtDecode(appleAuthRequestResponse.identityToken);
-
-      if (!appleAuthRequestResponse?.identityToken) {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert('Apple Sign-In failed - no identify token returned');
-        }, 10);
+    try {
+      if (!appleAuth.isSupported) {
+        Alert.alert('Apple Login not supported');
       } else {
-        const {identityToken, nonce} = appleAuthRequestResponse;
+        setloading(true);
+        const appleAuthRequestResponse = await appleAuth.performRequest({
+          requestedOperation: appleAuth.Operation.LOGIN,
+          requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+        });
+        console.log(' appleAuthRequestResponse', appleAuthRequestResponse);
+        const {email} = await jwtDecode(appleAuthRequestResponse.identityToken);
+
+        if (!appleAuthRequestResponse?.identityToken) {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert('Apple Sign-In failed - no identify token returned');
+          }, 10);
+        } else {
+          const {identityToken, nonce} = appleAuthRequestResponse;
+          commonCheckEmailVerification({
+            email,
+            provider: 'apple',
+            successCallback: async () => {
+              const appleCredential = await auth.AppleAuthProvider.credential(
+                identityToken,
+                nonce,
+              );
+              console.log('appleCredential=>',appleCredential);
+              await signInSignUpWithSocialCredential(
+                appleCredential,
+                'APPLE iOS| ',
+                {
+                  first_name: appleAuthRequestResponse.fullName.givenName,
+                  last_name: appleAuthRequestResponse.fullName.familyName,
+                },
+              );
+            },
+          });
+        }
+      }
+    } catch (e) {
+      Alert.alert(e.message);
+    }
+  };
+
+  const handleAndroidAppleLogin = async () => {
+    try {
+      console.log('1::=>:');
+      setloading(true);
+      if (!appleAuthAndroid?.isSupported) {
+        alert('Apple Login not supported');
+      } else {
+        console.log('2::=>:');
+
+        const rawNonce = uuid();
+        const state = uuid();
+        appleAuthAndroid.configure({
+          clientId: 'com.townscup',
+          redirectUri: 'https://townscup-fee6e.firebaseapp.com/__/auth/handler',
+          responseType: appleAuthAndroid.ResponseType.ALL,
+          scope: appleAuthAndroid.Scope.ALL,
+          nonce: rawNonce,
+          state,
+        });
+        console.log('3::=>:');
+
+        const appleAuthRequestResponse = await appleAuthAndroid.signIn();
+        console.log('4::=>:');
+        const {email} = await jwtDecode(appleAuthRequestResponse.id_token);
+
+        console.log(appleAuthRequestResponse);
+        console.log('email:', email);
+
+        setloading(true);
+        const {id_token, nonce} = appleAuthRequestResponse;
         commonCheckEmailVerification({
           email,
           provider: 'apple',
           successCallback: async () => {
-            const appleCredential = await auth.AppleAuthProvider.credential(
-              identityToken,
+            const appleAndroidCredential = await auth.AppleAuthProvider.credential(
+              id_token,
               nonce,
             );
             await signInSignUpWithSocialCredential(
-              appleCredential,
-              'APPLE iOS| ',
+              appleAndroidCredential,
+              'APPLE Android| ',
               {
-                first_name: appleAuthRequestResponse.fullName.givenName,
-                last_name: appleAuthRequestResponse.fullName.familyName,
+                first_name: '',
+                last_name: '',
               },
             );
           },
         });
       }
-    }
-  };
+    } catch (e) {
+      setloading(false);
 
-  const handleAndroidAppleLogin = async () => {
-    console.log('1::=>:');
-    if (!appleAuthAndroid?.isSupported) {
-      alert('Apple Login not supported');
-    } else {
-      console.log('2::=>:');
-
-      const rawNonce = uuid();
-      const state = uuid();
-      appleAuthAndroid.configure({
-        clientId: 'com.townscup',
-        redirectUri: 'https://townscup-fee6e.firebaseapp.com/__/auth/handler',
-        responseType: appleAuthAndroid.ResponseType.ALL,
-        scope: appleAuthAndroid.Scope.ALL,
-        nonce: rawNonce,
-        state,
-      });
-      console.log('3::=>:');
-
-      const appleAuthRequestResponse = await appleAuthAndroid.signIn();
-      console.log('4::=>:');
-      const {email} = await jwtDecode(appleAuthRequestResponse.id_token);
-
-      console.log(appleAuthRequestResponse);
-      console.log('email:', email);
-
-      setloading(true);
-      const {id_token, nonce} = appleAuthRequestResponse;
-      commonCheckEmailVerification({
-        email,
-        provider: 'apple',
-        successCallback: async () => {
-          const appleAndroidCredential = await auth.AppleAuthProvider.credential(
-            id_token,
-            nonce,
-          );
-          await signInSignUpWithSocialCredential(
-            appleAndroidCredential,
-            'APPLE Android| ',
-            {
-              first_name: '',
-              last_name: '',
-            },
-          );
-        },
-      });
+      Alert.alert(e.message);
     }
   };
 

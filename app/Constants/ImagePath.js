@@ -398,6 +398,8 @@ arrowGT: require('../assets/images/arrow_gt.png'),
   blueGradient: require('../assets/images/blue_gradient.png'),
   uncheckBox: require('../assets/images/uncheckBox.png'),
   profileLevel: require('../assets/images/profile_level.png'),
+  chatPlus: require('../assets/images/chat_plus.png'),
+
 
 };
 

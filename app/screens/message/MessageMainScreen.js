@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, {
   useCallback,
   useContext,
@@ -12,6 +13,7 @@ import {
   Text,
   FlatList,
 } from 'react-native';
+
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import QB from 'quickblox-react-native-sdk';
 import {useIsFocused, StackActions} from '@react-navigation/native';
@@ -39,6 +41,7 @@ const QbMessageEmitter = new NativeEventEmitter(QB);
 const MessageMainScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
+  
   const [endReachedCalled, setEndReachedCalled] = useState(false);
   const [pressStatus, setPressStatus] = useState(null);
   const [savedDialogsData, setSavedDialogsData] = useState({
@@ -49,7 +52,7 @@ const MessageMainScreen = ({navigation}) => {
     total: 0,
   });
   const isFocused = useIsFocused();
-  console.log('Auth context:', authContext?.entity?.QB);
+  console.log('Auth context:', authContext);
   useEffect(() => {
     if (!authContext?.entity?.QB) navigation.dispatch(StackActions.popToTop());
   }, [authContext?.entity?.QB, navigation]);
@@ -109,7 +112,7 @@ const MessageMainScreen = ({navigation}) => {
     await QBconnectAndSubscribe(authContext?.entity);
     await QBsetupSettings();
     await getDialogs();
-    setTimeout(() => setLoading(false), 1500);
+    // setTimeout(() => setLoading(false), 1500);
   };
 
   const onDialogPress = useCallback(
@@ -182,40 +185,29 @@ const MessageMainScreen = ({navigation}) => {
 
   const LiseEmptyComponent = useMemo(
     () => (
-      <Text
-        style={{
-          fontFamily: fonts.RLight,
-          marginTop: 15,
-          fontSize: 16,
-          color: colors.lightBlackColor,
-        }}>
-        No Messages Found
-      </Text>
+      <View style={styles.chatMainContainer}>
+        <TouchableOpacity
+          style={styles.plusImage}
+          onPress={() => {
+            navigation.navigate('MessageInviteScreen');
+          }}>
+          <FastImage
+            resizeMode={'contain'}
+            source={images.chatPlus}
+            style={styles.chatplusStyle}
+          />
+
+          <Text style={styles.startText}>Start a Chat</Text>
+        </TouchableOpacity>
+        <View style={styles.centerMsgContainer}>
+          <Text style={styles.noMsgText}>No Message</Text>
+          <Text style={styles.msgAppearText}>
+            New messages will appear here.
+          </Text>
+        </View>
+      </View>
     ),
     [],
-  );
-  const renderAllMessages = useMemo(
-    () => (
-      <FlatList
-        ListEmptyComponent={LiseEmptyComponent}
-        refreshing={loading}
-        data={savedDialogsData.dialogs ?? []}
-        keyExtractor={chatKeyExtractor}
-        renderItem={renderSingleEntityChat}
-        onEndReachedThreshold={0.2}
-        onMomentumScrollBegin={onMomentumScrollBegin}
-        onEndReached={onEndReached}
-      />
-    ),
-    [
-      LiseEmptyComponent,
-      chatKeyExtractor,
-      loading,
-      onEndReached,
-      onMomentumScrollBegin,
-      renderSingleEntityChat,
-      savedDialogsData.dialogs,
-    ],
   );
 
   const renderHeader = useMemo(
@@ -283,34 +275,26 @@ const MessageMainScreen = ({navigation}) => {
     <View style={styles.mainContainer}>
       {renderHeader}
       <View style={styles.separateLine} />
-      {!authContext?.entity?.QB && (
-        <View
-          style={{
-            flex: 1,
-            // backgroundColor: 'red',
-            width: '100%',
-           
-          }}>
-          <Text
-            style={{
-              height: '100%',
-              width: '100%',
-              fontSize: 20,
-              fontFamily: fonts.RLight,
-              color: colors.lightBlackColor,
-            }}>
-            Chat Module Connecting...
-          </Text>
-        </View>
-      )}
+     
       {/* eslint-disable-next-line no-nested-ternary */}
-      {authContext?.entity?.QB ? (
-        loading ? (
-          <UserListShimmer />
+      {loading
+         ? (
+           <UserListShimmer />
+        ) : (savedDialogsData.dialogs?.length > 0  && authContext?.entity?.QB  )? (
+          <FlatList
+            refreshing={loading}
+            data={savedDialogsData.dialogs ?? []}
+            keyExtractor={chatKeyExtractor}
+            renderItem={renderSingleEntityChat}
+            onEndReachedThreshold={0.2}
+            onMomentumScrollBegin={onMomentumScrollBegin}
+            onEndReached={onEndReached}
+            style={{flex: 1, height: '100%', width: '100%'}}
+          />
         ) : (
-          renderAllMessages
+          LiseEmptyComponent
         )
-      ) : null}
+      }
     </View>
   );
 };
@@ -337,6 +321,44 @@ const styles = StyleSheet.create({
     borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
     width: wp(100),
+  },
+  chatplusStyle: {
+    height: 40,
+    width: 40,
+  },
+  chatMainContainer: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  plusImage: {
+    height: 100,
+    width: 100,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  startText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+  },
+  centerMsgContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noMsgText: {
+    fontFamily: fonts.RBold,
+    fontSize: 20,
+    color: colors.lightBlackColor,
+    textAlign: 'center',
+  },
+  msgAppearText: {
+    fontFamily: fonts.RRegular,
+    marginTop: 10,
+    fontSize: 16,
+    color: colors.lightBlackColor,
   },
 });
 
