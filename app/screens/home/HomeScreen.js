@@ -18,6 +18,8 @@ import React, {
   useLayoutEffect,
 } from 'react';
 import FastImage from 'react-native-fast-image';
+import MarqueeText from 'react-native-marquee';
+
 import {
   Image,
   StyleSheet,
@@ -603,12 +605,23 @@ const HomeScreen = ({navigation, route}) => {
                 resizeMode: 'contain',
                 tintColor: colors.lightBlackColor,
                 marginLeft: 15,
+                marginRight:15
               }}
             />
           )}
-          <Text style={styles.userNavigationTextStyle}>
+          <MarqueeText
+                      style={styles.userNavigationTextStyle}
+                      duration={3000}
+                      marqueeOnStart
+                      loop={true}
+                      // marqueeDelay={0}
+                      // marqueeResetDelay={1000}
+                    >
             {currentUserData?.full_name || currentUserData?.group_name}
-          </Text>
+          </MarqueeText>
+          {/* <Text style={styles.userNavigationTextStyle}>
+           
+          </Text> */}
 
           <Image
             source={
@@ -6027,6 +6040,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     textAlign: 'left',
     marginLeft: 15,
+    paddingRight:15,
+    // paddingLeft:15
   },
 
   closeButton: {

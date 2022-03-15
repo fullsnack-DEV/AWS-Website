@@ -29,12 +29,13 @@ import TagItemView from '../../components/newsFeed/TagItemView';
 import SelectedTagList from '../../components/newsFeed/SelectedTagList';
 import ScrollableTabs from '../../components/ScrollableTabs';
 import TagMatches from './TagMatches';
-import {getAllGames} from '../../api/NewsFeeds';
+import { getAllGames} from '../../api/NewsFeeds';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 
 let stopFetchMore = true;
 
 export default function UserTagSelectionListScreen({navigation, route}) {
+
   const [searchText, setSearchText] = useState('');
   const [currentTab, setCurrentTab] = useState(0);
   const [currentGrpupTab, setCurrentGroupTab] = useState('team');
@@ -79,6 +80,11 @@ export default function UserTagSelectionListScreen({navigation, route}) {
     groupData,
     searchText,
   ]);
+
+  
+
+  
+
 
   const getUsersData = useCallback(
     (text = '') => {
