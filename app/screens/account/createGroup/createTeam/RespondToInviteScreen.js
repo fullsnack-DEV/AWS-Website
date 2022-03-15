@@ -25,7 +25,7 @@ import { getSportName, widthPercentageToDP } from '../../../../utils';
 import TeamStatus from './TeamStatus';
 
 export default function RespondToInviteScreen({ navigation, route }) {
-  const { teamObject } = route?.params ?? {};
+  const [teamObject] = useState(route?.params?.teamObject);
   const authContext = useContext(AuthContext);
   // eslint-disable-next-line no-unused-vars
   const entity = authContext.entity;

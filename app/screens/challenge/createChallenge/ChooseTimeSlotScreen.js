@@ -34,8 +34,9 @@ import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 
 let selectedDayMarking = {};
-export default function ChooseTimeSlotScreen({ navigation, route }) {
-  const { settingObject, comeFrom } = route?.params ?? {};
+export default function ChooseTimeSlotScreen({navigation, route}) {
+  const [settingObject] = useState(route?.params?.settingObject);
+  const [comeFrom] = useState(route?.params?.comeFrom);
   console.log('settingObject :=>', settingObject);
   const authContext = useContext(AuthContext);
 
@@ -61,9 +62,9 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     // console.log('temp mark:', selectedDayMarking);
     // setMarkingDays(selectedDayMarking);
     const dateObject = {
-      dateString: moment(new Date()).format('YYYY-MM-DD')
-    }
-    onDayPress(dateObject)
+      dateString: moment(new Date()).format('YYYY-MM-DD'),
+    };
+    onDayPress(dateObject);
     getBlockedSlots();
   }, []);
 
@@ -95,7 +96,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
                 'Please choose time slot from the list.',
               );
             } else {
-              navigation.navigate(comeFrom, { startTime: from, endTime: to });
+              navigation.navigate(comeFrom, {startTime: from, endTime: to});
             }
           }}>
           Save
@@ -105,7 +106,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
   }, [comeFrom, from, navigation, selectedSlot, to]);
 
   const getBlockedSlots = () => {
-   // setloading(true);
+    // setloading(true);
 
     // blockedSlots(
     //   authContext?.entity?.obj?.entity_type === 'player' ? 'users' : 'groups',
@@ -115,60 +116,59 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     Utility.getCalendar(
       authContext?.entity?.obj?.group_id || authContext?.entity?.obj?.user_id,
       new Date().getTime() / 1000,
-    )
-      .then((response) => {
-        console.table('aa', response);
-        setloading(false);
-        const bookSlots = response;
-        setSlots(bookSlots);
+    ).then((response) => {
+      console.table('aa', response);
+      setloading(false);
+      const bookSlots = response;
+      setSlots(bookSlots);
 
-        const markedDates = {};
+      const markedDates = {};
 
-        const group = bookSlots.reduce((groups, data) => {
-          const title = moment(new Date(data.start_datetime * 1000)).format(
-            'yyyy-MM-DD',
-          );
-          if (!groups[title]) {
-            groups[title] = [];
-          }
-          groups[title].push(data);
-          return groups;
-        }, {});
+      const group = bookSlots.reduce((groups, data) => {
+        const title = moment(new Date(data.start_datetime * 1000)).format(
+          'yyyy-MM-DD',
+        );
+        if (!groups[title]) {
+          groups[title] = [];
+        }
+        groups[title].push(data);
+        return groups;
+      }, {});
 
-        console.log('Groups:=>', group);
-        // eslint-disable-next-line array-callback-return
-        (bookSlots || []).map((e) => {
-          const original_date = moment(
-            new Date(e.start_datetime * 1000),
-          ).format('yyyy-MM-DD');
-          if (e.allDay === true) {
-            markedDates[original_date] = {
-              disabled: true,
-              startingDay: true,
-              endingDay: true,
-              disableTouchEvent: true,
-              customStyles: {
-                container: {
-                  backgroundColor: colors.lightgrayColor,
-                },
-                text: {
-                  color: colors.grayColor,
-                },
+      console.log('Groups:=>', group);
+      // eslint-disable-next-line array-callback-return
+      (bookSlots || []).map((e) => {
+        const original_date = moment(new Date(e.start_datetime * 1000)).format(
+          'yyyy-MM-DD',
+        );
+        if (e.allDay === true) {
+          markedDates[original_date] = {
+            disabled: true,
+            startingDay: true,
+            endingDay: true,
+            disableTouchEvent: true,
+            customStyles: {
+              container: {
+                backgroundColor: colors.lightgrayColor,
               },
-            };
-          } else {
-            markedDates[original_date] = {
-              marked: true,
-              dotColor: colors.themeColor,
-              activeOpacity: 1,
-            };
-          }
-          setMarkingDays({ ...markedDates, ...selectedDayMarking });
-          console.log('BLOCKED::', markedDates);
-        });
+              text: {
+                color: colors.grayColor,
+              },
+            },
+          };
+        } else {
+          markedDates[original_date] = {
+            marked: true,
+            dotColor: colors.themeColor,
+            activeOpacity: 1,
+          };
+        }
+        setMarkingDays({...markedDates, ...selectedDayMarking});
+        console.log('BLOCKED::', markedDates);
+      });
 
-        console.log('Marked dates::', JSON.stringify(markedDates));
-      })
+      console.log('Marked dates::', JSON.stringify(markedDates));
+    });
   };
 
   const onPressListView = useCallback((value, buttonIndex) => {
@@ -222,13 +222,13 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
   }, []);
 
   const onDayPress = (dateObj) => {
-    console.log('dateObj onDayPress',dateObj);
+    console.log('dateObj onDayPress', dateObj);
     setFrom();
     setTo();
     getFreeslot(
       new Date(dateObj.dateString),
-      settingObject?.game_duration?.totalMinutes * 60
-        + settingObject?.game_duration?.totalHours * 60 * 60,
+      settingObject?.game_duration?.totalMinutes * 60 +
+        settingObject?.game_duration?.totalHours * 60 * 60,
     );
     console.log('Date string:=>', dateObj.dateString);
     getSelectedDayEvents(dateObj.dateString);
@@ -236,8 +236,8 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     const temp = [];
     (slots || []).map((e) => {
       if (
-        getSimpleDateFormat(new Date(e.start_datetime))
-        === getSimpleDateFormat(new Date(dateObj.dateString))
+        getSimpleDateFormat(new Date(e.start_datetime)) ===
+        getSimpleDateFormat(new Date(dateObj.dateString))
       ) {
         temp.push(e);
       }
@@ -262,9 +262,10 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     console.log('Start/End time:=>', starttime, endtime);
 
     let blockedSlot = (slots || []).filter(
-      (slot) => slot.blocked === true
-        && ((slot.start_datetime >= starttime && slot.start_datetime <= endtime)
-          || (slot.end_datetime >= starttime && slot.end_datetime <= endtime)),
+      (slot) =>
+        slot.blocked === true &&
+        ((slot.start_datetime >= starttime && slot.start_datetime <= endtime) ||
+          (slot.end_datetime >= starttime && slot.end_datetime <= endtime)),
     );
 
     blockedSlot = blockedSlot.map((calendar) => ({
@@ -284,7 +285,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
         const endDateTime = slot.starttime - 60;
         const diff = endDateTime - startDateTime;
         if (diff > 60) {
-          freeslot.push({ starttime: startDateTime, endtime: endDateTime, diff });
+          freeslot.push({starttime: startDateTime, endtime: endDateTime, diff});
         }
         starttime = slot.endtime + 60;
       } else if (starttime < slot.endtime) {
@@ -295,7 +296,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     const diff = endtime - starttime;
 
     if (diff > 60) {
-      freeslot.push({ starttime, endtime, diff });
+      freeslot.push({starttime, endtime, diff});
     }
 
     const getSlot = (freeslot || []).filter((slot) => slot.diff > slotTime);
@@ -305,7 +306,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
     // return freeslot
   };
 
-  const renderSlotsList = ({ item }) => (
+  const renderSlotsList = ({item}) => (
     <TouchableOpacity
       onPress={() => {
         console.log('selected:=> ', item);
@@ -396,8 +397,8 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
   // };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ marginTop: 15, flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
+      <View style={{marginTop: 15, flex: 1}}>
         <ActivityLoader visible={loading} />
         <EventAgendaSection
           onKnobPress={onKnobPress}
@@ -410,7 +411,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
           // selectedCalendarDate={selectedCalendarDateString}
           calendarMarkedDates={markingDays}
         />
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView style={{flex: 1}}>
           <Text style={styles.slotHeader}>Available Time Zone</Text>
           {/* <SectionList
           sections={blockedGroups}
@@ -435,20 +436,20 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
             ItemSeparatorComponent={() => (
               <View style={styles.separatorLine}></View>
             )}
-            style={{ marginTop: 10, marginBottom: 10 }}
+            style={{marginTop: 10, marginBottom: 10}}
           />
 
-          <Text style={[styles.slotHeader, { marginBottom: 10 }]}>
+          <Text style={[styles.slotHeader, {marginBottom: 10}]}>
             Choose The Game Time
           </Text>
-          <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+          <View style={{flexDirection: 'row', marginBottom: 10}}>
             <TouchableOpacity
               style={styles.fieldView}
               onPress={() => {
                 if (from) {
                   setFromPickerVisible(!fromPickerVisible);
-                }else{
-                  Alert.alert('Please choose available time zone first.')
+                } else {
+                  Alert.alert('Please choose available time zone first.');
                 }
               }}>
               <View
@@ -460,7 +461,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
                   From
                 </Text>
               </View>
-              <View style={{ marginRight: 15, flexDirection: 'row' }}>
+              <View style={{marginRight: 15, flexDirection: 'row'}}>
                 <Text style={styles.fieldValue} numberOfLines={1}>
                   {from
                     ? moment(new Date(from)).format('MMM DD, yyyy hh:mm a')
@@ -470,14 +471,14 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
             </TouchableOpacity>
           </View>
 
-          <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+          <View style={{flexDirection: 'row', marginBottom: 10}}>
             <TouchableOpacity
               style={styles.fieldView}
               onPress={() => {
                 if (to) {
                   setToPickerVisible(!toPickerVisible);
-                }else{
-                  Alert.alert('Please choose available time zone first.')
+                } else {
+                  Alert.alert('Please choose available time zone first.');
                 }
               }}>
               <View
@@ -489,7 +490,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
                   To
                 </Text>
               </View>
-              <View style={{ marginRight: 15, flexDirection: 'row' }}>
+              <View style={{marginRight: 15, flexDirection: 'row'}}>
                 <Text style={styles.fieldValue} numberOfLines={1}>
                   {to
                     ? moment(new Date(to)).format('MMM DD, yyyy hh:mm a')
@@ -526,7 +527,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
             onDone={onFromDone}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={new Date()}// 
+            minimumDate={new Date()} //
             maximumDate={maxFromDate()}
             // minutesGap={5}
             mode={'time'}
@@ -539,7 +540,7 @@ export default function ChooseTimeSlotScreen({ navigation, route }) {
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
             minimumDate={minToDate()}
-             maximumDate={new Date(selectedSlot?.endtime * 1000)}
+            maximumDate={new Date(selectedSlot?.endtime * 1000)}
             // minutesGap={5}
             mode={'time'}
           />
@@ -572,7 +573,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.3,
     shadowRadius: 1,
     elevation: 1,

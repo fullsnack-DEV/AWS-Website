@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
@@ -11,7 +11,7 @@ import fonts from '../../../Constants/Fonts';
 import TCThinDivider from '../../../components/TCThinDivider';
 
 export default function LogDetailScreen({route}) {
-  const {data} = route?.params ?? {};
+  const [data] = useState(route?.params?.data);
   // const [loading, setloading] = useState(false);
 
   // const isFocused = useIsFocused();

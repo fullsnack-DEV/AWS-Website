@@ -26,12 +26,12 @@ import {
 
 // import ActivityLoader from '../../../components/loader/ActivityLoader';
 import moment from 'moment';
-import { Modalize } from 'react-native-modalize';
-import { Portal } from 'react-native-portalize';
+import {Modalize} from 'react-native-modalize';
+import {Portal} from 'react-native-portalize';
 import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
 import AuthContext from '../../../auth/context';
-import { heightPercentageToDP as hp } from '../../../utils';
+import {heightPercentageToDP as hp} from '../../../utils';
 import AppleStyleSwipeableRow from '../../../components/notificationComponent/AppleStyleSwipeableRow';
 
 import colors from '../../../Constants/Colors';
@@ -53,12 +53,13 @@ import {
 import strings from '../../../Constants/String';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-export default function TeamInvoiceDetailScreen({ navigation, route }) {
-  const { from, invoiceObj } = route?.params ?? {};
+export default function TeamInvoiceDetailScreen({navigation, route}) {
+  const [from] = useState(route?.params?.from);
+  const [invoiceObj] = useState(route?.params?.invoiceObj);
 
   const [loading, setloading] = useState(false);
   const [invoiceDetail, setInvoiceDetail] = useState();
-const [logsList, setLogsList] = useState([]);
+  const [logsList, setLogsList] = useState([]);
 
   const authContext = useContext(AuthContext);
   const actionSheet = useRef();
@@ -88,12 +89,12 @@ const [logsList, setLogsList] = useState([]);
     });
   }, [from, navigation]);
 
-const getInvoiceDetailApi = useCallback(() => {
-  getInvoiceDetail(invoiceObj?.invoice_id, authContext)
+  const getInvoiceDetailApi = useCallback(() => {
+    getInvoiceDetail(invoiceObj?.invoice_id, authContext)
       .then((response) => {
         setloading(false);
         setInvoiceDetail(response.payload[0]);
-        setLogsList(response?.payload?.[0]?.logs ?? [])
+        setLogsList(response?.payload?.[0]?.logs ?? []);
       })
       .catch((e) => {
         setloading(false);
@@ -101,12 +102,12 @@ const getInvoiceDetailApi = useCallback(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-}, [authContext, invoiceObj?.invoice_id])
+  }, [authContext, invoiceObj?.invoice_id]);
 
-useEffect(() => {
-  setloading(true);
-  getInvoiceDetailApi()
-}, [authContext, getInvoiceDetailApi, invoiceObj.invoice_id]);
+  useEffect(() => {
+    setloading(true);
+    getInvoiceDetailApi();
+  }, [authContext, getInvoiceDetailApi, invoiceObj.invoice_id]);
 
   const onDeleteLog = (item) => {
     Alert.alert(
@@ -122,11 +123,15 @@ useEffect(() => {
           text: strings.yes,
           onPress: () => {
             setloading(true);
-            deleteInvoiceLog(invoiceDetail?.invoice_id, item?.transaction_id, authContext)
+            deleteInvoiceLog(
+              invoiceDetail?.invoice_id,
+              item?.transaction_id,
+              authContext,
+            )
               .then(() => {
                 // const newLogList = logsList.filter((card) => card.transaction_id !== item.transaction_id);
                 // setLogsList(newLogList);
-                getInvoiceDetailApi()
+                getInvoiceDetailApi();
                 setloading(false);
               })
               .catch((e) => {
@@ -139,27 +144,32 @@ useEffect(() => {
           },
         },
       ],
-      { cancelable: true },
+      {cancelable: true},
     );
   };
 
-  const renderLogView = ({ item, index }) => {
+  const renderLogView = ({item, index}) => {
     console.log('item', item);
-    return (
-      logsList.length > 0 && logsList?.length - 1 === index && authContext?.entity?.role === 'team' && item?.payment_mode !== 'card' ? <AppleStyleSwipeableRow
-      onPress={() => onDeleteLog(item)}
-      color={colors.redDelColor}
-      image={images.deleteIcon}>
-        <PaymentLogs
+    return logsList.length > 0 &&
+      logsList?.length - 1 === index &&
+      authContext?.entity?.role === 'team' &&
+      item?.payment_mode !== 'card' ? (
+        <AppleStyleSwipeableRow
+        onPress={() => onDeleteLog(item)}
+        color={colors.redDelColor}
+        image={images.deleteIcon}>
+          <PaymentLogs
+          data={item}
+          onPressCard={() => {
+            navigation.navigate('LogDetailScreen', {data: item});
+          }}
+        />
+        </AppleStyleSwipeableRow>
+    ) : (
+      <PaymentLogs
         data={item}
         onPressCard={() => {
-          navigation.navigate('LogDetailScreen', { data: item });
-        }}
-      />
-      </AppleStyleSwipeableRow> : <PaymentLogs
-        data={item}
-        onPressCard={() => {
-          navigation.navigate('LogDetailScreen', { data: item });
+          navigation.navigate('LogDetailScreen', {data: item});
         }}
       />
     );
@@ -303,8 +313,8 @@ useEffect(() => {
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       {invoiceDetail && (
-        <View style={{ flex: 1 }}>
-          <View style={{ margin: 15 }}>
+        <View style={{flex: 1}}>
+          <View style={{margin: 15}}>
             <View
               style={{
                 flexDirection: 'row',
@@ -314,13 +324,13 @@ useEffect(() => {
               <Image
                 source={
                   from === 'user'
-                    ? invoiceDetail?.group?.thumbnail
-                      && invoiceDetail?.group?.thumbnail !== ''
-                      ? { uri: invoiceDetail?.group?.thumbnail }
+                    ? invoiceDetail?.group?.thumbnail &&
+                      invoiceDetail?.group?.thumbnail !== ''
+                      ? {uri: invoiceDetail?.group?.thumbnail}
                       : images.teamPlaceholder
-                    : invoiceDetail?.user?.thumbnail
-                      && invoiceDetail?.user?.thumbnail !== ''
-                    ? { uri: invoiceDetail?.user?.thumbnail }
+                    : invoiceDetail?.user?.thumbnail &&
+                      invoiceDetail?.user?.thumbnail !== ''
+                    ? {uri: invoiceDetail?.user?.thumbnail}
                     : images.profilePlaceHolder
                 }
                 style={styles.invoiceProfileStyle}
@@ -392,7 +402,7 @@ useEffect(() => {
 
           <TCThinDivider marginTop={15} width={'94%'} />
 
-          <View style={{ margin: 15 }}>
+          <View style={{margin: 15}}>
             <Text
               style={{
                 fontFamily: fonts.RLight,
@@ -435,7 +445,7 @@ useEffect(() => {
             <TouchableOpacity
               style={styles.paymentContainer}
               onPress={() => {
-                navigation.navigate('AddLogScreen', { invoiceDetail });
+                navigation.navigate('AddLogScreen', {invoiceDetail});
               }}>
               <Text style={styles.cardDetailText}>Log Manually</Text>
             </TouchableOpacity>
@@ -455,8 +465,8 @@ useEffect(() => {
                       route?.params?.paymentMethod?.card?.brand,
                     )
                   : strings.addOptionMessage}{' '}
-                {route?.params?.paymentMethod
-                  && `**** ${route?.params?.paymentMethod?.card?.last4}`}
+                {route?.params?.paymentMethod &&
+                  `**** ${route?.params?.paymentMethod?.card?.last4}`}
               </Text>
               <Image
                 style={styles.nextIconViewStyle}
@@ -466,39 +476,41 @@ useEffect(() => {
           )}
 
           {logsList?.length > 0 && (
-            <SafeAreaView style={{ flex: 1 }}>
-              <View style={{ flex: 1 }}>
+            <SafeAreaView style={{flex: 1}}>
+              <View style={{flex: 1}}>
                 <Text
-                style={{
-                  fontFamily: fonts.RMedium,
-                  fontSize: 20,
-                  color: colors.lightBlackColor,
-                  margin: 15,
-                }}>
+                  style={{
+                    fontFamily: fonts.RMedium,
+                    fontSize: 20,
+                    color: colors.lightBlackColor,
+                    margin: 15,
+                  }}>
                   Log
                 </Text>
                 <FlatList
-                data={logsList}
-                renderItem={renderLogView}
-                ListEmptyComponent={emptyLog}
-                keyExtractor={(item, index) => index.toString()}
-              />
+                  data={logsList}
+                  renderItem={renderLogView}
+                  ListEmptyComponent={emptyLog}
+                  keyExtractor={(item, index) => index.toString()}
+                />
               </View>
             </SafeAreaView>
           )}
 
           {from === 'user' && invoiceDetail?.amount_remaining > 0 && (
             <>
-              <View style={{ flex: 1 }} />
+              <View style={{flex: 1}} />
               <SafeAreaView>
                 <TouchableOpacity
-                onPress={() => {
-                  payNowClicked();
-                }}>
+                  onPress={() => {
+                    payNowClicked();
+                  }}>
                   <LinearGradient
-                  colors={[colors.yellowColor, colors.darkThemeColor]}
-                  style={styles.activeEventPricacy}>
-                    <Text style={styles.activeEventPrivacyText}>{'PAY NOW'}</Text>
+                    colors={[colors.yellowColor, colors.darkThemeColor]}
+                    style={styles.activeEventPricacy}>
+                    <Text style={styles.activeEventPrivacyText}>
+                      {'PAY NOW'}
+                    </Text>
                   </LinearGradient>
                 </TouchableOpacity>
               </SafeAreaView>
@@ -507,7 +519,13 @@ useEffect(() => {
 
           <ActionSheet
             ref={actionSheet}
-            options={['Refund', 'Resend Invoice', 'Cancel Invoice', 'Delete Invoice', 'Cancel']}
+            options={[
+              'Refund',
+              'Resend Invoice',
+              'Cancel Invoice',
+              'Delete Invoice',
+              'Cancel',
+            ]}
             cancelButtonIndex={4}
             destructiveButtonIndex={3}
             onPress={(index) => {
@@ -552,7 +570,7 @@ useEffect(() => {
                         },
                       },
                     ],
-                    { cancelable: false },
+                    {cancelable: false},
                   );
                 } else {
                   recipientModalRef.current.open();
@@ -573,18 +591,20 @@ useEffect(() => {
 
                           // style: 'destructive',
                           onPress: () => {
-                             deleteInvoiceByID();
+                            deleteInvoiceByID();
                           },
                         },
                       ],
-                      { cancelable: false },
+                      {cancelable: false},
                     );
                   } else {
-                  recipientModalRef.current.open();
+                    recipientModalRef.current.open();
+                  }
                 }
-                }
-                  Alert.alert('You can\'t delete this invoice because you did not paid anything.')
-            }
+                Alert.alert(
+                  'You can\'t delete this invoice because you did not paid anything.',
+                );
+              }
             }}
           />
 
@@ -610,7 +630,7 @@ useEffect(() => {
             <Modalize
               withHandle={false}
               adjustToContentHeight={true}
-              overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+              overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}
               snapPoint={hp(50)}
               modalStyle={{
                 flex: 1,
@@ -618,7 +638,7 @@ useEffect(() => {
                 borderTopRightRadius: 25,
                 borderTopLeftRadius: 25,
                 shadowColor: colors.blackColor,
-                shadowOffset: { width: 0, height: -2 },
+                shadowOffset: {width: 0, height: -2},
                 shadowOpacity: 0.3,
                 shadowRadius: 10,
                 elevation: 10,
@@ -631,7 +651,7 @@ useEffect(() => {
                     margin: 15,
                     backgroundColor: colors.lightGrayBackground,
                   }}>
-                  <View style={{ margin: 15 }}>
+                  <View style={{margin: 15}}>
                     <Text
                       style={{
                         fontFamily: fonts.RLight,
@@ -649,7 +669,7 @@ useEffect(() => {
                       {invoiceDetail?.invoice_title}
                     </Text>
                   </View>
-                  <View style={{ margin: 15 }}>
+                  <View style={{margin: 15}}>
                     <Text
                       style={{
                         fontFamily: fonts.RLight,
@@ -667,7 +687,7 @@ useEffect(() => {
                       {invoiceDetail?.invoice_description}
                     </Text>
                   </View>
-                  <View style={{ margin: 15 }}>
+                  <View style={{margin: 15}}>
                     <Text
                       style={{
                         fontFamily: fonts.RLight,
@@ -685,7 +705,7 @@ useEffect(() => {
                       ${invoiceDetail?.amount_due}
                     </Text>
                   </View>
-                  <View style={{ margin: 15 }}>
+                  <View style={{margin: 15}}>
                     <Text
                       style={{
                         fontFamily: fonts.RLight,
@@ -709,7 +729,6 @@ useEffect(() => {
               </View>
             </Modalize>
           </Portal>
-
         </View>
       )}
     </View>
@@ -757,7 +776,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     flexDirection: 'row',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 13,
@@ -847,7 +866,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     flexDirection: 'row',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 13,

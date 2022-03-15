@@ -20,7 +20,7 @@ import { widthPercentageToDP } from '../../../../utils';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 export default function InviteToMemberScreen({ navigation, route }) {
-  const { data } = route?.params ?? {};
+  const [data] = useState(route?.params?.data);
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);

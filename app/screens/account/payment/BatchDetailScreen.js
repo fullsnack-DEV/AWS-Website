@@ -48,7 +48,8 @@ import InvoiceTypeSelection from '../../../components/invoice/InvoiceTypeSelecti
 
 let entity = {};
 export default function BatchDetailScreen({ navigation, route }) {
-  const { from, batchData } = route?.params ?? {};
+  const [from] = useState( route?.params?.from);
+  const [batchData] = useState(route?.params?.batchData);
   console.log('Batch data:=>', batchData);
   const [loading, setloading] = useState(false);
 

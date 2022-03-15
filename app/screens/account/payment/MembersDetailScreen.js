@@ -23,12 +23,12 @@ import {
 
 // import { useIsFocused } from '@react-navigation/native';
 
-import { Modalize } from 'react-native-modalize';
-import { Portal } from 'react-native-portalize';
+import {Modalize} from 'react-native-modalize';
+import {Portal} from 'react-native-portalize';
 import moment from 'moment';
 import AuthContext from '../../../auth/context';
-import { getGroupMembers } from '../../../api/Groups';
-import { createInvoice } from '../../../api/Invoice';
+import {getGroupMembers} from '../../../api/Groups';
+import {createInvoice} from '../../../api/Invoice';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
@@ -40,12 +40,13 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
 import TCThinDivider from '../../../components/TCThinDivider';
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
-import { heightPercentageToDP } from '../../../utils';
+import {heightPercentageToDP} from '../../../utils';
 
 let entity = {};
-export default function MembersDetailScreen({ navigation, route }) {
+export default function MembersDetailScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
-  const { from, memberData } = route?.params ?? {};
+  const [from] = useState(route?.params?.from);
+  const [memberData] = useState(route?.params?.memberData);
 
   const createInvoiceModalRef = useRef();
   const recipientModalRef = useRef();
@@ -99,14 +100,14 @@ export default function MembersDetailScreen({ navigation, route }) {
         const data = response.payload.map((obj) => {
           if (obj?.user_id === memberData?.user_id) {
             const temp = obj;
-            temp.selected = true
-            setSelectedRecipient([`${memberData?.user_id}`])
-            return temp
+            temp.selected = true;
+            setSelectedRecipient([`${memberData?.user_id}`]);
+            return temp;
           }
           const temp = obj;
           temp.selected = false;
-          return temp
-        })
+          return temp;
+        });
         console.log('DATA:=>', data);
         setRecipientData(data);
       })
@@ -116,7 +117,7 @@ export default function MembersDetailScreen({ navigation, route }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-}, [authContext, memberData?.user_id]);
+  }, [authContext, memberData?.user_id]);
 
   const createInvoiceValidation = () => {
     console.log(selectedDueDate);
@@ -210,7 +211,7 @@ export default function MembersDetailScreen({ navigation, route }) {
                   console.log('Create invoice res:=>', response.payload);
                   setloading(false);
                   createInvoiceModalRef?.current?.close();
-                 navigation.goBack()
+                  navigation.goBack();
                 })
                 .catch((e) => {
                   setloading(false);
@@ -228,12 +229,13 @@ export default function MembersDetailScreen({ navigation, route }) {
     </View>
   );
 
-  const renderInvoiceView = ({ item }) => {
+  const renderInvoiceView = ({item}) => {
     console.log('item', item);
     return (
       <MembershipFeeView
         data={item}
-        onPressCard={() => navigation.navigate('TeamInvoiceDetailScreen', {
+        onPressCard={() =>
+          navigation.navigate('TeamInvoiceDetailScreen', {
             from,
             invoiceObj: item,
           })
@@ -256,15 +258,16 @@ export default function MembersDetailScreen({ navigation, route }) {
       }
       if (status === 'Open') {
         return memberData?.invoices.filter(
-          (obj) => obj.invoice_status === 'Unpaid'
-            || obj.invoice_status === 'Partially Paid',
+          (obj) =>
+            obj.invoice_status === 'Unpaid' ||
+            obj.invoice_status === 'Partially Paid',
         );
       }
     },
     [memberData?.invoices],
   );
 
-  const renderRecipients = ({ item, index }) => (
+  const renderRecipients = ({item, index}) => (
     <>
       <View style={styles.recipientContainer}>
         <View style={styles.profileContainer}>
@@ -272,7 +275,7 @@ export default function MembersDetailScreen({ navigation, route }) {
             <Image
               source={
                 item?.thumbnail && item?.thumbnail !== ''
-                  ? { uri: item?.thumbnail }
+                  ? {uri: item?.thumbnail}
                   : images.profilePlaceHolder
               }
               style={styles.profileImgStyle}
@@ -305,7 +308,7 @@ export default function MembersDetailScreen({ navigation, route }) {
   const getSelectedDayEvents = useCallback((date) => {
     const markedDates = {};
     console.log('MARKED::', Object.keys(markedDates));
-    markedDates[date] = { selected: true };
+    markedDates[date] = {selected: true};
     setMarkingDays(markedDates);
     console.log('MARKED DATES::', JSON.stringify(markedDates));
   }, []);
@@ -313,7 +316,7 @@ export default function MembersDetailScreen({ navigation, route }) {
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
 
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         <TopFilterBar />
 
         <InvoiceAmount
@@ -329,21 +332,21 @@ export default function MembersDetailScreen({ navigation, route }) {
           secondTabTitle={`Paid (${memberListByFilter('Paid').length})`}
           thirdTabTitle={`All (${memberListByFilter('All').length})`}
           indexCounter={tabNumber}
-          eventPrivacyContianer={{ width: 100 }}
+          eventPrivacyContianer={{width: 100}}
           onFirstTabPress={() => setTabNumber(0)}
           onSecondTabPress={() => setTabNumber(1)}
           onThirdTabPress={() => setTabNumber(2)}
         />
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{flex: 1}}>
           <FlatList
-          data={
-            (tabNumber === 0 && memberListByFilter('Open'))
-            || (tabNumber === 1 && memberListByFilter('Paid'))
-            || (tabNumber === 2 && memberListByFilter('All'))
-          }
-          renderItem={renderInvoiceView}
-          keyExtractor={(item, index) => index.toString()}
-        />
+            data={
+              (tabNumber === 0 && memberListByFilter('Open')) ||
+              (tabNumber === 1 && memberListByFilter('Paid')) ||
+              (tabNumber === 2 && memberListByFilter('All'))
+            }
+            renderItem={renderInvoiceView}
+            keyExtractor={(item, index) => index.toString()}
+          />
         </SafeAreaView>
       </View>
 
@@ -351,7 +354,7 @@ export default function MembersDetailScreen({ navigation, route }) {
         <Modalize
           withHandle={false}
           // adjustToContentHeight={true}
-          overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}
           // snapPoint={hp(50)}
           modalStyle={{
             flex: 1,
@@ -359,7 +362,7 @@ export default function MembersDetailScreen({ navigation, route }) {
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
@@ -483,7 +486,7 @@ export default function MembersDetailScreen({ navigation, route }) {
                 value={amount}></TextInput>
             </View>
 
-            <View style={{ marginBottom: 10 }}>
+            <View style={{marginBottom: 10}}>
               <Text
                 style={{
                   fontFamily: fonts.RRegular,
@@ -508,7 +511,7 @@ export default function MembersDetailScreen({ navigation, route }) {
         <Modalize
           withHandle={false}
           adjustToContentHeight={true}
-          overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}
           snapPoint={heightPercentageToDP(50)}
           modalStyle={{
             flex: 1,
@@ -516,7 +519,7 @@ export default function MembersDetailScreen({ navigation, route }) {
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
@@ -549,7 +552,7 @@ export default function MembersDetailScreen({ navigation, route }) {
                       // onTagCancelPress({ item, index }
                       setRecipientAllData(!recipientAllData);
                       const result = recipientData.map((el) => {
-                        const o = { ...el };
+                        const o = {...el};
                         o.selected = !recipientAllData;
                         return o;
                       });
@@ -569,7 +572,7 @@ export default function MembersDetailScreen({ navigation, route }) {
                 <TCThinDivider width={'92%'} />
               </View>
 
-              <View style={{ margin: 15 }}>
+              <View style={{margin: 15}}>
                 <Text
                   style={{
                     fontFamily: fonts.RRegular,
@@ -678,7 +681,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingRight: 30,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
 
@@ -697,7 +700,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 15,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
 
@@ -742,7 +745,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 64,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,

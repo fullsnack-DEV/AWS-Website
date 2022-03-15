@@ -268,7 +268,7 @@ import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 let entity = {};
 export default function EditMemberAuthInfoScreen({navigation, route}) {
-  const {groupMemberDetail} = route?.params ?? {};
+  const [groupMemberDetail] = useState(route?.params?.groupMemberDetail);
   console.log('groupMemberDetail1', groupMemberDetail);
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
