@@ -2,7 +2,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable react-native/split-platform-components */
 /* eslint-disable no-nested-ternary */
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useLayoutEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -13,8 +13,9 @@ import {
   Alert,
   PermissionsAndroid,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
-
+import {useNavigationState} from '@react-navigation/native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -49,7 +50,35 @@ export default function ChooseLocationScreen({navigation}) {
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(false);
+  const routes = useNavigationState((state) => state);
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            const routeObj = routes?.routes?.[routes?.index] ?? {};
+            const routeName =
+              routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
+            if (routeName === 'ChooseGenderScreen') {
+              navigation.pop(1);
+            } else {
+              navigation.navigate('ChooseGenderScreen');
+            }
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 15,
+              tintColor: colors.whiteColor,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
   useEffect(() => {
     getLocationData(searchText);
   }, [searchText]);

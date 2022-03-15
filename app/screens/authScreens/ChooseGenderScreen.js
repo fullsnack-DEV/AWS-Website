@@ -1,5 +1,6 @@
-import React, {useContext, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {useContext, useState, useLayoutEffect} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {useNavigationState} from '@react-navigation/native';
 
 import {
   widthPercentageToDP as wp,
@@ -23,6 +24,35 @@ export default function ChooseGenderScreen({navigation}) {
   const authContext = useContext(AuthContext);
   const [selected, setSelected] = useState(0);
   const [loading, setLoading] = useState(false);
+  const routes = useNavigationState((state) => state);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            const routeObj = routes?.routes?.[routes?.index] ?? {};
+            const routeName =
+              routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
+
+            if (routeName === 'AddBirthdayScreen') {
+              navigation.pop(2);
+            } else {
+              navigation.navigate('AddBirthdayScreen');
+            }
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 15,
+              tintColor: colors.whiteColor,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
   const RenderRadio = ({isSelected, onRadioPress}) => (
     <View
       style={{

@@ -1,6 +1,4 @@
-import React, {
- useState, useEffect, useContext,
-} from 'react';
+import React, {useState, useEffect, useContext, useLayoutEffect} from 'react';
 import {
   View,
   Text,
@@ -8,25 +6,27 @@ import {
   FlatList,
   TouchableWithoutFeedback,
   StyleSheet,
-
+  TouchableOpacity,
 } from 'react-native';
+import {useNavigationState} from '@react-navigation/native';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
-import { updateUserProfile } from '../../api/Users';
+import {updateUserProfile} from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
 import TCButton from '../../components/TCButton';
 import Separator from '../../components/Separator';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils/index';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
-export default function FollowTeams({ route }) {
+export default function FollowTeams({route, navigation}) {
   const [teams, setTeams] = useState(['1']);
   const [followed, setFollowed] = useState(['1']);
   const [loading, setloading] = useState(false);
@@ -34,8 +34,38 @@ export default function FollowTeams({ route }) {
   const authContext = useContext(AuthContext);
 
   const followedTeam = [];
+  const routes = useNavigationState((state) => state);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            const routeObj = routes?.routes?.[routes?.index] ?? {};
+            const routeName =
+              routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
+            if (routeName === 'ChooseSportsScreen') {
+              navigation.pop(1);
+            } else {
+              navigation.navigate('ChooseSportsScreen');
+              // navigation.navigate.push('ChooseLocationScreen');
+            }
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 15,
+              tintColor: colors.whiteColor,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
   useEffect(() => {
-    console.log('Team Data... :::',route.params.teamData);
+    console.log('Team Data... :::', route.params.teamData);
 
     const setFollowData = () => {
       const arr = [];
@@ -51,23 +81,25 @@ export default function FollowTeams({ route }) {
 
   const updateProfile = async (params, callback = () => {}) => {
     setloading(true);
-    updateUserProfile(params, authContext).then(async (userResoponse) => {
-      const userData = userResoponse?.payload;
-      const entity = { ...authContext?.entity };
-      entity.isLoggedIn = true;
-      entity.auth.user = userData;
-      entity.obj = userData;
-      await Utility.setStorage('loggedInEntity', { ...entity })
-      await Utility.setStorage('authContextEntity', { ...entity })
-      await Utility.setStorage('authContextUser', { ...userData });
-      await authContext.setUser({ ...userData });
-      await authContext.setEntity({ ...entity });
-      setloading(false);
-      callback();
-    }).catch(() => setloading(false))
-  }
+    updateUserProfile(params, authContext)
+      .then(async (userResoponse) => {
+        const userData = userResoponse?.payload;
+        const entity = {...authContext?.entity};
+        entity.isLoggedIn = true;
+        entity.auth.user = userData;
+        entity.obj = userData;
+        await Utility.setStorage('loggedInEntity', {...entity});
+        await Utility.setStorage('authContextEntity', {...entity});
+        await Utility.setStorage('authContextUser', {...userData});
+        await authContext.setUser({...userData});
+        await authContext.setEntity({...entity});
+        setloading(false);
+        callback();
+      })
+      .catch(() => setloading(false));
+  };
 
-  const followUnfollowClicked = ({ item, index }) => {
+  const followUnfollowClicked = ({item, index}) => {
     console.log('SELECTED:::', index);
 
     teams[index].follow = !item.follow;
@@ -84,45 +116,47 @@ export default function FollowTeams({ route }) {
     console.log('Followed Team:::', followedTeam);
   };
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = ({item, index}) => (
     <View>
-      <View style={ styles.listItem }>
-        <View style={ styles.listItemContainer }>
-          <View style={{ flex: 0.2 }}>
+      <View style={styles.listItem}>
+        <View style={styles.listItemContainer}>
+          <View style={{flex: 0.2}}>
             {teams[index].thumbnail ? (
               <Image
-              style={ styles.teamImg }
-              source={ { uri: teams[index].thumbnail } }
-            />
-          ) : (
-            <Image style={ styles.teamImg } source={ images.team_ph } />
-          )}
+                style={styles.teamImg}
+                source={{uri: teams[index].thumbnail}}
+              />
+            ) : (
+              <Image style={styles.teamImg} source={images.team_ph} />
+            )}
           </View>
           <View
-            style={ {
+            style={{
               flex: 0.5,
               paddingHorizontal: 10,
-            } }>
-            <Text style={ styles.teamNameText }>{teams[index].group_name ?? teams[index].full_name}</Text>
-            <Text style={ styles.cityText }>
+            }}>
+            <Text style={styles.teamNameText}>
+              {teams[index].group_name ?? teams[index].full_name}
+            </Text>
+            <Text style={styles.cityText}>
               {teams[index].city}, {teams[index].state_abbr},{' '}
               {teams[index].country}
             </Text>
           </View>
-          <View style={{ flex: 0.3 }}>
+          <View style={{flex: 0.3}}>
             <TouchableWithoutFeedback
-            onPress={ () => {
-              followUnfollowClicked({ item, index });
-            } }>
+              onPress={() => {
+                followUnfollowClicked({item, index});
+              }}>
               {teams[index].follow ? (
-                <View style={ styles.followBtn }>
-                  <Text style={ styles.followText}>Following</Text>
+                <View style={styles.followBtn}>
+                  <Text style={styles.followText}>Following</Text>
                 </View>
-            ) : (
-              <View style={ styles.followingBtn }>
-                <Text style={ styles.followingText }>Follow</Text>
-              </View>
-            )}
+              ) : (
+                <View style={styles.followingBtn}>
+                  <Text style={styles.followingText}>Follow</Text>
+                </View>
+              )}
             </TouchableWithoutFeedback>
           </View>
         </View>
@@ -132,25 +166,29 @@ export default function FollowTeams({ route }) {
   );
 
   const signUpLastStep = () => {
-    updateProfile({ club_ids: followed })
-  }
+    updateProfile({club_ids: followed});
+  };
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
+      <FastImage
+        resizeMode={'stretch'}
+        style={styles.background}
+        source={images.loginBg}
+      />
 
-      <Text style={ styles.sportText }>Follow sport teams.</Text>
+      <Text style={styles.sportText}>Follow sport teams.</Text>
       <FlatList
-          style={{ padding: 15 }}
-        data={ teams }
+        style={{padding: 15}}
+        data={teams}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={ renderItem }
+        renderItem={renderItem}
       />
       <TCButton
         title={'CONTINUE'}
-        extraStyle={ { marginBottom: hp('6.5%'), marginTop: hp('2%') } }
+        extraStyle={{marginBottom: hp('6.5%'), marginTop: hp('2%')}}
         onPress={signUpLastStep}
       />
     </LinearGradient>
