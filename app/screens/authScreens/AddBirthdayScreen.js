@@ -19,6 +19,7 @@ import images from '../../Constants/ImagePath';
 import {updateUserProfile} from '../../api/Users';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import {log} from 'react-native-reanimated';
 
 export default function AddBirthdayScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -36,11 +37,17 @@ export default function AddBirthdayScreen({navigation}) {
     'November',
     'December',
   ];
-  const [dateValue, setDateValue] = useState(new Date());
+  const [dateValue, setDateValue] = useState(
+    authContext?.entity?.obj?.birthday
+      ? new Date(authContext?.entity?.obj?.birthday * 1000)
+      : new Date(),
+  );
   const [minDateValue, setMinDateValue] = useState(new Date());
   const [maxDateValue, setMaxDateValue] = useState(new Date());
 
   const [loading, setLoading] = useState(false);
+  console.log('dateValue-', dateValue);
+  console.log('authContext-', new Date(authContext.entity.obj.birthday * 1000));
 
   const onChange = (selectedDate) => {
     setDateValue(selectedDate);
@@ -133,7 +140,10 @@ export default function AddBirthdayScreen({navigation}) {
         <TCButton
           title={strings.continueCapTitle}
           onPress={() => {
-            const userParams = {birthday: new Date(dateValue).getTime() / 1000};
+            const userParams = {
+              birthday: Number(dateValue.getTime() / 1000).toFixed(0),
+            };
+
             updateProfile(userParams, () => {
               navigation.navigate('ChooseGenderScreen');
             });

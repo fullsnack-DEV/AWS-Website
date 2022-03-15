@@ -22,7 +22,14 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 
 export default function ChooseGenderScreen({navigation}) {
   const authContext = useContext(AuthContext);
-  const [selected, setSelected] = useState(0);
+  console.log('authContextauthContext', authContext);
+  const [selected, setSelected] = useState(
+    authContext?.entity?.obj?.gender
+      ? (authContext?.entity?.obj?.gender === 'male' && 0) ||
+          (authContext?.entity?.obj?.gender === 'female' && 1) ||
+          (authContext?.entity?.obj?.gender === 'other' && 2)
+      : 0,
+  );
   const [loading, setLoading] = useState(false);
   const routes = useNavigationState((state) => state);
   useLayoutEffect(() => {
