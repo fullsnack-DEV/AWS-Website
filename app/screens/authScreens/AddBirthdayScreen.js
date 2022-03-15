@@ -5,6 +5,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import moment from 'moment';
+
 import {Tooltip} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
@@ -19,7 +21,6 @@ import images from '../../Constants/ImagePath';
 import {updateUserProfile} from '../../api/Users';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import {log} from 'react-native-reanimated';
 
 export default function AddBirthdayScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -37,17 +38,13 @@ export default function AddBirthdayScreen({navigation}) {
     'November',
     'December',
   ];
-  const [dateValue, setDateValue] = useState(
-    authContext?.entity?.obj?.birthday
-      ? new Date(authContext?.entity?.obj?.birthday * 1000)
-      : new Date(),
-  );
+
+  console.log('auth birthday',new Date(authContext?.entity?.obj?.birthday * 1000));
+  const [dateValue, setDateValue] = useState(authContext?.entity?.obj?.birthday ? new Date(authContext?.entity?.obj?.birthday * 1000) : new Date());
   const [minDateValue, setMinDateValue] = useState(new Date());
   const [maxDateValue, setMaxDateValue] = useState(new Date());
 
   const [loading, setLoading] = useState(false);
-  console.log('dateValue-', dateValue);
-  console.log('authContext-', new Date(authContext.entity.obj.birthday * 1000));
 
   const onChange = (selectedDate) => {
     setDateValue(selectedDate);
@@ -58,7 +55,7 @@ export default function AddBirthdayScreen({navigation}) {
     const maxdate = new Date();
     mindate.setFullYear(mindate.getFullYear() - 13);
     maxdate.setFullYear(maxdate.getFullYear() - 123);
-    setDateValue(mindate);
+    // setDateValue(mindate);
     setMinDateValue(mindate);
     setMaxDateValue(maxdate);
   }, []);
@@ -115,8 +112,7 @@ export default function AddBirthdayScreen({navigation}) {
 
         <View style={styles.matchFeeTxt}>
           <Text style={styles.dateText}>
-            {monthNames[dateValue.getMonth()]} {dateValue.getDate()} ,{' '}
-            {dateValue.getFullYear()}
+            {moment(dateValue).format('MMM DD, YYYY')}
           </Text>
         </View>
         <View style={{alignItems: 'center', justifyContent: 'center'}}>
@@ -140,10 +136,7 @@ export default function AddBirthdayScreen({navigation}) {
         <TCButton
           title={strings.continueCapTitle}
           onPress={() => {
-            const userParams = {
-              birthday: Number(dateValue.getTime() / 1000).toFixed(0),
-            };
-
+            const userParams = {birthday: new Date(dateValue).getTime() / 1000};
             updateProfile(userParams, () => {
               navigation.navigate('ChooseGenderScreen');
             });

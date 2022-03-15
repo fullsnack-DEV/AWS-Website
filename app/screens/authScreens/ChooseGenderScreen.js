@@ -59,7 +59,7 @@ export default function ChooseGenderScreen({navigation}) {
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
+  }, [navigation,selected]);
   const RenderRadio = ({isSelected, onRadioPress}) => (
     <View
       style={{
