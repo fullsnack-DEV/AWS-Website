@@ -61,7 +61,6 @@ export default function LoginScreen({navigation}) {
     }
     return true;
   }, [email, password]);
-  const routesLength = useNavigationState((state) => state.routes.length);
 
   const getRedirectionScreenName = useCallback(
     (townscupUser) =>

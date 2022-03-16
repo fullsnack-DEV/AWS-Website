@@ -26,20 +26,6 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 
 export default function AddBirthdayScreen({navigation}) {
   const authContext = useContext(AuthContext);
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
 
   console.log(
     'auth birthday',
