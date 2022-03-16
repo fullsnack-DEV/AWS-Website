@@ -1,10 +1,12 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useContext, useEffect, useState, useLayoutEffect} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {StackActions} from '@react-navigation/native';
+
 import moment from 'moment';
 
 import {Tooltip} from 'react-native-elements';
@@ -39,8 +41,15 @@ export default function AddBirthdayScreen({navigation}) {
     'December',
   ];
 
-  console.log('auth birthday',new Date(authContext?.entity?.obj?.birthday * 1000));
-  const [dateValue, setDateValue] = useState(authContext?.entity?.obj?.birthday ? new Date(authContext?.entity?.obj?.birthday * 1000) : new Date());
+  console.log(
+    'auth birthday',
+    new Date(authContext?.entity?.obj?.birthday * 1000),
+  );
+  const [dateValue, setDateValue] = useState(
+    authContext?.entity?.obj?.birthday
+      ? new Date(authContext?.entity?.obj?.birthday * 1000)
+      : new Date(),
+  );
   const [minDateValue, setMinDateValue] = useState(new Date());
   const [maxDateValue, setMaxDateValue] = useState(new Date());
 
@@ -49,7 +58,27 @@ export default function AddBirthdayScreen({navigation}) {
   const onChange = (selectedDate) => {
     setDateValue(selectedDate);
   };
-
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            // navigation.navigate('LoginScreen');
+            navigation.dispatch(StackActions.replace('LoginScreen'));
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 15,
+              tintColor: colors.whiteColor,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
   useEffect(() => {
     const mindate = new Date();
     const maxdate = new Date();

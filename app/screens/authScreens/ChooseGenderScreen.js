@@ -1,11 +1,10 @@
 import React, {useContext, useState, useLayoutEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
-import {useNavigationState} from '@react-navigation/native';
-
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {useNavigationState, StackActions} from '@react-navigation/native';
 
 import {Tooltip} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
@@ -32,19 +31,22 @@ export default function ChooseGenderScreen({navigation}) {
   );
   const [loading, setLoading] = useState(false);
   const routes = useNavigationState((state) => state);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
+            // navigation.navigate('AddBirthdayScreen');
+            // navigation.dispatch(StackActions.replace('AddBirthdayScreen'));
             const routeObj = routes?.routes?.[routes?.index] ?? {};
             const routeName =
               routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
-
             if (routeName === 'AddBirthdayScreen') {
-              navigation.pop(2);
+              navigation.pop(1);
             } else {
-              navigation.navigate('AddBirthdayScreen');
+              // navigation.navigate('AddBirthdayScreen');
+              navigation.dispatch(StackActions.replace('AddBirthdayScreen'));
             }
           }}>
           <Image
@@ -59,7 +61,7 @@ export default function ChooseGenderScreen({navigation}) {
         </TouchableOpacity>
       ),
     });
-  }, [navigation,selected]);
+  }, [navigation, selected]);
   const RenderRadio = ({isSelected, onRadioPress}) => (
     <View
       style={{

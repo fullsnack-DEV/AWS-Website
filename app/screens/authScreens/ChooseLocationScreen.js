@@ -48,7 +48,7 @@ export default function ChooseLocationScreen({navigation}) {
   const [cityData, setCityData] = useState([]);
   const [currentLocation, setCurrentLocation] = useState();
   const [noData, setNoData] = useState(false);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState(authContext?.entity?.obj?.city);
   const [loading, setLoading] = useState(false);
   const routes = useNavigationState((state) => state);
 
