@@ -57,7 +57,9 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     'route?.params?.isRefereeAvailable',
     route?.params?.isRefereeAvailable,
   );
-  const { selectedTeam } = route?.params ?? {};
+
+  const [selectedTeam] = useState(route?.params?.selectedTeam);
+
   console.log('selectedTeam:=>', selectedTeam);
   console.log('route?.params?.gameReviewData', route?.params?.gameReviewData);
 

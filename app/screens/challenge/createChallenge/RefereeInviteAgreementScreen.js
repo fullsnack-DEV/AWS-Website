@@ -12,7 +12,13 @@ export default function RefereeInviteAgreementScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [opetion, setOpetion] = useState(1);
   const [show, setShow] = useState(false);
-  const { challengeObj, groupObj, type } = route?.params ?? {};
+
+  const [challengeObj] = useState(route?.params?.challengeObj);
+  const [groupObj] = useState(route?.params?.groupObj);
+
+  const [type] = useState(route?.params?.type);
+
+
 
   return (
     <View style={styles.mainContainer}>

@@ -15,7 +15,9 @@ export default function LookingForSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [lookingFor, setLookingFor] = useState(false);
-  const {sportName, sportType} = route?.params ?? {};
+  const [sportName] = useState(route?.params?.sportName);
+  const [sportType] = useState(route?.params?.sportType);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (

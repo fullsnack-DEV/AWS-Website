@@ -20,7 +20,7 @@ import SingleVideoRender from '../../components/Home/SingleVideoRender';
 import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
 
 const AllInOneGallery = ({
-    isAdmin,
+    
     entity_id,
     entity_type,
     onAddPhotoPress,
@@ -62,7 +62,7 @@ const AllInOneGallery = ({
 
     const allGalleryRenderItem = useCallback(({ item, index }) => {
         const myItem = typeof item?.object === 'string' ? JSON.parse(item?.object) : item?.object
-        if (index === 0 && isAdmin) {
+        if (index === 0 && authContext.entity.uid === entity_id) {
             return (
               <AddPhotoItem
                     onAddPhotoPress={() => {
@@ -90,8 +90,8 @@ const AllInOneGallery = ({
             }
         }
         return <View />
-    }, [isAdmin, onAddPhotoPress])
-    const finalGalleryData = isAdmin ? ['0', ...galleryData] : galleryData
+    }, [authContext.entity.uid, entity_id, onAddPhotoPress])
+    const finalGalleryData = authContext.entity.uid === entity_id ? ['0', ...galleryData] : galleryData
     return (
       <View>
         <View style={{

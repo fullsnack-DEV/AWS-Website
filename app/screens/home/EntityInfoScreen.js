@@ -14,7 +14,11 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 export default function EntityInfoScreen({navigation, route}) {
   const isFocused = useIsFocused();
 
-  const {uid, isAdmin, onGroupListPress, onTeamPress} = route?.params ?? {};
+  const [uid] = useState(route?.params?.uid);
+  const [isAdmin] = useState(route?.params?.isAdmin);
+  const [onGroupListPress] = useState(route?.params?.onGroupListPress);
+  const [onTeamPress] = useState(route?.params?.onTeamPress);
+
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [currentUserData, setCurrentUserData] = useState();

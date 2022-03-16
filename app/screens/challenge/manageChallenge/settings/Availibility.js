@@ -14,7 +14,10 @@ import {patchPlayer} from '../../../../api/Users';
 import {patchGroup} from '../../../../api/Groups';
 
 export default function Availibility({navigation, route}) {
-  const {comeFrom, sportName, sportType} = route?.params ?? {};
+
+  const [comeFrom] = useState(route?.params?.comeFrom);
+  const [sportName] = useState(route?.params?.sportName);
+  const [sportType] = useState(route?.params?.sportType);
 
   const authContext = useContext(AuthContext);
 

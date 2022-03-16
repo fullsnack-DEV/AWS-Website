@@ -15,7 +15,10 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 export default function ScorekeeperInviteAgreementScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [opetion, setOpetion] = useState(1);
-  const { challengeObj, groupObj, type } = route?.params ?? {};
+  const [challengeObj] = useState(route?.params?.challengeObj);
+  const [groupObj] = useState(route?.params?.groupObj);
+  const [type] = useState(route?.params?.type);
+
   const [show, setShow] = useState(false);
   const [loading, setloading] = useState(false);
 

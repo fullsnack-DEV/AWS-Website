@@ -46,6 +46,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   const [gamesData, setGamesData] = useState([]);
   const [pageSize] = useState(10);
   const [pageFrom, setPageFrom] = useState(0);
+  const [loading, setLoading] = useState(true);
+
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
   const authContext = useContext(AuthContext);
@@ -79,6 +81,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
     userData,
     groupData,
     searchText,
+    loading
   ]);
 
   
@@ -113,8 +116,11 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
       // Referee query
       const userAddData = [];
+      setLoading(true)
       getUserIndex(userQuery)
         .then((response) => {
+          
+
           if (response.length > 0) {
             let fullName = '';
             response.map((userItem) => {
@@ -135,9 +141,11 @@ export default function UserTagSelectionListScreen({navigation, route}) {
             setUserData([...userData, ...userAddData]);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
+            setLoading(false)
           }
         })
         .catch((e) => {
+          setLoading(false)
           console.log('eeeee Get Users :-', e.response);
           Alert.alert('', e.messages);
         });
@@ -171,6 +179,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       const userAddData = [];
       getGroupIndex(groupQuery)
         .then((response) => {
+
           if (response.length > 0) {
             let fullName = '';
             response.map((groupItem) => {
@@ -206,13 +215,16 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   }, [currentGrpupTab]);
 
   useEffect(() => {
+
     getAllGames(authContext.entity.uid, authContext)
       .then((res) => {
+
         console.log('All games:=>',res);
         setGamesData([...res?.payload]);
         console.log(res);
       })
       .catch((error) => {
+
         console.log(error);
       });
   }, []);
@@ -325,17 +337,17 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       return (
         <View>
           <FlatList
-            ListEmptyComponent={
-              <Text
-                style={{
-                  textAlign: 'center',
-                  marginTop: hp(2),
-                  color: colors.userPostTimeColor,
-                }}>
-                No Records Found
-              </Text>
-            }
-            data={Array.from(new Set(userData))}
+           ListEmptyComponent={
+             !loading && <Text
+              style={{
+                textAlign: 'center',
+                marginTop: hp(2),
+                color: colors.userPostTimeColor,
+              }}>
+               No Records Found
+             </Text>
+          }
+            data={Array.from(new Set(userData))}// Array.from(new Set(userData))
             ListHeaderComponent={() => <View style={{height: 8}} />}
             ListFooterComponent={() => (
               <View style={{height: 8, marginBottom: 50}} />
@@ -349,7 +361,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
             onScrollBeginDrag={() => {
               stopFetchMore = false;
             }}
-          />
+          /> 
         </View>
       );
     }
@@ -493,7 +505,6 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1,}}>
-     
       {renderSearchBox}
       {renderSelectedEntity}
       <ScrollableTabs

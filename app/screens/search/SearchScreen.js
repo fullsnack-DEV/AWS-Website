@@ -12,7 +12,14 @@ const SearchScreen = ({navigation, route}) => {
   console.log(route.params);
   const authContext = useContext(AuthContext);
 
-  const {isAdmin, galleryRef, entityType, entityID} = route?.params ?? {};
+  const [isAdmin] = useState(route?.params?.isAdmin);
+  const [galleryRef] = useState(route?.params?.galleryRef);
+  const [entityType] = useState(route?.params?.entityType);
+  const [entityID] = useState(route?.params?.entityID);
+
+  
+
+
   const [sports, setSports] = useState([]);
 
   useEffect(() => {

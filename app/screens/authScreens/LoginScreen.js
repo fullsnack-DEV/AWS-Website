@@ -104,7 +104,6 @@ export default function LoginScreen({navigation}) {
         console.log('User Data:', userData);
         getRedirectionScreenName(userData)
           .then((responseScreen) => {
-            setloading(false);
             navigation.replace(responseScreen?.screen, {
               ...responseScreen?.params,
             });
@@ -125,8 +124,6 @@ export default function LoginScreen({navigation}) {
                   Alert.alert(strings.alertmessagetitle, e.message);
                 }, 10);
               });
-
-            setloading(false);
           });
       }
     },
@@ -212,7 +209,6 @@ export default function LoginScreen({navigation}) {
   );
 
   const login = useCallback(async () => {
-    
     await Utility.clearStorage();
     console.log('firebase:=>', firebase);
     firebase
@@ -220,7 +216,7 @@ export default function LoginScreen({navigation}) {
       .signInWithEmailAndPassword(email, password)
       .then(() => {
         console.log('then:=>');
-       
+
         const loginOnAuthStateChanged = firebase
           .auth()
           .onAuthStateChanged(onAuthStateChanged);
@@ -302,12 +298,11 @@ export default function LoginScreen({navigation}) {
   );
 
   const onLogin = useCallback(async () => {
-    setloading(true)
+    setloading(true);
     if (validate()) {
-      if (authContext.networkConnected){
-        login()
-      }
-      else {
+      if (authContext.networkConnected) {
+        login();
+      } else {
         authContext.showNetworkAlert();
       }
     }

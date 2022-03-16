@@ -31,7 +31,9 @@ import { widthPercentageToDP } from '../../utils';
 let selectedSports = [];
 
 export default function AddOrDeleteSport({ navigation, route }) {
-  const { defaultSports } = route?.params ?? {};
+
+  const [defaultSports] = useState(route?.params?.defaultSports);
+
   // const [loading, setloading] = useState(false);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);

@@ -13,7 +13,10 @@ import {patchGroup} from '../../../../api/Groups';
 import * as Utility from '../../../../utils';
 
 export default function GameFee({navigation, route}) {
-  const {comeFrom, sportName, sportType} = route?.params ?? {};
+  const [comeFrom] = useState(route?.params?.comeFrom);
+  const [sportName] = useState(route?.params?.sportName);
+  const [sportType] = useState(route?.params?.sportType);
+  
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [basicFee, setBasicFee] = useState(
@@ -58,6 +61,7 @@ export default function GameFee({navigation, route}) {
       },
     };
 
+  
     setloading(true);
 
     const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(

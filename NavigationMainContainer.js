@@ -26,6 +26,8 @@ import ActivityLoader from './app/components/loader/ActivityLoader';
 export default function NavigationMainContainer() {
   const authContext = useContext(AuthContext);
   const [appInitialize, setAppInitialize] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const resetApp = useCallback(async () => {
     QBLogout();
@@ -39,16 +41,21 @@ export default function NavigationMainContainer() {
 
   const getRefereshToken = () =>
     new Promise((resolve, reject) => {
+      
+
       const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
         unsubscribe();
         if (user) {
           user
             .getIdTokenResult(true)
             .then((refreshedToken) => {
+              setLoading(false)
               console.log('refreshedToken', refreshedToken);
               resolve(refreshedToken);
             })
             .catch(() => {
+              setLoading(false)
+
               reject();
             });
         } else {
@@ -59,6 +66,7 @@ export default function NavigationMainContainer() {
 
   const checkToken = useCallback(async () => {
     getQBSetting().then( (setting) => {
+     
       console.log('App QB Setting:=>', setting);
 
       if (setting) {
@@ -71,9 +79,13 @@ export default function NavigationMainContainer() {
             accountKey: setting.quickblox.accountKey,
           })
           .then( () => {
+            setLoading(false)
+
             QB.settings.enableAutoReconnect({enable: true});
           })
           .catch((e) => {
+            setLoading(false)
+
             console.log('QB ERROR:=>', e);
             // Some error occured, look at the exception message for more details
           });
@@ -137,6 +149,7 @@ export default function NavigationMainContainer() {
 
   return (
     <Fragment>
+      <ActivityLoader visible={loading} />
       {appInitialize ? (
         <NavigationContainer theme={navigationTheme}>
           <Host>

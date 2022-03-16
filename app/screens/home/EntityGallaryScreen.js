@@ -15,7 +15,10 @@ export default function EntityGallaryScreen({navigation, route}) {
   const galleryRef = useRef();
   const imageUploadContext = useContext(ImageUploadContext);
 
-  const {currentUserData, isAdmin} = route?.params ?? {};
+  const [currentUserData] = useState(route?.params?.currentUserData);
+
+console.log('currentUserData',currentUserData);
+
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
@@ -69,18 +72,14 @@ export default function EntityGallaryScreen({navigation, route}) {
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
       <AllInOneGallery
-        isAdmin={isAdmin}
+        isAdmin={authContext.entity.uid === currentUserData.group_id}
         ref={galleryRef}
-        entity_type={
-          ['user', 'player'].includes(
-            route?.params?.role ?? authContext.entity?.role,
-          )
-            ? 'player'
-            : route?.params?.role ?? authContext.entity?.role
+        entity_type={currentUserData?.entity_type ?? authContext.entity?.role
         }
         entity_id={route?.params?.uid ?? authContext.entity?.uid}
         onAddPhotoPress={(pickImages) => {
           navigation.navigate('WritePostScreen', {
+            comeFrom:'HomeScreen',
             postData: currentUserData,
             onPressDone: callthis,
             selectedImageList: pickImages,
