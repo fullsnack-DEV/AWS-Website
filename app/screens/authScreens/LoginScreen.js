@@ -15,7 +15,6 @@ import {
   Image,
 } from 'react-native';
 // import {StackActions} from '@react-navigation/native';
-import {useNavigationState, StackActions} from '@react-navigation/native';
 
 import {
   widthPercentageToDP as wp,
