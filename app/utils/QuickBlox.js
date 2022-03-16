@@ -32,52 +32,56 @@ let DIALOG_LIST_LIMIT;
 let USERS_LIST_LIMIT;
 
 export const getQBSetting = async () => {
-   axios({
-      method: 'get',
-      url: `${Config.BASE_URL}/app/settings`,
-      withCredentials: true,
-      headers: {
-        Accept: 'application/json',
-        setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
-      },
-    }).then(async (response) => {
-      console.log('setting response:=>', response);
+  axios({
+    method: 'get',
+    url: `${Config.BASE_URL}/app/settings`,
+    withCredentials: true,
+    headers: {
+      Accept: 'application/json',
+      setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
+    },
+  }).then(async (response) => {
+    console.log('setting response:=>', response);
 
-      if (!response.data.status) {
-        console.log('ERROR RESPONSE ::', response.data);
-        QB.settings
-          .init({
-            appId: response.data.payload.app.quickblox.appId,
-            authKey: response.data.payload.app.quickblox.authKey,
-            authSecret: response.data.payload.app.quickblox.authSecret,
-            accountKey: response.data.payload.app.quickblox.accountKey,
-          })
-          .then( () => {
-            console.log('QB init done..');
-
-            QB.settings.enableAutoReconnect({enable: true});
-          })
-          .catch((e) => {
-            console.log('QB ERROR:=>', e);
-            // Some error occured, look at the exception message for more details
-          });
-        throw response.data.messages || response.data.payload.app.quickblox;
-      } else {
-        console.log('setting response111223:=>', response.data.payload.app.quickblox);
-        QUICKBLOX_BASE_URL = response.data.payload.app.quickblox.QUICKBLOX_BASE_URL;
-        QB_Auth_Password = response.data.payload.app.quickblox.QB_Auth_Password;
-        MESSAGE_LIMIT = response.data.payload.app.quickblox.MESSAGE_LIMIT;
-        DIALOG_LIST_LIMIT = response.data.payload.app.quickblox.DIALOG_LIST_LIMIT;
-        USERS_LIST_LIMIT = response.data.payload.app.quickblox.USERS_LIST_LIMIT;
-        await Utility.setStorage('appSetting', response.data.payload.app);
-        QB.settings
+    if (!response.data.status) {
+      console.log('ERROR RESPONSE ::', response.data);
+      QB.settings
         .init({
           appId: response.data.payload.app.quickblox.appId,
           authKey: response.data.payload.app.quickblox.authKey,
           authSecret: response.data.payload.app.quickblox.authSecret,
           accountKey: response.data.payload.app.quickblox.accountKey,
         })
-        .then( () => {
+        .then(() => {
+          console.log('QB init done..');
+
+          QB.settings.enableAutoReconnect({enable: true});
+        })
+        .catch((e) => {
+          console.log('QB ERROR:=>', e);
+          // Some error occured, look at the exception message for more details
+        });
+      throw response.data.messages || response.data.payload.app.quickblox;
+    } else {
+      console.log(
+        'setting response111223:=>',
+        response.data.payload.app.quickblox,
+      );
+      QUICKBLOX_BASE_URL =
+        response.data.payload.app.quickblox.QUICKBLOX_BASE_URL;
+      QB_Auth_Password = response.data.payload.app.quickblox.QB_Auth_Password;
+      MESSAGE_LIMIT = response.data.payload.app.quickblox.MESSAGE_LIMIT;
+      DIALOG_LIST_LIMIT = response.data.payload.app.quickblox.DIALOG_LIST_LIMIT;
+      USERS_LIST_LIMIT = response.data.payload.app.quickblox.USERS_LIST_LIMIT;
+      await Utility.setStorage('appSetting', response.data.payload.app);
+      QB.settings
+        .init({
+          appId: response.data.payload.app.quickblox.appId,
+          authKey: response.data.payload.app.quickblox.authKey,
+          authSecret: response.data.payload.app.quickblox.authSecret,
+          accountKey: response.data.payload.app.quickblox.accountKey,
+        })
+        .then(() => {
           console.log('QB init done..');
           QB.settings.enableAutoReconnect({enable: true});
         })
@@ -85,10 +89,10 @@ export const getQBSetting = async () => {
           console.log('QB ERROR:=>', e);
           // Some error occured, look at the exception message for more details
         });
-        return response.data.payload.app.quickblox;
-      }
-    });
-}
+      return response.data.payload.app.quickblox;
+    }
+  });
+};
 
 // export const getQBSetting = () => Utility.getStorage('appSetting').then(async (setting) => {
 //     console.log('Setting utility:=>', setting);
@@ -217,12 +221,13 @@ export const getQBProfilePic = (dialogType, entityType, originalImage) => {
       return images.profilePlaceHolder;
     }
   } else {
-    return { uri: originalImage };
+    return {uri: originalImage};
   }
   return images.groupUsers;
 };
 
-export const QBChatDisconnect = () => QBChatConnected()
+export const QBChatDisconnect = () =>
+  QBChatConnected()
     .then(() => QB.chat.disconnect())
     .catch((e) => e);
 
@@ -230,7 +235,8 @@ export const QBlogin = (
   uniqueID,
   customData = {},
   userAccountType = QB_ACCOUNT_TYPE.USER,
-) => new Promise((resolve, reject) => {
+) =>
+  new Promise((resolve, reject) => {
     QB.auth
       .login({
         login: uniqueID,
@@ -260,7 +266,8 @@ export const QBLogout = async () => {
 };
 
 export const QBcreateUser = (uniqueID, customData, userAccountType) => {
-  const nameType = customData?.entity_type === 'player' ? 'full_name' : 'group_name';
+  const nameType =
+    customData?.entity_type === 'player' ? 'full_name' : 'group_name';
   const fullName = userAccountType + _.get(customData, [nameType], 'Full Name');
   const pureName = _.get(customData, [nameType], 'Full Name');
   const {
@@ -306,7 +313,8 @@ export const QBupdateUser = async (
   userAccountType,
   authContext,
 ) => {
-  const nameType = customData?.entity_type === 'player' ? 'full_name' : 'group_name';
+  const nameType =
+    customData?.entity_type === 'player' ? 'full_name' : 'group_name';
   const fullName = userAccountType + _.get(customData, [nameType], 'Full Name');
   const pureName = _.get(customData, [nameType], 'Full Name');
   const {
@@ -362,23 +370,23 @@ export const QBsetupSettings = async () => {
     messageTimeout: 10,
   });
   await QB.settings.enableCarbons();
-  await QB.settings.enableAutoReconnect({ enable: true });
+  await QB.settings.enableAutoReconnect({enable: true});
 };
 
 export const QBgetDialogs = async (request = {}) => {
   const connected = await QBChatConnected();
 
-  console.log('QB connnn',connected);
+  console.log('QB connnn', connected);
   if (connected) {
     try {
-      const { append, ...params } = request || {};
+      const {append, ...params} = request || {};
       const response = await QB.chat.getDialogs({
         limit: DIALOG_LIST_LIMIT,
         ...params,
       });
-      console.log('QB get dialog',response);
+      console.log('QB get dialog', response);
 
-      return { ...response, append };
+      return {...response, append};
     } catch (e) {
       return e;
     }
@@ -387,7 +395,7 @@ export const QBgetDialogs = async (request = {}) => {
 };
 
 export const QBgetMessages = (dialogId, skipCount = 0) => {
-  QBChatConnected().then((connected) => {
+  return QBChatConnected().then((connected) => {
     if (connected) {
       const query = {
         dialogId,
@@ -403,7 +411,8 @@ export const QBgetMessages = (dialogId, skipCount = 0) => {
   });
 };
 
-export const QBsendMessage = (dialogId, body, file = null) => QBChatConnected().then((connected) => {
+export const QBsendMessage = (dialogId, body, file = null) =>
+  QBChatConnected().then((connected) => {
     if (connected) {
       const message = {
         dialogId,
@@ -428,7 +437,8 @@ export const QBcreateDialog = (
   dialogType = QB_DIALOG_TYPE.SINGLE,
   groupName = 'Group',
 ) => {
-  const type = dialogType === QB_DIALOG_TYPE.SINGLE
+  const type =
+    dialogType === QB_DIALOG_TYPE.SINGLE
       ? QB.chat.DIALOG_TYPE.CHAT
       : QB.chat.DIALOG_TYPE.GROUP_CHAT;
   return QBChatConnected().then((connected) => {
@@ -450,9 +460,10 @@ export const QBupdateDialogNameAndPhoto = (
   name = '',
   photo = '',
   authContext,
-) => QBChatConnected().then(async (connected) => {
+) =>
+  QBChatConnected().then(async (connected) => {
     if (connected) {
-      const update = { dialogId };
+      const update = {dialogId};
       if (name) update.name = name;
       if (photo) update.photo = photo;
       if (!photo) {
@@ -473,7 +484,7 @@ export const QBupdateDialogNameAndPhoto = (
           occupantsIds: res?.occupants_ids,
           dialogType: res?.type,
         }))
-        .catch((error) => ({ status: 'error', error }));
+        .catch((error) => ({status: 'error', error}));
     }
     throw new Error('server-not-connected');
   });
@@ -482,7 +493,8 @@ export const QBupdateDialogInvitees = async (
   dialogId,
   addUsers = [],
   removeUsers = [],
-) => QBChatConnected().then((connected) => {
+) =>
+  QBChatConnected().then((connected) => {
     if (connected) {
       const update = {
         dialogId,
@@ -505,9 +517,9 @@ export const QBupdateDialogInvitees2 = async (
     if (connected) {
       const update = {};
       update.photo = 'https://picsum.photos/id/320/640/1136';
-      if (addUsers?.length > 0) update.push_all = { occupants_ids: addUsers };
+      if (addUsers?.length > 0) update.push_all = {occupants_ids: addUsers};
       if (removeUsers?.length > 0) {
-        update.pull_all = { occupants_ids: removeUsers };
+        update.pull_all = {occupants_ids: removeUsers};
       }
       const url = `${QUICKBLOX_BASE_URL}/chat/Dialog/${dialogId}.json`;
       return fetch(url, {
@@ -525,7 +537,8 @@ export const QBupdateDialogInvitees2 = async (
   });
 };
 
-export const QBgetAllUsers = () => QBChatConnected().then((connected) => {
+export const QBgetAllUsers = () =>
+  QBChatConnected().then((connected) => {
     if (connected) {
       const filter = {
         field: QB.users.USERS_FILTER.FIELD.LOGIN,
@@ -542,11 +555,12 @@ export const QBgetAllUsers = () => QBChatConnected().then((connected) => {
     throw new Error('server-not-connected');
   });
 
-export const QBgetUserDetail = (field, fieldType, value) => QBChatConnected().then((connected) => {
-  console.log('connected:',connected);  
-  if (connected) {
-      Utility.getStorage('appSetting').then(async (setting) => {
-        console.log('SETTTTTTING:',setting);
+export const QBgetUserDetail = (field, fieldType, value) =>
+   QBChatConnected().then((connected) => {
+    console.log('connected:', connected);
+    if (connected) {
+     return Utility.getStorage('appSetting').then(async (setting) => {
+        console.log('SETTTTTTING USERS_LIST_LIMIT:', setting);
         const filter = {
           field,
           type: fieldType,
@@ -559,20 +573,23 @@ export const QBgetUserDetail = (field, fieldType, value) => QBChatConnected().th
           filter,
         });
       });
+    } 
+      throw new Error('server-not-connected');
+    
+  });
+
+export const QBgetFileURL = (fileID) =>
+  QBChatConnected().then((connected) => {
+    if (connected) {
+      return QB.content.getPrivateURL({uid: fileID.toString()});
     }
     throw new Error('server-not-connected');
   });
 
-export const QBgetFileURL = (fileID) => QBChatConnected().then((connected) => {
+export const QBleaveDialog = (dialogId) =>
+  QBChatConnected().then((connected) => {
     if (connected) {
-      return QB.content.getPrivateURL({ uid: fileID.toString() });
-    }
-    throw new Error('server-not-connected');
-  });
-
-export const QBleaveDialog = (dialogId) => QBChatConnected().then((connected) => {
-    if (connected) {
-      return QB.chat.leaveDialog({ dialogId });
+      return QB.chat.leaveDialog({dialogId});
     }
     throw new Error('server-not-connected');
   });
@@ -580,22 +597,22 @@ export const QBleaveDialog = (dialogId) => QBChatConnected().then((connected) =>
 export const QBconnectAndSubscribe = async (entity) => {
   const connected = await QBChatConnected();
   if (entity?.QB) {
-    const { id } = entity.QB;
+    const {id} = entity.QB;
     if (!connected) {
       return QB.chat
-        .connect({ userId: id, password: QB_Auth_Password })
+        .connect({userId: id, password: QB_Auth_Password})
         .then(async () => {
           console.log('QB connected successfully');
           return true;
         })
         .catch((error) => {
           console.log(error.message);
-          return { error: error.message };
+          return {error: error.message};
         });
     }
     console.log('QB already connected');
     return true;
   }
   console.log('Something went wrong');
-  return { error: 'Something Went wrong' };
+  return {error: 'Something Went wrong'};
 };

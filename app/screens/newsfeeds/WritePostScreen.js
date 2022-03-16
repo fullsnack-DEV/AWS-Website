@@ -62,9 +62,9 @@ export default function WritePostScreen({navigation, route}) {
   const [letModalVisible, setLetModalVisible] = useState(false);
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
-  const {
-    params: {postData, onPressDone},
-  } = route;
+  const [onPressDoneButton] = useState(() => route?.params?.onPressDone);
+  const {postData} = route?.params ?? {};
+
   let userImage = '';
   let userName = '';
   if (postData && postData.thumbnail) {
@@ -105,10 +105,18 @@ export default function WritePostScreen({navigation, route}) {
                 if (!isThere) format_tagged_data.splice(index, 1);
                 return null;
               });
+              console.log('format_tagged_data', format_tagged_data);
+
               // eslint-disable-next-line no-param-reassign
               tagData.forEach((tData) => delete tData.entity_data);
-
-              onPressDone(selectImage, searchText, tagData, format_tagged_data);
+              console.log('tagData', tagData);
+              console.log('onPressDoneButton', onPressDoneButton);
+              onPressDoneButton(
+                selectImage,
+                searchText,
+                tagData,
+                format_tagged_data,
+              );
               navigation.goBack();
               setTimeout(() => {
                 setloading(false);
@@ -119,7 +127,7 @@ export default function WritePostScreen({navigation, route}) {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, onPressDone, searchText, selectImage, tagsOfEntity]);
+  }, [navigation, searchText, selectImage, tagsOfEntity]);
 
   useEffect(() => {
     if (searchText[currentTextInputIndex - 1] === '@') {
@@ -197,7 +205,7 @@ export default function WritePostScreen({navigation, route}) {
   }, [route?.params]);
 
   useEffect(() => {
-    console.log('searchText',searchText);
+    console.log('searchText', searchText);
     if (searchText?.length === 0) {
       setTagsOfEntity([]);
       setUsers([]);
@@ -268,15 +276,18 @@ export default function WritePostScreen({navigation, route}) {
   const searchFilterFunction = useCallback(
     (text) => {
       if (text?.length > 0) {
-        let userData = searchUsers.filter((a) => !tagsOfEntity.some((b) => a.user_id === b.entity_id));  
-        let groupData = searchGroups.filter((o1) => !tagsOfEntity.some((o2) => o1.group_id === o2?.entity_id));
-
-  
-         userData = userData.filter(
-          (x) => x?.full_name?.toLowerCase().includes(text?.toLowerCase()),
+        let userData = searchUsers.filter(
+          (a) => !tagsOfEntity.some((b) => a.user_id === b.entity_id),
         );
-         groupData = groupData.filter(
-          (x) =>  x?.group_name?.toLowerCase().includes(text?.toLowerCase()),
+        let groupData = searchGroups.filter(
+          (o1) => !tagsOfEntity.some((o2) => o1.group_id === o2?.entity_id),
+        );
+
+        userData = userData.filter((x) =>
+          x?.full_name?.toLowerCase().includes(text?.toLowerCase()),
+        );
+        groupData = groupData.filter((x) =>
+          x?.group_name?.toLowerCase().includes(text?.toLowerCase()),
         );
         setUsers([...userData]);
         setGroups([...groupData]);

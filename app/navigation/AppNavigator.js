@@ -62,15 +62,13 @@ const Tab = createBottomTabNavigator();
 //   }
 // }
 
-
 const getTabBarVisibility = (route) => {
   // let routeName = '';
   const routeObj = route?.routes?.[route?.index] ?? {};
 
-  const routeName = routeObj?.state?.routes?.[routeObj?.state?.index]?.name
+  const routeName = routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
 
-
-  console.log('routeNamerouteNamerouteNamerouteName:=>',route);
+  console.log('routeNamerouteNamerouteNamerouteName:=>', route);
   // if (route.name === 'Account') {
   //   const lastIndex = route?.state?.routes?.[0]?.state?.routes?.length - 1;
   //   routeName = route?.state?.routes?.[0]?.state?.routes?.[lastIndex]?.name;
@@ -117,7 +115,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'EditEventScreen' ||
     // || routeName === 'CreateEventScreen'
     routeName === 'EditChallengeAvailability' ||
-    routeName === 'MessageChatRoom' ||
+    routeName === 'MessageChat' ||
     routeName === 'MessageInviteScreen' ||
     routeName === 'MessageNewGroupScreen' ||
     routeName === 'MessageEditGroupScreen' ||
@@ -239,27 +237,25 @@ const getTabBarVisibility = (route) => {
     routeName === 'EntityReviewScreen' ||
     routeName === 'RespondForInviteScreen' ||
     routeName === 'JoinedTeamsScreen' ||
-    routeName === 'ClubSettingScreen' || 
-    routeName === 'EditMemberBasicInfoScreen' || 
-    routeName === 'EditClubNotesScreen' || 
-    routeName === 'EditMemberAuthInfoScreen' || 
+    routeName === 'ClubSettingScreen' ||
+    routeName === 'EditMemberBasicInfoScreen' ||
+    routeName === 'EditClubNotesScreen' ||
+    routeName === 'EditMemberAuthInfoScreen' ||
     routeName === 'EditMemberTeamInfoScreen' ||
-    routeName === 'EntityStatScreen' || 
+    routeName === 'EntityStatScreen' ||
     routeName === 'CreateMemberProfileForm1' ||
     routeName === 'CreateMemberProfileForm2' ||
     routeName === 'CreateMemberProfileForm3' ||
-    routeName === 'EditMemberInfoScreen' || 
+    routeName === 'EditMemberInfoScreen' ||
     routeName === 'CreateMemberProfileClubForm2' ||
-    routeName === 'CreateMemberProfileClubForm3' || 
+    routeName === 'CreateMemberProfileClubForm3' ||
     routeName === 'CreateMemberProfileTeamForm2' ||
     routeName === 'InviteMembersBySearchScreen' ||
-    routeName === 'RequestBasicInfoScreen' || 
-    routeName === 'RequestMultipleBasicInfoScreen' || 
-    routeName === 'EditPersonalProfileScreen' || 
+    routeName === 'RequestBasicInfoScreen' ||
+    routeName === 'RequestMultipleBasicInfoScreen' ||
+    routeName === 'EditPersonalProfileScreen' ||
     routeName === 'AddCardScreen' ||
     routeName === 'PaymentMethodsScreen'
-
-
   ) {
     return false;
   }
@@ -270,14 +266,13 @@ const QbMessageEmitter = new NativeEventEmitter(QB.chat);
 
 const AppNavigator = ({navigation}) => {
   const routes = useNavigationState((state) => state);
-  console.log('routesLengthroutesLengthroutesLength',routes);
+  console.log('routesLengthroutesLengthroutesLength', routes);
 
   const authContext = useContext(AuthContext);
   const count = useRef(0);
   const [role, setRole] = useState('user');
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
-
 
   useEffect(() => {
     if (authContext?.entity?.QB) QBeventListeners();
@@ -518,10 +513,10 @@ const AppNavigator = ({navigation}) => {
         component={LocalHomeNavigator}
         options={({route}) => ({
           headerShown: false,
-           // tabBarVisible: getTabBarVisibility(routes),
-          tabBarStyle: { display:  getTabBarVisibility(routes) ? 'flex' : 'none' },
+          // tabBarVisible: getTabBarVisibility(routes),
+          tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: ({focused}) => {
-            if (focused) onTabPress();
+            if (focused);
             return (
               <Image
                 source={focused ? images.tab_home_selected : images.tab_home}
@@ -537,9 +532,9 @@ const AppNavigator = ({navigation}) => {
         options={({route}) => ({
           headerShown: false,
           // tabBarVisible: getTabBarVisibility(route),
-          tabBarStyle: { display:  getTabBarVisibility(routes) ? 'flex' : 'none' },
+          tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: ({focused}) => {
-            if (focused) onTabPress();
+            if (focused);
             return (
               <Image
                 source={focused ? images.tabSelectedFeed : images.tabFeed}
@@ -558,8 +553,8 @@ const AppNavigator = ({navigation}) => {
           ...(unreadCount > 0 && {
             tabBarBadge: unreadCount > 300 ? '300+' : unreadCount,
           }),
-         // tabBarVisible: getTabBarVisibility(route),
-         tabBarStyle: { display:  getTabBarVisibility(routes) ? 'flex' : 'none' },
+          // tabBarVisible: getTabBarVisibility(route),
+          tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
             return (
@@ -579,9 +574,9 @@ const AppNavigator = ({navigation}) => {
         options={({route}) => ({
           headerShown: false,
           // tabBarVisible: getTabBarVisibility(route),
-          tabBarStyle: { display:  getTabBarVisibility(routes) ? 'flex' : 'none' },
+          tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: ({focused}) => {
-            if (focused) onTabPress();
+            if (focused);
             return (
               <Image
                 source={
@@ -606,8 +601,8 @@ const AppNavigator = ({navigation}) => {
               unreadNotificationCount > 300 ? '300+' : unreadNotificationCount,
           }),
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
-         // tabBarVisible: getTabBarVisibility(route),
-         tabBarStyle: { display:  getTabBarVisibility(routes) ? 'flex' : 'none' },
+          // tabBarVisible: getTabBarVisibility(route),
+          tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: renderTabIcon,
           headerShown: false,
         })}

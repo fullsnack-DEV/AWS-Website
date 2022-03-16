@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-nested-ternary */
@@ -55,6 +57,8 @@ export default function ChallengePaymentScreen({route, navigation}) {
   console.log(' route?.params?.challengeObj,', route?.params?.challengeObj);
   const [groupObj] = useState(route?.params?.groupObj);
   const [defaultCard, setDefaultCard] = useState();
+
+const [type] = useState(route?.params?.type);
 
   const getChallenger = () => {
     if (
@@ -369,7 +373,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
       </View>
       <TCThinDivider />
 
-      {route?.params?.type === 'challenge' && (
+      {type === 'challenge' && (
         <View>
           <TCLabel title={`Game · ${challengeData?.sport}`} />
           <TCInfoImageField
@@ -535,7 +539,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
         onPress={() => {
           // navigation.push('ChallengeSentScreen');
 
-          if (route?.params?.type === 'challenge') {
+          if (type === 'challenge') {
             sendChallenge();
           } else {
             let challengeObj = {};

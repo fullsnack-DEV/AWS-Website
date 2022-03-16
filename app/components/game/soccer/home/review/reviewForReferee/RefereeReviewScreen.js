@@ -85,7 +85,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
       setReviewsData(obj);
     }
     if (route?.params?.entityTags) {
-      console.table(route?.params?.entityTags);
+      console.log(route?.params?.entityTags);
 
       obj.tagged = route?.params?.entityTags;
       setReviewsData(obj);

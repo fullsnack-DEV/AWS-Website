@@ -47,11 +47,13 @@ module.exports = {
     'no-undef': [2],
     'react/jsx-curly-spacing': [0, 'always'],
     'no-restricted-syntax': [0],
+    'no-tabs': 0,
     'react/jsx-indent': [
       2,
       2,
       {checkAttributes: true, indentLogicalExpressions: true},
     ],
+    
     'no-plusplus': ['error', {allowForLoopAfterthoughts: true}],
     'one-var-declaration-per-line': [0],
     'one-var': [0],

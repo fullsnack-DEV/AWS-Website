@@ -26,7 +26,7 @@ import AuthContext from '../../../auth/context';
 export default function AddLogScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
-const { invoiceDetail } = route?.params ?? {}
+const [invoiceDetail] = useState(route?.params?.invoiceDetail);
 console.log('IDetail:=>', invoiceDetail);
   // const isFocused = useIsFocused();
   const [paymentSwitchSelection, setPaymentSwitchSelection] = useState(0);

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-continue */
 /* eslint-disable no-nested-ternary */
@@ -51,7 +52,8 @@ import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperA
 
 let entity = {};
 export default function EditChallenge({navigation, route}) {
-  const {sportName, groupObj} = route?.params ?? {};
+  const [sportName] =  useState(route?.params?.sportName);
+  const [groupObj] = useState(route?.params?.groupObj);
 
   console.log('settingObjsettingObj:=>', route?.params?.settingObj);
 

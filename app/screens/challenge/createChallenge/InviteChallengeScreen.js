@@ -37,7 +37,8 @@ import TCFormProgress from '../../../components/TCFormProgress';
 
 let entity = {};
 export default function InviteChallengeScreen({navigation, route}) {
-  const {setting, sportName, sportType, groupObj} = route?.params ?? {};
+
+
 
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
@@ -45,6 +46,14 @@ export default function InviteChallengeScreen({navigation, route}) {
   const [totalZero, setTotalZero] = useState(false);
   const [feeObj, setFeeObj] = useState();
   const [venue, setVenue] = useState();
+
+  const [sportName] = useState(route?.params?.sportName);
+  const [sportType] = useState(route?.params?.sportType);
+  const [setting] = useState(route?.params?.setting);
+  const [groupObj] = useState(route?.params?.groupObj);
+
+
+
 
   // const [startDate, setStartDate] = useState(
   //   new Date().setHours(new Date().getHours() + 10),
@@ -279,6 +288,8 @@ export default function InviteChallengeScreen({navigation, route}) {
     const body = {
       ...settingObject,
       ...feeObj,
+      sport : sportName,
+      sport_type : sportType,
       venue,
       start_datetime: route?.params?.startTime / 1000,
       end_datetime: route?.params?.endTime / 1000,
@@ -302,8 +313,12 @@ export default function InviteChallengeScreen({navigation, route}) {
       body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
 
     }
-    body.sport = sportName;
-    body.sport_type = sportType;
+   
+
+
+    console.log('Challenge sportName:=>', sportName);
+
+    console.log('Challenge sportType:=>', sportType);
 
     console.log('Challenge Object:=>', body);
 

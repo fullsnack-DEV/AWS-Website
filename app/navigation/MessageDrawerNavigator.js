@@ -2,13 +2,14 @@ import React from 'react';
 
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import colors from '../Constants/Colors';
-import MessageChatRoom from '../components/message/MessageChatRoom';
+import MessageNavigator from './MessageNavigator';
 import MessageInviteeDrawerScreen from '../components/message/MessageInviteeDrawerScreen';
 
 const Drawer = createDrawerNavigator();
 
 const MessageDrawerNavigator = () => (
   <Drawer.Navigator
+  initialRouteName="MessageChat"
     drawerContent={(props) => (
       <MessageInviteeDrawerScreen
         {...props}
@@ -29,7 +30,8 @@ const MessageDrawerNavigator = () => (
       backgroundColor: colors.whiteColor,
       borderTopLeftRadius: 10,
     }}>
-    <Drawer.Screen name="MessageChatRoom" component={MessageChatRoom} />
+    <Drawer.Screen name="MessageChat" component={MessageNavigator} />
+    
   </Drawer.Navigator>
 );
 

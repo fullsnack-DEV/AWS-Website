@@ -56,7 +56,8 @@ import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperA
 
 let entity = {};
 export default function AlterChallengeScreen({ navigation, route }) {
-  const { sportName, groupObj } = route?.params ?? {};
+  const [groupObj] = useState(route?.params?.groupObj);
+  const [sportName] = useState(route?.params?.sportName);
 
   console.log('settingObjsettingObj:=>', route?.params?.settingObj);
 

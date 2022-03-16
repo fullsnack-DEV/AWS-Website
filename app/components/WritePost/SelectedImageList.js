@@ -15,7 +15,6 @@ import images from '../../Constants/ImagePath'
 function SelectedImageList({
   data, onItemPress, itemNumber, totalItemNumber, isClose = true, isCounter = true,
 }) {
-  console.table(data);
   const [showExtraButtons, setShowExtraButtons] = useState(false);
   const videoPlayerRef = useRef();
   return (

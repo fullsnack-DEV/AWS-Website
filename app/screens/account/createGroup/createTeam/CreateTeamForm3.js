@@ -28,7 +28,7 @@ import TCPlayerImageInfo from '../../../../components/TCPlayerImageInfo';
 import {getSportName} from '../../../../utils';
 
 export default function CreateTeamForm3({navigation, route}) {
-  const {createTeamForm2} = route?.params ?? {};
+  const [createTeamForm2] = useState(route?.params?.createTeamForm2);
 
   console.log('createTeamForm2:=>', createTeamForm2);
   const actionSheet = useRef();

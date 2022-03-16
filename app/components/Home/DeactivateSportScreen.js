@@ -1,4 +1,4 @@
-import React, { useState, useContext,useEffect } from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -23,10 +23,11 @@ import {
   patchRegisterScorekeeperDetails,
 } from '../../api/Users';
 import images from '../../Constants/ImagePath';
-import { getGroups } from '../../api/Groups';
+import {getGroups} from '../../api/Groups';
 
-export default function DeactivateSportScreen({ navigation, route }) {
-  const { sportName, type } = route?.params ?? {};
+export default function DeactivateSportScreen({navigation, route}) {
+  const [sportName] = useState(route?.params?.sportName);
+  const [type] = useState(route?.params?.type);
   const authContext = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [showLeaveMsg, setShowLeaveMsg] = useState(false);
@@ -35,18 +36,24 @@ export default function DeactivateSportScreen({ navigation, route }) {
 
   console.log('Entity SportName: => ', sportName);
 
-
   useEffect(() => {
-    
     getGroups(authContext)
       .then((response) => {
         console.log('Get user groups Data Res ::--', response);
-        if(response.payload.clubs.length > 0 || response.payload.teams.length > 0){
-
-          if(response.payload.clubs.filter((obj)=> obj.sport === sportName && obj.sport_type === type).length > 0 || response.payload.teams.filter((obj)=> obj.sport === sportName && obj.sport_type === type).length > 0){
-            setShowLeaveMsg(true)
+        if (
+          response.payload.clubs.length > 0 ||
+          response.payload.teams.length > 0
+        ) {
+          if (
+            response.payload.clubs.filter(
+              (obj) => obj.sport === sportName && obj.sport_type === type,
+            ).length > 0 ||
+            response.payload.teams.filter(
+              (obj) => obj.sport === sportName && obj.sport_type === type,
+            ).length > 0
+          ) {
+            setShowLeaveMsg(true);
           }
-          
         }
       })
       .catch((error) => {
@@ -57,31 +64,29 @@ export default function DeactivateSportScreen({ navigation, route }) {
     setloading(true);
 
     const selectedSport = (
-      authContext?.entity?.obj?.sport_setting?.activity_order
-      || authContext?.entity?.obj?.registered_sports
-    )?.filter(
-      (obj) => obj.sport === sportName,
-    )[0];
+      authContext?.entity?.obj?.sport_setting?.activity_order ||
+      authContext?.entity?.obj?.registered_sports
+    )?.filter((obj) => obj.sport === sportName)[0];
 
     const modifiedObj = {
       ...selectedSport,
       is_published: false, //! item.is_published,
     };
     const players = (
-      authContext?.entity?.obj?.sport_setting?.activity_order
-      || authContext?.entity?.obj?.registered_sports
+      authContext?.entity?.obj?.sport_setting?.activity_order ||
+      authContext?.entity?.obj?.registered_sports
     ).map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
 
-    patchPlayer({ registered_sports: players }, authContext)
+    patchPlayer({registered_sports: players}, authContext)
       .then(async (res) => {
         setloading(false);
         const entity = authContext.entity;
         entity.auth.user = res.payload;
         entity.obj = res.payload;
-        authContext.setEntity({ ...entity });
+        authContext.setEntity({...entity});
         await Utility.setStorage('authContextUser', res.payload);
-        await Utility.setStorage('authContextEntity', { ...entity });
-        setModalVisible(true)
+        await Utility.setStorage('authContextEntity', {...entity});
+        setModalVisible(true);
       })
       .catch((error) => {
         Alert.alert(error);
@@ -98,10 +103,12 @@ export default function DeactivateSportScreen({ navigation, route }) {
       ...selectedScorekeeperSport,
       is_published: false, //! item.is_published,
     };
-    const scorekeepers = authContext?.entity?.obj?.scorekeeper_data.map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
+    const scorekeepers = authContext?.entity?.obj?.scorekeeper_data.map((u) =>
+      u.sport !== modifiedObj.sport ? u : modifiedObj,
+    );
 
     patchRegisterScorekeeperDetails(
-      { scorekeeper_data: scorekeepers },
+      {scorekeeper_data: scorekeepers},
       authContext,
     )
       .then(async (res) => {
@@ -109,11 +116,11 @@ export default function DeactivateSportScreen({ navigation, route }) {
         const entity = authContext.entity;
         entity.auth.user = res.payload;
         entity.obj = res.payload;
-        authContext.setEntity({ ...entity });
+        authContext.setEntity({...entity});
 
         await Utility.setStorage('authContextUser', res.payload);
-        await Utility.setStorage('authContextEntity', { ...entity });
-       setModalVisible(true)
+        await Utility.setStorage('authContextEntity', {...entity});
+        setModalVisible(true);
       })
       .catch((error) => {
         Alert.alert(error);
@@ -131,18 +138,20 @@ export default function DeactivateSportScreen({ navigation, route }) {
       ...selectedRefereeSport,
       is_published: false, //! item.is_published,
     };
-    const referees = authContext?.entity?.obj?.referee_data.map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
-    patchRegisterRefereeDetails({ referee_data: referees }, authContext)
+    const referees = authContext?.entity?.obj?.referee_data.map((u) =>
+      u.sport !== modifiedObj.sport ? u : modifiedObj,
+    );
+    patchRegisterRefereeDetails({referee_data: referees}, authContext)
       .then(async (res) => {
         setloading(false);
         const entity = authContext.entity;
         entity.auth.user = res.payload;
         entity.obj = res.payload;
-        authContext.setEntity({ ...entity });
+        authContext.setEntity({...entity});
 
         await Utility.setStorage('authContextUser', res.payload);
-        await Utility.setStorage('authContextEntity', { ...entity });
-       setModalVisible(true)
+        await Utility.setStorage('authContextEntity', {...entity});
+        setModalVisible(true);
       })
       .catch((error) => {
         Alert.alert(error);
@@ -186,10 +195,13 @@ export default function DeactivateSportScreen({ navigation, route }) {
           onPress={() => {
             // Alert.alert('',
             //   'Please leave all clubs, leagues and seasons before you deactivate Tennis Singles.');
-            
-            if(showLeaveMsg){
-              Alert.alert('',`Please leave all teams, clubs and leagues before you deactivate ${sportName}.`);
-            }else{
+
+            if (showLeaveMsg) {
+              Alert.alert(
+                '',
+                `Please leave all teams, clubs and leagues before you deactivate ${sportName}.`,
+              );
+            } else {
               Alert.alert(
                 `Are you sure you want to deactivate ${sportName}?`,
                 '',
@@ -214,11 +226,9 @@ export default function DeactivateSportScreen({ navigation, route }) {
                     },
                   },
                 ],
-                { cancelable: false },
+                {cancelable: false},
               );
             }
-            
-            
           }}
         />
         <Modal
@@ -239,11 +249,11 @@ export default function DeactivateSportScreen({ navigation, route }) {
             <TouchableOpacity
               onPress={() => {
                 setTimeout(() => {
-                    setModalVisible(false);
-                  }, 10);
-                  navigation.goBack();
+                  setModalVisible(false);
+                }, 10);
+                navigation.goBack();
               }}
-              style={{ alignSelf: 'flex-end' }}>
+              style={{alignSelf: 'flex-end'}}>
               <Image
                 source={images.cancelWhite}
                 style={{

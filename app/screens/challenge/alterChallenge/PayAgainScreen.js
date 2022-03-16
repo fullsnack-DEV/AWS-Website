@@ -30,10 +30,12 @@ export default function PayAgainScreen({ navigation, route }) {
   const [challengeObj, setChallengeObj] = useState();
   const [sorceScreen, setSourceScreen] = useState()
   const [defaultCard, setDefaultCard] = useState();
+  const [body] = useState(route.params?.body);
+  const [status] = useState(route.params?.status);
+
 
   useEffect(() => {
     if (isFocused) {
-      const { body, status } = route.params ?? {};
       setSourceScreen(status);
       setChallengeObj(body)
       if (route?.params?.paymentMethod) {
