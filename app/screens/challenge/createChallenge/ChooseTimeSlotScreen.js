@@ -117,7 +117,6 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
       authContext?.entity?.obj?.group_id || authContext?.entity?.obj?.user_id,
       new Date().getTime() / 1000,
     ).then((response) => {
-      console.table('aa', response);
       setloading(false);
       const bookSlots = response;
       setSlots(bookSlots);

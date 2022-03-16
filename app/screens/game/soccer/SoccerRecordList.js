@@ -70,7 +70,6 @@ export default function SoccerRecordList({ route }) {
         }
       })
       getGameMatchRecords(gameId, authContext).then((res) => {
-        console.table(res.payload)
         setMatchRecords(res.payload);
       }).finally(() => setLoading(false));
     }

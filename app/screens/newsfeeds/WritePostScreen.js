@@ -89,7 +89,6 @@ export default function WritePostScreen({navigation, route}) {
             } else {
               setloading(true);
               const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-              console.log('tagData', tagData);
               const format_tagged_data = JSON.parse(
                 JSON.stringify(tagsOfEntity),
               );
