@@ -31,7 +31,10 @@ export default function RefundPolicy({navigation, route}) {
     {key: strings.moderateText, id: 2},
     {key: strings.flexibleText, id: 3},
   ];
-  const {comeFrom, sportName, sportType} = route?.params ?? {};
+  const [comeFrom] = useState(route?.params?.comeFrom);
+  const [sportName] = useState(route?.params?.sportName);
+  const [sportType] = useState(route?.params?.sportType);
+  
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);

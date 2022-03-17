@@ -26,7 +26,10 @@ export default function ManageChallengeScreen({ navigation, route }) {
   const [showBottomNotes, setShowBottomNotes] = useState(true);
   const authContext = useContext(AuthContext);
 
-  const { sportName, sportType } = route?.params ?? {};
+  const [sportName] = useState(route?.params?.sportName);
+
+  const [sportType] = useState(route?.params?.sportType);
+
 
   console.log('sportName:::=>', sportName);
   console.log('sportType:::=>', sportType);

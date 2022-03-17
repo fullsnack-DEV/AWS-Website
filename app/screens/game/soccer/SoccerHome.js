@@ -41,6 +41,8 @@ const SoccerHome = ({ navigation, route }) => {
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext)
+  const galleryRef = useRef(null);
+
   const [soccerGameId] = useState(route?.params?.gameId);
   const [currentTab, setCurrentTab] = useState(0);
   const [gameData, setGameData] = useState(null);
@@ -160,6 +162,7 @@ const SoccerHome = ({ navigation, route }) => {
           gameData={gameData}
           getGalleryData={getSoccerGalleryData}
           navigation={navigation}
+          galleryRef={galleryRef}
       />
   ), [gameData, getSoccerGalleryData, isAdmin, navigation])
 

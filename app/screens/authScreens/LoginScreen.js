@@ -112,7 +112,6 @@ export default function LoginScreen({navigation}) {
         console.log('User Data:', userData);
         getRedirectionScreenName(userData)
           .then((responseScreen) => {
-            setloading(false);
             navigation.replace(responseScreen?.screen, {
               ...responseScreen?.params,
             });
@@ -133,8 +132,6 @@ export default function LoginScreen({navigation}) {
                   Alert.alert(strings.alertmessagetitle, e.message);
                 }, 10);
               });
-
-            setloading(false);
           });
       }
     },

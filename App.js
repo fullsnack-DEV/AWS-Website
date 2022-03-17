@@ -39,7 +39,6 @@ export default function App() {
     await Utility.setStorage('tokenData', token);
   }, []);
 
-console.log('1::=>');
 
 // useEffect(() => {
 //   axios({
@@ -93,7 +92,6 @@ console.log('1::=>');
     StatusBar.setBackgroundColor('white');
     Orientation.lockToPortrait();
 
-    console.log('2::=>');
 
     const QBSetting = {
             accountKey: 'aaaaa',

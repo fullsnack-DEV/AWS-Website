@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-concat */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   useEffect,
@@ -20,8 +21,11 @@ import {
   KeyboardAvoidingView,
   FlatList,
   Alert,
+  TextInput,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import {Modalize} from 'react-native-modalize';
+import {Portal} from 'react-native-portalize';
 import QB from 'quickblox-react-native-sdk';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -32,6 +36,7 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCInputBox from '../TCInputBox';
+import TCGroupNameBadge from '../TCGroupNameBadge';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -46,6 +51,7 @@ import {
   QBgetMessages,
   QBgetUserDetail,
   QBsendMessage,
+  QBleaveDialog,
 } from '../../utils/QuickBlox';
 import MessageChatShimmer from '../shimmer/message/MessageChatShimmer';
 import {ShimmerView} from '../shimmer/commonComponents/ShimmerCommonComponents';
@@ -64,20 +70,29 @@ const GradiantContainer = ({style, ...props}) => (
 
 const MessageChat = ({route, navigation}) => {
   const videoPlayerRef = useRef();
+  const commentModalRef = useRef(null);
+
   const authContext = useContext(AuthContext);
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploadImageInProgress, setUploadImageInProgress] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [dialogData, setDialogData] = useState(null);
+  const [dialogMenu, setDialogMenu] = useState(route?.params?.dialog);
   const [chatType, setChatType] = useState('');
   const [headingTitle, setHeadingTitle] = useState('');
   const [myUserId, setMyUserId] = useState();
   const [loading, setLoading] = useState(true);
   const [messageBody, setMessageBody] = useState('');
   const [savedMessagesData, setSavedMessagesData] = useState([]);
+  const [searchMessageData, setSearchMessageData] = useState([]);
+
   const [occupantsData, setOccupantsData] = useState([]);
+  const [hideSearchView, setHideSearchView] = useState(true);
+
   const scrollRef = useRef(null);
   const refSavedMessagesData = useRef(savedMessagesData);
+
+console.log('route?.params?.dialogroute?.params?.dialog',route?.params?.dialog);
 
   useEffect(() => {
     console.log(1);
@@ -166,9 +181,7 @@ const MessageChat = ({route, navigation}) => {
   useEffect(() => {
     if (dialogData) {
       if (!route?.params?.dialog) {
-        navigation.setParams({
-          dialog: {...dialogData, ...route?.params?.dialog},
-        });
+        setDialogMenu({...dialogData, ...route?.params?.dialog});
       }
       const getUser = async () => {
         setMyUserId(authContext.entity.QB.id);
@@ -215,6 +228,7 @@ const MessageChat = ({route, navigation}) => {
           messages = [...messages, payload];
           refSavedMessagesData.current = messages;
           setSavedMessagesData(messages);
+          setSearchMessageData(messages);
           setTimeout(() => onInputBoxFocus(), 100);
         }
       }
@@ -240,9 +254,11 @@ const MessageChat = ({route, navigation}) => {
             ...savedMessagesData,
           ];
           setSavedMessagesData((data) => [...response.message, ...data]);
+          setSearchMessageData((data) => [...response.message, ...data]);
         } else {
           refSavedMessagesData.current = [...response.message];
           setSavedMessagesData([...response.message]);
+          setSearchMessageData([...response.message]);
         }
       } catch (err) {
         console.log(err);
@@ -253,6 +269,15 @@ const MessageChat = ({route, navigation}) => {
     [dialogData?.dialogId, savedMessagesData],
   );
 
+  const searchMessage = (text) => {
+    const result = savedMessagesData.filter((x) => x.body.includes(text));
+
+    if (text.length > 0) {
+      setSavedMessagesData(result);
+    } else {
+      setSavedMessagesData(searchMessageData);
+    }
+  };
   const renderMessages = useCallback(
     ({item, index}) => {
       console.log('Messsssages', item);
@@ -465,18 +490,31 @@ const MessageChat = ({route, navigation}) => {
         )
         }
         rightComponent={
-          <TouchableOpacity
-            style={{padding: 2}}
-            onPress={() => {
-              console.log('navigationnavigation', navigation);
-              navigation.openDrawer();
-              navigation.setParams({participants: [occupantsData]});
-            }}>
-            <Image
-              source={images.threeDotIcon}
-              style={styles.rightImageStyle}
-            />
-          </TouchableOpacity>
+          <View
+            style={{padding: 2, flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableOpacity
+              onPress={() => {
+                setHideSearchView(!hideSearchView);
+              }}>
+              <Image
+                source={images.searchLocation}
+                style={styles.rightSearchImageStyle}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                console.log('occupantsData', occupantsData);
+                console.log('dialogData', dialogData);
+
+                commentModalRef.current.open();
+                // navigation.setParams({participants: [occupantsData]});
+              }}>
+              <Image
+                source={images.threeDotIcon}
+                style={styles.rightImageStyle}
+              />
+            </TouchableOpacity>
+          </View>
         }
       />
     ),
@@ -646,12 +684,119 @@ const MessageChat = ({route, navigation}) => {
       uploadImageInProgress,
     ],
   );
+  const ModalHeader = () => (
+    <View style={styles.headerStyle}>
+      <View style={styles.handleStyle} />
+    </View>
+  );
+  const onPressDone = useCallback(
+    (newDialog) => {
+      navigation.setParams({dialog: {...dialogData, ...newDialog}});
+    },
+    [dialogData, navigation],
+  );
+
+  const onParticipantsPress = useCallback(
+    (userData) => {
+      const uid =
+        userData?.entity_type === 'player'
+          ? userData?.user_id
+          : userData?.group_id;
+      if (uid && userData?.entity_type) {
+        commentModalRef.current.close()
+        navigation.push('HomeScreen', {
+          uid,
+          backButtonVisible: true,
+          role:
+          userData.entity_type === 'player' ? 'user' : userData?.entity_type,
+          menuBtnVisible: false,
+        });
+      }
+    },
+    [navigation],
+  );
+
+  const renderRow = useCallback(
+    ({item}) => {
+      const customData = JSON.parse(item?.customData);
+      const fullImage = customData?.full_image ?? '';
+      const finalImage = fullImage
+        ? {uri: fullImage}
+        : images.profilePlaceHolder;
+      return (
+        <TouchableOpacity
+          style={styles.rowContainer}
+          onPress={() => onParticipantsPress(customData)}>
+          <View style={styles.imageContainer}>
+            <Image style={styles.inviteImage} source={finalImage} />
+          </View>
+          <TCGroupNameBadge
+            textStyle={styles.rowText}
+            name={customData?.full_name}
+            groupType={customData?.entity_type}
+          />
+        </TouchableOpacity>
+      );
+    },
+    [onParticipantsPress],
+  );
+
+  const leaveRoom = () => {
+    const okPress = () => {
+      QBleaveDialog(dialogMenu?.id)
+        .then(() => {
+          commentModalRef.current.close();
+          navigation.goBack();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+    Alert.alert(
+      '',
+      'Are you sure you want to \n' + 'Leave this chatroom?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Leave', onPress: () => okPress(), style: 'destructive'},
+      ],
+      {cancelable: false},
+    );
+  };
+  let fullName = dialogMenu?.name;
+  if (dialogMenu?.type === QB.chat.DIALOG_TYPE.CHAT) {
+    fullName = dialogMenu?.name?.slice(2, dialogMenu?.name?.length);
+  }
+
+  const searchView = () => {
+    return (
+      <View style={styles.searchContainer}>
+        <View style={styles.sectionStyle}>
+          <Image source={images.searchLocation} style={styles.searchImg} />
+          <TextInput
+            style={styles.textInput}
+            placeholder={'Search'}
+            clearButtonMode="always"
+            placeholderTextColor={colors.userPostTimeColor}
+            onChangeText={(text) => searchMessage(text)}
+          />
+        </View>
+        <TouchableOpacity onPress={() => setHideSearchView(true)}>
+          <Image source={images.menuClose} style={styles.searchClose} />
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.mainContainer}>
       {/* <ActivityLoader visible={loading} /> */}
       {renderHeader}
       <View style={styles.sperateLine} />
+      {!hideSearchView && searchView()}
       {loading ? (
         <View style={{flex: 1, backgroundColor: colors.offwhite}}>
           <MessageChatShimmer />
@@ -661,9 +806,112 @@ const MessageChat = ({route, navigation}) => {
           style={{flex: 1}}
           behavior={Platform.OS === 'ios' ? 'padding' : null}>
           {messageList}
-          {renderBottomChatTools}
+          {hideSearchView && renderBottomChatTools}
         </KeyboardAvoidingView>
       )}
+      <Portal>
+        <Modalize
+          // onOpen={() => setMenuModal(true)}
+          snapPoint={hp(95)}
+          withHandle={false}
+          overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
+          HeaderComponent={ModalHeader}
+          modalStyle={{
+            borderTopRightRadius: 25,
+            borderTopLeftRadius: 25,
+            shadowColor: colors.blackColor,
+            shadowOffset: {width: 0, height: -2},
+            shadowOpacity: 0.3,
+            shadowRadius: 10,
+            elevation: 10,
+          }}
+          ref={commentModalRef}>
+          {/* <MessageInviteeDrawerScreen
+            navigation={navigation}
+            participants={occupantsData ?? []}
+            dialog={{...dialogData, ...route?.params?.dialog}}
+            commentModalRef={commentModalRef}
+          /> */}
+
+          <View style={styles.viewContainer}>
+            <View style={{flex: 1, marginLeft: 15}}>
+              <Text style={styles.titleLabel}>
+                {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT &&
+                  'CHATROOM NAME'}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  commentModalRef.current.close()
+                  if (dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT)
+                    navigation.navigate('MessageEditGroupScreen', {
+                      dialog: dialogMenu,
+                      onPressDone,
+                    });
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={[styles.title, {marginLeft: wp(3)}]}>
+                    {fullName}
+                  </Text>
+                  {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
+                    <FastImage
+                      resizeMode={'contain'}
+                      source={images.arrowDown}
+                      style={{
+                        ...styles.downArrow,
+                        transform: [{rotateZ: '270deg'}],
+                      }}
+                    />
+                  )}
+                </View>
+              </TouchableOpacity>
+              <View style={styles.separator} />
+              <Text style={styles.titleLabel}>PARTICIPANTS</Text>
+              {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
+                <TouchableOpacity
+                  style={styles.rowContainer}
+                  onPress={() => {
+                    console.log('inviteButton');
+                    commentModalRef.current.close();
+
+                    navigation.navigate('MessageEditInviteeScreen', {
+                      dialog: dialogMenu,
+                      isAdmin: dialogMenu?.userId === myUserId,
+                      selectedInvitees: occupantsData,
+                      participants: occupantsData,
+                      onPressDone,
+                    });
+                  }}>
+                  <Image
+                    style={styles.inviteImage}
+                    source={images.plus_round_orange}
+                  />
+                  <Text style={[styles.rowText, {color: colors.orangeColor}]}>
+                    Invite
+                  </Text>
+                </TouchableOpacity>
+              )}
+              <FlatList
+                data={occupantsData}
+                renderItem={renderRow}
+                keyExtractor={(item, index) => index.toString()}
+                showsVerticalScrollIndicator={false}
+              />
+            </View>
+            <TouchableOpacity style={styles.bottomView} onPress={leaveRoom}>
+              <Image
+                style={styles.inviteImage}
+                source={images.leave_chat_room}
+              />
+              <Text style={styles.grayText}>LEAVE CHAT ROOM</Text>
+            </TouchableOpacity>
+          </View>
+        </Modalize>
+      </Portal>
     </SafeAreaView>
   );
 };
@@ -685,6 +933,13 @@ const styles = StyleSheet.create({
     width: 10,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
+  },
+  rightSearchImageStyle: {
+    height: 15,
+    width: 15,
+    tintColor: colors.blackColor,
+    resizeMode: 'contain',
+    marginRight: 15,
   },
   rightImageStyle: {
     height: 20,
@@ -785,6 +1040,132 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: wp(10),
     margin: wp(1),
+  },
+
+  headerStyle: {
+    borderTopRightRadius: 25,
+    borderTopLeftRadius: 25,
+    backgroundColor: colors.whiteColor,
+  },
+  handleStyle: {
+    marginVertical: 15,
+    alignSelf: 'center',
+    height: 5,
+    width: 40,
+    borderRadius: 15,
+    backgroundColor: '#DADBDA',
+  },
+
+  viewContainer: {
+    flex: 1,
+    marginRight: wp(1),
+  },
+  titleLabel: {
+    fontSize: 14,
+    fontFamily: fonts.RMedium,
+    color: colors.userPostTimeColor,
+  },
+  downArrow: {
+    height: 15,
+    width: 15,
+    marginRight: 15,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
+  },
+  title: {
+    width: '80%',
+    marginTop: hp(1),
+    fontSize: 20,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: hp(1.5),
+  },
+  rowText: {
+    width: '75%',
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    marginLeft: wp(3),
+  },
+  inviteImage: {
+    borderRadius: 25,
+    height: 22.5,
+    width: 22.5,
+  },
+  grayText: {
+    fontSize: 12,
+    fontFamily: fonts.RBold,
+    color: colors.userPostTimeColor,
+  },
+  bottomView: {
+    height: 50,
+    paddingLeft: 20,
+    // backgroundColor: colors.grayBackgroundColor,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  separator: {
+    backgroundColor: colors.thinDividerColor,
+    height: 1,
+    marginTop: hp(2),
+    marginBottom: 35,
+  },
+
+  sectionStyle: {
+    alignItems: 'center',
+    backgroundColor: colors.offwhite,
+    borderRadius: 25,
+    flexDirection: 'row',
+    height: 45,
+    paddingLeft: 17,
+    paddingRight: 5,
+    width: wp('90%'),
+    shadowColor: colors.grayColor,
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 2,
+    marginLeft: 10,
+  },
+  searchImg: {
+    alignSelf: 'center',
+    height: 15,
+    tintColor: colors.magnifyIconColor,
+    resizeMode: 'contain',
+    width: 15,
+  },
+  searchClose: {
+    alignSelf: 'center',
+    height: 10,
+    tintColor: colors.lightBlackColor,
+    resizeMode: 'contain',
+    width: 10,
+    marginRight: 10,
+  },
+  textInput: {
+    flex: 1,
+    color: colors.blackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    paddingLeft: 10,
+    backgroundColor: colors.offwhite,
+  },
+  searchContainer: {
+    width: '100%',
+    backgroundColor: colors.grayBackgroundColor,
+    flexDirection: 'row',
+    height: 55,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    // shadowColor: colors.grayColor,
+    // shadowOffset: { width: 0, height: 5 },
+    // shadowOpacity: 0.2,
+    // shadowRadius: 10,
+    // elevation: 2,
   },
 });
 

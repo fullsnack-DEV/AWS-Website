@@ -44,7 +44,9 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
   // For activity indicator
   const authContext = useContext(AuthContext);
 
-  const {groupDetails} = route?.params ?? {};
+  const [groupDetails] = useState(route?.params?.groupDetails);
+
+
   console.log('groupDetailsgroupDetails:', groupDetails);
   const [loading, setloading] = useState(false);
   const [groupData, setGroupData] = useState(groupDetails);

@@ -28,7 +28,8 @@ import {acceptRequest, declineRequest} from '../../api/Notificaitons';
 
 // const entity = {};
 export default function RespondForInviteScreen({navigation, route}) {
-  const {groupObj} = route?.params ?? {}; // JSON.parse(groupObj.activities[0].object)
+  const [groupObj] = useState(route?.params?.groupObj);
+
   const entityObject = groupObj;
 
   console.log('route obj:=>', groupObj);

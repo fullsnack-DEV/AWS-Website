@@ -794,7 +794,7 @@ const HomeScreen = ({navigation, route}) => {
 
   const callthis = useCallback(
     (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
-      if (postDesc.trim().length > 0 && data?.length === 0) {
+      if (postDesc?.trim()?.length > 0 && data?.length === 0) {
         const dataParams = {
           text: postDesc,
           tagged: tagsOfEntity ?? [],
@@ -2695,6 +2695,10 @@ const HomeScreen = ({navigation, route}) => {
     navigation.navigate('EntityGallaryScreen', {
       currentUserData,
       isAdmin,
+      galleryRef,
+      entityType: route?.params?.role ?? authContext.entity?.role,
+      entityID: route?.params?.uid ?? authContext.entity?.uid,
+      callFunction: () => callthis,
     });
   };
   const moveToReview = () => {
@@ -3195,7 +3199,7 @@ const HomeScreen = ({navigation, route}) => {
                     entityType: route?.params?.role ?? authContext.entity?.role,
                     entityID: route?.params?.uid ?? authContext.entity?.uid,
                     currentUserData,
-                    callFunction: callthis,
+                    callFunction: () => callthis,
                   });
                 }}
               />

@@ -26,8 +26,7 @@ import React, {
      const [showBottomNotes, setShowBottomNotes] = useState(true);
      const authContext = useContext(AuthContext);
 
-     const { sportName } = route?.params ?? {};
-
+     const [sportName] = useState(route?.params?.sportName);
      const getSettings = useCallback(() => {
       setSettingObject((authContext?.entity?.obj?.scorekeeper_data ?? []).filter((obj) => obj.sport === sportName)?.[0]?.setting);
      }, [authContext, sportName]);

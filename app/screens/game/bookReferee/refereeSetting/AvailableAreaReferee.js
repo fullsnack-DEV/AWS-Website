@@ -34,8 +34,8 @@ import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
 // const entity = {};
 export default function AvailableAreaReferee({navigation, route}) {
-  const {comeFrom, sportName} = route?.params ?? {};
-
+  const [comeFrom] = useState(route?.params?.comeFrom);
+  const [sportName] = useState(route?.params?.sportName);
   // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   // const [selectedAddressIndex, setSelectedAddressIndex] = useState();

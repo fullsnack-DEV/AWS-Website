@@ -112,7 +112,7 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
             console.log('Estimate referee::=>', response.payload);
 
             body.hourly_game_fee = response?.payload?.hourly_game_fee ?? 0;
-            body.currency_type = 'CAD';
+            body.currency_type = response?.payload?.currency_type ?? 'CAD';
             body.total_payout = response?.payload?.total_payout ?? 0;
             body.total_service_fee1 =
               response?.payload?.total_service_fee1 ?? 0;

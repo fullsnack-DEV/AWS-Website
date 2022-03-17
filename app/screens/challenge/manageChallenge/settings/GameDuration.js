@@ -34,8 +34,9 @@ import {getNumberSuffix} from '../../../../utils/gameUtils';
 const MAX_HOUR_LIMIT = 100;
 // const entity = {};
 export default function GameDuration({navigation, route}) {
-  const {comeFrom, sportName, sportType} = route?.params ?? {};
-
+  const [comeFrom] = useState(route?.params?.comeFrom);
+  const [sportName] = useState(route?.params?.sportName);
+  const [sportType] = useState(route?.params?.sportType);
   // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [firstPeriod, setFirstPeriod] = useState(

@@ -11,7 +11,9 @@ import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperA
 export default function ScorekeeperAgreementScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [opetion, setOpetion] = useState(1);
-  const { challengeObj, groupObj, type } = route?.params ?? {};
+  const [challengeObj] = useState(route?.params?.challengeObj);
+  const [groupObj] = useState(route?.params?.groupObj);
+  const [type] = useState(route?.params?.type);
 
   return (
     <View style={styles.mainContainer}>
