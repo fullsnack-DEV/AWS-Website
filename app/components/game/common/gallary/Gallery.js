@@ -54,13 +54,13 @@ const Gallery = ({navigation, gameData, isAdmin, galleryRef}) => {
   return (
     <View style={{flex: 1}}>
       <AllInOneGallery
-       isAdmin={isAdmin}
+        isAdmin={isAdmin}
         ref={galleryRef}
         entity_type={'game'}
         entity_id={gameData?.game_id}
         onAddPhotoPress={(pickImages) => {
-          console.log('onAddPhotoPress:::',pickImages);
-          navigation.navigate('WritePostScreen',{
+          console.log('onAddPhotoPress:::', pickImages);
+          navigation.navigate('WritePostScreen', {
             postData: authContext?.entity?.obj ?? {},
             onPressDone: callthis,
             selectedImageList: pickImages,

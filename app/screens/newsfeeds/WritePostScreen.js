@@ -114,7 +114,10 @@ export default function WritePostScreen({navigation, route}) {
               // eslint-disable-next-line no-param-reassign
               tagData.forEach((tData) => delete tData.entity_data);
               console.log('tagData', tagData);
+              console.log('route::route', route?.params);
+
               console.log('onPressDoneButton', onPressDoneButton);
+             
               onPressDoneButton(
                 selectImage,
                 searchText,
@@ -136,7 +139,7 @@ export default function WritePostScreen({navigation, route}) {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, searchText, selectImage, tagsOfEntity]);
+  }, [navigation, onPressDoneButton, route?.params, searchText, selectImage, tagsOfEntity]);
 
   useEffect(() => {
     if (searchText[currentTextInputIndex - 1] === '@') {
