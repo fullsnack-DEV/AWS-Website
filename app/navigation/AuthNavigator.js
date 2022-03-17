@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { createStackNavigator } from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
 
 import WelcomeScreen from '../screens/authScreens/WelcomeScreen';
 import ChooseSportsScreen from '../screens/authScreens/ChooseSportsScreen';
@@ -17,77 +17,88 @@ import AddBirthdayScreen from '../screens/authScreens/AddBirthdayScreen';
 import ChooseGenderScreen from '../screens/authScreens/ChooseGenderScreen';
 
 import BottomTab from '../components/BottomTab';
-import colors from '../Constants/Colors'
+import colors from '../Constants/Colors';
 import SignupFromLoginScreen from '../screens/authScreens/SignupFromLoginScreen';
 
 const Stack = createStackNavigator();
 
 const AuthNavigator = () => (
-
   <Stack.Navigator
-      screenOptions={ {
-        gestureEnabled: false,
-        headerTintColor: colors.whiteColor,
-        headerTransparent: true,
-        headerTitle: false,
-        headerBackTitleVisible: false,
-      } }>
-
+    screenOptions={{
+      gestureEnabled: false,
+      headerTintColor: colors.whiteColor,
+      headerTransparent: true,
+      headerTitle: false,
+      headerBackTitleVisible: false,
+    }}>
     <Stack.Screen
-        name="WelcomeScreen"
-        component={ WelcomeScreen }
-        options={ { headerShown: false } }
-      />
+      name="WelcomeScreen"
+      component={WelcomeScreen}
+      options={{headerShown: false}}
+    />
     <Stack.Screen
-        name="ForgotPasswordScreen"
-        component={ ForgotPasswordScreen }
-        options={ { title: ''} }
-      />
+      name="ForgotPasswordScreen"
+      component={ForgotPasswordScreen}
+      options={{title: ''}}
+    />
     <Stack.Screen
-        name="ForgotPasswordLinkSentScreen"
-        component={ ForgotPasswordLinkSentScreen }
-        options={ { title: '' } }
-      />
-    <Stack.Screen name="SignupScreen" component={ SignupScreen } options={ {title: ''} } />
-    <Stack.Screen name="LoginScreen" component={ LoginScreen } options={ {title: ''} } />
-    <Stack.Screen name="SignUpFromLoginScreen" component={ SignupFromLoginScreen } options={ {title: ''} } />
+      name="ForgotPasswordLinkSentScreen"
+      component={ForgotPasswordLinkSentScreen}
+      options={{title: ''}}
+    />
     <Stack.Screen
-        name="ChooseLocationScreen"
-        component={ ChooseLocationScreen }
-        options={ {title: ''} }
-      />
+      name="SignupScreen"
+      component={SignupScreen}
+      options={{title: ''}}
+    />
     <Stack.Screen
-        name="ChooseSportsScreen"
-        component={ ChooseSportsScreen }
-        options={ {title: ''} }
-      />
-    <Stack.Screen name="FollowTeams" component={ FollowTeams } options={ {} } />
-    <Stack.Screen name="HomeScreen" component={ HomeScreen } options={ {} } />
+      name="LoginScreen"
+      component={LoginScreen}
+      options={{title: ''}}
+    />
     <Stack.Screen
-        name="EmailVerificationScreen"
-        component={ EmailVerificationScreen }
-        options={ {title: ''} }
-      />
+      name="SignUpFromLoginScreen"
+      component={SignupFromLoginScreen}
+      options={{title: ''}}
+    />
     <Stack.Screen
-        name="BottomTab"
-        component={ BottomTab }
-        options={ { headerShown: false } }
-      />
+      name="ChooseLocationScreen"
+      component={ChooseLocationScreen}
+      options={{title: ''}}
+    />
     <Stack.Screen
-        name="TotalTeamsScreen"
-        component={ TotalTeamsScreen }
-        options={ {title: ''} }
-      />
+      name="ChooseSportsScreen"
+      component={ChooseSportsScreen}
+      options={{title: ''}}
+    />
+    <Stack.Screen name="FollowTeams" component={FollowTeams} options={{}} />
+    <Stack.Screen name="HomeScreen" component={HomeScreen} options={{}} />
     <Stack.Screen
-        name="AddBirthdayScreen"
-        component={ AddBirthdayScreen }
-        options={ { headerShown: false } }
-      />
+      name="EmailVerificationScreen"
+      component={EmailVerificationScreen}
+      options={{title: ''}}
+    />
     <Stack.Screen
-        name="ChooseGenderScreen"
-        component={ ChooseGenderScreen }
-        options={ {title: ''} }
-      />
+      name="BottomTab"
+      component={BottomTab}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="TotalTeamsScreen"
+      component={TotalTeamsScreen}
+      options={{title: ''}}
+    />
+    <Stack.Screen
+      name="AddBirthdayScreen"
+      component={AddBirthdayScreen}
+      // options={{headerShown: true}}
+      options={{title: ''}}
+    />
+    <Stack.Screen
+      name="ChooseGenderScreen"
+      component={ChooseGenderScreen}
+      options={{title: ''}}
+    />
   </Stack.Navigator>
 );
 

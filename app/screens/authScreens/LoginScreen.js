@@ -1,4 +1,10 @@
-import React, {useState, useContext, useMemo, useCallback} from 'react';
+import React, {
+  useState,
+  useContext,
+  useMemo,
+  useCallback,
+  useLayoutEffect,
+} from 'react';
 import {
   View,
   Text,
@@ -6,7 +12,9 @@ import {
   Alert,
   TextInput,
   StyleSheet,
+  Image,
 } from 'react-native';
+import {StackActions} from '@react-navigation/native';
 
 import {
   widthPercentageToDP as wp,
@@ -212,7 +220,6 @@ export default function LoginScreen({navigation}) {
   );
 
   const login = useCallback(async () => {
-    
     await Utility.clearStorage();
     console.log('firebase:=>', firebase);
     firebase
@@ -220,7 +227,7 @@ export default function LoginScreen({navigation}) {
       .signInWithEmailAndPassword(email, password)
       .then(() => {
         console.log('then:=>');
-       
+
         const loginOnAuthStateChanged = firebase
           .auth()
           .onAuthStateChanged(onAuthStateChanged);
@@ -302,12 +309,11 @@ export default function LoginScreen({navigation}) {
   );
 
   const onLogin = useCallback(async () => {
-    setloading(true)
+    setloading(true);
     if (validate()) {
-      if (authContext.networkConnected){
-        login()
-      }
-      else {
+      if (authContext.networkConnected) {
+        login();
+      } else {
         authContext.showNetworkAlert();
       }
     }
@@ -331,6 +337,28 @@ export default function LoginScreen({navigation}) {
     ),
     [navigation, onLogin],
   );
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            // navigation.navigate('LoginScreen');
+            // navigation.dispatch(StackActions.popToTop());
+            navigation.dispatch(StackActions.replace('WelcomeScreen'));
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 15,
+              tintColor: colors.whiteColor,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   return (
     <LinearGradient

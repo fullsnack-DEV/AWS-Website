@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext,useLayoutEffect } from 'react';
+import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -6,17 +6,18 @@ import {
   FlatList,
   Alert,
   TouchableOpacity,
-  Image
+  Image,
 } from 'react-native';
+import {useNavigationState} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import { updateUserProfile } from '../../api/Users';
-import { getSportsList } from '../../api/Games';
+import {updateUserProfile} from '../../api/Users';
+import {getSportsList} from '../../api/Games';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import TCButton from '../../components/TCButton';
@@ -24,58 +25,75 @@ import Separator from '../../components/Separator';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import * as Utility from '../../utils/index';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
-
-export default function ChooseSportsScreen({ navigation, route }) {
+export default function ChooseSportsScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
   const [selected, setSelected] = useState([]);
   // For activity indigator
   const [loading, setloading] = useState(true);
-const [image_base_url, setImageBaseUrl] = useState();
+  const [image_base_url, setImageBaseUrl] = useState();
   const authContext = useContext(AuthContext);
   const selectedSports = [];
+  const routes = useNavigationState((state) => state);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.pop(2)}>
-          <Image source={images.backArrow} style={{
-            height: 20, width: 15, marginLeft: 15, tintColor: colors.whiteColor,
-          }} />
+        <TouchableOpacity
+          onPress={() => {
+            const routeObj = routes?.routes?.[routes?.index] ?? {};
+            const routeName =
+              routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
+            if (routeName === 'ChooseLocationScreen') {
+              navigation.pop(1);
+            } else {
+              navigation.navigate('ChooseLocationScreen');
+              // navigation.navigate.push('ChooseLocationScreen');
+            }
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 15,
+              tintColor: colors.whiteColor,
+            }}
+          />
         </TouchableOpacity>
       ),
     });
   }, [navigation]);
 
   useEffect(() => {
-    getSportsList(authContext).then((response) => {
-      console.log('Sport list:::', response);
+    getSportsList(authContext)
+      .then((response) => {
+        console.log('Sport list:::', response);
 
-      Utility.getStorage('appSetting').then((setting) => {
-     
-        setImageBaseUrl(setting.base_url_sporticon)
-        console.log('IMAGE_BASE_URL', setting.base_url_sporticon);
-        
+        Utility.getStorage('appSetting').then((setting) => {
+          setImageBaseUrl(setting.base_url_sporticon);
+          console.log('IMAGE_BASE_URL', setting.base_url_sporticon);
+        });
+
+        const arr = [];
+        for (const tempData of response.payload) {
+          tempData.isChecked = false;
+          arr.push(tempData);
+        }
+        setSports(arr);
+        setTimeout(() => setloading(false), 1000);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
       });
-
-      const arr = [];
-      for (const tempData of response.payload) {
-        tempData.isChecked = false;
-        arr.push(tempData);
-      }
-      setSports(arr);
-      setTimeout(() => setloading(false), 1000);
-    }).catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
   }, []);
 
-  const isIconCheckedOrNot = ({ item, index }) => {
+  const isIconCheckedOrNot = ({item, index}) => {
     console.log('SELECTED:::', index);
 
     sports[index].isChecked = !item.isChecked;
@@ -93,85 +111,102 @@ const [image_base_url, setImageBaseUrl] = useState();
 
   const updateProfile = async (params, callback) => {
     setloading(true);
-    updateUserProfile(params, authContext).then(async (userResoponse) => {
-      const userData = userResoponse?.payload;
-      const entity = { ...authContext?.entity };
-      entity.auth.user = userData;
-      entity.obj = userData;
-      await Utility.setStorage('loggedInEntity', { ...entity })
-      await Utility.setStorage('authContextEntity', { ...entity })
-      await Utility.setStorage('authContextUser', { ...userData });
-      await authContext.setUser({ ...userData });
-      await authContext.setEntity({ ...entity });
-      setloading(false);
-      callback();
-    }).catch(() => setloading(false))
-  }
+    updateUserProfile(params, authContext)
+      .then(async (userResoponse) => {
+        const userData = userResoponse?.payload;
+        const entity = {...authContext?.entity};
+        entity.auth.user = userData;
+        entity.obj = userData;
+        await Utility.setStorage('loggedInEntity', {...entity});
+        await Utility.setStorage('authContextEntity', {...entity});
+        await Utility.setStorage('authContextUser', {...userData});
+        await authContext.setUser({...userData});
+        await authContext.setEntity({...entity});
+        setloading(false);
+        callback();
+      })
+      .catch(() => setloading(false));
+  };
 
-  const renderItem = ({ item, index }) => {
-console.log('Image url :=>',`${image_base_url}${item.player_image}`);
+  const renderItem = ({item, index}) => {
+    console.log('Image url :=>', `${image_base_url}${item.player_image}`);
     return (
       <TouchableWithoutFeedback
-          style={ styles.listItem }
-          onPress={ () => {
-            isIconCheckedOrNot({ item, index });
-          } }>
-        <FastImage resizeMode={'contain'} source={{ uri: `${image_base_url}${item.player_image}` }} style={ styles.sportImg } />
-        <Text style={ styles.sportList }>{item.sport_name}</Text>
-        <View style={ styles.checkbox }>
+        style={styles.listItem}
+        onPress={() => {
+          isIconCheckedOrNot({item, index});
+        }}>
+        <FastImage
+          resizeMode={'contain'}
+          source={{uri: `${image_base_url}${item.player_image}`}}
+          style={styles.sportImg}
+        />
+        <Text style={styles.sportList}>{item.sport_name}</Text>
+        <View style={styles.checkbox}>
           {sports?.[index]?.isChecked ? (
-            <FastImage source={ images.checkWhite } resizeMode={'contain'} style={ styles.checkboxImg } />
+            <FastImage
+              source={images.checkWhite}
+              resizeMode={'contain'}
+              style={styles.checkboxImg}
+            />
           ) : (
-            <FastImage resizeMode={'contain'} source={ images.unCheckWhiteBorder } style={ styles.unCheckboxImg } />
+            <FastImage
+              resizeMode={'contain'}
+              source={images.unCheckWhiteBorder}
+              style={styles.unCheckboxImg}
+            />
           )}
         </View>
         <Separator />
-  
       </TouchableWithoutFeedback>
-    )
+    );
   };
 
   const finalStepSignUp = async () => {
-      let dummyEntity = { ...authContext?.entity }
-      dummyEntity = { ...dummyEntity, isLoggedIn: true }
-      await Utility.setStorage('authContextEntity', { ...dummyEntity })
-      await authContext.setEntity({ ...dummyEntity });
-  }
+    let dummyEntity = {...authContext?.entity};
+    dummyEntity = {...dummyEntity, isLoggedIn: true};
+    await Utility.setStorage('authContextEntity', {...dummyEntity});
+    await authContext.setEntity({...dummyEntity});
+  };
 
   return (
     <LinearGradient
-          colors={[colors.themeColor1, colors.themeColor3]}
-          style={styles.mainContainer}>
-      <ActivityLoader visible={ loading } />
-      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
+      colors={[colors.themeColor1, colors.themeColor3]}
+      style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
+      <FastImage
+        resizeMode={'stretch'}
+        style={styles.background}
+        source={images.loginBg}
+      />
 
-      <Text style={ styles.sportText }>{strings.sportText}</Text>
+      <Text style={styles.sportText}>{strings.sportText}</Text>
       {/* <ActivityIndicator animating={loading} size="large" /> */}
       <FlatList
-          data={ sports }
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={ renderItem }
-        />
+        data={sports}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderItem}
+      />
 
       <TCButton
-          title={'CONTINUE'}
-          extraStyle={ { position: 'absolute', bottom: hp('7%') } }
-          onPress={ () => {
-            updateProfile({ sports: selected }, () => {
-              if (route.params && route.params.teamData) {
-                navigation.navigate('FollowTeams', {
-                  teamData: route.params.teamData,
-                  city: route.params.city,
-                  state: route.params.state,
-                  country: route.params.country,
-                  sports: selected,
-                });
-              } else {
-                finalStepSignUp();
-              }
-            })
-          } }
-        />
+        title={'CONTINUE'}
+        extraStyle={{position: 'absolute', bottom: hp('7%')}}
+        onPress={() => {
+          updateProfile({sports: selected}, () => {
+            if (route.params && route.params.teamData) {
+              navigation.navigate('FollowTeams', {
+                teamData: route.params.teamData,
+                city: route.params.city,
+                state: route.params.state,
+                country: route.params.country,
+                sports: selected,
+              });
+            } else {
+              finalStepSignUp();
+            }
+          });
+        }}
+      />
     </LinearGradient>
   );
 }
@@ -182,9 +217,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: wp('100%'),
   },
-  checkbox: {
-
-  },
+  checkbox: {},
   unCheckboxImg: {
     width: 22,
     height: 22,
@@ -199,7 +232,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
-
   },
   mainContainer: {
     flex: 1,

@@ -1,10 +1,14 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useContext, useEffect, useState, useLayoutEffect} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {StackActions} from '@react-navigation/native';
+
+import moment from 'moment';
+
 import {Tooltip} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
@@ -22,21 +26,16 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 
 export default function AddBirthdayScreen({navigation}) {
   const authContext = useContext(AuthContext);
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  const [dateValue, setDateValue] = useState(new Date());
+
+  console.log(
+    'auth birthday',
+    new Date(authContext?.entity?.obj?.birthday * 1000),
+  );
+  const [dateValue, setDateValue] = useState(
+    authContext?.entity?.obj?.birthday
+      ? new Date(authContext?.entity?.obj?.birthday * 1000)
+      : new Date(),
+  );
   const [minDateValue, setMinDateValue] = useState(new Date());
   const [maxDateValue, setMaxDateValue] = useState(new Date());
 
@@ -45,13 +44,33 @@ export default function AddBirthdayScreen({navigation}) {
   const onChange = (selectedDate) => {
     setDateValue(selectedDate);
   };
-
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            // navigation.navigate('LoginScreen');
+            navigation.dispatch(StackActions.replace('LoginScreen'));
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 15,
+              tintColor: colors.whiteColor,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
   useEffect(() => {
     const mindate = new Date();
     const maxdate = new Date();
     mindate.setFullYear(mindate.getFullYear() - 13);
     maxdate.setFullYear(maxdate.getFullYear() - 123);
-    setDateValue(mindate);
+    // setDateValue(mindate);
     setMinDateValue(mindate);
     setMaxDateValue(maxdate);
   }, []);
@@ -108,8 +127,7 @@ export default function AddBirthdayScreen({navigation}) {
 
         <View style={styles.matchFeeTxt}>
           <Text style={styles.dateText}>
-            {monthNames[dateValue.getMonth()]} {dateValue.getDate()} ,{' '}
-            {dateValue.getFullYear()}
+            {moment(dateValue).format('MMM DD, YYYY')}
           </Text>
         </View>
         <View style={{alignItems: 'center', justifyContent: 'center'}}>
