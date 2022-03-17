@@ -45,7 +45,7 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
     }
     setSelectedInvitees([...data]);
     if (data.length === 0) {
-      navigation.replace('MessageInviteScreen')
+      navigation.navigate('MessageInviteScreen')
     }
   }, [navigation, selectedInvitees]);
 

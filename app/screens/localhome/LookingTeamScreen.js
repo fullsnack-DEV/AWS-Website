@@ -69,8 +69,7 @@ export default function LookingTeamScreen({ navigation, route }) {
     route?.params?.filters.sport,
   );
   const [location, setLocation] = useState(route?.params?.filters.location);
-
-  const { sportsList } = route?.params ?? {};
+  const [sportsList] = useState(route?.params?.sportsList);
 
   useEffect(() => {
     if (route?.params?.locationText) {

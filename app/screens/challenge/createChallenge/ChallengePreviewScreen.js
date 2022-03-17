@@ -150,7 +150,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      setloading(true);
+     
       if (route?.params?.paymentMethod) {
         setDefaultCard(route?.params?.paymentMethod);
       } else if (!defaultCard && challengeData?.source) {

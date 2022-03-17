@@ -25,7 +25,10 @@ import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 
 function ChooseVenueScreen({ navigation, route }) {
-  const { venues, comeFrom } = route?.params ?? {};
+  const [venues] = useState(route?.params?.venues);
+  const [comeFrom] = useState(route?.params?.comeFrom);
+
+  
   const authContext = useContext(AuthContext);
 
   const [venueFooter, setVenueFooter] = useState(

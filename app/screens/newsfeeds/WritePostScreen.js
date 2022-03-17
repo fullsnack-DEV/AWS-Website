@@ -62,9 +62,13 @@ export default function WritePostScreen({navigation, route}) {
   const [letModalVisible, setLetModalVisible] = useState(false);
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
-  const [onPressDoneButton] = useState(() => route?.params?.onPressDone);
-  const {postData} = route?.params ?? {};
+  const [onPressDoneButton] = useState(route?.params?.onPressDone ? () => route?.params?.onPressDone : () => {});
+  const [postData] = useState(route?.params?.postData);
 
+
+  console.log('route?.params?.postData::',route?.params?.postData);
+
+  console.log('route?.params?.onPressDone::',route?.params?.onPressDone);
   let userImage = '';
   let userName = '';
   if (postData && postData.thumbnail) {
@@ -87,7 +91,7 @@ export default function WritePostScreen({navigation, route}) {
             if (searchText.trim()?.length === 0 && selectImage?.length === 0) {
               Alert.alert('Please write some text or select any image.');
             } else {
-              setloading(true);
+              // setloading(true);
               const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
               const format_tagged_data = JSON.parse(
                 JSON.stringify(tagsOfEntity),
@@ -110,24 +114,32 @@ export default function WritePostScreen({navigation, route}) {
               // eslint-disable-next-line no-param-reassign
               tagData.forEach((tData) => delete tData.entity_data);
               console.log('tagData', tagData);
+              console.log('route::route', route?.params);
+
               console.log('onPressDoneButton', onPressDoneButton);
+             
               onPressDoneButton(
                 selectImage,
                 searchText,
                 tagData,
                 format_tagged_data,
               );
-              navigation.goBack();
+              if(route?.params?.comeFrom){
+                navigation.pop(2);
+              }else{
+                navigation.goBack();
+              }
+              
               setTimeout(() => {
                 setloading(false);
-              }, uploadTimeout());
+              }, uploadTimeout);
             }
           }}>
           <Text style={styles.doneTextStyle}>Done</Text>
         </TouchableOpacity>
       ),
     });
-  }, [navigation, searchText, selectImage, tagsOfEntity]);
+  }, [navigation, onPressDoneButton, route?.params, searchText, selectImage, tagsOfEntity]);
 
   useEffect(() => {
     if (searchText[currentTextInputIndex - 1] === '@') {

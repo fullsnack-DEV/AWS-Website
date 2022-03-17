@@ -241,7 +241,7 @@ export default function WriteReviewScreen({ navigation, route }) {
                   // navigation.goBack()
                   setTimeout(() => {
                     setloading(false);
-                  }, uploadTimeout());
+                  }, uploadTimeout);
                 }
               }}
           >

@@ -12,7 +12,10 @@ import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
 
 export default function RefereeFee({navigation, route}) {
-  const {comeFrom, sportName} = route?.params ?? {};
+  const [comeFrom] = useState(route?.params?.comeFrom);
+  const [sportName] = useState(route?.params?.sportName);
+  
+  
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);

@@ -274,7 +274,7 @@ const MessageEditInviteeScreen = ({ navigation, route }) => {
       QBupdateDialogInvitees(dialogId, addUsers, removeUsers).then((res) => {
         setSelectedInvitees([]);
         route.params.onPressDone(res);
-        navigation.goBack();
+        navigation.navigate('MessageChat', {dialog : route?.params?.dialog});
       }).catch((error) => {
         console.log(error);
       })

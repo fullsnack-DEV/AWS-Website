@@ -17,7 +17,9 @@ const viewabilityConfig = {
 };
 
 function ShortsPlayScreen({ route }) {
-  const { caller_id, currentPage, shorts } = route?.params ?? {};
+  const [caller_id] = useState(route?.params?.caller_id);
+  const [currentPage] = useState(route?.params?.currentPage);
+  const [shorts] = useState(route?.params?.shorts);
 
   const carouselRef = useRef(0);
 
