@@ -42,7 +42,6 @@ import TCKeyboardView from '../../../../components/TCKeyboardView';
 let entity = {};
 
 export default function EditMemberBasicInfoScreen({navigation, route}) {
-  const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0;
 
   const monthNames = [
     'January',
