@@ -67,11 +67,15 @@ export default function MembersProfileScreen({navigation, route}) {
   const [editMembership, setEditMembership] = useState(false);
   const [memberDetail, setMemberDetail] = useState();
   const [switchUser, setSwitchUser] = useState({});
+const [groupID] = useState(route?.params?.groupID);
+const [memberID] = useState(route?.params?.memberID);
+const [whoSeeID] = useState(route?.params?.whoSeeID);
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () =>
-        route?.params?.whoSeeID === entity.uid &&
+       whoSeeID === entity.uid &&
         !loading && (
           <TouchableWithoutFeedback
             onPress={() => actionSheet?.current?.show()}>
@@ -91,7 +95,7 @@ export default function MembersProfileScreen({navigation, route}) {
     switchUser,
     editProfile,
     loading,
-    route?.params?.whoSeeID,
+    whoSeeID,
   ]);
 
   useEffect(() => {
@@ -133,14 +137,14 @@ export default function MembersProfileScreen({navigation, route}) {
       setEditBasicInfo(true);
       setEditTeam(false);
       setEditMembership(true);
-    } else if (route.params.whoSeeID === entity.uid) {
+    } else if (whoSeeID === entity.uid) {
       setEditProfile(true);
       setEditBasicInfo(true);
     }
 
     getGroupMembersInfo(
-      route?.params?.groupID,
-      route?.params?.memberID,
+      groupID,
+      memberID,
       authContext,
     )
       .then((response) => {
@@ -157,9 +161,9 @@ export default function MembersProfileScreen({navigation, route}) {
         }, 10);
       });
   };
-  const deleteMemberProfile = (groupID, memberID) => {
+  const deleteMemberProfile = (groupId, memberId) => {
     setloading(true);
-    deleteMember(groupID, memberID, authContext)
+    deleteMember(groupId, memberId, authContext)
       .then((response) => {
         setloading(false);
         console.log('PROFILE RESPONSE::', response.payload);
@@ -304,12 +308,12 @@ const getLocation=()=>{
                       navigation.navigate('UserFoundScreen', {
                         signUpObj: players[0],
                         memberObj: memberDetail,
-                        groupID: route?.params?.groupID,
+                        groupID,
                       });
                     } else {
                       navigation.navigate('UserNotFoundScreen', {
                         memberObj: memberDetail,
-                        groupID: route?.params?.groupID,
+                        groupID,
                       });
                     }
                   });

@@ -1,19 +1,19 @@
-import React, {
-} from 'react';
+import React, { memo } from 'react';
 
 import {
-  StyleSheet, Platform, Image, View, TextInput,
+  StyleSheet, Platform, View, TextInput,
 
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 import RNPickerSelect from 'react-native-picker-select';
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 import images from '../Constants/ImagePath'
 
-export default function TCPhoneNumber({
+const TCPhoneNumber = ({
   placeholder, value, numberValue, onValueChange, onChangeText,
-}) {
+}) => {
   console.log('this value', value)
 
   const onPhoneNumberCountryChanged = async (local_countryCode) => {
@@ -39,8 +39,10 @@ export default function TCPhoneNumber({
            useNativeAndroidPickerStyle={ false }
            // eslint-disable-next-line no-sequences
            style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
+           
            Icon={ () => (
-             <Image
+             <FastImage
+             resizeMode='contain'
                  source={ images.dropDownArrow }
                  style={ styles.miniDownArrow }
                />
@@ -50,7 +52,7 @@ export default function TCPhoneNumber({
         <TextInput
              placeholder={ 'Phone number' }
              style={ styles.halffeeText }
-             keyboardType={ 'phone-pad' }
+             keyboardType={ 'number-pad' }
              onChangeText={ onChangeText }
              maxLength={10}
              // editable={ editMode }
@@ -85,7 +87,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 1,
     elevation: 3,
-    width: '50%',
+    width: '48%',
 
   },
   halffeeText: {
@@ -109,7 +111,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     paddingVertical: 12,
     paddingHorizontal: 15,
-    width: 180,
+    width: 175,
     color: colors.lightBlackColor,
     paddingRight: 30,
     backgroundColor: colors.offwhite,
@@ -136,3 +138,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 });
+
+
+export default memo(TCPhoneNumber);

@@ -356,6 +356,7 @@ export default function PersonalInformationScreen({navigation, route}) {
                 ...userInfo,
                 height: {
                   height: text,
+                  height_type:  userInfo?.height?.height_type,
                 },
               });
             }}
@@ -438,6 +439,7 @@ export default function PersonalInformationScreen({navigation, route}) {
                 ...userInfo,
                 weight: {
                   weight: text,
+                  weight_type:  userInfo?.weight?.weight_type,
                 },
               });
             }}

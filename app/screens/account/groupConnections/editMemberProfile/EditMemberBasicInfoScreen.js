@@ -33,11 +33,11 @@ import TCMessageButton from '../../../../components/TCMessageButton';
 import TCThickDivider from '../../../../components/TCThickDivider';
 
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
-import TCDateTimePicker from '../../../../components/TCDateTimePicker';
 import AuthContext from '../../../../auth/context';
 import DataSource from '../../../../Constants/DataSource';
 import colors from '../../../../Constants/Colors';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
+import DateTimePickerView from '../../../../components/Schedule/DateTimePickerModal';
 
 let entity = {};
 
@@ -60,6 +60,8 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
+  const [minDateValue, setMinDateValue] = useState(new Date());
+  const [maxDateValue, setMaxDateValue] = useState(new Date());
   const [loading, setloading] = useState(false);
   const [location, setLocation] = useState(
     route?.params?.memberInfo?.city
@@ -67,7 +69,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       : '',
   );
 
-  const [show, setShow] = useState(false);
+  const [showDate, setShowDate] = useState(false);
   const [role, setRole] = useState('');
   const [phoneNumber, setPhoneNumber] = useState([
     {
@@ -78,6 +80,20 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   ]);
 
   const [memberInfo, setMemberInfo] = useState({});
+
+  useEffect(() => {
+    const mindate = new Date();
+    const maxdate = new Date();
+    mindate.setFullYear(mindate.getFullYear() - 13);
+    maxdate.setFullYear(maxdate.getFullYear() - 123);
+    // setDateValue(mindate);
+    setMinDateValue(mindate);
+    setMaxDateValue(maxdate);
+
+    console.log('Min date', mindate);
+    console.log('Max date', maxdate);
+  }, []);
+
 
   useEffect(() => {
     setPhoneNumber(
@@ -140,6 +156,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         <Text
           style={styles.nextButtonStyle}
           onPress={() => {
+            console.log('memberInfomemberInfo',memberInfo);
             if (checkValidation()) {
               editMemberBasicInfo();
               // if (entity.role === 'team') {
@@ -153,7 +170,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         </Text>
       ),
     });
-  }, [navigation, memberInfo, role, phoneNumber, show]);
+  }, [navigation, memberInfo, role, phoneNumber, showDate]);
 
   // Form Validation
   const checkValidation = () => {
@@ -230,14 +247,14 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         }, 10);
       });
   };
-  const handleDonePress = ({date}) => {
-    setShow(!show);
+  const handleDonePress = (date) => {
+    setShowDate(!showDate);
     if (date !== '') {
       setMemberInfo({...memberInfo, birthday: new Date(date).getTime()});
     }
   };
   const handleCancelPress = () => {
-    setShow(!show);
+    setShowDate(!showDate);
   };
   const renderPhoneNumber = ({item, index}) => (
     <TCPhoneNumber
@@ -305,12 +322,13 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           <TextInput
             placeholder={'Height'}
             style={{...styles.halffeeText, ...shadowStyle}}
-            keyboardType={'phone-pad'}
+            keyboardType={'number-pad'}
             onChangeText={(text) => {
               setMemberInfo({
                 ...memberInfo,
                 height: {
                   height: text,
+                  height_type: memberInfo?.height?.height_type,
                 },
               });
             }}
@@ -384,12 +402,13 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           <TextInput
             placeholder={'Weight'}
             style={{...styles.halffeeText, ...shadowStyle}}
-            keyboardType={'phone-pad'}
+            keyboardType={'number-pad'}
             onChangeText={(text) => {
               setMemberInfo({
                 ...memberInfo,
                 weight: {
                   weight: text,
+                  weight_type: memberInfo?.weight?.weight_type,
                 },
               });
             }}
@@ -522,7 +541,7 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
             ).getFullYear()}`
           }
           placeholder={strings.birthDatePlaceholder}
-          onPress={() => setShow(!show)}
+          onPress={() => setShowDate(!showDate)}
         />
       </View>
 
@@ -590,23 +609,33 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
           
         <TCTextField
           value={memberInfo.postal_code}
-          onChangeText={(text) =>
-            setMemberInfo({...memberInfo, postal_code: text})
-          }
+          onChangeText={(text) => {
+            const regex = /^[0-9a-zA-Z]+$/;
+            if (text.match(regex) || text === '') {
+              setMemberInfo({...memberInfo, postal_code: text});
+            }
+          }}
           placeholder={strings.postalCodeText}
           keyboardType={'default'}
         />
       </View>
-
       <View style={{marginBottom: 20}} />
 
-      <TCDateTimePicker
-        title={'Choose Birthday'}
-        visible={show}
-        onDone={handleDonePress}
-        onCancel={handleCancelPress}
-      />
       
+      {showDate && (
+        <View>
+          <DateTimePickerView
+            visible={showDate}
+            date={memberInfo?.birthday}
+            onDone={handleDonePress}
+            onCancel={handleCancelPress}
+            onHide={handleCancelPress}
+            minimumDate={maxDateValue}
+            maximumDate={minDateValue}
+            mode={'date'}
+          />
+        </View>
+      )}
     </TCKeyboardView>
     
   );

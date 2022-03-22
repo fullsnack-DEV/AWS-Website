@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import strings from '../../../Constants/String';
 
 import colors from '../../../Constants/Colors';
@@ -14,10 +14,8 @@ export default function UserTeamTopSection({
   loggedInEntity,
   onAction,
 }) {
-  let isMember = false;
-  if (teamDetails && teamDetails.parent_group_id === loggedInEntity.uid) {
-    isMember = true;
-  }
+  console.log('teamDetailsteamDetails',teamDetails);
+  
 
   return (
     <View style={{marginTop: !isAdmin ? 0 : 15, marginBottom: 15}}>
@@ -105,17 +103,17 @@ export default function UserTeamTopSection({
 
           {loggedInEntity.role === 'club' && (
             <View style={styles.messageButtonStyle}>
-              {isMember && (
+              {teamDetails?.parent_groups.includes(loggedInEntity.uid) && (
                 <TCProfileButton
-                  title={strings.member}
+                  title={strings.joining}
                   style={styles.firstButtonStyle}
                   rightImage={images.check}
                   imageStyle={styles.checkMarkStyle}
                   textStyle={styles.buttonTextStyle}
-                  onPressProfile={() => {}}
+                  onPressProfile={() => Alert.alert('Please ask to team for leave your club.')}
                 />
               )}
-              {!isMember && (
+              {!teamDetails?.parent_groups.includes(loggedInEntity.uid) && (
                 <TCActionButton
                   outerContainerStyle={styles.firstButtonOuterStyle}
                   style={styles.firstButtonStyle}
