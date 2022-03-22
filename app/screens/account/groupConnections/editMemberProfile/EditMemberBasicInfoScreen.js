@@ -9,8 +9,6 @@ import {
   Image,
   Platform,
   TouchableOpacity,
-  ScrollView,
-  KeyboardAvoidingView
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
@@ -39,6 +37,7 @@ import TCDateTimePicker from '../../../../components/TCDateTimePicker';
 import AuthContext from '../../../../auth/context';
 import DataSource from '../../../../Constants/DataSource';
 import colors from '../../../../Constants/Colors';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 let entity = {};
 
@@ -102,10 +101,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         route?.params?.state &&
         route?.params?.country
       ) {
-        console.log('route?.params?.city', route?.params?.city);
-        console.log('route?.params?.state', route?.params?.state);
-
-        console.log('route?.params?.country', route?.params?.country);
+      
 
         setMemberInfo({
           ...memberInfo,
@@ -473,42 +469,39 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
 }
 
   return (
-    <ScrollView style={{backgroundColor: 'white', flex: 1}}>
-      <KeyboardAvoidingView
-        behavior="padding"
-        keyboardVerticalOffset={keyboardVerticalOffset}>
-        <ActivityLoader visible={loading} />
+    <TCKeyboardView>
+      <ActivityLoader visible={loading} />
       
-        {memberInfo.connected && (
-          <View>
-            <TouchableOpacity
+      {memberInfo.connected && (
+        <View>
+          <TouchableOpacity
             onPress={() => {
               console.log('OK');
               // navigation.navigate('RequestBasicInfoScreen', {memberInfo});
               sendRequestForBasicInfo()
             }}
             style={styles.outerContainerStyle}>
-              <LinearGradient
+            <LinearGradient
               colors={[colors.whiteColor, colors.whiteColor]}
               style={styles.containerStyle}>
-                <Text
+              <Text
                 style={[styles.buttonText, {color: colors.lightBlackColor}]}>
-                  {'Send request for basic info'}
-                </Text>
-              </LinearGradient>
-            </TouchableOpacity>
-            <Text style={styles.basicInfoText}>
-              You can send a request to collect a member’s basic info. When it is
-              accepted, this basic info will be updated with the information
-              provided by the member.
-            </Text>
-            <TCThickDivider />
-          </View>
+                {'Send request for basic info'}
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <Text style={styles.basicInfoText}>
+            You can send a request to collect a member’s basic info. When it is
+            accepted, this basic info will be updated with the information
+            provided by the member.
+          </Text>
+          <TCThickDivider />
+        </View>
       )}
 
-        <View>
-          <TCLabel title={'Gender'} />
-          <TCPicker
+      <View>
+        <TCLabel title={'Gender'} />
+        <TCPicker
           // disabled={!!memberInfo.gender}
           dataSource={DataSource.Gender}
           placeholder={strings.selectGenderPlaceholder}
@@ -517,10 +510,10 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
             value !== '' && setMemberInfo({...memberInfo, gender: value})
           }
         />
-        </View>
-        <View>
-          <TCLabel title={'Birthday'} />
-          <TCTouchableLabel
+      </View>
+      <View>
+        <TCLabel title={'Birthday'} />
+        <TCTouchableLabel
           title={
             memberInfo.birthday &&
             `${`${
@@ -532,43 +525,43 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
           placeholder={strings.birthDatePlaceholder}
           onPress={() => setShow(!show)}
         />
-        </View>
+      </View>
 
-        <TCLabel title={'Height'} />
-        {heightView()}
+      <TCLabel title={'Height'} />
+      {heightView()}
 
-        <TCLabel title={'Weight'} />
-        {weightView()}
+      <TCLabel title={'Weight'} />
+      {weightView()}
 
-        <View>
-          <TCLabel title={'E-Mail'} required={true} />
-          <TCTextField
+      <View>
+        <TCLabel title={'E-Mail'} required={true} />
+        <TCTextField
           editable={false}
           value={memberInfo.email}
           onChangeText={(text) => setMemberInfo({...memberInfo, email: text})}
           placeholder={strings.addressPlaceholder}
           keyboardType={'email-address'}
         />
-        </View>
-        <View>
-          <TCLabel title={'Phone'} />
-          <FlatList
+      </View>
+      <View>
+        <TCLabel title={'Phone'} />
+        <FlatList
           data={phoneNumber}
           renderItem={renderPhoneNumber}
           keyExtractor={(item, index) => index.toString()}
           // style={styles.flateListStyle}
         />
-        </View>
-        <TCMessageButton
+      </View>
+      <TCMessageButton
         title={strings.addPhone}
         width={85}
         alignSelf="center"
         marginTop={15}
         onPress={() => addPhoneNumber()}
       />
-        <View>
-          <TCLabel title={'Address'} />
-          <TCTextField
+      <View>
+        <TCLabel title={'Address'} />
+        <TCTextField
           value={memberInfo.street_address}
           onChangeText={(text) =>
             setMemberInfo({...memberInfo, street_address: text})
@@ -576,27 +569,27 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
           placeholder={strings.addressPlaceholder}
           keyboardType={'default'}
         />
-        </View>
+      </View>
       
-        <TouchableOpacity
+      <TouchableOpacity
           onPress={() =>
             navigation.navigate('SearchLocationScreen', {
               comeFrom: 'EditMemberBasicInfoScreen',
             })
           }>
-          <TextInput
+        <TextInput
             placeholder={strings.searchCityPlaceholder}
             placeholderTextColor={colors.userPostTimeColor}
             style={[styles.matchFeeTxt, {marginBottom: 5}]}
             value={location}
             editable={false}
             pointerEvents="none"></TextInput>
-        </TouchableOpacity>
+      </TouchableOpacity>
        
 
-        <View>
+      <View>
           
-          <TCTextField
+        <TCTextField
           value={memberInfo.postal_code}
           onChangeText={(text) =>
             setMemberInfo({...memberInfo, postal_code: text})
@@ -604,19 +597,19 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
           placeholder={strings.postalCodeText}
           keyboardType={'default'}
         />
-        </View>
+      </View>
 
-        <View style={{marginBottom: 20}} />
+      <View style={{marginBottom: 20}} />
 
-        <TCDateTimePicker
+      <TCDateTimePicker
         title={'Choose Birthday'}
         visible={show}
         onDone={handleDonePress}
         onCancel={handleCancelPress}
       />
       
-      </KeyboardAvoidingView>
-    </ScrollView>
+    </TCKeyboardView>
+    
   );
 }
 const styles = StyleSheet.create({

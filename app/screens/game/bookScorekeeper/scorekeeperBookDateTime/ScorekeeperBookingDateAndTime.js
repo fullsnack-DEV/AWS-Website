@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import FastImage from 'react-native-fast-image';
-import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../../auth/context';
 import EventMapView from '../../../../components/Schedule/EventMapView';
 import colors from '../../../../Constants/Colors';
@@ -38,11 +37,10 @@ import TCThickDivider from '../../../../components/TCThickDivider';
 
 let body = {};
 const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
-  const isFocused = useIsFocused();
 
-  const sportName = route?.params?.sportName;
-  const userData = route?.params?.userData;
-  const [gameData, setGameData] = useState(route?.params?.gameData ?? null);
+  const [sportName] = useState(route?.params?.sportName);
+  const [userData] = useState(route?.params?.userData);
+  const [gameData] = useState(route?.params?.gameData ?? null);
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
   const [defaultCard, setDefaultCard] = useState();
@@ -60,15 +58,12 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
       setDefaultCard(route?.params?.paymentMethod);
     }
     getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
-  }, [isFocused, route?.params?.paymentMethod]);
+  }, [defaultCard, route?.params?.paymentMethod]);
 
-  useEffect(() => {
-    setGameData(route?.params?.gameData);
-  }, [route?.params?.gameData]);
-
+  
   const getFeeDetail = useCallback(
     (paymentObj) => {
-      const gData = route?.params?.gameData;
+      const gData = gameData;
       if (gData) {
         setLoading(true);
         body = {
@@ -112,7 +107,7 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
     },
     [
       authContext,
-      route?.params?.gameData,
+      gameData,
       route?.params?.isHirer,
       userData?.user_id,
     ],

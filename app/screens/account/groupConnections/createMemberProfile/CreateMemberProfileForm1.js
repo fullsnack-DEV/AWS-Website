@@ -17,9 +17,6 @@ import {
   Alert,
   FlatList,
   TextInput,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 
 import ActionSheet from 'react-native-actionsheet';
@@ -42,11 +39,11 @@ import AuthContext from '../../../../auth/context';
 import DataSource from '../../../../Constants/DataSource';
 import {monthNames, widthPercentageToDP} from '../../../../utils';
 import TCFormProgress from '../../../../components/TCFormProgress';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 let entity = {};
 
 export default function CreateMemberProfileForm1({navigation, route}) {
-  const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0;
 
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
@@ -338,182 +335,173 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   );
 
   return (
-    <ScrollView style={{backgroundColor: 'white', flex: 1}}>
-      <KeyboardAvoidingView
-        behavior="padding"
-        keyboardVerticalOffset={keyboardVerticalOffset}>
-        <TCFormProgress totalSteps={role === 'club' ? 3 : 2} curruentStep={1} />
+    <TCKeyboardView>
+      <TCFormProgress totalSteps={role === 'club' ? 3 : 2} curruentStep={1} />
 
-        <View style={styles.profileView}>
-          <Image
-            source={
-              memberInfo.full_image
-                ? {uri: memberInfo.full_image}
-                : images.profilePlaceHolder
-            }
-            style={styles.profileChoose}
-          />
-          <TouchableOpacity
-            style={styles.choosePhoto}
-            onPress={() => onProfileImageClicked()}>
-            <Image
-              source={images.certificateUpload}
-              style={styles.choosePhoto}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <View>
-          <TCLable title={'Name'} required={true} />
-          <TCTextField
-            value={firstName}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={(text) => setFirstName(text)}
-            placeholder={strings.firstName}
-          />
-          <TCTextField
-            value={lastName}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={(text) => setLastName(text)}
-            placeholder={strings.lastName}
-            style={{marginTop: 12}}
-          />
-        </View>
-
-        <View>
-          <TCLable title={'E-Mail'} required={true} />
-          <TCTextField
-            value={email}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={(text) => setEmail(text)}
-            placeholder={strings.addressPlaceholder}
-            keyboardType={'email-address'}
-          />
-        </View>
-        <View>
-          <TCLable title={'Phone'} />
-          <FlatList
-            data={phoneNumber}
-            renderItem={renderPhoneNumber}
-            keyExtractor={(item, index) => index.toString()}></FlatList>
-        </View>
-        {phoneNumber?.length < 5 && (
-          <TCMessageButton
-            title={strings.addPhone}
-            width={85}
-            alignSelf="center"
-            marginTop={15}
-            onPress={() => addPhoneNumber()}
-          />
-        )}
-
-
-        <View>
-          <TCLable title={'Address'} />
-          <TCTextField
-            value={streetAddress}
-            onChangeText={(text) => setStreetAddress(text)}
-            placeholder={strings.addressPlaceholder}
-            keyboardType={'default'}
-            autoCapitalize="none"
-            autoCorrect={false}
-            // onFocus={() => setLocationFieldVisible(true)}
-          />
-
-        </View>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('SearchLocationScreen', {
-              comeFrom: 'CreateMemberProfileForm1',
-            })
-          }>
-          <TextInput
-            placeholder={strings.searchCityPlaceholder}
-            placeholderTextColor={colors.userPostTimeColor}
-            style={[styles.matchFeeTxt, {marginBottom: 5}]}
-            value={location}
-            editable={false}
-            pointerEvents="none"></TextInput>
-        </TouchableOpacity>
-
-        <View>
-          <TCTextField
-            value={postalCode}
-            onChangeText={(text) => setPostalCode(text)}
-            placeholder={strings.postalCodeText}
-            keyboardType={'default'}
-          />
-        </View>
-
-        <View>
-          <TCLable title={'Birthday'} />
-          {/* <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.addressPlaceholder} keyboardType={'default'}/> */}
-
-          <TCTouchableLabel
-            title={
-              birthday &&
-              `${`${monthNames[new Date(birthday).getMonth()]} ${new Date(
-                birthday,
-              ).getDate()}`}, ${new Date(birthday).getFullYear()}`
-            }
-            placeholder={strings.birthDatePlaceholder}
-            onPress={() => setShow(!show)}
-          />
-        </View>
-        <View>
-          <TCLable title={'Gender'} />
-          <TCPicker
-            dataSource={DataSource.Gender}
-            placeholder={strings.selectGenderPlaceholder}
-            value={gender}
-            onValueChange={(value) => {
-              setGender(value);
-            }}
-          />
-        </View>
-        <View style={{marginLeft: 15, marginTop: 15}}>
-          <Text style={styles.smallTxt}>
-            (<Text style={styles.mendatory}>{strings.star} </Text>
-            {strings.requiredText})
-          </Text>
-        </View>
-        <View style={{marginBottom: 20}} />
-        <ActionSheet
-          ref={actionSheet}
-          options={
+      <View style={styles.profileView}>
+        <Image
+          source={
             memberInfo.full_image
-              ? [
-                  strings.camera,
-                  strings.album,
-                  strings.deleteTitle,
-                  strings.cancelTitle,
-                ]
-              : [strings.camera, strings.album, strings.cancelTitle]
+              ? {uri: memberInfo.full_image}
+              : images.profilePlaceHolder
           }
-          destructiveButtonIndex={memberInfo.full_image && 2}
-          cancelButtonIndex={memberInfo.full_image ? 3 : 2}
-          onPress={(index) => {
-            if (index === 0) {
-              openCamera();
-            } else if (index === 1) {
-              openImagePicker();
-            } else if (index === 2) {
-              deleteImage();
-            }
+          style={styles.profileChoose}
+        />
+        <TouchableOpacity
+          style={styles.choosePhoto}
+          onPress={() => onProfileImageClicked()}>
+          <Image source={images.certificateUpload} style={styles.choosePhoto} />
+        </TouchableOpacity>
+      </View>
+
+      <View>
+        <TCLable title={'Name'} required={true} />
+        <TCTextField
+          value={firstName}
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={(text) => setFirstName(text)}
+          placeholder={strings.firstName}
+        />
+        <TCTextField
+          value={lastName}
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={(text) => setLastName(text)}
+          placeholder={strings.lastName}
+          style={{marginTop: 12}}
+        />
+      </View>
+
+      <View>
+        <TCLable title={'E-Mail'} required={true} />
+        <TCTextField
+          value={email}
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={(text) => setEmail(text)}
+          placeholder={strings.addressPlaceholder}
+          keyboardType={'email-address'}
+        />
+      </View>
+      <View>
+        <TCLable title={'Phone'} />
+        <FlatList
+          data={phoneNumber}
+          renderItem={renderPhoneNumber}
+          keyExtractor={(item, index) => index.toString()}></FlatList>
+      </View>
+      {phoneNumber?.length < 5 && (
+        <TCMessageButton
+          title={strings.addPhone}
+          width={85}
+          alignSelf="center"
+          marginTop={15}
+          onPress={() => addPhoneNumber()}
+        />
+      )}
+
+      <View>
+        <TCLable title={'Address'} />
+        <TCTextField
+          value={streetAddress}
+          onChangeText={(text) => setStreetAddress(text)}
+          placeholder={strings.addressPlaceholder}
+          keyboardType={'default'}
+          autoCapitalize="none"
+          autoCorrect={false}
+          // onFocus={() => setLocationFieldVisible(true)}
+        />
+      </View>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('SearchLocationScreen', {
+            comeFrom: 'CreateMemberProfileForm1',
+          })
+        }>
+        <TextInput
+          placeholder={strings.searchCityPlaceholder}
+          placeholderTextColor={colors.userPostTimeColor}
+          style={[styles.matchFeeTxt, {marginBottom: 5}]}
+          value={location}
+          editable={false}
+          pointerEvents="none"></TextInput>
+      </TouchableOpacity>
+
+      <View>
+        <TCTextField
+          value={postalCode}
+          onChangeText={(text) => setPostalCode(text)}
+          placeholder={strings.postalCodeText}
+          keyboardType={'default'}
+        />
+      </View>
+
+      <View>
+        <TCLable title={'Birthday'} />
+        {/* <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.addressPlaceholder} keyboardType={'default'}/> */}
+
+        <TCTouchableLabel
+          title={
+            birthday &&
+            `${`${monthNames[new Date(birthday).getMonth()]} ${new Date(
+              birthday,
+            ).getDate()}`}, ${new Date(birthday).getFullYear()}`
+          }
+          placeholder={strings.birthDatePlaceholder}
+          onPress={() => setShow(!show)}
+        />
+      </View>
+      <View>
+        <TCLable title={'Gender'} />
+        <TCPicker
+          dataSource={DataSource.Gender}
+          placeholder={strings.selectGenderPlaceholder}
+          value={gender}
+          onValueChange={(value) => {
+            setGender(value);
           }}
         />
+      </View>
+      <View style={{marginLeft: 15, marginTop: 15}}>
+        <Text style={styles.smallTxt}>
+          (<Text style={styles.mendatory}>{strings.star} </Text>
+          {strings.requiredText})
+        </Text>
+      </View>
+      <View style={{marginBottom: 20}} />
+      <ActionSheet
+        ref={actionSheet}
+        options={
+          memberInfo.full_image
+            ? [
+                strings.camera,
+                strings.album,
+                strings.deleteTitle,
+                strings.cancelTitle,
+              ]
+            : [strings.camera, strings.album, strings.cancelTitle]
+        }
+        destructiveButtonIndex={memberInfo.full_image && 2}
+        cancelButtonIndex={memberInfo.full_image ? 3 : 2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker();
+          } else if (index === 2) {
+            deleteImage();
+          }
+        }}
+      />
 
-        <TCDateTimePicker
-          title={'Choose Birthday'}
-          visible={show}
-          onDone={handleDonePress}
-          onCancel={handleCancelPress}
-        />
-      </KeyboardAvoidingView>
-    </ScrollView>
+      <TCDateTimePicker
+        title={'Choose Birthday'}
+        visible={show}
+        onDone={handleDonePress}
+        onCancel={handleCancelPress}
+      />
+    </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({

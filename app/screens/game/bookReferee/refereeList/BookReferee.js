@@ -50,7 +50,6 @@ let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function BookReferee({navigation, route}) {
-  const gameData = route?.params?.gameData;
 
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
@@ -68,6 +67,7 @@ export default function BookReferee({navigation, route}) {
   const [referees, setReferees] = useState([]);
   const [pageSize] = useState(10);
   const [pageFrom, setPageFrom] = useState(0);
+  const [gameData] = useState(route?.params?.gameData);
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
   const [searchData, setSearchData] = useState();
