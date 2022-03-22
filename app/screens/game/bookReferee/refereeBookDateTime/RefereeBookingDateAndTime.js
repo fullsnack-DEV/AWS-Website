@@ -42,9 +42,9 @@ import TCFormProgress from '../../../../components/TCFormProgress';
 
 let body = {};
 const RefereeBookingDateAndTime = ({navigation, route}) => {
-  const sportName = route?.params?.sportName;
-  const userData = route?.params?.userData;
-  const [gameData, setGameData] = useState(route?.params?.gameData ?? null);
+  const [sportName] = useState(route?.params?.sportName);
+  const [userData] = useState(route?.params?.userData);
+  const [gameData] = useState(route?.params?.gameData ?? null);
   const [chiefOrAssistant, setChiefOrAssistant] = useState('chief');
   const [challengeObject, setChallengeObject] = useState(null);
   const [refereeReservationList, setRefereeReservationList] = useState();
@@ -54,13 +54,12 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setGameData(route?.params?.gameData);
     if (route?.params?.paymentMethod) {
       setDefaultCard(route?.params?.paymentMethod);
       console.log('route?.params?.paymentMethod', route?.params?.paymentMethod);
     }
     getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
-  }, [route?.params?.gameData, route?.params?.paymentMethod]);
+  }, [route?.params?.paymentMethod]);
 
   useEffect(() => {
     Utility.getStorage('paymentSetting').then((setting) => {
@@ -70,12 +69,7 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
 
   useEffect(() => {
     if (gameData) {
-      getGameRefereeReservation(
-        route?.params?.gameData?.game_id,
-        false,
-        true,
-        authContext,
-      )
+      getGameRefereeReservation(gameData?.game_id, false, true, authContext)
         .then((response) => {
           console.log('resp:=>', response);
           setRefereeReservationList(response.payload);
@@ -87,15 +81,16 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
           }, 10);
         });
     }
-  }, [authContext, gameData, route?.params?.gameData?.game_id]);
+  }, [authContext, gameData, gameData?.game_id]);
 
   const getFeeDetail = useCallback(
     (paymentObj) => {
-      const gData = route?.params?.gameData;
+      const gData = gameData;
       if (gData) {
         setLoading(true);
         body = {
           sport: gData?.sport,
+          sport_type: gData?.sport_type,
           manual_fee: false,
           start_datetime: gData?.start_datetime,
           end_datetime: gData?.end_datetime,
@@ -138,13 +133,7 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
         setLoading(false);
       }
     },
-    [
-      authContext,
-      defaultCard?.id,
-      route?.params?.gameData,
-      route?.params?.isHirer,
-      userData?.user_id,
-    ],
+    [authContext, gameData, route?.params?.isHirer, userData?.user_id],
   );
 
   const Title = ({text, required}) => (

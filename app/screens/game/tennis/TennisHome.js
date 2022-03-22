@@ -225,7 +225,7 @@ const TennisHome = ({ navigation, route }) => {
         navigation={navigation}
       />
     ),
-    [gameData, getTennisGalleryData, navigation],
+    [gameData, getTennisGalleryData, isAdmin, navigation],
   );
 
   const renderTabContain = useCallback(
