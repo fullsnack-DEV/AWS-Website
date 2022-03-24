@@ -330,6 +330,8 @@ export default function ScheduleScreen({navigation, route}) {
 
   const configureEvents = useCallback(
     (eventsData, games) => {
+
+      console.log('gamesgames',games);
       const eventTimeTableData = eventsData.map((item) => {
         if (item?.game_id) {
           const gameObj =
@@ -513,6 +515,7 @@ export default function ScheduleScreen({navigation, route}) {
   const goToChallengeDetail = (data) => {
     console.log('Go To Challenge', data);
     // if (data?.responsible_to_secure_venue) { //Write condition for soccer
+   if(data?.challenge_id){
     setloading(true);
     Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
       setloading(false);
@@ -523,6 +526,9 @@ export default function ScheduleScreen({navigation, route}) {
       });
       setloading(false);
     });
+   }else{
+     Alert.alert('This challenge is not confirmed yet.')
+   }
     // }
   };
   const actionSheetOpetions = () => {

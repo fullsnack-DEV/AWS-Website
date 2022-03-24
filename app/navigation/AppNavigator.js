@@ -313,13 +313,17 @@ const AppNavigator = ({navigation}) => {
         if (response.status === true) {
           const {teams} = response.payload;
           const {clubs} = response.payload;
-          const groups = [authContext.entity.auth.user, ...clubs, ...teams];
+          const {user} = response.payload;
+
+
+          const groups = [{...user}, ...clubs, ...teams];
           let notificationCount = 0;
           (groups || []).map((e) => {
             if (e.unread) {
               notificationCount += e.unread;
             }
           });
+          console.log('notificationCount',notificationCount);
           setUnreadNotificationCount(notificationCount);
         }
       })
@@ -356,6 +360,7 @@ const AppNavigator = ({navigation}) => {
       if (role === 'user') {
         if (authContext?.entity?.obj?.thumbnail) {
           if (focused) {
+            onTabPress();
             return (
               <LinearGradient
                 colors={[colors.yellowColor, colors.assistTextColor]}
@@ -603,7 +608,7 @@ const AppNavigator = ({navigation}) => {
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
-          tabBarIcon: renderTabIcon,
+          tabBarIcon:  renderTabIcon,
           headerShown: false,
         })}
       />

@@ -19,6 +19,7 @@ import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
 
+import {useIsFocused} from '@react-navigation/native';
 import {
   acceptDeclineAlterReservation,
   acceptDeclineReservation,
@@ -66,6 +67,8 @@ let entity = {};
 const scroll = React.createRef();
 export default function AlterRefereeScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
+  const isFocused = useIsFocused();
+
   const [chiefOrAssistant, setChiefOrAssistant] = useState('');
   const [loading, setloading] = useState(false);
   const [homeTeam, setHomeTeam] = useState();
@@ -83,6 +86,7 @@ export default function AlterRefereeScreen({navigation, route}) {
   const [isOld, setIsOld] = useState(false);
   const [defaultCard, setDefaultCard] = useState();
   const [maintabNumber, setMaintabNumber] = useState(0);
+  const [reservationObj] = useState(route?.params?.reservationObj);
 
   useEffect(() => {
     const is_chief = bodyParams?.chief_referee ? 'chief' : 'assistant';
@@ -97,95 +101,96 @@ export default function AlterRefereeScreen({navigation, route}) {
   useEffect(() => {
     entity = authContext.entity;
 
-    const {reservationObj} = route.params ?? {};
     console.log('reservationObjreservationObj:=>', reservationObj);
-    if (reservationObj.length > 0) {
-      setIsPendingRequestPayment(true);
-      for (let i = 0; i < reservationObj.length; i++) {
-        if (reservationObj[i].status === RefereeReservationStatus.accepted) {
-          if (isOld === false) {
-            setbodyParams(reservationObj[0]);
-            setOldVersion(reservationObj[i]);
-            setIsOld(true);
-          } else {
-            setbodyParams(reservationObj[0]);
+    if(isFocused){
+      if (reservationObj.length > 0) {
+        setIsPendingRequestPayment(true);
+        for (let i = 0; i < reservationObj.length; i++) {
+          if (reservationObj[i].status === RefereeReservationStatus.accepted) {
+            if (isOld === false) {
+              setbodyParams(reservationObj[0]);
+              setOldVersion(reservationObj[i]);
+              setIsOld(true);
+            } else {
+              setbodyParams(reservationObj[0]);
+            }
+  
+            if (
+              (reservationObj[0]?.game?.away_team?.group_id ??
+                reservationObj[0]?.game?.away_team?.user_id) === entity.uid
+            ) {
+              setHomeTeam(reservationObj[0]?.game?.away_team);
+              setAwayTeam(reservationObj[0]?.game?.home_team);
+            } else {
+              setHomeTeam(reservationObj[0]?.game?.home_team);
+              setAwayTeam(reservationObj[0]?.game?.away_team);
+            }
+            break;
           }
-
-          if (
-            (reservationObj[0]?.game?.away_team?.group_id ??
-              reservationObj[0]?.game?.away_team?.user_id) === entity.uid
-          ) {
-            setHomeTeam(reservationObj[0]?.game?.away_team);
-            setAwayTeam(reservationObj[0]?.game?.home_team);
-          } else {
-            setHomeTeam(reservationObj[0]?.game?.home_team);
-            setAwayTeam(reservationObj[0]?.game?.away_team);
-          }
-          break;
         }
-      }
-      if (!paymentCard) {
-        setPaymentCard({
-          start_datetime: reservationObj[0]?.start_datetime,
-          end_datetime: reservationObj[0]?.end_datetime,
-          currency_type: reservationObj[0]?.currency_type,
-          payment_method_type: reservationObj[0]?.payment_method_type,
-          total_game_fee: reservationObj[0]?.total_game_fee,
-          total_service_fee1: reservationObj[0]?.total_service_fee1,
-          total_service_fee2: reservationObj[0]?.total_service_fee2,
-          international_card_fee: reservationObj[0]?.international_card_fee,
-          total_amount: reservationObj[0]?.total_amount,
-          total_stripe_fee: reservationObj[0]?.total_stripe_fee,
-          total_payout: reservationObj[0]?.total_payout,
-          hourly_game_fee: reservationObj[0]?.hourly_game_fee,
-          manual_fee: reservationObj[0]?.manual_fee,
-        });
-      }
-      console.log('challenge Object::', reservationObj[0]);
-
-      console.log('Payment Object::', paymentCard);
-    } else {
-      if (isOld === false) {
-        setbodyParams(reservationObj);
-        // oldVersion = { ...body };
-        setOldVersion(reservationObj);
-        setIsOld(true);
+        if (!paymentCard) {
+          setPaymentCard({
+            start_datetime: reservationObj[0]?.start_datetime,
+            end_datetime: reservationObj[0]?.end_datetime,
+            currency_type: reservationObj[0]?.currency_type,
+            payment_method_type: reservationObj[0]?.payment_method_type,
+            total_game_fee: reservationObj[0]?.total_game_fee,
+            total_service_fee1: reservationObj[0]?.total_service_fee1,
+            total_service_fee2: reservationObj[0]?.total_service_fee2,
+            international_card_fee: reservationObj[0]?.international_card_fee,
+            total_amount: reservationObj[0]?.total_amount,
+            total_stripe_fee: reservationObj[0]?.total_stripe_fee,
+            total_payout: reservationObj[0]?.total_payout,
+            hourly_game_fee: reservationObj[0]?.hourly_game_fee,
+            manual_fee: reservationObj[0]?.manual_fee,
+          });
+        }
+        console.log('challenge Object::', reservationObj[0]);
+  
+        console.log('Payment Object::', paymentCard);
       } else {
-        setbodyParams(reservationObj);
+        if (isOld === false) {
+          setbodyParams(reservationObj);
+          // oldVersion = { ...body };
+          setOldVersion(reservationObj);
+          setIsOld(true);
+        } else {
+          setbodyParams(reservationObj);
+        }
+  
+        if (
+          (reservationObj?.game?.away_team?.group_id ??
+            reservationObj?.game?.away_team?.user_id) === entity.uid
+        ) {
+          setHomeTeam(reservationObj?.game?.away_team);
+          setAwayTeam(reservationObj?.game?.home_team);
+        } else {
+          setHomeTeam(reservationObj?.game?.home_team);
+          setAwayTeam(reservationObj?.game.away_team);
+        }
+        if (!paymentCard) {
+          setPaymentCard({
+            start_datetime: reservationObj?.start_datetime,
+            end_datetime: reservationObj?.end_datetime,
+            currency_type: reservationObj?.currency_type,
+            payment_method_type: reservationObj?.payment_method_type,
+            total_game_fee: reservationObj?.total_game_fee,
+            total_service_fee1: reservationObj?.total_service_fee1,
+            total_service_fee2: reservationObj?.total_service_fee1,
+            international_card_fee: reservationObj?.international_card_fee,
+            total_amount: reservationObj?.total_amount,
+            total_stripe_fee: reservationObj?.total_stripe_fee,
+            total_payout: reservationObj?.total_payout,
+            hourly_game_fee: reservationObj?.hourly_game_fee,
+            manual_fee: reservationObj?.manual_fee,
+          });
+        }
+        console.log('challenge Object::', reservationObj);
+  
+        console.log('Payment Object::', paymentCard);
       }
-
-      if (
-        (reservationObj?.game?.away_team?.group_id ??
-          reservationObj?.game?.away_team?.user_id) === entity.uid
-      ) {
-        setHomeTeam(reservationObj?.game?.away_team);
-        setAwayTeam(reservationObj?.game?.home_team);
-      } else {
-        setHomeTeam(reservationObj?.game?.home_team);
-        setAwayTeam(reservationObj?.game.away_team);
-      }
-      if (!paymentCard) {
-        setPaymentCard({
-          start_datetime: reservationObj?.start_datetime,
-          end_datetime: reservationObj?.end_datetime,
-          currency_type: reservationObj?.currency_type,
-          payment_method_type: reservationObj?.payment_method_type,
-          total_game_fee: reservationObj?.total_game_fee,
-          total_service_fee1: reservationObj?.total_service_fee1,
-          total_service_fee2: reservationObj?.total_service_fee1,
-          international_card_fee: reservationObj?.international_card_fee,
-          total_amount: reservationObj?.total_amount,
-          total_stripe_fee: reservationObj?.total_stripe_fee,
-          total_payout: reservationObj?.total_payout,
-          hourly_game_fee: reservationObj?.hourly_game_fee,
-          manual_fee: reservationObj?.manual_fee,
-        });
-      }
-      console.log('challenge Object::', reservationObj);
-
-      console.log('Payment Object::', paymentCard);
+      getPaymentMethods(reservationObj[0] ?? reservationObj);
     }
-    getPaymentMethods(reservationObj[0] ?? reservationObj);
   }, []);
 
   useLayoutEffect(() => {
@@ -266,7 +271,7 @@ export default function AlterRefereeScreen({navigation, route}) {
   const getFeesEstimationDetail = () => {
     const body = {};
     // parseFloat((bodyParams.start_datetime / 1000).toFixed(0)
-body.source = bodyParams?.source;
+    body.source = bodyParams?.source;
     body.reservation_id = bodyParams.reservation_id;
     body.start_datetime = bodyParams?.start_datetime;
     body.end_datetime = bodyParams?.end_datetime;
@@ -400,7 +405,7 @@ body.source = bodyParams?.source;
     callerID,
     versionNo,
     status,
-    paymentID,
+    paymentobj,
   ) => {
     setloading(true);
 
@@ -410,20 +415,7 @@ body.source = bodyParams?.source;
       callerID,
       versionNo,
       status,
-      paymentID && {...bodyParams},
-      // paymentID && {
-      //   currency_type: bodyParams?.currency_type,
-      //   total_game_fee: bodyParams?.total_game_fee,
-      //   total_service_fee1: bodyParams?.total_service_fee1,
-      //   total_service_fee2: bodyParams?.total_service_fee2,
-      //   international_card_fee: bodyParams?.international_card_fee,
-      //   total_amount: bodyParams?.total_amount,
-      //   total_stripe_fee: bodyParams?.total_stripe_fee,
-      //   total_payout: bodyParams?.total_payout,
-      //   hourly_game_fee: bodyParams?.hourly_game_fee,
-      //   manual_fee: bodyParams?.manual_fee,
-      //   source: bodyParams?.source,
-      // },
+      paymentobj,
       authContext,
     )
       .then((response) => {
@@ -506,16 +498,16 @@ body.source = bodyParams?.source;
     },
     [authContext],
   );
-  const checkSenderForPayment = (reservationObj) => {
-    if (reservationObj?.referee?.user_id === entity.uid) {
+  const checkSenderForPayment = (reservationObject) => {
+    if (reservationObject?.referee?.user_id === entity.uid) {
       return 'receiver';
     }
 
     return 'sender';
   };
 
-  const checkSenderOrReceiver = (reservationObj) => {
-    const teampObj = {...reservationObj};
+  const checkSenderOrReceiver = (reservationObject) => {
+    const teampObj = {...reservationObject};
     if (
       teampObj?.status === RefereeReservationStatus.pendingpayment ||
       teampObj?.status === RefereeReservationStatus.pendingrequestpayment
@@ -641,17 +633,17 @@ body.source = bodyParams?.source;
     return `${startDate} - ${endDate} (${duration})`;
   };
 
-  const getOpponentEntity = (reservationObj) => {
-    if (reservationObj?.referee?.user_id === entity.uid) {
+  const getOpponentEntity = (reservationObject) => {
+    if (reservationObject?.referee?.user_id === entity.uid) {
       if (
-        reservationObj?.initiated_by ===
-        reservationObj?.game?.home_team?.user_id
+        reservationObject?.initiated_by ===
+        reservationObject?.game?.home_team?.user_id
       ) {
-        return reservationObj?.game?.away_team;
+        return reservationObject?.game?.away_team;
       }
-      return reservationObj?.game?.home_team;
+      return reservationObject?.game?.home_team;
     }
-    return reservationObj?.referee;
+    return reservationObject?.referee;
   };
   const acceptDeclineRefereeReservation = (
     reservationID,
@@ -1213,13 +1205,26 @@ body.source = bodyParams?.source;
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid;
                     }
+                    let paymentObj = {};
+                    paymentObj = {
+                      source: defaultCard?.id,
+                      payment_method_type: 'card',
+                      total_game_fee: paymentCard?.total_game_fee,
+                      total_service_fee1: paymentCard?.total_service_fee1,
+                      total_service_fee2: paymentCard?.total_service_fee2,
+                      international_card_fee:
+                      paymentCard?.international_card_fee,
+                      total_stripe_fee: paymentCard?.total_stripe_fee,
+                      total_payout: paymentCard?.total_payout,
+                      total_amount: paymentCard?.total_amount,
+                    };
+
                     acceptDeclineAlterReservationOperation(
                       bodyParams.reservation_id,
                       callerId,
                       bodyParams.version,
                       'accept',
-                      route?.params?.paymentMethod &&
-                        route?.params?.paymentMethod?.id,
+                      paymentObj,
                     );
                   }}
                   marginBottom={15}

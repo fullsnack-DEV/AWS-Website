@@ -43,7 +43,6 @@ export default function EventScheduleScreen({
         }
         return null;
       });
-      console.log('ED: ', eventData);
       let filData = [];
       if (todayData && tomorrowData && futureData) {
         if (

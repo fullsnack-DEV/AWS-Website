@@ -92,7 +92,10 @@ const MessageChat = ({route, navigation}) => {
   const scrollRef = useRef(null);
   const refSavedMessagesData = useRef(savedMessagesData);
 
-console.log('route?.params?.dialogroute?.params?.dialog',route?.params?.dialog);
+  console.log(
+    'route?.params?.dialogroute?.params?.dialog',
+    route?.params?.dialog,
+  );
 
   useEffect(() => {
     console.log(1);
@@ -131,6 +134,7 @@ console.log('route?.params?.dialogroute?.params?.dialog',route?.params?.dialog);
   useEffect(() => {
     console.log(2);
     const uid = route?.params?.userId;
+
     const setData = (data) => {
       const dialogDatas = {
         dialogId: data?.id,
@@ -145,7 +149,11 @@ console.log('route?.params?.dialogroute?.params?.dialog',route?.params?.dialog);
           : QB_DIALOG_TYPE.SINGLE,
       );
       if (dialogDatas?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
-        setHeadingTitle(dialogDatas?.name?.slice(0, dialogDatas?.name?.length));
+        console.log(
+          'dialogDatas?.dialogType === QB.chat.DIALOG_TYPE.CHAT : ',
+          dialogDatas?.dialogType === QB.chat.DIALOG_TYPE.CHAT,
+        );
+        setHeadingTitle(dialogDatas?.name?.slice(2, dialogDatas?.name?.length));
       } else {
         setHeadingTitle(dialogDatas?.name);
       }
@@ -153,7 +161,7 @@ console.log('route?.params?.dialogroute?.params?.dialog',route?.params?.dialog);
     };
 
     if (uid) {
-      console.log('QB Error UID : ', uid);
+      console.log('QB Error UID : ', QB.users.USERS_FILTER.TYPE.STRING);
       setLoading(true);
       QBgetUserDetail(
         QB.users.USERS_FILTER.FIELD.LOGIN,
@@ -161,6 +169,8 @@ console.log('route?.params?.dialogroute?.params?.dialog',route?.params?.dialog);
         [uid].join(),
       )
         .then((userData) => {
+          console.log('userDatauserData', userData);
+
           const user = userData.users.filter((item) => item.login === uid)[0];
           QBcreateDialog([user.id])
             .then((res) => {
@@ -498,22 +508,24 @@ console.log('route?.params?.dialogroute?.params?.dialog',route?.params?.dialog);
               }}>
               <Image
                 source={images.searchLocation}
-                style={styles.rightSearchImageStyle}
+                style={[
+                  styles.rightSearchImageStyle,
+                  {marginRight: occupantsData?.length > 2 ? 15 : 0},
+                ]}
               />
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                console.log('occupantsData', occupantsData);
-                console.log('dialogData', dialogData);
-
-                commentModalRef.current.open();
-                // navigation.setParams({participants: [occupantsData]});
-              }}>
-              <Image
-                source={images.threeDotIcon}
-                style={styles.rightImageStyle}
-              />
-            </TouchableOpacity>
+            {occupantsData?.length > 2 && (
+              <TouchableOpacity
+                onPress={() => {
+                  commentModalRef.current.open();
+                  // navigation.setParams({participants: [occupantsData]});
+                }}>
+                <Image
+                  source={images.threeDotIcon}
+                  style={styles.rightImageStyle}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         }
       />
@@ -703,12 +715,12 @@ console.log('route?.params?.dialogroute?.params?.dialog',route?.params?.dialog);
           ? userData?.user_id
           : userData?.group_id;
       if (uid && userData?.entity_type) {
-        commentModalRef.current.close()
+        commentModalRef.current.close();
         navigation.push('HomeScreen', {
           uid,
           backButtonVisible: true,
           role:
-          userData.entity_type === 'player' ? 'user' : userData?.entity_type,
+            userData.entity_type === 'player' ? 'user' : userData?.entity_type,
           menuBtnVisible: false,
         });
       }
@@ -841,7 +853,7 @@ console.log('route?.params?.dialogroute?.params?.dialog',route?.params?.dialog);
               </Text>
               <TouchableOpacity
                 onPress={() => {
-                  commentModalRef.current.close()
+                  commentModalRef.current.close();
                   if (dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT)
                     navigation.navigate('MessageEditGroupScreen', {
                       dialog: dialogMenu,
@@ -929,21 +941,20 @@ const styles = StyleSheet.create({
     width: wp(100),
   },
   backImageStyle: {
-    height: 20,
-    width: 10,
+    // height: 20,
+    width: 13,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },
   rightSearchImageStyle: {
-    height: 15,
-    width: 15,
+    // height: 15,
+    width: 20,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
-    marginRight: 15,
   },
   rightImageStyle: {
-    height: 20,
-    width: 3,
+    // height: 20,
+    width: 4,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },

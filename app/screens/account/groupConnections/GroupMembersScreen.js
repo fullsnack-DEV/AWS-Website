@@ -63,6 +63,7 @@ export default function GroupMembersScreen({navigation, route}) {
   // const [filter, setFilter] = useState([]);
   const [members, setMembers] = useState();
   const [switchUser, setSwitchUser] = useState({});
+  const [groupID] = useState(route.params?.groupID);
 
   useEffect(() => {
     console.log('NAVIGATION:', navigation);
@@ -75,8 +76,8 @@ export default function GroupMembersScreen({navigation, route}) {
   }, [isFocused]);
 
   const getMembers = async () => {
-    if (route.params?.groupID) {
-      getGroupMembers(route.params?.groupID, authContext)
+    if (groupID) {
+      getGroupMembers(groupID, authContext)
         .then((response) => {
           setMembers(response.payload);
           setSearchMember(response.payload);
@@ -204,10 +205,10 @@ export default function GroupMembersScreen({navigation, route}) {
       navigation.navigate('MembersProfileScreen', {
         memberID: item?.user_id,
         whoSeeID: item?.group_id,
-        groupID: route.params?.groupID,
+        groupID,
       });
     },
-    [navigation, route.params?.groupID],
+    [navigation, groupID],
   );
 
   // const onPressMessage = useCallback(
@@ -355,16 +356,16 @@ export default function GroupMembersScreen({navigation, route}) {
             </View>
           </View>
           {authContext.entity.role === 'club' ||
-          authContext.entity.role === 'team' ? (
-            <TouchableOpacity
+          authContext.entity.role === 'team'  ? (
+           authContext.entity.uid === groupID && <TouchableOpacity
               style={styles.buttonContainer}
               onPress={() => onPressProfile(data)}
               hitSlop={getHitSlop(15)}>
-              <Image
+             <Image
                 source={images.arrowGraterthan}
                 style={styles.arrowStyle}
               />
-            </TouchableOpacity>
+           </TouchableOpacity>
           ) : data.is_following ? (
             <TCFollowUnfollwButton
               outerContainerStyle={styles.firstButtonOuterStyle}
@@ -453,10 +454,10 @@ export default function GroupMembersScreen({navigation, route}) {
             navigation.navigate('CreateMemberProfileForm1');
           } else if (index === 3) {
             navigation.navigate('ConnectMemberAccountScreen', {
-              groupID: route.params?.groupID,
+              groupID,
             });
           } else if (index === 4) {
-            navigation.navigate('RequestMultipleBasicInfoScreen',{groupID: route.params?.groupID});
+            navigation.navigate('RequestMultipleBasicInfoScreen',{groupID});
           } else if (index === 5) {
             navigation.navigate('MembersViewPrivacyScreen');
           } else if (index === 6) {

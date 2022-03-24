@@ -69,7 +69,7 @@ export default function AccountScreen({navigation}) {
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
-
+  console.log('authContext?.sports', authContext);
   // const [isSportCreateModalVisible, setIsSportCreateModalVisible] = useState(
   //   false,
   // );
@@ -1020,7 +1020,9 @@ export default function AccountScreen({navigation}) {
         {authContext.entity.role === 'user' && sectionId === 4 && (
           <FlatList
             style={{marginVertical: 10}}
-            data={authContext?.entity?.obj?.registered_sports}
+            data={authContext?.entity?.obj?.registered_sports.filter(
+              (obj) => obj?.sport && obj?.sport_type,
+            )}
             keyExtractor={keyExtractorID}
             renderItem={renderSportsList}
             ItemSeparatorComponent={() => (
@@ -1929,7 +1931,12 @@ export default function AccountScreen({navigation}) {
               ItemSeparatorComponent={() => <TCThinDivider />}
               data={
                 (clickedUserType === 'user' &&
-                  authContext?.entity?.obj?.registered_sports) ||
+                  authContext?.entity?.obj?.registered_sports?.filter(
+                    (obj) =>
+                      obj?.sport &&
+                      obj?.sport_type &&
+                      obj.sport_type === 'single',
+                  )) ||
                 (clickedUserType === 'referee' &&
                   authContext?.entity?.obj?.referee_data) ||
                 (clickedUserType === 'scorekeeper' &&

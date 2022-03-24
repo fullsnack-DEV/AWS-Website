@@ -103,7 +103,7 @@ export default function UserTeamTopSection({
 
           {loggedInEntity.role === 'club' && (
             <View style={styles.messageButtonStyle}>
-              {teamDetails?.parent_groups.includes(loggedInEntity.uid) && (
+              {teamDetails?.parent_groups?.includes(loggedInEntity.uid) && (
                 <TCProfileButton
                   title={strings.joining}
                   style={styles.firstButtonStyle}
@@ -113,7 +113,7 @@ export default function UserTeamTopSection({
                   onPressProfile={() => Alert.alert('Please ask to team for leave your club.')}
                 />
               )}
-              {!teamDetails?.parent_groups.includes(loggedInEntity.uid) && (
+              {!teamDetails?.parent_groups?.includes(loggedInEntity.uid) && (
                 <TCActionButton
                   outerContainerStyle={styles.firstButtonOuterStyle}
                   style={styles.firstButtonStyle}

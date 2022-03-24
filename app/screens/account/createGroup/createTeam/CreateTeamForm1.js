@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,13 +15,13 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { useIsFocused } from '@react-navigation/native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {useIsFocused} from '@react-navigation/native';
 
 import Modal from 'react-native-modal';
 
 import TCGradientButton from '../../../../components/TCGradientButton';
-import { getUserDoubleTeamFollower } from '../../../../api/Users';
+import {getUserDoubleTeamFollower} from '../../../../api/Users';
 import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
@@ -32,10 +32,10 @@ import TCLabel from '../../../../components/TCLabel';
 import TCFormProgress from '../../../../components/TCFormProgress';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
-import { getGroupIndex } from '../../../../api/elasticSearch';
-import { getHitSlop, getSportName } from '../../../../utils';
+import {getGroupIndex} from '../../../../api/elasticSearch';
+import {getHitSlop, getSportName} from '../../../../utils';
 
-export default function CreateTeamForm1({ navigation, route }) {
+export default function CreateTeamForm1({navigation, route}) {
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
@@ -54,8 +54,10 @@ export default function CreateTeamForm1({ navigation, route }) {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
 
-
-  console.log('route.params && route.params.clubObject',route.params && route.params.clubObject);
+  console.log(
+    'route.params && route.params.clubObject',
+    route.params && route.params.clubObject,
+  );
   useEffect(() => {
     if (isFocused) {
       getSports();
@@ -79,19 +81,23 @@ export default function CreateTeamForm1({ navigation, route }) {
     }
   }, [isFocused]);
 
-  const renderSports = ({ item }) => (
+  const renderSports = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
         setSportsSelection(item);
         setTimeout(() => {
-          
           setVisibleSportsModal(false);
           if (
-            item?.sport === 'tennis' && item?.sport_type === 'double'
-            && authContext?.entity?.role === ('user' || 'player')
+            item?.sport === 'tennis' &&
+            item?.sport_type === 'double' &&
+            authContext?.entity?.role === ('user' || 'player')
           ) {
-            getUserDoubleTeamFollower(item?.sport, item?.sport_type, authContext)
+            getUserDoubleTeamFollower(
+              item?.sport,
+              item?.sport_type,
+              authContext,
+            )
               .then((res) => {
                 setFollowersData(res?.payload);
               })
@@ -108,7 +114,9 @@ export default function CreateTeamForm1({ navigation, route }) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{getSportName(item,authContext)}</Text>
+        <Text style={styles.languageList}>
+          {getSportName(item, authContext)}
+        </Text>
         <View style={styles.checkbox}>
           {sportsSelection?.sport === item?.sport ? (
             <Image
@@ -127,7 +135,9 @@ export default function CreateTeamForm1({ navigation, route }) {
     let sportArr = [];
 
     authContext.sports.map((item) => {
-      const filterFormat = item.format.filter((obj) => obj.entity_type === 'team')
+      const filterFormat = item.format.filter(
+        (obj) => obj.entity_type === 'team',
+      );
       sportArr = [...sportArr, ...filterFormat];
       return null;
     });
@@ -148,7 +158,7 @@ export default function CreateTeamForm1({ navigation, route }) {
                 },
               },
             },
-            { term: { entity_type: 'team' } },
+            {term: {entity_type: 'team'}},
             {
               term: {
                 'city.keyword': {
@@ -175,15 +185,16 @@ export default function CreateTeamForm1({ navigation, route }) {
           currency_type: authContext?.entity?.obj?.currency_type,
         };
         if (parentGroupID) {
-          const tempIds = []
-          tempIds.push(parentGroupID)
+          const tempIds = [];
+          tempIds.push(parentGroupID);
           obj.parent_groups = tempIds;
         }
         console.log('Form1 Object:=>', obj);
 
         if (
-          sportsSelection.sport === 'tennis' && sportsSelection.sport_type === 'double'
-          && authContext?.entity?.role === ('user' || 'player')
+          sportsSelection.sport === 'tennis' &&
+          sportsSelection.sport_type === 'double' &&
+          authContext?.entity?.role === ('user' || 'player')
         ) {
           if (followersData?.length > 0) {
             navigation.navigate('CreateTeamForm2', {
@@ -221,7 +232,7 @@ export default function CreateTeamForm1({ navigation, route }) {
               <TextInput
                 style={styles.searchTextField}
                 placeholder={strings.selectSportPlaceholder}
-                value={getSportName(sportsSelection,authContext)}
+                value={getSportName(sportsSelection, authContext)}
                 editable={false}
                 pointerEvents="none"
               />
@@ -240,25 +251,26 @@ export default function CreateTeamForm1({ navigation, route }) {
         <View style={styles.fieldView}>
           <TCLabel title={strings.locationTitle} required={false} />
           <TouchableOpacity
-            onPress={() => navigation.navigate('SearchLocationScreen', {
+            onPress={() =>
+              navigation.navigate('SearchLocationScreen', {
                 comeFrom: 'CreateTeamForm1',
               })
             }>
             <TextInput
               placeholder={strings.searchCityPlaceholder}
-              style={[styles.matchFeeTxt, { marginBottom: 5 }]}
+              style={[styles.matchFeeTxt, {marginBottom: 5}]}
               value={location}
               editable={false}
               pointerEvents="none"></TextInput>
           </TouchableOpacity>
         </View>
-        <View style={{ flex: 1 }} />
+        <View style={{flex: 1}} />
       </ScrollView>
       <SafeAreaView>
         <TCGradientButton
           isDisabled={!sportsSelection || teamName === '' || location === ''}
           title={strings.nextTitle}
-          style={{ marginBottom: 5 }}
+          style={{marginBottom: 5}}
           onPress={nextOnPress}
         />
       </SafeAreaView>
@@ -283,7 +295,7 @@ export default function CreateTeamForm1({ navigation, route }) {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: {width: 0, height: 1},
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
@@ -296,7 +308,7 @@ export default function CreateTeamForm1({ navigation, route }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
-            hitSlop={getHitSlop(15)}
+              hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -372,7 +384,7 @@ const styles = StyleSheet.create({
 
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('92%'),
@@ -393,7 +405,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingRight: 30,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
 
@@ -409,7 +421,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'ios' ? 12 : 0,
     paddingLeft: 15,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('92%'),

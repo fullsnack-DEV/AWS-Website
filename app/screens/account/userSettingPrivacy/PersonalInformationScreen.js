@@ -14,7 +14,6 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  ScrollView,
   Alert,
   FlatList,
   Dimensions,
@@ -59,7 +58,6 @@ export default function PersonalInformationScreen({navigation, route}) {
   const actionSheetWithDelete = useRef();
   // For activity indigator
   const [loading, setloading] = useState(false);
-  const [editMode, setEditMode] = useState(false);
   const [userInfo, setUserInfo] = useState(authContext.entity.obj);
   const [languagesName, setLanguagesName] = useState('');
   const [profileImageChanged, setProfileImageChanged] = useState(false);
@@ -95,7 +93,6 @@ export default function PersonalInformationScreen({navigation, route}) {
     });
   }, [
     navigation,
-    editMode,
     languages,
     phoneNumbers,
     userInfo,
@@ -201,11 +198,7 @@ export default function PersonalInformationScreen({navigation, route}) {
     return true;
   };
 
-  // Change Edit mode states
-  const changeEditMode = () => {
-    setEditMode(!editMode);
-  };
-
+ 
   const isIconCheckedOrNot = ({item, index}) => {
     console.log('SELECTED:::', index);
 
@@ -225,9 +218,9 @@ export default function PersonalInformationScreen({navigation, route}) {
 
   const onSavePress = () => {
     console.log('checkValidation()', checkValidation());
-   
+
     if (checkValidation()) {
-      const bodyParams = {};
+      const bodyParams = {...userInfo};
       bodyParams.first_name = userInfo.first_name;
       bodyParams.last_name = userInfo.last_name;
       bodyParams.full_name = `${userInfo.first_name} ${userInfo.last_name}`;
@@ -298,10 +291,11 @@ export default function PersonalInformationScreen({navigation, route}) {
         };
         authContext.setEntity({...currentEntity});
         Utility.setStorage('authContextEntity', {...currentEntity});
-        setEditMode(false);
+       
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.appName, 'Profile changed sucessfully');
+          navigation.goBack();
         }, 1000);
       })
       .catch((e) => {
@@ -346,21 +340,21 @@ export default function PersonalInformationScreen({navigation, route}) {
           justifyContent: 'space-between',
         }}>
         <View
-          style={{...styles.halfMatchFeeView, ...(editMode && shadowStyle)}}>
+          style={{...styles.halfMatchFeeView}}>
           <TextInput
             placeholder={'Height'}
-            style={{...styles.halffeeText, ...(editMode && shadowStyle)}}
+            style={{...styles.halffeeText}}
             keyboardType={'phone-pad'}
             onChangeText={(text) => {
               setUserInfo({
                 ...userInfo,
                 height: {
                   height: text,
-                  height_type:  userInfo?.height?.height_type,
+                  height_type: userInfo?.height?.height_type,
                 },
               });
             }}
-            editable={editMode}
+           
             value={userInfo?.height?.height}
           />
         </View>
@@ -383,7 +377,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             });
           }}
           value={userInfo?.height?.height_type}
-          disabled={!editMode}
+         
           useNativeAndroidPickerStyle={false}
           style={{
             inputIOS: {
@@ -395,7 +389,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-              ...(editMode && shadowStyle),
+              
             },
             inputAndroid: {
               fontSize: wp('4%'),
@@ -406,7 +400,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-              ...(editMode && shadowStyle),
+             
             },
           }}
           Icon={() => (
@@ -429,21 +423,21 @@ export default function PersonalInformationScreen({navigation, route}) {
           justifyContent: 'space-between',
         }}>
         <View
-          style={{...styles.halfMatchFeeView, ...(editMode && shadowStyle)}}>
+          style={{...styles.halfMatchFeeView}}>
           <TextInput
             placeholder={'Weight'}
-            style={{...styles.halffeeText, ...(editMode && shadowStyle)}}
+            style={{...styles.halffeeText}}
             keyboardType={'phone-pad'}
             onChangeText={(text) => {
               setUserInfo({
                 ...userInfo,
                 weight: {
                   weight: text,
-                  weight_type:  userInfo?.weight?.weight_type,
+                  weight_type: userInfo?.weight?.weight_type,
                 },
               });
             }}
-            editable={editMode}
+           
             value={userInfo?.weight?.weight}
           />
         </View>
@@ -466,7 +460,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             });
           }}
           value={userInfo?.weight?.weight_type}
-          disabled={!editMode}
+          
           useNativeAndroidPickerStyle={false}
           style={{
             inputIOS: {
@@ -478,7 +472,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-              ...(editMode && shadowStyle),
+              
             },
             inputAndroid: {
               fontSize: wp('4%'),
@@ -489,7 +483,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-              ...(editMode && shadowStyle),
+             
             },
           }}
           Icon={() => (
@@ -542,7 +536,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             });
           }}
           value={item.country_code}
-          disabled={!editMode}
+         
           useNativeAndroidPickerStyle={false}
           style={{
             inputIOS: {
@@ -554,7 +548,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-              ...(editMode && shadowStyle),
+             
             },
             inputAndroid: {
               fontSize: wp('4%'),
@@ -565,7 +559,7 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-              ...(editMode && shadowStyle),
+              
             },
           }}
           Icon={() => (
@@ -573,10 +567,10 @@ export default function PersonalInformationScreen({navigation, route}) {
           )}
         />
         <View
-          style={{...styles.halfMatchFeeView, ...(editMode && shadowStyle)}}>
+          style={{...styles.halfMatchFeeView}}>
           <TextInput
             placeholder={'Phone number'}
-            style={{...styles.halffeeText, ...(editMode && shadowStyle)}}
+            style={{...styles.halffeeText}}
             keyboardType={'phone-pad'}
             onChangeText={(text) => {
               const tempphoneNumbers = [...phoneNumbers];
@@ -598,20 +592,14 @@ export default function PersonalInformationScreen({navigation, route}) {
                 ),
               });
             }}
-            editable={editMode}
+           
             value={item.phone_number}
           />
         </View>
       </View>
     </View>
   );
-  const shadowStyle = {
-    elevation: 3,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 0.5},
-    shadowOpacity: 0.16,
-    shadowRadius: 1,
-  };
+ 
 
   const onProfileImageClicked = () => {
     setTimeout(() => {
@@ -727,10 +715,11 @@ export default function PersonalInformationScreen({navigation, route}) {
           <Text
             style={styles.headerRightButton}
             onPress={() => {
-              if (!editMode) changeEditMode();
-              else onSavePress();
+              // if (!editMode) changeEditMode();
+              // else 
+              onSavePress();
             }}>
-            {!editMode ? 'Edit' : 'Done'}
+            Done
           </Text>
         }
       />
@@ -742,299 +731,287 @@ export default function PersonalInformationScreen({navigation, route}) {
         }}
       />
       <TCKeyboardView>
-        <ScrollView bounces={false} style={styles.mainContainer}>
-          <ActivityLoader visible={loading} />
+        <ActivityLoader visible={loading} />
 
-          <View style={{flex: 1}}>
-            <TCImage
-              imageStyle={[styles.profileImageStyle, {marginTop: 10}]}
-              source={
-                userInfo.thumbnail
-                  ? {uri: userInfo.thumbnail}
-                  : images.profilePlaceHolder
-              }
-              defaultSource={images.profilePlaceHolder}
+        <View style={{flex: 1}}>
+          <TCImage
+            imageStyle={[styles.profileImageStyle, {marginTop: 10}]}
+            source={
+              userInfo.thumbnail
+                ? {uri: userInfo.thumbnail}
+                : images.profilePlaceHolder
+            }
+            defaultSource={images.profilePlaceHolder}
+          />
+
+          <TouchableOpacity
+           
+            style={styles.profileCameraButtonStyle}
+            onPress={() => onProfileImageClicked()}>
+            <Image
+              style={styles.profileImageButtonStyle}
+              source={images.certificateUpload}
             />
+          </TouchableOpacity>
+        </View>
 
-            <TouchableOpacity
-              disabled={!editMode}
-              style={styles.profileCameraButtonStyle}
-              onPress={() => onProfileImageClicked()}>
-              <Image
-                style={styles.profileImageButtonStyle}
-                source={images.certificateUpload}
-              />
-            </TouchableOpacity>
-          </View>
+        <TCLabel title={'Name'} />
+  
 
-          <TCLabel title={'Name'} />
-          {editMode && (
-            <View style={{marginHorizontal: 15, flexDirection: 'row'}}>
-              <TextInput
+  
+        <View style={{marginHorizontal: 15, flexDirection: 'row'}}>
+          <TextInput
                 placeholder={strings.fnameText}
                 style={{
                   ...styles.matchFeeTxt,
                   flex: 1,
                   marginRight: 5,
-                  ...(editMode && shadowStyle),
+                 
                 }}
                 onChangeText={(text) => {
                   setUserInfo({...userInfo, first_name: text});
                 }}
-                editable={editMode}
                 value={userInfo.first_name}
               />
-              <TextInput
+          <TextInput
                 placeholder={strings.lnameText}
                 style={{
                   ...styles.matchFeeTxt,
                   flex: 1,
                   marginLeft: 5,
-                  ...(editMode && shadowStyle),
                 }}
                 onChangeText={(text) => {
                   setUserInfo({...userInfo, last_name: text});
                 }}
-                editable={editMode}
                 value={userInfo.last_name}
               />
-            </View>
-          )}
+        </View>
+      
 
-          {!editMode && (
-            <TextInput
-              placeholder={'Name'}
-              style={{...styles.matchFeeTxt, ...(editMode && shadowStyle)}}
-              editable={editMode}
-              value={`${userInfo.first_name} ${userInfo.last_name}`}
-            />
-          )}
-
-          <View style={styles.fieldView}>
-            <TCLabel title={strings.locationTitle} />
-            <TouchableOpacity
-              disabled={!editMode}
-              onPress={() => {
-                // eslint-disable-next-line no-unused-expressions
-                editMode &&
-                  navigation.navigate('SearchLocationScreen', {
-                    comeFrom: 'PersonalInformationScreen',
-                  });
-              }}>
-              <TextInput
-                placeholder={strings.searchCityPlaceholder}
-                style={{...styles.matchFeeTxt, ...(editMode && shadowStyle)}}
-                value={
-                  userInfo?.city &&
-                  `${userInfo?.city?.trim()}, ${userInfo.state_abbr?.trim()}, ${userInfo.country?.trim()}`
-                }
-                editable={false}
-                pointerEvents="none"
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View>
-            <TCLabel title={strings.slogan} />
-            <TCTextField
-              placeholder={'Slogan'}
-              onChangeText={(text) =>
-                setUserInfo({...userInfo, description: text})
-              }
-              editable={editMode}
-              multiline
-              maxLength={150}
-              value={userInfo.description}
-              height={120}
-            />
-          </View>
-
-          <TCThickDivider marginTop={25} marginBottom={15} />
-
-          <View>
-            <TCLabel title={strings.gender} />
-            <View style={styles.staticTextView}>
-              <Text style={styles.staticText}>{userInfo.gender}</Text>
-            </View>
-          </View>
-
-          <View>
-            <TCLabel title={strings.birthDatePlaceholder} />
-            <View style={styles.staticTextView}>
-              <Text style={styles.staticText}>
-                {moment(userInfo?.birthday * 1000).format('MMM DD,YYYY')}
-              </Text>
-            </View>
-          </View>
-
-          <TCLabel title={'Height'} />
-          {heightView()}
-
-          <TCLabel title={'Weight'} />
-          {weightView()}
-
-          <TCLabel title={'Phone'} />
-          <FlatList
-            scrollEnabled={false}
-            data={phoneNumbers}
-            keyExtractor={(index) => index.toString()}
-            renderItem={renderPhoneNumber}
-          />
-          {editMode && (
-            <TCMessageButton
-              title={strings.addPhone}
-              width={85}
-              alignSelf="center"
-              marginTop={15}
-              onPress={() => addPhoneNumber()}
-            />
-          )}
-
-          <TCLabel title={strings.languageTitle} />
+        <View style={styles.fieldView}>
+          <TCLabel title={strings.locationTitle} />
           <TouchableOpacity
-            style={{...styles.searchView, ...(editMode && shadowStyle)}}
-            disabled={!editMode}
+           
             onPress={() => {
               // eslint-disable-next-line no-unused-expressions
-              editMode && toggleModal();
+             
+                navigation.navigate('SearchLocationScreen', {
+                  comeFrom: 'PersonalInformationScreen',
+                });
             }}>
             <TextInput
-              style={styles.searchTextField}
-              placeholder={strings.languagePlaceholder}
-              value={userInfo.language ? languagesName : ''}
+              placeholder={strings.searchCityPlaceholder}
+              style={{...styles.matchFeeTxt}}
+              value={
+                userInfo?.city &&
+                `${userInfo?.city?.trim()}, ${userInfo.state_abbr?.trim()}, ${userInfo.country?.trim()}`
+              }
               editable={false}
               pointerEvents="none"
             />
           </TouchableOpacity>
-          <TCLabel title={'E-mail'} />
-          <TextInput
-            placeholder={strings.emailPlaceHolder}
-            style={{...styles.matchFeeTxt, ...(editMode && shadowStyle)}}
-            editable={false}
-            value={userInfo.email}
+        </View>
+
+        <View>
+          <TCLabel title={strings.slogan} />
+          <TCTextField
+            placeholder={'Slogan'}
+            onChangeText={(text) =>
+              setUserInfo({...userInfo, description: text})
+            }
+           
+            multiline
+            maxLength={150}
+            value={userInfo.description}
+            height={120}
           />
+        </View>
 
-          <View>
-            <TCLabel title={'Address'} />
-            <TCTextField
-              editable={editMode}
-              value={streetAddress}
-              onChangeText={(text) => setStreetAddress(text)}
-              placeholder={strings.addressPlaceholder}
-              keyboardType={'default'}
-              autoCapitalize="none"
-              autoCorrect={false}
-              // onFocus={() => setLocationFieldVisible(true)}
-            />
+        <TCThickDivider marginTop={25} marginBottom={15} />
+
+        <View>
+          <TCLabel title={strings.gender} />
+          <View style={styles.staticTextView}>
+            <Text style={styles.staticText}>{userInfo.gender}</Text>
           </View>
+        </View>
 
-          <TouchableOpacity
-            disabled={!editMode}
-            onPress={() =>
-              navigation.navigate('SearchLocationScreen', {
-                comeFrom: 'PersonalInformationScreen',
-              })
-            }>
-            <TextInput
-              placeholder={strings.searchCityPlaceholder}
-              placeholderTextColor={colors.userPostTimeColor}
-              style={[styles.matchFeeTxt, {marginBottom: 5}]}
-              value={city && `${city}, ${state}, ${country}`}
-              editable={false}
-              pointerEvents="none"></TextInput>
-          </TouchableOpacity>
-
-          <View>
-            <TCTextField
-              editable={editMode}
-              value={postalCode}
-              onChangeText={(text) => setPostalCode(text)}
-              placeholder={strings.postalCodeText}
-              keyboardType={'default'}
-            />
+        <View>
+          <TCLabel title={strings.birthDatePlaceholder} />
+          <View style={styles.staticTextView}>
+            <Text style={styles.staticText}>
+              {moment(userInfo?.birthday * 1000).format('MMM DD,YYYY')}
+            </Text>
           </View>
-          <Modal
-            isVisible={isModalVisible}
-            backdropColor="black"
-            hasBackdrop={true}
-            onBackdropPress={() => {
-              setModalVisible(false);
-            }}
-            backdropOpacity={0}
-            style={{marginLeft: 0, marginRight: 0, marginBottom: 0}}>
+        </View>
+
+        <TCLabel title={'Height'} />
+        {heightView()}
+
+        <TCLabel title={'Weight'} />
+        {weightView()}
+
+        <TCLabel title={'Phone'} />
+        <FlatList
+          scrollEnabled={false}
+          data={phoneNumbers}
+          keyExtractor={(index) => index.toString()}
+          renderItem={renderPhoneNumber}
+        />
+     
+        <TCMessageButton
+            title={strings.addPhone}
+            width={85}
+            alignSelf="center"
+            marginTop={15}
+            onPress={() => addPhoneNumber()}
+          />
+       
+
+        <TCLabel title={strings.languageTitle} />
+        <TouchableOpacity
+          style={{...styles.searchView}}
+         
+          onPress={() => {
+            // eslint-disable-next-line no-unused-expressions
+           toggleModal();
+          }}>
+          <TextInput
+            style={styles.searchTextField}
+            placeholder={strings.languagePlaceholder}
+            value={userInfo.language ? languagesName : ''}
+            editable={false}
+            pointerEvents="none"
+          />
+        </TouchableOpacity>
+        <TCLabel title={'E-mail'} />
+        <TextInput
+          placeholder={strings.emailPlaceHolder}
+          style={{...styles.matchFeeTxt}}
+          editable={false}
+          value={userInfo.email}
+        />
+
+        <View>
+          <TCLabel title={'Address'} />
+          <TCTextField
+            
+            value={streetAddress}
+            onChangeText={(text) => setStreetAddress(text)}
+            placeholder={strings.addressPlaceholder}
+            keyboardType={'default'}
+            autoCapitalize="none"
+            autoCorrect={false}
+            // onFocus={() => setLocationFieldVisible(true)}
+          />
+        </View>
+
+        <TouchableOpacity
+          
+          onPress={() =>
+            navigation.navigate('SearchLocationScreen', {
+              comeFrom: 'PersonalInformationScreen',
+            })
+          }>
+          <TextInput
+            placeholder={strings.searchCityPlaceholder}
+            placeholderTextColor={colors.userPostTimeColor}
+            style={[styles.matchFeeTxt, {marginBottom: 5}]}
+            value={city && `${city}, ${state}, ${country}`}
+            editable={false}
+            pointerEvents="none"></TextInput>
+        </TouchableOpacity>
+
+        <View>
+          <TCTextField
+           
+            value={postalCode}
+            onChangeText={(text) => setPostalCode(text)}
+            placeholder={strings.postalCodeText}
+            keyboardType={'default'}
+          />
+        </View>
+        <Modal
+          isVisible={isModalVisible}
+          backdropColor="black"
+          hasBackdrop={true}
+          onBackdropPress={() => {
+            setModalVisible(false);
+          }}
+          backdropOpacity={0}
+          style={{marginLeft: 0, marginRight: 0, marginBottom: 0}}>
+          <View
+            style={{
+              width: '100%',
+              height: Dimensions.get('window').height / 2,
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              shadowColor: '#000',
+              shadowOffset: {width: 0, height: 1},
+              shadowOpacity: 0.5,
+              shadowRadius: 5,
+              elevation: 10,
+            }}>
+            <Header
+              mainContainerStyle={{marginTop: 15}}
+              centerComponent={
+                <Text style={styles.headerCenterStyle}>{'Languages'}</Text>
+              }
+              rightComponent={
+                <TouchableOpacity
+                  hitSlop={Utility.getHitSlop(15)}
+                  onPress={() => {
+                    setModalVisible(false);
+                  }}>
+                  <Image
+                    source={images.cancelImage}
+                    style={styles.cancelImageStyle}
+                    resizeMode={'contain'}
+                  />
+                </TouchableOpacity>
+              }
+            />
+            <View style={styles.sepratorStyle} />
+            <View style={styles.separatorLine}></View>
+            <FlatList
+              data={languageData}
+              keyExtractor={(index) => index.toString()}
+              renderItem={renderLanguage}
+              style={{marginBottom: '25%'}}
+            />
             <View
               style={{
                 width: '100%',
-                height: Dimensions.get('window').height / 2,
+                height: '25%',
                 backgroundColor: 'white',
                 position: 'absolute',
                 bottom: 0,
                 left: 0,
-                borderTopLeftRadius: 30,
-                borderTopRightRadius: 30,
+
                 shadowColor: '#000',
                 shadowOffset: {width: 0, height: 1},
                 shadowOpacity: 0.5,
                 shadowRadius: 5,
-                elevation: 10,
               }}>
-              <Header
-                mainContainerStyle={{marginTop: 15}}
-                centerComponent={
-                  <Text style={styles.headerCenterStyle}>{'Languages'}</Text>
-                }
-                rightComponent={
-                  <TouchableOpacity
-                    hitSlop={Utility.getHitSlop(15)}
-                    onPress={() => {
-                      setModalVisible(false);
-                    }}>
-                    <Image
-                      source={images.cancelImage}
-                      style={styles.cancelImageStyle}
-                      resizeMode={'contain'}
-                    />
-                  </TouchableOpacity>
-                }
-              />
-              <View style={styles.sepratorStyle} />
-              <View style={styles.separatorLine}></View>
-              <FlatList
-                data={languageData}
-                keyExtractor={(index) => index.toString()}
-                renderItem={renderLanguage}
-                style={{marginBottom: '25%'}}
-              />
-              <View
-                style={{
-                  width: '100%',
-                  height: '25%',
-                  backgroundColor: 'white',
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-
-                  shadowColor: '#000',
-                  shadowOffset: {width: 0, height: 1},
-                  shadowOpacity: 0.5,
-                  shadowRadius: 5,
+              <TouchableOpacity
+                onPress={() => {
+                  toggleModal();
                 }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    toggleModal();
-                  }}>
-                  <LinearGradient
-                    colors={[colors.yellowColor, colors.themeColor]}
-                    style={styles.languageApplyButton}>
-                    <Text style={styles.nextButtonText}>
-                      {strings.applyTitle}
-                    </Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </View>
+                <LinearGradient
+                  colors={[colors.yellowColor, colors.themeColor]}
+                  style={styles.languageApplyButton}>
+                  <Text style={styles.nextButtonText}>
+                    {strings.applyTitle}
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
             </View>
-          </Modal>
-        </ScrollView>
+          </View>
+        </Modal>
       </TCKeyboardView>
       <ActionSheet
         ref={actionSheet}
@@ -1134,10 +1111,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginTop: 20,
   },
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
+ 
   matchFeeTxt: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
