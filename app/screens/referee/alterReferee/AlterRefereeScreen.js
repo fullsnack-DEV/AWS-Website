@@ -645,6 +645,7 @@ export default function AlterRefereeScreen({navigation, route}) {
     }
     return reservationObject?.referee;
   };
+  
   const acceptDeclineRefereeReservation = (
     reservationID,
     callerID,

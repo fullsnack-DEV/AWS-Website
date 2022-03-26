@@ -1006,7 +1006,7 @@ function NotificationsListScreen({navigation}) {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View
-        style={[styles.rowViewStyle, {opacity: activeScreen ? 1.0 : 0.5}]}
+        style={[styles.rowViewStyle, {opacity: 1.0}]}
         needsOffscreenAlphaCompositing>
    
         <ActivityLoader visible={loading} />

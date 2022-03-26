@@ -2685,7 +2685,7 @@ const HomeScreen = ({navigation, route}) => {
     });
   };
   const moveToReview = () => {
-    console.log('move to EntityReviewScreen');
+    console.log('move to EntityReviewScreen',averageTeamReview);
     navigation.navigate('EntityReviewScreen', {
       averageTeamReview,
       teamReviewData,

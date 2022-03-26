@@ -124,6 +124,7 @@ export default function TCEventView({
     data?.game?.away_team?.group_id === authContext.entity.uid ||
     data?.game?.home_team?.user_id === authContext.entity.uid ||
     data?.game?.away_team?.user_id === authContext.entity.uid ||
+    (!data?.game && data?.participants?.[0]?.entity_id === authContext.entity.uid) ||
     refereeFound(data) ||
     scorekeeperFound(data)
   ) {

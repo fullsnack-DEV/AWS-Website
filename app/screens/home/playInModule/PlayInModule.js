@@ -398,16 +398,18 @@ const PlayInModule = ({
     } else if (challengeType === 'invite') {
       if (mySetting.availibility === 'On') {
         onClose();
+        console.log('currentUserDatacurrentUserData',playInObject);
         navigation.navigate('InviteChallengeScreen', {
           setting: mySetting,
-          sportName: currentUserData.sport,
+          sportName:  playInObject?.sport,
+          sportType:  playInObject?.sport_type,
           groupObj: currentUserData,
         });
       } else {
         onClose();
         navigation.navigate('ManageChallengeScreen', {
-          sportName: currentUserData?.sport,
-          sportType: currentUserData?.sport_type,
+          sportName:  playInObject?.sport,
+          sportType:  playInObject?.sport_type,
         });
       }
     }

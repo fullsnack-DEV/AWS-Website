@@ -37,7 +37,6 @@ import TCThickDivider from '../../../../components/TCThickDivider';
 
 let body = {};
 const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
-
   const [sportName] = useState(route?.params?.sportName);
   const [userData] = useState(route?.params?.userData);
   const [gameData] = useState(route?.params?.gameData ?? null);
@@ -60,7 +59,6 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
     getFeeDetail(route?.params?.paymentMethod ?? defaultCard);
   }, [defaultCard, route?.params?.paymentMethod]);
 
-  
   const getFeeDetail = useCallback(
     (paymentObj) => {
       const gData = gameData;
@@ -105,12 +103,7 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
         setLoading(false);
       }
     },
-    [
-      authContext,
-      gameData,
-      route?.params?.isHirer,
-      userData?.user_id,
-    ],
+    [authContext, gameData, route?.params?.isHirer, userData?.user_id],
   );
 
   const Title = ({text, required}) => (

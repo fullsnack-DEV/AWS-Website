@@ -184,95 +184,79 @@ export default function BookScorekeeper({navigation, route}) {
   }, []);
 
   const onPressNext = () => {
-    console.log('gameData:=>', gameData);
-    if (gameData?.scorekeepers) {
-      if (
-        gameData?.scorekeepers?.length <
-        gameData?.challenge_scorekeepers?.who_secure?.length
-      ) {
-        setLoading(true);
-        Utils.getSetting(
-          selectedScorekeeper?.user_id,
-          'scorekeeper',
-          gameData.sport,
-          authContext,
-        )
-          .then((response) => {
-            setLoading(false);
-            console.log('res3:::=>', response);
-            if (
-              response?.scorekeeperAvailibility &&
-              response?.game_fee &&
-              response?.refund_policy &&
-              response?.available_area
-            ) {
-              navigation.navigate('ScorekeeperBookingDateAndTime', {
-                settingObj: response,
-                userData: selectedScorekeeper,
-                navigationName: 'HomeScreen',
-                gameData,
-              });
-            } else {
+    console.log('gameData111:=>', gameData);
+   
+    setLoading(true);
+    Utils.getSetting(
+      authContext?.entity?.uid,
+      authContext?.entity?.role,
+      gameData.sport,
+      authContext,
+      gameData.sport_type,
+    )
+      .then((response) => {
+        setLoading(false);
+        console.log('setting of group or player:::=>', response);
+        if (
+          response?.responsible_for_scorekeeper?.who_secure?.length >
+          gameData?.challenge_scorekeepers?.who_secure?.length
+        ) {
+          setLoading(true);
+          Utils.getSetting(
+            selectedScorekeeper?.user_id,
+            'scorekeeper',
+            gameData.sport,
+            authContext,
+          )
+            .then((res) => {
+              setLoading(false);
+              console.log('res3:::=>', res);
+              if (
+                res?.scorekeeperAvailibility &&
+                res?.game_fee &&
+                res?.refund_policy &&
+                res?.available_area
+              ) {
+                navigation.navigate('ScorekeeperBookingDateAndTime', {
+                  settingObj: res,
+                  userData: selectedScorekeeper,
+                  navigationName: 'HomeScreen',
+                  gameData,
+                });
+              } else {
+                setTimeout(() => {
+                  Alert.alert('Scorekeeper setting not configured yet.');
+                }, 10);
+              }
+            })
+            .catch(() => {
+              setLoading(false);
               setTimeout(() => {
-                Alert.alert('Scorekeeper setting not configured yet.');
+                Alert.alert(strings.alertmessagetitle, strings.defaultError);
               }, 10);
-            }
-          })
-          .catch(() => {
-            setLoading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, strings.defaultError);
-            }, 10);
-            // navigation.goBack();
-          });
-      } else {
-        Alert.alert(
-          strings.appName,
-          `You can't book more than ${gameData?.challenge_scorekeepers?.who_secure?.length} scorekeeper for this match. You can change the number of scorekeepers in the reservation details.`,
-        );
-      }
-    } else if (gameData?.challenge_scorekeepers?.who_secure?.length > 0) {
-      setLoading(true);
-      Utils.getSetting(
-        selectedScorekeeper?.user_id,
-        'scorekeeper',
-        gameData.sport,
-        authContext,
-      )
-        .then((response) => {
-          setLoading(false);
-          console.log('res3:::=>', response);
-          if (
-            response?.scorekeeperAvailibility &&
-            response?.game_fee &&
-            response?.refund_policy &&
-            response?.available_area
-          ) {
-            navigation.navigate('ScorekeeperBookingDateAndTime', {
-              settingObj: response,
-              userData: selectedScorekeeper,
-              navigationName: 'HomeScreen',
-              gameData,
+              // navigation.goBack();
             });
-          } else {
-            setTimeout(() => {
-              Alert.alert('Scorekeeper setting not configured yet.');
-            }, 10);
-          }
-        })
-        .catch(() => {
-          setLoading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, strings.defaultError);
-          }, 10);
-          // navigation.goBack();
-        });
-    } else {
-      Alert.alert(
-        strings.appName,
-        `You can’t book more than ${gameData?.challenge_scorekeepers?.who_secure?.length} scorekeeper for this match. You can change the number of scorekeepers in the reservation details.`,
-      );
-    }
+        } else {
+          Alert.alert(
+            strings.appName,
+            `You can't book more than ${response?.responsible_for_scorekeeper?.who_secure?.length} scorekeeper for this match. You can change the number of scorekeepers in the reservation details.`,
+          );
+        }
+
+
+      })
+      .catch(() => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, strings.defaultError);
+        }, 10);
+        // navigation.goBack();
+      });
+
+
+    
+     
+    
   };
 
   const renderScorekeeperData = ({item}) => {

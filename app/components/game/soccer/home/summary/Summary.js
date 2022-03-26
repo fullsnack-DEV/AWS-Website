@@ -17,7 +17,7 @@ import {
   TouchableWithoutFeedback,
   Image,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
 import {
@@ -30,7 +30,7 @@ import {
   addScorekeeperReview,
   getGameMemberDetails,
 } from '../../../../../api/Games';
-import { getHitSlop, heightPercentageToDP as hp } from '../../../../../utils';
+import {getHitSlop, heightPercentageToDP as hp} from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
 import AuthContext from '../../../../../auth/context';
@@ -40,13 +40,13 @@ import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
 import ApproveDisapprove from './approveDisapprove/ApproveDisapprove';
 import TCInnerLoader from '../../../../TCInnerLoader';
-import { checkReviewExpired } from '../../../../../utils/gameUtils';
+import {checkReviewExpired} from '../../../../../utils/gameUtils';
 import fonts from '../../../../../Constants/Fonts';
 import strings from '../../../../../Constants/String';
 import GameFeed from '../../../common/summary/GameFeed';
 
 import images from '../../../../../Constants/ImagePath';
-import { ImageUploadContext } from '../../../../../context/ImageUploadContext';
+import {ImageUploadContext} from '../../../../../context/ImageUploadContext';
 import GameStatus from '../../../../../Constants/GameStatus';
 
 const Summary = ({
@@ -105,83 +105,83 @@ const Summary = ({
     if (isFocused && gameData) {
       leaveReviewButtonConfig();
 
-          const soccerSportData = authContext?.sports?.length
-            && authContext?.sports?.filter(
-              (item) => item.sport
-                === gameData?.sport,
-            )[0];
+      const soccerSportData =
+        authContext?.sports?.length &&
+        authContext?.sports?.filter(
+          (item) => item.sport === gameData?.sport,
+        )[0];
 
-          console.log('soccerSportData', soccerSportData);
-          const teamReviewProp = soccerSportData?.team_review_properties ?? [];
-          const playerReviewProp = soccerSportData?.player_review_properties ?? [];
-          const refereeReviewProp = soccerSportData?.referee_review_properties ?? [];
-          const scorekeeperReviewProp = soccerSportData?.scorekeeper_review_properties ?? [];
-          const sliderReviewProp = [];
-          const starReviewProp = [];
-          const sliderReviewPropForPlayer = [];
-          const starReviewPropForPlayer = [];
-          const sliderReviewPropForReferee = [];
-          const starReviewPropForReferee = [];
+      console.log('soccerSportData', soccerSportData);
+      const teamReviewProp = soccerSportData?.team_review_properties ?? [];
+      const playerReviewProp = soccerSportData?.player_review_properties ?? [];
+      const refereeReviewProp =
+        soccerSportData?.referee_review_properties ?? [];
+      const scorekeeperReviewProp =
+        soccerSportData?.scorekeeper_review_properties ?? [];
+      const sliderReviewProp = [];
+      const starReviewProp = [];
+      const sliderReviewPropForPlayer = [];
+      const starReviewPropForPlayer = [];
+      const sliderReviewPropForReferee = [];
+      const starReviewPropForReferee = [];
 
-          const sliderReviewPropForScorekeeper = [];
-          const starReviewPropForScorekeeper = [];
+      const sliderReviewPropForScorekeeper = [];
+      const starReviewPropForScorekeeper = [];
 
-          if (teamReviewProp?.length) {
-            teamReviewProp.filter((item) => {
-              if (item.type === 'slider') {
-                sliderReviewProp.push(item?.title.toLowerCase());
-              } else if (item.type === 'star') {
-                starReviewProp.push(item);
-              }
-              return true;
-            });
-            setSliderAttributes([...sliderReviewProp]);
-            setStarAttributes([...starReviewProp]);
+      if (teamReviewProp?.length) {
+        teamReviewProp.filter((item) => {
+          if (item.type === 'slider') {
+            sliderReviewProp.push(item?.title.toLowerCase());
+          } else if (item.type === 'star') {
+            starReviewProp.push(item);
           }
-          if (playerReviewProp?.length) {
-            playerReviewProp.filter((item) => {
-              if (item.type === 'slider') {
-                sliderReviewPropForPlayer.push(item?.name.toLowerCase());
-              } else if (item.type === 'star') {
-                starReviewPropForPlayer.push(item);
-              }
-              return true;
-            });
+          return true;
+        });
+        setSliderAttributes([...sliderReviewProp]);
+        setStarAttributes([...starReviewProp]);
+      }
+      if (playerReviewProp?.length) {
+        playerReviewProp.filter((item) => {
+          if (item.type === 'slider') {
+            sliderReviewPropForPlayer.push(item?.name.toLowerCase());
+          } else if (item.type === 'star') {
+            starReviewPropForPlayer.push(item);
           }
-          if (refereeReviewProp?.length) {
-            refereeReviewProp.filter((item) => {
-              if (item.type === 'topstar') {
-                sliderReviewPropForReferee.push(item?.name.toLowerCase());
-              } else if (item.type === 'star') {
-                starReviewPropForReferee.push(item);
-              }
-              return true;
-            });
-            setSliderAttributesForReferee([...sliderReviewPropForReferee]);
-            setStarAttributesForReferee([...starReviewPropForReferee]);
+          return true;
+        });
+      }
+      if (refereeReviewProp?.length) {
+        refereeReviewProp.filter((item) => {
+          if (item.type === 'topstar') {
+            sliderReviewPropForReferee.push(item?.name.toLowerCase());
+          } else if (item.type === 'star') {
+            starReviewPropForReferee.push(item);
           }
-          if (scorekeeperReviewProp?.length) {
-            scorekeeperReviewProp.filter((item) => {
-              if (item.type === 'topstar') {
-                sliderReviewPropForScorekeeper.push(item?.name.toLowerCase());
-              } else if (item.type === 'star') {
-                starReviewPropForScorekeeper.push(item);
-              }
-              return true;
-            });
-            console.log(
-              'sliderReviewPropForScorekeeper',
-              sliderReviewPropForScorekeeper,
-            );
-            console.log(
-              'starReviewPropForScorekeeper',
-              starReviewPropForScorekeeper,
-            );
-            setSliderAttributesForScorekeeper([
-              ...sliderReviewPropForScorekeeper,
-            ]);
-            setStarAttributesForScorekeeper([...starReviewPropForScorekeeper]);
+          return true;
+        });
+        setSliderAttributesForReferee([...sliderReviewPropForReferee]);
+        setStarAttributesForReferee([...starReviewPropForReferee]);
+      }
+      if (scorekeeperReviewProp?.length) {
+        scorekeeperReviewProp.filter((item) => {
+          if (item.type === 'topstar') {
+            sliderReviewPropForScorekeeper.push(item?.name.toLowerCase());
+          } else if (item.type === 'star') {
+            starReviewPropForScorekeeper.push(item);
           }
+          return true;
+        });
+        console.log(
+          'sliderReviewPropForScorekeeper',
+          sliderReviewPropForScorekeeper,
+        );
+        console.log(
+          'starReviewPropForScorekeeper',
+          starReviewPropForScorekeeper,
+        );
+        setSliderAttributesForScorekeeper([...sliderReviewPropForScorekeeper]);
+        setStarAttributesForScorekeeper([...starReviewPropForScorekeeper]);
+      }
     }
   }, [gameData, isFocused]);
 
@@ -262,8 +262,9 @@ const Summary = ({
           ];
           if (
             data.some(
-              (obj) => obj?.referee_id === authContext.entity.uid
-                || obj?.scorekeeper_id === authContext.entity.uid,
+              (obj) =>
+                obj?.referee_id === authContext.entity.uid ||
+                obj?.scorekeeper_id === authContext.entity.uid,
             )
           ) {
             setLeaveReviewText(strings.leaveOrEditReviewText);
@@ -275,7 +276,13 @@ const Summary = ({
         Alert.alert(strings.alertmessagetitle, error);
       });
   };
-  const showLeaveReviewButton = () => lineUpUser || isRefereeAdmin || isScorekeeperAdmin;
+
+  console.log('lineUpUser',lineUpUser);
+  console.log('isRefereeAdmin',isRefereeAdmin);
+  console.log('isScorekeeperAdmin',isScorekeeperAdmin);
+
+  const showLeaveReviewButton = () =>
+    lineUpUser || isRefereeAdmin || isScorekeeperAdmin;
 
   const getRefereeReviewsData = useCallback(
     (item) => {
@@ -345,13 +352,13 @@ const Summary = ({
             'Edit Review By Review ID Response::=>',
             response.payload,
           );
-          console.log('playerFrom::=>', playerFrom);
+          console.log('selectedTeamForReview::=>', selectedTeamForReview);
 
           navigation.navigate('LeaveReview', {
             gameData,
             gameReviewData: response.payload,
             selectedTeam:
-              selectedTeamForReview ?? playerFrom === 'home' ? 'away' : 'home',
+            selectedTeamForReview, // ?? playerFrom === 'home' ? 'away' : 'home',
             sliderAttributes,
             starAttributes,
             onPressReviewDone,
@@ -375,13 +382,14 @@ const Summary = ({
   );
 
   const reviewOperationsActionSheetOptions = useMemo(
-    () => (gameData?.review_id
+    () =>
+      gameData?.review_id
         ? [
             strings.editReviewForTeams,
             strings.reviewForReferees,
             strings.cancel,
           ]
-        : [strings.reviewForTeams, strings.reviewForReferees, strings.cancel]),
+        : [strings.reviewForTeams, strings.reviewForReferees, strings.cancel],
     [gameData?.review_id],
   );
 
@@ -420,10 +428,12 @@ const Summary = ({
   );
 
   const renderScoreRecordingButton = useMemo(
-    () => (isAdmin || isRefereeAdmin || isScorekeeperAdmin)
-      && gameData?.status !== GameStatus.ended ? (
+    () =>
+      (isAdmin || isRefereeAdmin || isScorekeeperAdmin) &&
+      gameData?.status !== GameStatus.ended ? (
         <TCGradientButton
-          onPress={() => navigation.navigate('SoccerRecording', { gameId: gameData?.game_id })
+          onPress={() =>
+            navigation.navigate('SoccerRecording', {gameId: gameData?.game_id})
           }
           startGradientColor={colors.yellowColor}
           endGradientColor={colors.themeColor}
@@ -437,7 +447,9 @@ const Summary = ({
             marginBottom: 0,
           }}
         />
-      ) : (<View/>),
+      ) : (
+        <View />
+      ),
     [
       gameData?.game_id,
       gameData?.status,
@@ -449,14 +461,14 @@ const Summary = ({
   );
 
   const renderLeaveAReviewButton = useMemo(
-    () => 
-       gameData?.status === 'ended'
-      && !checkReviewExpired(gameData?.actual_enddatetime)
-      && !isAdmin
-      && gameData?.approval?.home_team?.approved
-      && gameData?.approval?.away_team?.approved
-      && showLeaveReviewButton() && (
-        <View style={{ backgroundColor: colors.whiteColor, marginTop: 5 }}>
+    () =>
+      gameData?.status === 'ended' &&
+      !checkReviewExpired(gameData?.actual_enddatetime) &&
+      !isAdmin &&
+      gameData?.approval?.home_team?.approved &&
+      gameData?.approval?.away_team?.approved &&
+      showLeaveReviewButton() && (
+        <View style={{backgroundColor: colors.whiteColor, marginTop: 5}}>
           <View>
             <TCGradientButton
               onPress={() => {
@@ -468,7 +480,7 @@ const Summary = ({
                   } else {
                     navigation.navigate('LeaveReview', {
                       gameData,
-                      selectedTeam: playerFrom === 'home' ? 'away' : 'home',
+                      selectedTeam: playerFrom === 'home' ? 'home' : 'away',
                       sliderAttributes,
                       starAttributes,
                       onPressReviewDone,
@@ -508,12 +520,12 @@ const Summary = ({
   );
 
   const renderApproveDisapproveSection = useMemo(
-    () => gameData?.status === 'ended'
-      && isAdmin
-      // && !gameData?.approval?.home_team?.approved
-      // && !gameData?.approval?.away_team?.approved
-       && (
-         <ApproveDisapprove
+    () =>
+      gameData?.status === 'ended' &&
+      isAdmin && (
+        // && !gameData?.approval?.home_team?.approved
+        // && !gameData?.approval?.away_team?.approved
+        <ApproveDisapprove
           getGameData={getGameData}
           navigation={navigation}
           gameId={gameData?.game_id}
@@ -538,12 +550,7 @@ const Summary = ({
   );
 
   const renderSpecialRulesSection = useMemo(
-    () => (
-      <SpecialRules
-        specialRulesData={gameData}
-        
-      />
-    ),
+    () => <SpecialRules specialRulesData={gameData} />,
     [gameData],
   );
 
@@ -562,18 +569,30 @@ const Summary = ({
           console.log('Referee Pressed:=>', referee);
           if (referee?.review_id) {
             getRefereeReviewsData(referee);
+          } else {
+            navigation.navigate('RefereeReviewScreen', {
+              gameData,
+              userData: referee,
+              sliderAttributesForReferee,
+              starAttributesForReferee,
+              onPressRefereeReviewDone,
+            });
           }
-          navigation.navigate('RefereeReviewScreen', {
-            gameData,
-            userData: referee,
-            sliderAttributesForReferee,
-            starAttributesForReferee,
-            onPressRefereeReviewDone,
-          });
         }}
       />
     ),
-    [followSoccerUser, gameData, getRefereeReservation, getRefereeReviewsData, isAdmin, navigation, sliderAttributesForReferee, starAttributesForReferee, unFollowSoccerUser, userRole],
+    [
+      followSoccerUser,
+      gameData,
+      getRefereeReservation,
+      getRefereeReviewsData,
+      isAdmin,
+      navigation,
+      sliderAttributesForReferee,
+      starAttributesForReferee,
+      unFollowSoccerUser,
+      userRole,
+    ],
   );
 
   const renderScorekeeperSection = useMemo(
@@ -642,13 +661,11 @@ const Summary = ({
   );
 
   const patchOrAddScorekeeperReview = useCallback(
-    ({
- currentForm, isAlreadyReviewed, reviewsData, scorekeeper_id,
- }) => {
+    ({currentForm, isAlreadyReviewed, reviewsData, scorekeeper_id}) => {
       if (isAlreadyReviewed) {
         setLoading(true);
 
-        const teamReview = { ...reviewsData };
+        const teamReview = {...reviewsData};
         delete teamReview.created_at;
         delete teamReview.entity_type;
         delete teamReview.entity_id;
@@ -707,13 +724,11 @@ const Summary = ({
   );
 
   const patchOrAddRefereeReview = useCallback(
-    ({
- currentForm, isAlreadyReviewed, reviewsData, referee_id,
- }) => {
+    ({currentForm, isAlreadyReviewed, reviewsData, referee_id}) => {
       if (isAlreadyReviewed) {
         setLoading(true);
 
-        const teamReview = { ...reviewsData };
+        const teamReview = {...reviewsData};
         delete teamReview.created_at;
         delete teamReview.entity_type;
         delete teamReview.entity_id;
@@ -772,7 +787,7 @@ const Summary = ({
   );
 
   const patchOrAddReview = useCallback(
-    ({ isAlreadyReviewed, currentForm, reviewsData }) => {
+    ({isAlreadyReviewed, currentForm, reviewsData}) => {
       if (isAlreadyReviewed) {
         setLoading(true);
         const teamReview = reviewsData;
@@ -829,7 +844,7 @@ const Summary = ({
   );
   const onPressReviewDone = useCallback(
     (currentForm, isAlreadyReviewed, reviewsData) => {
-      const reviewData = { ...reviewsData };
+      const reviewData = {...reviewsData};
       const alreadyUrlDone = [];
       const createUrlData = [];
 
@@ -851,14 +866,15 @@ const Summary = ({
           authContext,
           reviewData,
           imageArray,
-          (dataParams) => patchOrAddReview({
+          (dataParams) =>
+            patchOrAddReview({
               currentForm,
               isAlreadyReviewed,
               reviewsData: dataParams,
             }),
         );
       } else {
-        patchOrAddReview({ currentForm, isAlreadyReviewed, reviewsData });
+        patchOrAddReview({currentForm, isAlreadyReviewed, reviewsData});
       }
     },
     [authContext, patchOrAddReview, imageUploadContext],
@@ -866,7 +882,7 @@ const Summary = ({
 
   const onPressRefereeReviewDone = useCallback(
     (currentForm, isAlreadyReviewed, reviewsData, referee_id) => {
-      const reviewData = { ...reviewsData };
+      const reviewData = {...reviewsData};
       const alreadyUrlDone = [];
       const createUrlData = [];
 
@@ -888,7 +904,8 @@ const Summary = ({
           authContext,
           reviewData,
           imageArray,
-          (dataParams) => patchOrAddRefereeReview({
+          (dataParams) =>
+            patchOrAddRefereeReview({
               currentForm,
               isAlreadyReviewed,
               reviewsData: dataParams,
@@ -909,7 +926,7 @@ const Summary = ({
 
   const onPressScorekeeperReviewDone = useCallback(
     (currentForm, isAlreadyReviewed, reviewsData, scorekeeper_id) => {
-      const reviewData = { ...reviewsData };
+      const reviewData = {...reviewsData};
       const alreadyUrlDone = [];
       const createUrlData = [];
 
@@ -931,7 +948,8 @@ const Summary = ({
           authContext,
           reviewData,
           imageArray,
-          (dataParams) => patchOrAddScorekeeperReview({
+          (dataParams) =>
+            patchOrAddScorekeeperReview({
               currentForm,
               isAlreadyReviewed,
               reviewsData: dataParams,
@@ -993,7 +1011,7 @@ const Summary = ({
             <View style={styles.bottomPopupContainer}>
               <View style={styles.titlePopup}>
                 <TouchableWithoutFeedback
-                 hitSlop={getHitSlop(15)}
+                  hitSlop={getHitSlop(15)}
                   onPress={() => {
                     setIsPopupVisible(false);
                     setSelectedTeamForReview();
@@ -1011,9 +1029,13 @@ const Summary = ({
                     console.log('gameData?.review_id:=>', gameData?.review_id);
                     if (playerFrom === '' && selectedTeamForReview) {
                       if (selectedTeamForReview === 'home') {
+                        
+
                         if (gameData?.home_review_id) {
+                          
                           getGameReviewsData(gameData?.home_review_id);
                         } else {
+                         
                           navigation.navigate('LeaveReview', {
                             gameData,
                             selectedTeam: selectedTeamForReview,
@@ -1024,7 +1046,9 @@ const Summary = ({
                         }
                       }
                       if (selectedTeamForReview === 'away') {
+                        
                         if (gameData?.away_review_id) {
+                          console.log('ddddd away');
                           getGameReviewsData(gameData?.away_review_id);
                         } else {
                           navigation.navigate('LeaveReview', {
@@ -1061,6 +1085,7 @@ const Summary = ({
                 <View style={styles.entityView}>
                   <TouchableWithoutFeedback
                     onPress={() => {
+                    
                       setSelectedTeamForReview('home');
                     }}>
                     {selectedTeamForReview === 'home' ? (
@@ -1168,7 +1193,7 @@ const styles = StyleSheet.create({
     height: 100,
     marginLeft: '6%',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: '37%',
@@ -1195,7 +1220,7 @@ const styles = StyleSheet.create({
     height: 100,
     marginRight: '6%',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: '37%',
@@ -1243,7 +1268,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },
