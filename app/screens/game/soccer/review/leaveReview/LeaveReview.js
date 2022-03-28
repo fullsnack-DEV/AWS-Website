@@ -30,21 +30,27 @@ import ActivityLoader from '../../../../../components/loader/ActivityLoader';
 
 const LeaveReview = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
+  console.log('route?.params?.selectedTeam',route?.params?.selectedTeam);
   const [currentForm, setCurrentForm] = useState(route?.params?.selectedTeam === 'home' ? 1 : 2);
   const [loading, setLoading] = useState(false);
   const [sliderAttributes, setSliderAttributes] = useState([]);
   const [starAttributes, setStarAttributes] = useState([]);
-
+  const [gameData] = useState(route?.params?.gameData);
+  const [onPressReview] = useState(
+    route?.params?.onPressReviewDone
+      ? () => route?.params?.onPressReviewDone
+      : () => {},
+  );
   const [reviewsData, setReviewsData] = useState(currentForm === 1 ? {
 
-    team_id: route?.params?.gameData?.home_team?.group_id,
+    team_id: gameData?.home_team?.group_id,
     comment: '',
     attachments: [],
     tagged: [],
 
   } : {
 
-    team_id: route?.params?.gameData?.away_team?.group_id,
+    team_id: gameData?.away_team?.group_id,
     comment: '',
     attachments: [],
     tagged: [],
@@ -173,7 +179,9 @@ const LeaveReview = ({ navigation, route }) => {
   };
 
   const patchOrAddReview = () => {
-    if (route?.params?.gameReviewData) {
+    console.log('patch called...');
+
+    if (reviewsData !== {}) {
       setLoading(true);
       const teamReview = reviewsData
       delete teamReview.created_at;
@@ -188,13 +196,11 @@ const LeaveReview = ({ navigation, route }) => {
       delete teamReview.sport;
 
       const reviewObj = {
-
         ...teamReview,
-
       };
 
       console.log('Edited Review Object::=>', reviewObj);
-      patchGameReview(route?.params?.gameData?.game_id, reviewID, reviewObj, authContext)
+      patchGameReview(gameData?.game_id, reviewID, reviewObj, authContext)
         .then(() => {
           setLoading(false);
           navigation.goBack();
@@ -207,7 +213,7 @@ const LeaveReview = ({ navigation, route }) => {
     } else {
       console.log('New Review Object::=>', reviewsData);
       setLoading(true);
-      addGameReview(route?.params?.gameData?.game_id, reviewsData, authContext)
+      addGameReview(gameData?.game_id, reviewsData, authContext)
         .then(() => {
           setLoading(false);
           navigation.goBack();
@@ -221,9 +227,10 @@ const LeaveReview = ({ navigation, route }) => {
   }
   const uploadMediaForTeamA = () => {
     setLoading(false) // CHANGED
-    const { onPressReviewDone } = route?.params ?? {};
+   
     if (reviewsData?.attachments?.length) {
-      onPressReviewDone(currentForm, !!route?.params?.gameReviewData, reviewsData);
+      console.log('uploadMediaForTeamA');
+      onPressReview(currentForm, !!gameData?.home_review_id, reviewsData);
       navigation.goBack();
     } else {
       patchOrAddReview()
@@ -231,9 +238,10 @@ const LeaveReview = ({ navigation, route }) => {
   }
   const uploadMediaForTeamB = () => {
     setLoading(false) // CHANGED
-    const { onPressReviewDone } = route?.params ?? {};
+    console.log('uploadMediaForTeamB');
+
     if (reviewsData?.attachments?.length) {
-      onPressReviewDone(currentForm, !!route?.params?.gameReviewData, reviewsData);
+      onPressReview(currentForm, !!gameData?.away_review_id, reviewsData);
       navigation.goBack();
     } else {
       patchOrAddReview()
@@ -247,6 +255,8 @@ const LeaveReview = ({ navigation, route }) => {
       setReviewsData({ ...reviews });
     }
   };
+
+  console.log('currentFormcurrentForm',currentForm);
   return (
     <View style={{ flex: 1 }}>
       <Header
@@ -278,7 +288,7 @@ const LeaveReview = ({ navigation, route }) => {
               reviewAttributes={sliderAttributes}
               starAttributes={starAttributes}
               starColor={STAR_COLOR.YELLOW}
-              teamData={route?.params?.gameData?.home_team}
+              teamData={gameData?.home_team}
               setTeamReview={setTeamReview}
               navigation = {navigation}
               route={route}
@@ -289,7 +299,7 @@ const LeaveReview = ({ navigation, route }) => {
               teamNo={1}
               reviewsData={reviewsData}
               starColor={STAR_COLOR.BLUE}
-              teamData={route?.params?.gameData?.away_team}
+              teamData={gameData?.away_team}
               reviewAttributes={sliderAttributes}
               starAttributes={starAttributes}
               setTeamReview={setTeamReview}

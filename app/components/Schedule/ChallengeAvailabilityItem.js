@@ -132,7 +132,7 @@ function ChallengeAvailabilityItem({
             onDone={handleStateDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-           // minimumDate={new Date()}
+            minimumDate={new Date()}
             mode={toggle ? 'date' : 'datetime'}      
       />
       <DateTimePickerView

@@ -69,7 +69,7 @@ const strings = {
   save: 'Save',
   done: 'Done',
   yes: 'Yes',
-  passwordText: 'Password (at least 8 characters)',
+  passwordText: 'Password (at least 6 characters)',
   confirmPasswordText: 'Confirm Password',
   // Password message
   passwordCanNotBlank: 'Password cannot be blank.',
@@ -366,7 +366,7 @@ const strings = {
   oldPassword: 'Current Password',
   newPassword: 'New Password',
   confirmPassword: 'Confirm Password',
-  atLeastText: '(At least 8 characters)',
+  atLeastText: '(At least 6 characters)',
 
   // reservation
 

@@ -81,12 +81,13 @@ const SoccerHome = ({ navigation, route }) => {
           const checkIsAdmin = teamIds.includes(entity?.uid);
 
           let refereeIds = [];
-          refereeIds = res?.payload?.referees?.map((e) => e.user_id);
+          refereeIds = res?.payload?.referees?.map((e) => e.referee_id);
           const checkIsRefereeAdmin = refereeIds?.includes(entity?.uid);
 
           let scorekeeperIds = [];
-          scorekeeperIds = res?.payload?.scorekeepers?.map((e) => e.user_id);
+          scorekeeperIds = res?.payload?.scorekeepers?.map((e) => e.scorekeeper_id);
           const checkIsScorekeeperAdmin = scorekeeperIds?.includes(entity?.uid);
+
 
           setIsAdmin(checkIsAdmin);
           setIsRefereeAdmin(checkIsRefereeAdmin);

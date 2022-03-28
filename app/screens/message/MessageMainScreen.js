@@ -186,7 +186,7 @@ const MessageMainScreen = ({navigation}) => {
   const LiseEmptyComponent = useMemo(
     () => (
       <View style={styles.chatMainContainer}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.plusImage}
           onPress={() => {
             navigation.navigate('MessageInviteScreen');
@@ -198,11 +198,11 @@ const MessageMainScreen = ({navigation}) => {
           />
 
           <Text style={styles.startText}>Start a Chat</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View style={styles.centerMsgContainer}>
-          <Text style={styles.noMsgText}>No Message</Text>
+          <Text style={styles.noMsgText}>No Chat</Text>
           <Text style={styles.msgAppearText}>
-            New messages will appear here.
+            New chats will appear here.
           </Text>
         </View>
       </View>
@@ -224,7 +224,7 @@ const MessageMainScreen = ({navigation}) => {
             />
           </View>
         }
-        centerComponent={<Text style={styles.eventTextStyle}>Message</Text>}
+        centerComponent={<Text style={styles.eventTextStyle}>Chat</Text>}
         rightComponent={
           authContext?.entity?.QB && (
             <View style={{flexDirection: 'row'}}>
@@ -322,27 +322,13 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     width: wp(100),
   },
-  chatplusStyle: {
-    height: 40,
-    width: 40,
-  },
+ 
   chatMainContainer: {
     flex: 1,
     width: '100%',
     height: '100%',
   },
-  plusImage: {
-    height: 100,
-    width: 100,
-
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  startText: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
+ 
   centerMsgContainer: {
     flex: 1,
     alignItems: 'center',

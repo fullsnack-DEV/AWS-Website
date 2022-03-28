@@ -34,22 +34,21 @@ import TCTextField from '../../../../components/TCTextField';
 import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
-import TCDateTimePicker from '../../../../components/TCDateTimePicker';
 import AuthContext from '../../../../auth/context';
 import DataSource from '../../../../Constants/DataSource';
 import {monthNames, widthPercentageToDP} from '../../../../utils';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
+import DateTimePickerView from '../../../../components/Schedule/DateTimePickerModal';
 
 let entity = {};
 
 export default function CreateMemberProfileForm1({navigation, route}) {
-
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
   const actionSheet = useRef();
-  const [show, setShow] = useState(false);
+  const [showDate, setShowDate] = useState(false);
   const [role, setRole] = useState('');
   const [location, setLocation] = useState('');
 
@@ -61,6 +60,8 @@ export default function CreateMemberProfileForm1({navigation, route}) {
     },
   ]);
 
+  const [minDateValue, setMinDateValue] = useState(new Date());
+  const [maxDateValue, setMaxDateValue] = useState(new Date());
   const [memberInfo, setMemberInfo] = useState({});
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
@@ -74,6 +75,19 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   const [birthday, setBirthday] = useState();
 
   console.log('this value form1');
+
+  useEffect(() => {
+    const mindate = new Date();
+    const maxdate = new Date();
+    mindate.setFullYear(mindate.getFullYear() - 13);
+    maxdate.setFullYear(maxdate.getFullYear() - 123);
+    // setDateValue(mindate);
+    setMinDateValue(mindate);
+    setMaxDateValue(maxdate);
+
+    console.log('Min date', mindate);
+    console.log('Max date', maxdate);
+  }, []);
 
   useEffect(() => {
     const getAuthEntity = async () => {
@@ -183,8 +197,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
     navigation,
     memberInfo,
     role,
-    phoneNumber,
-    show,
+    showDate,
     firstName,
     lastName,
     email,
@@ -282,12 +295,13 @@ export default function CreateMemberProfileForm1({navigation, route}) {
       setMemberInfo({...memberInfo, full_image: data.path});
     });
   };
-  const handleDonePress = ({date}) => {
-    setShow(!show);
+  const handleDonePress = (date) => {
+    console.log('seleccccc', date);
     setBirthday(new Date(date).getTime());
+    setShowDate(!showDate);
   };
   const handleCancelPress = () => {
-    setShow(!show);
+    setShowDate(!showDate);
   };
   const renderPhoneNumber = ({item, index}) => (
     <TCPhoneNumber
@@ -431,7 +445,12 @@ export default function CreateMemberProfileForm1({navigation, route}) {
       <View>
         <TCTextField
           value={postalCode}
-          onChangeText={(text) => setPostalCode(text)}
+          onChangeText={(text) => {
+            const regex = /^[0-9a-zA-Z]+$/;
+            if (text.match(regex) || text === '') {
+              setPostalCode(text);
+            }
+          }}
           placeholder={strings.postalCodeText}
           keyboardType={'default'}
         />
@@ -449,7 +468,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
             ).getDate()}`}, ${new Date(birthday).getFullYear()}`
           }
           placeholder={strings.birthDatePlaceholder}
-          onPress={() => setShow(!show)}
+          onPress={() => setShowDate(!showDate)}
         />
       </View>
       <View>
@@ -470,6 +489,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         </Text>
       </View>
       <View style={{marginBottom: 20}} />
+
       <ActionSheet
         ref={actionSheet}
         options={
@@ -495,12 +515,20 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         }}
       />
 
-      <TCDateTimePicker
-        title={'Choose Birthday'}
-        visible={show}
-        onDone={handleDonePress}
-        onCancel={handleCancelPress}
-      />
+      {showDate && (
+        <View>
+          <DateTimePickerView
+            visible={showDate}
+            date={birthday}
+            onDone={handleDonePress}
+            onCancel={handleCancelPress}
+            onHide={handleCancelPress}
+            minimumDate={maxDateValue}
+            maximumDate={minDateValue}
+            mode={'date'}
+          />
+        </View>
+      )}
     </TCKeyboardView>
   );
 }

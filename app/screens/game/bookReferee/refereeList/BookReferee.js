@@ -184,94 +184,81 @@ export default function BookReferee({navigation, route}) {
   }, []);
 
   const onPressNext = () => {
-    if (gameData?.referees) {
-      if (
-        gameData?.referees?.length <
-        gameData?.challenge_referee?.who_secure?.length
-      ) {
-        setLoading(true);
-        Utils.getSetting(
-          selectedReferee?.user_id,
-          'referee',
-          gameData.sport,
-          authContext,
-        )
-          .then((response) => {
-            setLoading(false);
-            console.log('res3:::=>', response);
-            if (
-              response?.refereeAvailibility &&
-              response?.game_fee &&
-              response?.refund_policy &&
-              response?.available_area
-            ) {
-              navigation.navigate('RefereeBookingDateAndTime', {
-                settingObj: response,
-                userData: selectedReferee,
-                navigationName: 'HomeScreen',
-                gameData,
-              });
-            } else {
+    
+    console.log('gameData111:=>', gameData);
+
+
+    setLoading(true);
+    Utils.getSetting(
+      authContext?.entity?.uid,
+      authContext?.entity?.role,
+      gameData.sport,
+      authContext,
+      gameData.sport_type,
+    )
+      .then((response) => {
+        setLoading(false);
+        console.log('setting of group or player:::=>', response);
+        if (
+          response?.responsible_for_referee?.who_secure?.length >
+          gameData?.challenge_referee?.who_secure?.length
+        ) {
+          setLoading(true);
+          Utils.getSetting(
+            selectedReferee?.user_id,
+            'referee',
+            gameData.sport,
+            authContext,
+          )
+            .then((res) => {
+              setLoading(false);
+              console.log('res3:::=>', res);
+              if (
+                res?.refereeAvailibility &&
+                res?.game_fee &&
+                res?.refund_policy &&
+                res?.available_area
+              ) {
+                navigation.navigate('RefereeBookingDateAndTime', {
+                  settingObj: res,
+                  userData: selectedReferee,
+                  navigationName: 'HomeScreen',
+                  gameData,
+                });
+              } else {
+                setTimeout(() => {
+                  Alert.alert('Referee setting not configured yet.');
+                }, 10);
+              }
+            })
+            .catch(() => {
+              setLoading(false);
               setTimeout(() => {
-                Alert.alert('Referee setting not configured yet.');
+                Alert.alert(strings.alertmessagetitle, strings.defaultError);
               }, 10);
-            }
-          })
-          .catch(() => {
-            setLoading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, strings.defaultError);
-            }, 10);
-            // navigation.goBack();
-          });
-      } else {
-        Alert.alert(
-          strings.appName,
-          `You can't book more than ${gameData?.challenge_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
-        );
-      }
-    } else if (gameData?.challenge_referee?.who_secure?.length > 0) {
-      setLoading(true);
-      Utils.getSetting(
-        selectedReferee?.user_id,
-        'referee',
-        gameData.sport,
-        authContext,
-      )
-        .then((response) => {
-          setLoading(false);
-          console.log('res3:::=>', response);
-          if (
-            response?.refereeAvailibility &&
-            response?.game_fee &&
-            response?.refund_policy &&
-            response?.available_area
-          ) {
-            navigation.navigate('RefereeBookingDateAndTime', {
-              settingObj: response,
-              userData: selectedReferee,
-              navigationName: 'HomeScreen',
-              gameData,
+              // navigation.goBack();
             });
-          } else {
-            setTimeout(() => {
-              Alert.alert('Referee setting not configured yet.');
-            }, 10);
-          }
-        })
-        .catch(() => {
-          setLoading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, strings.defaultError);
-          }, 10);
-          // navigation.goBack();
-        });
-    } else {
-      Alert.alert(
-        strings.appName,
-        `You can’t book more than ${gameData?.challenge_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
-      );
-    }
+        } else {
+          Alert.alert(
+            strings.appName,
+            `You can't book more than ${response?.responsible_for_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
+          );
+        }
+
+
+      })
+      .catch(() => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, strings.defaultError);
+        }, 10);
+        // navigation.goBack();
+      });
+
+
+
+     
+    
   };
 
   const renderRefereeData = ({item}) => {

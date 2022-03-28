@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-  StyleSheet, Platform, Image,
+  StyleSheet, Platform,
 
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 import RNPickerSelect from 'react-native-picker-select';
 import colors from '../Constants/Colors'
@@ -26,9 +27,14 @@ export default function TCPicker({
             // eslint-disable-next-line no-sequences
             style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
               value={value}
-              Icon={() => (
-                <Image source={images.dropDownArrow} style={styles.downArrow} />
-              )}
+              
+              Icon={ () => (
+                <FastImage
+                resizeMode='contain'
+                source={images.dropDownArrow} 
+                style={styles.downArrow}
+                />
+              ) }
             />
   );
 }

@@ -37,9 +37,6 @@ import TCFormProgress from '../../../components/TCFormProgress';
 
 let entity = {};
 export default function InviteChallengeScreen({navigation, route}) {
-
-
-
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
@@ -52,9 +49,6 @@ export default function InviteChallengeScreen({navigation, route}) {
   const [setting] = useState(route?.params?.setting);
   const [groupObj] = useState(route?.params?.groupObj);
 
-
-
-
   // const [startDate, setStartDate] = useState(
   //   new Date().setHours(new Date().getHours() + 10),
   // );
@@ -63,9 +57,6 @@ export default function InviteChallengeScreen({navigation, route}) {
   // );
 
   const [settingObject, setSettingObject] = useState(setting);
-
-  console.log('setting:=>', setting);
-  console.log('sportType1111', sportType);
   const [teams, setteams] = useState([]);
 
   useEffect(() => {
@@ -124,19 +115,15 @@ export default function InviteChallengeScreen({navigation, route}) {
   ]);
 
   useEffect(() => {
-    console.log('useEffect Called');
     if (isFocused) {
       const settings = {...settingObject};
       if (route?.params?.gameType) {
-        console.log('route?.params?.gameType', route?.params?.gameType);
         settings.game_type = route?.params?.gameType;
       }
       if (route?.params?.gameFee) {
-        console.log('route?.params?.gameFee', route?.params?.gameFee);
         settings.game_fee = route?.params?.gameFee ?? 0;
       }
       if (route?.params?.refundPolicy) {
-        console.log('route?.params?.refundPolicy', route?.params?.refundPolicy);
         settings.refund_policy = route?.params?.refundPolicy;
       }
       if (route?.params?.homeAway) {
@@ -148,10 +135,7 @@ export default function InviteChallengeScreen({navigation, route}) {
         settings.game_duration = route?.params?.gameDuration;
       }
       if (route?.params?.gameGeneralRules !== undefined) {
-        console.log(
-          'route?.params?.gameGeneralRules',
-          route?.params?.gameGeneralRules,
-        );
+       
         settings.general_rules = route?.params?.gameGeneralRules;
         settings.special_rules = route?.params?.gameSpecialRules;
       }
@@ -288,8 +272,8 @@ export default function InviteChallengeScreen({navigation, route}) {
     const body = {
       ...settingObject,
       ...feeObj,
-      sport : sportName,
-      sport_type : sportType,
+      sport: sportName,
+      sport_type: sportType,
       venue,
       start_datetime: route?.params?.startTime / 1000,
       end_datetime: route?.params?.endTime / 1000,
@@ -305,16 +289,12 @@ export default function InviteChallengeScreen({navigation, route}) {
           : entity?.uid,
       user_challenge: !groupObj?.group_id,
     };
-    if(res_secure_referee?.length > 0){
+    if (res_secure_referee?.length > 0) {
       body.responsible_for_referee.who_secure = res_secure_referee;
-
     }
-    if(res_secure_scorekeeper?.length > 0){
+    if (res_secure_scorekeeper?.length > 0) {
       body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
-
     }
-   
-
 
     console.log('Challenge sportName:=>', sportName);
 

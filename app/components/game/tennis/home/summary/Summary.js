@@ -662,7 +662,7 @@ const Summary = ({
     [gameData, isAdmin, isRefereeAdmin, isScorekeeperAdmin, navigation],
   );
   const showLeaveReviewButton = useCallback(() => {
-    if (gameData?.sport_type === 'single' ) {
+    if (gameData?.sport_type === 'single') {
       return isAdmin || isRefereeAdmin || isScorekeeperAdmin;
     }
     return lineUpUser || isRefereeAdmin || isScorekeeperAdmin;
@@ -794,8 +794,7 @@ const Summary = ({
   const renderLeaveAReviewButton = useMemo(
     () => (
       <>
-        {
-          gameData?.status === 'ended' &&
+        {gameData?.status === 'ended' &&
           !checkReviewExpired(gameData?.actual_enddatetime) &&
           showLeaveReviewButton() && (
             <View style={{backgroundColor: colors.whiteColor, padding: 10}}>
@@ -1294,7 +1293,7 @@ const Summary = ({
           <View style={styles.bottomPopupContainer}>
             <View style={styles.titlePopup}>
               <TouchableWithoutFeedback
-               hitSlop={getHitSlop(15)}
+                hitSlop={getHitSlop(15)}
                 onPress={() => {
                   setIsPopupVisible(false);
                 }}>

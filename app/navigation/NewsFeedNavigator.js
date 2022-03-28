@@ -16,7 +16,6 @@ import UserConnections from '../screens/account/connections/UserConnections';
 import RefereeBookingDateAndTime from '../screens/game/bookReferee/refereeBookDateTime/RefereeBookingDateAndTime';
 import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
 import BookRefereeSuccess from '../screens/game/bookReferee/BookRefereeSuccess';
-import MessageDrawerNavigator from './MessageDrawerNavigator';
 import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
@@ -87,6 +86,7 @@ import EntityReviewScreen from '../screens/home/EntityReviewScreen';
 import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInviteScreen';
 import JoinedTeamsScreen from '../screens/account/JoinedTeamsScreen';
 import EntityStatScreen from '../screens/home/EntityStatScreen';
+import MessageChat from '../components/message/MessageChat';
 
 const Stack = createStackNavigator();
 
@@ -448,7 +448,7 @@ const NewsFeedNavigator = () => (
     />
     <Stack.Screen
       name="MessageChat"
-      component={MessageDrawerNavigator}
+      component={MessageChat}
       options={{
         title: 'Message Chat',
         headerTintColor: colors.blackColor,

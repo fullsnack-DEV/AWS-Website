@@ -32,10 +32,10 @@ import TCMessageButton from '../../../components/TCMessageButton';
 import TCThickDivider from '../../../components/TCThickDivider';
 
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
-import TCDateTimePicker from '../../../components/TCDateTimePicker';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
+import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 
 let entity = {};
 
@@ -57,6 +57,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
+  const [minDateValue, setMinDateValue] = useState(new Date());
+  const [maxDateValue, setMaxDateValue] = useState(new Date());
   const [loading, setloading] = useState(false);
   const [memberInfo, setMemberInfo] = useState();
   const [show, setShow] = useState(false);
@@ -76,6 +78,19 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       : '',
   );
   const [setting, setSetting] = useState();
+
+  useEffect(() => {
+    const mindate = new Date();
+    const maxdate = new Date();
+    mindate.setFullYear(mindate.getFullYear() - 13);
+    maxdate.setFullYear(maxdate.getFullYear() - 123);
+    // setDateValue(mindate);
+    setMinDateValue(mindate);
+    setMaxDateValue(maxdate);
+
+    console.log('Min date', mindate);
+    console.log('Max date', maxdate);
+  }, []);
 
   useEffect(() => {
     if (isFocused) {
@@ -381,6 +396,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 ...memberInfo,
                 height: {
                   height: text,
+                  height_type:  memberInfo?.height?.height_type,
                 },
               });
             }}
@@ -460,6 +476,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 ...memberInfo,
                 weight: {
                   weight: text,
+                  weight_type:  memberInfo?.weight?.weight_type,
                 },
               });
             }}
@@ -743,12 +760,20 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
       <View style={{marginBottom: 20}} />
 
-      <TCDateTimePicker
-        title={'Choose Birthday'}
-        visible={show}
-        onDone={handleDonePress}
-        onCancel={handleCancelPress}
-      />
+      {show && (
+        <View>
+          <DateTimePickerView
+            visible={show}
+            date={memberInfo?.birthday}
+            onDone={handleDonePress}
+            onCancel={handleCancelPress}
+            onHide={handleCancelPress}
+            minimumDate={maxDateValue}
+            maximumDate={minDateValue}
+            mode={'date'}
+          />
+        </View>
+      )}
     </TCKeyboardView>
   );
 }

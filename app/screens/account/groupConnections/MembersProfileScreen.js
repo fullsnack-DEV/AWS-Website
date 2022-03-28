@@ -57,6 +57,9 @@ export default function MembersProfileScreen({navigation, route}) {
   ];
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
+
+  console.log('authcontext', authContext);
+
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [firstTimeLoad, setFirstTimeLoad] = useState(true);
@@ -67,11 +70,14 @@ export default function MembersProfileScreen({navigation, route}) {
   const [editMembership, setEditMembership] = useState(false);
   const [memberDetail, setMemberDetail] = useState();
   const [switchUser, setSwitchUser] = useState({});
+  const [groupID] = useState(route?.params?.groupID);
+  const [memberID] = useState(route?.params?.memberID);
+  const [whoSeeID] = useState(route?.params?.whoSeeID);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () =>
-        route?.params?.whoSeeID === entity.uid &&
+        whoSeeID === entity.uid &&
         !loading && (
           <TouchableWithoutFeedback
             onPress={() => actionSheet?.current?.show()}>
@@ -91,7 +97,7 @@ export default function MembersProfileScreen({navigation, route}) {
     switchUser,
     editProfile,
     loading,
-    route?.params?.whoSeeID,
+    whoSeeID,
   ]);
 
   useEffect(() => {
@@ -123,29 +129,29 @@ export default function MembersProfileScreen({navigation, route}) {
     setSwitchUser(entity);
 
     // Setting of Edit option
-    if (entity.role === 'team') {
-      setEditProfile(true);
-      setEditBasicInfo(true);
-      setEditTeam(true);
-      setEditMembership(true);
-    } else if (entity.role === 'club') {
-      setEditProfile(true);
-      setEditBasicInfo(true);
-      setEditTeam(false);
-      setEditMembership(true);
-    } else if (route.params.whoSeeID === entity.uid) {
-      setEditProfile(true);
-      setEditBasicInfo(true);
-    }
 
-    getGroupMembersInfo(
-      route?.params?.groupID,
-      route?.params?.memberID,
-      authContext,
-    )
+    getGroupMembersInfo(groupID, memberID, authContext)
       .then((response) => {
         console.log('PROFILE RESPONSE11::', response.payload);
         setMemberDetail(response?.payload);
+
+        if (entity.role === 'team') {
+          setEditProfile(true);
+          setEditBasicInfo(true);
+          setEditTeam(true);
+          setEditMembership(true);
+        } else if (entity.role === 'club') {
+          if (response?.payload?.group?.parent_groups.includes(entity.uid)) {
+            setEditProfile(true);
+            setEditBasicInfo(true);
+            setEditTeam(false);
+            setEditMembership(true);
+          }
+        } else if (whoSeeID === entity.uid) {
+          setEditProfile(true);
+          setEditBasicInfo(true);
+        }
+
         setloading(false);
         if (firstTimeLoad) setFirstTimeLoad(false);
       })
@@ -157,9 +163,9 @@ export default function MembersProfileScreen({navigation, route}) {
         }, 10);
       });
   };
-  const deleteMemberProfile = (groupID, memberID) => {
+  const deleteMemberProfile = (groupId, memberId) => {
     setloading(true);
-    deleteMember(groupID, memberID, authContext)
+    deleteMember(groupId, memberId, authContext)
       .then((response) => {
         setloading(false);
         console.log('PROFILE RESPONSE::', response.payload);
@@ -206,18 +212,26 @@ export default function MembersProfileScreen({navigation, route}) {
     return <TCThinDivider marginTop={20} width={'100%'} />;
   };
 
-const getLocation=()=>{
-  let locationString =  '';
+  const getLocation = () => {
+    let locationString = '';
 
-  if(memberDetail?.connected){
-    if(memberDetail?.user_city && memberDetail?.user_country && memberDetail?.user_state_abbr){
-      locationString = `${memberDetail?.user_city  }, ${  memberDetail?.user_state_abbr  }, ${  memberDetail?.user_country}`
+    if (memberDetail?.connected) {
+      if (
+        memberDetail?.user_city &&
+        memberDetail?.user_country &&
+        memberDetail?.user_state_abbr
+      ) {
+        locationString = `${memberDetail?.user_city}, ${memberDetail?.user_state_abbr}, ${memberDetail?.user_country}`;
+      }
+    } else if (
+      memberDetail?.city &&
+      memberDetail?.country &&
+      memberDetail?.state_abbr
+    ) {
+      locationString = `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`;
     }
-  }else if(memberDetail?.city && memberDetail?.country && memberDetail?.state_abbr){
-      locationString = `${memberDetail?.city  }, ${  memberDetail?.state_abbr  }, ${  memberDetail?.country}`
-    }
- return locationString
-}
+    return locationString;
+  };
 
   return (
     <SafeAreaView>
@@ -304,12 +318,12 @@ const getLocation=()=>{
                       navigation.navigate('UserFoundScreen', {
                         signUpObj: players[0],
                         memberObj: memberDetail,
-                        groupID: route?.params?.groupID,
+                        groupID,
                       });
                     } else {
                       navigation.navigate('UserNotFoundScreen', {
                         memberObj: memberDetail,
-                        groupID: route?.params?.groupID,
+                        groupID,
                       });
                     }
                   });

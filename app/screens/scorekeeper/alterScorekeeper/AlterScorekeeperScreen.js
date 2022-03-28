@@ -20,6 +20,7 @@ import LinearGradient from 'react-native-linear-gradient';
 // eslint-disable-next-line no-unused-vars
 import _ from 'lodash';
 
+import {useIsFocused} from '@react-navigation/native';
 import {
   acceptDeclineAlterReservation,
   acceptDeclineReservation,
@@ -57,6 +58,7 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from '../../../utils';
+
 import TCTabView from '../../../components/TCTabView';
 import CurruentScorekeeperReservationView from './CurruentScorekeeperReservationView';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
@@ -67,6 +69,7 @@ let entity = {};
 const scroll = React.createRef();
 export default function AlterScorekeeperScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
+  const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [homeTeam, setHomeTeam] = useState();
   const [awayTeam, setAwayTeam] = useState();
@@ -82,6 +85,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
   const [isOld, setIsOld] = useState(false);
   const [defaultCard, setDefaultCard] = useState();
   const [maintabNumber, setMaintabNumber] = useState(0);
+  const [reservationObj] = useState(route.params?.reservationObj);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -90,8 +94,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
   }, [navigation, bodyParams]);
   useEffect(() => {
     entity = authContext.entity;
-
-    const {reservationObj} = route.params ?? {};
+    if(isFocused){
     if (reservationObj.length > 0) {
       setIsPendingRequestPayment(true);
       for (let i = 0; i < reservationObj.length; i++) {
@@ -182,6 +185,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
     }
 
     getPaymentMethods(reservationObj[0] ?? reservationObj);
+  }
   }, []);
 
   useLayoutEffect(() => {
@@ -385,7 +389,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
     callerID,
     versionNo,
     status,
-    paymentID,
+    paymentobj,
   ) => {
     setloading(true);
 
@@ -395,7 +399,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
       callerID,
       versionNo,
       status,
-      paymentID && {...bodyParams},
+      paymentobj,
       authContext,
     )
       .then((response) => {
@@ -496,16 +500,16 @@ export default function AlterScorekeeperScreen({navigation, route}) {
     [authContext],
   );
 
-  const checkSenderForPayment = (reservationObj) => {
-    if (reservationObj?.scorekeeper?.user_id === entity.uid) {
+  const checkSenderForPayment = (reservationObject) => {
+    if (reservationObject?.scorekeeper?.user_id === entity.uid) {
       return 'receiver';
     }
 
     return 'sender';
   };
 
-  const checkSenderOrReceiver = (reservationObj) => {
-    const teampObj = {...reservationObj};
+  const checkSenderOrReceiver = (reservationObject) => {
+    const teampObj = {...reservationObject};
     if (
       teampObj?.status === ScorekeeperReservationStatus.pendingpayment ||
       teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
@@ -636,17 +640,17 @@ export default function AlterScorekeeperScreen({navigation, route}) {
     return `${startDate} - ${endDate} (${duration})`;
   };
 
-  const getOpponentEntity = (reservationObj) => {
-    if (reservationObj?.scorekeeper?.user_id === entity.uid) {
+  const getOpponentEntity = (reservationObject) => {
+    if (reservationObject?.scorekeeper?.user_id === entity.uid) {
       if (
-        reservationObj?.initiated_by ===
-        reservationObj?.game?.home_team?.user_id
+        reservationObject?.initiated_by ===
+        reservationObject?.game?.home_team?.user_id
       ) {
-        return reservationObj?.game?.away_team;
+        return reservationObject?.game?.away_team;
       }
-      return reservationObj?.game?.home_team;
+      return reservationObject?.game?.home_team;
     }
-    return reservationObj?.scorekeeper;
+    return reservationObject?.scorekeeper;
   };
   const acceptDeclineScorekeeperReservation = (
     reservationID,
@@ -1135,13 +1139,25 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
                       callerId = entity.uid;
                     }
+                    let paymentObj = {};
+                    paymentObj = {
+                      source: defaultCard?.id,
+                      payment_method_type: 'card',
+                      total_game_fee: paymentCard?.total_game_fee,
+                      total_service_fee1: paymentCard?.total_service_fee1,
+                      total_service_fee2: paymentCard?.total_service_fee2,
+                      international_card_fee:
+                      paymentCard?.international_card_fee,
+                      total_stripe_fee: paymentCard?.total_stripe_fee,
+                      total_payout: paymentCard?.total_payout,
+                      total_amount: paymentCard?.total_amount,
+                    };
                     acceptDeclineAlterReservationOperation(
                       bodyParams.reservation_id,
                       callerId,
                       bodyParams.version,
                       'accept',
-                      route?.params?.paymentMethod &&
-                        route?.params?.paymentMethod?.id,
+                     paymentObj
                     );
                   }}
                   marginBottom={15}

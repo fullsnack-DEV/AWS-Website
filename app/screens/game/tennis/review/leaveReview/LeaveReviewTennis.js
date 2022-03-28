@@ -47,7 +47,6 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
-  const [currentUserDetail, setCurrentUserDetail] = useState(null);
 
   console.log(
     'route?.params?.starAttributes',

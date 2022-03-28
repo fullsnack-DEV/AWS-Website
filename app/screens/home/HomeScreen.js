@@ -116,8 +116,7 @@ import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
 import * as Utility from '../../utils';
 import {
-  getQBAccountType,
-  QBcreateUser,
+ 
   QB_ACCOUNT_TYPE,
   QBconnectAndSubscribe,
   QBlogin,
@@ -1114,27 +1113,11 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const onMessageButtonPress = (user) => {
-    setloading(true);
+    console.log('message click:=>');
 
-    const accountType = getQBAccountType(user?.entity_type);
     const uid = user?.entity_type === 'player' ? user?.user_id : user?.group_id;
 
-    QBcreateUser(uid, user, accountType)
-      .then((response) => {
-        console.log('QB Res:=>', response);
-        navigation.navigate('MessageChat', {
-          screen: 'MessageChat',
-          params: {userId: uid},
-        });
-        setloading(false);
-      })
-      .catch(() => {
-        navigation.navigate('MessageChat', {
-          screen: 'MessageChat',
-          params: {userId: uid},
-        });
-        setloading(false);
-      });
+    navigation.navigate('MessageChat', {userId: uid})   
   };
   const onDotPress = () => {
     offerActionSheet.current.show();
@@ -2702,7 +2685,7 @@ const HomeScreen = ({navigation, route}) => {
     });
   };
   const moveToReview = () => {
-    console.log('move to EntityReviewScreen');
+    console.log('move to EntityReviewScreen',averageTeamReview);
     navigation.navigate('EntityReviewScreen', {
       averageTeamReview,
       teamReviewData,

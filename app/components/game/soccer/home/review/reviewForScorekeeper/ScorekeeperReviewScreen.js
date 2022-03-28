@@ -46,10 +46,20 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
 
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
   const [reviewsData, setReviewsData] = useState({});
+  const [starAttributesForScorekeeper] = useState(
+    route?.params?.starAttributesForScorekeeper,
+  );
+  const [sliderAttributesForScorekeeper] = useState(
+    route?.params?.sliderAttributesForScorekeeper,
+  );
+  const [userData] = useState(route?.params?.userData);
+  const [onPressReview] = useState(
+    route?.params?.onPressScorekeeperReviewDone
+      ? () => route?.params?.onPressScorekeeperReviewDone
+      : () => {},
+  );
 
 
-
-  console.log('route?.params?.starAttributesForScorekeeper',route?.params?.starAttributesForScorekeeper);
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = authContext.entity;
@@ -101,8 +111,8 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
 
   useEffect(() => {
     if (!route?.params?.gameReviewData) {
-      loadSliderAttributes(route?.params?.sliderAttributesForScorekeeper);
-      loadStarAttributes(route?.params?.starAttributesForScorekeeper);
+      loadSliderAttributes(sliderAttributesForScorekeeper);
+      loadStarAttributes(starAttributesForScorekeeper);
     }
   }, []);
 
@@ -180,7 +190,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
   };
 
   const patchOrAddScorekeeperReview = (data) => {
-    if (route?.params?.gameReviewData) {
+    if (reviewsData !== {}) {
       setLoading(true);
       console.log('Edited Review Object reviewData::=>', data);
       const teamReview = { ...data };
@@ -198,7 +208,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
       };
       console.log('Edited Review Object::=>', teamReview);
       patchScorekeeperReview(
-        route?.params?.userData?.user_id,
+        userData?.user_id,
         gameData?.game_id,
         reviewID,
         reviewObj,
@@ -220,7 +230,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
       console.log('New Review Object::=>', data);
       setLoading(true);
       addScorekeeperReview(
-        route?.params?.userData?.user_id,
+        userData?.user_id,
         gameData?.game_id,
         data,
         authContext,
@@ -242,13 +252,12 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
 
   const uploadMedia = () => {
     setLoading(false); // CHANGED
-    const { onPressScorekeeperReviewDone } = route?.params ?? {};
     if (reviewsData?.attachments?.length) {
-      onPressScorekeeperReviewDone(
+      onPressReview(
         1,
-        !!route?.params?.gameReviewData,
+        !!userData?.review_id,
         reviewsData,
-        route?.params?.userData?.user_id,
+        userData?.user_id,
       );
       navigation.goBack();
     } else {
@@ -317,8 +326,8 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
               {/* Title */}
               <Text style={styles.titleText}>
                 Please, rate the performance of{' '}
-                {route?.params?.userData?.first_name}{' '}
-                {route?.params?.userData?.last_name} and leave a review for the
+                {userData?.first_name}{' '}
+                {userData?.last_name} and leave a review for the
                 scorekeeper.
               </Text>
 
@@ -328,8 +337,8 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                 <View style={styles.imageContainer}>
                   <FastImage
                     source={
-                      route?.params?.userData?.thumbnail
-                        ? { uri: route?.params?.userData?.thumbnail }
+                      userData?.thumbnail
+                        ? { uri: userData?.thumbnail }
                         : images.teamPlaceholder
                     }
                     resizeMode={'contain'}
@@ -339,13 +348,13 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
 
                 {/*    Team name */}
                 <Text style={styles.teamName}>
-                  {route?.params?.userData?.first_name}{' '}
-                  {route?.params?.userData?.last_name}
+                  {userData?.first_name}{' '}
+                  {userData?.last_name}
                 </Text>
 
                 {/*    Country Name */}
                 <Text style={styles.countryName}>
-                  {route?.params?.userData?.country}
+                  {userData?.country}
                 </Text>
               </View>
 
@@ -363,7 +372,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
 
                 {/* Ratings */}
                 <View style={styles.rateSection}>
-                  {route?.params?.sliderAttributesForScorekeeper.map(
+                  {sliderAttributesForScorekeeper?.map(
                     (item, index) => (
                       <View
                         style={{
@@ -390,7 +399,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                 </View>
 
                 {/* Questions */}
-                {route?.params?.starAttributesForScorekeeper.map(
+                {starAttributesForScorekeeper?.map(
                   (item, index) => (
                     <View style={{ marginVertical: 5 }} key={index}>
                       <Text style={styles.questionText}>
@@ -464,7 +473,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                           fontSize: 16,
                           color: colors.grayColor,
                         }}>
-                        {`Describe what you thought and felt about ${route?.params?.userData?.first_name} ${route?.params?.userData?.last_name} while watching or playing the game.`}
+                        {`Describe what you thought and felt about ${userData?.first_name} ${userData?.last_name} while watching or playing the game.`}
                       </Text>
                     )}
                   </View>

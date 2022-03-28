@@ -16,6 +16,7 @@ import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
 
+import {useIsFocused} from '@react-navigation/native';
 import * as Utility from '../../../utils';
 import {
   acceptDeclineAlterReservation,
@@ -52,21 +53,24 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import CurruentRefereeReservationView from './CurrentRefereeReservationView';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
 
+
 let entity = {};
 const scroll = React.createRef();
 export default function EditRefereeReservation({ navigation, route }) {
   const authContext = useContext(AuthContext);
+  const isFocused = useIsFocused();
+
   const [chiefOrAssistant, setChiefOrAssistant] = useState('');
   // const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
 
-  const [bodyParams, setbodyParams] = useState();
+  const [bodyParams, setbodyParams] = useState(route?.params?.reservationObj);
   const [paymentCard, setPaymentCard] = useState();
   const [editRules, setEditRules] = useState(false);
   const [editVenue, setEditVenue] = useState(false);
   const [editReferee, setEditReferee] = useState(false);
   const [editScorekeeper, setEditScoreKeeper] = useState(false);
-  const [oldVersion, setOldVersion] = useState();
+  const [oldVersion] = useState(route?.params?.lastConfirmVersion);
   const [editInfo, setEditInfo] = useState(false);
   const [editPayment, setEditPayment] = useState(false);
   const [editMatch, setEditMatch] = useState(false);
@@ -75,7 +79,15 @@ export default function EditRefereeReservation({ navigation, route }) {
   const [maintabNumber, setMaintabNumber] = useState(0);
 
   const [defaultCard, setDefaultCard] = useState();
-  const { reservationObj } = route.params ?? {};
+  const [reservationObj,setReservationObj] = useState(route?.params?.reservationObj)
+
+  useEffect(() => {
+   if(isFocused){
+    setReservationObj(route?.params?.reservationObj)
+   
+   }
+  }, [isFocused, route?.params?.reservationObj]);
+
 
   useEffect(() => {
     const is_chief = bodyParams?.chief_referee ? 'chief' : 'assistant';
@@ -89,6 +101,7 @@ export default function EditRefereeReservation({ navigation, route }) {
 
     return 'Change Referee Reservation';
   };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: getNavigationTitle(),
@@ -96,7 +109,8 @@ export default function EditRefereeReservation({ navigation, route }) {
   }, [navigation, bodyParams, refereeUpdate]);
 
   useEffect(() => {
-    entity = authContext.entity;
+   
+      entity = authContext.entity;
     let reservationObject;
     if (reservationObj?.length > 0) {
       setIsPendingRequestPayment(true);
@@ -104,8 +118,7 @@ export default function EditRefereeReservation({ navigation, route }) {
     } else {
       reservationObject = reservationObj;
     }
-    setOldVersion(route?.params?.lastConfirmVersion);
-    console.log('Reservation Object :=>',reservationObj);
+    console.log('Reservation Object :=>',reservationObject);
     setbodyParams(reservationObject);
 
     if (!paymentCard) {
@@ -133,7 +146,8 @@ export default function EditRefereeReservation({ navigation, route }) {
     if (route?.params?.paymentMethod) {
       setDefaultCard(route?.params?.paymentMethod);
     }
-  }, [authContext.entity, defaultCard, paymentCard, reservationObj, route?.params?.lastConfirmVersion, route?.params?.paymentMethod]);
+    
+  }, [authContext.entity, defaultCard, isFocused, paymentCard, reservationObj, route?.params?.lastConfirmVersion, route?.params?.paymentMethod]);
 
   useLayoutEffect(() => {
     sectionEdited();
@@ -942,7 +956,7 @@ export default function EditRefereeReservation({ navigation, route }) {
           />
 
           {checkSenderForPayment(bodyParams) === 'sender'
-            && paymentCard.total_game_fee > 0 && (
+            && paymentCard?.total_game_fee > 0 && (
               <View style={{ marginTop: 10 }}>
                 <TCTouchableLabel
                   title={
