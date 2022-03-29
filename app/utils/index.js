@@ -708,68 +708,75 @@ export const getCalendar = async (
   type,
   blocked,
 ) => {
-  return getStorage('scheduleSetting').then(async (ids) => {
-    console.log('Calender ids:=>', ids);
-    console.log('parti ids:=>', participantId);
-
-    const idss = await getStorage('scheduleSetting');
-    console.log('Calender ids:=>', idss);
-
-    const body = {
-      query: {
-        bool: {
-          must: [
-            {
-              bool: {
-                should: [
-                  {
-                    term: {
-                      'participants.entity_id.keyword': participantId,
+  try {
+    return getStorage('scheduleSetting').then(async (ids) => {
+      console.log('Calender ids:=>', ids);
+      console.log('parti ids:=>', participantId);
+      // const idss = await getStorage('scheduleSetting');
+      // console.log('Calender ids:=>', idss);
+      const IDs = ids ?? []
+      const participants = [];
+      participants.push(participantId);
+      const body = {
+        query: {
+          bool: {
+            must: [
+              {
+                bool: {
+                  should: [
+                    {
+                      terms: {
+                        'participants.entity_id.keyword': [
+                          ...participants,
+                          ...IDs,
+                        ],
+                      },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
-      },
-    };
+      };
 
-    
-    if (type) {
-      body.query.bool.must.push({
-        term: {
-          'cal_type.keyword': type,
-        },
+      if (type) {
+        body.query.bool.must.push({
+          term: {
+            'cal_type.keyword': type,
+          },
+        });
+      }
+
+      if (blocked === true || blocked === false) {
+        body.query.bool.must.push({
+          match: {
+            blocked,
+          },
+        });
+      }
+
+      if (fromDate) {
+        body.query.bool.must.push({
+          range: {end_datetime: {gt: Number(fromDate.toFixed(0))}},
+        });
+      }
+      if (toDate) {
+        body.query.bool.must.push({
+          range: {start_datetime: {lt: Number(toDate.toFixed(0))}},
+        });
+      }
+
+      console.log('calender elastic search :=>', JSON.stringify(body));
+      return getCalendarIndex(body).then((response) => {
+        console.log('elastic search 111:=>', response);
+
+        return response;
       });
-    }
-
-    if (blocked === true || blocked === false) {
-      body.query.bool.must.push({
-        match: {
-          blocked,
-        },
-      });
-    }
-
-    if (fromDate) {
-      body.query.bool.must.push({
-        range: {end_datetime: {gt: Number(fromDate.toFixed(0))}},
-      });
-    }
-    if (toDate) {
-      body.query.bool.must.push({
-        range: {start_datetime: {lt: Number(toDate.toFixed(0))}},
-      });
-    }
-
-    console.log('calender elastic search :=>', JSON.stringify(body));
-    return getCalendarIndex(body).then((response) => {
-      console.log('elastic search 111:=>', response);
-
-      return response;
     });
-  });
+  } catch (error) {
+    return [];
+  }
 };
 
 export const getSportName = (object, authContext) => {

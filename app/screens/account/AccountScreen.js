@@ -1020,7 +1020,7 @@ export default function AccountScreen({navigation}) {
         {authContext.entity.role === 'user' && sectionId === 4 && (
           <FlatList
             style={{marginVertical: 10}}
-            data={authContext?.entity?.obj?.registered_sports.filter(
+            data={authContext?.entity?.obj?.registered_sports?.filter(
               (obj) => obj?.sport && obj?.sport_type,
             )}
             keyExtractor={keyExtractorID}

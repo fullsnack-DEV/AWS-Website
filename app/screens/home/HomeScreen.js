@@ -799,6 +799,7 @@ const HomeScreen = ({navigation, route}) => {
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
         };
+        console.log('createPostAfterUpload in home');
         createPostAfterUpload(dataParams);
       } else if (data) {
         const imageArray = data.map((dataItem) => dataItem);
@@ -1322,9 +1323,9 @@ const HomeScreen = ({navigation, route}) => {
   const onTeamPress = useCallback(
     (groupObject) => {
       navigation.push('HomeScreen', {
-        uid: groupObject.group_id,
+        uid: groupObject?.group_id,
         backButtonVisible: true,
-        role: groupObject.entity_type,
+        role: groupObject?.entity_type,
       });
     },
     [navigation],

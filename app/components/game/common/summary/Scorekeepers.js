@@ -49,6 +49,7 @@ import images from '../../../../Constants/ImagePath';
 let selectedScorekeeperData;
 const Scorekeepers = ({
   isAdmin,
+  isRefereeAdmin,
   userRole,
   gameData,
   followUser,
@@ -184,7 +185,7 @@ const Scorekeepers = ({
               ScorekeeperReservationStatus.declined,
             ].includes(reservationDetail?.status) &&
             !checkReviewExpired(gameData?.actual_enddatetime) &&
-          isAdmin
+          (isAdmin || isRefereeAdmin)
           }
           isReviewed={!!item?.scorekeeper?.review_id}
           followUser={followUser}
@@ -291,7 +292,7 @@ const Scorekeepers = ({
       ).length > 0 &&
       scorekeeper?.filter(
         (obj) => obj?.scorekeeper_id === authContext?.entity?.uid,
-      ).length === 0
+      ).length > 0
     ) {
       return true;
     }

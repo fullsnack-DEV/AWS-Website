@@ -84,7 +84,7 @@ const Summary = ({
   const [sliderAttributes, setSliderAttributes] = useState([]);
   const [starAttributes, setStarAttributes] = useState([]);
   const [leaveReviewText, setLeaveReviewText] = useState('');
-  const [lineUpUser, setLineUpUser] = useState(false);
+  const [isMemberOfHomeAway, setIsMemberOfHomeAway] = useState(false);
   const [pressedReferee, setPressedReferee] = useState({});
 
   const [sliderAttributesForReferee, setSliderAttributesForReferee] = useState(
@@ -185,6 +185,7 @@ const Summary = ({
     }
   }, [gameData, isFocused]);
 
+
   const leaveReviewButtonConfig = () => {
     let found = false;
     let teamName = '';
@@ -199,30 +200,34 @@ const Summary = ({
         // const awayTeamPlayers = response.payload.away_team.roster.concat(
         //   response.payload.away_team.non_roster,
         // );
-        const homeTeamPlayers = response.payload.home_team_members;
+        const homeTeamMembers = response.payload.home_team_members;
 
-        const awayTeamPlayers = response.payload.away_team_members;
+        const awayTeamMembers = response.payload.away_team_members;
 
         console.log('member list:=>', response.payload);
 
         const homeTeamRoasters = [];
         const awayTeamRoasters = [];
-        if (homeTeamPlayers.length > 0) {
-          homeTeamPlayers.map((item) => homeTeamRoasters.push(item?.member_id));
+        if (homeTeamMembers.length > 0) {
+          homeTeamMembers.map((item) => homeTeamRoasters.push(item?.member_id));
         }
-        if (awayTeamPlayers.length > 0) {
-          awayTeamPlayers.map((item) => awayTeamRoasters.push(item?.member_id));
+        if (awayTeamMembers.length > 0) {
+          awayTeamMembers.map((item) => awayTeamRoasters.push(item?.member_id));
         }
         if (
           [...homeTeamRoasters, ...awayTeamRoasters].includes(
             authContext.entity.uid,
           )
         ) {
-          setLineUpUser(true);
+          setIsMemberOfHomeAway(true);
         }
 
-        for (let i = 0; i < homeTeamPlayers?.length; i++) {
-          if (homeTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
+        console.log('homeTeamRoasters',homeTeamRoasters);
+       if(homeTeamMembers?.filter((home) => home.member_id === authContext.entity.uid).length > 0 && awayTeamMembers?.filter((away) => away.member_id === authContext.entity.uid).length > 0){
+        setplayerFrom('both');
+       }else{
+        for (let i = 0; i < homeTeamMembers?.length; i++) {
+          if (homeTeamMembers?.[i]?.member_id === authContext.entity.uid) {
             found = true;
             teamName = gameData?.away_team?.group_name;
             console.log('Team name Data:=>', teamName);
@@ -239,8 +244,8 @@ const Summary = ({
           }
         }
         if (!found) {
-          for (let i = 0; i < awayTeamPlayers.length; i++) {
-            if (awayTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
+          for (let i = 0; i < awayTeamMembers.length; i++) {
+            if (awayTeamMembers?.[i]?.member_id === authContext.entity.uid) {
               found = true;
               teamName = gameData?.home_team?.group_name;
               if (gameData?.away_review_id || gameData?.home_review_id) {
@@ -270,6 +275,7 @@ const Summary = ({
             setLeaveReviewText(strings.leaveOrEditReviewText);
           }
         }
+       }
       })
       .catch((error) => {
         console.log('error L ', error);
@@ -277,12 +283,12 @@ const Summary = ({
       });
   };
 
-  console.log('lineUpUser',lineUpUser);
+  console.log('isMemberOfHomeAway',isMemberOfHomeAway);
   console.log('isRefereeAdmin',isRefereeAdmin);
   console.log('isScorekeeperAdmin',isScorekeeperAdmin);
 
   const showLeaveReviewButton = () =>
-    lineUpUser || isRefereeAdmin || isScorekeeperAdmin;
+  isMemberOfHomeAway || isRefereeAdmin || isScorekeeperAdmin;
 
   const getRefereeReviewsData = useCallback(
     (item) => {
@@ -478,9 +484,10 @@ const Summary = ({
                   } else if (gameData?.away_review_id) {
                     getGameReviewsData(gameData?.away_review_id);
                   } else {
+                    console.log('clicked leavereview');
                     navigation.navigate('LeaveReview', {
                       gameData,
-                      selectedTeam: playerFrom === 'home' ? 'home' : 'away',
+                      selectedTeam: playerFrom === 'home' ? 'away' : 'home',
                       sliderAttributes,
                       starAttributes,
                       onPressReviewDone,
@@ -561,6 +568,8 @@ const Summary = ({
         gameData={gameData}
         navigation={navigation}
         isAdmin={isAdmin}
+        isRefereeAdmin={isRefereeAdmin}
+        isScorekeeperAdmin={isScorekeeperAdmin}
         userRole={userRole}
         followUser={followSoccerUser}
         unFollowUser={unFollowSoccerUser}
@@ -604,6 +613,8 @@ const Summary = ({
         gameData={gameData}
         navigation={navigation}
         isAdmin={isAdmin}
+        isRefereeAdmin={isRefereeAdmin}
+        isScorekeeperAdmin={isScorekeeperAdmin}
         userRole={userRole}
         onReviewPress={(scorekeeper) => {
           if (scorekeeper?.review_id) {

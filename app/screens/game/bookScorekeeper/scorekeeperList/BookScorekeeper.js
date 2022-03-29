@@ -199,7 +199,7 @@ export default function BookScorekeeper({navigation, route}) {
         console.log('setting of group or player:::=>', response);
         if (
           response?.responsible_for_scorekeeper?.who_secure?.length >
-          gameData?.challenge_scorekeepers?.who_secure?.length
+          (gameData?.scorekeepers?.length ?? 0)
         ) {
           setLoading(true);
           Utils.getSetting(

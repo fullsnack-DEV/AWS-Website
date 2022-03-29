@@ -43,11 +43,13 @@ import {
 import strings from '../../../../Constants/String';
 import images from '../../../../Constants/ImagePath';
 import {getSetting} from '../../../../screens/challenge/manageChallenge/settingUtility';
+import TCThinDivider from '../../../TCThinDivider';
 
 let selectedRefereeData;
 const Referees = ({
   gameData,
   isAdmin,
+  isScorekeeperAdmin,
   userRole,
   followUser,
   unFollowUser,
@@ -176,7 +178,7 @@ const Referees = ({
           RefereeReservationStatus.declined,
         ].includes(reservationDetail?.status) &&
         !checkReviewExpired(gameData?.actual_enddatetime) &&
-        isAdmin
+        (isAdmin || isScorekeeperAdmin)
       ) {
         return true;
       }
@@ -293,13 +295,14 @@ const Referees = ({
   );
 
   const refereeOfferValidation = useCallback(() => {
+   
     if (
       authContext.entity.role === 'user' &&
       authContext?.entity?.auth?.user?.referee_data?.filter(
         (obj) => obj?.sport === gameData?.sport,
       ).length > 0 &&
       referee?.filter((obj) => obj?.referee_id === authContext?.entity?.uid)
-        .length === 0
+        .length > 0
     ) {
       return true;
     }
@@ -508,6 +511,7 @@ const Referees = ({
           data={referee} // gameData?.referees
           renderItem={renderReferees}
           ListEmptyComponent={ListEmptyComponent}
+          ItemSeparatorComponent={() => <TCThinDivider />}
         />
         {renderBookRefereeButton}
         <ActionSheet

@@ -89,9 +89,6 @@ const getGameStatsData = async (userID, params, authContext) => makeAPIRequest({
   authContext,
 })
 
-
-
-
 const getStatsRDMData = async (entityID, params, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/teams/${entityID}/games/stats/RDM`,
