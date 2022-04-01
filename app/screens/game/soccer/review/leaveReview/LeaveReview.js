@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import fonts from '../../../../../Constants/Fonts';
-import TCStep from '../../../../../components/TCStep';
 import TeamReview from '../../../../../components/game/soccer/home/review/leaveReview/TeamReview';
 import {STAR_COLOR} from '../../../../../utils';
 import {addGameReview, patchGameReview} from '../../../../../api/Games';

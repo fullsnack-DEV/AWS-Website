@@ -49,6 +49,7 @@ let selectedRefereeData;
 const Referees = ({
   gameData,
   isAdmin,
+  isRefereeAdmin,
   isScorekeeperAdmin,
   userRole,
   followUser,
@@ -170,6 +171,7 @@ const Referees = ({
 
   const isCheckReviewButton = useCallback(
     (reservationDetail) => {
+      console.log('gameData?.status', isScorekeeperAdmin);
       if (
         gameData?.status === GameStatus.ended &&
         ![
@@ -178,14 +180,20 @@ const Referees = ({
           RefereeReservationStatus.declined,
         ].includes(reservationDetail?.status) &&
         !checkReviewExpired(gameData?.actual_enddatetime) &&
-        (isAdmin || isScorekeeperAdmin)
+        (isAdmin || isScorekeeperAdmin || isRefereeAdmin)
       ) {
         return true;
       }
 
       return false;
     },
-    [gameData?.actual_enddatetime, gameData?.status, isAdmin],
+    [
+      gameData?.actual_enddatetime,
+      gameData?.status,
+      isAdmin,
+      isRefereeAdmin,
+      isScorekeeperAdmin,
+    ],
   );
 
   const renderReferees = useCallback(
@@ -220,6 +228,7 @@ const Referees = ({
       );
     },
     [
+      authContext?.entity?.uid,
       followUser,
       getRefereeStatusMessage,
       isAdmin,
@@ -295,14 +304,14 @@ const Referees = ({
   );
 
   const refereeOfferValidation = useCallback(() => {
-   
     if (
       authContext.entity.role === 'user' &&
       authContext?.entity?.auth?.user?.referee_data?.filter(
         (obj) => obj?.sport === gameData?.sport,
       ).length > 0 &&
       referee?.filter((obj) => obj?.referee_id === authContext?.entity?.uid)
-        .length > 0
+        .length > 0 &&
+      gameData?.status !== GameStatus.ended
     ) {
       return true;
     }
@@ -310,8 +319,9 @@ const Referees = ({
   }, [
     authContext.entity?.auth?.user?.referee_data,
     authContext.entity.role,
-    authContext.entity.uid,
+    authContext.entity?.uid,
     gameData?.sport,
+    gameData?.status,
     referee,
   ]);
 

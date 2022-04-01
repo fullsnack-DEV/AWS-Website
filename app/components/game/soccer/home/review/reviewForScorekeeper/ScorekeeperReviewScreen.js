@@ -190,7 +190,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
   };
 
   const patchOrAddScorekeeperReview = (data) => {
-    if (reviewsData !== {}) {
+    if (userData?.review_id) {
       setLoading(true);
       console.log('Edited Review Object reviewData::=>', data);
       const teamReview = { ...data };

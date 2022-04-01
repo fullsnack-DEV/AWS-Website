@@ -1,9 +1,8 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
-import React, {
- useState, useEffect, useLayoutEffect, useContext,
- } from 'react';
+import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
 import {
   Alert,
   Image,
@@ -17,7 +16,7 @@ import _ from 'lodash';
 import fonts from '../../../../../Constants/Fonts';
 import TCStep from '../../../../../components/TCStep';
 import UserReview from '../../../../../components/game/tennis/review/leaveReview/UserReview';
-import { STAR_COLOR } from '../../../../../utils';
+import {STAR_COLOR} from '../../../../../utils';
 import {
   addPlayerReview,
   patchPlayerReview,
@@ -32,82 +31,72 @@ import AuthContext from '../../../../../auth/context';
 import strings from '../../../../../Constants/String';
 import uploadImages from '../../../../../utils/imageAction';
 import ActivityLoader from '../../../../../components/loader/ActivityLoader';
-import { ImageUploadContext } from '../../../../../context/ImageUploadContext';
+import {ImageUploadContext} from '../../../../../context/ImageUploadContext';
 
-const LeaveReviewTennis = ({ navigation, route }) => {
-  const imageUploadContext = useContext(ImageUploadContext);
+const LeaveReviewTennis = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const [currentForm, setCurrentForm] = useState(
     route?.params?.selectedTeam === 'home' ? 1 : 2,
   );
   const [loading, setLoading] = useState(false);
-  const [starAttributes, setStarAttributes] = useState([]);
+  const [starAttributes, setStarAttributes] = useState(route?.params?.starAttributes);
 
-  const [progressBar, setProgressBar] = useState(false);
-  const [totalUploadCount, setTotalUploadCount] = useState(0);
-  const [doneUploadCount, setDoneUploadCount] = useState(0);
-  const [cancelApiRequest, setCancelApiRequest] = useState(null);
-
-  console.log(
-    'route?.params?.starAttributes',
-    route?.params?.starAttributes,
-  );
-  console.log(
-    'route?.params?.isRefereeAvailable',
-    route?.params?.isRefereeAvailable,
+  const [isRefereeAvailable] = useState(route?.params?.isRefereeAvailable);
+  const [gameData] = useState(route?.params?.gameData);
+  const [onPressReview] = useState(
+    route?.params?.onPressReviewDone
+      ? () => route?.params?.onPressReviewDone
+      : () => {},
   );
 
-  const [selectedTeam] = useState(route?.params?.selectedTeam);
 
-  console.log('selectedTeam:=>', selectedTeam);
-  console.log('route?.params?.gameReviewData', route?.params?.gameReviewData);
-
-  const getReviewDataObject = () => {
-    if (currentForm === 1) {
-      if (route?.params?.gameData?.home_team?.user_id) {
-        return {
-          player_id: route?.params?.gameData?.home_team?.user_id,
+  const [reviewsData, setReviewsData] = useState(
+    currentForm === 1
+      ? gameData?.home_team?.user_id
+        ? {
+            player_id: gameData?.home_team?.user_id,
+            comment: '',
+            attachments: [],
+            tagged: [],
+          }
+        : {
+            team_id: gameData?.home_team?.group_id,
+            comment: '',
+            attachments: [],
+            tagged: [],
+          }
+      : gameData?.away_team?.user_id
+      ? {
+          player_id: gameData?.away_team?.user_id,
           comment: '',
           attachments: [],
           tagged: [],
-        };
-      }
-      return {
-        team_id: route?.params?.gameData?.home_team?.group_id,
-        comment: '',
-        attachments: [],
-        tagged: [],
-      };
-    }
-    if (route?.params?.gameData?.away_team?.user_id) {
-      return {
-        player_id: route?.params?.gameData?.away_team?.user_id,
-        comment: '',
-        attachments: [],
-        tagged: [],
-      };
-    }
-    return {
-      team_id: route?.params?.gameData?.away_team?.group_id,
-      comment: '',
-      attachments: [],
-      tagged: [],
-    };
-  };
+        }
+      : {
+          team_id: gameData?.away_team?.group_id,
+          comment: '',
+          attachments: [],
+          tagged: [],
+        },
+  );
 
-  const [reviewsData, setReviewsData] = useState(getReviewDataObject());
   useEffect(() => {
+    console.log(
+      'route?.params?.gameReviewData?.results[0]?.object',
+      route?.params?.gameReviewData,
+    );
     if (route?.params?.gameReviewData?.results[0]?.object) {
-      const reviewObj = JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
-          ?.playerReview
-        ?? JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
+      const reviewObj =
+        JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
+          ?.playerReview ??
+        JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
           ?.gameReview;
-      setReviewsData({ ...reviewObj });
+      setReviewsData({...reviewObj});
     }
   }, [route?.params?.gameReviewData?.results]);
 
   useEffect(() => {
-    const obj = { ...reviewsData };
+    const obj = {...reviewsData};
     if (route?.params?.selectedImageList) {
       obj.attachments = route?.params?.selectedImageList;
       setReviewsData(obj);
@@ -117,7 +106,6 @@ const LeaveReviewTennis = ({ navigation, route }) => {
       setReviewsData(obj);
     }
     if (route?.params?.entityTags) {
-
       obj.tagged = route?.params?.entityTags;
       setReviewsData(obj);
     }
@@ -139,13 +127,14 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     if (!route?.params?.gameReviewData) {
       loadStarAttributes(route?.params?.starAttributes || []);
     }
-  }, [route?.params?.gameReviewData, route?.params?.starAttributes]);
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
-          onPress={() => (currentForm === 1 ? navigation.goBack() : setCurrentForm(1))
+          onPress={() =>
+            currentForm === 1 ? navigation.goBack() : setCurrentForm(1)
           }>
           <Image
             source={images.backArrow}
@@ -174,8 +163,8 @@ const LeaveReviewTennis = ({ navigation, route }) => {
       return true;
     });
     let reviews = _.cloneDeep(reviewsData);
-    reviews = { ...reviews, ...attr };
-    setReviewsData({ ...reviews });
+    reviews = {...reviews, ...attr};
+    setReviewsData({...reviews});
     setLoading(false);
   };
 
@@ -192,10 +181,10 @@ const LeaveReviewTennis = ({ navigation, route }) => {
       'reviewer_id',
     ];
 
-    if (!route?.params?.isRefereeAvailable) {
+    if (!isRefereeAvailable) {
       exceptKey.push('respectforreferre');
     }
-    console.log(route?.params?.isRefereeAvailable);
+    console.log(isRefereeAvailable);
     console.log(exceptKey);
 
     let isValid = true;
@@ -210,7 +199,6 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   };
   const createReview = () => {
     console.log('Review Data::=>', JSON.stringify(reviewsData));
-
     if (currentForm === 1) {
       if (isValidReview()) {
         uploadMediaForTeamA();
@@ -225,24 +213,11 @@ const LeaveReviewTennis = ({ navigation, route }) => {
       }
     }
   };
-  const onCancelImageUpload = () => {
-    if (cancelApiRequest) {
-      cancelApiRequest.cancel('Cancel Image Uploading');
-    }
-    setProgressBar(false);
-    setDoneUploadCount(0);
-    setTotalUploadCount(0);
-  };
-  const progressStatus = (completed, total) => {
-    setDoneUploadCount(completed < total ? completed + 1 : total);
-  };
 
-  const cancelRequest = (axiosTokenSource) => {
-    setCancelApiRequest({ ...axiosTokenSource });
-  };
+
 
   const patchOrAddReview = () => {
-    if (route?.params?.gameReviewData) {
+    if (currentForm === 1 ?  !!gameData?.home_review_id : !!gameData?.away_review_id) {
       setLoading(true);
       const teamReview = reviewsData;
       delete teamReview.created_at;
@@ -261,26 +236,12 @@ const LeaveReviewTennis = ({ navigation, route }) => {
       };
 
       console.log('Edited Review Object::=>', reviewObj);
-      console.log(
-        `Home userID or teamID:=> ${
-          route?.params?.gameData?.home_team?.user_id
-          ?? route?.params?.gameData?.home_team?.group_id
-        } home username:=> ${route?.params?.gameData?.home_team?.full_name}`,
-      );
-      console.log(
-        `away userID or TeamID:=> ${
-          route?.params?.gameData?.away_team?.user_id
-          ?? route?.params?.gameData?.away_team?.group_id
-        } away username:=> ${route?.params?.gameData?.away_team?.full_name}`,
-      );
 
       patchPlayerReview(
         currentForm === 1
-          ? route?.params?.gameData?.home_team?.user_id
-              ?? route?.params?.gameData?.home_team?.group_id
-          : route?.params?.gameData?.away_team?.user_id
-              ?? route?.params?.gameData?.away_team?.group_id,
-        route?.params?.gameData?.game_id,
+          ? gameData?.home_team?.user_id ?? gameData?.home_team?.group_id
+          : gameData?.away_team?.user_id ?? gameData?.away_team?.group_id,
+        gameData?.game_id,
         reviewID,
         reviewObj,
         authContext,
@@ -297,20 +258,13 @@ const LeaveReviewTennis = ({ navigation, route }) => {
           );
           navigation.goBack();
         });
-    }
-      console.log('New Review Object::=>', reviewsData);
-      console.log(
-        `Home userID:=> ${route?.params?.gameData?.home_team?.user_id} home username:=> ${route?.params?.gameData?.home_team?.full_name}`,
-      );
-      console.log(
-        `away userID:=> ${route?.params?.gameData?.away_team?.user_id} away username:=> ${route?.params?.gameData?.away_team?.full_name}`,
-      );
+    }else{
       setLoading(true);
       addPlayerReview(
         currentForm === 1
-          ? route?.params?.gameData?.home_team?.user_id
-          : route?.params?.gameData?.away_team?.user_id,
-        route?.params?.gameData?.game_id,
+          ? gameData?.home_team?.user_id
+          : gameData?.away_team?.user_id,
+        gameData?.game_id,
         reviewsData,
         authContext,
       )
@@ -326,10 +280,13 @@ const LeaveReviewTennis = ({ navigation, route }) => {
           );
           navigation.goBack();
         });
+    }
+   
+   
   };
 
   const patchOrAddReviewTeam = () => {
-    if (route?.params?.gameReviewData) {
+    if (currentForm === 1 ?  !!gameData?.home_review_id : !!gameData?.away_review_id) {
       setLoading(true);
       const teamReview = reviewsData;
       delete teamReview.created_at;
@@ -348,19 +305,18 @@ const LeaveReviewTennis = ({ navigation, route }) => {
       };
 
       console.log('Edited Review Object::=>', reviewObj);
-      patchGameReview(
-        route?.params?.gameData?.game_id,
-        reviewID,
-        reviewObj,
-        authContext,
-      )
+      patchGameReview(gameData?.game_id, reviewID, reviewObj, authContext)
         .then(() => {
           setLoading(false);
           navigation.goBack();
         })
         .catch((error) => {
           setLoading(false);
-          console.log('strings.alertmessagetitle, error?.message', strings.alertmessagetitle, error?.message);
+          console.log(
+            'strings.alertmessagetitle, error?.message',
+            strings.alertmessagetitle,
+            error?.message,
+          );
           setTimeout(
             () => Alert.alert(strings.alertmessagetitle, error?.message),
             100,
@@ -369,9 +325,8 @@ const LeaveReviewTennis = ({ navigation, route }) => {
         });
     } else {
       console.log('New Review Object::=>', reviewsData);
-
       setLoading(true);
-      addGameReview(route?.params?.gameData?.game_id, reviewsData, authContext)
+      addGameReview(gameData?.game_id, reviewsData, authContext)
         .then(() => {
           setLoading(false);
           navigation.goBack();
@@ -393,36 +348,25 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     if (reviewsData?.attachments?.length > 0) {
       console.log('Player A-1');
 
-      const { onPressReviewDone } = route?.params ?? {};
-      onPressReviewDone(
-        currentForm,
-        !!route?.params?.gameReviewData,
-        reviewsData,
-      );
-      navigation.goBack()
+      onPressReview(currentForm, currentForm === 1 ?  !!gameData?.home_review_id : !!gameData?.away_review_id, reviewsData);
+      navigation.goBack();
     } else if (reviewsData?.team_id) {
       console.log('Player A-2');
 
-        patchOrAddReviewTeam();
-      } else {
-        console.log('Player A-3');
+      patchOrAddReviewTeam();
+    } else {
+      console.log('Player A-3');
 
-        patchOrAddReview();
-       }
+      patchOrAddReview();
+    }
   };
   const uploadMediaForTeamB = () => {
     setLoading(false); // CHANGED
-    console.log('Player B');
+    console.log('Player B:',reviewsData);
 
     if (reviewsData?.attachments?.length > 0) {
-      const { onPressReviewDone } = route?.params ?? {};
-
-      onPressReviewDone(
-        currentForm,
-        !!route?.params?.gameReviewData,
-        reviewsData,
-      );
-      navigation.goBack()
+      onPressReview(currentForm, !!gameData?.away_review_id, reviewsData);
+      navigation.goBack();
     } else if (reviewsData?.team_id) {
       patchOrAddReviewTeam();
     } else {
@@ -434,15 +378,16 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     if (reviewsData[key] !== value) {
       const reviews = _.cloneDeep(reviewsData);
       reviews[key] = value;
-      setReviewsData({ ...reviews });
+      setReviewsData({...reviews});
     }
   };
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <Header
         leftComponent={
           <TouchableOpacity
-            onPress={() => (currentForm === 1 ? navigation.goBack() : navigation.pop(1))
+            onPress={() =>
+              currentForm === 1 ? navigation.goBack() : navigation.pop(1)
             }>
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
@@ -467,11 +412,11 @@ const LeaveReviewTennis = ({ navigation, route }) => {
               reviewsData={reviewsData}
               reviewAttributes={starAttributes}
               starColor={STAR_COLOR.YELLOW}
-              teamData={route?.params?.gameData?.home_team}
+              teamData={gameData?.home_team}
               setTeamReview={setTeamReview}
               navigation={navigation}
               route={route}
-              isRefereeAvailable={route?.params?.isRefereeAvailable}
+              isRefereeAvailable={isRefereeAvailable}
               tags={reviewsData?.tagged || route?.params?.entityTags}
             />
           ) : (
@@ -479,15 +424,15 @@ const LeaveReviewTennis = ({ navigation, route }) => {
               teamNo={1}
               reviewsData={reviewsData}
               starColor={STAR_COLOR.BLUE}
-              teamData={route?.params?.gameData?.away_team}
+              teamData={gameData?.away_team}
               reviewAttributes={starAttributes}
               setTeamReview={setTeamReview}
               navigation={navigation}
               route={route}
-              isRefereeAvailable={route?.params?.isRefereeAvailable}
+              isRefereeAvailable={isRefereeAvailable}
               tags={
-                route?.params?.format_tagged_data
-                || reviewsData?.format_tagged_data
+                route?.params?.format_tagged_data ||
+                reviewsData?.format_tagged_data
               }
             />
           )}

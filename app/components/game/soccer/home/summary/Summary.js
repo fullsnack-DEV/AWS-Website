@@ -16,6 +16,7 @@ import {
   Modal,
   TouchableWithoutFeedback,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
@@ -39,7 +40,6 @@ import Scorekeepers from '../../../common/summary/Scorekeepers';
 import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
 import ApproveDisapprove from './approveDisapprove/ApproveDisapprove';
-import TCInnerLoader from '../../../../TCInnerLoader';
 import {checkReviewExpired} from '../../../../../utils/gameUtils';
 import fonts from '../../../../../Constants/Fonts';
 import strings from '../../../../../Constants/String';
@@ -72,7 +72,7 @@ const Summary = ({
   getGameNextFeedData,
 }) => {
   console.log('GameData Soccer:=>', gameData);
-
+  const recipientModalRef = useRef();
   const imageUploadContext = useContext(ImageUploadContext);
   const authContext = useContext(AuthContext);
   const reviewOpetions = useRef();
@@ -102,6 +102,7 @@ const Summary = ({
   ] = useState([]);
 
   useEffect(() => {
+
     if (isFocused && gameData) {
       leaveReviewButtonConfig();
 
@@ -185,7 +186,6 @@ const Summary = ({
     }
   }, [gameData, isFocused]);
 
-
   const leaveReviewButtonConfig = () => {
     let found = false;
     let teamName = '';
@@ -222,60 +222,74 @@ const Summary = ({
           setIsMemberOfHomeAway(true);
         }
 
-        console.log('homeTeamRoasters',homeTeamRoasters);
-       if(homeTeamMembers?.filter((home) => home.member_id === authContext.entity.uid).length > 0 && awayTeamMembers?.filter((away) => away.member_id === authContext.entity.uid).length > 0){
-        setplayerFrom('both');
-       }else{
-        for (let i = 0; i < homeTeamMembers?.length; i++) {
-          if (homeTeamMembers?.[i]?.member_id === authContext.entity.uid) {
-            found = true;
-            teamName = gameData?.away_team?.group_name;
-            console.log('Team name Data:=>', teamName);
-            if (gameData?.home_review_id || gameData?.away_review_id) {
-              // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
-              setLeaveReviewText(strings.editReviewText);
-            } else {
-              // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
-              setLeaveReviewText(strings.leaveReviewText);
-            }
-            console.log('set home');
-            setplayerFrom('home');
-            break;
+        console.log('homeTeamRoasters', homeTeamRoasters);
+        if (
+          homeTeamMembers?.filter(
+            (home) => home.member_id === authContext.entity.uid,
+          ).length > 0 &&
+          awayTeamMembers?.filter(
+            (away) => away.member_id === authContext.entity.uid,
+          ).length > 0
+        ) {
+          if (gameData?.home_review_id || gameData?.away_review_id) {
+            // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+            setLeaveReviewText(strings.editReviewText);
+          } else {
+            // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+            setLeaveReviewText(strings.leaveReviewText);
           }
-        }
-        if (!found) {
-          for (let i = 0; i < awayTeamMembers.length; i++) {
-            if (awayTeamMembers?.[i]?.member_id === authContext.entity.uid) {
+          setplayerFrom('');
+        } else {
+          for (let i = 0; i < homeTeamMembers?.length; i++) {
+            if (homeTeamMembers?.[i]?.member_id === authContext.entity.uid) {
               found = true;
-              teamName = gameData?.home_team?.group_name;
-              if (gameData?.away_review_id || gameData?.home_review_id) {
+              teamName = gameData?.away_team?.group_name;
+              console.log('Team name Data:=>', teamName);
+              if (gameData?.home_review_id || gameData?.away_review_id) {
                 // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
                 setLeaveReviewText(strings.editReviewText);
               } else {
                 // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
                 setLeaveReviewText(strings.leaveReviewText);
               }
-              console.log('set away');
-
-              setplayerFrom('away');
+              console.log('set home');
+              setplayerFrom('home');
               break;
             }
           }
-          const data = [
-            ...(gameData?.referees ?? []),
-            ...(gameData?.scorekeepers ?? []),
-          ];
-          if (
-            data.some(
-              (obj) =>
-                obj?.referee_id === authContext.entity.uid ||
-                obj?.scorekeeper_id === authContext.entity.uid,
-            )
-          ) {
-            setLeaveReviewText(strings.leaveOrEditReviewText);
+          if (!found) {
+            for (let i = 0; i < awayTeamMembers.length; i++) {
+              if (awayTeamMembers?.[i]?.member_id === authContext.entity.uid) {
+                found = true;
+                teamName = gameData?.home_team?.group_name;
+                if (gameData?.away_review_id || gameData?.home_review_id) {
+                  // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+                  setLeaveReviewText(strings.editReviewText);
+                } else {
+                  // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+                  setLeaveReviewText(strings.leaveReviewText);
+                }
+                console.log('set away');
+
+                setplayerFrom('away');
+                break;
+              }
+            }
+            const data = [
+              ...(gameData?.referees ?? []),
+              ...(gameData?.scorekeepers ?? []),
+            ];
+            if (
+              data.some(
+                (obj) =>
+                  obj?.referee_id === authContext.entity.uid ||
+                  obj?.scorekeeper_id === authContext.entity.uid,
+              )
+            ) {
+              setLeaveReviewText(strings.leaveOrEditReviewText);
+            }
           }
         }
-       }
       })
       .catch((error) => {
         console.log('error L ', error);
@@ -283,12 +297,12 @@ const Summary = ({
       });
   };
 
-  console.log('isMemberOfHomeAway',isMemberOfHomeAway);
-  console.log('isRefereeAdmin',isRefereeAdmin);
-  console.log('isScorekeeperAdmin',isScorekeeperAdmin);
+  console.log('isMemberOfHomeAway', isMemberOfHomeAway);
+  console.log('isRefereeAdmin', isRefereeAdmin);
+  console.log('isScorekeeperAdmin', isScorekeeperAdmin);
 
   const showLeaveReviewButton = () =>
-  isMemberOfHomeAway || isRefereeAdmin || isScorekeeperAdmin;
+    isMemberOfHomeAway || isRefereeAdmin || isScorekeeperAdmin;
 
   const getRefereeReviewsData = useCallback(
     (item) => {
@@ -363,8 +377,7 @@ const Summary = ({
           navigation.navigate('LeaveReview', {
             gameData,
             gameReviewData: response.payload,
-            selectedTeam:
-            selectedTeamForReview, // ?? playerFrom === 'home' ? 'away' : 'home',
+            selectedTeam: selectedTeamForReview, // ?? playerFrom === 'home' ? 'away' : 'home',
             sliderAttributes,
             starAttributes,
             onPressReviewDone,
@@ -978,6 +991,30 @@ const Summary = ({
     },
     [imageUploadContext, authContext, patchOrAddScorekeeperReview],
   );
+
+  const createInvoiceModalHeader = () => (
+    <View style={styles.headerStyle}>
+      <View style={styles.headerButtonStyle}>
+        <Text
+          style={styles.cancelText}
+          onPress={() => recipientModalRef.current.close()}>
+          Cancel
+        </Text>
+
+        <Text style={styles.titleText}>New Invoice</Text>
+        <Text
+          style={styles.sendText}
+          onPress={() => {
+            console.log('OKOK');
+          }}>
+          Send
+        </Text>
+      </View>
+
+      <View style={styles.headerSeparator} />
+    </View>
+  );
+
   return (
     <View style={styles.mainContainer}>
       {/* <TCInnerLoader visible={loading} /> */}
@@ -1040,13 +1077,9 @@ const Summary = ({
                     console.log('gameData?.review_id:=>', gameData?.review_id);
                     if (playerFrom === '' && selectedTeamForReview) {
                       if (selectedTeamForReview === 'home') {
-                        
-
                         if (gameData?.home_review_id) {
-                          
                           getGameReviewsData(gameData?.home_review_id);
                         } else {
-                         
                           navigation.navigate('LeaveReview', {
                             gameData,
                             selectedTeam: selectedTeamForReview,
@@ -1057,7 +1090,6 @@ const Summary = ({
                         }
                       }
                       if (selectedTeamForReview === 'away') {
-                        
                         if (gameData?.away_review_id) {
                           console.log('ddddd away');
                           getGameReviewsData(gameData?.away_review_id);
@@ -1096,7 +1128,6 @@ const Summary = ({
                 <View style={styles.entityView}>
                   <TouchableWithoutFeedback
                     onPress={() => {
-                    
                       setSelectedTeamForReview('home');
                     }}>
                     {selectedTeamForReview === 'home' ? (
@@ -1163,6 +1194,8 @@ const Summary = ({
           </View>
         </Modal>
       )}
+
+     
 
       <ActionSheet
         ref={reviewOpetions}

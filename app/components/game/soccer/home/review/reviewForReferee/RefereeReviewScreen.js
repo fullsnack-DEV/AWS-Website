@@ -231,7 +231,7 @@ setGameReviewData(route?.params?.gameReviewData)
     console.log('data ==== ::=>', data);
 
 
-    if (reviewsData !== {}) {
+    if (userData?.review_id) {
       setLoading(true);
       console.log('Edited Review Object reviewData::=>', data);
       const teamReview = {...data};
