@@ -39,7 +39,9 @@ const LeaveReviewTennis = ({navigation, route}) => {
     route?.params?.selectedTeam === 'home' ? 1 : 2,
   );
   const [loading, setLoading] = useState(false);
-  const [starAttributes, setStarAttributes] = useState(route?.params?.starAttributes);
+  const [starAttributes, setStarAttributes] = useState(
+    route?.params?.starAttributes,
+  );
 
   const [isRefereeAvailable] = useState(route?.params?.isRefereeAvailable);
   const [gameData] = useState(route?.params?.gameData);
@@ -48,7 +50,6 @@ const LeaveReviewTennis = ({navigation, route}) => {
       ? () => route?.params?.onPressReviewDone
       : () => {},
   );
-
 
   const [reviewsData, setReviewsData] = useState(
     currentForm === 1
@@ -199,25 +200,19 @@ const LeaveReviewTennis = ({navigation, route}) => {
   };
   const createReview = () => {
     console.log('Review Data::=>', JSON.stringify(reviewsData));
-    if (currentForm === 1) {
       if (isValidReview()) {
-        uploadMediaForTeamA();
+        uploadMediaForTeam();
       } else {
         Alert.alert('Please, complete all ratings before moving to the next.');
-      }
-    } else if (currentForm === 2) {
-      if (isValidReview()) {
-        uploadMediaForTeamB();
-      } else {
-        Alert.alert('Please, complete all ratings before moving to the next.');
-      }
-    }
+      } 
   };
 
-
-
   const patchOrAddReview = () => {
-    if (currentForm === 1 ?  !!gameData?.home_review_id : !!gameData?.away_review_id) {
+    if (
+      currentForm === 1
+        ? !!gameData?.home_review_id
+        : !!gameData?.away_review_id
+    ) {
       setLoading(true);
       const teamReview = reviewsData;
       delete teamReview.created_at;
@@ -258,7 +253,7 @@ const LeaveReviewTennis = ({navigation, route}) => {
           );
           navigation.goBack();
         });
-    }else{
+    } else {
       setLoading(true);
       addPlayerReview(
         currentForm === 1
@@ -281,12 +276,14 @@ const LeaveReviewTennis = ({navigation, route}) => {
           navigation.goBack();
         });
     }
-   
-   
   };
 
   const patchOrAddReviewTeam = () => {
-    if (currentForm === 1 ?  !!gameData?.home_review_id : !!gameData?.away_review_id) {
+    if (
+      currentForm === 1
+        ? !!gameData?.home_review_id
+        : !!gameData?.away_review_id
+    ) {
       setLoading(true);
       const teamReview = reviewsData;
       delete teamReview.created_at;
@@ -342,37 +339,17 @@ const LeaveReviewTennis = ({navigation, route}) => {
     }
   };
 
-  const uploadMediaForTeamA = () => {
-    setLoading(false); // CHANGED
-
-    if (reviewsData?.attachments?.length > 0) {
-      console.log('Player A-1');
-
-      onPressReview(currentForm, currentForm === 1 ?  !!gameData?.home_review_id : !!gameData?.away_review_id, reviewsData);
-      navigation.goBack();
-    } else if (reviewsData?.team_id) {
-      console.log('Player A-2');
-
-      patchOrAddReviewTeam();
-    } else {
-      console.log('Player A-3');
-
-      patchOrAddReview();
-    }
+  const uploadMediaForTeam = () => {
+    onPressReview(
+      currentForm,
+      currentForm === 1
+        ? !!gameData?.home_review_id
+        : !!gameData?.away_review_id,
+      reviewsData,
+    );
+    navigation.goBack();
   };
-  const uploadMediaForTeamB = () => {
-    setLoading(false); // CHANGED
-    console.log('Player B:',reviewsData);
-
-    if (reviewsData?.attachments?.length > 0) {
-      onPressReview(currentForm, !!gameData?.away_review_id, reviewsData);
-      navigation.goBack();
-    } else if (reviewsData?.team_id) {
-      patchOrAddReviewTeam();
-    } else {
-      patchOrAddReview();
-    }
-  };
+  
   const setTeamReview = (teamNo = 0, key = '', value = '') => {
     console.log(`key::${key}value::${value}`);
     if (reviewsData[key] !== value) {

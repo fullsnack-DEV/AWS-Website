@@ -113,10 +113,9 @@ const tennisGamePlayStats = {
 const getGameDateTimeInHMSformat = (date = new Date()) => moment(new Date(date * 1000)).format('hh:mm A')
 
 const checkReviewExpired = (date) => {
-  const expiryDate = moment(date * 1000).add(REVIEW_EXPIRY_DAYS, 'days');
-  // const diff = getDiffDays(expiryDate);
-  // if (diff >= 0 && diff <= REVIEW_EXPIRY_DAYS) return false;
-  // return true;
+ // const expiryDate = moment(date * 1000).add(REVIEW_EXPIRY_DAYS, 'days');
+
+  const expiryDate = moment(date * 1000);
   if (new Date(expiryDate).getTime() > new Date().getTime()) {
     return false
   }
@@ -125,11 +124,9 @@ const checkReviewExpired = (date) => {
 }
 
 const reviewExpiredDate = (date) => {
-  const expiryDate = moment(date * 1000).add(REVIEW_EXPIRY_DAYS, 'days');
-  // const diff = getDiffDays(expiryDate);
-  // if (diff >= 0 && diff <= REVIEW_EXPIRY_DAYS) return false;
-  // return true;
-
+ // const expiryDate = moment(date * 1000).add(REVIEW_EXPIRY_DAYS, 'days');
+  
+  const  expiryDate = moment(date * 1000);
   const thenDate = moment(expiryDate);
   const currentDate = moment(new Date());
   const diff = moment.duration(thenDate.diff(currentDate));

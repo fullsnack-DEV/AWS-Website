@@ -258,7 +258,9 @@ const getTabBarVisibility = (route) => {
     routeName === 'PaymentMethodsScreen' ||
     routeName === 'WriteReviewScreen' ||
     routeName === 'SoccerHome' || 
-    routeName === 'TennisHome' 
+    routeName === 'TennisHome' ||
+    routeName === 'LeaveReviewTennis' 
+
 
 
   ) {

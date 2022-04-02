@@ -63,6 +63,7 @@ export default function RefereeReviewScreen({navigation, route}) {
 
   const [gameReview,setGameReviewData] = useState(route?.params?.gameReviewData)
 
+  console.log('route?.params?.userData::',route?.params?.userData);
   console.log('route?.params?.gameReviewDataroute?.params?.gameReviewData',route?.params?.gameReviewData);
 
 
@@ -287,13 +288,6 @@ setGameReviewData(route?.params?.gameReviewData)
   };
 
   const uploadMedia = () => {
-    setLoading(false); // CHANGED
-    console.log('reviewsDatareviewsData;;;',reviewsData);
-    console.log('rrrrr;;;',gameReview);
-    console.log('rrrrr111;;;',gameData);
-
-
-    if (reviewsData?.attachments?.length) {
       onPressReview(
         1,
         !!userData?.review_id,
@@ -301,10 +295,7 @@ setGameReviewData(route?.params?.gameReviewData)
         userData?.user_id,
       );
       navigation.goBack();
-    } else {
-      console.log('reviewsDatareviewsData',reviewsData);
-      patchOrAddRefereeReview(reviewsData);
-    }
+   
   };
 
   return (

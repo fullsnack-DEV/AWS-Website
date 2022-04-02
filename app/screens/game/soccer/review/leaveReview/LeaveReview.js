@@ -182,19 +182,13 @@ const LeaveReview = ({navigation, route}) => {
   const createReview = () => {
     console.log('Review Data::=>', JSON.stringify(reviewsData));
     console.log('currentForm', currentForm);
-    if (currentForm === 1) {
+   
       if (isValidReview(currentForm)) {
-        uploadMediaForTeamA();
+        uploadMediaForTeam();
       } else {
         Alert.alert('Please, complete all ratings before moving to the next.');
       }
-    } else if (currentForm === 2) {
-      if (isValidReview(currentForm)) {
-        uploadMediaForTeamB();
-      } else {
-        Alert.alert('Please, complete all ratings before moving to the next.');
-      }
-    }
+    
   };
 
   const patchOrAddReview = () => {
@@ -250,28 +244,17 @@ const LeaveReview = ({navigation, route}) => {
         });
     }
   };
-  const uploadMediaForTeamA = () => {
-    setLoading(false); // CHANGED
+  const uploadMediaForTeam = () => {
 
-    if (reviewsData?.attachments?.length) {
-      console.log('uploadMediaForTeamA');
-      onPressReview(currentForm, !!gameData?.home_review_id, reviewsData);
+   
+      onPressReview(currentForm, currentForm === 1
+        ? !!gameData?.home_review_id
+        : !!gameData?.away_review_id,
+         reviewsData);
       navigation.goBack();
-    } else {
-      patchOrAddReview();
-    }
+   
   };
-  const uploadMediaForTeamB = () => {
-    setLoading(false); // CHANGED
-    console.log('uploadMediaForTeamB');
-
-    if (reviewsData?.attachments?.length) {
-      onPressReview(currentForm, !!gameData?.away_review_id, reviewsData);
-      navigation.goBack();
-    } else {
-      patchOrAddReview();
-    }
-  };
+ 
   const setTeamReview = (teamNo = 0, key = '', value = '') => {
     console.log(`key::${key}value::${value}`);
     if (reviewsData[key] !== value) {
