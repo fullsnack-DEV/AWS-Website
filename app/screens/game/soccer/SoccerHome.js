@@ -33,7 +33,6 @@ import {
   getGameGallery,
   getGameMatchRecords,
   getGameRefereeReservation,
-  getGameReviews,
   getGameScorekeeperReservation,
   getGameStats,
   getAllLineUp,
@@ -424,10 +423,7 @@ const SoccerHome = ({navigation, route}) => {
     (gameId) => getGameStats(gameId, authContext),
     [authContext],
   );
-  const getSoccerGameReview = useCallback(
-    (gameId) => getGameReviews(gameId, authContext),
-    [authContext],
-  );
+
   const getSoccerGalleryData = useCallback(
     (gameId) => getGameGallery(gameId, authContext),
     [authContext],
@@ -466,7 +462,6 @@ const SoccerHome = ({navigation, route}) => {
         getRefereeReservation={getRefereeReservation}
         getScorekeeperReservation={getScorekeeperReservation}
         getSportsList={getGameSportsList}
-        getSoccerGameReview={getSoccerGameReview}
         getSoccerGameStats={getSoccerGameStats}
         getGameData={getSoccerGameData}
         approveDisapproveGameScore={approveDisapproveGameScore}
@@ -498,7 +493,6 @@ const SoccerHome = ({navigation, route}) => {
       getScorekeeperReservation,
       getSoccerGameData,
       getSoccerGameMatchRecords,
-      getSoccerGameReview,
       getSoccerGameStats,
       isAdmin,
       isRefereeAdmin,

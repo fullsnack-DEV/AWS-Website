@@ -115,11 +115,7 @@ const getGameStats = (gameId, authContext) => makeAPIRequest({
   authContext,
 })
 
-const getGameReviews = (gameId, authContext) => makeAPIRequest({
-  method: 'get',
-  url: `${Config.BASE_URL}/games/${gameId}/reviews`,
-  authContext,
-})
+
 
 const getTeamReviews = (teamId, groupBy, authContext) => makeAPIRequest({
   method: 'get',
@@ -303,7 +299,6 @@ export {
   getGameMatchRecords,
   approveDisapproveGameRecords,
   getGameStats,
-  getGameReviews,
   getGameLineUp,
   getGameGallery,
   createGameLineUp,
