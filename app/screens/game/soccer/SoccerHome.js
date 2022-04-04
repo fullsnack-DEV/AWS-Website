@@ -219,6 +219,7 @@ const SoccerHome = ({navigation, route}) => {
         setFirstTimeLoad(false);
       });
   }, []);
+  
   const getLeaveReviewTitle = useCallback(
     (gameObject) => {
       const homeID = homeTeam?.group_id ?? homeTeam?.user_id;
@@ -242,8 +243,8 @@ const SoccerHome = ({navigation, route}) => {
             );
 
             if (
-              refereeReviews.length === gameObject?.referees?.length &&
-              scorekeeperReviews.length === gameObject?.scorekeepers?.length
+              refereeReviews?.length === gameObject?.referees?.length &&
+              scorekeeperReviews?.length === gameObject?.scorekeepers?.length
             ) {
               reviewFillingStatus = 2;
             } else {

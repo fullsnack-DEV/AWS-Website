@@ -236,8 +236,8 @@ const TennisHome = ({navigation, route}) => {
           );
 
           if (
-            refereeReviews.length === gameObject?.referees?.length &&
-            scorekeeperReviews.length === gameObject?.scorekeepers?.length
+            refereeReviews?.length === gameObject?.referees?.length &&
+            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
           ) {
             reviewFillingStatus = 2;
           } else {
@@ -252,8 +252,8 @@ const TennisHome = ({navigation, route}) => {
           );
 
           if (
-            refereeReviews.length === gameObject?.referees?.length ||
-            scorekeeperReviews.length === gameObject?.scorekeepers?.length
+            refereeReviews?.length === gameObject?.referees?.length ||
+            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
           ) {
             reviewFillingStatus = 1;
           } else {
@@ -273,8 +273,8 @@ const TennisHome = ({navigation, route}) => {
           );
 
           if (
-            refereeReviews.length === gameObject?.referees?.length &&
-            scorekeeperReviews.length === gameObject?.scorekeepers?.length
+            refereeReviews?.length === gameObject?.referees?.length &&
+            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
           ) {
             reviewFillingStatus = 2;
           } else {
@@ -291,8 +291,8 @@ const TennisHome = ({navigation, route}) => {
 
           console.log('refereeReviews.length',gameObject?.referees?.length);
           if (
-            refereeReviews.length === gameObject?.referees?.length ||
-            scorekeeperReviews.length === gameObject?.scorekeepers?.length
+            refereeReviews?.length === gameObject?.referees?.length ||
+            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
           ) {
             console.log('awayELSEIIID1');
             reviewFillingStatus = 1;

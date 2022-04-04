@@ -38,6 +38,7 @@ import fonts from '../../Constants/Fonts';
 import TCInputBox from '../TCInputBox';
 import TCGroupNameBadge from '../TCGroupNameBadge';
 import {
+  getHitSlop,
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from '../../utils';
@@ -516,6 +517,7 @@ const MessageChat = ({route, navigation}) => {
             </TouchableOpacity>
             {occupantsData?.length > 2 && (
               <TouchableOpacity
+              itSlop={getHitSlop(15)}
                 onPress={() => {
                   commentModalRef.current.open();
                   // navigation.setParams({participants: [occupantsData]});

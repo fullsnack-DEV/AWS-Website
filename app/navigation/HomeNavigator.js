@@ -128,7 +128,6 @@ import EditRefereeFeeScreen from '../screens/referee/alterReferee/EditRefereeFee
 import EditRefereeReservation from '../screens/referee/alterReferee/EditRefereeReservation';
 import AlterRefereeScreen from '../screens/referee/alterReferee/AlterRefereeScreen';
 
-import MessageDrawerNavigator from './MessageDrawerNavigator';
 import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
 import CurrencySettingScreen from '../screens/account/CurrencySettingScreen';
 import TennisDeletedRecordScreen from '../screens/game/tennis/TennisDeletedRecordScreen';
@@ -193,6 +192,7 @@ import EntityStatScreen from '../screens/home/EntityStatScreen';
 import RequestBasicInfoScreen from '../screens/account/groupConnections/RequestBasicInfoScreen';
 import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/RequestMultipleBasicInfoScreen';
 import EditMemberAuthInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberAuthInfoScreen';
+import MessageNavigator from './MessageNavigator';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1872,7 +1872,7 @@ const HomeNavigator = () => (
     />
     <Stack.Screen
       name="MessageChat"
-      component={MessageDrawerNavigator}
+      component={MessageNavigator}
       options={{
         title: 'Message Chat',
         headerTintColor: colors.blackColor,

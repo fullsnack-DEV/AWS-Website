@@ -23,12 +23,13 @@ import {
  getQBProfilePic, QB_DIALOG_TYPE, QBcreateDialog,
 } from '../../utils/QuickBlox';
 import TCInputBox from '../../components/TCInputBox';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 const MessageNewGroupScreen = ({ route, navigation }) => {
   const { selectedInviteesData } = route.params
   const [selectedInvitees, setSelectedInvitees] = useState([...selectedInviteesData]);
   const [groupName, setGroupName] = useState('');
-
+const [loading,setLoading] = useState(false);
   useEffect(() => {
     if (route?.params?.dialog) {
       setGroupName(route?.params?.dialog?.name)
@@ -91,12 +92,15 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
   }, [toggleSelection]);
 
   const onDonePress = useCallback(() => {
+    setLoading(true)
     if (groupName !== '') {
       const occupantsIds = [];
 
       selectedInvitees.filter((item) => occupantsIds.push(item.id))
       if (occupantsIds.length > 0) {
         QBcreateDialog(occupantsIds, QB_DIALOG_TYPE.GROUP, groupName).then((res) => {
+          setLoading(false)
+
           console.log('rerererererer',res);
           setSelectedInvitees([]);
           console.log('Navigation stack',navigation);
@@ -104,10 +108,13 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
           
           
         }).catch((error) => {
+          setLoading(false)
+
           console.log(error);
         })
       }
     } else {
+      setLoading(false)
       Alert.alert('Enter Chatroom Name')
     }
   }, [groupName, navigation, selectedInvitees])
@@ -151,6 +158,7 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
+      <ActivityLoader visible={loading}/>
       {renderHeader}
       <View style={styles.separateLine}/>
       <View style={styles.avatarContainer}>

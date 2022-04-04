@@ -869,7 +869,7 @@ export default function ScheduleScreen({navigation, route}) {
             </Text>
           </View>
           <View style={{flexDirection: 'row'}}>
-            {!isMenu && scheduleIndexCounter !== 1 && (
+            {/* {!isMenu && scheduleIndexCounter !== 1 && (
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={{marginRight: 15}}
@@ -887,7 +887,7 @@ export default function ScheduleScreen({navigation, route}) {
                   }}
                 />
               </TouchableOpacity>
-            )}
+            )} */}
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               onPress={() => {
