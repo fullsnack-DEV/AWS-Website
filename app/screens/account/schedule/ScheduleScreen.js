@@ -239,7 +239,7 @@ export default function ScheduleScreen({navigation, route}) {
   };
 
   const getBlockedSlots = () => {
-    setloading(true);
+   
     console.log('Other team Object:', authContext?.entity?.obj);
     // blockedSlots(
     //   authContext?.entity?.obj?.entity_type === 'player' ? 'users' : 'groups',
@@ -437,6 +437,8 @@ export default function ScheduleScreen({navigation, route}) {
             };
 
             getGameIndex(gameList).then((games) => {
+              console.log('game index', games);
+
               const listObj = response.map((obj) => {
                 if (obj.game_id === obj.challenge_id) {
                   return obj.game;
@@ -456,6 +458,8 @@ export default function ScheduleScreen({navigation, route}) {
               );
             });
           }
+          console.log('eventTimeTableData::=>', eventTimeTableData);
+
           configureEvents(eventTimeTableData);
           setloading(false);
         })
@@ -865,7 +869,7 @@ export default function ScheduleScreen({navigation, route}) {
             </Text>
           </View>
           <View style={{flexDirection: 'row'}}>
-            {!isMenu && scheduleIndexCounter !== 1 && (
+            {/* {!isMenu && scheduleIndexCounter !== 1 && (
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={{marginRight: 15}}
@@ -883,7 +887,7 @@ export default function ScheduleScreen({navigation, route}) {
                   }}
                 />
               </TouchableOpacity>
-            )}
+            )} */}
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               onPress={() => {

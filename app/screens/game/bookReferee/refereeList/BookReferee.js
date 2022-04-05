@@ -201,7 +201,8 @@ export default function BookReferee({navigation, route}) {
         console.log('setting of group or player:::=>', response);
         if (
           response?.responsible_for_referee?.who_secure?.length >
-          gameData?.challenge_referee?.who_secure?.length
+          (gameData?.referees?.length ?? 0 )
+
         ) {
           setLoading(true);
           Utils.getSetting(

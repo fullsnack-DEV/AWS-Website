@@ -190,7 +190,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
   };
 
   const patchOrAddScorekeeperReview = (data) => {
-    if (reviewsData !== {}) {
+    if (userData?.review_id) {
       setLoading(true);
       console.log('Edited Review Object reviewData::=>', data);
       const teamReview = { ...data };
@@ -252,7 +252,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
 
   const uploadMedia = () => {
     setLoading(false); // CHANGED
-    if (reviewsData?.attachments?.length) {
+    
       onPressReview(
         1,
         !!userData?.review_id,
@@ -260,9 +260,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
         userData?.user_id,
       );
       navigation.goBack();
-    } else {
-      patchOrAddScorekeeperReview(reviewsData);
-    }
+    
     // if (reviewsData?.attachments?.length) {
     //   const UrlArray = [];
     //   const pathArray = [];

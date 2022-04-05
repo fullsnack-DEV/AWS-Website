@@ -37,7 +37,6 @@ import {
   REVIEW_EXPIRY_DAYS,
 } from '../../../../../utils/gameUtils';
 import fonts from '../../../../../Constants/Fonts';
-import TCInnerLoader from '../../../../TCInnerLoader';
 import AuthContext from '../../../../../auth/context';
 import TennisScoreView from '../../TennisScoreView';
 import GameFeed from '../../../common/summary/GameFeed';
@@ -57,6 +56,7 @@ import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
 import {ImageUploadContext} from '../../../../../context/ImageUploadContext';
 import ApproveDisapprove from '../../../soccer/home/summary/approveDisapprove/ApproveDisapprove';
+import ActivityLoader from '../../../../loader/ActivityLoader';
 
 // import GameStatus from '../../../../../Constants/GameStatus';
 
@@ -573,16 +573,11 @@ const Summary = ({
       setLoading(true);
       getGameReview(gameData?.game_id, reviewID, authContext)
         .then((response) => {
-          console.log('starAttributesForPlayer', starAttributesForPlayer);
-          console.log('isRefereeAvailable', gameData?.referees?.length > 0);
           setLoading(false);
           navigation.navigate('LeaveReviewTennis', {
             gameData,
             gameReviewData: response.payload,
-            selectedTeam:
-              selectedTeamForReview ?? getHomeID() === authContext?.entity?.uid
-                ? 'away'
-                : 'home',
+            selectedTeam: selectedTeamForReview,
             starAttributes: starAttributesForPlayer,
             isRefereeAvailable: gameData?.referees?.length > 0,
             onPressReviewDone,
@@ -596,7 +591,6 @@ const Summary = ({
     [
       authContext,
       gameData,
-      getHomeID,
       navigation,
       onPressReviewDone,
       selectedTeamForReview,
@@ -956,6 +950,8 @@ const Summary = ({
         navigation={navigation}
         gameData={gameData}
         isAdmin={isAdmin}
+        isScorekeeperAdmin={isScorekeeperAdmin}
+        isRefereeAdmin={isRefereeAdmin}
         userRole={userRole}
         followUser={followTennisUser}
         unFollowUser={unFollowTennisUser}
@@ -980,6 +976,8 @@ const Summary = ({
       getRefereeReservation,
       getRefereeReviewsData,
       isAdmin,
+      isRefereeAdmin,
+      isScorekeeperAdmin,
       navigation,
       sliderAttributesForReferee,
       starAttributesForReferee,
@@ -995,6 +993,8 @@ const Summary = ({
         followUser={followTennisUser}
         unFollowUser={unFollowTennisUser}
         isAdmin={isAdmin}
+        isScorekeeperAdmin={isScorekeeperAdmin}
+        isRefereeAdmin={isRefereeAdmin}
         userRole={userRole}
         navigation={navigation}
         gameData={gameData}
@@ -1265,6 +1265,7 @@ const Summary = ({
   return (
     <View style={styles.mainContainer}>
       {/* <TCInnerLoader visible={loading} /> */}
+      {/* <ActivityLoader visible={loading}/> */}
       {renderTopButtons}
       {renderApproveDisapproveSection}
       {renderScoresSection}
@@ -1308,10 +1309,7 @@ const Summary = ({
                 style={styles.doneText}
                 onPress={() => {
                   setIsPopupVisible(false);
-                  console.log(
-                    'gameData?.review_id:=>',
-                    gameData?.referees?.length > 0,
-                  );
+
                   if (playerFrom === '' && selectedTeamForReview) {
                     if (selectedTeamForReview === 'home') {
                       if (gameData?.home_review_id) {

@@ -1,9 +1,7 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
-import React, {
-  useState, useEffect, useLayoutEffect, useContext,
-} from 'react';
+import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
 import {
   Alert,
   Image,
@@ -15,10 +13,9 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import fonts from '../../../../../Constants/Fonts';
-import TCStep from '../../../../../components/TCStep';
 import TeamReview from '../../../../../components/game/soccer/home/review/leaveReview/TeamReview';
-import { STAR_COLOR } from '../../../../../utils';
-import { addGameReview, patchGameReview } from '../../../../../api/Games';
+import {STAR_COLOR} from '../../../../../utils';
+import {addGameReview, patchGameReview} from '../../../../../api/Games';
 import TCInnerLoader from '../../../../../components/TCInnerLoader';
 import images from '../../../../../Constants/ImagePath';
 import colors from '../../../../../Constants/Colors';
@@ -28,10 +25,12 @@ import strings from '../../../../../Constants/String';
 import uploadImages from '../../../../../utils/imageAction';
 import ActivityLoader from '../../../../../components/loader/ActivityLoader';
 
-const LeaveReview = ({ navigation, route }) => {
+const LeaveReview = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
-  console.log('route?.params?.selectedTeam',route?.params?.selectedTeam);
-  const [currentForm, setCurrentForm] = useState(route?.params?.selectedTeam === 'home' ? 1 : 2);
+  console.log('route?.params?.selectedTeam', route?.params?.selectedTeam);
+  const [currentForm, setCurrentForm] = useState(
+    route?.params?.selectedTeam === 'home' ? 1 : 2,
+  );
   const [loading, setLoading] = useState(false);
   const [sliderAttributes, setSliderAttributes] = useState([]);
   const [starAttributes, setStarAttributes] = useState([]);
@@ -41,49 +40,58 @@ const LeaveReview = ({ navigation, route }) => {
       ? () => route?.params?.onPressReviewDone
       : () => {},
   );
-  const [reviewsData, setReviewsData] = useState(currentForm === 1 ? {
-
-    team_id: gameData?.home_team?.group_id,
-    comment: '',
-    attachments: [],
-    tagged: [],
-
-  } : {
-
-    team_id: gameData?.away_team?.group_id,
-    comment: '',
-    attachments: [],
-    tagged: [],
-
-  });
+  const [reviewsData, setReviewsData] = useState(
+    currentForm === 1
+      ? {
+          team_id: gameData?.home_team?.group_id,
+          comment: '',
+          attachments: [],
+          tagged: [],
+        }
+      : {
+          team_id: gameData?.away_team?.group_id,
+          comment: '',
+          attachments: [],
+          tagged: [],
+        },
+  );
   useEffect(() => {
-    console.log('route?.params?.gameReviewData?.results[0]?.object', route?.params?.gameReviewData);
+    console.log(
+      'route?.params?.gameReviewData?.results[0]?.object',
+      route?.params?.gameReviewData,
+    );
     if (route?.params?.gameReviewData?.results[0]?.object) {
-      const reviewObj = JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)?.gameReview;
-      setReviewsData({ ...reviewObj });
+      const reviewObj = JSON.parse(
+        route?.params?.gameReviewData?.results?.[0]?.object,
+      )?.gameReview;
+      setReviewsData({...reviewObj});
     }
   }, [route?.params?.gameReviewData?.results]);
 
   useEffect(() => {
-    const obj = { ...reviewsData }
+    const obj = {...reviewsData};
     if (route?.params?.selectedImageList) {
-      obj.attachments = route?.params?.selectedImageList
-      setReviewsData(obj)
+      obj.attachments = route?.params?.selectedImageList;
+      setReviewsData(obj);
     }
     if (route?.params?.searchText?.length >= 0) {
-      obj.comment = route?.params?.searchText ?? ''
-      setReviewsData(obj)
+      obj.comment = route?.params?.searchText ?? '';
+      setReviewsData(obj);
     }
     if (route?.params?.entityTags) {
-
-      obj.tagged = route?.params?.entityTags
-      setReviewsData(obj)
+      obj.tagged = route?.params?.entityTags;
+      setReviewsData(obj);
     }
     if (route?.params?.format_tagged_data) {
-      obj.format_tagged_data = route?.params?.format_tagged_data
-      setReviewsData(obj)
+      obj.format_tagged_data = route?.params?.format_tagged_data;
+      setReviewsData(obj);
     }
-  }, [route?.params?.selectedImageList, route?.params?.searchText, route?.params?.entityTags, route?.params?.format_tagged_data]);
+  }, [
+    route?.params?.selectedImageList,
+    route?.params?.searchText,
+    route?.params?.entityTags,
+    route?.params?.format_tagged_data,
+  ]);
 
   useEffect(() => {
     setSliderAttributes([...route?.params?.sliderAttributes]);
@@ -100,7 +108,8 @@ const LeaveReview = ({ navigation, route }) => {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
-          onPress={() => (currentForm === 1 ? navigation.goBack() : setCurrentForm(1))
+          onPress={() =>
+            currentForm === 1 ? navigation.goBack() : setCurrentForm(1)
           }>
           <Image
             source={images.backArrow}
@@ -129,8 +138,8 @@ const LeaveReview = ({ navigation, route }) => {
       return true;
     });
     let reviews = _.cloneDeep(reviewsData);
-    reviews = { ...reviews, ...attr };
-    setReviewsData({ ...reviews });
+    reviews = {...reviews, ...attr};
+    setReviewsData({...reviews});
     setLoading(false);
   };
 
@@ -142,16 +151,26 @@ const LeaveReview = ({ navigation, route }) => {
       return true;
     });
     let reviews = _.cloneDeep(reviewsData);
-    reviews = { ...reviews, ...attr };
-    setReviewsData({ ...reviews });
+    reviews = {...reviews, ...attr};
+    setReviewsData({...reviews});
     setLoading(false);
   };
 
   const isValidReview = (teamNo) => {
-    const exceptKey = ['team_id', 'comment', 'attachments', 'tagged', 'format_tagged_data', 'created_at', 'member', 'review_id', 'reviewer_id'];
+    const exceptKey = [
+      'team_id',
+      'comment',
+      'attachments',
+      'tagged',
+      'format_tagged_data',
+      'created_at',
+      'member',
+      'review_id',
+      'reviewer_id',
+    ];
     let isValid = true;
     const reviews = _.cloneDeep(reviewsData);
-    const review = reviews
+    const review = reviews;
     Object.keys(review).map((key) => {
       if (!exceptKey.includes(key) && isValid && Number(review?.[key]) <= 0) {
         isValid = false;
@@ -163,19 +182,13 @@ const LeaveReview = ({ navigation, route }) => {
   const createReview = () => {
     console.log('Review Data::=>', JSON.stringify(reviewsData));
     console.log('currentForm', currentForm);
-    if (currentForm === 1) {
+   
       if (isValidReview(currentForm)) {
-        uploadMediaForTeamA()
+        uploadMediaForTeam();
       } else {
         Alert.alert('Please, complete all ratings before moving to the next.');
       }
-    } else if (currentForm === 2) {
-      if (isValidReview(currentForm)) {
-        uploadMediaForTeamB()
-      } else {
-        Alert.alert('Please, complete all ratings before moving to the next.');
-      }
-    }
+    
   };
 
   const patchOrAddReview = () => {
@@ -183,12 +196,12 @@ const LeaveReview = ({ navigation, route }) => {
 
     if (reviewsData !== {}) {
       setLoading(true);
-      const teamReview = reviewsData
+      const teamReview = reviewsData;
       delete teamReview.created_at;
       delete teamReview.entity_type;
-      const team1ID = teamReview.entity_id
+      const team1ID = teamReview.entity_id;
       delete teamReview.entity_id;
-      teamReview.team_id = team1ID
+      teamReview.team_id = team1ID;
       delete teamReview.game_id;
       const reviewID = teamReview.review_id;
       delete teamReview.review_id;
@@ -207,7 +220,10 @@ const LeaveReview = ({ navigation, route }) => {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          setTimeout(
+            () => Alert.alert(strings.alertmessagetitle, error?.message),
+            100,
+          );
           navigation.goBack();
         });
     } else {
@@ -220,49 +236,42 @@ const LeaveReview = ({ navigation, route }) => {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          setTimeout(
+            () => Alert.alert(strings.alertmessagetitle, error?.message),
+            100,
+          );
           navigation.goBack();
         });
     }
-  }
-  const uploadMediaForTeamA = () => {
-    setLoading(false) // CHANGED
-   
-    if (reviewsData?.attachments?.length) {
-      console.log('uploadMediaForTeamA');
-      onPressReview(currentForm, !!gameData?.home_review_id, reviewsData);
-      navigation.goBack();
-    } else {
-      patchOrAddReview()
-    }
-  }
-  const uploadMediaForTeamB = () => {
-    setLoading(false) // CHANGED
-    console.log('uploadMediaForTeamB');
+  };
+  const uploadMediaForTeam = () => {
 
-    if (reviewsData?.attachments?.length) {
-      onPressReview(currentForm, !!gameData?.away_review_id, reviewsData);
+   
+      onPressReview(currentForm, currentForm === 1
+        ? !!gameData?.home_review_id
+        : !!gameData?.away_review_id,
+         reviewsData);
       navigation.goBack();
-    } else {
-      patchOrAddReview()
-    }
-  }
+   
+  };
+ 
   const setTeamReview = (teamNo = 0, key = '', value = '') => {
     console.log(`key::${key}value::${value}`);
     if (reviewsData[key] !== value) {
       const reviews = _.cloneDeep(reviewsData);
       reviews[key] = value;
-      setReviewsData({ ...reviews });
+      setReviewsData({...reviews});
     }
   };
 
-  console.log('currentFormcurrentForm',currentForm);
+  console.log('currentFormcurrentForm', currentForm);
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <Header
         leftComponent={
           <TouchableOpacity
-            onPress={() => (currentForm === 1 ? navigation.goBack() : navigation.pop(1))
+            onPress={() =>
+              currentForm === 1 ? navigation.goBack() : navigation.pop(1)
             }>
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
@@ -290,9 +299,12 @@ const LeaveReview = ({ navigation, route }) => {
               starColor={STAR_COLOR.YELLOW}
               teamData={gameData?.home_team}
               setTeamReview={setTeamReview}
-              navigation = {navigation}
+              navigation={navigation}
               route={route}
-              tags={route?.params?.format_tagged_data || reviewsData?.format_tagged_data}
+              tags={
+                route?.params?.format_tagged_data ||
+                reviewsData?.format_tagged_data
+              }
             />
           ) : (
             <TeamReview
@@ -303,9 +315,12 @@ const LeaveReview = ({ navigation, route }) => {
               reviewAttributes={sliderAttributes}
               starAttributes={starAttributes}
               setTeamReview={setTeamReview}
-              navigation = {navigation}
+              navigation={navigation}
               route={route}
-              tags={route?.params?.format_tagged_data || reviewsData?.format_tagged_data}
+              tags={
+                route?.params?.format_tagged_data ||
+                reviewsData?.format_tagged_data
+              }
             />
           )}
         </ScrollView>

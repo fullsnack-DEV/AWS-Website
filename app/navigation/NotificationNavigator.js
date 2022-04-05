@@ -35,7 +35,6 @@ import EditChallenge from '../screens/challenge/alterChallenge/EditChallenge';
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
 
 import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
-import MessageDrawerNavigator from './MessageDrawerNavigator';
 
 import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequestAccept';
 import BookReferee from '../screens/game/bookReferee/refereeList/BookReferee';
@@ -68,6 +67,7 @@ import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChall
 import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInviteScreen';
+import MessageNavigator from './MessageNavigator';
 
 const Stack = createStackNavigator();
 
@@ -455,7 +455,7 @@ function NotificationNavigator() {
 
       <Stack.Screen
             name="MessageChat"
-            component={MessageDrawerNavigator}
+            component={MessageNavigator}
             options={{
 
               title: 'Message Chat',
