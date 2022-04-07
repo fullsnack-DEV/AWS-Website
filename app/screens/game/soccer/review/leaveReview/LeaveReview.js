@@ -60,13 +60,14 @@ const LeaveReview = ({navigation, route}) => {
       'route?.params?.gameReviewData?.results[0]?.object',
       route?.params?.gameReviewData,
     );
-    if (route?.params?.gameReviewData?.results?.[0]?.object) {
-      const reviewObj = JSON.parse(
-        route?.params?.gameReviewData?.results?.[0]?.object,
-      )?.gameReview;
+    if (route?.params?.gameReviewData) {
+      // const reviewObj = JSON.parse(
+      //   route?.params?.gameReviewData?.results?.[0]?.object,
+      // )?.gameReview;
+      const reviewObj = route?.params?.gameReviewData;
       setReviewsData({...reviewObj});
     }
-  }, [route?.params?.gameReviewData, route?.params?.gameReviewData?.results]);
+  }, [route?.params?.gameReviewData]);
 
   useEffect(() => {
     const obj = {...reviewsData};
@@ -156,29 +157,51 @@ const LeaveReview = ({navigation, route}) => {
     setLoading(false);
   };
 
-  const isValidReview = (teamNo) => {
-    const exceptKey = [
-      'team_id',
-      'comment',
-      'attachments',
-      'tagged',
-      'format_tagged_data',
-      'created_at',
-      'member',
-      'review_id',
-      'reviewer_id',
-    ];
+  // const isValidReview = (teamNo) => {
+  //   const exceptKey = [
+  //     'team_id',
+  //     'comment',
+  //     'attachments',
+  //     'tagged',
+  //     'format_tagged_data',
+  //     'created_at',
+  //     'member',
+  //     'review_id',
+  //     'reviewer_id',
+  //   ];
+  //   let isValid = true;
+  //   const reviews = _.cloneDeep(reviewsData);
+  //   const review = reviews;
+  //   Object.keys(review).map((key) => {
+  //     if (!exceptKey.includes(key) && isValid && Number(review?.[key]) <= 0) {
+  //       isValid = false;
+  //     }
+  //     return key;
+  //   });
+  //   return isValid;
+  // };
+
+
+  const isValidReview = () => {
+    const starKeys = [];
+    starAttributes?.map((star) => {
+      starKeys.push(star?.name);
+    });
+    const includeKey = [...starKeys,...sliderAttributes]
     let isValid = true;
     const reviews = _.cloneDeep(reviewsData);
-    const review = reviews;
-    Object.keys(review).map((key) => {
-      if (!exceptKey.includes(key) && isValid && Number(review?.[key]) <= 0) {
-        isValid = false;
+    Object.keys(reviews).map((key) => {
+      if (includeKey.includes(key) && isValid) {
+        if(Number(reviews?.[key]) <= 0){
+          isValid = false;
+        }
+        
       }
       return key;
     });
     return isValid;
   };
+
   const createReview = () => {
     console.log('Review Data::=>', JSON.stringify(reviewsData));
     console.log('currentForm', currentForm);

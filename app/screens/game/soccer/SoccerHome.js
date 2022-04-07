@@ -29,14 +29,14 @@ import {
   approveDisapproveGameRecords,
   createGamePost,
   getGameData,
-  getGameFeed,
+  getGameTimeline,
   getGameGallery,
   getGameMatchRecords,
   getGameRefereeReservation,
   getGameScorekeeperReservation,
   getGameStats,
   getAllLineUp,
-  getGameNextFeed,
+  getGameNextTimeline,
   resetGame,
   getGameReview,
   addRefereeReview,
@@ -219,121 +219,129 @@ const SoccerHome = ({navigation, route}) => {
         setFirstTimeLoad(false);
       });
   }, []);
-  
- 
-  const getLeaveReviewTitle = useCallback((gameObject) => {
-    const homeID = homeTeam?.group_id ?? homeTeam?.user_id;
-    const awayID = awayTeam?.group_id ?? awayTeam?.user_id;
 
-    console.log('gameObject::=>', gameObject);
-    let reviewFillingStatus = 0;
+  const getLeaveReviewTitle = useCallback(
+    (gameObject) => {
+      const homeID = homeTeam?.group_id ?? homeTeam?.user_id;
+      const awayID = awayTeam?.group_id ?? awayTeam?.user_id;
 
-    if (
-      homeID === authContext.entity.uid ||
-      awayID === authContext.entity.uid
-    ) {
-      if (homeID === authContext.entity.uid) {
-        console.log('homeIIID');
-        if (gameObject?.away_review_id) {
-          const refereeReviews = gameObject?.referees?.filter(
-            (obj) => obj?.review_id,
-          );
-          const scorekeeperReviews = gameObject?.scorekeepers?.filter(
-            (obj) => obj?.review_id,
-          );
+      console.log('gameObject::=>', gameObject);
+      let reviewFillingStatus = 0;
 
-          if (
-            refereeReviews?.length === gameObject?.referees?.length &&
-            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
-          ) {
-            reviewFillingStatus = 2;
+      if (
+        homeID === authContext.entity.uid ||
+        awayID === authContext.entity.uid
+      ) {
+        if (homeID === authContext.entity.uid) {
+          console.log('homeIIID');
+          if (gameObject?.away_review_id) {
+            const refereeReviews = gameObject?.referees?.filter(
+              (obj) => obj?.review_id,
+            );
+            const scorekeeperReviews = gameObject?.scorekeepers?.filter(
+              (obj) => obj?.review_id,
+            );
+
+            if (
+              refereeReviews?.length === gameObject?.referees?.length &&
+              scorekeeperReviews?.length === gameObject?.scorekeepers?.length
+            ) {
+              reviewFillingStatus = 2;
+            } else {
+              reviewFillingStatus = 1;
+            }
           } else {
-            reviewFillingStatus = 1;
-          }
-        } else {
-          const refereeReviews = gameObject?.referees?.filter(
-            (obj) => obj?.review_id,
-          );
-          const scorekeeperReviews = gameObject?.scorekeepers?.filter(
-            (obj) => obj?.review_id,
-          );
+            const refereeReviews = gameObject?.referees?.filter(
+              (obj) => obj?.review_id,
+            );
+            const scorekeeperReviews = gameObject?.scorekeepers?.filter(
+              (obj) => obj?.review_id,
+            );
 
-          if (
-            refereeReviews?.length === gameObject?.referees?.length ||
-            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
-          ) {
-            reviewFillingStatus = 0;
-          } else {
-            reviewFillingStatus = 1;
-          }
-        }
-      }
-      if (awayID === authContext.entity.uid) {
-        console.log('awayIIID');
-
-        if (gameObject?.home_review_id) {
-          const refereeReviews = gameObject?.referees?.filter(
-            (obj) => obj?.review_id,
-          );
-          const scorekeeperReviews = gameObject?.scorekeepers?.filter(
-            (obj) => obj?.review_id,
-          );
-
-          if (
-            refereeReviews?.length === gameObject?.referees?.length &&
-            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
-          ) {
-            reviewFillingStatus = 2;
-          } else {
-            reviewFillingStatus = 1;
-          }
-        } else {
-          console.log('awayELSEIIID');
-          const refereeReviews = gameObject?.referees?.filter(
-            (obj) => obj?.review_id,
-          );
-          const scorekeeperReviews = gameObject?.scorekeepers?.filter(
-            (obj) => obj?.review_id,
-          );
-
-          console.log('refereeReviews.length11',refereeReviews?.length);
-          if (
-            refereeReviews?.length === gameObject?.referees?.length ||
-            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
-          ) {
-            console.log('awayELSEIIID1');
-            reviewFillingStatus = 1;
-          } else {
-            console.log('awayELSEIIID0');
-            reviewFillingStatus = 0;
+            if (
+              refereeReviews?.length === gameObject?.referees?.length ||
+              scorekeeperReviews?.length === gameObject?.scorekeepers?.length
+            ) {
+              reviewFillingStatus = 1;
+            } else {
+              reviewFillingStatus = 0;
+            }
           }
         }
-      }
-    } else if(isRefereeAdmin || isScorekeeperAdmin){
+        if (awayID === authContext.entity.uid) {
+          console.log('awayIIID');
+
+          if (gameObject?.home_review_id) {
+            const refereeReviews = gameObject?.referees?.filter(
+              (obj) => obj?.review_id,
+            );
+            const scorekeeperReviews = gameObject?.scorekeepers?.filter(
+              (obj) => obj?.review_id,
+            );
+
+            if (
+              refereeReviews?.length === gameObject?.referees?.length &&
+              scorekeeperReviews?.length === gameObject?.scorekeepers?.length
+            ) {
+              reviewFillingStatus = 2;
+            } else {
+              reviewFillingStatus = 1;
+            }
+          } else {
+            console.log('awayELSEIIID');
+            const refereeReviews = gameObject?.referees?.filter(
+              (obj) => obj?.review_id,
+            );
+            const scorekeeperReviews = gameObject?.scorekeepers?.filter(
+              (obj) => obj?.review_id,
+            );
+
+            console.log('refereeReviews.length11', refereeReviews?.length);
+            if (
+              refereeReviews?.length === gameObject?.referees?.length ||
+              scorekeeperReviews?.length === gameObject?.scorekeepers?.length
+            ) {
+              console.log('awayELSEIIID1');
+              reviewFillingStatus = 1;
+            } else {
+              console.log('awayELSEIIID0');
+              reviewFillingStatus = 0;
+            }
+          }
+        }
+      } else if (isRefereeAdmin || isScorekeeperAdmin) {
         if (gameObject?.home_review_id && gameObject?.away_review_id) {
           reviewFillingStatus = 2;
-        } else if(!gameObject?.home_review_id && !gameObject?.away_review_id){
-            reviewFillingStatus = 0;
-          }else{
-            if (!gameObject?.home_review_id) {
-              reviewFillingStatus = 1;
-            }
-            if (!gameObject?.away_review_id) {
-              reviewFillingStatus = 1;
-            }
+        } else if (!gameObject?.home_review_id && !gameObject?.away_review_id) {
+          reviewFillingStatus = 0;
+        } else {
+          if (!gameObject?.home_review_id) {
+            reviewFillingStatus = 1;
           }
+          if (!gameObject?.away_review_id) {
+            reviewFillingStatus = 1;
+          }
+        }
       }
 
-       
-    if (reviewFillingStatus === 0) {
-      return 'LEAVE REVIEW';
-    } if (reviewFillingStatus === 1) {
-      return 'LEAVE OR EDIT A REVIEW';
-    } 
-     return 'EDIT REVIEW';
-    
-  },[authContext.entity.uid, awayTeam?.group_id, awayTeam?.user_id, homeTeam?.group_id, homeTeam?.user_id, isRefereeAdmin, isScorekeeperAdmin]);
-
+      if (reviewFillingStatus === 0) {
+        return 'LEAVE REVIEW';
+      }
+      if (reviewFillingStatus === 1) {
+        return 'LEAVE OR EDIT A REVIEW';
+      }
+      return 'EDIT REVIEW';
+    },
+    [
+      authContext.entity.uid,
+      awayTeam?.group_id,
+      awayTeam?.user_id,
+      homeTeam?.group_id,
+      homeTeam?.user_id,
+      isRefereeAdmin,
+      isScorekeeperAdmin,
+    ],
+  );
 
   console.log('soccerGameId:=>', soccerGameId);
 
@@ -433,12 +441,12 @@ const SoccerHome = ({navigation, route}) => {
     [authContext],
   );
   const getGameFeedData = useCallback(
-    () => getGameFeed(gameData?.game_id, authContext),
-    [authContext, gameData?.game_id],
+    () => getGameTimeline(soccerGameId, authContext),
+    [authContext, soccerGameId],
   );
   const getGameNextFeedData = useCallback(
-    (last_id) => getGameNextFeed(gameData?.game_id, last_id, authContext),
-    [authContext, gameData?.game_id],
+    (last_id) => getGameNextTimeline(soccerGameId, last_id, authContext),
+    [authContext, soccerGameId],
   );
   const createGamePostData = useCallback(
     (params) => createGamePost(params, authContext),
@@ -563,7 +571,7 @@ const SoccerHome = ({navigation, route}) => {
           } else if (gameData?.status === GameStatus.ended) {
             Alert.alert(strings.gameEnded);
           } else {
-            resetGameDetail(gameData?.game_id);
+            resetGameDetail(soccerGameId);
           }
         }}>
         <TCScrollableProfileTabs
@@ -582,6 +590,7 @@ const SoccerHome = ({navigation, route}) => {
       onEndReached,
       renderTabContain,
       route?.params?.onBackPress,
+      soccerGameId,
     ],
   );
 
@@ -601,50 +610,6 @@ const SoccerHome = ({navigation, route}) => {
         });
     },
     [authContext],
-  );
-
-  const onPressScorekeeperReviewDone = useCallback(
-    (currentForm, isAlreadyReviewed, reviewsData, scorekeeper_id) => {
-      const reviewData = {...reviewsData};
-      const alreadyUrlDone = [];
-      const createUrlData = [];
-
-      if (reviewsData.attachments.length > 0) {
-        reviewsData.attachments.map((dataItem) => {
-          if (dataItem.thumbnail) {
-            alreadyUrlDone.push(dataItem);
-          } else {
-            createUrlData.push(dataItem);
-          }
-          return null;
-        });
-      }
-
-      reviewData.attachments = [...alreadyUrlDone];
-      if (createUrlData?.length > 0) {
-        const imageArray = createUrlData.map((dataItem) => dataItem);
-        imageUploadContext.uploadData(
-          authContext,
-          reviewData,
-          imageArray,
-          (dataParams) =>
-            patchOrAddScorekeeperReview({
-              currentForm,
-              isAlreadyReviewed,
-              reviewsData: dataParams,
-              scorekeeper_id,
-            }),
-        );
-      } else {
-        patchOrAddScorekeeperReview({
-          currentForm,
-          isAlreadyReviewed,
-          reviewsData,
-          scorekeeper_id,
-        });
-      }
-    },
-    [imageUploadContext, authContext],
   );
 
   const patchOrAddScorekeeperReview = useCallback(
@@ -675,12 +640,14 @@ const SoccerHome = ({navigation, route}) => {
           authContext,
         )
           .then(() => {
-            getGameDetails().then(() => {
-              modalizeRef.current.open(isShowReviewRow ? 'top' : 'default');
-            })
-            .catch(() => {
-              setFirstTimeLoad(false);
-            });
+            getGameDetails()
+              .then(() => {
+                setLoading(false);
+                modalizeRef.current.open(isShowReviewRow ? 'top' : 'default');
+              })
+              .catch(() => {
+                setFirstTimeLoad(false);
+              });
           })
           .catch((error) => {
             setLoading(false);
@@ -692,22 +659,23 @@ const SoccerHome = ({navigation, route}) => {
           });
       } else {
         setLoading(true);
+        console.log('soccer game id', soccerGameId);
         addScorekeeperReview(
           scorekeeper_id,
-          gameData?.game_id,
+          soccerGameId,
           reviewsData,
           authContext,
         )
           .then(() => {
-           
-            getGameDetails().then(() => {
-              setLoading(false);
-              modalizeRef.current.open(isShowReviewRow ? 'top' : 'default');
-            })
-            .catch(() => {
-              setFirstTimeLoad(false);
-              setLoading(false);
-            });
+            getGameDetails()
+              .then(() => {
+                setLoading(false);
+                modalizeRef.current.open(isShowReviewRow ? 'top' : 'default');
+              })
+              .catch(() => {
+                setFirstTimeLoad(false);
+                setLoading(false);
+              });
           })
           .catch((error) => {
             setLoading(false);
@@ -719,7 +687,7 @@ const SoccerHome = ({navigation, route}) => {
           });
       }
     },
-    [authContext, gameData?.game_id, getGameDetails, navigation, soccerGameId],
+    [authContext, getGameDetails, isShowReviewRow, navigation, soccerGameId],
   );
 
   const patchOrAddRefereeReview = useCallback(
@@ -750,14 +718,15 @@ const SoccerHome = ({navigation, route}) => {
           authContext,
         )
           .then(() => {
-            getGameDetails().then(() => {
-              setLoading(false);
-              modalizeRef.current.open(isShowReviewRow ? 'top' : 'default');
-            })
-            .catch(() => {
-              setFirstTimeLoad(false);
-              setLoading(false);
-            });
+            getGameDetails()
+              .then(() => {
+                setLoading(false);
+                modalizeRef.current.open(isShowReviewRow ? 'top' : 'default');
+              })
+              .catch(() => {
+                setFirstTimeLoad(false);
+                setLoading(false);
+              });
           })
           .catch((error) => {
             setLoading(false);
@@ -769,21 +738,17 @@ const SoccerHome = ({navigation, route}) => {
           });
       } else {
         setLoading(true);
-        addRefereeReview(
-          referee_id,
-          gameData?.game_id,
-          reviewsData,
-          authContext,
-        )
+        addRefereeReview(referee_id, soccerGameId, reviewsData, authContext)
           .then(() => {
-            getGameDetails().then(() => {
-              setLoading(false);
-              modalizeRef.current.open(isShowReviewRow ? 'top' : 'default');
-            })
-            .catch(() => {
-              setFirstTimeLoad(false);
-              setLoading(false);
-            });
+            getGameDetails()
+              .then(() => {
+                setLoading(false);
+                modalizeRef.current.open(isShowReviewRow ? 'top' : 'default');
+              })
+              .catch(() => {
+                setFirstTimeLoad(false);
+                setLoading(false);
+              });
           })
           .catch((error) => {
             setLoading(false);
@@ -795,14 +760,7 @@ const SoccerHome = ({navigation, route}) => {
           });
       }
     },
-    [
-      authContext,
-      gameData?.game_id,
-      getGameDetails,
-      isShowReviewRow,
-      navigation,
-      soccerGameId,
-    ],
+    [authContext, getGameDetails, isShowReviewRow, navigation, soccerGameId],
   );
 
   const onPressRefereeReviewDone = useCallback(
@@ -849,10 +807,54 @@ const SoccerHome = ({navigation, route}) => {
     [imageUploadContext, authContext, patchOrAddRefereeReview],
   );
 
+  const onPressScorekeeperReviewDone = useCallback(
+    (currentForm, isAlreadyReviewed, reviewsData, scorekeeper_id) => {
+      const reviewData = {...reviewsData};
+      const alreadyUrlDone = [];
+      const createUrlData = [];
+
+      if (reviewsData.attachments.length > 0) {
+        reviewsData.attachments.map((dataItem) => {
+          if (dataItem.thumbnail) {
+            alreadyUrlDone.push(dataItem);
+          } else {
+            createUrlData.push(dataItem);
+          }
+          return null;
+        });
+      }
+
+      reviewData.attachments = [...alreadyUrlDone];
+      if (createUrlData?.length > 0) {
+        const imageArray = createUrlData.map((dataItem) => dataItem);
+        imageUploadContext.uploadData(
+          authContext,
+          reviewData,
+          imageArray,
+          (dataParams) =>
+            patchOrAddScorekeeperReview({
+              currentForm,
+              isAlreadyReviewed,
+              reviewsData: dataParams,
+              scorekeeper_id,
+            }),
+        );
+      } else {
+        patchOrAddScorekeeperReview({
+          currentForm,
+          isAlreadyReviewed,
+          reviewsData,
+          scorekeeper_id,
+        });
+      }
+    },
+    [imageUploadContext, authContext, patchOrAddScorekeeperReview],
+  );
+
   const getRefereeReviewsData = useCallback(
     (item) => {
       setLoading(true);
-      getGameReview(gameData?.game_id, item?.review_id, authContext)
+      getGameReview(soccerGameId, item?.review_id, authContext)
         .then((response) => {
           console.log('Get review of referee::=>', response.payload);
           modalizeRef.current.close();
@@ -877,6 +879,7 @@ const SoccerHome = ({navigation, route}) => {
       navigation,
       onPressRefereeReviewDone,
       sliderAttributesForReferee,
+      soccerGameId,
       starAttributesForReferee,
     ],
   );
@@ -884,7 +887,7 @@ const SoccerHome = ({navigation, route}) => {
   const getScorekeeperReviewsData = useCallback(
     (item) => {
       setLoading(true);
-      getGameReview(gameData?.game_id, item?.review_id, authContext)
+      getGameReview(soccerGameId, item?.review_id, authContext)
         .then((response) => {
           console.log('Get review of scorekeeper::=>', response.payload);
           modalizeRef.current.close();
@@ -909,16 +912,17 @@ const SoccerHome = ({navigation, route}) => {
       navigation,
       onPressScorekeeperReviewDone,
       sliderAttributesForScorekeeper,
+      soccerGameId,
       starAttributesForScorekeeper,
     ],
   );
 
   useEffect(() => {
     if (isFocused) {
-      getRefereeReservation(gameData?.game_id).then((res) => {
+      getRefereeReservation(soccerGameId).then((res) => {
         const refData = res?.payload?.filter(
           (item) =>
-            ![RefereeReservationStatus.cancelled].includes(item?.status),
+            ![RefereeReservationStatus.cancelled,RefereeReservationStatus.approved].includes(item?.status),
         );
         const cloneRefData = [];
         refData.map((item) => {
@@ -940,14 +944,20 @@ const SoccerHome = ({navigation, route}) => {
         setReferee([...cloneRefData]);
       });
     }
-  }, [authContext?.entity?.uid, gameData, getRefereeReservation, isFocused]);
+  }, [
+    authContext?.entity?.uid,
+    gameData,
+    getRefereeReservation,
+    isFocused,
+    soccerGameId,
+  ]);
 
   useEffect(() => {
-    getScorekeeperReservation(gameData?.game_id).then((res) => {
+    getScorekeeperReservation(soccerGameId).then((res) => {
       console.log('Scorekeeper reservation::=>', res);
       const refData = res?.payload?.filter(
         (item) =>
-          ![ScorekeeperReservationStatus.cancelled].includes(item?.status),
+          ![ScorekeeperReservationStatus.cancelled,ScorekeeperReservationStatus.approved].includes(item?.status),
       );
       const cloneRefData = [];
       refData.map((item) => {
@@ -967,7 +977,12 @@ const SoccerHome = ({navigation, route}) => {
       });
       setScorekeeper([...cloneRefData]);
     });
-  }, [authContext?.entity?.uid, gameData, getScorekeeperReservation]);
+  }, [
+    authContext?.entity?.uid,
+    gameData,
+    getScorekeeperReservation,
+    soccerGameId,
+  ]);
 
   const isCheckReviewButton = useCallback(
     (reservationDetail) => {
@@ -998,7 +1013,7 @@ const SoccerHome = ({navigation, route}) => {
   const getGameReviewsData = useCallback(
     (reviewID, isHome) => {
       setLoading(true);
-      getGameReview(gameData?.game_id, reviewID, authContext)
+      getGameReview(soccerGameId, reviewID, authContext)
         .then((response) => {
           console.log(
             'Edit Review By Review ID Response::=>',
@@ -1046,10 +1061,11 @@ const SoccerHome = ({navigation, route}) => {
         };
 
         console.log('Edited Review Object::=>', reviewObj);
-        patchGameReview(gameData?.game_id, reviewID, reviewObj, authContext)
+        patchGameReview(soccerGameId, reviewID, reviewObj, authContext)
           .then(() => {
             setLoading(false);
             getGameDetails().then(() => {
+              setLoading(false);
               modalizeRef.current.open(isShowReviewRow ? 'top' : 'default');
             });
             // navigation.goBack();
@@ -1065,10 +1081,11 @@ const SoccerHome = ({navigation, route}) => {
       } else {
         console.log('New Review Object::=>', reviewsData);
         setLoading(true);
-        addGameReview(gameData?.game_id, reviewsData, authContext)
+        addGameReview(soccerGameId, reviewsData, authContext)
           .then(() => {
             setLoading(false);
             getGameDetails().then(() => {
+              setLoading(false);
               modalizeRef.current.open(isShowReviewRow ? 'top' : 'default');
             });
             // navigation.goBack();
@@ -1083,7 +1100,7 @@ const SoccerHome = ({navigation, route}) => {
           });
       }
     },
-    [authContext, gameData?.game_id, getGameDetails, isShowReviewRow],
+    [authContext, soccerGameId, getGameDetails, isShowReviewRow],
   );
 
   const onPressReviewDone = useCallback(
@@ -1209,7 +1226,7 @@ const SoccerHome = ({navigation, route}) => {
           onReviewPress={() => {
             console.log('Referee Pressed:=>', referee);
             if (item?.referee?.review_id) {
-              getRefereeReviewsData(referee);
+              getRefereeReviewsData(item?.referee);
             } else {
               modalizeRef.current.close();
               navigation.navigate('RefereeReviewScreen', {
@@ -1252,7 +1269,7 @@ const SoccerHome = ({navigation, route}) => {
           onReviewPress={() => {
             console.log('scorekeeper Pressed:=>', scorekeeper);
             if (item?.scorekeeper?.review_id) {
-              getScorekeeperReviewsData(scorekeeper);
+              getScorekeeperReviewsData(item?.scorekeeper);
             } else {
               modalizeRef.current.close();
               navigation.navigate('ScorekeeperReviewScreen', {
@@ -1308,9 +1325,7 @@ const SoccerHome = ({navigation, route}) => {
         renderTopHeaderWithTabContain
       )}
       <SafeAreaView>
-        <View>
-          {renderImageProgress}
-        </View>
+        <View>{renderImageProgress}</View>
       </SafeAreaView>
       <Modalize
         ref={modalizeRef}
@@ -1388,7 +1403,7 @@ const SoccerHome = ({navigation, route}) => {
                 </View>
               )}
 
-              {!isRefereeAdmin && !isScorekeeperAdmin && (
+              {!isRefereeAdmin && !isScorekeeperAdmin && referee.length > 0 && (
                 <View>
                   <Text style={styles.refereeTitle}>Referees</Text>
                   <FlatList
@@ -1399,7 +1414,7 @@ const SoccerHome = ({navigation, route}) => {
                 </View>
               )}
 
-              {!isScorekeeperAdmin && !isRefereeAdmin && (
+              {!isScorekeeperAdmin && !isRefereeAdmin && scorekeeper.length > 0 && (
                 <View>
                   <Text style={styles.scorekeeperTitle}>Scorekeepers</Text>
 

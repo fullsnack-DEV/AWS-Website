@@ -30,10 +30,10 @@ import {
   approveDisapproveGameRecords,
   createGamePost,
   getGameData,
-  getGameFeed,
+  getGameTimeline,
   getGameGallery,
   getGameMatchRecords,
-  getGameNextFeed,
+  getGameNextTimeline,
   getGameRefereeReservation,
   getGameReview,
   getGameScorekeeperReservation,
@@ -289,15 +289,12 @@ const TennisHome = ({navigation, route}) => {
             (obj) => obj?.review_id,
           );
 
-          console.log('refereeReviews.length',gameObject?.referees?.length);
           if (
             refereeReviews?.length === gameObject?.referees?.length ||
             scorekeeperReviews?.length === gameObject?.scorekeepers?.length
           ) {
-            console.log('awayELSEIIID1');
             reviewFillingStatus = 1;
           } else {
-            console.log('awayELSEIIID0');
             reviewFillingStatus = 0;
           }
         }
@@ -417,11 +414,11 @@ const TennisHome = ({navigation, route}) => {
     [authContext],
   );
   const getGameFeedData = useCallback(
-    () => getGameFeed(gameData?.game_id, authContext),
+    () => getGameTimeline(gameData?.game_id, authContext),
     [authContext, gameData?.game_id],
   );
   const getGameNextFeedData = useCallback(
-    (last_id) => getGameNextFeed(gameData?.game_id, last_id, authContext),
+    (last_id) => getGameNextTimeline(gameData?.game_id, last_id, authContext),
     [authContext, gameData?.game_id],
   );
   const createGamePostData = useCallback(
@@ -569,7 +566,7 @@ const TennisHome = ({navigation, route}) => {
       getRefereeReservation(tennisGameId).then((res) => {
         const refData = res?.payload?.filter(
           (item) =>
-            ![RefereeReservationStatus.cancelled].includes(item?.status),
+            ![RefereeReservationStatus.cancelled, RefereeReservationStatus.approved].includes(item?.status),
         );
         const cloneRefData = [];
         refData.map((item) => {
@@ -598,7 +595,7 @@ const TennisHome = ({navigation, route}) => {
       console.log('Scorekeeper reservation::=>', res);
       const refData = res?.payload?.filter(
         (item) =>
-          ![ScorekeeperReservationStatus.cancelled].includes(item?.status),
+          ![ScorekeeperReservationStatus.cancelled,ScorekeeperReservationStatus.approved].includes(item?.status),
       );
       const cloneRefData = [];
       refData.map((item) => {
@@ -1436,7 +1433,7 @@ const TennisHome = ({navigation, route}) => {
                 </View>
               )}
 
-              {!isRefereeAdmin && !isScorekeeperAdmin && (
+              {!isRefereeAdmin && !isScorekeeperAdmin  && referee.length > 0 && (
                 <View>
                   <Text style={styles.refereeTitle}>Referees</Text>
                   <FlatList
@@ -1447,7 +1444,7 @@ const TennisHome = ({navigation, route}) => {
                 </View>
               )}
 
-              {!isScorekeeperAdmin && !isRefereeAdmin && (
+              {!isScorekeeperAdmin && !isRefereeAdmin  && scorekeeper.length > 0 && (
                 <View>
                   <Text style={styles.scorekeeperTitle}>Scorekeepers</Text>
 

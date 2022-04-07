@@ -62,12 +62,23 @@ const getGameFeed = async (game_id, authContext) => makeAPIRequest({
   authContext,
 });
 
+const getGameTimeline = async (game_id, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/timeline/${game_id}`,
+  authContext,
+});
+
+
 const getGameNextFeed = async (game_id, last_id, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/newsfeeds?entity_type=game&entity_id=${game_id}&id_lt=${last_id}`,
   authContext,
 });
-
+const getGameNextTimeline = async (game_id, last_id, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/timeline/${game_id}&id_lt=${last_id}`,
+  authContext,
+});
 const createGamePost = async (bodyParams, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}/posts`,
@@ -320,6 +331,7 @@ export {
   patchGameRecord,
   getRefereedMatch,
   getGameFeed,
+  getGameTimeline,
   createGamePost,
   addPlayerReview,
   getGameReview,
@@ -333,6 +345,7 @@ export {
   addScorekeeperReview,
   patchScorekeeperReview,
   getGameNextFeed,
+  getGameNextTimeline,
   getRecentGameDetails,
   getShortsList,
   patchPlayerReview,
