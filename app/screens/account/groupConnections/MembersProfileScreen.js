@@ -141,7 +141,7 @@ export default function MembersProfileScreen({navigation, route}) {
           setEditTeam(true);
           setEditMembership(true);
         } else if (entity.role === 'club') {
-          if (response?.payload?.group?.parent_groups.includes(entity.uid)) {
+          if (response?.payload?.group?.parent_groups?.includes(entity.uid)) {
             setEditProfile(true);
             setEditBasicInfo(true);
             setEditTeam(false);

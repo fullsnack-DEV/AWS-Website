@@ -1,11 +1,7 @@
-import React, { useState } from 'react';
-import {
-  StyleSheet, View, Text, TouchableOpacity, Image,
-} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
 import moment from 'moment';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -27,80 +23,82 @@ function ChallengeAvailabilityItem({
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
 
-  const handleStateDatePress = (date) => {
-    console.log('Start date:=>',date);
+  const handleStartDatePress = (date) => {
+    console.log('Start date:=>', date);
     const startDate = moment(date).format('YYYY-MM-DD hh:mm:ss');
-    const obj = { ...data };
+    const obj = {...data};
     obj.startDateTime = startDate;
     changeAvailablilityItem(obj);
     setEventStartdateTime(date);
-    if(new Date(date).getTime() > new Date(eventEndDateTime).getTime()){
-      const d1 = new Date (date);
-       const d2 = new Date ( d1 );
-      d2.setMinutes ( d1.getMinutes() + 5 );
+    if (new Date(date).getTime() > new Date(eventEndDateTime).getTime()) {
+      const d1 = new Date(date);
+      const d2 = new Date(d1);
+      d2.setMinutes(d1.getMinutes() + 5);
       setEventEnddateTime(d2);
     }
-    setStartDateVisible(!startDateVisible)
-  }
+    setStartDateVisible(!startDateVisible);
+  };
   const handleCancelPress = () => {
-    setStartDateVisible(false)
-    setEndDateVisible(false)
-  }
+    setStartDateVisible(false);
+    setEndDateVisible(false);
+  };
 
   const handleEndDatePress = (date) => {
-    console.log('End date:=>',date);
+    console.log('End date:=>', date);
 
     const endDate = moment(date).format('YYYY-MM-DD hh:mm:ss');
-    const obj = { ...data };
+    const obj = {...data};
     obj.endDateTime = endDate;
     changeAvailablilityItem(obj);
     setEventEnddateTime(date);
-    if(new Date(date).getTime() < new Date(eventStartDateTime).getTime()){
-      const d1 = new Date (date);
-       const d2 = new Date ( d1 );
-      d2.setMinutes ( d1.getMinutes() + 5 );
-      setEventStartdateTime(date);
+    if (new Date(date).getTime() < new Date(eventStartDateTime).getTime()) {
+      const d1 = new Date(date);
+      const d2 = new Date(d1);
+      d2.setMinutes(d1.getMinutes() + 5);
+      setEventStartdateTime(d2);
     }
-    setEndDateVisible(!endDateVisible)
-  }
+    setEndDateVisible(!endDateVisible);
+  };
 
   return (
-    <View style={{ marginTop: 10 }}>
+    <View style={{marginTop: 10}}>
       <View style={styles.containerStyle}>
         <BlockAvailableTabView
-            blocked={is_Blocked}
-            firstTabTitle={strings.block}
-            secondTabTitle={strings.setAvailable}
-            onFirstTabPress={() => {
-              const obj = { ...data };
-              obj.isBlock = true;
-              changeAvailablilityItem(obj);
-              setIsBlocked(true)
-            }}
-            onSecondTabPress={() => {
-              const obj = { ...data };
-              obj.isBlock = false;
-              changeAvailablilityItem(obj);
-              setIsBlocked(false)
-            }}
-            style={styles.blockStyle}
-            activeEventPricacy={styles.activeEventPricacy}
-            inactiveEventPricacy={styles.inactiveEventPricacy}
-            activeEventPrivacyText={styles.activeEventPrivacyText}
-            inactiveEventPrivacyText={styles.activeEventPrivacyText}
+          blocked={is_Blocked}
+          firstTabTitle={strings.block}
+          secondTabTitle={strings.setAvailable}
+          onFirstTabPress={() => {
+            const obj = {...data};
+            obj.isBlock = true;
+            changeAvailablilityItem(obj);
+            setIsBlocked(true);
+          }}
+          onSecondTabPress={() => {
+            const obj = {...data};
+            obj.isBlock = false;
+            changeAvailablilityItem(obj);
+            setIsBlocked(false);
+          }}
+          style={styles.blockStyle}
+          activeEventPricacy={styles.activeEventPricacy}
+          inactiveEventPricacy={styles.inactiveEventPricacy}
+          activeEventPrivacyText={styles.activeEventPrivacyText}
+          inactiveEventPrivacyText={styles.activeEventPrivacyText}
         />
         <View style={styles.toggleViewStyle}>
           <Text style={styles.allDayText}>{strings.allDay}</Text>
-          <TouchableOpacity style={styles.checkbox} onPress={() => {
-            const obj = { ...data };
-            obj.allDay = !toggle;
-            changeAvailablilityItem(obj);
-            setToggle(!toggle)
-          }}>
+          <TouchableOpacity
+            style={styles.checkbox}
+            onPress={() => {
+              const obj = {...data};
+              obj.allDay = !toggle;
+              changeAvailablilityItem(obj);
+              setToggle(!toggle);
+            }}>
             <Image
-                source={toggle ? images.checkWhiteLanguage : images.uncheckWhite}
-                style={styles.checkboxImg}
-                resizeMode={'contain'}
+              source={toggle ? images.checkWhiteLanguage : images.uncheckWhite}
+              style={styles.checkboxImg}
+              resizeMode={'contain'}
             />
           </TouchableOpacity>
         </View>
@@ -108,43 +106,60 @@ function ChallengeAvailabilityItem({
       <EventTimeSelectItem
         title={strings.starts}
         toggle={!toggle}
-        headerTextStyle={{ paddingLeft: 0 }}
-        date={eventStartDateTime ? moment(eventStartDateTime).format('ll') : moment(new Date()).format('ll')}
-        time={eventStartDateTime ? moment(eventStartDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')}
+        headerTextStyle={{paddingLeft: 0}}
+        date={
+          eventStartDateTime
+            ? moment(eventStartDateTime).format('ll')
+            : moment(new Date()).format('ll')
+        }
+        time={
+          eventStartDateTime
+            ? moment(eventStartDateTime).format('h:mm a')
+            : moment(new Date()).format('h:mm a')
+        }
         onDatePress={() => setStartDateVisible(!startDateVisible)}
       />
       <EventTimeSelectItem
         title={strings.ends}
         toggle={!toggle}
-        headerTextStyle={{ paddingLeft: 0 }}
-        date={eventEndDateTime ? moment(eventEndDateTime).format('ll') : moment(new Date()).format('ll')}
-        time={eventEndDateTime ? moment(eventEndDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')}
-        containerStyle={{ marginBottom: 8 }}
+        headerTextStyle={{paddingLeft: 0}}
+        date={
+          eventEndDateTime
+            ? moment(eventEndDateTime).format('ll')
+            : moment(new Date()).format('ll')
+        }
+        time={
+          eventEndDateTime
+            ? moment(eventEndDateTime).format('h:mm a')
+            : moment(new Date()).format('h:mm a')
+        }
+        containerStyle={{marginBottom: 8}}
         onDatePress={() => setEndDateVisible(!endDateVisible)}
       />
       <View>
-        <Text style={styles.deleteTextStyle} onPress={onDeletePress}>Delete</Text>
+        <Text style={styles.deleteTextStyle} onPress={onDeletePress}>
+          Delete
+        </Text>
       </View>
       <DateTimePickerView
-            title={toggle ? 'Choose a date' : 'Choose a date & time'}
-           // date={new Date(eventStartDateTime)}
-            visible={startDateVisible}
-            onDone={handleStateDatePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            minimumDate={new Date()}
-            mode={toggle ? 'date' : 'datetime'}      
+        title={toggle ? 'Choose a date' : 'Choose a date & time'}
+        // date={new Date(eventStartDateTime)}
+        visible={startDateVisible}
+        onDone={handleStartDatePress}
+        onCancel={handleCancelPress}
+        onHide={handleCancelPress}
+        minimumDate={new Date()}
+        mode={toggle ? 'date' : 'datetime'}
       />
       <DateTimePickerView
-           title={toggle ? 'Choose a date' : 'Choose a date & time'}
-            // date={new Date(eventEndDateTime)}
-            visible={endDateVisible}
-            onDone={handleEndDatePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            minimumDate={eventStartDateTime}
-            
-            mode={toggle ? 'date' : 'datetime'}
+        title={toggle ? 'Choose a date' : 'Choose a date & time'}
+        // date={new Date(eventEndDateTime)}
+        visible={endDateVisible}
+        onDone={handleEndDatePress}
+        onCancel={handleCancelPress}
+        onHide={handleCancelPress}
+        minimumDate={new Date(eventStartDateTime.getTime() + 5 * 60000)}
+        mode={toggle ? 'date' : 'datetime'}
       />
     </View>
   );
@@ -183,7 +198,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 3,
     alignItems: 'center',
-
   },
   allDayText: {
     fontSize: 16,

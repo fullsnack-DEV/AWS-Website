@@ -60,7 +60,7 @@ import {ImageUploadContext} from '../../../context/ImageUploadContext';
 import ScorekeeperReservationStatus from '../../../Constants/ScorekeeperReservationStatus';
 import RefereeReservationStatus from '../../../Constants/RefereeReservationStatus';
 
-const TAB_ITEMS = ['Summary', 'Stats', 'Review', 'Gallery'];
+const TAB_ITEMS = ['Summary', 'Stats', 'Gallery'];
 
 const TennisHome = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -500,8 +500,7 @@ const TennisHome = ({navigation, route}) => {
       <View style={{flex: 1}}>
         {tabKey === 0 && renderSummaryTab}
         {tabKey === 1 && renderStatsTab}
-        {tabKey === 2 && <></>}
-        {tabKey === 3 && renderGalleryTab}
+        {tabKey === 2 && renderGalleryTab}
       </View>
     ),
     [renderGalleryTab, renderStatsTab, renderSummaryTab],
@@ -509,7 +508,7 @@ const TennisHome = ({navigation, route}) => {
 
   const resetGameDetail = useCallback(() => {
     setLoading(true);
-    resetGame(gameData?.game_id, authContext)
+    resetGame(tennisGameId, authContext)
       .then(() => {
         getGameDetails()
           .then(() => setLoading(false))
@@ -521,7 +520,7 @@ const TennisHome = ({navigation, route}) => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext, gameData?.game_id, getGameDetails]);
+  }, [authContext, tennisGameId, getGameDetails]);
 
   const onEndReached = useCallback(() => {
     if (currentTab === 0 && gameFeedFlatListRef?.current?.onEndReached) {
@@ -567,7 +566,7 @@ const TennisHome = ({navigation, route}) => {
 
   useEffect(() => {
     if (isFocused) {
-      getRefereeReservation(gameData?.game_id).then((res) => {
+      getRefereeReservation(tennisGameId).then((res) => {
         const refData = res?.payload?.filter(
           (item) =>
             ![RefereeReservationStatus.cancelled].includes(item?.status),
@@ -595,7 +594,7 @@ const TennisHome = ({navigation, route}) => {
   }, [authContext?.entity?.uid, gameData, getRefereeReservation, isFocused]);
 
   useEffect(() => {
-    getScorekeeperReservation(gameData?.game_id).then((res) => {
+    getScorekeeperReservation(tennisGameId).then((res) => {
       console.log('Scorekeeper reservation::=>', res);
       const refData = res?.payload?.filter(
         (item) =>
@@ -863,7 +862,7 @@ const TennisHome = ({navigation, route}) => {
   const getRefereeReviewsData = useCallback(
     (item) => {
       setLoading(true);
-      getGameReview(gameData?.game_id, item?.review_id, authContext)
+      getGameReview(tennisGameId, item?.review_id, authContext)
         .then((response) => {
           console.log('Get review of referee::=>', response.payload);
           modalizeRef.current.close();
@@ -882,19 +881,13 @@ const TennisHome = ({navigation, route}) => {
           setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
         });
     },
-    [
-      authContext,
-      gameData,
-      navigation,
-      sliderAttributesForReferee,
-      starAttributesForReferee,
-    ],
+    [authContext, gameData, navigation, onPressRefereeReviewDone, sliderAttributesForReferee, starAttributesForReferee, tennisGameId],
   );
 
   const getScorekeeperReviewsData = useCallback(
     (item) => {
       setLoading(true);
-      getGameReview(gameData?.game_id, item?.review_id, authContext)
+      getGameReview(tennisGameId, item?.review_id, authContext)
         .then((response) => {
           console.log('Get review of scorekeeper::=>', response.payload);
           modalizeRef.current.close();
@@ -913,13 +906,7 @@ const TennisHome = ({navigation, route}) => {
           setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
         });
     },
-    [
-      authContext,
-      gameData,
-      navigation,
-      sliderAttributesForScorekeeper,
-      starAttributesForScorekeeper,
-    ],
+    [authContext, gameData, navigation, onPressScorekeeperReviewDone, sliderAttributesForScorekeeper, starAttributesForScorekeeper, tennisGameId],
   );
 
   const isCheckReviewButton = useCallback(

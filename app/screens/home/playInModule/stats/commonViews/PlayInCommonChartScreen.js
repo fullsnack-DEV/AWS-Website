@@ -8,6 +8,7 @@ import {
   PieChart as SVGPieChart,
 } from 'react-native-svg-charts';
 import {Defs, LinearGradient, Stop} from 'react-native-svg';
+import {isNaN} from 'lodash';
 import WinProgressView from '../../../../../components/Home/WinProgressView';
 import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
@@ -87,6 +88,7 @@ export default function PlayInCommonChartScreen({
       </Defs>
     );
   };
+ 
   return (
     <View>
       <View
@@ -117,9 +119,9 @@ export default function PlayInCommonChartScreen({
               titleText={'Wins'}
               percentageCount={gameStatsData ? gameStatsData.winner : ''}
               progress={
-                gameStatsData.winner !== 0
-                  ? (1 * gameStatsData.winner) / gameStatsData.total_games
-                  : 0
+                isNaN(gameStatsData.winner / gameStatsData.total_games)
+                  ? 0
+                  : gameStatsData.winner / gameStatsData.total_games
               }
               prgressColor={colors.blueGradiantStart}
               percentageTextStyle={[
@@ -134,9 +136,9 @@ export default function PlayInCommonChartScreen({
               titleText={'Draws'}
               percentageCount={gameStatsData ? gameStatsData.draw : ''}
               progress={
-                gameStatsData.draw !== 0
-                  ? (1 * gameStatsData.draw) / gameStatsData.total_games
-                  : 0
+                isNaN(gameStatsData.winner / gameStatsData.total_games)
+                  ? 0
+                  : gameStatsData.winner / gameStatsData.total_games
               }
               prgressColor={colors.greenGradientEnd}
               percentageTextStyle={[
@@ -150,9 +152,9 @@ export default function PlayInCommonChartScreen({
               titleText={'Losses'}
               percentageCount={gameStatsData ? gameStatsData.looser : ''}
               progress={
-                gameStatsData.looser !== 0
-                  ? (1 * gameStatsData.looser) / gameStatsData.total_games
-                  : 0
+                isNaN(gameStatsData.winner / gameStatsData.total_games)
+                  ? 0
+                  : gameStatsData.winner / gameStatsData.total_games
               }
               prgressColor={colors.orangeColor}
               percentageTextStyle={[
@@ -188,10 +190,9 @@ export default function PlayInCommonChartScreen({
           <View style={styles.winPercentageView}>
             <View style={{flexDirection: 'row'}}>
               <Text style={styles.percentageStyle}>
-                {(gameStatsData.winner !== 0
-                  ? (100 * gameStatsData.winner) / gameStatsData?.total_games
-                  : 0
-                ).toFixed(1)}
+                {isNaN(gameStatsData.winner / gameStatsData.total_games)
+                  ? 0
+                  : (100 * gameStatsData.winner) / gameStatsData.total_games}
               </Text>
             </View>
             <Text style={styles.winTextStyle}>{'Winning\nPercentage'}</Text>

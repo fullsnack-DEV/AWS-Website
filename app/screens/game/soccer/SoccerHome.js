@@ -220,128 +220,120 @@ const SoccerHome = ({navigation, route}) => {
       });
   }, []);
   
-  const getLeaveReviewTitle = useCallback(
-    (gameObject) => {
-      const homeID = homeTeam?.group_id ?? homeTeam?.user_id;
-      const awayID = awayTeam?.group_id ?? awayTeam?.user_id;
+ 
+  const getLeaveReviewTitle = useCallback((gameObject) => {
+    const homeID = homeTeam?.group_id ?? homeTeam?.user_id;
+    const awayID = awayTeam?.group_id ?? awayTeam?.user_id;
 
-      console.log('gameObject::=>', gameObject);
-      let reviewFillingStatus = 0;
+    console.log('gameObject::=>', gameObject);
+    let reviewFillingStatus = 0;
 
-      if (
-        homeID === authContext.entity.uid ||
-        awayID === authContext.entity.uid
-      ) {
-        if (homeID === authContext.entity.uid) {
-          console.log('homeIIID');
-          if (gameObject?.away_review_id) {
-            const refereeReviews = gameObject?.referees?.filter(
-              (obj) => obj?.review_id,
-            );
-            const scorekeeperReviews = gameObject?.scorekeepers?.filter(
-              (obj) => obj?.review_id,
-            );
+    if (
+      homeID === authContext.entity.uid ||
+      awayID === authContext.entity.uid
+    ) {
+      if (homeID === authContext.entity.uid) {
+        console.log('homeIIID');
+        if (gameObject?.away_review_id) {
+          const refereeReviews = gameObject?.referees?.filter(
+            (obj) => obj?.review_id,
+          );
+          const scorekeeperReviews = gameObject?.scorekeepers?.filter(
+            (obj) => obj?.review_id,
+          );
 
-            if (
-              refereeReviews?.length === gameObject?.referees?.length &&
-              scorekeeperReviews?.length === gameObject?.scorekeepers?.length
-            ) {
-              reviewFillingStatus = 2;
-            } else {
-              reviewFillingStatus = 1;
-            }
+          if (
+            refereeReviews?.length === gameObject?.referees?.length &&
+            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
+          ) {
+            reviewFillingStatus = 2;
           } else {
-            const refereeReviews = gameObject?.referees?.filter(
-              (obj) => obj?.review_id,
-            );
-            const scorekeeperReviews = gameObject?.scorekeepers?.filter(
-              (obj) => obj?.review_id,
-            );
+            reviewFillingStatus = 1;
+          }
+        } else {
+          const refereeReviews = gameObject?.referees?.filter(
+            (obj) => obj?.review_id,
+          );
+          const scorekeeperReviews = gameObject?.scorekeepers?.filter(
+            (obj) => obj?.review_id,
+          );
 
-            if (
-              refereeReviews?.length === gameObject?.referees?.length ||
-              scorekeeperReviews?.length === gameObject?.scorekeepers?.length
-            ) {
-              reviewFillingStatus = 1;
-            } else {
-              reviewFillingStatus = 0;
-            }
+          if (
+            refereeReviews?.length === gameObject?.referees?.length ||
+            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
+          ) {
+            reviewFillingStatus = 0;
+          } else {
+            reviewFillingStatus = 1;
           }
         }
-        if (awayID === authContext.entity.uid) {
-          console.log('awayIIID');
+      }
+      if (awayID === authContext.entity.uid) {
+        console.log('awayIIID');
 
-          if (gameObject?.home_review_id) {
-            const refereeReviews = gameObject?.referees?.filter(
-              (obj) => obj?.review_id,
-            );
-            const scorekeeperReviews = gameObject?.scorekeepers?.filter(
-              (obj) => obj?.review_id,
-            );
+        if (gameObject?.home_review_id) {
+          const refereeReviews = gameObject?.referees?.filter(
+            (obj) => obj?.review_id,
+          );
+          const scorekeeperReviews = gameObject?.scorekeepers?.filter(
+            (obj) => obj?.review_id,
+          );
 
-            if (
-              refereeReviews?.length === gameObject?.referees?.length &&
-              scorekeeperReviews?.length === gameObject?.scorekeepers?.length
-            ) {
-              reviewFillingStatus = 2;
-            } else {
-              reviewFillingStatus = 1;
-            }
+          if (
+            refereeReviews?.length === gameObject?.referees?.length &&
+            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
+          ) {
+            reviewFillingStatus = 2;
           } else {
-            console.log('awayELSEIIID');
-            const refereeReviews = gameObject?.referees?.filter(
-              (obj) => obj?.review_id,
-            );
-            const scorekeeperReviews = gameObject?.scorekeepers?.filter(
-              (obj) => obj?.review_id,
-            );
+            reviewFillingStatus = 1;
+          }
+        } else {
+          console.log('awayELSEIIID');
+          const refereeReviews = gameObject?.referees?.filter(
+            (obj) => obj?.review_id,
+          );
+          const scorekeeperReviews = gameObject?.scorekeepers?.filter(
+            (obj) => obj?.review_id,
+          );
 
-            console.log('refereeReviews.length', gameObject?.referees?.length);
-            if (
-              refereeReviews?.length === gameObject?.referees?.length ||
-              scorekeeperReviews?.length === gameObject?.scorekeepers?.length
-            ) {
-              console.log('awayELSEIIID1');
-              reviewFillingStatus = 1;
-            } else {
-              console.log('awayELSEIIID0');
-              reviewFillingStatus = 0;
-            }
+          console.log('refereeReviews.length11',refereeReviews?.length);
+          if (
+            refereeReviews?.length === gameObject?.referees?.length ||
+            scorekeeperReviews?.length === gameObject?.scorekeepers?.length
+          ) {
+            console.log('awayELSEIIID1');
+            reviewFillingStatus = 1;
+          } else {
+            console.log('awayELSEIIID0');
+            reviewFillingStatus = 0;
           }
         }
-      } else if (isRefereeAdmin || isScorekeeperAdmin) {
+      }
+    } else if(isRefereeAdmin || isScorekeeperAdmin){
         if (gameObject?.home_review_id && gameObject?.away_review_id) {
           reviewFillingStatus = 2;
-        } else if (!gameObject?.home_review_id && !gameObject?.away_review_id) {
-          reviewFillingStatus = 0;
-        } else {
-          if (!gameObject?.home_review_id) {
-            reviewFillingStatus = 1;
+        } else if(!gameObject?.home_review_id && !gameObject?.away_review_id){
+            reviewFillingStatus = 0;
+          }else{
+            if (!gameObject?.home_review_id) {
+              reviewFillingStatus = 1;
+            }
+            if (!gameObject?.away_review_id) {
+              reviewFillingStatus = 1;
+            }
           }
-          if (!gameObject?.away_review_id) {
-            reviewFillingStatus = 1;
-          }
-        }
       }
 
-      if (reviewFillingStatus === 0) {
-        return 'LEAVE REVIEW';
-      }
-      if (reviewFillingStatus === 1) {
-        return 'LEAVE OR EDIT A REVIEW';
-      }
-      return 'EDIT REVIEW';
-    },
-    [
-      authContext.entity.uid,
-      awayTeam?.group_id,
-      awayTeam?.user_id,
-      homeTeam?.group_id,
-      homeTeam?.user_id,
-      isRefereeAdmin,
-      isScorekeeperAdmin,
-    ],
-  );
+       
+    if (reviewFillingStatus === 0) {
+      return 'LEAVE REVIEW';
+    } if (reviewFillingStatus === 1) {
+      return 'LEAVE OR EDIT A REVIEW';
+    } 
+     return 'EDIT REVIEW';
+    
+  },[authContext.entity.uid, awayTeam?.group_id, awayTeam?.user_id, homeTeam?.group_id, homeTeam?.user_id, isRefereeAdmin, isScorekeeperAdmin]);
+
 
   console.log('soccerGameId:=>', soccerGameId);
 
@@ -1315,7 +1307,11 @@ const SoccerHome = ({navigation, route}) => {
       ) : (
         renderTopHeaderWithTabContain
       )}
-      {renderImageProgress}
+      <SafeAreaView>
+        <View>
+          {renderImageProgress}
+        </View>
+      </SafeAreaView>
       <Modalize
         ref={modalizeRef}
         scrollViewProps={{showsVerticalScrollIndicator: false}}
