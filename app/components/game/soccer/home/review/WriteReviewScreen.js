@@ -544,42 +544,42 @@ export default function WriteReviewScreen({navigation, route}) {
       });
   }, [selectImage]);
 
-  const onSelectMatch = useCallback(
-    (selectedMatch) => {
-      const tagsArray = [];
-      if (selectedMatch?.length > 0) {
-        selectedMatch?.map((gameTagItem) => {
-          const entity_data = {};
-          const jsonData = {
-            entity_type: 'game',
-            entity_id: gameTagItem?.game_id,
-          };
-          jsonData.entity_data = getTaggedEntityData(
-            entity_data,
-            gameTagItem,
-            'game',
-          );
-          console.log('PARSE', jsonData.entity_data);
-          const isExist = tagsOfEntity.some(
-            (item) => item?.entity_id === gameTagItem?.game_id,
-          );
-          if (!isExist) tagsArray.push(jsonData);
-          textInputRef.current.focus();
-          return null;
-        });
-        setLetModalVisible(false);
-        setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
-      }
-    },
-    [tagsOfEntity],
-  );
+  // const onSelectMatch = useCallback(
+  //   (selectedMatch) => {
+  //     const tagsArray = [];
+  //     if (selectedMatch?.length > 0) {
+  //       selectedMatch?.map((gameTagItem) => {
+  //         const entity_data = {};
+  //         const jsonData = {
+  //           entity_type: 'game',
+  //           entity_id: gameTagItem?.game_id,
+  //         };
+  //         jsonData.entity_data = getTaggedEntityData(
+  //           entity_data,
+  //           gameTagItem,
+  //           'game',
+  //         );
+  //         console.log('PARSE', jsonData.entity_data);
+  //         const isExist = tagsOfEntity.some(
+  //           (item) => item?.entity_id === gameTagItem?.game_id,
+  //         );
+  //         if (!isExist) tagsArray.push(jsonData);
+  //         textInputRef.current.focus();
+  //         return null;
+  //       });
+  //       setLetModalVisible(false);
+  //       setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
+  //     }
+  //   },
+  //   [tagsOfEntity],
+  // );
 
-  const onSelectTagButtonPress = useCallback(() => {
-    navigation.navigate('UserTagSelectionListScreen', {
-      comeFrom: 'WriteReviewScreen',
-      onSelectMatch,
-    });
-  }, [navigation, onSelectMatch]);
+  // const onSelectTagButtonPress = useCallback(() => {
+  //   navigation.navigate('UserTagSelectionListScreen', {
+  //     comeFrom: 'WriteReviewScreen',
+  //     onSelectMatch,
+  //   });
+  // }, [navigation, onSelectMatch]);
 
   const removeTaggedGame = useCallback(
     (taggedGame) => {
@@ -678,15 +678,15 @@ export default function WriteReviewScreen({navigation, route}) {
             {selectImage?.length < MAX_UPLOAD_POST_ASSETS && (
               <ImageButton
                 source={images.pickImage}
-                imageStyle={{width: 30, height: 30, marginHorizontal: wp('2%')}}
+                imageStyle={{width: 30, height: 30}}
                 onImagePress={onImagePress}
               />
             )}
-            <ImageButton
+            {/* <ImageButton
               source={images.tagImage}
               imageStyle={{width: 30, height: 30, marginLeft: wp('2%')}}
               onImagePress={onSelectTagButtonPress}
-            />
+            /> */}
           </View>
         </View>
       </SafeAreaView>

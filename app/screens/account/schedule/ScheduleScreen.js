@@ -24,6 +24,7 @@ import {
   Animated,
   SectionList,
 } from 'react-native';
+
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 // import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import {RRule} from 'rrule';

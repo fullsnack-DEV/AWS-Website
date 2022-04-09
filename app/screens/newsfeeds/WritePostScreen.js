@@ -68,9 +68,6 @@ export default function WritePostScreen({navigation, route}) {
   );
   const [postData] = useState(route?.params?.postData);
 
-  console.log('route?.params?.postData::', route?.params?.postData);
-
-  console.log('route?.params?.onPressDone::', route?.params?.onPressDone);
   let userImage = '';
   let userName = '';
   if (postData && postData.thumbnail) {
@@ -95,14 +92,14 @@ export default function WritePostScreen({navigation, route}) {
             } else {
               // setloading(true);
               let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-              tagData =  tagData?.map((tag) => {
-                return{
+              tagData = tagData?.map((tag) => {
+                return {
                   ...tag,
-                  entity_type : 'timeline'
-                }
-              })
-              console.log('tagDatatagData',tagData);
-              
+                  entity_type: 'timeline',
+                };
+              });
+              console.log('tagDatatagData', tagData);
+
               const format_tagged_data = JSON.parse(
                 JSON.stringify(tagsOfEntity),
               );
@@ -120,7 +117,7 @@ export default function WritePostScreen({navigation, route}) {
                 return null;
               });
               console.log('format_tagged_data', format_tagged_data);
-              
+
               // eslint-disable-next-line no-param-reassign
               tagData.forEach((tData) => delete tData.entity_data);
               console.log('tagData', tagData);

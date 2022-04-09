@@ -1,22 +1,24 @@
 import React from 'react';
-import {
-  StyleSheet, Platform, Image, View, Text,
-
-} from 'react-native';
+import {StyleSheet, Platform, Image, View, Text} from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
 export default function EventMonthlySelection({
-  dataSource, placeholder, value, onValueChange, containerStyle, title,
+  dataSource,
+  placeholder,
+  value,
+  onValueChange,
+  containerStyle,
+  title,
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <Text style={styles.headerTextStyle}>{title}</Text>
-      <View style={{ width: wp('72%') }}>
+      <View style={{width: wp('72%')}}>
         <RNPickerSelect
           placeholder={{
             label: placeholder,
@@ -26,7 +28,10 @@ export default function EventMonthlySelection({
           onValueChange={onValueChange}
           useNativeAndroidPickerStyle={true}
           // eslint-disable-next-line no-sequences
-          style={ (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), { ...styles } }
+          style={
+            (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid,
+            {...styles})
+          }
           value={value}
           Icon={() => (
             <Image source={images.dropDownArrow} style={styles.downArrow} />
@@ -79,7 +84,7 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: '100%',
@@ -88,7 +93,7 @@ const styles = StyleSheet.create({
     height: 15,
     resizeMode: 'contain',
     right: 15,
-    tintColor: colors.grayColor,
+    tintColor: colors.lightBlackColor,
     top: 12,
     width: 15,
   },

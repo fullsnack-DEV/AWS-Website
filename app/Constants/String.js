@@ -318,7 +318,7 @@ const strings = {
   titlePlaceholder: 'Enter Title',
   createTitleValue: 'Welcome Season Party',
   titleValue: 'Games with Vancouver Whitecaps',
-  about: 'Description',
+  about: 'About',
   aboutPlaceholder: 'Enter Description',
   createAboutValue:
     'I love playing soccer, Association football, commonly known as football or soccer, [a] is a sport played between seven teams of eleven with a spherical ball.',

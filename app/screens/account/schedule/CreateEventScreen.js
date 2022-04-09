@@ -486,7 +486,7 @@ export default function CreateEventScreen({navigation, route}) {
                   });
               }
             }}>
-            <Text>Done</Text>
+            <Text>Save</Text>
           </TouchableOpacity>
         }
       />
@@ -521,7 +521,7 @@ export default function CreateEventScreen({navigation, route}) {
                   onPress={() => setToggle(!toggle)}>
                   <Image
                     source={
-                      toggle ? images.checkWhiteLanguage : images.uncheckWhite
+                      toggle ? images.orangeCheckBox : images.uncheckWhite
                     }
                     style={styles.checkboxImg}
                   />
