@@ -632,6 +632,7 @@ export default function AccountScreen({navigation}) {
       } else {
         console.log('entity?.obj?.sport1:=>', entity?.obj);
         navigation.navigate('ManageChallengeScreen', {
+          groupObj: authContext.entity.obj,
           sportName: entity?.obj?.sport,
           sportType: entity?.obj?.sport_type,
         });
@@ -1222,6 +1223,7 @@ export default function AccountScreen({navigation}) {
           console.log('Sport name:=>', item?.sport, item?.sport_type);
           if (clickedUserType === 'user') {
             navigation.navigate('ManageChallengeScreen', {
+              groupObj: authContext.entity.obj,
               sportName: item.sport,
               sportType: item.sport_type,
             });

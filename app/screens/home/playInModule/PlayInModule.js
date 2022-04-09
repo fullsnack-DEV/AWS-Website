@@ -417,6 +417,7 @@ const PlayInModule = ({
       } else {
         onClose();
         navigation.navigate('ManageChallengeScreen', {
+          groupObj: playInObject,
           sportName:  playInObject?.sport,
           sportType:  playInObject?.sport_type,
         });
@@ -606,6 +607,7 @@ const PlayInModule = ({
                               onClose();
 
                               navigation.navigate('ManageChallengeScreen', {
+                                groupObj: playInObject,
                                 sportName: playInObject.sport,
                                 sportType: playInObject?.sport_type,
                               });
