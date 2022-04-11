@@ -1327,6 +1327,7 @@ const HomeScreen = ({navigation, route}) => {
         backButtonVisible: true,
         role: groupObject?.entity_type,
       });
+     
     },
     [navigation],
   );
@@ -3330,7 +3331,7 @@ const HomeScreen = ({navigation, route}) => {
         // setReviewDetailModalVisible(!reviewDetailModalVisible)
         // setRefereeInfoModalVisible(!refereeInfoModalVisible)
 
-        //  onProfilePress(item)
+        // onProfilePress(item)
       };
       const onLikeButtonPress = () => onLikePress(item);
       return (
@@ -4153,7 +4154,7 @@ const HomeScreen = ({navigation, route}) => {
             homeFeedHeaderComponent={MainHeaderComponent}
             currentTab={currentTab}
             currentUserData={currentUserData}
-            isAdmin={isAdmin}
+            isAdmin={route?.params?.uid === authContext.entity.uid}
             navigation={navigation}
             setGalleryData={() => {}}
             userID={route?.params?.uid ?? authContext.entity?.uid}

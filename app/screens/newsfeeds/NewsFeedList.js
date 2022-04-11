@@ -8,17 +8,15 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import {
- View, ActivityIndicator, FlatList, Text,
-} from 'react-native';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useIsFocused } from '@react-navigation/native';
+import {View, ActivityIndicator, FlatList, Text} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useIsFocused} from '@react-navigation/native';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
 import fonts from '../../Constants/Fonts';
 
-const viewabilityConfig = { itemVisiblePercentThreshold: 50 };
+const viewabilityConfig = {itemVisiblePercentThreshold: 50};
 const NewsFeedList = ({
   onFeedScroll,
   refs,
@@ -57,7 +55,7 @@ const NewsFeedList = ({
     (item) => {
       if (item?.actor?.id) {
         if (item?.actor?.id !== authContext?.entity?.uid) {
-          navigation.navigate('HomeScreen', {
+          navigation.push('HomeScreen', {
             uid: item.actor.id,
             backButtonVisible: true,
             role:
@@ -72,7 +70,7 @@ const NewsFeedList = ({
   );
 
   const renderNewsFeed = useCallback(
-    ({ item, index }) => {
+    ({item, index}) => {
       const onDeleteButtonPress = () => onDeletePost(item);
       const onLikeButtonPress = () => onLikePress(item);
       return (
@@ -91,7 +89,7 @@ const NewsFeedList = ({
             onDeletePost={onDeleteButtonPress}
           />
           <View
-            style={{ backgroundColor: colors.grayBackgroundColor, height: 7 }}
+            style={{backgroundColor: colors.grayBackgroundColor, height: 7}}
           />
         </View>
       );
@@ -123,8 +121,9 @@ const NewsFeedList = ({
   );
 
   const newsFeedListFooterComponent = useMemo(
-    () => (!footerLoading ? (
-      <View
+    () =>
+      !footerLoading ? (
+        <View
           style={{
             height: hp(10),
           }}
@@ -133,9 +132,9 @@ const NewsFeedList = ({
         <ActivityIndicator
           size={'small'}
           color={colors.blackColor}
-          style={{ alignSelf: 'center', marginBottom: hp(10) }}
+          style={{alignSelf: 'center', marginBottom: hp(10)}}
         />
-      )),
+      ),
     [footerLoading],
   );
 
@@ -154,12 +153,14 @@ const NewsFeedList = ({
     [],
   );
 
-  const onViewableItemsChanged = useCallback(({ viewableItems }) => {
-    if (viewableItems?.length > 0) { setParentIndex(viewableItems?.[0]?.index ?? 0); }
+  const onViewableItemsChanged = useCallback(({viewableItems}) => {
+    if (viewableItems?.length > 0) {
+      setParentIndex(viewableItems?.[0]?.index ?? 0);
+    }
   }, []);
 
   const viewabilityConfigCallbackPairs = useRef([
-    { viewabilityConfig, onViewableItemsChanged },
+    {viewabilityConfig, onViewableItemsChanged},
   ]);
 
   const listEmpty = useCallback(() => {
@@ -176,25 +177,25 @@ const NewsFeedList = ({
         </Text>
       );
     }
-      return (<View></View>)
+    return <View></View>;
   }, [feedAPI, noDataFoundText]);
 
   return (
     <View
       onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
-      style={{ flex: 1 }}>
+      style={{flex: 1}}>
       <FlatList
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
         onScroll={onFeedScroll}
         ref={refs}
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingVertical: 15 }}
+        style={{flex: 1}}
+        contentContainerStyle={{paddingVertical: 15}}
         scrollEventThrottle={16}
         removeClippedSubviews={true}
         legacyImplementation={true}
         maxToRenderPerBatch={10}
         initialNumToRender={5}
-         ListEmptyComponent={listEmpty}
+        ListEmptyComponent={listEmpty}
         bounces={true}
         data={postData}
         ItemSeparatorComponent={newsFeedListItemSeperator}
@@ -211,7 +212,6 @@ const NewsFeedList = ({
         nestedScrollEnabled={true}
         keyExtractor={newsFeedKeyExtractor}
       />
-
     </View>
   );
 };

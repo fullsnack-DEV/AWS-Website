@@ -62,6 +62,7 @@ export default function WriteReviewScreen({navigation, route}) {
   const [onPressDoneButton] = useState(
     route?.params?.onPressDone ? () => route?.params?.onPressDone : () => {},
   );
+  const [comeFrom] = useState(route?.params?.comeFrom);
 
   useEffect(() => {
     if (searchText[currentTextInputIndex - 1] === '@')
@@ -341,7 +342,13 @@ export default function WriteReviewScreen({navigation, route}) {
                 Alert.alert('Please write some text or select any image.');
               } else {
                 setloading(true);
-                const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
+                let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
+                tagData = tagData?.map((tag) => {
+                  return {
+                    ...tag,
+                    entity_type: 'timeline',
+                  };
+                });
                 const format_tagged_data = JSON.parse(
                   JSON.stringify(tagsOfEntity),
                 );
@@ -372,8 +379,8 @@ export default function WriteReviewScreen({navigation, route}) {
                   tagData?.forEach((tData) => delete tData.entity_data);
                 }
 
-                console.log('route?.params?.comeFrom', route?.params?.comeFrom);
-                navigation.navigate(route?.params?.comeFrom, {
+                console.log('route?.params?.comeFrom', comeFrom);
+                navigation.navigate(comeFrom, {
                   selectedImageList: selectImage,
                   searchText,
                   entityTags: tagData,
