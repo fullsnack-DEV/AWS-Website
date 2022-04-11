@@ -1,5 +1,6 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -10,8 +11,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
-
- Dimensions,
+  Dimensions,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -27,7 +27,7 @@ import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
 
-export default function DefaultColorScreen({ navigation }) {
+export default function DefaultColorScreen({navigation}) {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const [createdEventColors, setCreatedEventColors] = useState();
@@ -117,11 +117,25 @@ export default function DefaultColorScreen({ navigation }) {
       setSelectedMatchColors();
     }
   };
-  const renderCreatedEventsColorItem = ({ item }) => {
-    if (item.isNew) {
-      return (
+
+  const getImageOfColor = (data) => {
+    if (data.isNew && data.isSelected) {
+      return images.check;
+    } if (data.isNew) {
+      return images.plus;
+    } if (data.isSelected) {
+      return images.check;
+    }
+    return null
+  };
+
+  const renderCreatedEventsColorItem = ({item}) => {
+    return (
+      <View
+        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
         <EventColorItem
-          isNew={item.color !== '0'}
+          item={item}
+          isNew={!!item?.isNew}
           onChangeColorPressed={() => onChangeColorPressed('Created Events')}
           imageStyle={{
             tintColor:
@@ -138,6 +152,7 @@ export default function DefaultColorScreen({ navigation }) {
                 const createEventData = createEventItem;
                 if (createEventData.id === item.id) {
                   createEventData.isSelected = true;
+
                   setSelectedEventColors(createEventData.color);
                 } else {
                   createEventData.isSelected = false;
@@ -148,13 +163,7 @@ export default function DefaultColorScreen({ navigation }) {
               setCreatedEventColors([...createdEventColors]);
             }
           }}
-          source={
-            item.isNew && item.color === '0'
-              ? images.plus
-              : item.isSelected
-              ? images.check
-              : null
-          }
+          source={getImageOfColor(item)}
           eventColorViewStyle={{
             backgroundColor:
               item.color === '0' ? colors.whiteColor : item.color,
@@ -163,41 +172,17 @@ export default function DefaultColorScreen({ navigation }) {
             marginRight: wp(3),
           }}
         />
-      );
-    }
-    return (
-      <EventColorItem
-        source={item.isSelected ? images.check : null}
-        imageStyle={{ tintColor: colors.whiteColor }}
-        onItemPress={() => {
-          createdEventColors.map(async (createEventItem) => {
-            const createEventData = createEventItem;
-            if (createEventData.id === item.id) {
-              createEventData.isSelected = true;
-              setSelectedEventColors(createEventData.color);
-            } else {
-              createEventData.isSelected = false;
-            }
-            return null;
-          });
-
-          setCreatedEventColors([...createdEventColors]);
-        }}
-        eventColorViewStyle={{
-          backgroundColor: item.color,
-          borderWidth: item.isSelected ? 2 : 0,
-          borderColor: colors.whiteColor,
-          marginRight: wp(3),
-        }}
-      />
+      </View>
     );
   };
 
-  const renderImportedEventsColorItem = ({ item }) => {
-    if (item.isNew) {
-      return (
+  const renderImportedEventsColorItem = ({item}) => {
+    return (
+      <View
+        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
         <EventColorItem
-          isNew={item.color !== '0'}
+          item={item}
+          isNew={!!item?.isNew}
           onChangeColorPressed={() => onChangeColorPressed('Imported Events')}
           imageStyle={{
             tintColor:
@@ -224,13 +209,7 @@ export default function DefaultColorScreen({ navigation }) {
               setImportedEventColors([...importedEventColors]);
             }
           }}
-          source={
-            item.isNew && item.color === '0'
-              ? images.plus
-              : item.isSelected
-              ? images.check
-              : null
-          }
+          source={getImageOfColor(item)}
           eventColorViewStyle={{
             backgroundColor:
               item.color === '0' ? colors.whiteColor : item.color,
@@ -239,41 +218,17 @@ export default function DefaultColorScreen({ navigation }) {
             marginRight: wp(3),
           }}
         />
-      );
-    }
-    return (
-      <EventColorItem
-        source={item.isSelected ? images.check : null}
-        imageStyle={{ tintColor: colors.whiteColor }}
-        onItemPress={() => {
-          importedEventColors.map(async (importedEventItem) => {
-            const importedEventData = importedEventItem;
-            if (importedEventData.id === item.id) {
-              importedEventData.isSelected = true;
-              setSelectedImportedColors(importedEventData.color);
-            } else {
-              importedEventData.isSelected = false;
-            }
-            return null;
-          });
-
-          setImportedEventColors([...importedEventColors]);
-        }}
-        eventColorViewStyle={{
-          backgroundColor: item.color,
-          borderWidth: item.isSelected ? 2 : 0,
-          borderColor: colors.whiteColor,
-          marginRight: wp(3),
-        }}
-      />
+      </View>
     );
   };
 
-  const renderGamesEventsColorItem = ({ item }) => {
-    if (item.isNew) {
-      return (
+  const renderGamesEventsColorItem = ({item}) => {
+    return (
+      <View
+        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
         <EventColorItem
-          isNew={item.color !== '0'}
+          item={item}
+          isNew={!!item?.isNew}
           onChangeColorPressed={() => onChangeColorPressed('Game Events')}
           imageStyle={{
             tintColor:
@@ -301,13 +256,7 @@ export default function DefaultColorScreen({ navigation }) {
               setGamesEventColor([...gamesEventColors]);
             }
           }}
-          source={
-            item.isNew && item.color === '0'
-              ? images.plus
-              : item.isSelected
-              ? images.check
-              : null
-          }
+          source={getImageOfColor(item)}
           eventColorViewStyle={{
             backgroundColor:
               item.color === '0' ? colors.whiteColor : item.color,
@@ -316,32 +265,7 @@ export default function DefaultColorScreen({ navigation }) {
             marginRight: wp(3),
           }}
         />
-      );
-    }
-    return (
-      <EventColorItem
-        source={item.isSelected ? images.check : null}
-        imageStyle={{ tintColor: colors.whiteColor }}
-        onItemPress={() => {
-          gamesEventColors.map(async (gamesEventItem) => {
-            const gamesEventData = gamesEventItem;
-            if (gamesEventData.id === item.id) {
-              gamesEventData.isSelected = true;
-              setSelectedMatchColors(gamesEventData.color);
-            } else {
-              gamesEventData.isSelected = false;
-            }
-            return null;
-          });
-          setGamesEventColor([...gamesEventColors]);
-        }}
-        eventColorViewStyle={{
-          backgroundColor: item.color,
-          borderWidth: item.isSelected ? 2 : 0,
-          borderColor: colors.whiteColor,
-          marginRight: wp(3),
-        }}
-      />
+      </View>
     );
   };
 
@@ -365,8 +289,10 @@ export default function DefaultColorScreen({ navigation }) {
           <Text style={styles.eventTextStyle}>Default Color Setting</Text>
         }
         rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
-            <Text>Done</Text>
+          <TouchableOpacity
+            style={{padding: 2, fontFamily: fonts.RMedium, fontSize: 10}}
+            onPress={onDonePress}>
+            <Text>Save</Text>
           </TouchableOpacity>
         }
       />
@@ -376,12 +302,11 @@ export default function DefaultColorScreen({ navigation }) {
           <FlatList
             numColumns={Dimensions.get('window').width > 360 ? 9 : 8}
             scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             data={createdEventColors}
-            ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
             renderItem={renderCreatedEventsColorItem}
             keyExtractor={(item, index) => index.toString()}
-
           />
         </EventItemRender>
         <EventItemRender title={strings.eventImportedTitle}>
@@ -390,7 +315,7 @@ export default function DefaultColorScreen({ navigation }) {
             scrollEnabled={false}
             showsHorizontalScrollIndicator={false}
             data={importedEventColors}
-            ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
+            ItemSeparatorComponent={() => <View style={{width: 30}} />}
             renderItem={renderImportedEventsColorItem}
             keyExtractor={(item, index) => index.toString()}
           />
@@ -401,7 +326,7 @@ export default function DefaultColorScreen({ navigation }) {
             scrollEnabled={false}
             showsHorizontalScrollIndicator={false}
             data={gamesEventColors}
-            ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
+            ItemSeparatorComponent={() => <View style={{width: 30}} />}
             renderItem={renderGamesEventsColorItem}
             keyExtractor={(item, index) => index.toString()}
           />

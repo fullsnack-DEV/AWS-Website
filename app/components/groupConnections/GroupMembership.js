@@ -98,7 +98,7 @@ const GroupMembership = ({
         <>
           <TCInfoField
             title={'Position'}
-            value={groupData.positions ? groupData.positions.join(', ') : 'N/A'}
+            value={groupData?.positions?.length && groupData?.positions[0] !== '' ? groupData.positions.join(', ') : 'N/A'}
             marginLeft={25}
             marginTop={30}
           />

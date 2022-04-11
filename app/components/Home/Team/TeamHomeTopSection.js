@@ -32,7 +32,8 @@ export default function UserTeamTopSection({
       )}
       {!isAdmin && (
         <View style={styles.otherUserStyle}>
-          {loggedInEntity.role === 'user' && teamDetails?.createdBy?.uid !== loggedInEntity.uid && (
+          {/* {loggedInEntity.role === 'user' && teamDetails?.createdBy?.uid !== loggedInEntity.uid && ( */}
+          {loggedInEntity.role === 'user' && (
             <View style={styles.joinFollowViewStyle}>
               {teamDetails && teamDetails.is_joined && (
                 <TCProfileButton

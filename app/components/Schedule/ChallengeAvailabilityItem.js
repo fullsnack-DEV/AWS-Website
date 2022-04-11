@@ -32,7 +32,7 @@ function ChallengeAvailabilityItem({
     setEventStartdateTime(date);
     if (new Date(date).getTime() > new Date(eventEndDateTime).getTime()) {
       const d1 = new Date(date);
-      const d2 = new Date(d1);
+      const d2 = d1;
       d2.setMinutes(d1.getMinutes() + 5);
       setEventEnddateTime(d2);
     }

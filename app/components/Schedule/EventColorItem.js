@@ -5,6 +5,7 @@ import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 
 function EventColorItem({
+  item,
   eventColorViewStyle,
   imageStyle,
   source,
@@ -12,16 +13,17 @@ function EventColorItem({
   isNew = false,
   onChangeColorPressed,
 }) {
+ 
   return (
     <TouchableOpacity
       onPress={onItemPress}
       style={[styles.eventColorViewStyle, eventColorViewStyle]}>
-      <Image
+      {(item?.isSelected || item?.isNew) &&  <Image 
         source={source}
         style={[styles.imageStyle, imageStyle]}
         resizeMode={'contain'}
-      />
-      {isNew && (
+      />}
+      {isNew && item?.color !== '0' && (
         <TouchableOpacity
           onPress={onChangeColorPressed}
           style={{
@@ -59,6 +61,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.googleColor,
     alignItems: 'center',
     justifyContent: 'center',
+    
   },
   imageStyle: {
     height: 15,

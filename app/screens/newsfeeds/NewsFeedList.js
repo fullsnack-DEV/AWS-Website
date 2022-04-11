@@ -111,8 +111,7 @@ const NewsFeedList = ({
     () => (
       <View
         style={{
-          marginTop: 10,
-          height: 8,
+          height: 1,
           backgroundColor: colors.whiteGradientColor,
         }}
       />

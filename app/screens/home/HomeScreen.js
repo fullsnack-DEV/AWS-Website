@@ -3092,6 +3092,7 @@ const HomeScreen = ({navigation, route}) => {
         });
       } else {
         navigation.navigate('ManageChallengeScreen', {
+          groupObj: currentUserData,
           sportName: currentUserData?.sport,
           sportType: currentUserData?.sport_type,
         });
@@ -3154,7 +3155,7 @@ const HomeScreen = ({navigation, route}) => {
 
   const renderMainFlatList = useMemo(
     () => (
-      <View style={{margin: 15, marginTop: 0}}>
+      <View style={{margin: 15, marginTop: 0,marginBottom:0}}>
         {challengeButton()}
         {isUserHome ? (
           <View style={{flex: 1}}>
@@ -3533,6 +3534,7 @@ const HomeScreen = ({navigation, route}) => {
         setTimeout(() => {
           console.log('Sport name:=>', item.sport);
           navigation.navigate('ManageChallengeScreen', {
+            groupObj: currentUserData,
             sportName: item.sport,
             sportType: currentUserData?.sport_type,
           });
@@ -4018,6 +4020,7 @@ const HomeScreen = ({navigation, route}) => {
             }
             if (entity.role === 'team') {
               navigation.navigate('ManageChallengeScreen', {
+                groupObj: currentUserData,
                 sportName: currentUserData?.sport,
                 sportType: currentUserData?.sport_type,
               });
@@ -5333,6 +5336,7 @@ const HomeScreen = ({navigation, route}) => {
                 confirmationRef.current.close();
                 if (route?.params?.role !== 'club') {
                   navigation.navigate('ManageChallengeScreen', {
+                    groupObj: currentUserData,
                     sportName: route?.params?.entityObj?.sport,
                     sportType: currentUserData?.sport_type,
                   });
@@ -5609,6 +5613,7 @@ const HomeScreen = ({navigation, route}) => {
                           text: 'OK',
                           onPress: () => {
                             navigation.navigate('ManageChallengeScreen', {
+                              groupObj: currentUserData,
                               sportName: currentUserData.sport,
                               sportType: currentUserData?.sport_type,
                             });

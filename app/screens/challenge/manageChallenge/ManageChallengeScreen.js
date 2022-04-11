@@ -29,6 +29,8 @@ export default function ManageChallengeScreen({ navigation, route }) {
   const [sportName] = useState(route?.params?.sportName);
 
   const [sportType] = useState(route?.params?.sportType);
+  const [groupObj] = useState(route?.params?.groupObj);
+
 
 
   console.log('sportName:::=>', sportName);
@@ -85,6 +87,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
         navigation.navigate('Availibility', {
           settingObj: settingObject,
           comeFrom: 'ManageChallengeScreen',
+          groupObj,
           sportName,
           sportType,
         });

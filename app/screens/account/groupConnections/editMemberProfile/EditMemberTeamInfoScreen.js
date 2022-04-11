@@ -38,7 +38,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
   const [switchUser, setSwitchUser] = useState({});
 
   const [groupMemberDetail, setGroupMemberDetail] = useState(route?.params?.groupMemberDetail);
-  const [positions, setPositions] = useState(route.params.groupMemberDetail.positions || [{}]);
+  const [positions, setPositions] = useState(route.params.groupMemberDetail.positions ?? [{}]);
 
   useEffect(() => {
     
@@ -73,7 +73,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
     if (groupMemberDetail.status) {
       bodyParams.status = groupMemberDetail.status;
     }
-    bodyParams.is_others = groupMemberDetail.is_others;
+    bodyParams.is_admin = groupMemberDetail.is_admin;
     bodyParams.is_coach = groupMemberDetail.is_coach;
     bodyParams.is_member = groupMemberDetail.is_member;
 
@@ -100,7 +100,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext, groupMemberDetail.appearance, groupMemberDetail.group_id, groupMemberDetail.is_others, groupMemberDetail.is_coach, groupMemberDetail.is_member, groupMemberDetail.jersey_number, groupMemberDetail.note, groupMemberDetail.positions, groupMemberDetail.status, groupMemberDetail.user_id, navigation, positions]);
+  }, [authContext, groupMemberDetail.appearance, groupMemberDetail.group_id, groupMemberDetail.is_admin, groupMemberDetail.is_coach, groupMemberDetail.is_member, groupMemberDetail.jersey_number, groupMemberDetail.note, groupMemberDetail.positions, groupMemberDetail.status, groupMemberDetail.user_id, navigation, positions]);
 
 
   useLayoutEffect(() => {
@@ -200,18 +200,18 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
           </TouchableOpacity>
         </View>
         <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>Others</Text>
+          <Text style={styles.checkBoxItemText}>Admin</Text>
 
           <TouchableOpacity
             onPress={() => {
               setGroupMemberDetail({
                 ...groupMemberDetail,
-                is_others: !groupMemberDetail.is_others,
+                is_admin: !groupMemberDetail.is_admin,
               });
             }}>
             <Image
               source={
-                groupMemberDetail.is_others
+                groupMemberDetail.is_admin
                   ? images.orangeCheckBox
                   : images.uncheckWhite
               }

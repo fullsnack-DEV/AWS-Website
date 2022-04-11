@@ -10,6 +10,8 @@ import {
   Platform,
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+
+
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
@@ -55,7 +57,7 @@ export default function ViewPrivacyScreen({ navigation }) {
         }
         rightComponent={
           <TouchableOpacity style={{ padding: 2 }} onPress={() => navigation.goBack()}>
-            <Text>Done</Text>
+            <Text style={{fontFamily:fonts.RMedium, fontSize: 16,}}>Save</Text>
           </TouchableOpacity>
         }
       />

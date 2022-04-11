@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, {
   useContext,
   useEffect,
@@ -25,7 +26,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-import { getGroups } from '../../../api/Groups';
+import {getGroups} from '../../../api/Groups';
 
 export default function GroupEventScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -68,7 +69,7 @@ export default function GroupEventScreen({navigation}) {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.doneButtonStyle} onPress={() => onDonePress()}>
-          Done
+          Save
         </Text>
       ),
     });
@@ -143,11 +144,19 @@ export default function GroupEventScreen({navigation}) {
   const renderGroups = ({item, index}) => {
     return (
       <GroupEventItems
-        eventImageSource={item.eventImage}
+        eventImageSource={item.entity_type === 'team'
+        ? images.teamPatch
+        : images.clubPatch}
         eventText={item.group_name}
-        groupImageSource={item.thumbnail}
+        groupImageSource={
+          item.thumbnail
+            ? {uri: item.thumbnail}
+            : item.entity_type === 'team'
+            ? images.teamPlaceholder
+            : images.clubPlaceholder
+        }
         checkBoxImage={
-          item.isSelected ? images.checkWhiteLanguage : images.uncheckWhite
+          item.isSelected ? images.orangeCheckBox : images.uncheckWhite
         }
         onCheckBoxPress={() => {
           groupsList[index].isSelected = !groupsList[index].isSelected;
@@ -174,7 +183,7 @@ export default function GroupEventScreen({navigation}) {
             setGroupsList([...groups]);
           }}>
           <Image
-            source={isAll ? images.checkWhiteLanguage : images.uncheckWhite}
+            source={isAll ? images.orangeCheckBox : images.uncheckWhite}
             style={styles.imageStyle}
           />
         </TouchableOpacity>
@@ -198,7 +207,7 @@ const styles = StyleSheet.create({
   },
 
   doneButtonStyle: {
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginRight: 10,
   },
@@ -219,10 +228,9 @@ const styles = StyleSheet.create({
   },
 
   imageStyle: {
-    width: 23,
-    height: 23,
+    width: wp('5.5%'),
     resizeMode: 'contain',
-    marginRight: 12,
+    marginRight: 10,
   },
 
   headerTextStyle: {
