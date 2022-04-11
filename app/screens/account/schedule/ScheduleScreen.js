@@ -240,14 +240,18 @@ export default function ScheduleScreen({navigation, route}) {
     //   authContext,
     // )
 
-    Utility.getCalendar(authContext?.entity?.uid, new Date().getTime() / 1000)
+    Utility.getCalendar(
+      authContext?.entity?.uid,
+      Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+    )
       .then((response) => {
         setloading(false);
-        console.log('Events List:=>', response);
+        console.log('Events List get Calender:=>', response);
         const bookSlots = [];
         response.forEach((item) => {
-          if (item.rrule) {
+          if (item?.rrule) {
             const rEvents = getEventOccuranceFromRule(item);
+            console.log('Recurring Events List:=>', rEvents);
             bookSlots.push(...rEvents);
           } else {
             bookSlots.push(item);
@@ -279,10 +283,12 @@ export default function ScheduleScreen({navigation, route}) {
         );
         console.log('Groups:=>', group);
         // eslint-disable-next-line array-callback-return
-        (bookSlots || []).map((e) => {
+        bookSlots?.map((e) => {
+          console.log('start date list :=>', e);
           const original_date = moment(
             new Date(e.start_datetime * 1000),
           ).format('yyyy-MM-DD');
+          console.log('original_date', original_date);
           if (e.allDay === true) {
             markedDates[original_date] = {
               disabled: true,
@@ -305,11 +311,9 @@ export default function ScheduleScreen({navigation, route}) {
               activeOpacity: 1,
             };
           }
-
-          console.log('BLOCKED::', markedDates);
         });
-
-        console.log('Marked dates::', JSON.stringify(markedDates));
+        setMarkingDays(markedDates);
+        console.log('Marked dates::', markedDates);
       })
       .catch((e) => {
         setTimeout(() => {
@@ -320,7 +324,8 @@ export default function ScheduleScreen({navigation, route}) {
 
   const configureEvents = useCallback(
     (eventsData, games) => {
-      console.log('gamesgames', games);
+      console.log('gamesgames::::::->', games);
+      console.log('gaeventsDatamesgames', games);
       const eventTimeTableData = eventsData.map((item) => {
         if (item?.game_id) {
           const gameObj =
@@ -355,24 +360,17 @@ export default function ScheduleScreen({navigation, route}) {
         }
         return null;
       });
-      drawMarkDay(eventsData);
-      // setFilterEventData(eventData);
-      // (eventTimeTableData || []).filter((timetable_item) => {
-      //   const timetable_date = new Date(timetable_item.start_datetime * 1000);
-      //   const endDate = new Date(timetable_item.end_datetime * 1000);
-      //   const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
-      //   if (timetabledate === selectedDate) {
-      //     const obj = {
-      //       ...timetable_item,
-      //       start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
-      //       end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-      //     };
-      //     timetabledate.push(obj);
-      //   }
-      //   return null;
-      // });
-      // console.log('timetabledate', timetabledate);
-      // setFilterTimeTable(timetabledate);
+
+      const tempMarkDate = {};
+      (eventsData || []).filter((event_item) => {
+        const startDate = new Date(event_item.start_datetime * 1000);
+        const eventDate = moment(startDate).format('YYYY-MM-DD');
+        tempMarkDate[eventDate] = {
+          event: true,
+          selected: false,
+        };
+      });
+      setMarkingDays(tempMarkDate);
     },
     [eventData, selectedDate],
   );
@@ -383,7 +381,10 @@ export default function ScheduleScreen({navigation, route}) {
       console.log('selectedObj:=>', selectedObj);
 
       let eventTimeTableData = [];
-      Utility.getCalendar(authContext?.entity?.uid, new Date().getTime() / 1000)
+      Utility.getCalendar(
+        authContext?.entity?.uid,
+        Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+      )
         // blockedSlots(entityRole, uid, authContext)
         .then((response) => {
           console.log('calender list:=>', response);
@@ -405,9 +406,21 @@ export default function ScheduleScreen({navigation, route}) {
               }
             }
           });
+
+          const bookSlots = [];
+          response.forEach((item) => {
+            if (item?.rrule) {
+              const rEvents = getEventOccuranceFromRule(item);
+              console.log('Recurring Events List:=>', rEvents);
+              bookSlots.push(...rEvents);
+            } else {
+              bookSlots.push(item);
+            }
+          });
+
           console.log('filter list:=>', response);
 
-          eventTimeTableData = [...response];
+          eventTimeTableData = bookSlots;
           let gameIDs = [...new Set(response.map((item) => item.game_id))];
 
           gameIDs = (gameIDs || []).filter((item) => item !== undefined);
@@ -445,7 +458,6 @@ export default function ScheduleScreen({navigation, route}) {
             });
           }
           console.log('eventTimeTableData::=>', eventTimeTableData);
-
           configureEvents(eventTimeTableData);
           setloading(false);
         })
@@ -641,20 +653,6 @@ export default function ScheduleScreen({navigation, route}) {
     }
   }, []);
 
-  const drawMarkDay = (eData) => {
-    const eventTimeTableData = eData;
-    const tempMarkDate = {};
-    (eventTimeTableData || []).filter((event_item) => {
-      const startDate = new Date(event_item.start_datetime * 1000);
-      const eventDate = moment(startDate).format('YYYY-MM-DD');
-      tempMarkDate[eventDate] = {
-        event: true,
-        selected: false,
-      };
-    });
-    setMarkingDays(tempMarkDate);
-  };
-
   const getSelectedDayEvents = useCallback(
     (date) => {
       const markedDates = {...markingDays};
@@ -687,7 +685,6 @@ export default function ScheduleScreen({navigation, route}) {
     selectedCalendarDate = moment(dateObj.dateString);
     getSelectedDayEvents(dateObj.dateString);
     // setselectedCalendarMonthString(selectedCalendarDateStr);
-    // drawMarkDay(eventData)
     setEventSelectDate(dateObj.dateString);
     const date = moment(dateObj.dateString).format('YYYY-MM-DD');
     setSelectedDate(moment(dateObj.dateString).format('YYYY-MM-DD'));

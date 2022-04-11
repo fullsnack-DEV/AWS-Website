@@ -251,75 +251,52 @@ export default function CreateEventScreen({navigation, route}) {
     colorToggleModal();
     setSelectedEventColors([]);
   };
-
-  const renderColorItem = ({item}) => {
-    if (item.isNew) {
-      return (
-        <EventColorItem
-          isNew={item.color !== '0'}
-          onChangeColorPressed={onChangeColorPressed}
-          imageStyle={{
-            tintColor:
-              item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
-          }}
-          onItemPress={() => {
-            if (item.color === '0') {
-              setAddColorDoneButton(false);
-              colorToggleModal();
-              setSelectedEventColors([]);
-            } else {
-              eventColors.map(async (createEventItem) => {
-                const createEventData = createEventItem;
-                if (createEventData.id === item.id) {
-                  createEventData.isSelected = true;
-                  setSingleSelectEventColor(createEventData.color);
-                } else {
-                  createEventData.isSelected = false;
-                }
-                return null;
-              });
-
-              setEventColors([...eventColors]);
-            }
-          }}
-          source={
-            item.isNew && item.color === '0'
-              ? images.plus
-              : item.isSelected
-              ? images.check
-              : null
-          }
-          eventColorViewStyle={{
-            backgroundColor:
-              item.color === '0' ? colors.whiteColor : item.color,
-            borderWidth: item.isSelected ? 2 : 0,
-            borderColor: colors.whiteColor,
-            marginRight: wp(3),
-          }}
-        />
-      );
+  const getImageOfColor = (data) => {
+    if (data.isNew && data.isSelected) {
+      return images.check;
     }
+    if (data.isNew) {
+      return images.plus;
+    }
+    if (data.isSelected) {
+      return images.check;
+    }
+    return null;
+  };
+  const renderColorItem = ({item}) => {
     return (
       <EventColorItem
-        source={item.isSelected ? images.check : null}
-        imageStyle={{tintColor: colors.whiteColor}}
-        onItemPress={() => {
-          eventColors.map(async (createEventItem) => {
-            const createEventData = createEventItem;
-            if (createEventData.id === item.id) {
-              createEventData.isSelected = true;
-              setSingleSelectEventColor(createEventData.color);
-            } else {
-              createEventData.isSelected = false;
-            }
-            return null;
-          });
-
-          setEventColors([...eventColors]);
+        item={item}
+        isNew={!!item?.isNew}
+        onChangeColorPressed={onChangeColorPressed}
+        imageStyle={{
+          tintColor:
+            item?.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
         }}
+        onItemPress={() => {
+          if (item?.color === '0') {
+            setAddColorDoneButton(false);
+            colorToggleModal();
+            setSelectedEventColors([]);
+          } else {
+            eventColors.map(async (createEventItem) => {
+              const createEventData = createEventItem;
+              if (createEventData.id === item?.id) {
+                createEventData.isSelected = true;
+                setSingleSelectEventColor(createEventData.color);
+              } else {
+                createEventData.isSelected = false;
+              }
+              return null;
+            });
+
+            setEventColors([...eventColors]);
+          }
+        }}
+        source={getImageOfColor(item)}
         eventColorViewStyle={{
-          backgroundColor: item.color,
-          borderWidth: item.isSelected ? 2 : 0,
+          backgroundColor: item.color === '0' ? colors.whiteColor : item.color,
+          borderWidth: item?.isSelected ? 2 : 0,
           borderColor: colors.whiteColor,
           marginRight: wp(3),
         }}
@@ -492,6 +469,7 @@ export default function CreateEventScreen({navigation, route}) {
       />
 
       <View style={styles.sperateLine} />
+      
       <TCKeyboardView>
         <ScrollView bounces={false}>
           <SafeAreaView>
@@ -671,7 +649,7 @@ export default function CreateEventScreen({navigation, route}) {
               mode={toggle ? 'date' : 'datetime'}
             />
             <DateTimePickerView
-             // date={eventEndDateTime}
+              // date={eventEndDateTime}
               visible={endDateVisible}
               onDone={handleEndDatePress}
               onCancel={handleCancelPress}

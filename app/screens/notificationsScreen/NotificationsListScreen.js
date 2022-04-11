@@ -375,7 +375,7 @@ function NotificationsListScreen({navigation}) {
       const entityType = item?.entityType;
       const navigateToMessage = (userId) => {
         setloading(false);
-        navigation.push('MessageChat', {
+        navigation.navigate('MessageChat', {
           screen: 'MessageChat',
           params: {userId},
         });

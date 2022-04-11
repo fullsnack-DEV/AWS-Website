@@ -920,7 +920,7 @@ export default function LocalHomeScreen({navigation, route}) {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View>
       <TCThinDivider width={'100%'} />
       {/* <ActivityLoader visible={loading} /> */}
       <View style={styles.sportsListView}>
@@ -1398,22 +1398,19 @@ export default function LocalHomeScreen({navigation, route}) {
           <TouchableWithoutFeedback
             onPress={() => {
               setSelectedSettingOption(0);
+             
               setTimeout(() => {
-                setLocationPopup(false);
                 setSettingPopup(false);
               }, 100);
-              if (selectedSettingOption === 1) {
-                setSettingPopup(false);
-                setLocationPopup(true);
-              } else {
-                setSettingPopup(false);
+              setTimeout(() => {
+                navigation.navigate('SportSettingScreen', {
+                  sports,
+                });
+              }, 10);
+              
 
-                setTimeout(() => {
-                  navigation.navigate('SportSettingScreen', {
-                    sports,
-                  });
-                }, 10);
-              }
+               
+              
             }}>
             {selectedSettingOption === 0 ? (
               <LinearGradient

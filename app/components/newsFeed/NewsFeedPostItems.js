@@ -337,7 +337,7 @@ const NewsFeedPostItems = memo(
     }, []);
 
     return (
-      <View style={{ flex: 1, marginBottom: 15 }}>
+      <View style={{ flex: 1, marginBottom: 15}}>
         {renderProfileInfo}
         <View>
           {attachedImages && attachedImages?.length === 1 ? (
@@ -519,6 +519,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: 15,
     marginBottom: 15,
+    marginTop:15
   },
   userNameTxt: {
     color: colors.lightBlackColor,

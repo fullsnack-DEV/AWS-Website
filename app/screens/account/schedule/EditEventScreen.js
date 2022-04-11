@@ -1,7 +1,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-plusplus */
-import React, { useEffect, useState, useContext } from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -13,13 +13,13 @@ import {
   Dimensions,
 } from 'react-native';
 import moment from 'moment';
-import { FlatList } from 'react-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { useIsFocused } from '@react-navigation/native';
-import { parseInt } from 'lodash';
+import {useIsFocused} from '@react-navigation/native';
+import {parseInt} from 'lodash';
 import Header from '../../../components/Home/Header';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
@@ -34,14 +34,14 @@ import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal
 import EventSearchLocation from '../../../components/Schedule/EventSearchLocation';
 import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import { editEvent } from '../../../api/Schedule';
+import {editEvent} from '../../../api/Schedule';
 import EventTextInputItem from '../../../components/Schedule/EventTextInputItem';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 import * as Utility from '../../../utils/index';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 
-export default function EditEventScreen({ navigation, route }) {
+export default function EditEventScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   let event_Title = 'Game';
   let aboutDescription = 'Game With';
@@ -129,7 +129,9 @@ export default function EditEventScreen({ navigation, route }) {
   const [aboutDesc, setAboutDesc] = useState(
     `${aboutDescription} ${aboutDescription2}`,
   );
-  const [singleSelectEventColor, setSingleSelectEventColor] = useState(route.params.data.color ?? '');
+  const [singleSelectEventColor, setSingleSelectEventColor] = useState(
+    route.params.data.color ?? '',
+  );
   const [toggle, setToggle] = useState(route.params.data.allDay);
   const [eventStartDateTime, setEventStartdateTime] = useState(
     fromDate || getNearDateTime(new Date()),
@@ -274,73 +276,51 @@ export default function EditEventScreen({ navigation, route }) {
     colorToggleModal();
     setSelectedEventColors([]);
   };
-  const renderColorItem = ({ item }) => {
-    if (item.isNew) {
-      return (
-        <EventColorItem
-          isNew={item.color !== '0'}
-          onChangeColorPressed={onChangeColorPressed}
-          imageStyle={{
-            tintColor:
-              item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
-          }}
-          onItemPress={() => {
-            if (item.color === '0') {
-              setAddColorDoneButton(false);
-              colorToggleModal();
-              setSelectedEventColors([]);
-            } else {
-              eventColors.map(async (createEventItem) => {
-                const createEventData = createEventItem;
-                if (createEventData.id === item.id) {
-                  createEventData.isSelected = true;
-                  setSingleSelectEventColor(createEventData.color);
-                } else {
-                  createEventData.isSelected = false;
-                }
-                return null;
-              });
-
-              setEventColors([...eventColors]);
-            }
-          }}
-          source={
-            item.isNew && item.color === '0'
-              ? images.plus
-              : item.isSelected
-              ? images.check
-              : null
-          }
-          eventColorViewStyle={{
-            backgroundColor:
-              item.color === '0' ? colors.whiteColor : item.color,
-            borderWidth: item.isSelected ? 2 : 0,
-            borderColor: colors.whiteColor,
-            marginRight: wp(3),
-          }}
-        />
-      );
+  const getImageOfColor = (data) => {
+    if (data.isNew && data.isSelected) {
+      return images.check;
     }
+    if (data.isNew) {
+      return images.plus;
+    }
+    if (data.isSelected) {
+      return images.check;
+    }
+    return null;
+  };
+  const renderColorItem = ({item}) => {
     return (
       <EventColorItem
-        source={item.isSelected ? images.check : null}
-        imageStyle={{ tintColor: colors.whiteColor }}
-        onItemPress={() => {
-          eventColors.map(async (createEventItem) => {
-            const createEventData = createEventItem;
-            if (createEventData.id === item.id) {
-              createEventData.isSelected = true;
-              setSingleSelectEventColor(createEventData.color);
-            } else {
-              createEventData.isSelected = false;
-            }
-            return null;
-          });
-
-          setEventColors([...eventColors]);
+        item={item}
+        isNew={!!item?.isNew}
+        onChangeColorPressed={onChangeColorPressed}
+        imageStyle={{
+          tintColor:
+            item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
         }}
+        onItemPress={() => {
+          if (item.color === '0') {
+            setAddColorDoneButton(false);
+            colorToggleModal();
+            setSelectedEventColors([]);
+          } else {
+            eventColors.map(async (createEventItem) => {
+              const createEventData = createEventItem;
+              if (createEventData.id === item.id) {
+                createEventData.isSelected = true;
+                setSingleSelectEventColor(createEventData.color);
+              } else {
+                createEventData.isSelected = false;
+              }
+              return null;
+            });
+
+            setEventColors([...eventColors]);
+          }
+        }}
+        source={getImageOfColor(item)}
         eventColorViewStyle={{
-          backgroundColor: item.color,
+          backgroundColor: item.color === '0' ? colors.whiteColor : item.color,
           borderWidth: item.isSelected ? 2 : 0,
           borderColor: colors.whiteColor,
           marginRight: wp(3),
@@ -365,13 +345,14 @@ export default function EditEventScreen({ navigation, route }) {
         }
         rightComponent={
           <TouchableOpacity
-            style={{ padding: 2 }}
+            style={{padding: 2}}
             onPress={async () => {
-               setloading(true);
+              setloading(true);
               const entity = authContext.entity;
               console.log('Auth:=>', entity);
               const u_id = entity.uid;
-              const entityRole = entity.role === 'user' || entity.role === 'player'
+              const entityRole =
+                entity.role === 'user' || entity.role === 'player'
                   ? 'users'
                   : 'groups';
               const params = {
@@ -394,22 +375,22 @@ export default function EditEventScreen({ navigation, route }) {
               };
               let rules = '';
               if (
-                selectWeekMonth === 'Daily'
-                || selectWeekMonth === 'Weekly'
-                || selectWeekMonth === 'Monthly'
-                || selectWeekMonth === 'Yearly'
+                selectWeekMonth === 'Daily' ||
+                selectWeekMonth === 'Weekly' ||
+                selectWeekMonth === 'Monthly' ||
+                selectWeekMonth === 'Yearly'
               ) {
                 rules = selectWeekMonth.toUpperCase();
               } else if (
-                selectWeekMonth
-                === `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`
+                selectWeekMonth ===
+                `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`
               ) {
                 rules = `MONTHLY;BYDAY=${getTodayDay()
                   .substring(0, 2)
                   .toUpperCase()};BYSETPOS=${countNumberOfWeeks()}`;
               } else if (
-                selectWeekMonth
-                === `Monthly on ${ordinal_suffix_of(new Date().getDate())}`
+                selectWeekMonth ===
+                `Monthly on ${ordinal_suffix_of(new Date().getDate())}`
               ) {
                 rules = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`;
               }
@@ -431,9 +412,9 @@ export default function EditEventScreen({ navigation, route }) {
                 .then((response) => {
                   console.log('Get Response :-', response);
                   setTimeout(() => {
-                    setloading(false)
+                    setloading(false);
                     navigation.goBack();
-                }, 5000);
+                  }, 5000);
                 })
                 .catch((e) => {
                   setloading(false);
@@ -560,16 +541,15 @@ export default function EditEventScreen({ navigation, route }) {
                 ? moment(eventEndDateTime).format('h:mm a')
                 : moment(new Date()).format('h:mm a')
             }
-            containerStyle={{ marginBottom: 8 }}
+            containerStyle={{marginBottom: 8}}
             onDatePress={() => setEndDateVisible(!endDateVisible)}
           />
           <EventMonthlySelection
             title={strings.repeat}
             dataSource={[
-
-              { label: 'Daily', value: 'Daily' },
-              { label: 'Weekly', value: 'Weekly' },
-              { label: 'Monthly', value: 'Monthly' },
+              {label: 'Daily', value: 'Daily'},
+              {label: 'Weekly', value: 'Weekly'},
+              {label: 'Monthly', value: 'Monthly'},
               {
                 label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
                 value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
@@ -578,7 +558,7 @@ export default function EditEventScreen({ navigation, route }) {
                 label: `Monthly on ${new Date().getDate()}`,
                 value: `Monthly on ${new Date().getDate()}`,
               },
-              { label: 'Yearly', value: 'Yearly' },
+              {label: 'Yearly', value: 'Yearly'},
             ]}
             // placeholder={strings.selectTimePlaceholder}
             placeholder={'Does not repeat'}
@@ -601,7 +581,7 @@ export default function EditEventScreen({ navigation, route }) {
                   ? moment(eventUntilDateTime).format('h:mm a')
                   : moment(new Date()).format('h:mm a')
               }
-              containerStyle={{ marginBottom: 12 }}
+              containerStyle={{marginBottom: 12}}
               onDatePress={() => setUntilDateVisible(!untilDateVisible)}
             />
           )}
@@ -641,7 +621,7 @@ export default function EditEventScreen({ navigation, route }) {
 
         <EventItemRender
           title={strings.availableTitle}
-          containerStyle={{ marginTop: 10 }}>
+          containerStyle={{marginTop: 10}}>
           <Text style={styles.availableSubHeader}>
             {strings.availableSubTitle}
           </Text>
@@ -658,7 +638,7 @@ export default function EditEventScreen({ navigation, route }) {
             numColumns={Dimensions.get('window').width > 360 ? 9 : 8}
             scrollEnabled={false}
             data={eventColors}
-            ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
+            ItemSeparatorComponent={() => <View style={{width: wp('1%')}} />}
             renderItem={renderColorItem}
             keyExtractor={(item, index) => index.toString()}
           />
@@ -667,7 +647,7 @@ export default function EditEventScreen({ navigation, route }) {
           isModalVisible={isColorPickerModal}
           onBackdropPress={() => setIsColorPickerModal(false)}
           cancelImageSource={images.cancelImage}
-          containerStyle={{ height: hp('55%') }}
+          containerStyle={{height: hp('55%')}}
           onCancelImagePress={() => setIsColorPickerModal(false)}
           headerCenterText={'Add color'}
           onColorSelected={(selectColor) => {

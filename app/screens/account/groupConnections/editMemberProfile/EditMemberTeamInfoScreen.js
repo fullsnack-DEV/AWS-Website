@@ -38,7 +38,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
   const [switchUser, setSwitchUser] = useState({});
 
   const [groupMemberDetail, setGroupMemberDetail] = useState(route?.params?.groupMemberDetail);
-  const [positions, setPositions] = useState(route.params.groupMemberDetail.positions || [{}]);
+  const [positions, setPositions] = useState(route.params.groupMemberDetail.positions ?? [{}]);
 
   useEffect(() => {
     

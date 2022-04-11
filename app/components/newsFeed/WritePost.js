@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     flexDirection: 'row',
     height: 70,
-    paddingHorizontal: wp('4%'),
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -51,7 +50,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
     borderRadius: 8,
-    height: 28,
+    height: 40,
     marginLeft: wp('4%'),
     justifyContent: 'center',
     paddingLeft: 12,

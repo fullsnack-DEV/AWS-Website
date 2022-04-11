@@ -59,28 +59,54 @@ const GameFeed = ({
       })
   }, [createGamePostData, gameData?.game_id])
 
-  const onPressDone = useCallback((data, postDesc, tagsOfEntity) => {
-    if (postDesc.trim().length > 0 && data?.length === 0) {
-      const dataParams = {
-        text: postDesc,
-        tagged: tagsOfEntity ?? [],
-      };
-      createPostAfterUpload(dataParams);
-    } else if (data) {
-      const imageArray = data.map((dataItem) => (dataItem))
-      const dataParams = {
-        text: postDesc && postDesc,
-        attachments: [],
-        tagged: tagsOfEntity ?? [],
-      };
-      imageUploadContext.uploadData(
+  const onPressDone = useCallback(
+    (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
+      let dataParams = {};
+      const entityID = currentUserData?.group_id  ?? currentUserData?.user_id;
+      if (entityID !== authContext.entity.uid) {
+        if (
+          currentUserData?.entity_type === 'team' ||
+          currentUserData?.entity_type === 'club'
+        ) {
+          dataParams.group_id = currentUserData?.group_id;
+          dataParams.feed_type = currentUserData?.entity_type;
+        }
+        if (
+          currentUserData?.entity_type === 'user' ||
+          currentUserData?.entity_type === 'player'
+        ) {
+          dataParams.user_id = currentUserData?.user_id;
+        }
+      }
+      if (postDesc.trim().length > 0 && data?.length === 0) {
+         dataParams = {
+           ...dataParams,
+          text: postDesc,
+          tagged: tagsOfEntity ?? [],
+          format_tagged_data,
+        };
+       
+        createPostAfterUpload(dataParams);
+      } else if (data) {
+        const imageArray = data.map((dataItem) => dataItem);
+         dataParams = {
+           ...dataParams,
+          text: postDesc && postDesc,
+          attachments: [],
+          tagged: tagsOfEntity ?? [],
+          format_tagged_data,
+        };
+        imageUploadContext.uploadData(
           authContext,
           dataParams,
           imageArray,
           createPostAfterUpload,
-      )
-    }
-  }, [authContext, createPostAfterUpload, imageUploadContext])
+        );
+      }
+    },
+    [authContext, createPostAfterUpload, imageUploadContext],
+  );
+
 
   const onEndFeedReached = useCallback(() => {
     setFooterLoading(true);

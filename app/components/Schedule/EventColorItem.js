@@ -18,12 +18,12 @@ function EventColorItem({
     <TouchableOpacity
       onPress={onItemPress}
       style={[styles.eventColorViewStyle, eventColorViewStyle]}>
-      {(item.isSelected || item.isNew) &&  <Image 
+      {(item?.isSelected || item?.isNew) &&  <Image 
         source={source}
         style={[styles.imageStyle, imageStyle]}
         resizeMode={'contain'}
       />}
-      {isNew && item.color !== '0' && (
+      {isNew && item?.color !== '0' && (
         <TouchableOpacity
           onPress={onChangeColorPressed}
           style={{

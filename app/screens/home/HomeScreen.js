@@ -3155,7 +3155,7 @@ const HomeScreen = ({navigation, route}) => {
 
   const renderMainFlatList = useMemo(
     () => (
-      <View style={{margin: 15, marginTop: 0}}>
+      <View style={{margin: 15, marginTop: 0,marginBottom:0}}>
         {challengeButton()}
         {isUserHome ? (
           <View style={{flex: 1}}>

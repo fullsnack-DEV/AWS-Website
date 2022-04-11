@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
-  Alert,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 
 import {
@@ -17,7 +17,8 @@ import {
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
-import {getJoinedGroups, getTeamsOfClub} from '../../api/Groups';
+import {  getUserFollowerFollowing  } from '../../api/Users';
+
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -28,41 +29,28 @@ export default function JoinedTeamsScreen({route}) {
   const [teamList, setTeamList] = useState([]);
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
+  const [uid] = useState(route?.params?.uid);
+  const [role] = useState(route?.params?.role);
 
   console.log('route?.params?.uid', route?.params?.uid);
   console.log('route?.params?.role', route?.params?.role);
 
   useEffect(() => {
-    getTeamsList();
+    getFollowingList();
   }, []);
 
-  const getTeamsList = () => {
+  const getFollowingList = () => {
     setloading(true);
-    if (route?.params?.role === 'club') {
-      getTeamsOfClub(route?.params?.uid, authContext)
-        .then((response) => {
-          setloading(false);
-          setTeamList(response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    } else {
-      getJoinedGroups('team', authContext)
-        .then((response) => {
-          setloading(false);
-          setTeamList(response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    }
+      getUserFollowerFollowing(uid, role === 'user' ? 'players' : 'groups', 'following', authContext)
+      .then((res) => {
+        setloading(false)
+        setTeamList(res.payload);
+      })
+      .catch((error) => {
+        console.log('error coming', error);
+        setloading(false)
+        Alert.alert(strings.alertmessagetitle, error.message);
+      });
   };
 
   const renderTeams = ({item}) => (
@@ -73,7 +61,7 @@ export default function JoinedTeamsScreen({route}) {
       }}>
       <View>
         <Image
-          source={item?.full_image ? {uri: item?.full_image} : images.team_ph}
+          source={item?.thumbnail ? {uri: item?.thumbnail} : images.team_ph}
           style={styles.entityImg}
         />
       </View>
