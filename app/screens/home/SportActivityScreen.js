@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useLayoutEffect,
   useRef,
+  useEffect,
   useState,
 } from 'react';
 import {
@@ -15,40 +16,33 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   Alert,
-
 } from 'react-native';
 
-import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
-import TCMessageButton from '../../components/TCMessageButton';
-import ActivityLoader from '../../components/loader/ActivityLoader';
+
+import {useIsFocused} from '@react-navigation/native';
 import * as Utility from '../../utils';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import {
-  patchPlayer,
-  patchRegisterRefereeDetails,
-  patchRegisterScorekeeperDetails,
-} from '../../api/Users';
+
+import TCThinDivider from '../../components/TCThinDivider';
+import {getUserDetails} from '../../api/Users';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 
-let image_url = '';
-
-export default function SportActivityScreen({ navigation }) {
+export default function SportActivityScreen({navigation}) {
   const actionSheet = useRef();
-  const addRoleActionSheet = useRef();
+  const isFocused = useIsFocused();
 
-  const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
-  console.log('authContext', authContext.entity.obj);
+  const [loading, setloading] = useState(false);
+  const [userObject, setUserObject] = useState();
 
-  Utility.getStorage('appSetting').then((setting) => {
-    console.log('APPSETTING:=', setting);
-    image_url = setting.base_url_sporticon;
-  });
+  console.log('authContext', authContext.entity.obj);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -63,260 +57,96 @@ export default function SportActivityScreen({ navigation }) {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    if (isFocused) {
+      setloading(true);
+      getUserDetails(authContext?.entity?.uid, authContext)
+        .then((response) => {
+          setloading(false);
+          setUserObject(response.payload);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  }, [authContext, isFocused]);
+
   const keyExtractor = useCallback((item, index) => index.toString(), []);
-  const sportsView = useCallback(
-    ({ item }) => (
-      <View style={styles.sportView}>
-        <LinearGradient
-          colors={[colors.yellowColor, colors.orangeGradientColor]}
-          style={styles.backgroundView}></LinearGradient>
-        <View style={styles.innerViewContainer}>
-          <View style={styles.viewContainer}>
-            <Image
-              source={{
-                uri: `${image_url}${Utility.getSportImage(item.sport, item.type, authContext)}`,
-              }}
-              style={styles.sportIcon}
-            />
-            <View>
-              <Text style={styles.sportName}>{Utility.getSportName(item, authContext)}</Text>
-              <Text style={styles.matchCount}>0 match</Text>
-            </View>
-          </View>
-          {/* <TouchableOpacity onPress={() => patchPlayerIn({ item })}>
-            {item.is_published ? (
-              <Text style={styles.unlistedText}>UNLIST</Text>
-            ) : (
-              <Text style={styles.listedText}>LIST</Text>
-            )}
-          </TouchableOpacity> */}
+
+  const renderSports = ({item}) => (
+    <View>
+      <TouchableWithoutFeedback
+        style={styles.listContainer}
+        onPress={() => {
+          navigation.navigate('ActivitySettingScreen', {sport: item});
+        }}>
+        <View style={{flexDirection: 'row'}}>
+          <Text style={styles.listItems}>
+            {Utility.getSportName(item, authContext)}
+          </Text>
+          <Image source={images.nextArrow} style={styles.nextArrow} />
         </View>
-      </View>
-    ),
-    [],
+      </TouchableWithoutFeedback>
+      <TCThinDivider width="95%" />
+    </View>
   );
-
-  const refereeSportsView = useCallback(
-    ({ item }) => (
-      <View style={styles.sportView}>
-        <LinearGradient
-          colors={[colors.darkThemeColor, colors.darkThemeColor]}
-          style={styles.backgroundView}></LinearGradient>
-        <View style={styles.innerViewContainer}>
-          <View style={styles.viewContainer}>
-            <Image source={{
-                uri: `${image_url}${Utility.getSportImage(item.sport, item.type, authContext)}`,
-            }} style={styles.sportIcon} />
-            <View>
-              <Text style={styles.sportName}>{Utility.getSportName(item, authContext)}</Text>
-              <Text style={styles.matchCount}>0 match</Text>
-            </View>
-          </View>
-          {/* <TouchableOpacity onPress={() => patchReferee({ item })}>
-            {item.is_published ? (
-              <Text style={styles.unlistedText}>UNLIST</Text>
-            ) : (
-              <Text style={styles.listedText}>LIST</Text>
-            )}
-          </TouchableOpacity> */}
-        </View>
-      </View>
-    ),
-    [],
-  );
-
-  const scorekeeperSportsView = useCallback(
-    ({ item }) => (
-      <View style={styles.sportView}>
-        <LinearGradient
-          colors={[colors.blueGradiantEnd, colors.blueGradiantStart]}
-          style={styles.backgroundView}></LinearGradient>
-        <View style={styles.innerViewContainer}>
-          <View style={styles.viewContainer}>
-            <Image source={{
-                uri: `${image_url}${Utility.getSportImage(item.sport, item.type, authContext)}`,
-            }} style={styles.sportIcon} />
-            <View>
-              <Text style={styles.sportName}>{Utility.getSportName(item, authContext)}</Text>
-              <Text style={styles.matchCount}>0 match</Text>
-            </View>
-          </View>
-          {/* <TouchableOpacity onPress={() => patchScorekeeper({ item })}>
-            {item.is_published ? (
-              <Text style={styles.unlistedText}>UNLIST</Text>
-            ) : (
-              <Text style={styles.listedText}>LIST</Text>
-            )}
-          </TouchableOpacity> */}
-        </View>
-      </View>
-    ),
-    [],
-  );
-
-  // eslint-disable-next-line no-unused-vars
-  const patchPlayerIn = ({ item }) => {
-    setloading(true);
-
-    const selectedSport = (
-      authContext?.entity?.obj?.sport_setting?.activity_order
-      || authContext?.entity?.obj?.registered_sports
-    )?.filter((obj) => obj.sport === item.sport)[0];
-
-    const modifiedObj = {
-      ...selectedSport,
-      is_published: !item.is_published,
-    };
-    const players = (
-      authContext?.entity?.obj?.sport_setting?.activity_order
-      || authContext?.entity?.obj?.registered_sports
-    ).map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
-
-    patchPlayer({ registered_sports: players }, authContext)
-      .then(async (res) => {
-        setloading(false);
-        const entity = authContext.entity;
-        entity.auth.user = res.payload;
-        entity.obj = res.payload;
-        authContext.setEntity({ ...entity });
-        await Utility.setStorage('authContextUser', res.payload);
-        await Utility.setStorage('authContextEntity', { ...entity });
-      })
-      .catch((error) => {
-        Alert.alert(error);
-      })
-      .finally(() => setloading(false));
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  const patchScorekeeper = ({ item }) => {
-    setloading(true);
-    const selectedScorekeeperSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
-      (obj) => obj.sport === item.sport,
-    )[0];
-    const modifiedObj = {
-      ...selectedScorekeeperSport,
-      is_published: !item.is_published,
-    };
-    const scorekeepers = authContext?.entity?.obj?.scorekeeper_data.map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
-
-    patchRegisterScorekeeperDetails(
-      { scorekeeper_data: scorekeepers },
-      authContext,
-    )
-      .then(async (res) => {
-        setloading(false);
-        const entity = authContext.entity;
-        entity.auth.user = res.payload;
-        entity.obj = res.payload;
-        authContext.setEntity({ ...entity });
-        await Utility.setStorage('authContextUser', res.payload);
-        await Utility.setStorage('authContextEntity', { ...entity });
-      })
-      .catch((error) => {
-        Alert.alert(error);
-      })
-      .finally(() => setloading(false));
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  const patchReferee = ({ item }) => {
-    setloading(true);
-
-    const selectedRefereeSport = authContext?.entity?.obj?.referee_data?.filter(
-      (obj) => obj.sport === item.sport,
-    )[0];
-
-    const modifiedObj = {
-      ...selectedRefereeSport,
-      is_published: !item.is_published,
-    };
-    const referees = authContext?.entity?.obj?.referee_data.map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
-    patchRegisterRefereeDetails({ referee_data: referees }, authContext)
-      .then(async (res) => {
-        setloading(false);
-        const entity = authContext.entity;
-        entity.auth.user = res.payload;
-        entity.obj = res.payload;
-        authContext.setEntity({ ...entity });
-        await Utility.setStorage('authContextUser', res.payload);
-        await Utility.setStorage('authContextEntity', { ...entity });
-      })
-      .catch((error) => {
-        Alert.alert(error);
-      })
-      .finally(() => setloading(false));
-  };
-
-  const addActivity = () => {
-    addRoleActionSheet.current.show();
-  };
 
   return (
     <ScrollView>
       <ActivityLoader visible={loading} />
-      {(
-        authContext?.entity?.obj?.sport_setting?.activity_order
-        || authContext?.entity?.obj?.registered_sports
-      )?.length > 0 && (
+      {userObject?.registered_sports?.length > 0 && (
         <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>Player in</Text>
+          <Text style={styles.listTitle}>Playing</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
-            data={(
-              authContext?.entity?.obj?.sport_setting?.activity_order
-              || authContext?.entity?.obj?.registered_sports
-            )?.filter((obj) => obj.type === 'player')}
+            data={userObject?.registered_sports?.filter((obj) => obj.is_active)}
             keyExtractor={keyExtractor}
-            renderItem={sportsView}
+            renderItem={renderSports}
           />
         </View>
       )}
 
-      {(
-        authContext?.entity?.obj?.sport_setting?.activity_order
-        || authContext?.entity?.obj?.referee_data
-      )?.length > 0 && (
+      {userObject?.referee_data?.length > 0 && (
         <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>Referee in</Text>
+          <Text style={styles.listTitle}>Refereeing</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
-            data={(
-              authContext?.entity?.obj?.sport_setting?.activity_order
-              || authContext?.entity?.obj?.referee_data
-            )?.filter((obj) => obj.type === 'referee')}
+            data={userObject?.referee_data?.filter((obj) => obj.is_active)}
             keyExtractor={keyExtractor}
-            renderItem={refereeSportsView}
+            renderItem={renderSports}
           />
         </View>
       )}
 
-      {(
-        authContext?.entity?.obj?.sport_setting?.activity_order
-        || authContext?.entity?.obj?.scorekeeper_data
-      )?.length > 0 && (
+      {userObject?.scorekeeper_data?.length > 0 && (
         <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>Scorekeeper in</Text>
+          <Text style={styles.listTitle}>Scorekeepering</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
-            data={(
-              authContext?.entity?.obj?.sport_setting?.activity_order
-              || authContext?.entity?.obj?.scorekeeper_data
-            )?.filter((obj) => obj.type === 'scorekeeper')}
+            data={userObject?.scorekeeper_data?.filter((obj) => obj.is_active)}
             keyExtractor={keyExtractor}
-            renderItem={scorekeeperSportsView}
+            renderItem={renderSports}
           />
         </View>
       )}
 
-      <TCMessageButton
-        title={'+ Add Activity'}
-        width={150}
-        alignSelf={'center'}
-        marginTop={15}
-        marginBottom={40}
-        onPress={() => addActivity()}
-      />
+      <View style={styles.listDeactivateContainer}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.navigate('DeactivatedSportsListScreen');
+          }}>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={styles.listItemsTitle}>
+              Deactivated Sports Acitivies
+            </Text>
+            <Image source={images.nextArrow} style={styles.nextArrow} />
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+
       <ActionSheet
         ref={actionSheet}
         options={['Sports Activity Tags Order', 'Cancel']}
@@ -327,92 +157,21 @@ export default function SportActivityScreen({ navigation }) {
           }
         }}
       />
-
-      <ActionSheet
-        ref={addRoleActionSheet}
-        options={[
-          strings.addPlaying,
-          strings.addRefereeing,
-          strings.addScorekeeping,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={3}
-        onPress={(index) => {
-          if (index === 0) {
-            // Add Playing
-            navigation.navigate('RegisterPlayer', {
-              comeFrom: 'SportActivityScreen',
-            });
-          } else if (index === 1) {
-            // Add Refereeing
-            navigation.navigate('RegisterReferee');
-          } else if (index === 2) {
-            // Add Scorekeeper
-            navigation.navigate('RegisterScorekeeper');
-          }
-        }}
-      />
     </ScrollView>
   );
 }
 const styles = StyleSheet.create({
   listTitle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 20,
-    color: colors.lightBlackColor,
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    color: colors.blackColor,
     marginBottom: 15,
   },
   listContainer: {
     margin: 15,
   },
-  sportView: {
-    flexDirection: 'row',
-    height: 50,
-    borderRadius: 8,
-    backgroundColor: colors.whiteColor,
-    shadowColor: colors.googleColor,
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowRadius: 3,
-    shadowOpacity: 0.2,
-    elevation: 5,
-    marginBottom: 20,
-  },
-  backgroundView: {
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
-    height: 50,
-    width: 8,
-  },
-  innerViewContainer: {
-    flex: 1,
-    flexDirection: 'row',
+  listDeactivateContainer: {
     marginRight: 15,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  sportName: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
-  matchCount: {
-    fontFamily: fonts.RLight,
-    fontSize: 12,
-    color: colors.lightBlackColor,
-  },
-  sportIcon: {
-    height: 24,
-    width: 24,
-    resizeMode: 'cover',
-    marginLeft: 15,
-    marginRight: 15,
-  },
-  viewContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
 
   navigationRightItem: {
@@ -422,16 +181,33 @@ const styles = StyleSheet.create({
     tintColor: colors.blackColor,
     width: 15,
   },
-  // listedText: {
-  //   fontFamily: fonts.RBold,
-  //   fontSize: 12,
-  //   color: colors.lightBlackColor,
-  //   textDecorationLine: 'underline',
-  // },
-  // unlistedText: {
-  //   fontFamily: fonts.RBold,
-  //   fontSize: 12,
-  //   color: colors.redColor,
-  //   textDecorationLine: 'underline',
-  // },
+
+  listItems: {
+    flex: 1,
+    padding: 20,
+    paddingLeft: 15,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.blackColor,
+    alignSelf: 'center',
+  },
+  listItemsTitle: {
+    flex: 1,
+    padding: 20,
+    paddingLeft: 15,
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.blackColor,
+    alignSelf: 'center',
+  },
+
+  nextArrow: {
+    alignSelf: 'center',
+    flex: 0.1,
+    height: 15,
+    marginRight: 10,
+    resizeMode: 'contain',
+    tintColor: colors.lightBlackColor,
+    width: 15,
+  },
 });

@@ -233,6 +233,9 @@ import RequestBasicInfoScreen from '../screens/account/groupConnections/RequestB
 import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/RequestMultipleBasicInfoScreen';
 import EditMemberAuthInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberAuthInfoScreen';
 import MessageNavigator from './MessageNavigator';
+import SportSettingScreen from '../screens/localhome/SportSettingScreen';
+import DeactivatedSportsListScreen from '../components/Home/DeactivatedSportsListScreen';
+import ActivitySettingScreen from '../screens/account/userSettingPrivacy/sportsActivity/ActivitySettingScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2360,6 +2363,39 @@ const AccountNavigator = () => (
       }}
     />
     <Stack.Screen
+      name="ActivitySettingScreen"
+      component={ActivitySettingScreen}
+      options={{
+        title: ' ',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="DeactivatedSportsListScreen"
+      component={DeactivatedSportsListScreen}
+      options={{
+        title: 'Deactivated Sports Activities',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
       name="SportActivityTagScreen"
       component={SportActivityTagScreen}
       options={{
@@ -3185,6 +3221,23 @@ const AccountNavigator = () => (
           },
         } }
       />
+    <Stack.Screen
+      name="SportSettingScreen"
+      component={SportSettingScreen}
+      options={{
+        title: 'Sports',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
   </Stack.Navigator>
 );
 

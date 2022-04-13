@@ -161,11 +161,11 @@ export default function RegisterReferee({navigation}) {
   const nextOnPress = () => {
     const isValid = checkValidation();
     if (isValid) {
-      let bodyParams = {};
-      const referee_data = [];
-      bodyParams.sport = sportsSelection.sport;
-
-      bodyParams.descriptions = description;
+      const bodyParams = {
+        sport : sportsSelection.sport,
+        descriptions :description,
+        is_active : true,
+      };
       const languageData = [];
       if (selectedLanguages?.length) {
         selectedLanguages.map((item) =>
@@ -174,13 +174,11 @@ export default function RegisterReferee({navigation}) {
       }
       bodyParams.language = languageData;
       // bodyParams.certificates = certificate;
-      referee_data[0] = bodyParams;
-      bodyParams = {referee_data};
+    
       console.log('Body::=>', bodyParams);
 
       navigation.navigate('RegisterRefereeForm2', {
         bodyParams,
-        refereesData,
       });
     }
   };

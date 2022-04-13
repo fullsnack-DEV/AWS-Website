@@ -64,7 +64,15 @@ export default function RefereeFee({navigation, route}) {
         },
       });
     } else {
-      const bodyParams = {
+
+
+
+      const refereeSetting = (
+        authContext?.entity?.obj?.referee_data ?? []
+      ).filter((obj) => obj.sport === sportName)?.[0]?.setting;
+  
+      const modifiedSetting = {
+        ...refereeSetting,
         sport: sportName,
         entity_type: 'referee',
         game_fee: {
@@ -72,6 +80,8 @@ export default function RefereeFee({navigation, route}) {
           currency_type: currencyType,
         },
       };
+
+     
       setloading(true);
       const registerdRefereeData = authContext?.entity?.obj?.referee_data?.filter(
         (obj) => obj?.sport !== sportName,
@@ -83,7 +93,7 @@ export default function RefereeFee({navigation, route}) {
 
       selectedSport = {
         ...selectedSport,
-        setting: {...selectedSport?.setting, ...bodyParams},
+        setting: modifiedSetting,
       };
       registerdRefereeData.push(selectedSport);
 

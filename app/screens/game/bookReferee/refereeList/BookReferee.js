@@ -50,7 +50,6 @@ let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
 export default function BookReferee({navigation, route}) {
-
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
@@ -119,7 +118,18 @@ export default function BookReferee({navigation, route}) {
                 nested: {
                   path: 'referee_data',
                   query: {
-                    bool: {must: [{term: {'referee_data.is_published': true}}]},
+                    bool: {
+                      must: [
+                        {term: {'referee_data.is_published': true}},
+                        {
+                          term: {
+                            'referee_data.setting.refereeAvailibility.keyword': {
+                              value: 'On',
+                            },
+                          },
+                        },
+                      ],
+                    },
                   },
                 },
               },
@@ -155,7 +165,6 @@ export default function BookReferee({navigation, route}) {
           },
         });
       }
-
       console.log('refereeQuery:=>', JSON.stringify(refereeQuery));
 
       // Referee query
@@ -184,9 +193,7 @@ export default function BookReferee({navigation, route}) {
   }, []);
 
   const onPressNext = () => {
-    
     console.log('gameData111:=>', gameData);
-
 
     setLoading(true);
     Utils.getSetting(
@@ -201,8 +208,7 @@ export default function BookReferee({navigation, route}) {
         console.log('setting of group or player:::=>', response);
         if (
           response?.responsible_for_referee?.who_secure?.length >
-          (gameData?.referees?.length ?? 0 )
-
+          (gameData?.referees?.length ?? 0)
         ) {
           setLoading(true);
           Utils.getSetting(
@@ -245,8 +251,6 @@ export default function BookReferee({navigation, route}) {
             `You can't book more than ${response?.responsible_for_referee?.who_secure?.length} referee for this match. You can change the number of referees in the reservation details.`,
           );
         }
-
-
       })
       .catch(() => {
         setLoading(false);
@@ -255,11 +259,6 @@ export default function BookReferee({navigation, route}) {
         }, 10);
         // navigation.goBack();
       });
-
-
-
-     
-    
   };
 
   const renderRefereeData = ({item}) => {

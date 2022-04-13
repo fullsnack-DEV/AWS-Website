@@ -641,8 +641,7 @@ const PlayInModule = ({
           if (index === 0) {
             onClose();
             navigation.navigate('LookingForSettingScreen', {
-              sportName: playInObject.sport,
-              sportType: playInObject?.sport_type,
+              sport: playInObject
             });
           }
           if (index === 1) {

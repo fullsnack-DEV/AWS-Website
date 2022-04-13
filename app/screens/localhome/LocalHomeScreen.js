@@ -1398,7 +1398,7 @@ export default function LocalHomeScreen({navigation, route}) {
           <TouchableWithoutFeedback
             onPress={() => {
               setSelectedSettingOption(0);
-             
+
               setTimeout(() => {
                 setSettingPopup(false);
               }, 100);
@@ -1407,10 +1407,6 @@ export default function LocalHomeScreen({navigation, route}) {
                   sports,
                 });
               }, 10);
-              
-
-               
-              
             }}>
             {selectedSettingOption === 0 ? (
               <LinearGradient

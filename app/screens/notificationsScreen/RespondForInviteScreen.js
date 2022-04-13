@@ -37,8 +37,14 @@ export default function RespondForInviteScreen({navigation, route}) {
   const [loading, setLoading] = useState(false);
   const [groupObject, setGroupObject] = useState();
   const [membersList,setMembersList] = useState();
+  const [hideScore, SetHideScore] = useState();
 
  
+  useEffect(() => {
+    setTimeout(() => {
+      SetHideScore(true);
+    }, 5000);
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -114,69 +120,121 @@ export default function RespondForInviteScreen({navigation, route}) {
       });
   };
 
+
+
+  const renderBackground = () => {
+    if (groupObject?.background_thumbnail) {
+      return (
+        <View style={{marginLeft: 10, marginRight: 10,marginTop:10}}>
+          <FastImage
+            source={{uri: groupObject?.background_thumbnail}}
+            resizeMode={'cover'}
+            style={styles.bgImageStyle}>
+            
+            {!hideScore && <ImageBackground
+                source={images.profileLevel}
+                style={{
+                  height: 58,
+                  width: 93,
+                  resizeMode: 'contain',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+              <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 8,
+                  }}>
+                <FastImage
+                    source={images.tc_message_top_icon}
+                    resizeMode={'contain'}
+                    style={{height: 35, width: 35}}
+                  />
+                <View style={{flexDirection: 'column', alignItems: 'center'}}>
+                  <Text
+                      style={{
+                        fontFamily: fonts.RBold,
+                        fontSize: 16,
+                        color: colors.lightBlackColor,
+                      }}>
+                    {0}
+                  </Text>
+                  <Text
+                      style={{
+                        fontFamily: fonts.RMedium,
+                        fontSize: 10,
+                        color: colors.lightBlackColor,
+                      }}>
+                    POINTS
+                  </Text>
+                </View>
+              </View>
+            </ImageBackground>}
+            
+          </FastImage>
+        </View>
+      );
+    }
+    return (
+      <View style={{marginLeft: 10, marginRight: 10,marginTop:10}}>
+        <View style={styles.bgImageStyle}>
+         
+          {!hideScore && <ImageBackground
+              source={images.profileLevel}
+              style={{
+                height: 58,
+                width: 93,
+                resizeMode: 'contain',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+            <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 8,
+                }}>
+              <FastImage
+                  source={images.tc_message_top_icon}
+                  resizeMode={'contain'}
+                  style={{height: 35, width: 35}}
+                />
+              <View style={{flexDirection: 'column', alignItems: 'center'}}>
+                <Text
+                    style={{
+                      fontFamily: fonts.RBold,
+                      fontSize: 16,
+                      color: colors.lightBlackColor,
+                    }}>
+                  {0}
+                </Text>
+                <Text
+                    style={{
+                      fontFamily: fonts.RMedium,
+                      fontSize: 10,
+                      color: colors.lightBlackColor,
+                    }}>
+                  POINTS
+                </Text>
+              </View>
+            </View>
+          </ImageBackground>}
+          
+        </View>
+      </View>
+    );
+  };
+
+  
   return (
     <SafeAreaView>
       <ActivityLoader visible={loading} />
       {!loading && (
         <ScrollView>
-          <View style={{margin: 10}}>
-            <FastImage
-              source={groupObject?.background_thumbnail ? {uri: groupObject?.background_thumbnail} : images.profileLevel}
-              resizeMode={'cover'}
-              style={
-                groupObject?.background_thumbnail
-                  ? styles.bgImageStyle
-                  : [
-                      styles.bgImageStyle,
-                      {backgroundColor: colors.grayBackgroundColor},
-              ]
-              }>
-              
-              <ImageBackground
-                  source={images.profileLevel}
-                  style={{
-                    height: 58,
-                    width: 93,
-                    resizeMode: 'contain',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: 8,
-                    }}>
-                  <FastImage
-                      source={images.tc_message_top_icon}
-                      resizeMode={'contain'}
-                      style={{height: 35, width: 35}}
-                    />
-                  <View
-                      style={{flexDirection: 'column', alignItems: 'center'}}>
-                    <Text
-                        style={{
-                          fontFamily: fonts.RBold,
-                          fontSize: 16,
-                          color: colors.lightBlackColor,
-                        }}>
-                      {0}
-                    </Text>
-                    <Text
-                        style={{
-                          fontFamily: fonts.RMedium,
-                          fontSize: 10,
-                          color: colors.lightBlackColor,
-                        }}>
-                      POINTS
-                    </Text>
-                  </View>
-                </View>
-              </ImageBackground>
-              
-            </FastImage>
-          </View>
+          {renderBackground()}
           <Image
             style={{
               ...styles.profileImageStyle,
@@ -378,7 +436,7 @@ const styles = StyleSheet.create({
   profileImageStyle: {
     height: 82,
     width: 82,
-    marginTop: -45,
+    marginTop: -30,
     alignSelf: 'center',
     borderRadius: 41,
   },

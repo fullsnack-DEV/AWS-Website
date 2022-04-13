@@ -1040,9 +1040,12 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const clubInviteTeam = async () => {
+    setloading(true)
     const params = [userID];
     inviteTeam(params, authContext.entity.uid, authContext)
       .then(() => {
+        setloading(false)
+
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
@@ -1051,11 +1054,7 @@ const HomeScreen = ({navigation, route}) => {
         }, 10);
       })
       .catch((error) => {
-        console.log(
-          'clubInviteTeam error with userID',
-          error,
-          authContext.entity.uid,
-        );
+        setloading(false)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
