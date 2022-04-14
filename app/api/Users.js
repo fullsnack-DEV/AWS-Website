@@ -190,3 +190,17 @@ export const getUserDoubleTeamFollower = (sportName, sportType, authContext) => 
   url: `${Config.BASE_URL}/groups/doubleteam/member?sport=${sportName}&sport_type=${sportType}`,
   authContext,
 })
+
+export const sportActivate = (params, authContext) => makeAPIRequest({
+  method: 'put',
+  url: `${Config.BASE_URL}users/sportactivity`,
+  data: params,
+  authContext,
+})
+
+export const sportDeactivate = (params, authContext) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}users/sportactivity`,
+  data: params,
+  authContext,
+})

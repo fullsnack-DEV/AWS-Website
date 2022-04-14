@@ -827,5 +827,8 @@ const strings = {
 
   teamExist: 'The team name in the sports already exists in the city.',
   sportActivity: 'Sports Activities',
+  refereeRegisteredSuccess: 'Registered as a referee.',
+  scorekeeperRegisteredSuccess: 'Registered as a scorekeeper.'
+
 };
 export default strings;

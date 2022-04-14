@@ -220,6 +220,8 @@ const getTabBarVisibility = (route) => {
     routeName === 'AddOrDeleteSport' ||
     routeName === 'LookingForSettingScreen' ||
     routeName === 'SportActivityScreen' ||
+    routeName === 'DeactivatedSportsListScreen' ||
+    routeName === 'ActivitySettingScreen' ||
     routeName === 'SportActivityTagScreen' ||
     routeName === 'DeactivateSportScreen' ||
     routeName === 'EditRosterScreen' ||

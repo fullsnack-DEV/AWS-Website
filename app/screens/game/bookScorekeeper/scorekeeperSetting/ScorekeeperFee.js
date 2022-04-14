@@ -11,7 +11,6 @@ import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
 
 export default function ScorekeeperFee({navigation, route}) {
-
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
   const authContext = useContext(AuthContext);
@@ -62,7 +61,12 @@ export default function ScorekeeperFee({navigation, route}) {
         },
       });
     } else {
-      const bodyParams = {
+      const scorekeeperSetting = (
+        authContext?.entity?.obj?.scorekeeper_data ?? []
+      ).filter((obj) => obj.sport === sportName)?.[0]?.setting;
+
+      const modifiedSetting = {
+        ...scorekeeperSetting,
         sport: sportName,
         entity_type: 'scorekeeper',
         game_fee: {
@@ -70,6 +74,7 @@ export default function ScorekeeperFee({navigation, route}) {
           currency_type: currencyType,
         },
       };
+
       setloading(true);
       const registerdScorekeeperData = authContext?.entity?.obj?.scorekeeper_data?.filter(
         (obj) => obj?.sport !== sportName,
@@ -81,7 +86,7 @@ export default function ScorekeeperFee({navigation, route}) {
 
       selectedSport = {
         ...selectedSport,
-        setting: {...selectedSport?.setting, ...bodyParams},
+        setting: modifiedSetting,
       };
       registerdScorekeeperData.push(selectedSport);
 

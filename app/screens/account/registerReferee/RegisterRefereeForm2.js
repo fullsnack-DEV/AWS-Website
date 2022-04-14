@@ -46,7 +46,7 @@ export default function RegisterRefereeForm2({navigation, route}) {
   useEffect(() => {
     getUserDetails(authContext?.entity?.uid, authContext)
       .then((res) => {
-        setCurrentRefereeData(res?.payload?.referee_data || []);
+        setCurrentRefereeData(res?.payload?.referee_data ?? []);
       })
       .catch((error) => {
         console.log(error);
@@ -81,24 +81,25 @@ export default function RegisterRefereeForm2({navigation, route}) {
     if (isValid) {
       setloading(true);
       if (route?.params?.bodyParams) {
-        const bodyParams = {...route?.params?.bodyParams};
-        bodyParams.referee_data[0].certificates = certificate;
-        bodyParams.referee_data[0].is_published = true;
-        bodyParams.referee_data[0].type = 'referee';
+        const bodyParams = {...route?.params?.bodyParams,
+          certificates : certificate,
+          is_published : true,
+          type : 'referee',
+        };
+        bodyParams.certificates.pop();
 
-        bodyParams.referee_data[0].certificates.pop();
-        const auth = {
+        const refereeData = currentRefereeData;
+        refereeData.push(bodyParams);
+        
+        const refereeObject = {
           ...authContext?.entity?.obj,
+          referee_data:refereeData,
           sport_setting: {},
         };
 
-        const allData = {
-          ...auth,
-          referee_data: [...bodyParams?.referee_data, ...currentRefereeData],
-        };
-        console.log('All data:=>', allData);
-
-        patchRegisterRefereeDetails(allData, authContext)
+      
+        console.log('All data:=>', refereeObject);
+        patchRegisterRefereeDetails(refereeObject, authContext)
           .then(async (res) => {
             setloading(false);
             console.log('User data:=>', res.payload);
@@ -110,7 +111,20 @@ export default function RegisterRefereeForm2({navigation, route}) {
             authContext.setEntity({...entity});
             await Utility.setStorage('authContextUser', res.payload);
             await Utility.setStorage('authContextEntity', {...entity});
-            navigation.navigate('RegisterRefereeSuccess');
+
+            Alert.alert(
+              strings.refereeRegisteredSuccess,
+              '',
+              [
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    navigation.pop(2);
+                  },
+                },
+              ],
+              {cancelable: false},
+            );
           })
           .catch((error) => {
             Alert.alert(error);

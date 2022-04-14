@@ -641,7 +641,7 @@ export default function AccountScreen({navigation}) {
       setClickedUserType('referee');
 
       const entity = authContext.entity;
-
+      console.log('entity?.objentity?.obj-->',entity?.obj,entity?.obj?.sport);
       if (entity.role === 'user') {
         if (entity?.obj?.referee_data?.length > 0) {
           setVisibleSportsModal(true);
@@ -651,6 +651,7 @@ export default function AccountScreen({navigation}) {
       } else {
         navigation.navigate('RefereeReservationSetting', {
           sportName: entity?.obj?.sport,
+          
         });
       }
     } else if (section === 'Scorekeeper Reservation Settings') {
@@ -667,6 +668,7 @@ export default function AccountScreen({navigation}) {
       } else {
         navigation.navigate('ScorekeeperReservationSetting', {
           sportName: entity?.obj?.sport,
+          
         });
       }
     } else if (section === 'Log out') {
@@ -1231,11 +1233,13 @@ export default function AccountScreen({navigation}) {
           if (clickedUserType === 'referee') {
             navigation.navigate('RefereeReservationSetting', {
               sportName: item.sport,
+             
             });
           }
           if (clickedUserType === 'scorekeeper') {
             navigation.navigate('ScorekeeperReservationSetting', {
               sportName: item.sport,
+              
             });
           }
         }, 300);

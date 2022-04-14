@@ -49,7 +49,7 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
   useEffect(() => {
     getUserDetails(authContext?.entity?.uid, authContext)
       .then((res) => {
-        setCurrentScorekeeperData(res?.payload?.scorekeeper_data || []);
+        setCurrentScorekeeperData(res?.payload?.scorekeeper_data ?? []);
       })
       .catch((error) => {
         console.log(error);
@@ -84,28 +84,26 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
     if (isValid) {
       setloading(true);
       if (route?.params?.bodyParams) {
-        const bodyParams = {...route?.params?.bodyParams};
-        console.log('route?.params?.bodyParams', route?.params?.bodyParams);
-        bodyParams.scorekeeper_data[0].certificates = certificate;
-        bodyParams.scorekeeper_data[0].is_published = true;
-        bodyParams.scorekeeper_data[0].type = 'scorekeeper';
+        const bodyParams = {
+          ...route?.params?.bodyParams,
+          certificates: certificate,
+          is_published: true,
+          type: 'scorekeeper',
+        };
+        bodyParams.certificates.pop();
 
-        bodyParams.scorekeeper_data[0].certificates.pop();
+        const scorekeeperData = currentScorekeeperData;
+        scorekeeperData.push(bodyParams);
 
-        const auth = {
+        const scorekeeperObject = {
           ...authContext?.entity?.obj,
+          scorekeeper_data: scorekeeperData,
           sport_setting: {},
         };
-        const allData = {
-          ...auth,
-          scorekeeper_data: [
-            ...bodyParams?.scorekeeper_data,
-            ...currentScorekeeperData,
-          ],
-        };
-        console.log('All data:=>', allData);
 
-        patchRegisterScorekeeperDetails(allData, authContext)
+        console.log('All data:=>', scorekeeperObject);
+
+        patchRegisterScorekeeperDetails(scorekeeperObject, authContext)
           .then(async (res) => {
             console.log('scorekeeper Data:=>', res.payload);
             setloading(false);
@@ -115,7 +113,20 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
             authContext.setEntity({...entity});
             await Utility.setStorage('authContextUser', res.payload);
             await Utility.setStorage('authContextEntity', {...entity});
-            navigation.navigate('RegisterScorekeeperSuccess');
+
+            Alert.alert(
+              strings.scorekeeperRegisteredSuccess,
+              '',
+              [
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    navigation.pop(2);
+                  },
+                },
+              ],
+              {cancelable: false},
+            );
           })
           .catch((error) => {
             Alert.alert(error);

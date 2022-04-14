@@ -187,11 +187,24 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
     setLoading(true);
     createUserReservation('scorekeepers', bodyParams, authContext)
       .then(() => {
-        const navigationName =
-          route?.params?.navigationName ?? getGameHomeScreen(gameData?.sport);
-        navigation.navigate('BookScorekeeperSuccess', {
-          navigationScreenName: navigationName,
-        });
+        // const navigationName =
+        //   route?.params?.navigationName ?? getGameHomeScreen(gameData?.sport);
+        // navigation.navigate('BookScorekeeperSuccess', {
+        //   navigationScreenName: navigationName,
+        // });
+        Alert.alert(
+          'Scorekeeper approval request sent.',
+          '',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                navigation.pop(2);
+              },
+            },
+          ],
+          {cancelable: false},
+        );
       })
       .catch((error) => {
         setTimeout(() => Alert.alert(strings.appName, error?.message), 200);

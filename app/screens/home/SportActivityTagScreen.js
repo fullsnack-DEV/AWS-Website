@@ -38,10 +38,10 @@ export default function SportActivityTagScreen({ navigation }) {
   const [loading, setloading] = useState(false);
 
   const [selectedRadio, setSelectedRadio] = useState(
-    authContext.entity.obj.sport_setting.selectedOpetion || 0,
+    authContext.entity.obj.sport_setting?.selectedOpetion || 0,
   );
   const [selectedCheck, setSelectedCheck] = useState(
-    authContext.entity.obj.sport_setting.isChecked || false,
+    authContext.entity.obj?.sport_setting?.isChecked || false,
   );
   const [entitySource, setEntitySource] = useState(
     authContext?.entity?.obj?.sport_setting?.entity_order || [

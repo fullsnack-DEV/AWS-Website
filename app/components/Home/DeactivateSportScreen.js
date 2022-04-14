@@ -17,24 +17,19 @@ import fonts from '../../Constants/Fonts';
 import strings from '../../Constants/String';
 import TCGradientButton from '../TCGradientButton';
 import * as Utility from '../../utils';
-import {
-  patchPlayer,
-  patchRegisterRefereeDetails,
-  patchRegisterScorekeeperDetails,
-} from '../../api/Users';
+import {sportDeactivate} from '../../api/Users';
 import images from '../../Constants/ImagePath';
 import {getGroups} from '../../api/Groups';
 
 export default function DeactivateSportScreen({navigation, route}) {
-  const [sportName] = useState(route?.params?.sportName);
-  const [type] = useState(route?.params?.type);
+  const [sportObj] = useState(route?.params?.sport);
   const authContext = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [showLeaveMsg, setShowLeaveMsg] = useState(false);
 
   const [loading, setloading] = useState(false);
 
-  console.log('Entity SportName: => ', sportName);
+  console.log('Entity SportObject: => ', sportObj);
 
   useEffect(() => {
     getGroups(authContext)
@@ -46,10 +41,10 @@ export default function DeactivateSportScreen({navigation, route}) {
         ) {
           if (
             response.payload.clubs.filter(
-              (obj) => obj.sport === sportName && obj.sport_type === type,
+              (obj) => obj.sport === sportObj.sport && obj.sport_type === sportObj.sport_type,
             ).length > 0 ||
             response.payload.teams.filter(
-              (obj) => obj.sport === sportName && obj.sport_type === type,
+              (obj) => obj.sport === sportObj.sport && obj.sport_type === sportObj.sport_type,
             ).length > 0
           ) {
             setShowLeaveMsg(true);
@@ -60,116 +55,43 @@ export default function DeactivateSportScreen({navigation, route}) {
         Alert.alert(strings.alertmessagetitle, error.message);
       });
   }, [authContext]);
-  const patchPlayerIn = () => {
-    setloading(true);
-
-    const selectedSport = (
-      authContext?.entity?.obj?.sport_setting?.activity_order ||
-      authContext?.entity?.obj?.registered_sports
-    )?.filter((obj) => obj.sport === sportName)[0];
-
-    const modifiedObj = {
-      ...selectedSport,
-      is_published: false, //! item.is_published,
-    };
-    const players = (
-      authContext?.entity?.obj?.sport_setting?.activity_order ||
-      authContext?.entity?.obj?.registered_sports
-    ).map((u) => (u.sport !== modifiedObj.sport ? u : modifiedObj));
-
-    patchPlayer({registered_sports: players}, authContext)
-      .then(async (res) => {
-        setloading(false);
-        const entity = authContext.entity;
-        entity.auth.user = res.payload;
-        entity.obj = res.payload;
-        authContext.setEntity({...entity});
-        await Utility.setStorage('authContextUser', res.payload);
-        await Utility.setStorage('authContextEntity', {...entity});
-        setModalVisible(true);
-      })
-      .catch((error) => {
-        Alert.alert(error);
-      })
-      .finally(() => setloading(false));
-  };
-
-  const patchScorekeeper = () => {
-    setloading(true);
-    const selectedScorekeeperSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
-      (obj) => obj.sport === sportName,
-    )[0];
-    const modifiedObj = {
-      ...selectedScorekeeperSport,
-      is_published: false, //! item.is_published,
-    };
-    const scorekeepers = authContext?.entity?.obj?.scorekeeper_data.map((u) =>
-      u.sport !== modifiedObj.sport ? u : modifiedObj,
-    );
-
-    patchRegisterScorekeeperDetails(
-      {scorekeeper_data: scorekeepers},
-      authContext,
-    )
-      .then(async (res) => {
-        setloading(false);
-        const entity = authContext.entity;
-        entity.auth.user = res.payload;
-        entity.obj = res.payload;
-        authContext.setEntity({...entity});
-
-        await Utility.setStorage('authContextUser', res.payload);
-        await Utility.setStorage('authContextEntity', {...entity});
-        setModalVisible(true);
-      })
-      .catch((error) => {
-        Alert.alert(error);
-      })
-      .finally(() => setloading(false));
-  };
-
-  const patchReferee = () => {
-    setloading(true);
-    const selectedRefereeSport = authContext?.entity?.obj?.referee_data?.filter(
-      (obj) => obj.sport === sportName,
-    )[0];
-
-    const modifiedObj = {
-      ...selectedRefereeSport,
-      is_published: false, //! item.is_published,
-    };
-    const referees = authContext?.entity?.obj?.referee_data.map((u) =>
-      u.sport !== modifiedObj.sport ? u : modifiedObj,
-    );
-    patchRegisterRefereeDetails({referee_data: referees}, authContext)
-      .then(async (res) => {
-        setloading(false);
-        const entity = authContext.entity;
-        entity.auth.user = res.payload;
-        entity.obj = res.payload;
-        authContext.setEntity({...entity});
-
-        await Utility.setStorage('authContextUser', res.payload);
-        await Utility.setStorage('authContextEntity', {...entity});
-        setModalVisible(true);
-      })
-      .catch((error) => {
-        Alert.alert(error);
-      })
-      .finally(() => setloading(false));
-  };
 
   const getSpportText = () => {
-    if (type === 'referee') {
-      return `${sportName} in Referee deactivated`;
+    if (sportObj.type === 'referee') {
+      return `${sportObj.sport} in Referee deactivated`;
     }
-    if (type === 'scorekeeper') {
-      return `${sportName} in Scorekeeper deactivated`;
+    if (sportObj.type === 'scorekeeper') {
+      return `${sportObj.sport} in Scorekeeper deactivated`;
     }
-    if (type === 'player') {
-      return `${sportName} in Playing deactivated`;
+    if (sportObj.type === 'player') {
+      return `${sportObj.sport} in Playing deactivated`;
     }
     return null;
+  };
+  const deactivateSport = () => {
+    const body = {
+      sport: sportObj.sport,
+      sport_type: sportObj.sport_type,
+      entity_type: sportObj.type,
+    };
+    sportDeactivate(body, authContext)
+      .then(async (response) => {
+        console.log('deactivate sport ', response);
+        setloading(false);
+        const entity = authContext.entity;
+        entity.auth.user = response.payload;
+        entity.obj = response.payload;
+        authContext.setEntity({...entity});
+        await Utility.setStorage('authContextUser', response.payload);
+        await Utility.setStorage('authContextEntity', {...entity});
+        navigation.pop(2);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e);
+        }, 10);
+      });
   };
 
   return (
@@ -199,11 +121,17 @@ export default function DeactivateSportScreen({navigation, route}) {
             if (showLeaveMsg) {
               Alert.alert(
                 '',
-                `Please leave all teams, clubs and leagues before you deactivate ${sportName}.`,
+                `Please leave all teams, clubs and leagues before you deactivate ${Utility.getSportName(
+                  sportObj,
+                  authContext,
+                )}.`,
               );
             } else {
               Alert.alert(
-                `Are you sure you want to deactivate ${sportName}?`,
+                `Are you sure you want to deactivate ${Utility.getSportName(
+                  sportObj,
+                  authContext,
+                )}?`,
                 '',
                 [
                   {
@@ -214,15 +142,16 @@ export default function DeactivateSportScreen({navigation, route}) {
                     text: 'Deactivate',
                     style: 'destructive',
                     onPress: () => {
-                      if (type === 'referee') {
-                        patchReferee();
-                      }
-                      if (type === 'scorekeeper') {
-                        patchScorekeeper();
-                      }
-                      if (type === 'player') {
-                        patchPlayerIn();
-                      }
+                      // if (type === 'referee') {
+                      //   patchReferee();
+                      // }
+                      // if (type === 'scorekeeper') {
+                      //   patchScorekeeper();
+                      // }
+                      // if (type === 'player') {
+                      //   patchPlayerIn();
+                      // }
+                      deactivateSport();
                     },
                   },
                 ],
