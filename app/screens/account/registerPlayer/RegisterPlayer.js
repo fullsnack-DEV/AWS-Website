@@ -40,6 +40,7 @@ export default function RegisterPlayer({ navigation }) {
   useEffect(() => {
     let sportArr = [];
 
+    console.log('authContext.sports',authContext.sports);
     authContext.sports.map((item) => {
       sportArr = [...sportArr, ...item.format];
       return null;
@@ -95,6 +96,7 @@ export default function RegisterPlayer({ navigation }) {
         const bodyParams = {};
         bodyParams.sport_type = sportsSelection.sport_type;
         bodyParams.sport = sportsSelection.sport;
+        bodyParams.sport_name = sportsSelection.sport_name;
         bodyParams.is_active = true;
         navigation.navigate('RegisterPlayerForm2', {
           bodyParams,

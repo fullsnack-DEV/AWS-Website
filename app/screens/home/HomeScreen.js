@@ -116,7 +116,6 @@ import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
 import * as Utility from '../../utils';
 import {
- 
   QB_ACCOUNT_TYPE,
   QBconnectAndSubscribe,
   QBlogin,
@@ -230,6 +229,10 @@ const HomeScreen = ({navigation, route}) => {
   );
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserData, setCurrentUserData] = useState({});
+  const [myGroupDetail] = useState(
+    authContext.entity.role === 'team' && authContext.entity.obj,
+  );
+
   const [loading, setloading] = useState(false);
   const [userID, setUserID] = useState('');
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
@@ -604,18 +607,18 @@ const HomeScreen = ({navigation, route}) => {
                 resizeMode: 'contain',
                 tintColor: colors.lightBlackColor,
                 marginLeft: 15,
-                marginRight:15
+                marginRight: 15,
               }}
             />
           )}
           <MarqueeText
-                      style={styles.userNavigationTextStyle}
-                      duration={3000}
-                      marqueeOnStart
-                      loop={true}
-                      // marqueeDelay={0}
-                      // marqueeResetDelay={1000}
-                    >
+            style={styles.userNavigationTextStyle}
+            duration={3000}
+            marqueeOnStart
+            loop={true}
+            // marqueeDelay={0}
+            // marqueeResetDelay={1000}
+          >
             {currentUserData?.full_name || currentUserData?.group_name}
           </MarqueeText>
           {/* <Text style={styles.userNavigationTextStyle}>
@@ -1040,11 +1043,11 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const clubInviteTeam = async () => {
-    setloading(true)
+    setloading(true);
     const params = [userID];
     inviteTeam(params, authContext.entity.uid, authContext)
       .then(() => {
-        setloading(false)
+        setloading(false);
 
         setTimeout(() => {
           Alert.alert(
@@ -1054,7 +1057,7 @@ const HomeScreen = ({navigation, route}) => {
         }, 10);
       })
       .catch((error) => {
-        setloading(false)
+        setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -1117,7 +1120,7 @@ const HomeScreen = ({navigation, route}) => {
 
     const uid = user?.entity_type === 'player' ? user?.user_id : user?.group_id;
 
-    navigation.navigate('MessageChat', {userId: uid})   
+    navigation.navigate('MessageChat', {userId: uid});
   };
   const onDotPress = () => {
     offerActionSheet.current.show();
@@ -1326,7 +1329,6 @@ const HomeScreen = ({navigation, route}) => {
         backButtonVisible: true,
         role: groupObject?.entity_type,
       });
-     
     },
     [navigation],
   );
@@ -2686,7 +2688,7 @@ const HomeScreen = ({navigation, route}) => {
     });
   };
   const moveToReview = () => {
-    console.log('move to EntityReviewScreen',averageTeamReview);
+    console.log('move to EntityReviewScreen', averageTeamReview);
     navigation.navigate('EntityReviewScreen', {
       averageTeamReview,
       teamReviewData,
@@ -3083,12 +3085,41 @@ const HomeScreen = ({navigation, route}) => {
       // });
     } else if (challengeButtonType() === 'invite') {
       if (mySettingObject.availibility === 'On') {
-        navigation.navigate('InviteChallengeScreen', {
-          setting: mySettingObject,
-          sportName: currentUserData?.sport,
-          sportType: currentUserData?.sport_type,
-          groupObj: currentUserData,
-        });
+        if (
+          myGroupDetail.sport_type === 'double' &&
+          (!('player_deactivated' in myGroupDetail) ||
+            !myGroupDetail?.player_deactivated) &&
+          (!('player_leaved' in currentUserData) ||
+            !currentUserData?.player_leaved) &&
+          (!('player_leaved' in myGroupDetail) || !myGroupDetail?.player_leaved)
+        ) {
+          navigation.navigate('InviteChallengeScreen', {
+            setting: mySettingObject,
+            sportName: currentUserData?.sport,
+            sportType: currentUserData?.sport_type,
+            groupObj: currentUserData,
+          });
+        } else {
+          console.log('in else');
+          if (
+            'player_deactivated' in myGroupDetail ||
+            myGroupDetail?.player_deactivated
+          ) {
+            Alert.alert('Player deactiveted sport.');
+          } else if (
+            'player_leaved' in currentUserData ||
+            currentUserData?.player_leaved
+          ) {
+            Alert.alert(
+              `${currentUserData?.group_name} have't 2 players in team.`,
+            );
+          } else if (
+            'player_leaved' in myGroupDetail ||
+            myGroupDetail?.player_leaved
+          ) {
+            Alert.alert('You have\'t 2 players in team.');
+          }
+        }
       } else {
         navigation.navigate('ManageChallengeScreen', {
           groupObj: currentUserData,
@@ -3154,7 +3185,7 @@ const HomeScreen = ({navigation, route}) => {
 
   const renderMainFlatList = useMemo(
     () => (
-      <View style={{margin: 15, marginTop: 0,marginBottom:0}}>
+      <View style={{margin: 15, marginTop: 0, marginBottom: 0}}>
         {challengeButton()}
         {isUserHome ? (
           <View style={{flex: 1}}>
@@ -5516,29 +5547,58 @@ const HomeScreen = ({navigation, route}) => {
               const obj = settingObject;
               if (obj?.availibility === 'On') {
                 if (
-                  obj?.game_duration &&
-                  obj?.availibility &&
-                  obj?.special_rules !== undefined &&
-                  obj?.general_rules !== undefined &&
-                  obj?.responsible_for_referee &&
-                  obj?.responsible_for_scorekeeper &&
-                  obj?.game_fee &&
-                  obj?.venue &&
-                  obj?.refund_policy &&
-                  obj?.home_away &&
-                  obj?.game_type
+                  currentUserData.sport_type === 'double' &&
+                  (!('player_deactivated' in currentUserData) ||
+                    !currentUserData?.player_deactivated) &&
+                  (!('player_leaved' in currentUserData) ||
+                    !currentUserData?.player_leaved) &&
+                  (!('player_leaved' in myGroupDetail) ||
+                    !myGroupDetail?.player_leaved)
                 ) {
-                  console.log('currentUserData1111',currentUserData);
+                  if (
+                    obj?.game_duration &&
+                    obj?.availibility &&
+                    obj?.special_rules !== undefined &&
+                    obj?.general_rules !== undefined &&
+                    obj?.responsible_for_referee &&
+                    obj?.responsible_for_scorekeeper &&
+                    obj?.game_fee &&
+                    obj?.venue &&
+                    obj?.refund_policy &&
+                    obj?.home_away &&
+                    obj?.game_type
+                  ) {
+                    console.log('currentUserData1111', currentUserData);
 
-                  setChallengePopup(false);
-                  navigation.navigate('ChallengeScreen', {
-                    setting: obj,
-                    sportName: currentUserData?.sport,
-                    sportType: currentUserData?.sport_type,
-                    groupObj: currentUserData,
-                  });
+                    setChallengePopup(false);
+                    navigation.navigate('ChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData?.sport,
+                      sportType: currentUserData?.sport_type,
+                      groupObj: currentUserData,
+                    });
+                  } else {
+                    Alert.alert(
+                      'This team has no completed challenge setting.',
+                    );
+                  }
                 } else {
-                  Alert.alert('This team has no completed challenge setting.');
+                  console.log('in else continue :', currentUserData);
+                  if (currentUserData?.player_deactivated) {
+                    Alert.alert('Player deactiveted sport.');
+                  } else if (
+                    'player_leaved' in currentUserData &&
+                    currentUserData?.player_leaved
+                  ) {
+                    Alert.alert(
+                      `${currentUserData?.group_name} have't 2 players in team.`,
+                    );
+                  } else if (
+                    'player_leaved' in myGroupDetail &&
+                    myGroupDetail?.player_leaved
+                  ) {
+                    Alert.alert('You have\'t 2 players in team.');
+                  }
                 }
               } else {
                 Alert.alert(
@@ -5579,49 +5639,79 @@ const HomeScreen = ({navigation, route}) => {
               const obj = mySettingObject;
               if (obj?.availibility === 'On') {
                 if (
-                  obj?.game_duration &&
-                  obj?.availibility &&
-                  obj?.special_rules !== undefined &&
-                  obj?.general_rules !== undefined &&
-                  obj?.responsible_for_referee &&
-                  obj?.responsible_for_scorekeeper &&
-                  obj?.game_fee &&
-                  obj?.venue &&
-                  obj?.refund_policy &&
-                  obj?.home_away &&
-                  obj?.game_type
+                  myGroupDetail.sport_type === 'double' &&
+                  (!('player_deactivated' in myGroupDetail) ||
+                    !myGroupDetail?.player_deactivated) &&
+                  (!('player_leaved' in currentUserData) ||
+                    !currentUserData?.player_leaved) &&
+                  (!('player_leaved' in myGroupDetail) ||
+                    !myGroupDetail?.player_leaved)
                 ) {
-                  setChallengePopup(false);
-                  navigation.navigate('InviteChallengeScreen', {
-                    setting: obj,
-                    sportName: currentUserData?.sport,
-                    sportType: currentUserData?.sport_type,
-                    groupObj: currentUserData,
-                  });
-                } else {
-                  setTimeout(() => {
-                    Alert.alert(
-                      'Please complete your all setting before send a challenge invitation.',
-                      '',
-                      [
-                        {
-                          text: 'Cancel',
-                          onPress: () => console.log('Cancel Pressed!'),
-                        },
-                        {
-                          text: 'OK',
-                          onPress: () => {
-                            navigation.navigate('ManageChallengeScreen', {
-                              groupObj: currentUserData,
-                              sportName: currentUserData.sport,
-                              sportType: currentUserData?.sport_type,
-                            });
+                  if (
+                    obj?.game_duration &&
+                    obj?.availibility &&
+                    obj?.special_rules !== undefined &&
+                    obj?.general_rules !== undefined &&
+                    obj?.responsible_for_referee &&
+                    obj?.responsible_for_scorekeeper &&
+                    obj?.game_fee &&
+                    obj?.venue &&
+                    obj?.refund_policy &&
+                    obj?.home_away &&
+                    obj?.game_type
+                  ) {
+                    setChallengePopup(false);
+                    navigation.navigate('InviteChallengeScreen', {
+                      setting: obj,
+                      sportName: currentUserData?.sport,
+                      sportType: currentUserData?.sport_type,
+                      groupObj: currentUserData,
+                    });
+                  } else {
+                    setTimeout(() => {
+                      Alert.alert(
+                        'Please complete your all setting before send a challenge invitation.',
+                        '',
+                        [
+                          {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed!'),
                           },
-                        },
-                      ],
-                      {cancelable: false},
+                          {
+                            text: 'OK',
+                            onPress: () => {
+                              navigation.navigate('ManageChallengeScreen', {
+                                groupObj: currentUserData,
+                                sportName: currentUserData.sport,
+                                sportType: currentUserData?.sport_type,
+                              });
+                            },
+                          },
+                        ],
+                        {cancelable: false},
+                      );
+                    }, 1000);
+                  }
+                } else {
+                  console.log('in else');
+                  if (
+                    'player_deactivated' in myGroupDetail ||
+                    myGroupDetail?.player_deactivated
+                  ) {
+                    Alert.alert('Player deactiveted sport.');
+                  } else if (
+                    'player_leaved' in currentUserData ||
+                    currentUserData?.player_leaved
+                  ) {
+                    Alert.alert(
+                      `${currentUserData?.group_name} have't 2 players in team.`,
                     );
-                  }, 1000);
+                  } else if (
+                    'player_leaved' in myGroupDetail ||
+                    myGroupDetail?.player_leaved
+                  ) {
+                    Alert.alert('You have\'t 2 players in team.');
+                  }
                 }
               } else {
                 Alert.alert('Your availability for challenge is off.');
@@ -6033,7 +6123,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     textAlign: 'left',
     marginLeft: 15,
-    paddingRight:15,
+    paddingRight: 15,
     // paddingLeft:15
   },
 

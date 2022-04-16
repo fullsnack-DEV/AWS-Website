@@ -80,7 +80,10 @@ const Scorekeepers = ({
       console.log('Scorekeeper reservation::=>', res);
       const refData = res?.payload?.filter(
         (item) =>
-          ![ScorekeeperReservationStatus.cancelled].includes(item?.status),
+          ![
+            ScorekeeperReservationStatus.cancelled,
+            ScorekeeperReservationStatus.declined,
+          ].includes(item?.status),
       );
       const cloneRefData = [];
       refData.map((item) => {

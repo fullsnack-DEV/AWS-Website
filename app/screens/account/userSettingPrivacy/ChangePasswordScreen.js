@@ -57,10 +57,18 @@ export default function ChangePasswordScreen({navigation}) {
       Alert.alert(strings.appName, 'Password should be atleast 6 characters.');
       return false;
     }
+    
     if (newPassword !== confirmPassword) {
       Alert.alert(
         strings.appName,
         'New Password and Confirm Password should be same.',
+      );
+      return false;
+    }
+    if (newPassword === oldPassword) {
+      Alert.alert(
+        strings.appName,
+        'New Password and Old Password cannot be same.',
       );
       return false;
     }

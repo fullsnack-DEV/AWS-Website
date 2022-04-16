@@ -48,11 +48,18 @@ export default function Availibility({navigation, route}) {
 
   useEffect(() => {
     if (!route?.params?.settingObj?.availibility) {
-      if (groupObj?.not_available_for_challenge) {
+      if (
+        (groupObj?.player_leaved && groupObj?.player_leaved === true) ||
+        (groupObj?.player_deactivated && groupObj?.player_deactivated === true)
+      ) {
         setAcceptChallenge(false);
       }
     }
-  }, [groupObj?.not_available_for_challenge, route?.params?.settingObj]);
+  }, [
+    groupObj?.player_deactivated,
+    groupObj?.player_leaved,
+    route?.params?.settingObj,
+  ]);
 
   const saveUser = () => {
     const bodyParams = {
@@ -198,7 +205,11 @@ export default function Availibility({navigation, route}) {
           <ToggleView
             isOn={acceptChallenge}
             onToggle={() => {
-              if (groupObj?.not_available_for_challenge) {
+              if (
+                (groupObj?.player_leaved && groupObj?.player_leaved === true) ||
+                (groupObj?.player_deactivated &&
+                  groupObj?.player_deactivated === true)
+              ) {
                 Alert.alert('You can not change availibility setting.');
               } else {
                 setAcceptChallenge(!acceptChallenge);

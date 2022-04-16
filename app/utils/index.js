@@ -791,7 +791,7 @@ export const getSportName = (object, authContext) => {
         item?.sport_type === object?.sport_type &&
         item?.sport === object?.sport,
     )[0];
-    return filterFormat?.sport_name;
+    return filterFormat?.sport_name?.toLowerCase() === 'Tennis'.toLowerCase() ? 'Tennis Singles' : filterFormat?.sport_name ;
   }
   const filterFormat = authContext?.sports?.filter(
     (obj) => obj?.sport === object?.sport,
