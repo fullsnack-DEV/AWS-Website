@@ -78,7 +78,10 @@ const Referees = ({
       getRefereeReservation(gameData?.game_id).then((res) => {
         const refData = res?.payload?.filter(
           (item) =>
-            ![RefereeReservationStatus.cancelled].includes(item?.status),
+            ![
+              RefereeReservationStatus.cancelled,
+              RefereeReservationStatus.declined,
+            ].includes(item?.status),
         );
         const cloneRefData = [];
         refData.map((item) => {

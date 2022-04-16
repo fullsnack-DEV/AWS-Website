@@ -1,5 +1,5 @@
 import React, {
- useCallback, useState, useEffect, useLayoutEffect, useContext,
+ useCallback, useState, useLayoutEffect, useContext,
  } from 'react';
 import {
   View,
@@ -8,31 +8,25 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Platform,
+  FlatList
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // eslint-disable-next-line import/no-unresolved
-import DraggableFlatList from 'react-native-draggable-flatlist';
-import Modal from 'react-native-modal';
+// import DraggableFlatList from 'react-native-draggable-flatlist';
 import * as Utility from '../../utils';
 
 import {widthPercentageToDP} from '../../utils';
 import colors from '../../Constants/Colors';
-import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import SportsListView from '../../components/localHome/SportsListView';
 import AuthContext from '../../auth/context';
 
-let selectedSports = [];
 
 export default function SportSettingScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
-  const [systemSports, setSystemSports] = useState([]);
 
-  const [sportsListPopup, setSportsListPopup] = useState(false);
-  const [sportsSource, setSportsSource] = useState(route?.params?.sports);
+  const [sportsSource] = useState(route?.params?.sports);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -42,13 +36,9 @@ export default function SportSettingScreen({ navigation, route }) {
         </Text>
       ),
     });
-  }, [navigation, sportsSource, systemSports]);
+  }, [navigation, sportsSource]);
 
-  useEffect(() => {
-    if (route?.params?.sports) {
-      setSportsSource(route?.params?.sports);
-    }
-  }, [route?.params?.sports]);
+  
   const onPressSave = () => {
     console.log('sportsSource', sportsSource);
     Utility.setStorage('sportSetting', sportsSource).then(() => {
@@ -68,43 +58,10 @@ export default function SportSettingScreen({ navigation, route }) {
     [],
   );
 
-  const isIconCheckedOrNot = useCallback(({ item, index }) => {
-      if (item.sport === 'All') {
 
-        if (item.isChecked) {
-          systemSports[index].isChecked = false;
-          systemSports.forEach((x, i) => {
-            systemSports[i].isChecked = false;
-          });
-        } else {
-          systemSports[index].isChecked = true;
-          systemSports.forEach((x, i) => {
-            systemSports[i].isChecked = true;
-          });
-        }
-      } else {
-        if (item.isChecked) {
-          systemSports[index].isChecked = false;
-        } else {
-          systemSports[index].isChecked = true;
-        }
-        if (systemSports.length === selectedSports.length) {
-          systemSports[0].isChecked = true;
-        } else {
-          systemSports[0].isChecked = false;
-        }
-      }
-      setSystemSports([...systemSports]);
-      selectedSports = systemSports.filter(
-        (e) => e.isChecked && e.sport !== 'All',
-      );
-      console.log('Slected sports', selectedSports);
-    },
-    [systemSports],
-  );
   return (
     <View style={{flex: 1}}>
-      <DraggableFlatList
+      {/* <DraggableFlatList
         showsHorizontalScrollIndicator={false}
         data={sportsSource}
         keyExtractor={keyExtractor}
@@ -125,6 +82,19 @@ export default function SportSettingScreen({ navigation, route }) {
           setSportsSource([...data]);
           console.log('DATATATATATA:=', data);
         }}
+      /> */}
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        data={sportsSource}
+        keyExtractor={keyExtractor}
+        renderItem={renderSportsView}
+        style={{
+          width: '100%',
+          alignContent: 'center',
+          marginBottom: 15,
+          paddingVertical: 15,
+        }}
+       
       />
       <SafeAreaView>
         <TouchableOpacity
@@ -132,56 +102,13 @@ export default function SportSettingScreen({ navigation, route }) {
           onPress={() => {
             // setSportsListPopup(true);
             navigation.navigate('AddOrDeleteSport', {
-              defaultSports: sportsSource,
+              sports: sportsSource,
             });
           }}>
           <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
         </TouchableOpacity>
       </SafeAreaView>
-      <Modal
-        onBackdropPress={() => setSportsListPopup(false)}
-        backdropOpacity={1}
-        animationType="slide"
-        hasBackdrop
-        style={{
-          flex: 1,
-          margin: 0,
-          backgroundColor: colors.blackOpacityColor,
-        }}
-        visible={sportsListPopup}>
-        <View style={[styles.bottomPopupContainer, {height: '80%'}]}>
-          <View style={styles.viewsContainer}>
-            <Text
-              onPress={() => setSportsListPopup(false)}
-              style={styles.cancelText}>
-              Cancel
-            </Text>
-            <Text style={styles.locationText}>Add or delete Sports </Text>
-            <Text
-              style={styles.doneText}
-              onPress={() => {
-                setSportsSource([
-                  ...[
-                    {
-                      isChecked: true,
-                      sport: 'All',
-                    },
-                  ],
-                  ...selectedSports,
-                ]);
-
-                setTimeout(() => {
-                  setSportsListPopup(false);
-                }, 10);
-                console.log('DONE::', selectedSports);
-              }}>
-              {'Apply'}
-            </Text>
-          </View>
-          <TCThinDivider width={'100%'} marginBottom={15} />
-          <SportsListView sports={systemSports} onSelect={isIconCheckedOrNot} />
-        </View>
-      </Modal>
+      
     </View>
   );
 }
@@ -242,50 +169,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     marginBottom: 15,
   },
-  bottomPopupContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 34 : 0,
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.googleColor,
-        shadowOffset: {width: 0, height: 3},
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
-  },
-  cancelText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.veryLightGray,
-  },
-  viewsContainer: {
-    height: 60,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 20,
-    marginRight: 20,
-  },
-  doneText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.themeColor,
-  },
-  locationText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
+  
   nextButtonStyle: {
     fontFamily: fonts.RRegular,
     fontSize: 16,

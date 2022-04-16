@@ -275,8 +275,8 @@ const MessageInviteScreen = ({ navigation }) => {
             <Text style={styles.eventTitleTextStyle}>Invite</Text>
           }
           rightComponent={
-            <TouchableOpacity onPress={handlePress}>
-              <Text style={{ ...styles.eventTextStyle, fontSize: 14 }}>
+            <TouchableOpacity onPress={handlePress} disabled={selectedInvitees.length < 1}>
+              <Text style={{ ...styles.eventTextStyle, fontSize: 14 ,opacity: selectedInvitees.length < 1 ? 0.5 : 1}}>
                 {
                   selectedInvitees
                   && (selectedInvitees.length > 1)

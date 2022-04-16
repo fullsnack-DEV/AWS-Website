@@ -24,6 +24,7 @@ import {
   TextInput,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import {useIsFocused} from '@react-navigation/native';
 import {Modalize} from 'react-native-modalize';
 import {Portal} from 'react-native-portalize';
 import QB from 'quickblox-react-native-sdk';
@@ -72,6 +73,7 @@ const GradiantContainer = ({style, ...props}) => (
 const MessageChat = ({route, navigation}) => {
   const videoPlayerRef = useRef();
   const commentModalRef = useRef(null);
+  const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -190,45 +192,47 @@ const MessageChat = ({route, navigation}) => {
   }, [route?.params?.userId]);
 
   useEffect(() => {
-    if (dialogData) {
-      if (!route?.params?.dialog) {
-        setDialogMenu({...dialogData, ...route?.params?.dialog});
-      }
-      const getUser = async () => {
-        setMyUserId(authContext.entity.QB.id);
-        setLoading(true);
-        await getMessages();
-        setTimeout(() => onInputBoxFocus(), 200);
-        setLoading(false);
-      };
-      getUser()
-        .then(() => {
-          QBgetUserDetail(
-            QB.users.USERS_FILTER.FIELD.ID,
-            QB.users.USERS_FILTER.TYPE.STRING,
-            [dialogData?.occupantsIds].join(),
-          )
-            .then((res) => {
-              console.log('USER:::::===> ', res?.users);
-              setLoading(false);
-              setOccupantsData([...res?.users]);
-            })
-            .catch((e) => {
-              setLoading(false);
-              console.log(e);
-            });
-        })
-        .catch(() => setLoading(false));
+    if (isFocused) {
+      if (dialogData) {
+        if (!route?.params?.dialog) {
+          setDialogMenu({...dialogData, ...route?.params?.dialog});
+        }
+        const getUser = async () => {
+          setMyUserId(authContext.entity.QB.id);
+          setLoading(true);
+          await getMessages();
+          setTimeout(() => onInputBoxFocus(), 200);
+          setLoading(false);
+        };
+        getUser()
+          .then(() => {
+            QBgetUserDetail(
+              QB.users.USERS_FILTER.FIELD.ID,
+              QB.users.USERS_FILTER.TYPE.STRING,
+              [dialogData?.occupantsIds].join(),
+            )
+              .then((res) => {
+                console.log('USER:::::===> ', res?.users);
+                setLoading(false);
+                setOccupantsData([...res?.users]);
+              })
+              .catch((e) => {
+                setLoading(false);
+                console.log(e);
+              });
+          })
+          .catch(() => setLoading(false));
 
-      if (chatType === QB_DIALOG_TYPE.GROUP && !dialogData?.isJoined) {
-        QB.chat.joinDialog({dialogId: dialogData?.dialogId});
+        if (chatType === QB_DIALOG_TYPE.GROUP && !dialogData?.isJoined) {
+          QB.chat.joinDialog({dialogId: dialogData?.dialogId});
+        }
+        QbMessageEmitter.addListener(
+          QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
+          newMessageHandler,
+        );
       }
-      QbMessageEmitter.addListener(
-        QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
-        newMessageHandler,
-      );
     }
-  }, [dialogData]);
+  }, [dialogData, isFocused]);
 
   const newMessageHandler = (event) => {
     const {type, payload} = event;
@@ -517,7 +521,7 @@ const MessageChat = ({route, navigation}) => {
             </TouchableOpacity>
             {occupantsData?.length > 2 && (
               <TouchableOpacity
-              itSlop={getHitSlop(15)}
+                itSlop={getHitSlop(15)}
                 onPress={() => {
                   commentModalRef.current.open();
                   // navigation.setParams({participants: [occupantsData]});
@@ -910,6 +914,7 @@ const MessageChat = ({route, navigation}) => {
                 </TouchableOpacity>
               )}
               <FlatList
+                extraData={occupantsData}
                 data={occupantsData}
                 renderItem={renderRow}
                 keyExtractor={(item, index) => index.toString()}
