@@ -50,17 +50,9 @@ export default function AddBirthdayScreen({navigation}) {
         <TouchableOpacity
           onPress={() => {
             // navigation.navigate('LoginScreen');
-            navigation.dispatch(StackActions.replace('LoginScreen'));
+            navigation.dispatch(StackActions.replace('WelcomeScreen'));
           }}>
-          <Image
-            source={images.backArrow}
-            style={{
-              height: 20,
-              width: 15,
-              marginLeft: 15,
-              tintColor: colors.whiteColor,
-            }}
-          />
+          <Text style={styles.quitText}>{strings.quitText}</Text>
         </TouchableOpacity>
       ),
     });
@@ -229,5 +221,13 @@ const styles = StyleSheet.create({
     marginRight: 35,
     textAlign: 'left',
     top: 25,
+  },
+  quitText: {
+    height: 25,
+    width: 60,
+    marginLeft: 20,
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 15,
   },
 });

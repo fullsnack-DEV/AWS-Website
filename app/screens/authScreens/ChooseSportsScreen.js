@@ -27,6 +27,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import * as Utility from '../../utils/index';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import {getGroupIndex} from '../../api/elasticSearch';
 
 export default function ChooseSportsScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
@@ -127,6 +128,121 @@ export default function ChooseSportsScreen({navigation, route}) {
       })
       .catch(() => setloading(false));
   };
+  const getTeamsData = async () => {
+    console.log('Call getTeamData');
+    setloading(true);
+    const queryParams = {
+      size: 100,
+      query: {
+        bool: {
+          must: [
+            {
+              bool: {
+                should: [],
+              },
+            },
+            {
+              bool: {
+                should: [],
+              },
+            },
+          ],
+        },
+      },
+    };
+    if (selected.length === 1) {
+      queryParams.query.bool.must[0].bool.should.push({
+        multi_match: {
+          query: `${selected[0]}`,
+          fields: ['sport', 'sports.sport'],
+        },
+      });
+    } else if (selected.length === 2) {
+      queryParams.query.bool.must[0].bool.should.push({
+        multi_match: {
+          query: `${selected[0]}`,
+          fields: ['sport', 'sports.sport'],
+        },
+      });
+      queryParams.query.bool.must[0].bool.should.push({
+        multi_match: {
+          query: `${selected[1]}`,
+          fields: ['sport', 'sports.sport'],
+        },
+      });
+    }
+
+    if (route.params.city !== '') {
+      queryParams.query.bool.must[1].bool.should.push({
+        match: {
+          city: {query: route?.params?.city, boost: 4},
+        },
+      });
+    }
+    if (route.params.state !== '') {
+      queryParams.query.bool.must[1].bool.should.push({
+        match: {
+          state_abbr: {
+            query: route.params.state,
+            boost: 3,
+          },
+        },
+      });
+    }
+    if (route.params.state !== '') {
+      queryParams.query.bool.must[1].bool.should.push({
+        match: {
+          country: {
+            query: route.params.country,
+            boost: 2,
+          },
+        },
+      });
+    }
+    queryParams.query.bool.must[1].bool.should.push({
+      match: {
+        entity_type: {
+          query: 'team',
+          boost: 0,
+        },
+      },
+    });
+    queryParams.query.bool.must[1].bool.should.push({
+      match: {
+        entity_type: {
+          query: 'club',
+          boost: 0,
+        },
+      },
+    });
+    console.log('query --->', JSON.stringify(queryParams));
+    getGroupIndex(queryParams)
+      .then((response) => {
+        setloading(false);
+        console.log('groupIndex:=>', response);
+        updateProfile({sports: selected}, () => {
+          if (response) {
+            navigation.navigate('FollowTeams', {
+              teamData: response,
+              city: route.params.city,
+              state: route.params.state,
+              country: route.params.country,
+              sports: selected,
+            });
+          } else {
+            setloading(false);
+            finalStepSignUp();
+          }
+        });
+      })
+      .catch((e) => {
+        setloading(false);
+        console.log(e);
+        setTimeout(() => {
+          Alert.alert(`${strings.alertmessagetitle} - 1`, e.message);
+        }, 10);
+      });
+  };
 
   const renderItem = ({item, index}) => {
     console.log('Image url :=>', `${image_base_url}${item.player_image}`);
@@ -192,19 +308,12 @@ export default function ChooseSportsScreen({navigation, route}) {
         title={'CONTINUE'}
         extraStyle={{position: 'absolute', bottom: hp('7%')}}
         onPress={() => {
-          updateProfile({sports: selected}, () => {
-            if (route.params && route.params.teamData) {
-              navigation.navigate('FollowTeams', {
-                teamData: route.params.teamData,
-                city: route.params.city,
-                state: route.params.state,
-                country: route.params.country,
-                sports: selected,
-              });
-            } else {
-              finalStepSignUp();
-            }
-          });
+          if (selected.length > 0) {
+            getTeamsData();
+          } else {
+            Alert.alert(strings.appName, 'Please choose at least one sport.');
+            return false;
+          }
         }}
       />
     </LinearGradient>

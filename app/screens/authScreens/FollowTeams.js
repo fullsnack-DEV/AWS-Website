@@ -28,6 +28,7 @@ import fonts from '../../Constants/Fonts';
 
 export default function FollowTeams({route, navigation}) {
   const [teams, setTeams] = useState(['1']);
+
   const [followed, setFollowed] = useState(['1']);
   const [loading, setloading] = useState(false);
 
@@ -45,10 +46,21 @@ export default function FollowTeams({route, navigation}) {
             const routeName =
               routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
             if (routeName === 'ChooseSportsScreen') {
-              navigation.pop(1);
+              // navigation.pop(1);
+              navigation.navigate('ChooseSportsScreen', {
+                city: route.params.city,
+                state: route.params.state,
+                country: route.params.country,
+                teamData: route.params.teamData,
+              });
             } else {
-              navigation.navigate('ChooseSportsScreen');
-              // navigation.navigate.push('ChooseLocationScreen');
+              // navigation.navigate('ChooseSportsScreen');
+              navigation.navigate('ChooseSportsScreen', {
+                city: route.params.city,
+                state: route.params.state,
+                country: route.params.country,
+                teamData: route.params.teamData,
+              });
             }
           }}>
           <Image
@@ -64,9 +76,53 @@ export default function FollowTeams({route, navigation}) {
       ),
     });
   }, [navigation]);
+
+  /*
+  const isClubSport = ({sportName}) => {
+    const data = filterData.filter((obj) => obj.sport === sportName);
+    return data.length > 0;
+  };
+
   useEffect(() => {
     console.log('Team Data... :::', route.params.teamData);
+    let dataObj = [];
+    if (
+      route.params.sports[0] === 'Soccer' &&
+      route.params.sports.length === 1
+    ) {
+      dataObj = route.params.teamData.filter((item) => {
+        console.log('Sport string ==>', item.sports_string);
+        if (item.sport === 'soccer') {
+          return item;
+        }
+        return false;
+      });
+    } else if (
+      route.params.sports[0] === 'Tennis' &&
+      route.params.sports.length === 1
+    ) {
+      dataObj = route.params.teamData.filter((item) => {
+        if (item.sport === 'tennis') {
+          return item;
+        }
+        return false;
+      });
+    } else {
+      console.log('Both sport selected', route.params.teamData);
+      dataObj = route.params.teamData.filter((item) => {
+        if (item.sport === 'tennis' || item.sport === 'soccer') {
+          return item;
+        }
+        return false;
+      });
+    }
 
+    console.log('Sort dataObj-->', dataObj);
+    setFilterData([...dataObj]);
+    console.log('filter data-->', filterData);
+  }, []);
+  */
+  useEffect(() => {
     const setFollowData = () => {
       const arr = [];
       for (const tempData of route.params.teamData) {
@@ -74,6 +130,8 @@ export default function FollowTeams({route, navigation}) {
 
         arr.push(tempData);
       }
+      console.log('teams', teams);
+
       setTeams(arr);
     };
     setFollowData();

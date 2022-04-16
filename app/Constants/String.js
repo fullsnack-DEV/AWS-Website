@@ -5,15 +5,17 @@ const strings = {
   titleBasic: 'Townscup',
   townsCupTagLine: 'All teams in the world',
   welCome: 'Welcome',
-  welcomeText: 'You\'re only a few steps away from joining Townscup.',
+  welcomeText: "You're only a few steps away from joining Townscup.",
   fbText: 'Continue with Facebook',
   googleText: 'Continue with Google',
   appleText: 'Continue with Apple',
   signUpText: 'Sign up with email',
   alreadyRegisteredMessage: 'Email address is already registered.',
+  userNotFound: 'The email and password you entered do not match.',
   validEmailMessage: 'Please use a valid email address.',
   alreadyMember: 'Already a member?',
   loginText: 'Log in',
+  quitText: 'Quit',
   orText: 'OR',
   emailPlaceHolder: 'Email',
   allDay: 'All day',
@@ -44,9 +46,10 @@ const strings = {
   checkEmailDescText:
     'We have sent you an email with a link to reset your password. It may take a few minutes for you to receive it.',
   signTerms:
-    'By continuing you agree to Towny\'s Terms of Service, We will manage information about you as described in our PrivacyPolicy and Cookie Policy.',
+    "By continuing you agree to Towny's Terms of Service, We will manage information about you as described in our PrivacyPolicy and Cookie Policy.",
   resetText: 'Reset your password.',
   nextTitle: 'NEXT',
+  emailNotRegisterd: 'This email is not registered.',
   varificationLinkSend: 'Verification email was sent successfully.',
   deactivateTitle: 'DEACTIVATE ACTIVITY',
   acceptTitle: 'ACCEPT',
@@ -69,7 +72,7 @@ const strings = {
   save: 'Save',
   done: 'Done',
   yes: 'Yes',
-  passwordText: 'Password (at least 6 characters)',
+  passwordText: 'Password (at least 8 characters)',
   confirmPasswordText: 'Confirm Password',
   // Password message
   passwordCanNotBlank: 'Password cannot be blank.',
@@ -82,8 +85,8 @@ const strings = {
   requestSent: 'Request Sent',
   offered: 'offered',
   chiefReferee: 'CHIEF REFEREE',
-  cancelled: 'cancelled',
-  Cancelled: 'Cancelled',
+  cancelled: 'canceled',
+  Cancelled: 'Canceled',
   requestCancelled: 'requestcancelled',
   reqCan: 'Request Cancelled',
   accepted: 'accepted',
@@ -121,7 +124,7 @@ const strings = {
   clubTeamTitle3: 'FC Barcelona',
   leagueTeamTitle: 'UEFA Champions League',
 
-  locationText: 'Choose your current city.',
+  locationText: 'Choose your city.',
   locationPlaceholderText: 'Search by city or postal code',
   sportText: 'Select your favourite sports.',
 
@@ -168,13 +171,13 @@ const strings = {
   player2Title: 'Player 2',
   searchHereText: 'Search here',
   searchText: 'Search',
-  genderTitle: 'Choose player\'s gender.',
+  genderTitle: "Choose player's gender.",
   curruencyType: 'Currency Type',
   feeCyclePlaceholder: 'Fees cycle',
   selectCode: 'Country Code',
   selectGenderPlaceholder: 'Select Gender',
   selectCurruencyTypePlaceholder: 'Select Currency Type',
-  membersAgeTitle: 'Range player\'s ages.',
+  membersAgeTitle: "Range player's ages.",
   maxPlaceholder: 'Max',
   minPlaceholder: 'Min',
   locationTitle: 'Current City',
@@ -366,7 +369,7 @@ const strings = {
   oldPassword: 'Current Password',
   newPassword: 'New Password',
   confirmPassword: 'Confirm Password',
-  atLeastText: '(At least 6 characters)',
+  atLeastText: '(At least 8 characters)',
 
   // reservation
 
@@ -500,8 +503,8 @@ const strings = {
   membersTitle: 'Members',
   sport: 'Sport',
   hometown: 'Home town',
-  membersgender: 'Member\'s gender',
-  membersage: 'Member\'s age',
+  membersgender: "Member's gender",
+  membersage: "Member's age",
   language: 'Language',
   languagesName: 'Korean, English, Hindi, Italian',
   membershipregfee: 'Membership registration fee',
@@ -661,7 +664,7 @@ const strings = {
   privacySettings: 'Privacy Settings',
   gameEndedAlertText: 'Game is ended, so you can not change reservation.',
   enterValidGameFee: 'Please enter valid game fee.',
-  whatsGoingText: 'What\'s going on?',
+  whatsGoingText: "What's going on?",
   writeText: 'Please write some text or select any image.',
   cannotCancelReservationAfterGameStartText:
     'Reservation cannot be cancel after game game has beed started.',
@@ -722,7 +725,7 @@ const strings = {
   photoUploadClubTitle:
     'Review the club, and add the profile photo and cover photo.',
 
-  playersGenderText: 'Player\'s Gender',
+  playersGenderText: "Player's Gender",
 
   manageChallengeShhetItem: 'Manage Challenge',
   challengeSettingTitle:

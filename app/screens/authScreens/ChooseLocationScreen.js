@@ -165,6 +165,7 @@ export default function ChooseLocationScreen({navigation}) {
     if (searchLocationText.length >= 3) {
       searchLocations(searchLocationText)
         .then((response) => {
+          console.log('Response ---8888', response);
           setNoData(false);
           setCityData(response.predictions);
         })
@@ -182,59 +183,20 @@ export default function ChooseLocationScreen({navigation}) {
   const getTeamsDataByCurrentLocation = async () => {
     setLoading(true);
     console.log('Curruent location data:=>', currentLocation);
-    // const queryParams = {
-    //   state: currentLocation.stateAbbr,
-    //   city: currentLocation.city,
-    // };
-    const queryParams = {
-      size: 50,
-      query: {
-        bool: {
-          must: [
-            {
-              multi_match: {
-                query: currentLocation.country,
-                fields: ['city', 'country', 'state'],
-              },
-            },
-            {term: {entity_type: 'team'}},
-          ],
-        },
-      },
+    const userData = {
+      city: currentLocation.city,
+      state_abbr: currentLocation.stateAbbr,
+      country: currentLocation.country,
     };
-
-    getGroupIndex(queryParams)
-      .then((response) => {
-        const userData = {
-          city: currentLocation.city,
-          state_abbr: currentLocation.stateAbbr,
-          country: currentLocation.country,
-        };
-        updateProfile(userData, () => {
-          if (response.length > 0) {
-            navigation.navigate('TotalTeamsScreen', {
-              city: currentLocation?.city,
-              state: currentLocation?.stateAbbr,
-              country: currentLocation?.country,
-              totalTeams: response?.length,
-              teamData: response,
-            });
-          } else {
-            navigation.navigate('ChooseSportsScreen', {
-              city: currentLocation?.city,
-              state: currentLocation?.stateAbbr,
-              country: currentLocation?.country,
-            });
-          }
-        });
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
+    updateProfile(userData, () => {
+      navigation.navigate('ChooseSportsScreen', {
+        city: currentLocation?.city,
+        state: currentLocation?.stateAbbr,
+        country: currentLocation?.country,
       });
+      console.log('Total teams from current location ==> ==>', response);
+    });
   };
-
   const updateProfile = async (params, callback) => {
     setLoading(true);
     updateUserProfile(params, authContext)
@@ -257,62 +219,19 @@ export default function ChooseLocationScreen({navigation}) {
   const getTeamsData = async (item) => {
     console.log('item location data:=>', item);
     setLoading(true);
-    // const queryParams = {
-    //   state: item?.terms?.[1]?.value,
-    //   city: item?.terms?.[0]?.value,
-    // };
-    const queryParams = {
-      size: 50,
-      query: {
-        bool: {
-          must: [
-            {
-              multi_match: {
-                query: item?.terms?.[0]?.value,
-                fields: ['city', 'country', 'state'],
-              },
-            },
-            {term: {entity_type: 'team'}},
-          ],
-        },
-      },
+    const userData = {
+      city: item?.terms?.[0]?.value,
+      state_abbr: item?.terms?.[1]?.value,
+      country: item?.terms?.[2]?.value,
     };
-
-    getGroupIndex(queryParams)
-      .then((response) => {
-        setLoading(false);
-        console.log('groupIndex:=>', response);
-        const userData = {
-          city: item?.terms?.[0]?.value,
-          state_abbr: item?.terms?.[1]?.value,
-          country: item?.terms?.[2]?.value,
-        };
-        updateProfile(userData, () => {
-          if (response.length > 0) {
-            navigation.navigate('TotalTeamsScreen', {
-              city: item?.terms?.[0]?.value,
-              state: item?.terms?.[1]?.value,
-              country: item?.terms?.[2]?.value,
-              totalTeams: response?.length,
-              teamData: response,
-            });
-          } else {
-            navigation.navigate('ChooseSportsScreen', {
-              city: item?.terms?.[0]?.value,
-              state: item?.terms?.[1]?.value,
-              country: item?.terms?.[2]?.value,
-            });
-          }
-        });
-      })
-      .catch((e) => {
-        setLoading(false);
-
-        console.log(e);
-        setTimeout(() => {
-          Alert.alert(`${strings.alertmessagetitle} - 1`, e.message);
-        }, 10);
+    updateProfile(userData, () => {
+      setLoading(false);
+      navigation.navigate('ChooseSportsScreen', {
+        city: item?.terms?.[0]?.value,
+        state: item?.terms?.[1]?.value,
+        country: item?.terms?.[2]?.value,
       });
+    });
   };
 
   const renderItem = ({item, index}) => (

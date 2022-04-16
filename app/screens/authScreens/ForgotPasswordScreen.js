@@ -58,7 +58,14 @@ export default function ForgotPasswordScreen({navigation}) {
       .catch((e) => {
         setLoading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          let message = e.message;
+          if (e.code === 'auth/user-not-found') {
+            message = strings.emailNotRegisterd;
+          }
+          if (e.code === 'auth/network-request-failed') {
+            message = strings.networkConnectivityErrorMessage;
+          }
+          Alert.alert(strings.alertmessagetitle, message);
         }, 10);
       });
   };
