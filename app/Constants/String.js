@@ -5,7 +5,7 @@ const strings = {
   titleBasic: 'Townscup',
   townsCupTagLine: 'All teams in the world',
   welCome: 'Welcome',
-  welcomeText: "You're only a few steps away from joining Townscup.",
+  welcomeText: 'You\'re only a few steps away from joining Townscup.',
   fbText: 'Continue with Facebook',
   googleText: 'Continue with Google',
   appleText: 'Continue with Apple',
@@ -46,7 +46,7 @@ const strings = {
   checkEmailDescText:
     'We have sent you an email with a link to reset your password. It may take a few minutes for you to receive it.',
   signTerms:
-    "By continuing you agree to Towny's Terms of Service, We will manage information about you as described in our PrivacyPolicy and Cookie Policy.",
+    'By continuing you agree to Towny\'s Terms of Service, We will manage information about you as described in our PrivacyPolicy and Cookie Policy.',
   resetText: 'Reset your password.',
   nextTitle: 'NEXT',
   emailNotRegisterd: 'This email is not registered.',
@@ -171,13 +171,13 @@ const strings = {
   player2Title: 'Player 2',
   searchHereText: 'Search here',
   searchText: 'Search',
-  genderTitle: "Choose player's gender.",
+  genderTitle: 'Choose player\'s gender.',
   curruencyType: 'Currency Type',
   feeCyclePlaceholder: 'Fees cycle',
   selectCode: 'Country Code',
   selectGenderPlaceholder: 'Select Gender',
   selectCurruencyTypePlaceholder: 'Select Currency Type',
-  membersAgeTitle: "Range player's ages.",
+  membersAgeTitle: 'Range player\'s ages.',
   maxPlaceholder: 'Max',
   minPlaceholder: 'Min',
   locationTitle: 'Current City',
@@ -503,8 +503,8 @@ const strings = {
   membersTitle: 'Members',
   sport: 'Sport',
   hometown: 'Home town',
-  membersgender: "Member's gender",
-  membersage: "Member's age",
+  membersgender: 'Member\'s gender',
+  membersage: 'Member\'s age',
   language: 'Language',
   languagesName: 'Korean, English, Hindi, Italian',
   membershipregfee: 'Membership registration fee',
@@ -664,7 +664,7 @@ const strings = {
   privacySettings: 'Privacy Settings',
   gameEndedAlertText: 'Game is ended, so you can not change reservation.',
   enterValidGameFee: 'Please enter valid game fee.',
-  whatsGoingText: "What's going on?",
+  whatsGoingText: 'What\'s going on?',
   writeText: 'Please write some text or select any image.',
   cannotCancelReservationAfterGameStartText:
     'Reservation cannot be cancel after game game has beed started.',
@@ -725,7 +725,7 @@ const strings = {
   photoUploadClubTitle:
     'Review the club, and add the profile photo and cover photo.',
 
-  playersGenderText: "Player's Gender",
+  playersGenderText: 'Player\'s Gender',
 
   manageChallengeShhetItem: 'Manage Challenge',
   challengeSettingTitle:
@@ -831,7 +831,6 @@ const strings = {
   teamExist: 'The team name in the sports already exists in the city.',
   sportActivity: 'Sports Activities',
   refereeRegisteredSuccess: 'Registered as a referee.',
-  scorekeeperRegisteredSuccess: 'Registered as a scorekeeper.'
-
+  scorekeeperRegisteredSuccess: 'Registered as a scorekeeper.',
 };
 export default strings;

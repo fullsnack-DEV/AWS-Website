@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState, useLayoutEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 import {
   widthPercentageToDP as wp,

@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
 import {
   StyleSheet,

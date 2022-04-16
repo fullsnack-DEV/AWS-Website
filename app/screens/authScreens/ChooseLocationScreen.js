@@ -194,7 +194,6 @@ export default function ChooseLocationScreen({navigation}) {
         state: currentLocation?.stateAbbr,
         country: currentLocation?.country,
       });
-      console.log('Total teams from current location ==> ==>', response);
     });
   };
   const updateProfile = async (params, callback) => {
