@@ -14,7 +14,7 @@ import {patchPlayer} from '../../../../api/Users';
 export default function AvailibilityScorekeeoer({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
-    const authContext = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
   const [acceptChallenge, setAcceptChallenge] = useState(
@@ -35,16 +35,19 @@ export default function AvailibilityScorekeeoer({navigation, route}) {
         </Text>
       ),
     });
-  }, [navigation]);
+  }, [navigation, acceptChallenge]);
 
   const onSavePressed = () => {
-    const bodyParams = {
+    const scorekeeperSetting = (
+      authContext?.entity?.obj?.scorekeeper_data ?? []
+    ).filter((obj) => obj.sport === sportName)?.[0]?.setting;
+
+    const modifiedSetting = {
+      ...scorekeeperSetting,
       sport: sportName,
       entity_type: 'scorekeeper',
       scorekeeperAvailibility: acceptChallenge ? 'On' : 'Off',
     };
-
-    console.log('data::=>', bodyParams);
 
     setloading(true);
     const registerdScorekeeperData = authContext?.entity?.obj?.scorekeeper_data?.filter(
@@ -57,7 +60,7 @@ export default function AvailibilityScorekeeoer({navigation, route}) {
 
     selectedSport = {
       ...selectedSport,
-      setting: {...selectedSport?.setting, ...bodyParams},
+      setting: modifiedSetting,
     };
     registerdScorekeeperData.push(selectedSport);
 

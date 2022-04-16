@@ -28,6 +28,7 @@ import React, {
      const authContext = useContext(AuthContext);
 
      const [sportName] = useState(route?.params?.sportName);
+
      const getSettings = useCallback(() => {
       setSettingObject((authContext?.entity?.obj?.referee_data ?? []).filter((obj) => obj.sport === sportName)?.[0]?.setting);
      }, [authContext, sportName]);
@@ -54,11 +55,13 @@ import React, {
              settingObj: settingObject,
              comeFrom: 'RefereeReservationSetting',
              sportName,
+             
            });
          } else {
            navigation.navigate('AvailibilityReferee', {
              comeFrom: 'RefereeReservationSetting',
              sportName,
+             
            });
          }
        } else if (opetions === 'Referee Fee') {

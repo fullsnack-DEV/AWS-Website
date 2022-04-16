@@ -321,7 +321,7 @@ const strings = {
   titlePlaceholder: 'Enter Title',
   createTitleValue: 'Welcome Season Party',
   titleValue: 'Games with Vancouver Whitecaps',
-  about: 'Description',
+  about: 'About',
   aboutPlaceholder: 'Enter Description',
   createAboutValue:
     'I love playing soccer, Association football, commonly known as football or soccer, [a] is a sport played between seven teams of eleven with a spherical ball.',
@@ -830,5 +830,8 @@ const strings = {
 
   teamExist: 'The team name in the sports already exists in the city.',
   sportActivity: 'Sports Activities',
+  refereeRegisteredSuccess: 'Registered as a referee.',
+  scorekeeperRegisteredSuccess: 'Registered as a scorekeeper.'
+
 };
 export default strings;

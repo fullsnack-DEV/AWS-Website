@@ -130,5 +130,7 @@ opacityThemeColor: 'rgba(255,78,0,0.5)',
 lightGrayBackground: '#F8F8F8',
   completeTextColor: '#00c168',
   messageSenderColor: '#FFD798',
+  modalHandleColor: '#DADBDA',
+
 };
 export default colors;

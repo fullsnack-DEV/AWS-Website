@@ -87,6 +87,7 @@ const FeedsScreen = ({navigation}) => {
 
   const createPostAfterUpload = useCallback(
     (dataParams) => {
+      console.log('create post -> feedsScreen');
       createPost(dataParams, authContext)
         .then((response) => {
           setPostData((pData) => [response.payload, ...pData]);
@@ -100,16 +101,36 @@ const FeedsScreen = ({navigation}) => {
 
   const onPressDone = useCallback(
     (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
+      let dataParams = {};
+      const entityID = currentUserDetail?.group_id  ?? currentUserDetail?.user_id;
+      if (entityID !== authContext.entity.uid) {
+        if (
+          currentUserDetail?.entity_type === 'team' ||
+          currentUserDetail?.entity_type === 'club'
+        ) {
+          dataParams.group_id = currentUserDetail?.group_id;
+          dataParams.feed_type = currentUserDetail?.entity_type;
+        }
+        if (
+          currentUserDetail?.entity_type === 'user' ||
+          currentUserDetail?.entity_type === 'player'
+        ) {
+          dataParams.user_id = currentUserDetail?.user_id;
+        }
+      }
       if (postDesc.trim().length > 0 && data?.length === 0) {
-        const dataParams = {
+         dataParams = {
+           ...dataParams,
           text: postDesc,
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
         };
+       
         createPostAfterUpload(dataParams);
       } else if (data) {
         const imageArray = data.map((dataItem) => dataItem);
-        const dataParams = {
+         dataParams = {
+           ...dataParams,
           text: postDesc && postDesc,
           attachments: [],
           tagged: tagsOfEntity ?? [],

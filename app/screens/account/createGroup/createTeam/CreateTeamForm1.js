@@ -32,7 +32,6 @@ import TCLabel from '../../../../components/TCLabel';
 import TCFormProgress from '../../../../components/TCFormProgress';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
-import {getGroupIndex} from '../../../../api/elasticSearch';
 import {getHitSlop, getSportName} from '../../../../utils';
 
 export default function CreateTeamForm1({navigation, route}) {
@@ -145,79 +144,125 @@ export default function CreateTeamForm1({navigation, route}) {
   };
 
   const nextOnPress = () => {
-    const query = {
-      _source: ['group_id'],
-      query: {
-        bool: {
-          must: [
-            {
-              term: {
-                'group_name.keyword': {
-                  value: teamName,
-                  case_insensitive: true,
-                },
-              },
-            },
-            {term: {entity_type: 'team'}},
-            {
-              term: {
-                'city.keyword': {
-                  value: city,
-                  case_insensitive: true,
-                },
-              },
-            },
-          ],
-        },
-      },
+    const obj = {
+      sport: sportsSelection.sport,
+      sport_type: sportsSelection.sport_type,
+      group_name: teamName,
+      city,
+      state_abbr: state,
+      country,
+      currency_type: authContext?.entity?.obj?.currency_type,
     };
+    if (parentGroupID) {
+      const tempIds = [];
+      tempIds.push(parentGroupID);
+      obj.parent_groups = tempIds;
+    }
+    console.log('Form1 Object:=>', obj);
 
-    getGroupIndex(query).then((teams) => {
-      console.log('hiringPlayers::=>', teams);
-      if (teams.length === 0) {
-        const obj = {
-          sport: sportsSelection.sport,
-          sport_type: sportsSelection.sport_type,
-          group_name: teamName,
-          city,
-          state_abbr: state,
-          country,
-          currency_type: authContext?.entity?.obj?.currency_type,
-        };
-        if (parentGroupID) {
-          const tempIds = [];
-          tempIds.push(parentGroupID);
-          obj.parent_groups = tempIds;
-        }
-        console.log('Form1 Object:=>', obj);
-
-        if (
-          sportsSelection.sport === 'tennis' &&
-          sportsSelection.sport_type === 'double' &&
-          authContext?.entity?.role === ('user' || 'player')
-        ) {
-          if (followersData?.length > 0) {
-            navigation.navigate('CreateTeamForm2', {
-              followersList: followersData,
-              createTeamForm1: {
-                ...obj,
-              },
-            });
-          } else {
-            Alert.alert(strings.noFollowersTocreateTeam);
-          }
-        } else {
-          navigation.navigate('CreateTeamForm2', {
-            createTeamForm1: {
-              ...obj,
-            },
-          });
-        }
+    if (
+      sportsSelection.sport === 'tennis' &&
+      sportsSelection.sport_type === 'double' &&
+      authContext?.entity?.role === ('user' || 'player')
+    ) {
+      if (followersData?.length > 0) {
+        navigation.navigate('CreateTeamForm2', {
+          followersList: followersData,
+          createTeamForm1: {
+            ...obj,
+          },
+        });
       } else {
-        Alert.alert(strings.teamExist);
+        Alert.alert(strings.noFollowersTocreateTeam);
       }
-    });
+    } else {
+      navigation.navigate('CreateTeamForm2', {
+        createTeamForm1: {
+          ...obj,
+        },
+      });
+    }
   };
+
+
+
+// we can't add duplicate team name in same city with same sport 
+
+
+  // const nextOnPress = () => {
+  //   const query = {
+  //     _source: ['group_id'],
+  //     query: {
+  //       bool: {
+  //         must: [
+  //           {
+  //             term: {
+  //               'group_name.keyword': {
+  //                 value: teamName,
+  //                 case_insensitive: true,
+  //               },
+  //             },
+  //           },
+  //           {term: {entity_type: 'team'}},
+  //           {
+  //             term: {
+  //               'city.keyword': {
+  //                 value: city,
+  //                 case_insensitive: true,
+  //               },
+  //             },
+  //           },
+  //         ],
+  //       },
+  //     },
+  //   };
+
+  //   getGroupIndex(query).then((teams) => {
+      
+  //     if (teams.length === 0) {
+  //       const obj = {
+  //         sport: sportsSelection.sport,
+  //         sport_type: sportsSelection.sport_type,
+  //         group_name: teamName,
+  //         city,
+  //         state_abbr: state,
+  //         country,
+  //         currency_type: authContext?.entity?.obj?.currency_type,
+  //       };
+  //       if (parentGroupID) {
+  //         const tempIds = [];
+  //         tempIds.push(parentGroupID);
+  //         obj.parent_groups = tempIds;
+  //       }
+  //       console.log('Form1 Object:=>', obj);
+
+  //       if (
+  //         sportsSelection.sport === 'tennis' &&
+  //         sportsSelection.sport_type === 'double' &&
+  //         authContext?.entity?.role === ('user' || 'player')
+  //       ) {
+  //         if (followersData?.length > 0) {
+  //           navigation.navigate('CreateTeamForm2', {
+  //             followersList: followersData,
+  //             createTeamForm1: {
+  //               ...obj,
+  //             },
+  //           });
+  //         } else {
+  //           Alert.alert(strings.noFollowersTocreateTeam);
+  //         }
+  //       } else {
+  //         navigation.navigate('CreateTeamForm2', {
+  //           createTeamForm1: {
+  //             ...obj,
+  //           },
+  //         });
+  //       }
+  //     } else {
+  //       Alert.alert(strings.teamExist);
+  //     }
+  //   });
+  // };
 
   return (
     <>

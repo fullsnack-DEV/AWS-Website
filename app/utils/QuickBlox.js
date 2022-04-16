@@ -237,11 +237,12 @@ export const QBlogin = (
   userAccountType = QB_ACCOUNT_TYPE.USER,
 ) =>
   new Promise((resolve, reject) => {
+    const loginParams = {
+      login: uniqueID ?? 123456,
+      password: QB_Auth_Password ?? 'townscup',
+    };
     QB.auth
-      .login({
-        login: uniqueID,
-        password: QB_Auth_Password,
-      })
+      .login(loginParams)
       .then((res) => {
         resolve(res);
       })
@@ -598,9 +599,13 @@ export const QBconnectAndSubscribe = async (entity) => {
   const connected = await QBChatConnected();
   if (entity?.QB) {
     const {id} = entity.QB;
+    const connectParams = {
+      userId: id ?? 12345,
+      password: QB_Auth_Password ?? 'passw0rd!'
+    };
     if (!connected) {
       return QB.chat
-        .connect({userId: id, password: QB_Auth_Password})
+        .connect(connectParams)
         .then(async () => {
           console.log('QB connected successfully');
           return true;

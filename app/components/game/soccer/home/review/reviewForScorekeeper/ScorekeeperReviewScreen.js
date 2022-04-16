@@ -100,14 +100,15 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
   ]);
 
   useEffect(() => {
-    if (route?.params?.gameReviewData?.results[0]?.object) {
-      const reviewObj = JSON.parse(
-        route?.params?.gameReviewData?.results?.[0]?.object,
-      )?.scorekeeperReview;
+    if (route?.params?.gameReviewData) {
+      // const reviewObj = JSON.parse(
+      //   route?.params?.gameReviewData?.results?.[0]?.object,
+      // )?.scorekeeperReview;
+      const reviewObj = route?.params?.gameReviewData;
       console.log('Edit review Data::=>', reviewObj);
       setReviewsData({ ...reviewObj });
     }
-  }, [route?.params?.gameReviewData?.results[0]?.object]);
+  }, [route?.params?.gameReviewData]);
 
   useEffect(() => {
     if (!route?.params?.gameReviewData) {
@@ -116,15 +117,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
     }
   }, []);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text onPress={createReview} style={styles.nextButtonStyle}>
-          {'Done'}
-        </Text>
-      ),
-    });
-  }, [navigation]);
+  
 
   const loadSliderAttributes = (attributes) => {
     setLoading(true);
@@ -156,14 +149,19 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
   };
 
   const isValidReview = () => {
-    const exceptKey = ['comment', 'attachments', 'tagged','format_tagged_data'];
+    const starKeys = [];
+    starAttributesForScorekeeper?.map((star) => {
+      starKeys.push(star?.name);
+    });
+    const includeKey = [...starKeys,...sliderAttributesForScorekeeper]
     let isValid = true;
-    console.log('reviewsData ::=>', reviewsData);
     const reviews = _.cloneDeep(reviewsData);
-
     Object.keys(reviews).map((key) => {
-      if (!exceptKey.includes(key) && isValid && Number(reviews?.[key]) <= 0) {
-        isValid = false;
+      if (includeKey.includes(key) && isValid) {
+        if(Number(reviews?.[key]) <= 0){
+          isValid = false;
+        }
+        
       }
       return key;
     });
@@ -190,7 +188,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
   };
 
   const patchOrAddScorekeeperReview = (data) => {
-    if (reviewsData !== {}) {
+    if (userData?.review_id) {
       setLoading(true);
       console.log('Edited Review Object reviewData::=>', data);
       const teamReview = { ...data };
@@ -252,7 +250,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
 
   const uploadMedia = () => {
     setLoading(false); // CHANGED
-    if (reviewsData?.attachments?.length) {
+    
       onPressReview(
         1,
         !!userData?.review_id,
@@ -260,9 +258,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
         userData?.user_id,
       );
       navigation.goBack();
-    } else {
-      patchOrAddScorekeeperReview(reviewsData);
-    }
+    
     // if (reviewsData?.attachments?.length) {
     //   const UrlArray = [];
     //   const pathArray = [];

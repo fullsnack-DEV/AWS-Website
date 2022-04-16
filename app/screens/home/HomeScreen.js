@@ -799,6 +799,7 @@ const HomeScreen = ({navigation, route}) => {
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
         };
+        console.log('createPostAfterUpload in home');
         createPostAfterUpload(dataParams);
       } else if (data) {
         const imageArray = data.map((dataItem) => dataItem);
@@ -1039,9 +1040,12 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const clubInviteTeam = async () => {
+    setloading(true)
     const params = [userID];
     inviteTeam(params, authContext.entity.uid, authContext)
       .then(() => {
+        setloading(false)
+
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
@@ -1050,11 +1054,7 @@ const HomeScreen = ({navigation, route}) => {
         }, 10);
       })
       .catch((error) => {
-        console.log(
-          'clubInviteTeam error with userID',
-          error,
-          authContext.entity.uid,
-        );
+        setloading(false)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -1322,10 +1322,11 @@ const HomeScreen = ({navigation, route}) => {
   const onTeamPress = useCallback(
     (groupObject) => {
       navigation.push('HomeScreen', {
-        uid: groupObject.group_id,
+        uid: groupObject?.group_id,
         backButtonVisible: true,
-        role: groupObject.entity_type,
+        role: groupObject?.entity_type,
       });
+     
     },
     [navigation],
   );
@@ -3090,6 +3091,7 @@ const HomeScreen = ({navigation, route}) => {
         });
       } else {
         navigation.navigate('ManageChallengeScreen', {
+          groupObj: currentUserData,
           sportName: currentUserData?.sport,
           sportType: currentUserData?.sport_type,
         });
@@ -3152,7 +3154,7 @@ const HomeScreen = ({navigation, route}) => {
 
   const renderMainFlatList = useMemo(
     () => (
-      <View style={{margin: 15, marginTop: 0}}>
+      <View style={{margin: 15, marginTop: 0,marginBottom:0}}>
         {challengeButton()}
         {isUserHome ? (
           <View style={{flex: 1}}>
@@ -3329,7 +3331,7 @@ const HomeScreen = ({navigation, route}) => {
         // setReviewDetailModalVisible(!reviewDetailModalVisible)
         // setRefereeInfoModalVisible(!refereeInfoModalVisible)
 
-        //  onProfilePress(item)
+        // onProfilePress(item)
       };
       const onLikeButtonPress = () => onLikePress(item);
       return (
@@ -3531,6 +3533,7 @@ const HomeScreen = ({navigation, route}) => {
         setTimeout(() => {
           console.log('Sport name:=>', item.sport);
           navigation.navigate('ManageChallengeScreen', {
+            groupObj: currentUserData,
             sportName: item.sport,
             sportType: currentUserData?.sport_type,
           });
@@ -4016,6 +4019,7 @@ const HomeScreen = ({navigation, route}) => {
             }
             if (entity.role === 'team') {
               navigation.navigate('ManageChallengeScreen', {
+                groupObj: currentUserData,
                 sportName: currentUserData?.sport,
                 sportType: currentUserData?.sport_type,
               });
@@ -4152,7 +4156,7 @@ const HomeScreen = ({navigation, route}) => {
             homeFeedHeaderComponent={MainHeaderComponent}
             currentTab={currentTab}
             currentUserData={currentUserData}
-            isAdmin={isAdmin}
+            isAdmin={route?.params?.uid === authContext.entity.uid}
             navigation={navigation}
             setGalleryData={() => {}}
             userID={route?.params?.uid ?? authContext.entity?.uid}
@@ -5331,6 +5335,7 @@ const HomeScreen = ({navigation, route}) => {
                 confirmationRef.current.close();
                 if (route?.params?.role !== 'club') {
                   navigation.navigate('ManageChallengeScreen', {
+                    groupObj: currentUserData,
                     sportName: route?.params?.entityObj?.sport,
                     sportType: currentUserData?.sport_type,
                   });
@@ -5607,6 +5612,7 @@ const HomeScreen = ({navigation, route}) => {
                           text: 'OK',
                           onPress: () => {
                             navigation.navigate('ManageChallengeScreen', {
+                              groupObj: currentUserData,
                               sportName: currentUserData.sport,
                               sportType: currentUserData?.sport_type,
                             });

@@ -43,11 +43,14 @@ import {
 import strings from '../../../../Constants/String';
 import images from '../../../../Constants/ImagePath';
 import {getSetting} from '../../../../screens/challenge/manageChallenge/settingUtility';
+import TCThinDivider from '../../../TCThinDivider';
 
 let selectedRefereeData;
 const Referees = ({
   gameData,
   isAdmin,
+  isRefereeAdmin,
+  isScorekeeperAdmin,
   userRole,
   followUser,
   unFollowUser,
@@ -168,6 +171,7 @@ const Referees = ({
 
   const isCheckReviewButton = useCallback(
     (reservationDetail) => {
+      console.log('gameData?.status', isScorekeeperAdmin);
       if (
         gameData?.status === GameStatus.ended &&
         ![
@@ -176,14 +180,20 @@ const Referees = ({
           RefereeReservationStatus.declined,
         ].includes(reservationDetail?.status) &&
         !checkReviewExpired(gameData?.actual_enddatetime) &&
-        isAdmin
+        (isAdmin || isScorekeeperAdmin || isRefereeAdmin)
       ) {
         return true;
       }
 
       return false;
     },
-    [gameData?.actual_enddatetime, gameData?.status, isAdmin],
+    [
+      gameData?.actual_enddatetime,
+      gameData?.status,
+      isAdmin,
+      isRefereeAdmin,
+      isScorekeeperAdmin,
+    ],
   );
 
   const renderReferees = useCallback(
@@ -218,6 +228,7 @@ const Referees = ({
       );
     },
     [
+      authContext?.entity?.uid,
       followUser,
       getRefereeStatusMessage,
       isAdmin,
@@ -299,7 +310,8 @@ const Referees = ({
         (obj) => obj?.sport === gameData?.sport,
       ).length > 0 &&
       referee?.filter((obj) => obj?.referee_id === authContext?.entity?.uid)
-        .length === 0
+        .length > 0 &&
+      gameData?.status !== GameStatus.ended
     ) {
       return true;
     }
@@ -307,8 +319,9 @@ const Referees = ({
   }, [
     authContext.entity?.auth?.user?.referee_data,
     authContext.entity.role,
-    authContext.entity.uid,
+    authContext.entity?.uid,
     gameData?.sport,
+    gameData?.status,
     referee,
   ]);
 
@@ -508,6 +521,7 @@ const Referees = ({
           data={referee} // gameData?.referees
           renderItem={renderReferees}
           ListEmptyComponent={ListEmptyComponent}
+          ItemSeparatorComponent={() => <TCThinDivider />}
         />
         {renderBookRefereeButton}
         <ActionSheet

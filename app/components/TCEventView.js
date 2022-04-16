@@ -22,14 +22,13 @@ export default function TCEventView({
   data,
   onThreeDotPress,
   eventBetweenSection,
-  eventOfSection,
   // entity,
   profileID,
   
 }) {
   const authContext  = useContext(AuthContext);
 
-  console.log('data.game.referees', data);
+  console.log('data::=>', data);
   let showDot = false;
   let startDate = '';
   if (data && data.start_datetime) {
@@ -196,7 +195,7 @@ export default function TCEventView({
               }
             />
           )}
-          {eventOfSection && (
+          {data?.game?.referees?.length > 0 && (
             <EventOfItem
               eventOfText={'Referee'}
               refereeList={data?.game?.referees}

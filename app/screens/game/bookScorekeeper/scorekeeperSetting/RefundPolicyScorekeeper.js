@@ -85,11 +85,17 @@ export default function RefundPolicyScorekeeper({navigation, route}) {
         refundPolicy: typeSelection.key,
       });
     } else {
-      const bodyParams = {
+      const scorekeeperSetting = (
+        authContext?.entity?.obj?.scorekeeper_data ?? []
+      ).filter((obj) => obj.sport === sportName)?.[0]?.setting;
+
+      const modifiedSetting = {
+        ...scorekeeperSetting,
         sport: sportName,
         entity_type: 'scorekeeper',
         refund_policy: typeSelection.key,
       };
+
       setloading(true);
       const registerdScorekeeperData = authContext?.entity?.obj?.scorekeeper_data?.filter(
         (obj) => obj?.sport !== sportName,
@@ -101,7 +107,7 @@ export default function RefundPolicyScorekeeper({navigation, route}) {
 
       selectedSport = {
         ...selectedSport,
-        setting: {...selectedSport?.setting, ...bodyParams},
+        setting: modifiedSetting,
       };
       registerdScorekeeperData.push(selectedSport);
 

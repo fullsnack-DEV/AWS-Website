@@ -95,6 +95,7 @@ export default function RegisterPlayer({ navigation }) {
         const bodyParams = {};
         bodyParams.sport_type = sportsSelection.sport_type;
         bodyParams.sport = sportsSelection.sport;
+        bodyParams.is_active = true;
         navigation.navigate('RegisterPlayerForm2', {
           bodyParams,
         });

@@ -12,7 +12,7 @@ import images from '../Constants/ImagePath';
 import fonts from '../Constants/Fonts';
 import colors from '../Constants/Colors';
 import TCGradientButton from './TCGradientButton';
-import {getHitSlop, heightPercentageToDP as hp} from '../utils';
+import {getHitSlop} from '../utils';
 import TCInnerLoader from './TCInnerLoader';
 import strings from '../Constants/String';
 
@@ -202,19 +202,19 @@ const TCUserFollowUnfollowList = ({
           )}
         </View>
       </View>
-      <View style={styles.seperateContainer} />
+      {/* <View style={styles.seperateContainer} /> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  seperateContainer: {
-    width: '100%',
-    alignSelf: 'center',
-    borderWidth: 0.5,
-    borderColor: colors.grayBackgroundColor,
-    marginVertical: hp(0.7),
-  },
+  // seperateContainer: {
+  //   width: '100%',
+  //   alignSelf: 'center',
+  //   borderWidth: 0.5,
+  //   borderColor: colors.grayBackgroundColor,
+  //   marginVertical: hp(0.7),
+  // },
   threedot: {
     height: 18,
     resizeMode: 'contain',

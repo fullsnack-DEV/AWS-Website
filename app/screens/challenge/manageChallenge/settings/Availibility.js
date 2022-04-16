@@ -1,4 +1,4 @@
-import React, {useState, useLayoutEffect, useContext} from 'react';
+import React, {useState, useLayoutEffect, useContext, useEffect} from 'react';
 import {StyleSheet, View, Text, Alert, SafeAreaView} from 'react-native';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import AuthContext from '../../../../auth/context';
@@ -14,11 +14,12 @@ import {patchPlayer} from '../../../../api/Users';
 import {patchGroup} from '../../../../api/Groups';
 
 export default function Availibility({navigation, route}) {
-
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
+  const [groupObj] = useState(route?.params?.groupObj);
 
+  console.log('groupObjgroupObjgroupObj', groupObj);
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -44,6 +45,14 @@ export default function Availibility({navigation, route}) {
       ),
     });
   }, [acceptChallenge, comeFrom, navigation]);
+
+  useEffect(() => {
+    if (!route?.params?.settingObj?.availibility) {
+      if (groupObj?.not_available_for_challenge) {
+        setAcceptChallenge(false);
+      }
+    }
+  }, [groupObj?.not_available_for_challenge, route?.params?.settingObj]);
 
   const saveUser = () => {
     const bodyParams = {
@@ -188,7 +197,13 @@ export default function Availibility({navigation, route}) {
           </Text>
           <ToggleView
             isOn={acceptChallenge}
-            onToggle={() => setAcceptChallenge(!acceptChallenge)}
+            onToggle={() => {
+              if (groupObj?.not_available_for_challenge) {
+                Alert.alert('You can not change availibility setting.');
+              } else {
+                setAcceptChallenge(!acceptChallenge);
+              }
+            }}
             onColor={colors.themeColor}
             offColor={colors.grayBackgroundColor}
           />

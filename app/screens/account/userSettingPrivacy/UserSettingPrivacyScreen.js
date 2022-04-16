@@ -20,6 +20,8 @@ import Header from '../../../components/Home/Header';
 
 export default function UserSettingPrivacyScreen({ navigation }) {
   const authContext = useContext(AuthContext);
+
+
 const [userSetting,setUserSetting] = useState();
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -28,7 +30,7 @@ const [userSetting,setUserSetting] = useState();
   }, [navigation]);
 
 
-
+  
   const getUserSettingMenu= useCallback(()=>{
     checkUserIsRegistratedOrNotWithFirebase(authContext.entity.obj.email)
     .then(async (providerData) => {
@@ -36,15 +38,16 @@ const [userSetting,setUserSetting] = useState();
       if(providerData.includes('password')){
        setUserSetting([
         { key: 'Profile', id: 1 },
-        { key: 'Change Password', id: 2 },
-        { key: 'Currency', id: 3 },
+        { key: 'Sports Activities', id: 2 },
+        { key: 'Change Password', id: 3 },
+        { key: 'Currency', id: 4 },
         // {key: 'Privacy Setting',id:3}
       ])
       }else{
         setUserSetting([
           { key: 'Profile', id: 1 },
-          
-          { key: 'Currency', id: 2},
+          { key: 'Sports Activities', id: 3 },
+          { key: 'Currency', id: 3},
           // {key: 'Privacy Setting',id:3}
         ])
       }
@@ -81,7 +84,11 @@ const [userSetting,setUserSetting] = useState();
   const handleOpetions = async (opetions) => {
     if (opetions === 'Profile') {
       navigation.navigate('PersonalInformationScreen');
-    } else if (opetions === 'Change Password') {
+    }else if (opetions === 'Sports Activities') {
+      console.log('click on sport setting');
+      navigation.navigate('SportActivityScreen');
+    } 
+    else if (opetions === 'Change Password') {
       navigation.navigate('ChangePasswordScreen');
     } else if (opetions === 'Currency') {
       navigation.navigate('CurrencySettingScreen');

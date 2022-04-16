@@ -86,11 +86,17 @@ export default function RefundPolicyReferee({navigation, route}) {
         refundPolicy: typeSelection.key,
       });
     } else {
-      const bodyParams = {
+      const refereeSetting = (
+        authContext?.entity?.obj?.referee_data ?? []
+      ).filter((obj) => obj.sport === sportName)?.[0]?.setting;
+
+      const modifiedSetting = {
+        ...refereeSetting,
         sport: sportName,
         entity_type: 'referee',
         refund_policy: typeSelection.key,
       };
+
       setloading(true);
       const registerdRefereeData = authContext?.entity?.obj?.referee_data?.filter(
         (obj) => obj?.sport !== sportName,
@@ -102,7 +108,7 @@ export default function RefundPolicyReferee({navigation, route}) {
 
       selectedSport = {
         ...selectedSport,
-        setting: {...selectedSport?.setting, ...bodyParams},
+        setting: modifiedSetting,
       };
       registerdRefereeData.push(selectedSport);
 

@@ -632,6 +632,7 @@ export default function AccountScreen({navigation}) {
       } else {
         console.log('entity?.obj?.sport1:=>', entity?.obj);
         navigation.navigate('ManageChallengeScreen', {
+          groupObj: authContext.entity.obj,
           sportName: entity?.obj?.sport,
           sportType: entity?.obj?.sport_type,
         });
@@ -640,7 +641,7 @@ export default function AccountScreen({navigation}) {
       setClickedUserType('referee');
 
       const entity = authContext.entity;
-
+      console.log('entity?.objentity?.obj-->',entity?.obj,entity?.obj?.sport);
       if (entity.role === 'user') {
         if (entity?.obj?.referee_data?.length > 0) {
           setVisibleSportsModal(true);
@@ -650,6 +651,7 @@ export default function AccountScreen({navigation}) {
       } else {
         navigation.navigate('RefereeReservationSetting', {
           sportName: entity?.obj?.sport,
+          
         });
       }
     } else if (section === 'Scorekeeper Reservation Settings') {
@@ -666,6 +668,7 @@ export default function AccountScreen({navigation}) {
       } else {
         navigation.navigate('ScorekeeperReservationSetting', {
           sportName: entity?.obj?.sport,
+          
         });
       }
     } else if (section === 'Log out') {
@@ -1020,7 +1023,7 @@ export default function AccountScreen({navigation}) {
         {authContext.entity.role === 'user' && sectionId === 4 && (
           <FlatList
             style={{marginVertical: 10}}
-            data={authContext?.entity?.obj?.registered_sports.filter(
+            data={authContext?.entity?.obj?.registered_sports?.filter(
               (obj) => obj?.sport && obj?.sport_type,
             )}
             keyExtractor={keyExtractorID}
@@ -1222,6 +1225,7 @@ export default function AccountScreen({navigation}) {
           console.log('Sport name:=>', item?.sport, item?.sport_type);
           if (clickedUserType === 'user') {
             navigation.navigate('ManageChallengeScreen', {
+              groupObj: authContext.entity.obj,
               sportName: item.sport,
               sportType: item.sport_type,
             });
@@ -1229,11 +1233,13 @@ export default function AccountScreen({navigation}) {
           if (clickedUserType === 'referee') {
             navigation.navigate('RefereeReservationSetting', {
               sportName: item.sport,
+             
             });
           }
           if (clickedUserType === 'scorekeeper') {
             navigation.navigate('ScorekeeperReservationSetting', {
               sportName: item.sport,
+              
             });
           }
         }, 300);

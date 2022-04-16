@@ -119,7 +119,16 @@ export default function BookScorekeeper({navigation, route}) {
                   path: 'scorekeeper_data',
                   query: {
                     bool: {
-                      must: [{term: {'scorekeeper_data.is_published': true}}],
+                      must: [
+                        {term: {'scorekeeper_data.is_published': true}},
+                        {
+                          term: {
+                            'scorekeeper_data.setting.scorekeeperAvailibility.keyword': {
+                              value: 'On',
+                            },
+                          },
+                        },
+                      ],
                     },
                   },
                 },
@@ -155,7 +164,7 @@ export default function BookScorekeeper({navigation, route}) {
           },
         });
       }
-
+     
       console.log('ScorekeeperQuery:=>', JSON.stringify(scorekeeperQuery));
 
       // Scorekeeper query
@@ -185,7 +194,7 @@ export default function BookScorekeeper({navigation, route}) {
 
   const onPressNext = () => {
     console.log('gameData111:=>', gameData);
-   
+
     setLoading(true);
     Utils.getSetting(
       authContext?.entity?.uid,
@@ -199,7 +208,7 @@ export default function BookScorekeeper({navigation, route}) {
         console.log('setting of group or player:::=>', response);
         if (
           response?.responsible_for_scorekeeper?.who_secure?.length >
-          gameData?.challenge_scorekeepers?.who_secure?.length
+          (gameData?.scorekeepers?.length ?? 0)
         ) {
           setLoading(true);
           Utils.getSetting(
@@ -242,8 +251,6 @@ export default function BookScorekeeper({navigation, route}) {
             `You can't book more than ${response?.responsible_for_scorekeeper?.who_secure?.length} scorekeeper for this match. You can change the number of scorekeepers in the reservation details.`,
           );
         }
-
-
       })
       .catch(() => {
         setLoading(false);
@@ -252,11 +259,6 @@ export default function BookScorekeeper({navigation, route}) {
         }, 10);
         // navigation.goBack();
       });
-
-
-    
-     
-    
   };
 
   const renderScorekeeperData = ({item}) => {

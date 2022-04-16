@@ -15,7 +15,7 @@ import {patchPlayer} from '../../../../api/Users';
 export default function AvailibilityReferee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
-   const authContext = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
   const [acceptChallenge, setAcceptChallenge] = useState(
@@ -36,16 +36,21 @@ export default function AvailibilityReferee({navigation, route}) {
         </Text>
       ),
     });
-  }, [navigation]);
+  }, [navigation, acceptChallenge]);
 
   const onSavePressed = () => {
-    const bodyParams = {
+
+    const refereeSetting = (
+      authContext?.entity?.obj?.referee_data ?? []
+    ).filter((obj) => obj.sport === sportName)?.[0]?.setting;
+
+    const modifiedSetting = {
+      ...refereeSetting,
       sport: sportName,
       entity_type: 'referee',
       refereeAvailibility: acceptChallenge ? 'On' : 'Off',
     };
-
-    console.log('data::=>', bodyParams);
+    console.log('data::=>', modifiedSetting);
     setloading(true);
 
     const registerdRefereeData = authContext?.entity?.obj?.referee_data?.filter(
@@ -58,7 +63,7 @@ export default function AvailibilityReferee({navigation, route}) {
 
     selectedSport = {
       ...selectedSport,
-      setting: {...selectedSport?.setting, ...bodyParams},
+      setting: modifiedSetting,
     };
     registerdRefereeData.push(selectedSport);
 

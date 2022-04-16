@@ -161,8 +161,8 @@ export default function GroupMembersScreen({navigation, route}) {
   const navigateToGroupMessage = () => {
     setloading(true);
     const UIDs = [];
-    if (members.length) {
-      members.filter((data) => {
+    if (members?.length) {
+      members?.map((data) => {
         if (data?.connected) {
           UIDs.push(data?.user_id);
           return data;
@@ -170,6 +170,7 @@ export default function GroupMembersScreen({navigation, route}) {
         return null;
       });
     }
+    console.log('UIDsUIDs',UIDs);
     if (UIDs.length > 0) {
       QBgetUserDetail(
         QB.users.USERS_FILTER.FIELD.LOGIN,
@@ -182,6 +183,7 @@ export default function GroupMembersScreen({navigation, route}) {
           const groupName = authContext?.entity?.obj?.group_name;
           QBcreateDialog(IDs, QB_DIALOG_TYPE.GROUP, groupName)
             .then((dialog) => {
+              console.log('dialogdialogdialog',dialog);
               setloading(false);
               navigation.navigate('MessageChat', {
                 screen: 'MessageChat',

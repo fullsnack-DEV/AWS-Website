@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useMemo, useCallback,
+  useState, useEffect, useMemo, useCallback
 } from 'react';
 import {
   Alert,
@@ -20,15 +20,18 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
 import {
- getQBProfilePic, QB_DIALOG_TYPE, QBcreateDialog,
+ getQBProfilePic, QB_DIALOG_TYPE, QBcreateDialog
 } from '../../utils/QuickBlox';
 import TCInputBox from '../../components/TCInputBox';
+import ActivityLoader from '../../components/loader/ActivityLoader';
+
 
 const MessageNewGroupScreen = ({ route, navigation }) => {
+
   const { selectedInviteesData } = route.params
   const [selectedInvitees, setSelectedInvitees] = useState([...selectedInviteesData]);
   const [groupName, setGroupName] = useState('');
-
+const [loading,setLoading] = useState(false);
   useEffect(() => {
     if (route?.params?.dialog) {
       setGroupName(route?.params?.dialog?.name)
@@ -91,12 +94,22 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
   }, [toggleSelection]);
 
   const onDonePress = useCallback(() => {
+    setLoading(true)
     if (groupName !== '') {
       const occupantsIds = [];
 
       selectedInvitees.filter((item) => occupantsIds.push(item.id))
       if (occupantsIds.length > 0) {
+
+        console.log('occupantsIds',occupantsIds);
+        console.log('QB_DIALOG_TYPE.GROUP',QB_DIALOG_TYPE.GROUP);
+        console.log('groupName',groupName);
+
+
+
         QBcreateDialog(occupantsIds, QB_DIALOG_TYPE.GROUP, groupName).then((res) => {
+          setLoading(false)
+
           console.log('rerererererer',res);
           setSelectedInvitees([]);
           console.log('Navigation stack',navigation);
@@ -104,10 +117,14 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
           
           
         }).catch((error) => {
+          setLoading(false)
+          // QBLogout();
+          // QBconnectAndSubscribe(authContext.entity)
           console.log(error);
         })
       }
     } else {
+      setLoading(false)
       Alert.alert('Enter Chatroom Name')
     }
   }, [groupName, navigation, selectedInvitees])
@@ -151,6 +168,7 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
+      <ActivityLoader visible={loading}/>
       {renderHeader}
       <View style={styles.separateLine}/>
       <View style={styles.avatarContainer}>

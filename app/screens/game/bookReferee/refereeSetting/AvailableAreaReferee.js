@@ -146,10 +146,18 @@ export default function AvailableAreaReferee({navigation, route}) {
     }
 
     console.log('availableArea', availableArea);
-    const bodyParams = {};
-    bodyParams.available_area = availableArea;
-    bodyParams.sport = sportName;
-    bodyParams.entity_type = 'referee';
+
+    const refereeSetting = (
+      authContext?.entity?.obj?.referee_data ?? []
+    ).filter((obj) => obj.sport === sportName)?.[0]?.setting;
+
+    const modifiedSetting = {
+      ...refereeSetting,
+      available_area: availableArea,
+      sport: sportName,
+      entity_type: 'referee',
+    };
+
     setloading(true);
 
     const registerdRefereeData = authContext?.entity?.obj?.referee_data?.filter(
@@ -162,7 +170,7 @@ export default function AvailableAreaReferee({navigation, route}) {
 
     selectedSport = {
       ...selectedSport,
-      setting: {...selectedSport?.setting, ...bodyParams},
+      setting: modifiedSetting,
     };
     registerdRefereeData.push(selectedSport);
 

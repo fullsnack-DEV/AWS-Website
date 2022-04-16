@@ -56,7 +56,6 @@ const PlayInModule = ({
   navigation,
   openPlayInModal,
 }) => {
-  console.log('userData', userData);
   console.log('playInObject', playInObject);
 
   const actionSheetRef = useRef();
@@ -70,6 +69,9 @@ const PlayInModule = ({
   const [challengeType, setChallengeType] = useState();
 
   const [loading, setloading] = useState(false);
+
+  console.log('authContext?.entity111', authContext?.entity);
+
 
   const onClose = useCallback(() => {
     onModalClose();
@@ -250,48 +252,55 @@ const PlayInModule = ({
 
   // eslint-disable-next-line consistent-return
   const renderChallengeButton = () => {
+    const mySport = authContext?.entity?.obj?.registered_sports?.filter(
+      (obj) => obj?.sport ===  playInObject?.sport && obj?.sport_type === playInObject?.sport_type,
+    );
     if (
       currentTab === 0 &&
       authContext?.entity?.uid !== currentUserData?.user_id &&
-      authContext?.entity?.role === 'user'
+      authContext?.entity?.role === 'user' && mySport.length > 0
     ) {
-      return (
-        playInObject?.sport_type !== 'double' &&
-        playInObject?.sport !== 'soccer' && (
-          <TouchableOpacity
-            onPress={onChallengePress}
-            style={styles.challengeButtonContainer}>
-            <LinearGradient
-              colors={[colors.themeColor, '#FF3B00']}
-              style={styles.challengeLinearContainer}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                }}>
-                {(challengeType === 'both' || challengeType === 'challenge') &&
-                  (oppSetting?.game_fee?.fee ? (
-                    <Text style={styles.challengeButtonTitle}>
-                      {strings.challenge}
-                      <Text>{` $${oppSetting?.game_fee?.fee} ${
-                        currentUserData?.currency_type ?? 'CAD'
-                      }${' / match'}`}</Text>
-                    </Text>
-                  ) : (
-                    <Text style={styles.challengeButtonTitle}>
-                      {strings.challenge}
-                    </Text>
-                  ))}
-                {challengeType === 'invite' && (
-                  <Text style={styles.challengeButtonTitle}>
-                    {'Invite to challenge'}
-                  </Text>
-                )}
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
-        )
-      );
+      
+     
+          return (
+            playInObject?.sport_type !== 'double' &&
+            playInObject?.sport !== 'soccer' && (
+              <TouchableOpacity
+                onPress={onChallengePress}
+                style={styles.challengeButtonContainer}>
+                <LinearGradient
+                  colors={[colors.themeColor, '#FF3B00']}
+                  style={styles.challengeLinearContainer}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                    }}>
+                    {(challengeType === 'both' || challengeType === 'challenge') &&
+                      (oppSetting?.game_fee?.fee ? (
+                        <Text style={styles.challengeButtonTitle}>
+                          {strings.challenge}
+                          <Text>{` $${oppSetting?.game_fee?.fee} ${
+                            currentUserData?.currency_type ?? 'CAD'
+                          }${' / match'}`}</Text>
+                        </Text>
+                      ) : (
+                        <Text style={styles.challengeButtonTitle}>
+                          {strings.challenge}
+                        </Text>
+                      ))}
+                    {challengeType === 'invite' && (
+                      <Text style={styles.challengeButtonTitle}>
+                        {'Invite to challenge'}
+                      </Text>
+                    )}
+                  </View>
+                </LinearGradient>
+              </TouchableOpacity>
+            )
+          );
+        
+         // Alert.alert(`You have to registerd ${Utility.getSportName(playInObject)}, before make a challenge.`)
     }
   };
   const getSettingOfBoth = useCallback(() => {
@@ -408,6 +417,7 @@ const PlayInModule = ({
       } else {
         onClose();
         navigation.navigate('ManageChallengeScreen', {
+          groupObj: playInObject,
           sportName:  playInObject?.sport,
           sportType:  playInObject?.sport_type,
         });
@@ -594,9 +604,12 @@ const PlayInModule = ({
                           {
                             text: 'OK',
                             onPress: () => {
+                              onClose();
+
                               navigation.navigate('ManageChallengeScreen', {
-                                sportName: currentUserData.sport,
-                                sportType: currentUserData?.sport_type,
+                                groupObj: playInObject,
+                                sportName: playInObject.sport,
+                                sportType: playInObject?.sport_type,
                               });
                             },
                           },
@@ -628,8 +641,7 @@ const PlayInModule = ({
           if (index === 0) {
             onClose();
             navigation.navigate('LookingForSettingScreen', {
-              sportName: playInObject.sport,
-              sportType: playInObject?.sport_type,
+              sport: playInObject
             });
           }
           if (index === 1) {

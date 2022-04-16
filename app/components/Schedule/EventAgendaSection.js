@@ -95,6 +95,8 @@ class EventAgendaSection extends React.Component {
             showPastDatesInHorizontal={1}
             horizontalEndReachedThreshold={100}
             horizontalStartReachedThreshold={0}
+            disablePan={true} // we need this
+            disableWeekScroll={true}
             // loading={this.state.calendarLoading}
           />
           {!this.props.onKnobPress && <View style={styles.knobContainer}>

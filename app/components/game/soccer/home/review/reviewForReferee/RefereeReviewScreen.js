@@ -61,14 +61,14 @@ export default function RefereeReviewScreen({navigation, route}) {
       : () => {},
   );
 
-  const [gameReview,setGameReviewData] = useState(route?.params?.gameReviewData)
-
-  console.log('route?.params?.gameReviewDataroute?.params?.gameReviewData',route?.params?.gameReviewData);
-
-
-useEffect(()=>{
-setGameReviewData(route?.params?.gameReviewData)
-},[route?.params?.gameReviewData])
+  console.log(
+    'route?.params?.starAttributesForReferee::',
+    route?.params?.sliderAttributesForReferee,
+  );
+  console.log(
+    'route?.params?.gameReviewDataroute?.params?.gameReviewData',
+    route?.params?.gameReviewData,
+  );
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -114,14 +114,15 @@ setGameReviewData(route?.params?.gameReviewData)
   ]);
 
   useEffect(() => {
-    if (route?.params?.gameReviewData?.results?.[0]?.object) {
-      const reviewObj = JSON.parse(
-        route?.params?.gameReviewData?.results?.[0]?.object,
-      )?.refereeReview;
+    if (route?.params?.gameReviewData) {
+      // const reviewObj = JSON.parse(
+      //   route?.params?.gameReviewData?.results?.[0]?.object,
+      // )?.refereeReview;
+      const reviewObj = route?.params?.gameReviewData;
       console.log('Edit review Data::=>', reviewObj);
       setReviewsData({...reviewObj});
     }
-  }, [route?.params?.gameReviewData?.results]);
+  }, [route?.params?.gameReviewData]);
 
   useEffect(() => {
     if (!route?.params?.gameReviewData) {
@@ -129,16 +130,6 @@ setGameReviewData(route?.params?.gameReviewData)
       loadStarAttributes(starAttributesForReferee);
     }
   }, []);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text onPress={createReview} style={styles.nextButtonStyle}>
-          {'Done'}
-        </Text>
-      ),
-    });
-  }, [navigation]);
 
   const loadSliderAttributes = (attributes) => {
     setLoading(true);
@@ -172,19 +163,19 @@ setGameReviewData(route?.params?.gameReviewData)
   };
 
   const isValidReview = () => {
-    const exceptKey = [
-      'comment',
-      'attachments',
-      'tagged',
-      'format_tagged_data',
-    ];
+    const starKeys = [];
+    starAttributesForReferee?.map((star) => {
+      starKeys.push(star?.name);
+    });
+    const includeKey = [...starKeys,...sliderAttributesForReferee]
     let isValid = true;
-    console.log('reviewsData ::=>', reviewsData);
     const reviews = _.cloneDeep(reviewsData);
-
     Object.keys(reviews).map((key) => {
-      if (!exceptKey.includes(key) && isValid && Number(reviews?.[key]) <= 0) {
-        isValid = false;
+      if (includeKey.includes(key) && isValid) {
+        if(Number(reviews?.[key]) <= 0){
+          isValid = false;
+        }
+        
       }
       return key;
     });
@@ -230,8 +221,7 @@ setGameReviewData(route?.params?.gameReviewData)
     console.log('reviewData ==== ::=>', reviewsData);
     console.log('data ==== ::=>', data);
 
-
-    if (reviewsData !== {}) {
+    if (userData?.review_id) {
       setLoading(true);
       console.log('Edited Review Object reviewData::=>', data);
       const teamReview = {...data};
@@ -287,24 +277,8 @@ setGameReviewData(route?.params?.gameReviewData)
   };
 
   const uploadMedia = () => {
-    setLoading(false); // CHANGED
-    console.log('reviewsDatareviewsData;;;',reviewsData);
-    console.log('rrrrr;;;',gameReview);
-    console.log('rrrrr111;;;',gameData);
-
-
-    if (reviewsData?.attachments?.length) {
-      onPressReview(
-        1,
-        !!userData?.review_id,
-        reviewsData,
-        userData?.user_id,
-      );
-      navigation.goBack();
-    } else {
-      console.log('reviewsDatareviewsData',reviewsData);
-      patchOrAddRefereeReview(reviewsData);
-    }
+    onPressReview(1, !!userData?.review_id, reviewsData, userData?.user_id);
+    navigation.goBack();
   };
 
   return (

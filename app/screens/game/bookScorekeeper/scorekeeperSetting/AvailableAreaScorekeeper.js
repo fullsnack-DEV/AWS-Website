@@ -141,10 +141,18 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
     }
 
     console.log('availableArea', availableArea);
-    const bodyParams = {};
-    bodyParams.available_area = availableArea;
-    bodyParams.sport = sportName;
-    bodyParams.entity_type = 'scorekeeper';
+
+    const scorekeeperSetting = (
+      authContext?.entity?.obj?.scorekeeper_data ?? []
+    ).filter((obj) => obj.sport === sportName)?.[0]?.setting;
+
+    const modifiedSetting = {
+      ...scorekeeperSetting,
+      available_area: availableArea,
+      sport: sportName,
+      entity_type: 'scorekeeper',
+    };
+
     setloading(true);
 
     const registerdScorekeeperData = authContext?.entity?.obj?.scorekeeper_data?.filter(
@@ -157,7 +165,7 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
 
     selectedSport = {
       ...selectedSport,
-      setting: {...selectedSport?.setting, ...bodyParams},
+      setting: modifiedSetting,
     };
     registerdScorekeeperData.push(selectedSport);
 
