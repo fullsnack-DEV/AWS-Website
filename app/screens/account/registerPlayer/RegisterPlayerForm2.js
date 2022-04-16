@@ -141,11 +141,11 @@ export default function RegisterPlayerForm2({navigation, route}) {
       registered_sports: registerdPlayerData,
     };
 
-console.log('body',body);
-console.log('body params',bodyParams);
-console.log('body registerdPlayerData',registerdPlayerData);
+    console.log('body', body);
+    console.log('body params', bodyParams);
+    console.log('body registerdPlayerData', registerdPlayerData);
 
-
+    
     patchPlayer(body, authContext)
       .then(async (response) => {
         if (response.status === true) {
@@ -159,19 +159,21 @@ console.log('body registerdPlayerData',registerdPlayerData);
           await Utility.setStorage('authContextUser', response.payload);
           await Utility.setStorage('authContextEntity', {...entity});
           Alert.alert(
-            `${Utility.getSportName(bodyParams,authContext)} added to Playing`,
+            `${Utility.getSportName(bodyParams, authContext)} added to Playing`,
             '',
             [
-              {text: 'OK', onPress: () =>{
-                navigation.navigate('AccountScreen', {
-                  createdSportName: route?.params?.bodyParams?.sport,
-                  sportType: route?.params?.bodyParams?.sport_type,
-                });
-              }},
+              {
+                text: 'OK',
+                onPress: () => {
+                  navigation.navigate('AccountScreen', {
+                    createdSportName: route?.params?.bodyParams?.sport,
+                    sportType: route?.params?.bodyParams?.sport_type,
+                  });
+                },
+              },
             ],
-            { cancelable: false }
-          )
-
+            {cancelable: false},
+          );
         } else {
           Alert.alert(strings.appName, response.messages);
         }

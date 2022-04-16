@@ -15,6 +15,8 @@ export default function RefereeAgreementScreen({navigation, route}) {
   const [groupObj] = useState(route?.params?.groupObj);
   const [type] = useState(route?.params?.type);
 
+console.log('challengeObj referee agree screen : ',challengeObj);
+
   return (
     <View style={styles.mainContainer}>
       <TCFormProgress totalSteps={4} curruentStep={2} />
@@ -48,14 +50,11 @@ export default function RefereeAgreementScreen({navigation, route}) {
           shadow={true}
           marginTop={15}
           onPress={() => {
+
             navigation.push('ScorekeeperAgreementScreen', {
               challengeObj: {
                 ...challengeObj,
-                min_referee:
-                  (opetion === 2 &&
-                    challengeObj?.responsible_for_referee?.who_secure
-                      ?.length) ||
-                  (opetion === 1 && 0),
+                min_referee: opetion === 2 ? challengeObj?.responsible_for_referee?.who_secure?.length ?? 0 : 0    
               },
               groupObj,
               type,

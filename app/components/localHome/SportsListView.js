@@ -17,6 +17,8 @@ const SportsListView = ({ sports, onSelect, defaultSport }) => {
   const authContext = useContext(AuthContext);
 
   const renderItem = ({ item, index }) => {
+    console.log('Default Item', item);
+
     console.log('Default sport', defaultSport);
     return (
       <TouchableOpacity

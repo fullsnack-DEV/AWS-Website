@@ -161,9 +161,9 @@ export default function LocalHomeScreen({navigation, route}) {
             }}>
             <Image source={images.home_search} style={styles.townsCupIcon} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSettingPopup(true)}>
+          {/* <TouchableOpacity onPress={() => setSettingPopup(true)}>
             <Image source={images.home_setting} style={styles.townsCupIcon} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       ),
 
@@ -197,7 +197,6 @@ export default function LocalHomeScreen({navigation, route}) {
     if (isFocused) {
       getSportsList(authContext).then(async (res) => {
         await authContext.setSports([...res.payload]);
-        await Utility.setStorage('sportsList', res.payload);
       });
     }
   }, []);
@@ -213,27 +212,76 @@ export default function LocalHomeScreen({navigation, route}) {
   }, [route?.params?.locationText]);
 
   useEffect(() => {
-    Utility.getStorage('sportSetting')
-      .then((setting) => {
-        console.log('Setting::1::=>', setting);
-        if (setting === null) {
-          const playerSport = authContext?.entity?.obj?.registered_sports || [];
-          const result = (playerSport || []).map((obj) => ({
+    if (isFocused) {
+      console.log(
+        'authContext?.entity?.obj?.sports',
+        authContext?.entity?.obj?.sports,
+      );
+      Utility.getStorage('sportSetting')
+        .then((setting) => {
+          console.log('Setting::1::=>', setting);
+          if (setting === null) {
+            const playerSport =
+              authContext?.entity?.auth?.user?.registered_sports || [];
+            const followedSport = authContext?.entity?.obj?.sports;
+            const res = ([...playerSport, ...followedSport] || []).map(
+              (obj) => ({
+                sport: obj.sport,
+                sport_type: obj.sport_type,
+                sport_name: obj.sport_name,
+              }),
+            );
+            const result = res.reduce((unique, o) => {
+              if (
+                !unique.some(
+                  (obj) =>
+                    obj.sport === o.sport &&
+                    obj.sport_type === o.sport_type &&
+                    obj.sport_name === o.sport_name,
+                )
+              ) {
+                unique.push(o);
+              }
+              return unique;
+            }, []);
+
+            console.log('playerSport:1=>', result);
+
+            setSports(result);
+          } else {
+            setSports([...setting]);
+          }
+        })
+        // eslint-disable-next-line no-unused-vars
+        .catch((e) => {
+          const playerSport =
+            authContext?.entity?.auth?.user?.registered_sports || [];
+          const followedSport = authContext?.entity?.obj?.sports;
+          const res = ([...playerSport, ...followedSport] || []).map((obj) => ({
             sport: obj.sport,
             sport_type: obj.sport_type,
+            sport_name: obj.sport_name,
           }));
-          console.log('playerSport:1=>', playerSport);
+          const result = res.reduce((unique, o) => {
+            if (
+              !unique.some(
+                (obj) =>
+                  obj.sport === o.sport &&
+                  obj.sport_type === o.sport_type &&
+                  obj.sport_name === o.sport_name,
+              )
+            ) {
+              unique.push(o);
+            }
+            return unique;
+          }, []);
+
+          console.log('playerSport:1=>', result);
 
           setSports(result);
-        } else {
-          setSports([...setting]);
-        }
-      })
-      // eslint-disable-next-line no-unused-vars
-      .catch((e) => {
-        Alert.alert('Can not fetch local sport setting.');
-      });
-  }, [authContext]);
+        });
+    }
+  }, [authContext, isFocused]);
 
   useEffect(() => {
     if (isFocused) {
@@ -682,34 +730,40 @@ export default function LocalHomeScreen({navigation, route}) {
   }, [authContext, isFocused, location, selectedSport, sportType]);
 
   const sportsListView = useCallback(
-    ({item, index}) => (
-      <Text
-        style={
-          selectedSport === item.sport && sportType === item.sport_type
-            ? [
-                styles.sportName,
-                {color: colors.themeColor, fontFamily: fonts.RBlack},
-              ]
-            : styles.sportName
-        }
-        onPress={() => {
-          refContainer.current.scrollToIndex({
-            animated: true,
-            index,
-            viewPosition: 0.5,
-          });
-          console.log('selected sport::=>', item);
-          setSelectedSport(item.sport);
-          setSportType(item.sport_type);
-          setFilters({
-            ...filters,
-            sport: item.sport,
-            sport_type: item.sport_type,
-          });
-        }}>
-        {item.sport === 'All' ? 'All' : Utility.getSportName(item, authContext)}
-      </Text>
-    ),
+    ({item, index}) => {
+      console.log('Localhome item:=>', item);
+      console.log('selectedSport', selectedSport);
+      return (
+        <Text
+          style={
+            selectedSport === item.sport && sportType === item.sport_type
+              ? [
+                  styles.sportName,
+                  {color: colors.themeColor, fontFamily: fonts.RBlack},
+                ]
+              : styles.sportName
+          }
+          onPress={() => {
+            refContainer.current.scrollToIndex({
+              animated: true,
+              index,
+              viewPosition: 0.5,
+            });
+            console.log('selected sport::=>', item);
+            setSelectedSport(item.sport);
+            setSportType(item.sport_type);
+            setFilters({
+              ...filters,
+              sport: item.sport,
+              sport_type: item.sport_type,
+            });
+          }}>
+          {item.sport === 'All'
+            ? 'All'
+            : Utility.getSportName(item, authContext)}
+        </Text>
+      );
+    },
     [authContext, filters, selectedSport, sportType],
   );
 
@@ -955,6 +1009,17 @@ export default function LocalHomeScreen({navigation, route}) {
             alignContent: 'center',
           }}
         />
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('SportSettingScreen', {
+              sports,
+            });
+          }}>
+          <Image
+            source={images.threeDotIcon}
+            style={styles.townsCupthreeDotIcon}
+          />
+        </TouchableOpacity>
       </View>
       {loading ? (
         <LocalHomeScreenShimmer />
@@ -1485,6 +1550,7 @@ const styles = StyleSheet.create({
   },
 
   sportsListView: {
+    flexDirection: 'row',
     backgroundColor: colors.whiteColor,
     shadowColor: colors.blackColor,
     shadowOffset: {
@@ -1495,6 +1561,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     marginBottom: 5,
     elevation: 5,
+    alignItems: 'center',
   },
   bottomPopupContainer: {
     paddingBottom: Platform.OS === 'ios' ? 34 : 0,
@@ -1617,5 +1684,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  townsCupthreeDotIcon: {
+    resizeMode: 'contain',
+    height: 15,
+    width: 8,
+    marginLeft: 10,
+    tintColor: colors.lightBlackColor,
+    marginRight: 15,
   },
 });

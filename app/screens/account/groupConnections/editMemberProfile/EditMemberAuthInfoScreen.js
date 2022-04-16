@@ -559,9 +559,9 @@ const styles = StyleSheet.create({
   },
 
   nextButtonStyle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    marginRight: 10,
+    fontFamily: fonts.RMedium,
+    fontSize: 14,
+    marginRight: 8,
   },
   checkBoxContainer: {
     flexDirection: 'row',

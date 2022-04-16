@@ -558,6 +558,29 @@ const AppNavigator = ({navigation}) => {
           },
         })}
       />
+     
+      <Tab.Screen
+        name="Schedule"
+        component={ScheduleNavigator}
+        options={({route}) => ({
+          headerShown: false,
+          // tabBarVisible: getTabBarVisibility(route),
+          tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
+          tabBarIcon: ({focused}) => {
+            if (focused);
+            return (
+              <Image
+                source={
+                  focused
+                    ? images.tab_reservation_selected
+                    : images.tab_reservation
+                }
+                style={styles.tabImg}
+              />
+            );
+          },
+        })}
+      />
       <Tab.Screen
         name="Message"
         component={MessageNavigator}
@@ -582,29 +605,6 @@ const AppNavigator = ({navigation}) => {
           },
         })}
       />
-      <Tab.Screen
-        name="Schedule"
-        component={ScheduleNavigator}
-        options={({route}) => ({
-          headerShown: false,
-          // tabBarVisible: getTabBarVisibility(route),
-          tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
-          tabBarIcon: ({focused}) => {
-            if (focused);
-            return (
-              <Image
-                source={
-                  focused
-                    ? images.tab_reservation_selected
-                    : images.tab_reservation
-                }
-                style={styles.tabImg}
-              />
-            );
-          },
-        })}
-      />
-
       <Tab.Screen
         name="Account"
         navigation={navigation}
@@ -644,9 +644,9 @@ const styles = StyleSheet.create({
 
   tabImg: {
     alignSelf: 'center',
-    height: 34,
+    height: 36,
     resizeMode: 'cover',
-    width: 34,
+    width: 36,
     // borderRadius: 80,
   },
   profileTabImg: {

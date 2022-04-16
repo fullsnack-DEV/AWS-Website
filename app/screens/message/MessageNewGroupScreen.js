@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useMemo, useCallback
+  useState, useEffect, useMemo, useCallback,useContext
 } from 'react';
 import {
   Alert,
@@ -14,19 +14,24 @@ import {
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
 import QB from 'quickblox-react-native-sdk';
+import AuthContext from '../../auth/context';
+
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
 import {
- getQBProfilePic, QB_DIALOG_TYPE, QBcreateDialog
+ getQBProfilePic, QB_DIALOG_TYPE, QBcreateDialog, QBLogout, QBlogin, QB_ACCOUNT_TYPE, QBconnectAndSubscribe
 } from '../../utils/QuickBlox';
 import TCInputBox from '../../components/TCInputBox';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import * as Utility from '../../utils/index';
+import strings from '../../Constants/String';
 
 
 const MessageNewGroupScreen = ({ route, navigation }) => {
+  const authContext = useContext(AuthContext);
 
   const { selectedInviteesData } = route.params
   const [selectedInvitees, setSelectedInvitees] = useState([...selectedInviteesData]);
@@ -93,6 +98,56 @@ const [loading,setLoading] = useState(false);
     );
   }, [toggleSelection]);
 
+
+  const switchQBAccount = async (accountData, entity) => {
+    let currentEntity = entity;
+    const entityType = accountData?.entity_type;
+    const uid = entityType === 'player' ? 'user_id' : 'group_id';
+    QBLogout()
+      .then(() => {
+        const {USER, CLUB, LEAGUE, TEAM} = QB_ACCOUNT_TYPE;
+        let accountType = USER;
+        if (entityType === 'club') accountType = CLUB;
+        else if (entityType === 'team') accountType = TEAM;
+        else if (entityType === 'league') accountType = LEAGUE;
+        QBlogin(
+          accountData[uid],
+          {
+            ...accountData,
+            full_name: accountData.group_name,
+          },
+          accountType,
+        )
+          .then(async (res) => {
+            console.log('QB LOGIN:=>', res);
+            currentEntity = {
+              ...currentEntity,
+              QB: {...res.user, connected: true, token: res?.session?.token},
+            };
+            authContext.setEntity({...currentEntity});
+            await Utility.setStorage('authContextEntity', {...currentEntity});
+            QBconnectAndSubscribe(currentEntity)
+              .then((qbRes) => {
+                setLoading(false);
+                if (qbRes?.error) {
+                  console.log(strings.appName, qbRes?.error);
+                }
+              })
+              .catch(() => {
+                setLoading(false);
+              });
+          })
+          .catch(() => {
+            setLoading(false);
+          });
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  };
+
+
+
   const onDonePress = useCallback(() => {
     setLoading(true)
     if (groupName !== '') {
@@ -118,8 +173,7 @@ const [loading,setLoading] = useState(false);
           
         }).catch((error) => {
           setLoading(false)
-          // QBLogout();
-          // QBconnectAndSubscribe(authContext.entity)
+          switchQBAccount(authContext.entity,authContext.entity)
           console.log(error);
         })
       }
@@ -141,7 +195,7 @@ const [loading,setLoading] = useState(false);
           }
           rightComponent={
             <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
-              <Text style={{ ...styles.eventTextStyle, width: 100, textAlign: 'right' }}>Done</Text>
+              <Text style={{ ...styles.eventTextStyle, width: 100, textAlign: 'right' }}>Create</Text>
             </TouchableOpacity>
           }
       />

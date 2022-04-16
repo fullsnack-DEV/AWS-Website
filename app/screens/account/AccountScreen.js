@@ -570,7 +570,6 @@ export default function AccountScreen({navigation}) {
   const onLogout = useCallback(async () => {
     QBLogout();
     await firebase.auth().signOut();
-
     await Utility.clearStorage();
     await authContext.setUser(null);
     await authContext.setEntity(null);

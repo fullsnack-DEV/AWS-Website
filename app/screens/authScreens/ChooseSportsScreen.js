@@ -1,4 +1,5 @@
 /* eslint-disable consistent-return */
+/* eslint-disable no-return-assign */
 import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
 import {
   StyleSheet,
@@ -74,13 +75,27 @@ export default function ChooseSportsScreen({navigation, route}) {
       .then((response) => {
         console.log('Sport list:::', response);
 
+        const arrData = [];
+        for (const outer of response.payload) {
+          for (const inner of outer.format) {
+            const temp = {
+              ...inner,
+              player_image: outer.player_image,
+            };
+            arrData.push(temp);
+          }
+        }
+
+        console.log('AAA:->', arrData);
+
         Utility.getStorage('appSetting').then((setting) => {
+          console.log('appSetting', setting);
           setImageBaseUrl(setting.base_url_sporticon);
           console.log('IMAGE_BASE_URL', setting.base_url_sporticon);
         });
 
         const arr = [];
-        for (const tempData of response.payload) {
+        for (const tempData of arrData) {
           tempData.isChecked = false;
           arr.push(tempData);
         }
@@ -96,7 +111,7 @@ export default function ChooseSportsScreen({navigation, route}) {
   }, []);
 
   const isIconCheckedOrNot = ({item, index}) => {
-    console.log('SELECTED:::', index);
+    console.log('SELECTED:::', item);
 
     sports[index].isChecked = !item.isChecked;
 
@@ -104,7 +119,7 @@ export default function ChooseSportsScreen({navigation, route}) {
 
     for (const temp of sports) {
       if (temp.isChecked) {
-        selectedSports.push(temp.sport_name);
+        selectedSports.push(temp);
       }
     }
 

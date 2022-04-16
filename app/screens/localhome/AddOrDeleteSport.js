@@ -12,11 +12,10 @@ import {
   SafeAreaView,
   Text,
   TextInput,
-  Alert,
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import * as Utility from '../../utils';
 
 import AuthContext from '../../auth/context';
@@ -26,21 +25,18 @@ import fonts from '../../Constants/Fonts';
 import SportsListView from '../../components/localHome/SportsListView';
 import strings from '../../Constants/String';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import { widthPercentageToDP } from '../../utils';
+import {widthPercentageToDP} from '../../utils';
 
 let selectedSports = [];
 
-export default function AddOrDeleteSport({ navigation, route }) {
-
-  const [defaultSports] = useState(route?.params?.defaultSports);
-
+export default function AddOrDeleteSport({navigation, route}) {
   // const [loading, setloading] = useState(false);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [systemSports, setSystemSports] = useState([]);
   const [searchData, setSearchData] = useState();
   const [defaultSportsList, setDefaultSportsList] = useState();
-  const [sportsSource, setSportsSource] = useState(defaultSports);
+  const [sportsSource] = useState(route?.params?.sports);
   const authContext = useContext(AuthContext);
 
   useLayoutEffect(() => {
@@ -57,44 +53,31 @@ export default function AddOrDeleteSport({ navigation, route }) {
     selectedSports = systemSports.filter((e) => e.isChecked);
     console.log('selectedSports::1::=>', selectedSports);
 
-    Utility.getStorage('sportSetting')
-      .then((setting) => {
-        console.log('Setting::1::=>', setting);
-        if (setting === null) {
-          const arr = [];
+    const arr = [];
 
-          const refereeSport = authContext?.entity?.auth?.user?.referee_data || [];
-          const scorekeeperSport = authContext?.entity?.auth?.user?.scorekeeper_data || [];
-          const playerSport = authContext?.entity?.auth?.user?.registered_sports || [];
+    const refereeSport = authContext?.entity?.auth?.user?.referee_data || [];
+    const scorekeeperSport =
+      authContext?.entity?.auth?.user?.scorekeeper_data || [];
+    const playerSport =
+      authContext?.entity?.auth?.user?.registered_sports || [];
 
-          const allSports = [
-            ...arr,
-            ...refereeSport,
-            ...scorekeeperSport,
-            ...playerSport,
-          ];
-          const uniqSports = {};
-          const uniqueSports = allSports.filter(
-            (obj) => !uniqSports[obj.sport]
-              && (uniqSports[obj.sport] = true),
-          );
+    const allSports = [
+      ...arr,
+      ...refereeSport,
+      ...scorekeeperSport,
+      ...playerSport,
+    ];
+    const uniqSports = {};
+    const uniqueSports = allSports.filter(
+      (obj) => !uniqSports[obj.sport] && (uniqSports[obj.sport] = true),
+    );
 
-          const result = uniqueSports.map((obj) => ({
-            sport: obj.sport,
-          }));
-          setDefaultSportsList(result);
-          console.log('Unique sport:=>', result);
-        } else {
-          console.log('Unique sport:=>', setting);
-
-          setDefaultSportsList([...setting]);
-        }
-      })
-      // eslint-disable-next-line no-unused-vars
-      .catch((e) => {
-        Alert.alert('Can not fetch local sport setting.');
-      });
-  }, [authContext, isFocused]);
+    const result = uniqueSports.map((obj) => ({
+      sport: obj.sport,
+    }));
+    setDefaultSportsList(result);
+    console.log('Unique sport:=>', result);
+  }, [authContext]);
 
   useEffect(() => {
     if (isFocused) {
@@ -102,9 +85,7 @@ export default function AddOrDeleteSport({ navigation, route }) {
         const arr = [];
         for (const tempData of authContext.sports) {
           const isFound = sportsSource.filter(
-            (obj) => obj.sport
-                === tempData.sport
-              && tempData.sport !== 'All',
+            (obj) => obj.sport === tempData.sport && tempData.sport !== 'All',
           );
           if (isFound.length > 0) {
             tempData.isChecked = true;
@@ -121,21 +102,19 @@ export default function AddOrDeleteSport({ navigation, route }) {
         setTimeout(() => setloading(false), 1000);
       }
     }
-  }, [authContext, isFocused]);
+  }, [authContext, isFocused, sportsSource]);
 
   const onPressApply = () => {
-    setSportsSource([...selectedSports]);
 
-    setTimeout(() => {
-      navigation.navigate('SportSettingScreen', {
-        sports: selectedSports,
-      });
-    }, 10);
+    Utility.setStorage('sportSetting', selectedSports).then(() => {
+      navigation.pop(2);
+    });
+
     console.log('DONE::', selectedSports);
   };
 
   const isIconCheckedOrNot = useCallback(
-    ({ item, index }) => {
+    ({item, index}) => {
       systemSports[index].isChecked = !item.isChecked;
 
       setSystemSports([...systemSports]);
@@ -145,9 +124,8 @@ export default function AddOrDeleteSport({ navigation, route }) {
     [systemSports],
   );
   const searchSportsFunction = (text) => {
-    const result = systemSports.filter(
-      (x) => x.sport.includes(text)
-        || x.sport.includes(text),
+    const result = systemSports.filter((x) =>
+      x.sport?.toLowerCase().includes(text?.toLowerCase()),
     );
     if (text.length > 0) {
       setSystemSports(result);
@@ -156,7 +134,7 @@ export default function AddOrDeleteSport({ navigation, route }) {
     }
   };
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
@@ -170,7 +148,7 @@ export default function AddOrDeleteSport({ navigation, route }) {
           />
         </View>
       </View>
-      <View style={{ height: '80%' }}>
+      <View style={{height: '80%'}}>
         <TCThinDivider width={'100%'} marginBottom={15} />
         <SportsListView
           sports={systemSports}
@@ -200,7 +178,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('92%'),
     borderRadius: 20,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,

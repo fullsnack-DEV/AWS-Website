@@ -25,6 +25,7 @@ export default function DeactivateSportScreen({navigation, route}) {
   const [sportObj] = useState(route?.params?.sport);
   const authContext = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [showLeaveMsg, setShowLeaveMsg] = useState(false);
 
   const [loading, setloading] = useState(false);
@@ -36,16 +37,16 @@ export default function DeactivateSportScreen({navigation, route}) {
       .then((response) => {
         console.log('Get user groups Data Res ::--', response);
         if (
-          response.payload.clubs.length > 0 ||
-          response.payload.teams.length > 0
+          response.payload.clubs?.length > 0 ||
+          response.payload.teams?.length > 0
         ) {
           if (
             response.payload.clubs.filter(
               (obj) => obj.sport === sportObj.sport && obj.sport_type === sportObj.sport_type,
-            ).length > 0 ||
+            )?.length > 0 ||
             response.payload.teams.filter(
               (obj) => obj.sport === sportObj.sport && obj.sport_type === sportObj.sport_type,
-            ).length > 0
+            )?.length > 0
           ) {
             setShowLeaveMsg(true);
           }
@@ -69,6 +70,8 @@ export default function DeactivateSportScreen({navigation, route}) {
     return null;
   };
   const deactivateSport = () => {
+    setloading(true);
+
     const body = {
       sport: sportObj.sport,
       sport_type: sportObj.sport_type,
@@ -118,15 +121,15 @@ export default function DeactivateSportScreen({navigation, route}) {
             // Alert.alert('',
             //   'Please leave all clubs, leagues and seasons before you deactivate Tennis Singles.');
 
-            if (showLeaveMsg) {
-              Alert.alert(
-                '',
-                `Please leave all teams, clubs and leagues before you deactivate ${Utility.getSportName(
-                  sportObj,
-                  authContext,
-                )}.`,
-              );
-            } else {
+            // if (showLeaveMsg) {
+            //   Alert.alert(
+            //     '',
+            //     `Please leave all teams, clubs and leagues before you deactivate ${Utility.getSportName(
+            //       sportObj,
+            //       authContext,
+            //     )}.`,
+            //   );
+            // } else {
               Alert.alert(
                 `Are you sure you want to deactivate ${Utility.getSportName(
                   sportObj,
@@ -157,7 +160,7 @@ export default function DeactivateSportScreen({navigation, route}) {
                 ],
                 {cancelable: false},
               );
-            }
+           // }
           }}
         />
         <Modal
