@@ -11,9 +11,11 @@ const strings = {
   appleText: 'Continue with Apple',
   signUpText: 'Sign up with email',
   alreadyRegisteredMessage: 'Email address is already registered.',
+  userNotFound: 'The email and password you entered do not match.',
   validEmailMessage: 'Please use a valid email address.',
   alreadyMember: 'Already a member?',
   loginText: 'Log in',
+  quitText: 'Quit',
   orText: 'OR',
   emailPlaceHolder: 'Email',
   allDay: 'All day',
@@ -47,6 +49,7 @@ const strings = {
     'By continuing you agree to Towny\'s Terms of Service, We will manage information about you as described in our PrivacyPolicy and Cookie Policy.',
   resetText: 'Reset your password.',
   nextTitle: 'NEXT',
+  emailNotRegisterd: 'This email is not registered.',
   varificationLinkSend: 'Verification email was sent successfully.',
   deactivateTitle: 'DEACTIVATE ACTIVITY',
   acceptTitle: 'ACCEPT',
@@ -69,7 +72,7 @@ const strings = {
   save: 'Save',
   done: 'Done',
   yes: 'Yes',
-  passwordText: 'Password (at least 6 characters)',
+  passwordText: 'Password (at least 8 characters)',
   confirmPasswordText: 'Confirm Password',
   // Password message
   passwordCanNotBlank: 'Password cannot be blank.',
@@ -82,8 +85,8 @@ const strings = {
   requestSent: 'Request Sent',
   offered: 'offered',
   chiefReferee: 'CHIEF REFEREE',
-  cancelled: 'cancelled',
-  Cancelled: 'Cancelled',
+  cancelled: 'canceled',
+  Cancelled: 'Canceled',
   requestCancelled: 'requestcancelled',
   reqCan: 'Request Cancelled',
   accepted: 'accepted',
@@ -121,7 +124,7 @@ const strings = {
   clubTeamTitle3: 'FC Barcelona',
   leagueTeamTitle: 'UEFA Champions League',
 
-  locationText: 'Choose your current city.',
+  locationText: 'Choose your city.',
   locationPlaceholderText: 'Search by city or postal code',
   sportText: 'Select your favourite sports.',
 
@@ -366,7 +369,7 @@ const strings = {
   oldPassword: 'Current Password',
   newPassword: 'New Password',
   confirmPassword: 'Confirm Password',
-  atLeastText: '(At least 6 characters)',
+  atLeastText: '(At least 8 characters)',
 
   // reservation
 
@@ -828,7 +831,6 @@ const strings = {
   teamExist: 'The team name in the sports already exists in the city.',
   sportActivity: 'Sports Activities',
   refereeRegisteredSuccess: 'Registered as a referee.',
-  scorekeeperRegisteredSuccess: 'Registered as a scorekeeper.'
-
+  scorekeeperRegisteredSuccess: 'Registered as a scorekeeper.',
 };
 export default strings;

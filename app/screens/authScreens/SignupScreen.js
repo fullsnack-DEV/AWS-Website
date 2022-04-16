@@ -36,7 +36,12 @@ import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context';
 import apiCall from '../../utils/apiCall';
 import {checkTownscupEmail, createUser} from '../../api/Users';
-import { QBconnectAndSubscribe, QBcreateUser, QBlogin, QB_ACCOUNT_TYPE} from '../../utils/QuickBlox';
+import {
+  QBconnectAndSubscribe,
+  QBcreateUser,
+  QBlogin,
+  QB_ACCOUNT_TYPE,
+} from '../../utils/QuickBlox';
 
 export default function SignupScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -60,8 +65,22 @@ export default function SignupScreen({navigation}) {
       Alert.alert(strings.appName, 'First name cannot be blank');
       return false;
     }
+    if (Utility.validatedName(fName) === false) {
+      Alert.alert(
+        strings.appName,
+        'The first name cannot contain numbers or special characters.',
+      );
+      return false;
+    }
     if (lName === '') {
       Alert.alert(strings.appName, 'Last name cannot be blank');
+      return false;
+    }
+    if (Utility.validatedName(lName) === false) {
+      Alert.alert(
+        strings.appName,
+        'The last name cannot contain numbers or special characters.',
+      );
       return false;
     }
     if (email === '') {
@@ -84,8 +103,8 @@ export default function SignupScreen({navigation}) {
       Alert.alert(strings.appName, strings.confirmAndPasswordNotMatch);
       return false;
     }
-    if (password.length < 6) {
-      Alert.alert(strings.appName, 'Password should be atleast 6 characters.');
+    if (password.length < 8) {
+      Alert.alert(strings.appName, 'Password should be atleast 8 characters.');
       return false;
     }
     return true;
@@ -153,46 +172,42 @@ export default function SignupScreen({navigation}) {
     });
   };
 
-
-  const signUpWithQB = async (response) => {    
+  const signUpWithQB = async (response) => {
     console.log('QB signUpWithQB : ', response);
 
     let qbEntity = {...dummyAuthContext.entity};
     console.log('QB qbEntity : ', qbEntity);
- 
-        const setting = await Utility.getStorage('appSetting')
-        console.log('App QB Setting:=>', setting);
 
-        authContext.setQBCredential(setting)
-            QB.settings.enableAutoReconnect({ enable: true });
-            QBlogin(qbEntity.uid, response)
-            .then(async (res) => {
-              qbEntity = {
-                ...qbEntity,
-                QB: {...res.user, connected: true, token: res?.session?.token},
-              };
-              QBconnectAndSubscribe(qbEntity);
-              setDummyAuthContext('entity', qbEntity);
-              await wholeSignUpProcessComplete(response);
-            })
-            .catch(async (error) => {
-              console.log('QB Login Error : ', error.message);
-              qbEntity = {...qbEntity, QB: {connected: false}};
-              setDummyAuthContext('entity', qbEntity);
-              QBcreateUser(qbEntity.uid, response, QB_ACCOUNT_TYPE.USER)
-              .then(() => {
-                QBlogin(qbEntity.uid).then((loginRes) => {
-                console.log('QB loginRes',loginRes);
-                });
-              })
-              .catch((e) => {
-                console.log('QB error',e);
-      
-              });
-              await wholeSignUpProcessComplete(response);
+    const setting = await Utility.getStorage('appSetting');
+    console.log('App QB Setting:=>', setting);
+
+    authContext.setQBCredential(setting);
+    QB.settings.enableAutoReconnect({enable: true});
+    QBlogin(qbEntity.uid, response)
+      .then(async (res) => {
+        qbEntity = {
+          ...qbEntity,
+          QB: {...res.user, connected: true, token: res?.session?.token},
+        };
+        QBconnectAndSubscribe(qbEntity);
+        setDummyAuthContext('entity', qbEntity);
+        await wholeSignUpProcessComplete(response);
+      })
+      .catch(async (error) => {
+        console.log('QB Login Error : ', error.message);
+        qbEntity = {...qbEntity, QB: {connected: false}};
+        setDummyAuthContext('entity', qbEntity);
+        QBcreateUser(qbEntity.uid, response, QB_ACCOUNT_TYPE.USER)
+          .then(() => {
+            QBlogin(qbEntity.uid).then((loginRes) => {
+              console.log('QB loginRes', loginRes);
             });
-        
-         
+          })
+          .catch((e) => {
+            console.log('QB error', e);
+          });
+        await wholeSignUpProcessComplete(response);
+      });
   };
 
   const signUpToTownsCup = async (uploadedProfilePic) => {
@@ -508,25 +523,23 @@ export default function SignupScreen({navigation}) {
         />
         <TCKeyboardView>
           <View style={{marginVertical: 20}}>
-            <FastImage
-              source={
-                profilePic?.path
-                  ? {uri: profilePic?.path}
-                  : images.profilePlaceHolder
-              }
+            <TouchableOpacity
               style={styles.profile}
-            />
+              onPress={() => {
+                onProfileImageClicked();
+              }}>
+              <FastImage
+                source={
+                  profilePic?.path
+                    ? {uri: profilePic?.path}
+                    : images.profilePlaceHolder
+                }
+                style={{width: 100, height: 100, borderRadius: 50}}
+              />
+            </TouchableOpacity>
             <TouchableOpacity
               style={styles.profileCameraButtonStyle}
               onPress={() => {
-                // ImagePicker.openPicker({
-                //   width: 300,
-                //   height: 400,
-                //   cropping: true,
-                //   cropperCircleOverlay: true,
-                // }).then((pickImages) => {
-                //   setProfilePic(pickImages);
-                // });
                 onProfileImageClicked();
               }}>
               <FastImage
@@ -540,23 +553,23 @@ export default function SignupScreen({navigation}) {
             style={styles.textFieldStyle}
             placeholder={strings.fnameText}
             value={fName}
-            onChangeText={(name) => {
-              if (Utility.validatedName(name)) {
-                setFName(name);
-              }
-            }}
-            //  onChangeText={(text) => setFName(text)}
+            // onChangeText={(name) => {
+            //   if (Utility.validatedName(name)) {
+            //     setFName(name);
+            //   }
+            // }}
+            onChangeText={(text) => setFName(text)}
           />
           <TCTextField
             placeholderTextColor={colors.darkYellowColor}
             style={styles.textFieldStyle}
             placeholder={strings.lnameText}
-            // onChangeText={(text) => setLName(text)}
-            onChangeText={(lastName) => {
-              if (Utility.validatedName(lastName) === true) {
-                setLName(lastName);
-              }
-            }}
+            onChangeText={(text) => setLName(text)}
+            // onChangeText={(lastName) => {
+            //   if (Utility.validatedName(lastName) === true) {
+            //     setLName(lastName);
+            //   }
+            // }}
             value={lName}
           />
           <TCTextField

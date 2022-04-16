@@ -340,10 +340,6 @@ export default function WelcomeScreen({navigation}) {
     socialSignInSignUpOnAuthChanged();
   };
 
-
-
-
-  
   const signInSignUpWithSocialCredential = async (
     credential,
     provider,
@@ -359,7 +355,6 @@ export default function WelcomeScreen({navigation}) {
 
         console.log('social extraData:=>', extraData);
 
-
         socialSignInSignUp(authResult, provider, extraData);
       })
       .catch(async (error) => {
@@ -372,11 +367,11 @@ export default function WelcomeScreen({navigation}) {
         //   const providers = await auth().fetchSignInMethodsForEmail(error.email);
         //  console.log('providersproviders',providers);
         // }
-        console.log('error.codeerror.code',error.code);
+        console.log('error.codeerror.code', error.code);
         setloading(false);
         let message = '';
         if (error.code === 'auth/user-not-found') {
-          message = 'Your email or password is incorrect.Please try again';
+          message = strings.userNotFound;
         }
         if (error.code === 'auth/email-already-in-use') {
           message = 'That email address is already in use!';
@@ -398,45 +393,45 @@ export default function WelcomeScreen({navigation}) {
 
   // Login With Facebook manage function
   const onFacebookButtonPress = async () => {
-    try{
-    setloading(true);
-    const result = await LoginManager.logInWithPermissions([
-      'public_profile',
-      'email',
-    ]);
-    console.log('facebook login result', result);
-    if (result.isCancelled) {
-      setloading(false);
-      throw new Error('User cancelled the login process');
-    }
-    const data = await AccessToken.getCurrentAccessToken();
-    console.log('facebook login data', data);
+    try {
+      setloading(true);
+      const result = await LoginManager.logInWithPermissions([
+        'public_profile',
+        'email',
+      ]);
+      console.log('facebook login result', result);
+      if (result.isCancelled) {
+        setloading(false);
+        throw new Error('User canceled the login process');
+      }
+      const data = await AccessToken.getCurrentAccessToken();
+      console.log('facebook login data', data);
 
-    if (!data) {
-      setloading(false);
-      throw new Error('Something went wrong obtaining access token');
-    }
-    const facebookCredential = await auth.FacebookAuthProvider.credential(
-      data.accessToken,
-    );
-    console.log('facebook facebookCredential', facebookCredential);
+      if (!data) {
+        setloading(false);
+        throw new Error('Something went wrong obtaining access token');
+      }
+      const facebookCredential = await auth.FacebookAuthProvider.credential(
+        data.accessToken,
+      );
+      console.log('facebook facebookCredential', facebookCredential);
 
-    await signInSignUpWithSocialCredential(facebookCredential, 'FACEBOOK | ');
-  } catch (error) {
-    setloading(false);
-    if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-      // sign in was cancelled
-      Alert.alert('cancelled');
-    } else if (error.code === statusCodes.IN_PROGRESS) {
-      // operation in progress already
-      Alert.alert('in progress');
-    } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-      Alert.alert('play services not available or outdated');
-    } else {
-      console.log('Something went wrong:', error);
-      Alert.alert('Something went wrong', error.toString());
+      await signInSignUpWithSocialCredential(facebookCredential, 'FACEBOOK | ');
+    } catch (error) {
+      setloading(false);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // sign in was cancelled
+        Alert.alert('Canceled');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation in progress already
+        Alert.alert('in progress');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        Alert.alert('play services not available or outdated');
+      } else {
+        console.log('Something went wrong:', error);
+        Alert.alert('Something went wrong', error.toString());
+      }
     }
-  }
   };
 
   // Login With Google manage function
@@ -457,7 +452,7 @@ export default function WelcomeScreen({navigation}) {
       setloading(false);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // sign in was cancelled
-        Alert.alert('cancelled');
+        Alert.alert('Canceled');
       } else if (error.code === statusCodes.IN_PROGRESS) {
         // operation in progress already
         Alert.alert('in progress');
@@ -629,7 +624,7 @@ export default function WelcomeScreen({navigation}) {
                 identityToken,
                 nonce,
               );
-              console.log('appleCredential=>',appleCredential);
+              console.log('appleCredential=>', appleCredential);
               await signInSignUpWithSocialCredential(
                 appleCredential,
                 'APPLE iOS| ',
@@ -643,6 +638,7 @@ export default function WelcomeScreen({navigation}) {
         }
       }
     } catch (e) {
+      setloading(false);
       Alert.alert(e.message);
     }
   };

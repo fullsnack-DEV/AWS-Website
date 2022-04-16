@@ -51,10 +51,12 @@ export default function LoginScreen({navigation}) {
 
   const validate = useCallback(() => {
     if (email === '') {
+      setloading(false);
       Alert.alert(strings.appName, 'Email cannot be blank');
       return false;
     }
     if (password === '') {
+      setloading(false);
       Alert.alert(strings.appName, strings.passwordCanNotBlank);
       return false;
     }
@@ -236,7 +238,7 @@ export default function LoginScreen({navigation}) {
 
         let message = error.message;
         if (error.code === 'auth/user-not-found') {
-          message = 'Your email or password is incorrect.Please try again';
+          message = strings.userNotFound;
         }
         if (error.code === 'auth/email-already-in-use') {
           message = 'That email address is already in use!';
@@ -245,8 +247,7 @@ export default function LoginScreen({navigation}) {
           message = strings.validEmailMessage;
         }
         if (error.code === 'auth/wrong-password') {
-          message =
-            'The password is invalid or the user does not have a password.';
+          message = 'The email and password you entered do not match.';
         }
         if (error.code === 'auth/too-many-requests') {
           message = 'Too many request for login ,try after sometime';

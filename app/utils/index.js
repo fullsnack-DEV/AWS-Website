@@ -982,7 +982,7 @@ export const validateEmail = (emailText) => {
 };
 export const validatedName = (name) => {
   // /^[a-zA-Z0-9]+$/.test(name)
-  if (/^$|^[a-zA-Z0-9]+$/.test(name)) {
+  if (/^$|^[A-Za-z]+$/.test(name)) {
     return true;
   }
   return false;

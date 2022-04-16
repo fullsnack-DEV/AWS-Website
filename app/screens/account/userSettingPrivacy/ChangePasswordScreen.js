@@ -54,7 +54,7 @@ export default function ChangePasswordScreen({navigation}) {
       return false;
     }
     if (newPassword.length < 6) {
-      Alert.alert(strings.appName, 'Password should be atleast 6 characters.');
+      Alert.alert(strings.appName, 'Password should be atleast 8 characters.');
       return false;
     }
     
@@ -121,7 +121,7 @@ export default function ChangePasswordScreen({navigation}) {
             setTimeout(() => {
               Alert.alert(
                 'TownsCup',
-                'The password is invalid or the user does not have a password.',
+                'The email and password you entered dont match',
               );
             }, 10);
           }
