@@ -1248,6 +1248,7 @@ const HomeNavigator = () => (
         },
       }}
     />
+   
     <Stack.Screen
       name="ChangePasswordScreen"
       component={ChangePasswordScreen}

@@ -60,7 +60,6 @@ import {getHitSlop} from '../../../utils';
 import {getUnreadCount} from '../../../api/Notificaitons';
 import * as Utility from '../../../utils/index';
 
-import TCThinDivider from '../../../components/TCThinDivider';
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import MonthHeader from '../../../components/Schedule/Monthheader';
 import {getGameIndex} from '../../../api/elasticSearch';
@@ -741,40 +740,42 @@ export default function ScheduleScreen({navigation, route}) {
   };
 
   return (
-    <View style={styles.mainContainer} needsOffscreenAlphaCompositing>
-      <View style={{flex: 1}}>
-        <View
-          style={{
-            flexDirection: 'row',
-            margin: 15,
-            justifyContent: 'space-between',
-          }}>
-          <View style={{flexDirection: 'row'}}>
-            <Text
-              style={
-                scheduleIndexCounter === 0
-                  ? styles.activeButton
-                  : styles.inActiveButton
-              }
-              onPress={() => {
-                setScheduleIndexCounter(0);
-              }}>
-              Events
-            </Text>
-            <Text
-              style={
-                scheduleIndexCounter === 1
-                  ? styles.activeButton
-                  : styles.inActiveButton
-              }
-              onPress={() => {
-                setScheduleIndexCounter(1);
-              }}>
-              Availability
-            </Text>
-          </View>
-          <View style={{flexDirection: 'row'}}>
-            {/* {!isMenu && scheduleIndexCounter !== 1 && (
+    <>
+      <View style={styles.separateLine} />
+      <View style={styles.mainContainer} needsOffscreenAlphaCompositing>
+        <View style={{flex: 1}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              margin: 15,
+              justifyContent: 'space-between',
+            }}>
+            <View style={{flexDirection: 'row'}}>
+              <Text
+                style={
+                  scheduleIndexCounter === 0
+                    ? styles.activeButton
+                    : styles.inActiveButton
+                }
+                onPress={() => {
+                  setScheduleIndexCounter(0);
+                }}>
+                Events
+              </Text>
+              <Text
+                style={
+                  scheduleIndexCounter === 1
+                    ? styles.activeButton
+                    : styles.inActiveButton
+                }
+                onPress={() => {
+                  setScheduleIndexCounter(1);
+                }}>
+                Availability
+              </Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              {/* {!isMenu && scheduleIndexCounter !== 1 && (
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={{marginRight: 15}}
@@ -793,33 +794,125 @@ export default function ScheduleScreen({navigation, route}) {
                 />
               </TouchableOpacity>
             )} */}
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              onPress={() => {
-                setIsMenu(!isMenu);
-                setShowTimeTable(false);
-              }}>
-              <Image
-                source={isMenu ? images.menuOrange : images.menuGray}
-                style={{
-                  resizeMode: 'contain',
-                  height: 25,
-                  width: 25,
-                }}
-              />
-            </TouchableOpacity>
+              <TouchableOpacity
+                hitSlop={getHitSlop(15)}
+                onPress={() => {
+                  setIsMenu(!isMenu);
+                  setShowTimeTable(false);
+                }}>
+                <Image
+                  source={isMenu ? images.menuOrange : images.menuGray}
+                  style={{
+                    resizeMode: 'contain',
+                    height: 25,
+                    width: 25,
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-        <TCThinDivider width={'100%'} marginBottom={12} />
-        <TCInnerLoader visible={loading} />
-        {!loading && scheduleIndexCounter === 0 && (
-          <View style={{flex: 1}}>
-            <ScrollView
-              style={{flex: 1}}
-              onScroll={onScrollCalender}
-              nestedScrollEnabled
-              stickyHeaderIndices={[0]}>
-              <View>
+          <View style={[styles.separateLine, {marginBottom: 12}]} />
+          <TCInnerLoader visible={loading} />
+          {!loading && scheduleIndexCounter === 0 && (
+            <View style={{flex: 1}}>
+              <ScrollView
+                style={{flex: 1}}
+                onScroll={onScrollCalender}
+                nestedScrollEnabled
+                stickyHeaderIndices={[0]}>
+                <View>
+                  {isMenu && <MonthHeader />}
+                  {!isMenu && (
+                    <EventAgendaSection
+                      showTimeTable={showTimeTable}
+                      isMenu={isMenu}
+                      horizontal={listView}
+                      onPressListView={onPressListView}
+                      onPressGridView={onPressGridView}
+                      onDayPress={onDayPress}
+                      selectedCalendarDate={selectedCalendarDateString}
+                      calendarMarkedDates={markingDays}
+                    />
+                  )}
+                  <EventScheduleScreen
+                    eventData={
+                      eventSelectDate
+                        ? (eventData || []).filter(
+                            (e) =>
+                              moment(eventSelectDate).format('YYYY-MM-DD') ===
+                              moment(e.start_datetime * 1000).format(
+                                'YYYY-MM-DD',
+                              ),
+                          )
+                        : eventData
+                    }
+                    navigation={navigation}
+                    profileID={authContext.entity.uid}
+                    onThreeDotPress={(item) => {
+                      setSelectedEventItem(item);
+                    }}
+                    onItemPress={async (item) => {
+                      console.log('Clicked ITEM:=>', item);
+                      const entity = authContext.entity;
+                      if (item?.game_id) {
+                        if (item?.game?.sport) {
+                          const gameHome = getGameHomeScreen(
+                            item.game.sport.replace(' ', '_'),
+                          );
+                          navigation.navigate(gameHome, {
+                            gameId: item?.game_id,
+                          });
+                        }
+                      } else {
+                        getEventById(
+                          entity.role === 'user' ? 'users' : 'groups',
+                          entity.uid || entity.auth.user_id,
+                          item.cal_id,
+                          authContext,
+                        )
+                          .then((response) => {
+                            navigation.navigate('EventScreen', {
+                              data: response.payload,
+                              gameData: item,
+                            });
+                          })
+                          .catch((e) => {
+                            console.log('Error :-', e);
+                          });
+                      }
+                    }}
+                    entity={authContext.entity}
+                  />
+                </View>
+              </ScrollView>
+
+              {!createEventModal && (
+                <CreateEventButton
+                  source={images.plus}
+                  onPress={() => {
+                    setCreateEventModal(true);
+                  }}
+                />
+              )}
+            </View>
+          )}
+          {!loading && scheduleIndexCounter === 1 && (
+            <View style={{flex: 1}}>
+              <ScrollView
+                style={{flex: 1}}
+                onScroll={onScrollCalender}
+                nestedScrollEnabled
+                stickyHeaderIndices={[0]}>
+                {/* <EventAgendaSection
+              showTimeTable={showTimeTable}
+              isMenu={isMenu}
+              horizontal={listView}
+              onPressListView={onPressListView}
+              onPressGridView={onPressGridView}
+              onDayPress={onDayPress}
+              selectedCalendarDate={selectedCalendarDateString}
+              calendarMarkedDates={markingDays}
+            /> */}
                 {isMenu && <MonthHeader />}
                 {!isMenu && (
                   <EventAgendaSection
@@ -833,417 +926,329 @@ export default function ScheduleScreen({navigation, route}) {
                     calendarMarkedDates={markingDays}
                   />
                 )}
-                <EventScheduleScreen
-                  eventData={
-                    eventSelectDate
-                      ? (eventData || []).filter(
-                          (e) =>
-                            moment(eventSelectDate).format('YYYY-MM-DD') ===
-                            moment(e.start_datetime * 1000).format(
-                              'YYYY-MM-DD',
-                            ),
-                        )
-                      : eventData
-                  }
-                  navigation={navigation}
-                  profileID={authContext.entity.uid}
-                  onThreeDotPress={(item) => {
-                    setSelectedEventItem(item);
-                  }}
-                  onItemPress={async (item) => {
-                    console.log('Clicked ITEM:=>', item);
-                    const entity = authContext.entity;
-                    if (item?.game_id) {
-                      if (item?.game?.sport) {
-                        const gameHome = getGameHomeScreen(
-                          item.game.sport.replace(' ', '_'),
-                        );
-                        navigation.navigate(gameHome, {
-                          gameId: item?.game_id,
-                        });
-                      }
-                    } else {
-                      getEventById(
-                        entity.role === 'user' ? 'users' : 'groups',
-                        entity.uid || entity.auth.user_id,
-                        item.cal_id,
-                        authContext,
-                      )
-                        .then((response) => {
-                          navigation.navigate('EventScreen', {
-                            data: response.payload,
-                            gameData: item,
-                          });
-                        })
-                        .catch((e) => {
-                          console.log('Error :-', e);
-                        });
-                    }
-                  }}
-                  entity={authContext.entity}
-                />
-              </View>
-            </ScrollView>
+                {/* Availibility bottom view */}
 
-            {!createEventModal && (
-              <CreateEventButton
-                source={images.plus}
-                onPress={() => {
-                  setCreateEventModal(true);
-                }}
-              />
-            )}
-          </View>
-        )}
-        {!loading && scheduleIndexCounter === 1 && (
-          <View style={{flex: 1}}>
-            <ScrollView
-              style={{flex: 1}}
-              onScroll={onScrollCalender}
-              nestedScrollEnabled
-              stickyHeaderIndices={[0]}>
-              {/* <EventAgendaSection
-              showTimeTable={showTimeTable}
-              isMenu={isMenu}
-              horizontal={listView}
-              onPressListView={onPressListView}
-              onPressGridView={onPressGridView}
-              onDayPress={onDayPress}
-              selectedCalendarDate={selectedCalendarDateString}
-              calendarMarkedDates={markingDays}
-            /> */}
-              {isMenu && <MonthHeader />}
-              {!isMenu && (
-                <EventAgendaSection
-                  showTimeTable={showTimeTable}
-                  isMenu={isMenu}
-                  horizontal={listView}
-                  onPressListView={onPressListView}
-                  onPressGridView={onPressGridView}
-                  onDayPress={onDayPress}
-                  selectedCalendarDate={selectedCalendarDateString}
-                  calendarMarkedDates={markingDays}
-                />
-              )}
-              {/* Availibility bottom view */}
-
-              <View>
-                {/* <Text style={styles.slotHeader}>
+                <View>
+                  {/* <Text style={styles.slotHeader}>
                 Available time For challenge
               </Text> */}
-                <SectionList
-                  sections={blockedGroups}
-                  renderItem={({item}) => (
-                    <BlockSlotView
-                      startDate={item.start_datetime}
-                      endDate={item.end_datetime}
-                      allDay={item.allDay}
-                    />
-                  )}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderSectionHeader={({section: {title}}) => (
-                    <Text style={styles.sectionHeader}>
-                      {moment(new Date(title)).format('dddd, MMM DD, YYYY')}
-                    </Text>
-                  )}
+                  <SectionList
+                    sections={blockedGroups}
+                    renderItem={({item}) => (
+                      <BlockSlotView
+                        startDate={item.start_datetime}
+                        endDate={item.end_datetime}
+                        allDay={item.allDay}
+                      />
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderSectionHeader={({section: {title}}) => (
+                      <Text style={styles.sectionHeader}>
+                        {moment(new Date(title)).format('dddd, MMM DD, YYYY')}
+                      </Text>
+                    )}
+                  />
+                </View>
+              </ScrollView>
+              {!createEventModal && (
+                <CreateEventButton
+                  source={images.plus}
+                  onPress={() => setCreateEventModal(true)}
                 />
-              </View>
-            </ScrollView>
-            {!createEventModal && (
-              <CreateEventButton
-                source={images.plus}
-                onPress={() => setCreateEventModal(true)}
-              />
-            )}
-          </View>
-        )}
-      </View>
-      <CreateEventBtnModal
-        visible={createEventModal}
-        onCancelPress={() => setCreateEventModal(false)}
-        onCreateEventPress={() => {
-          setCreateEventModal(false);
-          navigation.navigate('CreateEventScreen', {
-            comeName: 'ScheduleScreen',
-          });
-        }}
-        onChallengePress={() => {
-          setCreateEventModal(false);
-          navigation.navigate('EditChallengeAvailability');
-        }}
-      />
-      <ActionSheet
-        ref={actionSheet}
-        options={
-          authContext.entity.role === 'player' ||
-          authContext.entity.role === 'user'
-            ? [
-                'Default Color',
-                'Group Events Display',
-                'View Privacy',
-                'Cancel',
-              ]
-            : ['Default Color', 'View Privacy', 'Cancel']
-        }
-        cancelButtonIndex={
-          authContext.entity.role === 'player' ||
-          authContext.entity.role === 'user'
-            ? 3
-            : 2
-        }
-        // destructiveButtonIndex={3}
-        onPress={(index) => {
-          if (index === 0) {
-            navigation.navigate('DefaultColorScreen');
-          } else if (index === 1) {
-            if (
-              authContext.entity.role === 'player' ||
-              authContext.entity.role === 'user'
-            ) {
-              navigation.navigate('GroupEventScreen');
-            } else {
+              )}
+            </View>
+          )}
+        </View>
+        <CreateEventBtnModal
+          visible={createEventModal}
+          onCancelPress={() => setCreateEventModal(false)}
+          onCreateEventPress={() => {
+            setCreateEventModal(false);
+            navigation.navigate('CreateEventScreen', {
+              comeName: 'ScheduleScreen',
+            });
+          }}
+          onChallengePress={() => {
+            setCreateEventModal(false);
+            navigation.navigate('EditChallengeAvailability');
+          }}
+        />
+        <ActionSheet
+          ref={actionSheet}
+          options={
+            authContext.entity.role === 'player' ||
+            authContext.entity.role === 'user'
+              ? [
+                  'Default Color',
+                  'Group Events Display',
+                  'View Privacy',
+                  'Cancel',
+                ]
+              : ['Default Color', 'View Privacy', 'Cancel']
+          }
+          cancelButtonIndex={
+            authContext.entity.role === 'player' ||
+            authContext.entity.role === 'user'
+              ? 3
+              : 2
+          }
+          // destructiveButtonIndex={3}
+          onPress={(index) => {
+            if (index === 0) {
+              navigation.navigate('DefaultColorScreen');
+            } else if (index === 1) {
+              if (
+                authContext.entity.role === 'player' ||
+                authContext.entity.role === 'user'
+              ) {
+                navigation.navigate('GroupEventScreen');
+              } else {
+                navigation.navigate('ViewPrivacyScreen');
+              }
+            } else if (index === 2) {
               navigation.navigate('ViewPrivacyScreen');
             }
-          } else if (index === 2) {
-            navigation.navigate('ViewPrivacyScreen');
-          }
-        }}
-      />
+          }}
+        />
 
-      <Modal
-        isVisible={isRefereeModal}
-        backdropColor="black"
-        style={{margin: 0, justifyContent: 'flex-end'}}
-        hasBackdrop
-        onBackdropPress={() => {
-          setIsRefereeModal(false);
-        }}
-        backdropOpacity={0}>
-        <SafeAreaView style={styles.modalMainViewStyle}>
-          <Header
-            mainContainerStyle={styles.headerMainContainerStyle}
-            leftComponent={
-              <TouchableOpacity
-                onPress={() => {
-                  setIsRefereeModal(false);
-                }}>
-                <Image
-                  source={images.cancelImage}
-                  style={styles.cancelImageStyle}
-                  resizeMode={'contain'}
+        <Modal
+          isVisible={isRefereeModal}
+          backdropColor="black"
+          style={{margin: 0, justifyContent: 'flex-end'}}
+          hasBackdrop
+          onBackdropPress={() => {
+            setIsRefereeModal(false);
+          }}
+          backdropOpacity={0}>
+          <SafeAreaView style={styles.modalMainViewStyle}>
+            <Header
+              mainContainerStyle={styles.headerMainContainerStyle}
+              leftComponent={
+                <TouchableOpacity
+                  onPress={() => {
+                    setIsRefereeModal(false);
+                  }}>
+                  <Image
+                    source={images.cancelImage}
+                    style={styles.cancelImageStyle}
+                    resizeMode={'contain'}
+                  />
+                </TouchableOpacity>
+              }
+              centerComponent={
+                <Text style={styles.headerCenterStyle}>
+                  {'Choose a referee'}
+                </Text>
+              }
+            />
+            <View style={styles.sepratorStyle} />
+            <FlatList
+              data={refereeReservData}
+              bounces={false}
+              showsHorizontalScrollIndicator={false}
+              ItemSeparatorComponent={() => (
+                <View style={[styles.sepratorStyle, {marginHorizontal: 15}]} />
+              )}
+              renderItem={({item}) => (
+                <RefereeReservationItem
+                  data={item}
+                  onPressButton={() => {
+                    setIsRefereeModal(false);
+                    console.log('choose Referee:', item);
+                    goToRefereReservationDetail(item);
+                  }}
                 />
-              </TouchableOpacity>
-            }
-            centerComponent={
-              <Text style={styles.headerCenterStyle}>{'Choose a referee'}</Text>
-            }
-          />
-          <View style={styles.sepratorStyle} />
-          <FlatList
-            data={refereeReservData}
-            bounces={false}
-            showsHorizontalScrollIndicator={false}
-            ItemSeparatorComponent={() => (
-              <View style={[styles.sepratorStyle, {marginHorizontal: 15}]} />
-            )}
-            renderItem={({item}) => (
-              <RefereeReservationItem
-                data={item}
-                onPressButton={() => {
-                  setIsRefereeModal(false);
-                  console.log('choose Referee:', item);
-                  goToRefereReservationDetail(item);
-                }}
-              />
-            )}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </SafeAreaView>
-      </Modal>
-      {/* Scorekeeper modal */}
-      <Modal
-        isVisible={isScorekeeperModal}
-        backdropColor="black"
-        style={{margin: 0, justifyContent: 'flex-end'}}
-        hasBackdrop
-        onBackdropPress={() => {
-          setIsScorekeeperModal(false);
-        }}
-        backdropOpacity={0}>
-        <SafeAreaView style={styles.modalMainViewStyle}>
-          <Header
-            mainContainerStyle={styles.headerMainContainerStyle}
-            leftComponent={
-              <TouchableOpacity
-                onPress={() => {
-                  setIsScorekeeperModal(false);
-                }}>
-                <Image
-                  hitSlop={getHitSlop(15)}
-                  source={images.cancelImage}
-                  style={styles.cancelImageStyle}
-                  resizeMode={'contain'}
+              )}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </SafeAreaView>
+        </Modal>
+        {/* Scorekeeper modal */}
+        <Modal
+          isVisible={isScorekeeperModal}
+          backdropColor="black"
+          style={{margin: 0, justifyContent: 'flex-end'}}
+          hasBackdrop
+          onBackdropPress={() => {
+            setIsScorekeeperModal(false);
+          }}
+          backdropOpacity={0}>
+          <SafeAreaView style={styles.modalMainViewStyle}>
+            <Header
+              mainContainerStyle={styles.headerMainContainerStyle}
+              leftComponent={
+                <TouchableOpacity
+                  onPress={() => {
+                    setIsScorekeeperModal(false);
+                  }}>
+                  <Image
+                    hitSlop={getHitSlop(15)}
+                    source={images.cancelImage}
+                    style={styles.cancelImageStyle}
+                    resizeMode={'contain'}
+                  />
+                </TouchableOpacity>
+              }
+              centerComponent={
+                <Text style={styles.headerCenterStyle}>
+                  {strings.chooseScorekeeperText}
+                </Text>
+              }
+            />
+            <View style={styles.sepratorStyle} />
+            <FlatList
+              data={scorekeeperReservData}
+              bounces={false}
+              showsHorizontalScrollIndicator={false}
+              ItemSeparatorComponent={() => (
+                <View style={[styles.sepratorStyle, {marginHorizontal: 15}]} />
+              )}
+              renderItem={({item}) => (
+                <ScorekeeperReservationItem
+                  data={item}
+                  onPressButton={() => {
+                    setIsScorekeeperModal(false);
+                    console.log('choose Scorekeeper:', item);
+                    goToScorekeeperReservationDetail(item);
+                  }}
                 />
-              </TouchableOpacity>
-            }
-            centerComponent={
-              <Text style={styles.headerCenterStyle}>
-                {strings.chooseScorekeeperText}
-              </Text>
-            }
-          />
-          <View style={styles.sepratorStyle} />
-          <FlatList
-            data={scorekeeperReservData}
-            bounces={false}
-            showsHorizontalScrollIndicator={false}
-            ItemSeparatorComponent={() => (
-              <View style={[styles.sepratorStyle, {marginHorizontal: 15}]} />
-            )}
-            renderItem={({item}) => (
-              <ScorekeeperReservationItem
-                data={item}
-                onPressButton={() => {
-                  setIsScorekeeperModal(false);
-                  console.log('choose Scorekeeper:', item);
-                  goToScorekeeperReservationDetail(item);
-                }}
-              />
-            )}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </SafeAreaView>
-      </Modal>
-      {/* Scorekeeper modal */}
-      <ActionSheet
-        ref={eventEditDeleteAction}
-        options={actionSheetOpetions()}
-        cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
-        destructiveButtonIndex={
-          selectedEventItem !== null && !selectedEventItem.game && 1
-        }
-        onPress={(index) => {
-          if (
-            actionSheetOpetions()?.[index] === 'Referee Reservation Details'
-          ) {
-            if (refereeFound(selectedEventItem)) {
-              goToRefereReservationDetail(selectedEventItem);
-            } else {
-              setloading(true);
-              const params = {
-                caller_id: authContext.entity.uid,
-              };
-              getRefereeReservationDetails(
-                selectedEventItem.game_id,
-                params,
-                authContext,
-              )
-                .then((res) => {
-                  console.log('Res :-', res);
-                  const myReferee = (res?.payload || []).filter(
-                    (e) => e.initiated_by === authContext.entity.uid,
-                  );
-                  setRefereeReserveData(myReferee);
-                  if (myReferee.length > 0) {
-                    refereeReservModal();
+              )}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </SafeAreaView>
+        </Modal>
+        {/* Scorekeeper modal */}
+        <ActionSheet
+          ref={eventEditDeleteAction}
+          options={actionSheetOpetions()}
+          cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
+          destructiveButtonIndex={
+            selectedEventItem !== null && !selectedEventItem.game && 1
+          }
+          onPress={(index) => {
+            if (
+              actionSheetOpetions()?.[index] === 'Referee Reservation Details'
+            ) {
+              if (refereeFound(selectedEventItem)) {
+                goToRefereReservationDetail(selectedEventItem);
+              } else {
+                setloading(true);
+                const params = {
+                  caller_id: authContext.entity.uid,
+                };
+                getRefereeReservationDetails(
+                  selectedEventItem.game_id,
+                  params,
+                  authContext,
+                )
+                  .then((res) => {
+                    console.log('Res :-', res);
+                    const myReferee = (res?.payload || []).filter(
+                      (e) => e.initiated_by === authContext.entity.uid,
+                    );
+                    setRefereeReserveData(myReferee);
+                    if (myReferee.length > 0) {
+                      refereeReservModal();
+                      setloading(false);
+                    } else {
+                      setloading(false);
+                      setTimeout(() => {
+                        Alert.alert(
+                          strings.appName,
+                          'No referees invited or booked by you for this game',
+                          [
+                            {
+                              text: 'OK',
+                              onPress: async () => {},
+                            },
+                          ],
+                          {cancelable: false},
+                        );
+                      }, 0);
+                    }
+                  })
+                  .catch((error) => {
                     setloading(false);
-                  } else {
-                    setloading(false);
-                    setTimeout(() => {
-                      Alert.alert(
-                        strings.appName,
-                        'No referees invited or booked by you for this game',
-                        [
-                          {
-                            text: 'OK',
-                            onPress: async () => {},
-                          },
-                        ],
-                        {cancelable: false},
-                      );
-                    }, 0);
-                  }
-                })
-                .catch((error) => {
-                  setloading(false);
-                  console.log('Error :-', error);
-                });
+                    console.log('Error :-', error);
+                  });
+              }
+              console.log('Referee:::', index);
             }
-            console.log('Referee:::', index);
-          }
-          if (
-            actionSheetOpetions()?.[index] === 'Scorekeeper Reservation Details'
-          ) {
-            if (scorekeeperFound(selectedEventItem)) {
-              goToScorekeeperReservationDetail(selectedEventItem);
-            } else {
-              setloading(true);
-              const params = {
-                caller_id: authContext.entity.uid,
-              };
-              getScorekeeperReservationDetails(
-                selectedEventItem.game_id,
-                params,
-                authContext,
-              )
-                .then((res) => {
-                  console.log('Res :-', res);
-                  const myScorekeeper = (res?.payload || []).filter(
-                    (e) => e.initiated_by === authContext.entity.uid,
-                  );
-                  setScorekeeperReserveData(myScorekeeper);
-                  if (myScorekeeper.length > 0) {
-                    scorekeeperReservModal();
+            if (
+              actionSheetOpetions()?.[index] ===
+              'Scorekeeper Reservation Details'
+            ) {
+              if (scorekeeperFound(selectedEventItem)) {
+                goToScorekeeperReservationDetail(selectedEventItem);
+              } else {
+                setloading(true);
+                const params = {
+                  caller_id: authContext.entity.uid,
+                };
+                getScorekeeperReservationDetails(
+                  selectedEventItem.game_id,
+                  params,
+                  authContext,
+                )
+                  .then((res) => {
+                    console.log('Res :-', res);
+                    const myScorekeeper = (res?.payload || []).filter(
+                      (e) => e.initiated_by === authContext.entity.uid,
+                    );
+                    setScorekeeperReserveData(myScorekeeper);
+                    if (myScorekeeper.length > 0) {
+                      scorekeeperReservModal();
+                      setloading(false);
+                    } else {
+                      setloading(false);
+                      setTimeout(() => {
+                        Alert.alert(
+                          strings.appName,
+                          'No scorekeepers invited or booked by you for this game',
+                          [
+                            {
+                              text: 'OK',
+                              onPress: async () => {},
+                            },
+                          ],
+                          {cancelable: false},
+                        );
+                      }, 0);
+                    }
+                  })
+                  .catch((error) => {
                     setloading(false);
-                  } else {
-                    setloading(false);
-                    setTimeout(() => {
-                      Alert.alert(
-                        strings.appName,
-                        'No scorekeepers invited or booked by you for this game',
-                        [
-                          {
-                            text: 'OK',
-                            onPress: async () => {},
-                          },
-                        ],
-                        {cancelable: false},
-                      );
-                    }, 0);
-                  }
-                })
-                .catch((error) => {
-                  setloading(false);
-                  console.log('Error :-', error);
-                });
+                    console.log('Error :-', error);
+                  });
+              }
+              console.log('Scorekeeper:::', index);
             }
-            console.log('Scorekeeper:::', index);
-          }
-          if (actionSheetOpetions()?.[index] === 'Game Reservation Details') {
-            goToChallengeDetail(selectedEventItem.game);
-            console.log('Game:::', index);
-          }
-          if (actionSheetOpetions()?.[index] === 'Change Events Color') {
-            navigation.navigate('EditEventScreen', {
-              data: selectedEventItem,
-              gameData: selectedEventItem,
-            });
-            console.log('Event:::', index);
-          }
-          if (actionSheetOpetions()?.[index] === 'Edit') {
-            navigation.navigate('EditEventScreen', {
-              data: selectedEventItem,
-              gameData: selectedEventItem,
-            });
-            console.log('Event:::', index);
-          }
-          if (actionSheetOpetions()?.[index] === 'Delete') {
-            console.log('Event Delete');
-          }
-          setSelectedEventItem(null);
-        }}
-      />
-    </View>
+            if (actionSheetOpetions()?.[index] === 'Game Reservation Details') {
+              goToChallengeDetail(selectedEventItem.game);
+              console.log('Game:::', index);
+            }
+            if (actionSheetOpetions()?.[index] === 'Change Events Color') {
+              navigation.navigate('EditEventScreen', {
+                data: selectedEventItem,
+                gameData: selectedEventItem,
+              });
+              console.log('Event:::', index);
+            }
+            if (actionSheetOpetions()?.[index] === 'Edit') {
+              navigation.navigate('EditEventScreen', {
+                data: selectedEventItem,
+                gameData: selectedEventItem,
+              });
+              console.log('Event:::', index);
+            }
+            if (actionSheetOpetions()?.[index] === 'Delete') {
+              console.log('Event Delete');
+            }
+            setSelectedEventItem(null);
+          }}
+        />
+      </View>
+    </>
   );
 }
 
@@ -1323,5 +1328,9 @@ const styles = StyleSheet.create({
   backStyle: {
     height: 20,
     width: 35,
+  },
+  separateLine: {
+    borderColor: colors.veryLightGray,
+    borderWidth: 0.5,
   },
 });

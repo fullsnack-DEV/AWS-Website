@@ -23,6 +23,25 @@ import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 import AddOrDeleteSport from '../screens/localhome/AddOrDeleteSport';
 import RecruitingPlayerScreen from '../screens/localhome/RecruitingPlayerScreen';
 import EntitySearchScreen from '../screens/EntitySearchScreen';
+import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
+import ClubCreatedScreen from '../screens/account/createGroup/createClub/ClubCreatedScreen';
+import TeamCreatedScreen from '../screens/account/createGroup/createTeam/TeamCreatedScreen';
+import CreateClubForm3 from '../screens/account/createGroup/createClub/CreateClubForm3';
+import CreateClubForm2 from '../screens/account/createGroup/createClub/CreateClubForm2';
+import CreateClubForm1 from '../screens/account/createGroup/createClub/CreateClubForm1';
+import CreateTeamForm4 from '../screens/account/createGroup/createTeam/CreateTeamForm4';
+import CreateTeamForm3 from '../screens/account/createGroup/createTeam/CreateTeamForm3';
+import CreateTeamForm2 from '../screens/account/createGroup/createTeam/CreateTeamForm2';
+import CreateTeamForm1 from '../screens/account/createGroup/createTeam/CreateTeamForm1';
+import RegisterPlayerSuccess from '../screens/account/registerPlayer/RegisterPlayerSuccess';
+import RegisterRefereeSuccess from '../screens/account/registerReferee/RegisterRefereeSuccess';
+import RegisterRefereeForm2 from '../screens/account/registerReferee/RegisterRefereeForm2';
+import RegisterReferee from '../screens/account/registerReferee/RegisterReferee';
+import RegisterPlayerForm2 from '../screens/account/registerPlayer/RegisterPlayerForm2';
+import RegisterPlayer from '../screens/account/registerPlayer/RegisterPlayer';
+import RegisterScorekeeper from '../screens/account/registerScorekeeper/RegisterScorekeeper';
+import RegisterScorekeeperForm2 from '../screens/account/registerScorekeeper/RegisterScorekeeperForm2';
+import RegisterScorekeeperSuccess from '../screens/account/registerScorekeeper/RegisterScorekeeperSuccess';
 
 const Stack = createStackNavigator();
 
@@ -363,6 +382,294 @@ const LocalHomeNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+      name="WritePostScreen"
+      component={WritePostScreen}
+      options={{
+        title: 'Write Post',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+
+    <Stack.Screen
+      name="RegisterPlayer"
+      component={RegisterPlayer}
+      options={{
+        title: 'Add Sport',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="RegisterPlayerForm2"
+      component={RegisterPlayerForm2}
+      options={{
+        title: 'Add Sport',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="RegisterReferee"
+      component={RegisterReferee}
+      options={{
+        title: 'Register as a referee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          alignSelf: 'center',
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="RegisterRefereeForm2"
+      component={RegisterRefereeForm2}
+      options={{
+        title: 'Register as a referee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="RegisterRefereeSuccess"
+      component={RegisterRefereeSuccess}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="RegisterScorekeeperSuccess"
+      component={RegisterScorekeeperSuccess}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="RegisterPlayerSuccess"
+      component={RegisterPlayerSuccess}
+      options={{
+        headerShown: false,
+      }}
+    />
+  
+    <Stack.Screen
+      name="RegisterScorekeeper"
+      component={RegisterScorekeeper}
+      options={{
+        title: 'Register as a scorekeeper',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          alignSelf: 'center',
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="RegisterScorekeeperForm2"
+      component={RegisterScorekeeperForm2}
+      options={{
+        title: 'Register as a scorekeeper',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="CreateTeamForm1"
+      component={CreateTeamForm1}
+      options={{
+        title: 'Create Team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="CreateTeamForm2"
+      component={CreateTeamForm2}
+      options={{
+        title: 'Create Team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="CreateTeamForm3"
+      component={CreateTeamForm3}
+      options={{
+        title: 'Create Team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="CreateTeamForm4"
+      component={CreateTeamForm4}
+      options={{
+        title: 'Create Team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="CreateClubForm1"
+      component={CreateClubForm1}
+      options={{
+        title: 'Create Club',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="CreateClubForm2"
+      component={CreateClubForm2}
+      options={{
+        title: 'Create Club',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="CreateClubForm3"
+      component={CreateClubForm3}
+      options={{
+        title: 'Create Club',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="TeamCreatedScreen"
+      component={TeamCreatedScreen}
+      options={{
+        // headerTransparent: true,
+        // title: ' ',
+        // headerTintColor: colors.whiteColor,
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="ClubCreatedScreen"
+      component={ClubCreatedScreen}
+      options={{
+        // headerTransparent: true,
+        // title: ' ',
+        // headerTintColor: colors.whiteColor,
+        headerShown: false,
+      }}
+    />
+    {/* <Stack.Screen
+        name="SearchLocationScreen"
+        component={ SearchLocationScreen }
+        options={ {
+          headerTransparent: true,
+          title: ' ',
+          headerTintColor: colors.whiteColor,
+        } }
+      /> */}
+
+ 
+    
+    
+
+    
+
+  
   </Stack.Navigator>
 );
 

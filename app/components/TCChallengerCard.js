@@ -1,25 +1,26 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-expressions */
-import React, { memo, useContext } from 'react';
-import {
- View, Text, StyleSheet, Image,TouchableOpacity
-} from 'react-native';
+import React, {memo, useContext} from 'react';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../auth/context';
 
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
-import { getSportName } from '../utils';
+import { getSportName} from '../utils';
 
 const TCChallengerCard = ({
- data, entityType, selectedSport, sportType,onPress
+  data = {full_name: 'Towns Cup'},
+  entityType = 'player',
+  selectedSport = 'soccer',
+  sportType = 'soccer',
+  onPress,
 }) => {
   const authContext = useContext(AuthContext);
 
-  let entityName, sportText, gameFee, currency;
+  let entityName = 'Towns Cup',
+    sportText;
 
   if (entityType === 'player') {
     entityName = data.full_name;
@@ -30,13 +31,14 @@ const TCChallengerCard = ({
   if (entityType === 'player') {
     if (selectedSport !== 'All') {
       const filterdData = (data?.registered_sports || []).filter(
-        (obj) => obj.sport === selectedSport && obj.sport_type === sportType && obj?.setting?.availibility === 'On',
+        (obj) =>
+          obj.sport === selectedSport &&
+          obj.sport_type === sportType &&
+          obj?.setting?.availibility === 'On',
       );
       console.log('filterdData', filterdData);
       if (filterdData.length > 0) {
         sportText = getSportName(filterdData[0], authContext);
-        gameFee = filterdData?.[0]?.setting?.game_fee?.fee;
-        currency = filterdData?.[0].setting?.game_fee?.currency_type;
       }
     } else {
       const filterdData = (data?.registered_sports || []).filter(
@@ -46,14 +48,9 @@ const TCChallengerCard = ({
 
       if (filterdData.length === 1) {
         sportText = getSportName(filterdData[0], authContext);
-        gameFee = filterdData?.[0]?.setting?.game_fee?.fee;
-        currency = filterdData?.[0].setting?.game_fee?.currency_type;
       }
       if (filterdData.length === 2) {
-        sportText = `${getSportName(
-          filterdData[0],
-          authContext,
-        )} and  ${getSportName(filterdData[1], authContext)}`;
+        sportText = `${getSportName(filterdData[0], authContext)} and`;
       }
       if (filterdData.length > 2) {
         sportText = `${getSportName(filterdData[0], authContext)} and  ${
@@ -63,99 +60,84 @@ const TCChallengerCard = ({
     }
   } else {
     sportText = getSportName(data, authContext);
-    gameFee = data?.setting?.game_fee?.fee;
-    currency = data?.setting?.game_fee?.currency_type;
   }
 
   return (
-    <TouchableOpacity onPress={onPress}>
-      <LinearGradient
-      colors={[colors.localHomeGradientStart, colors.localHomeGradientEnd]}
-      style={styles.gradientContainer}>
-        <Image
-        source={
-          data?.background_thumbnail ? { uri: data?.background_thumbnail } : null
-        }
-        style={styles.backgroundView}
-      />
-        <Image source={images.localhomeOverlay} style={styles.overlayView} />
-        <View
-        style={{
-          width: wp('40%'),
-          marginLeft: 10,
-          marginTop: 10,
-          position: 'absolute',
-        }}>
-          {/* <View style={styles.bottomView}>
-          <Text style={styles.levelText}>Lv.0</Text>
-          <Text style={styles.textSaperator}> | </Text>
-          <Text style={styles.pointView} numberOfLines={1}>
-            {data?.point} points
-          </Text>
-        </View> */}
-
-          <View style={{ flexDirection: 'row' }}>
+    <TouchableOpacity onPress={onPress} style={styles.gradientContainer}>
+      <View style={styles.gradientContainer}>
+        <View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginRight: 10,
+              marginLeft: 10,
+            }}>
             <Image
-            source={
-              data?.thumbnail
-                ? { uri: data?.thumbnail }
-                : images.profilePlaceHolder
-            }
-            style={styles.profileImage}
+              source={
+                data?.thumbnail
+                  ? {uri: data?.thumbnail}
+                  : images.profilePlaceHolder
+              }
+              style={styles.profileImage}
+            />
+            <View style={{width: 100}}>
+              <Text style={styles.entityTitle} numberOfLines={2}>
+                {entityName ?? 'Towns Cup'}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              height: 1,
+              backgroundColor: colors.grayBackgroundColor,
+              margin: 10,
+            }}
           />
-            <View style={{ flexDirection: 'column', marginLeft: 10 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.entityTitle} numberOfLines={2}>
-                  {entityName}
-                </Text>
-                {entityType === 'team' && (
-                  <Image
-                  source={
-                    (entityType === 'team' && images.teamT)
-                    || (entityType === 'club' && images.clubC)
-                    || (entityType === 'league' && images.leagueL)
-                  }
-                  style={styles.teamTImage}
-                />
-              )}
-              </View>
-              <View>
-                <Text style={styles.smallTitle} numberOfLines={2}>
-                  {data?.city} · {sportText}
-                </Text>
-              </View>
-              <View>
-                <Text style={styles.amountTitle} numberOfLines={2}>
-                  {gameFee && `LV 13 · ${gameFee} ${currency}`}
-                </Text>
-              </View>
+          <View style={{flexDirection: 'column', marginLeft: 10, flex: 1}}>
+            <View>
+              <Text style={styles.smallTitle} numberOfLines={2}>
+                {data?.city} {data?.state_abbr}
+              </Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              {/* <FastImage
+                source={{uri: getSportLogo(data, authContext.sports)}}
+                resizeMode={'contain'}
+                style={{
+                  height: 15,
+                  width: 15,
+                }}
+              /> */}
+              <Text style={styles.amountTitle} numberOfLines={2}>
+                LV 13
+              </Text>
+              <Text style={styles.sportTitle} numberOfLines={2}>
+                {sportText ?? 'Soccer'}
+              </Text>
             </View>
           </View>
         </View>
-      </LinearGradient>
+      </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   gradientContainer: {
-    alignSelf: 'center',
-    width: '98%',
+    flex: 1,
+    width: 165,
     borderRadius: 6,
     elevation: 5,
     flexDirection: 'row',
     height: 105,
-
+    backgroundColor: colors.whiteColor,
+    shadowOpacity: 0.16,
+    shadowColor: colors.grayColor,
+    shadowOffset: {width: 0, height: 5},
+    shadowRadius: 5,
     // marginTop: 15,
-  },
-  backgroundView: {
-    height: 105,
-    width: '100%',
-  },
-  overlayView: {
-    position: 'absolute',
-    height: 105,
-    width: '100%',
   },
   profileImage: {
     height: 40,
@@ -165,27 +147,26 @@ const styles = StyleSheet.create({
   },
 
   entityTitle: {
-    color: colors.whiteColor,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     fontSize: 16,
+    marginLeft: 5,
   },
   smallTitle: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 12,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RMedium,
+    fontSize: 14,
+  },
+  sportTitle: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RMedium,
+    fontSize: 14,
+    marginLeft: 5,
   },
   amountTitle: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 12,
-  },
-
-  teamTImage: {
-    resizeMode: 'contain',
-    marginLeft: 5,
-    // alignSelf: 'center',
-    height: 15,
-    width: 15,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 14,
   },
 });
 

@@ -224,6 +224,8 @@ const getTabBarVisibility = (route) => {
     routeName === 'ActivitySettingScreen' ||
     routeName === 'SportActivityTagScreen' ||
     routeName === 'DeactivateSportScreen' ||
+    routeName === 'DeactivateAccountScreen' ||
+    routeName === 'TerminateAccountScreen' ||
     routeName === 'EditRosterScreen' ||
     routeName === 'CreateEventScreen' ||
     routeName === 'EditLineUpScreen' ||
@@ -261,10 +263,10 @@ const getTabBarVisibility = (route) => {
     routeName === 'WriteReviewScreen' ||
     routeName === 'SoccerHome' || 
     routeName === 'TennisHome' ||
-    routeName === 'LeaveReviewTennis' 
-
-
-
+    routeName === 'LeaveReviewTennis' ||
+    routeName === 'GroupSettingPrivacyScreen' ||
+    routeName === 'UserSettingPrivacyScreen' || 
+    routeName === 'PauseTeamScreen'
   ) {
     return false;
   }

@@ -194,4 +194,17 @@ export const sendBasicInfoRequest = (groupID, params, authContext) => makeAPIReq
   authContext,
 })
 
+export const groupPaused = (authContext) =>
+  makeAPIRequest({
+    method: 'put',
+    url: `${Config.BASE_URL}groups/pause`,
+    authContext,
+  });
+
+export const groupUnpaused = (authContext) =>
+  makeAPIRequest({
+    method: 'delete',
+    url: `${Config.BASE_URL}groups/pause`,
+    authContext,
+  });
 

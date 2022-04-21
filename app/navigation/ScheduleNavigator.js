@@ -183,6 +183,7 @@ import MessageNavigator from './MessageNavigator';
 import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 // Scorekeeper Review Screen
 
+
 const Stack = createStackNavigator();
 
 const ScheduleNavigator = () => (
@@ -1027,6 +1028,7 @@ const ScheduleNavigator = () => (
           },
         } }
       />
+    
     <Stack.Screen
         name="ChangePasswordScreen"
         component={ ChangePasswordScreen }

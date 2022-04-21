@@ -62,17 +62,17 @@ export default function ActivitySettingScreen({navigation, route}) {
   const handleOpetions = async (opetions) => {
     if (opetions === 'Looking For Team') {
       navigation.navigate('LookingForSettingScreen', {
-        sport: sportObj
+        sport: sportObj,
       });
     }
     if (opetions === 'Looking For Club') {
       navigation.navigate('LookingForSettingScreen', {
-        sport: sportObj
+        sport: sportObj,
       });
     } else if (opetions === 'Deactivate This Activity') {
       console.log('click on sport setting');
-      navigation.navigate('DeactivateSportScreen',{
-        sport: sportObj
+      navigation.navigate('DeactivateSportScreen', {
+        sport: sportObj,
       });
     }
   };
@@ -84,12 +84,11 @@ export default function ActivitySettingScreen({navigation, route}) {
       }}>
       <View style={{flexDirection: 'row'}}>
         <Text style={styles.listItems}>{item.key}</Text>
-        {(item.key === 'Looking For Team' || item.key === 'Looking For Club') && (
-          <Text style={styles.currencyTypeStyle}>
-            {sportObj.is_active
-              ? 'Yes'
-              : 'No'}
-          </Text>
+        {(item.key === 'Looking For Team' ||
+          item.key === 'Looking For Club') && (
+            <Text style={styles.currencyTypeStyle}>
+              {sportObj.is_active ? 'Yes' : 'No'}
+            </Text>
         )}
         <Image source={images.nextArrow} style={styles.nextArrow} />
       </View>

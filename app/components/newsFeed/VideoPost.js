@@ -1,135 +1,149 @@
-import React, {
-  useRef, memo, useState, useCallback,
-} from 'react';
+import React, {useRef, memo, useState, useCallback} from 'react';
 import {
-  StyleSheet, View, Text, TouchableWithoutFeedback, TouchableHighlight,
+  StyleSheet,
+  View,
+  Text,
+  TouchableWithoutFeedback,
+  TouchableHighlight,
 } from 'react-native';
 import Video from 'react-native-video';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import images from '../../Constants/ImagePath';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
-import { toggleView } from '../../utils';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
+import {toggleView} from '../../utils';
 
-const VideoPost = memo(({
-  currentParentIndex,
-  parentIndex,
-  item,
-  data,
-  navigation,
-  updateCommentCount,
-  onLikePress,
-}) => {
-  const isFocused = useIsFocused();
-  const videoPlayerRef = useRef();
-  const [mute, setMute] = useState(true);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [videoLoad, setVideoLoad] = useState(false);
-  const [height, setHeight] = useState(wp(68))
-  const [videoDuration, setVideoDuration] = useState(0);
-  const setVideoHeight = useCallback((orientation) => {
-    if (orientation === 'portrait') toggleView(() => setHeight(wp(124)), 300);
-  }, [])
+const VideoPost = memo(
+  ({
+    currentParentIndex,
+    parentIndex,
+    item,
+    data,
+    navigation,
+    updateCommentCount,
+    onLikePress,
+  }) => {
+    const isFocused = useIsFocused();
+    const videoPlayerRef = useRef();
+    const [mute, setMute] = useState(true);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [videoLoad, setVideoLoad] = useState(false);
+    const [height, setHeight] = useState(wp(68));
+    const [videoDuration, setVideoDuration] = useState(0);
+    const setVideoHeight = useCallback((orientation) => {
+      if (orientation === 'portrait') toggleView(() => setHeight(wp(124)), 300);
+    }, []);
 
-  const toggleModal = useCallback(() => {
-    navigation.navigate('FeedViewScreen', {
-      feedItem: item,
-      updateCommentCount,
-      onLikePress,
-    })
-  }, [item, navigation, onLikePress, updateCommentCount]);
+    const toggleModal = useCallback(() => {
+      navigation.navigate('FeedViewScreen', {
+        feedItem: item,
+        updateCommentCount,
+        onLikePress,
+      });
+    }, [item, navigation, onLikePress, updateCommentCount]);
 
-  const onVideoLoad = useCallback((videoMetaData) => {
-      setVideoHeight(videoMetaData?.naturalSize?.orientation)
-      videoPlayerRef.current.seek(0)
-      setVideoDuration(videoMetaData?.duration)
-      setVideoLoad(true);
-  }, [setVideoHeight])
+    const onVideoLoad = useCallback(
+      (videoMetaData) => {
+        setVideoHeight(videoMetaData?.naturalSize?.orientation);
+        videoPlayerRef.current.seek(0);
+        setVideoDuration(videoMetaData?.duration);
+        setVideoLoad(true);
+      },
+      [setVideoHeight],
+    );
 
-  const onPressMuteUnmute = useCallback(() => {
-    setMute((val) => !val);
-  }, [])
+    const onPressMuteUnmute = useCallback(() => {
+      setMute((val) => !val);
+    }, []);
 
-  const secondsToHms = (date) => {
-    let hDisplay = '';
-    let mDisplay = '0';
-    let sDisplay = '00';
+    const secondsToHms = (date) => {
+      let hDisplay = '';
+      let mDisplay = '0';
+      let sDisplay = '00';
 
-    const d = Number(date);
+      const d = Number(date);
 
-    const h = Math.floor(d / 3600);
-    // eslint-disable-next-line no-mixed-operators
-    const m = Math.floor(d % 3600 / 60);
-    const s = Math.floor(d % 3600 % 60);
+      const h = Math.floor(d / 3600);
+      // eslint-disable-next-line no-mixed-operators
+      const m = Math.floor((d % 3600) / 60);
+      const s = Math.floor((d % 3600) % 60);
 
-    // Hour
-    if (h > 0 && h?.toString()?.length === 1) hDisplay = `0${h}`
-    if (h > 0 && h?.toString()?.length > 1) hDisplay = `${h}`
+      // Hour
+      if (h > 0 && h?.toString()?.length === 1) hDisplay = `0${h}`;
+      if (h > 0 && h?.toString()?.length > 1) hDisplay = `${h}`;
 
-    // Minuites
-    if (m > 0 && m?.toString()?.length === 1) mDisplay = `0${m}`
-    if (m > 0 && m?.toString()?.length > 1) mDisplay = `${m}`
+      // Minuites
+      if (m > 0 && m?.toString()?.length === 1) mDisplay = `0${m}`;
+      if (m > 0 && m?.toString()?.length > 1) mDisplay = `${m}`;
 
-    // Seconds
-    if (s > 0 && s?.toString()?.length === 1) sDisplay = `0${s}`
-    if (s > 0 && s?.toString()?.length > 1) sDisplay = `${s}`
+      // Seconds
+      if (s > 0 && s?.toString()?.length === 1) sDisplay = `0${s}`;
+      if (s > 0 && s?.toString()?.length > 1) sDisplay = `${s}`;
 
-    return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
-  }
+      return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
+    };
 
-  const onProgress = useCallback((curTimeData) => setCurrentTime(curTimeData?.currentTime), []);
-  return (
-    <View style={{ ...styles.mainContainer, height }}>
-      <View
-             style={{
-       ...styles.singleImageDisplayStyle, borderWidth: 1, borderColor: colors.lightgrayColor, height,
-             }}>
-        <FastImage
-               style={styles.loadimageStyle}
-               source={images.imageLoadingGIF}
-               resizeMode={FastImage.resizeMode.contain}
-             />
-        <Text style={styles.loadingTextStyle}>Loading...</Text>
-      </View>
+    const onProgress = useCallback(
+      (curTimeData) => setCurrentTime(curTimeData?.currentTime),
+      [],
+    );
+    return (
+      <View style={{...styles.mainContainer, height}}>
+        <View
+          style={{
+            ...styles.singleImageDisplayStyle,
+            borderWidth: 1,
+            borderColor: colors.lightgrayColor,
+            height,
+          }}>
+          <FastImage
+            style={styles.loadimageStyle}
+            source={images.imageLoadingGIF}
+            resizeMode={FastImage.resizeMode.contain}
+          />
+          <Text style={styles.loadingTextStyle}>Loading...</Text>
+        </View>
 
-      <TouchableWithoutFeedback onPress={toggleModal}>
-        <Video
+        <TouchableWithoutFeedback onPress={toggleModal}>
+          <Video
             repeat={true}
-
             ref={videoPlayerRef}
-            paused={!(isFocused && (currentParentIndex === parentIndex))}
+            paused={!(isFocused && currentParentIndex === parentIndex)}
             muted={mute}
             onProgress={onProgress}
-            source={{ uri: data.url }}
-            style={{ ...styles.singleImageDisplayStyle, height, position: 'absolute' }}
+            source={{uri: data.url}}
+            style={{
+              ...styles.singleImageDisplayStyle,
+              height,
+              position: 'absolute',
+            }}
             resizeMode={'cover'}
             onLoad={onVideoLoad}
-        />
-      </TouchableWithoutFeedback>
-      {videoLoad && (
-        <>
-          <Text style={styles.currentTime}>
-            {secondsToHms(videoDuration?.toFixed(0) - currentTime)}
-          </Text>
-          <TouchableHighlight
-                style={styles.pauseMuteStyle}
+          />
+        </TouchableWithoutFeedback>
+        {videoLoad && (
+          <>
+            <Text style={styles.currentTime}>
+              {secondsToHms(videoDuration?.toFixed(0) - currentTime)}
+            </Text>
+            <TouchableHighlight
+              style={styles.pauseMuteStyle}
               onPress={onPressMuteUnmute}>
-            <FastImage
+              <FastImage
                 resizeMode={'contain'}
                 tintColor={'white'}
                 style={styles.imageStyle}
                 source={mute ? images.mute : images.unmute}
               />
-          </TouchableHighlight>
-        </>
-      )}
-    </View>
-  );
-});
+            </TouchableHighlight>
+          </>
+        )}
+      </View>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   imageStyle: {
@@ -169,7 +183,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     shadowColor: colors.googleColor,
     shadowOpacity: 0.16,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowRadius: 15,
     elevation: 2,
     alignItems: 'center',
@@ -196,7 +210,7 @@ const styles = StyleSheet.create({
     left: 10,
     fontFamily: fonts.RRegular,
     textShadowColor: colors.googleColor,
-    textShadowOffset: { width: 0, height: 1 },
+    textShadowOffset: {width: 0, height: 1},
     textShadowRadius: 5,
   },
 });

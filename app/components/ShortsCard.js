@@ -16,11 +16,10 @@ function millisToMinutesAndSeconds(millis) {
 }
 
 function ShortsCard({ onPress, cardItem }) {
-  const json = JSON.parse(cardItem.object);
+  const json = JSON.parse(cardItem.object) ?? {};
   console.log('json?.attachments?.[0]?.thumbnail:=>', json?.attachments?.[0]?.thumbnail);
   return (
     <TouchableOpacity onPress={() => onPress({ cardItem }) }>
-
       <View>
         <Video
         source={{ uri: json?.attachments?.[0]?.thumbnail }}
