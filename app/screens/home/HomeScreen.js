@@ -143,6 +143,7 @@ import UserProfileScreenShimmer from '../../components/shimmer/account/UserProfi
 import TCGameCard from '../../components/TCGameCard';
 import * as settingUtils from '../challenge/manageChallenge/settingUtility';
 import {getCalendarIndex, getGameIndex} from '../../api/elasticSearch';
+import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 // import { getSetting } from '../challenge/manageChallenge/settingUtility';
 let entityObject = {};
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews'];
@@ -195,6 +196,8 @@ const HomeScreen = ({navigation, route}) => {
   // const viewRef = useRef();
   const mainFlatListRef = useRef();
   const confirmationRef = useRef();
+    // eslint-disable-next-line no-unused-vars
+    const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [mainFlatListFromTop] = useState(new Animated.Value(0));
   const [isUserHome, setIsUserHome] = useState(false);
   const [isClubHome, setIsClubHome] = useState(false);
@@ -4004,6 +4007,11 @@ const HomeScreen = ({navigation, route}) => {
 
   return (
     <View style={styles.mainContainer}>
+      {isAccountDeactivated && (
+        <TCAccountDeactivate type={'paused'} onPress={() => {
+          Alert.alert('This is under development.');
+        }}/>
+      )}
       <ActionSheet
         ref={addRoleActionSheet}
         options={[

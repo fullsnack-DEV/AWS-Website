@@ -11,7 +11,7 @@ const TCGradientButton = ({
   textStyle,
   rightIcon,
   rightIconStyle,
-  startGradientColor = colors.orangeGradientColor,
+  startGradientColor = colors.darkThemeColor,
   endGradientColor = colors.yellowColor,
   outerContainerStyle,
   disabled = false,

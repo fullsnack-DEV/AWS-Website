@@ -43,6 +43,7 @@ export default function SportActivityTagScreen({ navigation }) {
   const [selectedCheck, setSelectedCheck] = useState(
     authContext.entity.obj?.sport_setting?.isChecked || false,
   );
+  // eslint-disable-next-line no-unused-vars
   const [entitySource, setEntitySource] = useState(
     authContext?.entity?.obj?.sport_setting?.entity_order || [
       'Player',
@@ -51,7 +52,7 @@ export default function SportActivityTagScreen({ navigation }) {
     ],
   );
   console.log('authContext?.entity?.obj', authContext?.entity?.obj);
-
+  
   const [activityList, setActivityList] = useState(
     authContext?.entity?.obj?.sport_setting?.activity_order || [
       ...(authContext?.entity?.obj?.registered_sports || []),
@@ -218,7 +219,7 @@ export default function SportActivityTagScreen({ navigation }) {
             </Text>
           </TouchableOpacity>
 
-          <DraggableFlatList
+          {/* <DraggableFlatList
             pointerEvents={selectedCheck ? 'auto' : 'none'}
             showsHorizontalScrollIndicator={false}
             data={entitySource}
@@ -265,6 +266,22 @@ export default function SportActivityTagScreen({ navigation }) {
 
               console.log('DATATATATATA:=', [...list]);
             }}
+          /> */}
+          <FlatList
+            pointerEvents={selectedCheck ? 'auto' : 'none'}
+            showsHorizontalScrollIndicator={false}
+            data={entitySource}
+            keyExtractor={keyExtractor}
+            renderItem={renderSportsView}
+            style={{
+              width: '100%',
+              alignContent: 'center',
+              marginBottom: 15,
+              paddingVertical: 15,
+              opacity: selectedCheck ? 1 : 0.4,
+            }}
+           
+           
           />
         </View>
       )}

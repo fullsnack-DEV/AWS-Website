@@ -687,6 +687,33 @@ export const getSportIcon = (sport) => {
   }
 };
 
+export const getSportLogo = (sportObj,sportContext) => {
+ console.log('aaaaaaa0000aaaaa',sportObj);
+
+ const arrData = [];
+ for (const outer of sportContext) {
+   for (const inner of outer.format) {
+     const temp = {
+       ...inner,
+       player_image: outer.player_image,
+     };
+     arrData.push(temp);
+   }
+ }
+let url = '';
+ console.log('AAA:->', arrData);
+   getStorage('appSetting').then((setting) => {
+   console.log('appSetting index', setting);
+  
+   const selectedObj = arrData?.filter((obj) => obj.sport === sportObj.sport && obj.sport_type === sportObj.sport_type)
+   console.log('image aaaa ',selectedObj);
+   url = setting.base_url_sporticon;
+ });
+ return `${url}${selectedObj[0]?.player_image}`
+
+
+};
+
 export const roundValue = (value, decimals) =>
   value ? parseFloat(+value.toFixed(decimals)) : 0;
 
@@ -714,7 +741,7 @@ export const getCalendar = async (
       console.log('parti ids:=>', participantId);
       // const idss = await getStorage('scheduleSetting');
       // console.log('Calender ids:=>', idss);
-      const IDs = ids ?? []
+      const IDs = ids ?? [];
       const participants = [];
       participants.push(participantId);
       const body = {
@@ -791,7 +818,9 @@ export const getSportName = (object, authContext) => {
         item?.sport_type === object?.sport_type &&
         item?.sport === object?.sport,
     )[0];
-    return filterFormat?.sport_name?.toLowerCase() === 'Tennis'.toLowerCase() ? 'Tennis Singles' : filterFormat?.sport_name ;
+    return filterFormat?.sport_name?.toLowerCase() === 'Tennis'.toLowerCase()
+      ? 'Tennis Singles'
+      : filterFormat?.sport_name;
   }
   const filterFormat = authContext?.sports?.filter(
     (obj) => obj?.sport === object?.sport,

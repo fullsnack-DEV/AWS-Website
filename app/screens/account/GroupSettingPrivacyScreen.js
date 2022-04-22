@@ -1,185 +1,166 @@
-import React from 'react';
+import React, {
+  useContext,
+  useLayoutEffect,
+  useState,
+  useEffect,
+} from 'react';
 import {
   StyleSheet,
+  View,
+  Text,
+  Image,
+  FlatList,
+  TouchableWithoutFeedback,
   ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
 
-export default function GroupSettingPrivacyScreen() {
-//   const [selectedMember, setSelectedMember] = useState(0);
-//   const [selectedFollower, setSelectedFollower] = useState(0);
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
-  //   const [everyoneMembers, setEveryoneMembers] = useState(true);
-  //   const [followersMembers, setFollowersMembers] = useState(false);
-  //   const [clubMembersMembers, setclubMembersMembers] = useState(false);
-  //   const [admins, setAdmins] = useState(false);
+import AuthContext from '../../auth/context';
+import images from '../../Constants/ImagePath';
+import Header from '../../components/Home/Header';
+import fonts from '../../Constants/Fonts';
+import colors from '../../Constants/Colors';
 
-  //   const [everyoneFollowers, setEveryoneFollowers] = useState(true);
-  //   const [followersFollowers, setFollowersFollowers] = useState(false);
-  //   const [clubMembersFollowers, setclubMembersFollowers] = useState(false);
+export default function GroupSettingPrivacyScreen({navigation}) {
+  const authContext = useContext(AuthContext);
 
+  const [userSetting, setUserSetting] = useState();
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
+
+
+
+  useEffect(() => {
+    setUserSetting([
+      {key: 'Account', id: 1},
+      {key: 'Privacy', id: 2},
+      {key: 'Pause Team', id: 3},
+      {key: 'Terminate Account', id: 4}, 
+    ]);
+  }, []);
+
+
+  const handleOpetions = async (opetions) => {
+    if (opetions === 'Account') {
+      Alert.alert('This is not decited yet')
+    } else if (opetions === 'Privacy') {
+      Alert.alert('This is not decited yet')
+    } else if (opetions === 'Pause Team') {
+     navigation.navigate('PauseTeamScreen')
+    } else if (opetions === 'Terminate Account') {
+      Alert.alert('This is not decited yet')
+    } 
+  };
+
+  const renderMenu = ({item}) => (
+    <TouchableWithoutFeedback
+      style={styles.listContainer}
+      onPress={() => {
+        handleOpetions(item.key);
+      }}>
+      <View style={{flexDirection: 'row'}}>
+        <Text style={styles.listItems}>{item.key}</Text>
+        {item.key === 'Currency' && authContext?.entity?.obj?.currency_type && (
+          <Text style={styles.currencyTypeStyle}>
+            {authContext?.entity?.obj?.currency_type}
+          </Text>
+        )}
+        <Image source={images.nextArrow} style={styles.nextArrow} />
+      </View>
+    </TouchableWithoutFeedback>
+  );
   return (
-    <ScrollView style={ styles.mainContainer }>
-
-      {/* <Text style={ styles.membershipText }>{strings.connectionTitle}</Text>
-          {route.params.switchBy === 'team' ? <Text style={ styles.whoJoinText }>{strings.whoCanSeeTeam}</Text> : <Text style={ styles.whoJoinText }>{strings.whoCanSeeClub}</Text>}
-
-          <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback
-          onPress={ () => {
-            setSelectedMember(0);
-            setEveryoneMembers(true);
-            setFollowersMembers(false);
-            setclubMembersMembers(false);
-            setAdmins(false);
-          } }>
-                  {selectedMember === 0 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
-                  ) : (
-                      <Image
-              source={ PATH.radioUnselect }
-              style={ styles.unSelectRadioImage }
-            />
-                  )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.everyoneRadio}</Text>
-          </View>
-          <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback
-          onPress={ () => {
-            setSelectedMember(1);
-            setEveryoneMembers(false);
-            setFollowersMembers(true);
-            setclubMembersMembers(false);
-            setAdmins(false);
-          } }>
-                  {selectedMember === 1 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
-                  ) : (
-                      <Image
-              source={ PATH.radioUnselect }
-              style={ styles.unSelectRadioImage }
-            />
-                  )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.followersRadio}</Text>
-          </View>
-          <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback
-          onPress={ () => {
-            setSelectedMember(2);
-            setEveryoneMembers(false);
-            setFollowersMembers(false);
-            setclubMembersMembers(true);
-            setAdmins(false);
-          } }>
-                  {selectedMember === 2 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
-                  ) : (
-                      <Image
-              source={ PATH.radioUnselect }
-              style={ styles.unSelectRadioImage }
-            />
-                  )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.clubMembersRadio}</Text>
-          </View>
-          <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback
-          onPress={ () => {
-            setSelectedMember(3);
-            setEveryoneMembers(false);
-            setFollowersMembers(false);
-            setclubMembersMembers(false);
-            setAdmins(true);
-          } }>
-                  {selectedMember === 3 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
-                  ) : (
-                      <Image
-              source={ PATH.radioUnselect }
-              style={ styles.unSelectRadioImage }
-            />
-                  )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.adminsRadio}</Text>
-          </View>
-
-          {route.params.switchBy === 'team' ? <Text style={ [styles.whoJoinText, { marginTop: 20 }] }>{strings.whoCanSeeTeamFollowers}</Text> : <Text style={ [styles.whoJoinText, { marginTop: 20 }] }>{strings.whoCanSeeClubFollowers}</Text>}
-
-          <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback
-          onPress={ () => {
-            setSelectedFollower(0);
-            setEveryoneFollowers(true);
-            setFollowersFollowers(false);
-            setclubMembersFollowers(false);
-          } }>
-                  {selectedFollower === 0 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
-                  ) : (
-                      <Image
-              source={ PATH.radioUnselect }
-              style={ styles.unSelectRadioImage }
-            />
-                  )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.everyoneRadio}</Text>
-          </View>
-          <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback
-          onPress={ () => {
-            setSelectedFollower(1);
-            setEveryoneFollowers(false);
-            setFollowersFollowers(true);
-            setclubMembersFollowers(false);
-          } }>
-                  {selectedFollower === 1 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
-                  ) : (
-                      <Image
-              source={ PATH.radioUnselect }
-              style={ styles.unSelectRadioImage }
-            />
-                  )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.followersRadio}</Text>
-          </View>
-          <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback
-          onPress={ () => {
-            setSelectedFollower(2);
-            setEveryoneFollowers(false);
-            setFollowersFollowers(false);
-            setclubMembersFollowers(true);
-          } }>
-                  {selectedFollower === 2 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
-                  ) : (
-                      <Image
-              source={ PATH.radioUnselect }
-              style={ styles.unSelectRadioImage }
-            />
-                  )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.clubMembersRadio}</Text>
-          </View>
-
-          <TouchableOpacity
-        onPress={ () => { console.log('Next pressed..'); }
-        }>
-              <LinearGradient
-          colors={ [colors.yellowColor, colors.themeColor] }
-          style={ styles.nextButton }>
-                  <Text style={ styles.nextButtonText }>{strings.doneTitle}</Text>
-              </LinearGradient>
-          </TouchableOpacity> */}
-    </ScrollView>
+    <SafeAreaView style={{flex: 1}}>
+      <Header
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image source={images.backArrow} style={styles.backImageStyle} />
+          </TouchableOpacity>
+        }
+        centerComponent={
+          <Text
+            style={{
+              fontSize: 16,
+              color: colors.lightBlackColor,
+              textAlign: 'center',
+              fontFamily: fonts.RBold,
+            }}>
+            Settings
+          </Text>
+        }
+      />
+      <View
+        style={{
+          width: '100%',
+          height: 0.5,
+          backgroundColor: colors.writePostSepratorColor,
+        }}
+      />
+      <ScrollView style={styles.mainContainer}>
+        <FlatList
+          data={userSetting}
+          keyExtractor={(index) => index.toString()}
+          renderItem={renderMenu}
+          ItemSeparatorComponent={() => (
+            <View style={styles.separatorLine}></View>
+          )}
+        />
+        <View style={styles.separatorLine}></View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
+  listContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  listItems: {
+    flex: 1,
+    padding: 20,
+    paddingLeft: 15,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.blackColor,
+    alignSelf: 'center',
+  },
+  currencyTypeStyle: {
+    marginRight: 10,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.greeColor,
+    alignSelf: 'center',
+  },
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
   },
-
+  nextArrow: {
+    alignSelf: 'center',
+    flex: 0.1,
+    height: 15,
+    marginRight: 10,
+    resizeMode: 'contain',
+    tintColor: colors.lightBlackColor,
+    width: 15,
+  },
+  separatorLine: {
+    alignSelf: 'center',
+    backgroundColor: colors.lightgrayColor,
+    height: 0.5,
+    width: wp('90%'),
+  },
+  backImageStyle: {
+    height: 20,
+    width: 10,
+    tintColor: colors.lightBlackColor,
+    resizeMode: 'contain',
+  },
 });

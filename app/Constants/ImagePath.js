@@ -399,6 +399,10 @@ arrowGT: require('../assets/images/arrow_gt.png'),
   uncheckBox: require('../assets/images/uncheckBox.png'),
   profileLevel: require('../assets/images/profile_level.png'),
   chatPlus: require('../assets/images/chat_plus.png'),
+  recentMatch : require('../assets/images/recentMatch.png'),
+  upcomingMatch : require('../assets/images/upcomingMatch.png'),
+  shortCard : require('../assets/images/shortCard.png'),
+
 
 
 };

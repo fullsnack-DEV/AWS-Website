@@ -63,6 +63,7 @@ import Header from '../../components/Home/Header';
 import TCGradientButton from '../../components/TCGradientButton';
 import TCThinDivider from '../../components/TCThinDivider';
 import {getSportIcon} from '../../utils/index';
+import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 
 export default function AccountScreen({navigation}) {
   const scrollRef = useRef();
@@ -79,6 +80,8 @@ export default function AccountScreen({navigation}) {
   const [notificationCounter, setNotificationCounter] = useState(0);
   const [team, setTeam] = useState([]);
   const [club, setClub] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
 
   const [sportsSelection, setSportsSelection] = useState();
   const [sports, setSports] = useState('');
@@ -144,6 +147,7 @@ export default function AccountScreen({navigation}) {
         {opetions: 'Transactions'},
       ],
     },
+    {key: 'Setting'},
     {key: 'Log out'},
   ];
   const clubMenu = [
@@ -610,11 +614,9 @@ export default function AccountScreen({navigation}) {
       const entity = authContext.entity;
       if (entity.role === 'user') {
         navigation.navigate('UserSettingPrivacyScreen');
-      } else {
-        navigation.navigate('GroupSettingPrivacyScreen', {
-          role: entity.role,
-        });
       }
+    } else if (section === 'Setting') {
+      navigation.navigate('GroupSettingPrivacyScreen');
     } else if (section === 'Members') {
       const entity = authContext.entity;
       navigation.navigate('GroupMembersScreen', {groupID: entity.uid});
@@ -640,7 +642,7 @@ export default function AccountScreen({navigation}) {
       setClickedUserType('referee');
 
       const entity = authContext.entity;
-      console.log('entity?.objentity?.obj-->',entity?.obj,entity?.obj?.sport);
+      console.log('entity?.objentity?.obj-->', entity?.obj, entity?.obj?.sport);
       if (entity.role === 'user') {
         if (entity?.obj?.referee_data?.length > 0) {
           setVisibleSportsModal(true);
@@ -650,7 +652,6 @@ export default function AccountScreen({navigation}) {
       } else {
         navigation.navigate('RefereeReservationSetting', {
           sportName: entity?.obj?.sport,
-          
         });
       }
     } else if (section === 'Scorekeeper Reservation Settings') {
@@ -667,7 +668,6 @@ export default function AccountScreen({navigation}) {
       } else {
         navigation.navigate('ScorekeeperReservationSetting', {
           sportName: entity?.obj?.sport,
-          
         });
       }
     } else if (section === 'Log out') {
@@ -1232,13 +1232,11 @@ export default function AccountScreen({navigation}) {
           if (clickedUserType === 'referee') {
             navigation.navigate('RefereeReservationSetting', {
               sportName: item.sport,
-             
             });
           }
           if (clickedUserType === 'scorekeeper') {
             navigation.navigate('ScorekeeperReservationSetting', {
               sportName: item.sport,
-              
             });
           }
         }, 300);
@@ -1271,8 +1269,16 @@ export default function AccountScreen({navigation}) {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      {renderTopHeader}
 
+      {renderTopHeader}
+      {isAccountDeactivated && (
+        <TCAccountDeactivate
+          type={'terminate'}
+          onPress={() => {
+            Alert.alert('This is under development.');
+          }}
+        />
+      )}
       <ScrollView style={styles.mainContainer} ref={scrollRef}>
         <View
           style={{
@@ -1650,7 +1656,14 @@ export default function AccountScreen({navigation}) {
                         style={{...styles.menuItem}}
                       />
                     )}
+
                     {section === 'Setting & Privacy' && (
+                      <Image
+                        source={images.accountSettingPrivacy}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
+                    {section === 'Setting' && (
                       <Image
                         source={images.accountSettingPrivacy}
                         style={{...styles.menuItem}}
@@ -2289,9 +2302,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   separateLine: {
-    borderColor: colors.writePostSepratorColor,
-    borderWidth: 1,
-    width: wp(100),
+    borderColor: colors.veryLightGray,
+    borderWidth: 0.5,
   },
 
   // background: {
@@ -2409,4 +2421,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: colors.lightBlackColor,
   },
+ 
 });

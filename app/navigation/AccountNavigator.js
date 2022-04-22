@@ -236,6 +236,9 @@ import MessageNavigator from './MessageNavigator';
 import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 import DeactivatedSportsListScreen from '../components/Home/DeactivatedSportsListScreen';
 import ActivitySettingScreen from '../screens/account/userSettingPrivacy/sportsActivity/ActivitySettingScreen';
+import DeactivateAccountScreen from '../components/Home/DeactivateAccountScreen';
+import TerminateAccountScreen from '../components/Home/TerminateAccountScreen';
+import PauseTeamScreen from '../components/Home/PauseTeamScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1281,6 +1284,9 @@ const AccountNavigator = () => (
         },
       }}
     />
+    
+    
+   
     <Stack.Screen
       name="ChangePasswordScreen"
       component={ChangePasswordScreen}
@@ -3177,6 +3183,55 @@ const AccountNavigator = () => (
       component={DeactivateSportScreen}
       options={{
         title: 'Deactivate Activity',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="DeactivateAccountScreen"
+      component={DeactivateAccountScreen}
+      options={{
+        title: 'Deactivate Account',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="PauseTeamScreen"
+      component={PauseTeamScreen}
+      options={{
+        title: 'Pause Team',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    
+    <Stack.Screen
+      name="TerminateAccountScreen"
+      component={TerminateAccountScreen}
+      options={{
+        title: 'Terminate Account',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

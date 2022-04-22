@@ -265,6 +265,12 @@ export default function WritePostScreen({navigation, route}) {
   }, [letModalVisible, searchTag]);
 
   useEffect(() => {
+    if (route?.params?.comeFrom === 'LocalHomeScreen'){
+    Alert.alert('A vertical video that is 30 seconds long or less may be shown in Shorts.')
+    }
+  }, [route?.params?.comeFrom]);
+
+  useEffect(() => {
     const userQuery = {
       size: 1000,
       query: {

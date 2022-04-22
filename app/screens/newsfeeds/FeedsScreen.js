@@ -459,9 +459,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   separateLine: {
-    borderColor: colors.writePostSepratorColor,
+    borderColor: colors.veryLightGray,
     borderWidth: 0.5,
-    width: wp(100),
   },
   eventTitleTextStyle: {
     fontSize: 16,

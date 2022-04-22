@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import {
-  View, Text, StyleSheet, Image, TouchableOpacity,
+  View, Text, StyleSheet, Image,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -10,10 +10,9 @@ import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 import ReservationStatus from '../Constants/ReservationStatus';
-import { widthPercentageToDP } from '../utils';
 
  function TCGameCardPlaceholder({
- data, cardWidth = '86%', placeholderText = '', onStartPress,
+ data, cardWidth = '86%', placeholderText = '',
  }) {
   const months = [
     'Jan',
@@ -145,14 +144,12 @@ import { widthPercentageToDP } from '../utils';
         </View>
       </View>
       <LinearGradient
-        colors={[colors.localHomeGradientStart, colors.localHomeGradientEnd]}
+        colors={[colors.whiteColor, colors.whiteColor]}
           style={styles.overlayStyle}>
         <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
-        <TouchableOpacity
-              style={styles.startButton}
-              onPress={onStartPress}>
-          <Text style={styles.startTitle}>Start</Text>
-        </TouchableOpacity>
+       
+        <Text style={styles.startTitle}>{'Challenge now >'}</Text>
+      
       </LinearGradient>
     </View>
   );
@@ -191,7 +188,7 @@ const styles = StyleSheet.create({
     height: 102,
     width: '100%',
     position: 'absolute',
-    opacity: 0.9,
+    opacity: 0.8,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -293,29 +290,14 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   placeholderTextStyle: {
-      fontSize: 16,
+      fontSize: 14,
       fontFamily: fonts.RMedium,
-      color: colors.whiteColor,
+      color: colors.googleColor,
       textAlign: 'center',
   },
-  startButton: {
-    alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 5,
-    elevation: 5,
-    flexDirection: 'row',
-    height: 25,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    width: widthPercentageToDP('20%'),
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8,
-  },
+  
   startTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: fonts.RMedium,
     color: colors.tabFontColor,
     alignSelf: 'center',

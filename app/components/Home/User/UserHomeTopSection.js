@@ -80,9 +80,9 @@ const UserHomeTopSection = ({
       ];
     }
     return [
-      ...(userDetails?.registered_sports?.filter((obj) => obj.is_published && obj.is_active) ?? []),
-      ...(userDetails?.referee_data?.filter((obj) => obj.is_published && obj.is_active) ?? []),
-      ...(userDetails?.scorekeeper_data?.filter((obj) => obj.is_published && obj.is_active) ?? []),
+      ...(userDetails?.registered_sports?.filter((obj) => obj.is_published  && (obj?.is_active === true || !('is_active' in obj))) ?? []),
+      ...(userDetails?.referee_data?.filter((obj) => obj.is_published && (obj?.is_active === true || !('is_active' in obj))) ?? []),
+      ...(userDetails?.scorekeeper_data?.filter((obj) => obj.is_published && (obj?.is_active === true || !('is_active' in obj))) ?? []),
       { sport_name: strings.addrole, item_type: EntityStatus.addNew },
     ];
   };

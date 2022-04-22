@@ -52,6 +52,11 @@ const strings = {
   emailNotRegisterd: 'This email is not registered.',
   varificationLinkSend: 'Verification email was sent successfully.',
   deactivateTitle: 'DEACTIVATE ACTIVITY',
+  deactivateAccountTitle: 'DEACTIVATE MY ACCOUNT',
+  terminateAccount: 'TERMINATE ACCOUNT',
+  pauseTeam: 'PAUSE TEAM',
+
+
   acceptTitle: 'ACCEPT',
   declineTitle: 'DECLINE',
   cancelRequestTitle: 'CANCEL REQUEST',
@@ -673,27 +678,27 @@ const strings = {
   upcomingMatchesTitle: 'Upcoming Matches',
   lookingForTitle: 'Available for Challenge',
   shortsTitle: 'Shorts',
-  hiringPlayerTitle: 'Recruiting Players',
-  lookingForTeamTitle: 'Looking for a team',
+  hiringPlayerTitle: 'Recruiting Members',
+  lookingForTeamTitle: 'Looking For Team/Club',
   refereesTitle: 'Referees',
   scorekeeperTitle: 'Scorekeepers',
   searchTitle: 'Search by city, state or country',
   challengeeSecureText: 'The challengee secures the match place',
   challengerSecureText: 'The challenger secures the match place',
   recentMatchPlaceholderText:
-    'There are no recent games.\nWould you like to start your game?',
+    'NO RECENT MATCHES',
   upcomingMatchPlaceholderText:
-    'There is no Upcoming Match.\nWould you like to start your challenge?',
+    'NO UPCOMING MATCHES',
   challengerPlaceholderText:
     'There is no challenge.\nWould you like to start your challenge?',
   hiringPlayersPlaceholderText:
-    'There is no Hiring team.\nWould you like to start to hire players?',
+    'NO GROUPS',
   lookingTeamsPlaceholderText:
-    'There is no Player.\nWould you like to start registering players?',
+    'NO PLAYERS',
   refereesPlaceholderText:
-    'There is no referee.\nWould you like to start registering Referees?',
+    'NO REFEREES',
   scorekeepersPlaceholderText:
-    'There is no Scorekeeper.\nWould you like to start registering\nScorekeeper?',
+    'NO SCOREKEEPERS',
   taggedPeopleText: 'Tagged People',
   taggedMatchesText: 'Tagged matches',
 

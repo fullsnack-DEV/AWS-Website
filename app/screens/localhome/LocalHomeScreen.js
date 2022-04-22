@@ -12,6 +12,7 @@ import React, {
   useEffect,
   useRef,
   useLayoutEffect,
+  useMemo
 } from 'react';
 import {
   View,
@@ -34,6 +35,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
+import ActionSheet from 'react-native-actionsheet';
 import {getLocationNameWithLatLong} from '../../api/External';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
@@ -65,18 +67,28 @@ import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHome
 import {getUserSettings} from '../../api/Users';
 import TCUpcomingMatchCard from '../../components/TCUpcomingMatchCard';
 import {getGameHomeScreen} from '../../utils/gameUtils';
+import TCShortsPlaceholder from '../../components/TCShortsPlaceholder';
+import TCAccountDeactivate from '../../components/TCAccountDeactivate';
+import { ImageUploadContext } from '../../context/ImageUploadContext';
+import { createPost } from '../../api/NewsFeeds';
+import ImageProgress from '../../components/newsFeed/ImageProgress';
 
 const defaultPageSize = 5;
 export default function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
+  const actionSheet = useRef();
+  const actionSheetTeamClub = useRef();
 
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
+  const imageUploadContext = useContext(ImageUploadContext);
 
   const [loading, setloading] = useState(false);
   const [sports, setSports] = useState([]);
   const [customSports, setCustomSports] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
 
   const [locationPopup, setLocationPopup] = useState(false);
   const [selectedLocationOption, setSelectedLocationOption] = useState();
@@ -113,18 +125,7 @@ export default function LocalHomeScreen({navigation, route}) {
 
   console.log('authContextttt::=>', authContext.entity.role);
 
-  useEffect(() => {
-    getSportsList(authContext).then((res) => {
-      const sport = [];
-      res.payload.map((item) =>
-        sport.push({
-          label: item?.sport_name,
-          value: item?.sport_name.toLowerCase(),
-        }),
-      );
-      setCustomSports([...sport]);
-    });
-  }, [authContext]);
+  
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -194,11 +195,20 @@ export default function LocalHomeScreen({navigation, route}) {
   }, [authContext, isFocused]);
 
   useEffect(() => {
-    if (isFocused) {
+   
       getSportsList(authContext).then(async (res) => {
+        console.log('sports list',res.payload );
         await authContext.setSports([...res.payload]);
+        const sport = [];
+      res.payload.map((item) =>
+        sport.push({
+          label: item?.sport_name,
+          value: item?.sport_name.toLowerCase(),
+        }),
+      );
+      setCustomSports([...sport]);
       });
-    }
+   
   }, []);
 
   useEffect(() => {
@@ -350,7 +360,6 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-      console.log('Recent match Query:=>', recentMatchQuery);
       // Recent match query
 
       // Upcoming match query
@@ -675,15 +684,16 @@ export default function LocalHomeScreen({navigation, route}) {
         });
       }
       // Scorekeeper Query
+      console.log('Recent match query :=>', recentMatchQuery);
 
       getGameIndex(recentMatchQuery).then((games) => {
         console.log('Recent match response :=>', games);
 
         Utility.getGamesList(games).then((gamedata) => {
-          if (games?.length) {
-            setRecentMatch([]);
-          } else {
+          if (games?.length > 0) {
             setRecentMatch(gamedata);
+          } else {
+            setRecentMatch([]);
           }
         });
       });
@@ -692,10 +702,10 @@ export default function LocalHomeScreen({navigation, route}) {
         console.log('Upcoming match response :=>', games);
 
         Utility.getGamesList(games).then((gamedata) => {
-          if (games?.length) {
-            setUpcomingMatch([]);
-          } else {
+          if (games?.length > 0) {
             setUpcomingMatch(gamedata);
+          } else {
+            setUpcomingMatch([]);
           }
         });
       });
@@ -828,33 +838,37 @@ export default function LocalHomeScreen({navigation, route}) {
     [],
   );
   const renderChallengerItems = useCallback(
-    ({item}) => (
-      <View style={{marginBottom: 15, flex: 1}}>
-        <TCChallengerCard
-          data={item}
-          entityType={item.entity_type}
-          selectedSport={selectedSport}
-          sportType={sportType}
-          onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: ['user', 'player']?.includes(item?.entity_type)
-                ? item?.user_id
-                : item?.group_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
-                : item.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-            });
-          }}
-        />
-      </View>
-    ),
+    ({item}) => {
+console.log('ttttt',item);
+return (
+  <View
+    style={{marginBottom: 15, flex: 1, backgroundColor: colors.whiteColor}}>
+    <TCChallengerCard
+      data={item}
+      entityType={item.entity_type}
+      selectedSport={selectedSport}
+      sportType={sportType}
+      onPress={() => {
+        navigation.navigate('HomeScreen', {
+          uid: ['user', 'player']?.includes(item?.entity_type)
+            ? item?.user_id
+            : item?.group_id,
+          role: ['user', 'player']?.includes(item?.entity_type)
+            ? 'user'
+            : item.entity_type,
+          backButtonVisible: true,
+          menuBtnVisible: false,
+        });
+      }}
+    />
+  </View>
+)
+    },
     [navigation, selectedSport, sportType],
   );
   const renderHiringPlayersItems = useCallback(
     ({item}) => (
-      <View style={{marginBottom: 15}}>
+      <View style={{marginBottom: 15, backgroundColor: colors.whiteColor}}>
         <TCHiringPlayersCard
           data={item}
           entityType={item.entity_type}
@@ -973,9 +987,93 @@ export default function LocalHomeScreen({navigation, route}) {
     );
   };
 
+  const renderImageProgress = useMemo(() => <ImageProgress />, []);
+
+
+  const createPostAfterUpload = useCallback(
+    (dataParams) => {
+      console.log('create post -> feedsScreen');
+      createPost(dataParams, authContext)
+        .then((response) => {
+         console.log(response.payload);
+        })
+        .catch((e) => {
+          Alert.alert('', e.messages);
+        });
+    },
+    [authContext],
+  );
+
+  const onPressDone = useCallback(
+    (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
+      const currentUserDetail = authContext.entity.obj;
+      let dataParams = {};
+      const entityID = authContext.entity.uid;
+      if (entityID !== authContext.entity.uid) {
+        if (
+          currentUserDetail?.entity_type === 'team' ||
+          currentUserDetail?.entity_type === 'club'
+        ) {
+          dataParams.group_id = currentUserDetail?.group_id;
+          dataParams.feed_type = currentUserDetail?.entity_type;
+        }
+        if (
+          currentUserDetail?.entity_type === 'user' ||
+          currentUserDetail?.entity_type === 'player'
+        ) {
+          dataParams.user_id = currentUserDetail?.user_id;
+        }
+      }
+      if (postDesc.trim().length > 0 && data?.length === 0) {
+         dataParams = {
+           ...dataParams,
+          text: postDesc,
+          tagged: tagsOfEntity ?? [],
+          format_tagged_data,
+        };
+       
+        createPostAfterUpload(dataParams);
+      } else if (data) {
+        const imageArray = data.map((dataItem) => dataItem);
+         dataParams = {
+           ...dataParams,
+          text: postDesc && postDesc,
+          attachments: [],
+          tagged: tagsOfEntity ?? [],
+          format_tagged_data,
+        };
+        imageUploadContext.uploadData(
+          authContext,
+          dataParams,
+          imageArray,
+          createPostAfterUpload,
+        );
+      }
+    },
+    [authContext, createPostAfterUpload, imageUploadContext],
+  );
+
+
+  const onCreateTeamActionSheetItemPress = (index) => {
+    if (index === 0) {
+      navigation.navigate('CreateTeamForm1');
+    } else if (index === 1) {
+      navigation.navigate('RegisterPlayer');
+    }
+  };
+
+  const onCreateGroupActionSheetItemPress = (index) => {
+    if (index === 0) {
+      navigation.navigate('CreateTeamForm1');
+    } else if (index === 1) {
+      navigation.navigate('CreateClubForm1');
+    }else if (index === 2) {
+      Alert.alert('This is under development');
+    }
+  };
   return (
-    <View>
-      <TCThinDivider width={'100%'} />
+    <View style={{flex: 1}}>
+      <View style={styles.separateLine} />
       {/* <ActivityLoader visible={loading} /> */}
       <View style={styles.sportsListView}>
         <FlatList
@@ -1021,25 +1119,46 @@ export default function LocalHomeScreen({navigation, route}) {
           />
         </TouchableOpacity>
       </View>
+      {isAccountDeactivated && (
+        <TCAccountDeactivate type={'terminate'} onPress={() => {
+          Alert.alert('This is under development.');
+        }}/>
+      )}
       {loading ? (
         <LocalHomeScreenShimmer />
-      ) : !recentMatch?.length &&
-        !upcomingMatch?.length &&
-        !challengeeMatch?.length &&
-        !hiringPlayers?.length &&
-        !referees?.length &&
-        !scorekeepers?.length ? (
-          <View style={styles.placeholderContainer}>
-            <Text style={styles.placeholderViewText}>
-              Towns Cup Data Not Available
-            </Text>
-          </View>
       ) : (
         <Fragment>
           <ScrollView>
-            {recentMatch?.length > 0 && (
-              <View>
-                {/* <FlatList
+            <View>
+              <TCTitleWithArrow
+                isDisabled={!(shortsList?.length > 0)}
+                title={strings.shortsTitle}
+                showArrow={true}
+                viewStyle={{marginTop: 20, marginBottom: 15}}
+                onPress={() => onShortPress(0, shortsList[0])}
+              />
+              <FlatList
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                data={shortsList}
+                scrollEnabled={shortsList.length > 0}
+                keyExtractor={keyExtractor}
+                renderItem={shortsListView}
+                ListEmptyComponent={() => (
+                  <TCShortsPlaceholder onPress={()=>{
+                    navigation.navigate('WritePostScreen', {
+                      comeFrom:'LocalHomeScreen',
+                      postData: authContext.entity.obj,
+                      onPressDone,
+                      selectedImageList: [],
+                    });
+                  }}/>
+                )}
+              />
+            </View>
+
+            <View>
+              {/* <FlatList
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
                 data={[
@@ -1059,251 +1178,247 @@ export default function LocalHomeScreen({navigation, route}) {
                 }}
               />
               <TCThinDivider width={'100%'} marginTop={10} /> */}
-                <TCTitleWithArrow
-                  isDisabled={!(recentMatch?.length > 0)}
-                  title={strings.recentMatchesTitle}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() =>
-                    navigation.navigate('RecentMatchScreen', {
-                      filters,
-                    })
-                  }
-                />
-                <Carousel
-                  data={recentMatch} // recentMatch
-                  scrollEnabled={recentMatch?.length > 0}
-                  renderItem={renderRecentMatchItems}
-                  inactiveSlideScale={1}
-                  inactiveSlideOpacity={1}
-                  sliderWidth={widthPercentageToDP(100)}
-                  itemWidth={widthPercentageToDP(94)}
-                  ListEmptyComponent={() => (
-                    <TCGameCardPlaceholder
-                      data={gameData}
-                      cardWidth={'94%'}
-                      placeholderText={strings.recentMatchPlaceholderText}
-                      onStartPress={async () => {
-                        console.log('Query');
-                      }}
-                    />
-                  )}
-                />
-              </View>
-            )}
-            {upcomingMatch?.length > 0 && (
-              <View>
-                <TCTitleWithArrow
-                  isDisabled={!(upcomingMatch?.length > 0)}
-                  title={strings.upcomingMatchesTitle}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() => {
-                    navigation.navigate('UpcomingMatchScreen', {
-                      filters,
-                    });
+              <TCTitleWithArrow
+                isDisabled={!(recentMatch?.length > 0)}
+                title={strings.recentMatchesTitle}
+                showArrow={true}
+                viewStyle={{marginTop: 20, marginBottom: 15}}
+                onPress={() =>
+                  navigation.navigate('RecentMatchScreen', {
+                    filters,
+                  })
+                }
+              />
+              <Carousel
+                data={recentMatch} // recentMatch
+                scrollEnabled={recentMatch?.length > 0}
+                renderItem={renderRecentMatchItems}
+                inactiveSlideScale={1}
+                inactiveSlideOpacity={1}
+                sliderWidth={widthPercentageToDP(100)}
+                itemWidth={widthPercentageToDP(94)}
+                ListEmptyComponent={() => (
+                  <TCGameCardPlaceholder
+                    data={gameData}
+                    cardWidth={'94%'}
+                    placeholderText={strings.recentMatchPlaceholderText}
+                    onStartPress={async () => {
+                      console.log('Query');
+                    }}
+                  />
+                )}
+              />
+            </View>
 
-                    // navigation.navigate('AddLogScreen')
-                  }}
-                />
-                <Carousel
-                  data={upcomingMatch}
-                  scrollEnabled={upcomingMatch?.length > 0}
-                  renderItem={renderGameItems}
-                  inactiveSlideScale={1}
-                  inactiveSlideOpacity={1}
-                  sliderWidth={widthPercentageToDP(100)}
-                  itemWidth={widthPercentageToDP(94)}
-                  ListEmptyComponent={() => (
-                    <TCGameCardPlaceholder
-                      data={gameData}
-                      cardWidth={'94%'}
-                      placeholderText={strings.upcomingMatchPlaceholderText}
-                      onStartPress={() => Alert.alert('ok')}
-                    />
-                  )}
-                />
-              </View>
-            )}
-            {shortsList?.length > 2 && (
-              <View>
-                <TCTitleWithArrow
-                  isDisabled={!(shortsList?.length > 0)}
-                  title={strings.shortsTitle}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() => onShortPress(0, shortsList[0])}
-                />
-                <FlatList
-                  horizontal={true}
-                  showsHorizontalScrollIndicator={false}
-                  data={shortsList}
-                  keyExtractor={keyExtractor}
-                  renderItem={shortsListView}
-                />
-              </View>
-            )}
-            {challengeeMatch?.length > 0 && (
-              <View>
-                <TCTitleWithArrow
-                  isDisabled={!(challengeeMatch?.length > 0)}
-                  title={strings.lookingForTitle}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() => {
-                    navigation.navigate('LookingForChallengeScreen', {
-                      filters,
-                    });
-                  }}
-                />
-                <Carousel
-                  data={challengeeMatch}
-                  scrollEnabled={challengeeMatch?.length > 0}
-                  renderItem={renderChallengerItems}
-                  inactiveSlideScale={1}
-                  inactiveSlideOpacity={1}
-                  sliderWidth={widthPercentageToDP(100)}
-                  itemWidth={widthPercentageToDP(94)}
-                  ListEmptyComponent={() => (
-                    <TCTeamsCardPlaceholder
-                      data={gameData}
-                      cardWidth={'94%'}
-                      placeholderText={strings.challengerPlaceholderText}
-                      onStartPress={async () => {}}
-                    />
-                  )}
-                />
-              </View>
-            )}
-            {hiringPlayers?.length > 0 && (
-              <View>
-                <TCTitleWithArrow
-                  isDisabled={!(hiringPlayers?.length > 0)}
-                  title={strings.hiringPlayerTitle}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() => {
-                    navigation.navigate('RecruitingPlayerScreen', {
-                      filters: {
-                        ...filters,
-                        groupTeam: 'Teams',
-                        groupClub: 'Clubs',
-                        groupLeague: 'Leagues',
-                      },
-                    });
-                  }}
-                />
-                <Carousel
-                  data={hiringPlayers}
-                  scrollEnabled={hiringPlayers?.length > 0}
-                  renderItem={renderHiringPlayersItems}
-                  inactiveSlideScale={1}
-                  inactiveSlideOpacity={1}
-                  sliderWidth={widthPercentageToDP(100)}
-                  itemWidth={widthPercentageToDP(94)}
-                  ListEmptyComponent={() => (
-                    <TCTeamsCardPlaceholder
-                      data={gameData}
-                      cardWidth={'94%'}
-                      placeholderText={strings.hiringPlayersPlaceholderText}
-                    />
-                  )}
-                />
-              </View>
-            )}
-            {lookingTeam?.length > 0 && (
-              <View>
-                <TCTitleWithArrow
-                  isDisabled={!(lookingTeam?.length > 0)}
-                  title={strings.lookingForTeamTitle}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() =>
-                    navigation.navigate('LookingTeamScreen', {
-                      filters,
-                      sportsList: sports,
-                    })
-                  }
-                />
-                <FlatList
-                  horizontal={true}
-                  scrollEnabled={lookingTeam?.length > 0}
-                  showsHorizontalScrollIndicator={false}
-                  data={lookingTeam}
-                  ItemSeparatorComponent={renderSeparator}
-                  keyExtractor={keyExtractor}
-                  renderItem={renderEntityListView}
-                  style={{marginLeft: 15}}
-                  ListEmptyComponent={() => (
-                    <TCEntityListPlaceholder
-                      cardWidth={'94%'}
-                      placeholderText={strings.lookingTeamsPlaceholderText}
-                    />
-                  )}
-                />
-              </View>
-            )}
-            {referees?.length > 0 && (
-              <View>
-                <TCTitleWithArrow
-                  title={strings.refereesTitle}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() => {
-                    console.log('Applicable filter::=>', filters);
-                    navigation.navigate('RefereesListScreen', {
-                      filters,
-                    });
-                  }}
-                />
-                <FlatList
-                  horizontal={true}
-                  scrollEnabled={referees?.length > 0}
-                  showsHorizontalScrollIndicator={false}
-                  data={referees}
-                  ItemSeparatorComponent={renderSeparator}
-                  keyExtractor={keyExtractor}
-                  renderItem={renderRefereesScorekeeperListView}
-                  style={{marginLeft: 15}}
-                  ListEmptyComponent={() => (
-                    <TCEntityListPlaceholder
-                      cardWidth={'94%'}
-                      placeholderText={strings.refereesPlaceholderText}
-                    />
-                  )}
-                />
-              </View>
-            )}
-            {scorekeepers?.length > 0 && (
-              <View>
-                <TCTitleWithArrow
-                  title={strings.scorekeeperTitle}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() =>
-                    navigation.navigate('ScorekeeperListScreen', {
-                      filters,
-                    })
-                  }
-                />
-                <FlatList
-                  horizontal={true}
-                  scrollEnabled={scorekeepers?.length > 0}
-                  showsHorizontalScrollIndicator={false}
-                  data={scorekeepers}
-                  ItemSeparatorComponent={renderSeparator}
-                  keyExtractor={keyExtractor}
-                  renderItem={renderRefereesScorekeeperListView}
-                  style={{marginLeft: 15}}
-                  ListEmptyComponent={() => (
-                    <TCEntityListPlaceholder
-                      cardWidth={'94%'}
-                      placeholderText={strings.scorekeepersPlaceholderText}
-                    />
-                  )}
-                />
-              </View>
-            )}
+            <View>
+              <TCTitleWithArrow
+                isDisabled={!(upcomingMatch?.length > 0)}
+                title={strings.upcomingMatchesTitle}
+                showArrow={true}
+                viewStyle={{marginTop: 20, marginBottom: 15}}
+                onPress={() => {
+                  navigation.navigate('UpcomingMatchScreen', {
+                    filters,
+                  });
+
+                  // navigation.navigate('AddLogScreen')
+                }}
+              />
+              <Carousel
+                data={upcomingMatch}
+                scrollEnabled={upcomingMatch?.length > 0}
+                renderItem={renderGameItems}
+                inactiveSlideScale={1}
+                inactiveSlideOpacity={1}
+                sliderWidth={widthPercentageToDP(100)}
+                itemWidth={widthPercentageToDP(94)}
+                ListEmptyComponent={() => (
+                  <TCGameCardPlaceholder
+                    data={gameData}
+                    cardWidth={'94%'}
+                    placeholderText={strings.upcomingMatchPlaceholderText}
+                    onStartPress={() => Alert.alert('ok')}
+                  />
+                )}
+              />
+            </View>
+
+            <View>
+              <TCTitleWithArrow
+                isDisabled={!(challengeeMatch?.length > 0)}
+                title={strings.lookingForTitle}
+                showArrow={true}
+                viewStyle={{marginTop: 20, marginBottom: 15}}
+                onPress={() => {
+                  navigation.navigate('LookingForChallengeScreen', {
+                    filters,
+                  });
+                }}
+              />
+
+              <FlatList
+                horizontal={true}
+                scrollEnabled={challengeeMatch?.length > 0}
+                showsHorizontalScrollIndicator={false}
+                data={challengeeMatch}
+                ItemSeparatorComponent={renderSeparator}
+                keyExtractor={keyExtractor}
+                renderItem={renderChallengerItems}
+                style={{paddingLeft: 15}}
+                ListEmptyComponent={() => (
+                  <TCTeamsCardPlaceholder
+                    data={gameData}
+                    cardWidth={'94%'}
+                    placeholderText={'NO AVAILABLE TEAMS OR PLAYERS'}
+                    buttonTitle={'Create a team or register as a player >'}
+                    onPress={()=>{
+                      actionSheet.current.show();
+                    }}
+                  />
+                )}
+              />
+            </View>
+            <View>
+              <TCTitleWithArrow
+                title={strings.refereesTitle}
+                showArrow={true}
+                viewStyle={{marginTop: 20, marginBottom: 15}}
+                onPress={() => {
+                  console.log('Applicable filter::=>', filters);
+                  navigation.navigate('RefereesListScreen', {
+                    filters,
+                  });
+                }}
+              />
+              <FlatList
+                horizontal={true}
+                scrollEnabled={referees?.length > 0}
+                showsHorizontalScrollIndicator={false}
+                data={referees}
+                ItemSeparatorComponent={renderSeparator}
+                keyExtractor={keyExtractor}
+                renderItem={renderRefereesScorekeeperListView}
+                style={{marginLeft: 15}}
+                ListEmptyComponent={() => (
+                  <TCEntityListPlaceholder
+                    cardWidth={'94%'}
+                    placeholderText={strings.refereesPlaceholderText}
+                    buttonText={'Register as a referee >'}
+                    onPress={() =>{
+                      navigation.navigate('RegisterReferee')
+                    }}
+                  />
+                )}
+              />
+            </View>
+
+            <View>
+              <TCTitleWithArrow
+                title={strings.scorekeeperTitle}
+                showArrow={true}
+                viewStyle={{marginTop: 20, marginBottom: 15}}
+                onPress={() =>
+                  navigation.navigate('ScorekeeperListScreen', {
+                    filters,
+                  })
+                }
+              />
+              <FlatList
+                horizontal={true}
+                scrollEnabled={scorekeepers?.length > 0}
+                showsHorizontalScrollIndicator={false}
+                data={scorekeepers}
+                ItemSeparatorComponent={renderSeparator}
+                keyExtractor={keyExtractor}
+                renderItem={renderRefereesScorekeeperListView}
+                style={{marginLeft: 15}}
+                ListEmptyComponent={() => (
+                  <TCEntityListPlaceholder
+                    cardWidth={'94%'}
+                    placeholderText={strings.scorekeepersPlaceholderText}
+                    buttonText={'Register as a scorekeeper >'}
+                    onPress={() =>{
+                      navigation.navigate('RegisterScorekeeper')
+                    }}
+                  />
+                )}
+              />
+            </View>
+            <View>
+              <TCTitleWithArrow
+                isDisabled={!(hiringPlayers?.length > 0)}
+                title={strings.hiringPlayerTitle}
+                showArrow={true}
+                viewStyle={{marginTop: 20, marginBottom: 15}}
+                onPress={() => {
+                  navigation.navigate('RecruitingPlayerScreen', {
+                    filters: {
+                      ...filters,
+                      groupTeam: 'Teams',
+                      groupClub: 'Clubs',
+                      groupLeague: 'Leagues',
+                    },
+                  });
+                }}
+              />
+
+              <FlatList
+                horizontal={true}
+                scrollEnabled={hiringPlayers?.length > 0}
+                showsHorizontalScrollIndicator={false}
+                data={hiringPlayers}
+                ItemSeparatorComponent={renderSeparator}
+                keyExtractor={keyExtractor}
+                renderItem={renderHiringPlayersItems}
+                style={{paddingLeft: 15}}
+                ListEmptyComponent={() => (
+                  <TCTeamsCardPlaceholder
+                    data={gameData}
+                    cardWidth={'94%'}
+                    placeholderText={strings.hiringPlayersPlaceholderText}
+                    buttonTitle={'Create your group >'}
+                    onPress={()=>{
+                      actionSheetTeamClub.current.show();
+                    }}
+                  />
+                )}
+              />
+            </View>
+
+            <View>
+              <TCTitleWithArrow
+                isDisabled={!(lookingTeam?.length > 0)}
+                title={strings.lookingForTeamTitle}
+                showArrow={true}
+                viewStyle={{marginTop: 20, marginBottom: 15}}
+                onPress={() =>
+                  navigation.navigate('LookingTeamScreen', {
+                    filters,
+                    sportsList: sports,
+                  })
+                }
+              />
+              <FlatList
+                horizontal={true}
+                scrollEnabled={lookingTeam?.length > 0}
+                showsHorizontalScrollIndicator={false}
+                data={lookingTeam}
+                ItemSeparatorComponent={renderSeparator}
+                keyExtractor={keyExtractor}
+                renderItem={renderEntityListView}
+                style={{marginLeft: 15}}
+                ListEmptyComponent={() => (
+                  <TCEntityListPlaceholder
+                    cardWidth={'94%'}
+                    placeholderText={strings.lookingTeamsPlaceholderText}
+                    buttonText={'Register as a player >'}
+                    onPress={() =>{
+                      navigation.navigate('RegisterPlayer')
+                    }}
+                  />
+                )}
+              />
+            </View>
           </ScrollView>
         </Fragment>
       )}
@@ -1463,7 +1578,6 @@ export default function LocalHomeScreen({navigation, route}) {
           <TouchableWithoutFeedback
             onPress={() => {
               setSelectedSettingOption(0);
-
               setTimeout(() => {
                 setSettingPopup(false);
               }, 100);
@@ -1510,6 +1624,22 @@ export default function LocalHomeScreen({navigation, route}) {
                 </TouchableWithoutFeedback> */}
         </View>
       </Modal>
+      <ActionSheet
+            ref={actionSheet}
+            title={'Create a team or register as a player'}
+            options={['Create Team',' Register as Player', 'Cancel']}
+            cancelButtonIndex={2}
+            onPress={onCreateTeamActionSheetItemPress}
+          />
+
+      <ActionSheet
+            ref={actionSheetTeamClub}
+            title={'Create a team or club or league'}
+            options={['Create Team',' Create Club','Create League' ,'Cancel']}
+            cancelButtonIndex={3}
+            onPress={onCreateGroupActionSheetItemPress}
+          />
+      {renderImageProgress}
     </View>
   );
 }
@@ -1552,15 +1682,8 @@ const styles = StyleSheet.create({
   sportsListView: {
     flexDirection: 'row',
     backgroundColor: colors.whiteColor,
-    shadowColor: colors.blackColor,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowRadius: 3,
-    shadowOpacity: 0.2,
-    marginBottom: 5,
-    elevation: 5,
+    borderBottomColor: colors.veryLightGray,
+    borderBottomWidth: 0.5,
     alignItems: 'center',
   },
   bottomPopupContainer: {
@@ -1675,16 +1798,7 @@ const styles = StyleSheet.create({
     height: 35,
     width: 35,
   },
-  placeholderViewText: {
-    fontFamily: fonts.RBold,
-    fontSize: 20,
-    color: colors.ligherGray,
-  },
-  placeholderContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+ 
   townsCupthreeDotIcon: {
     resizeMode: 'contain',
     height: 15,
@@ -1692,5 +1806,10 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     tintColor: colors.lightBlackColor,
     marginRight: 15,
+  },
+  
+  separateLine: {
+    borderColor: colors.veryLightGray,
+    borderWidth: 0.5,
   },
 });
