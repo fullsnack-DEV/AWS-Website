@@ -14,7 +14,6 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
-import {StackActions} from '@react-navigation/native';
 
 import {
   widthPercentageToDP as wp,
@@ -39,6 +38,7 @@ import {eventDefaultColorsData} from '../../Constants/LoaderImages';
 import apiCall from '../../utils/apiCall';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import {getAppSettingsWithoutAuth} from '../../api/Users';
+import {getHitSlop} from '../../utils/index';
 
 export default function LoginScreen({navigation}) {
   const [email, setEmail] = useState('makani20@gmail.com');
@@ -55,6 +55,11 @@ export default function LoginScreen({navigation}) {
       Alert.alert(strings.appName, 'Email cannot be blank');
       return false;
     }
+    if (validateEmail(email) === false) {
+      setloading(false);
+      Alert.alert('', strings.validEmailMessage);
+      return false;
+    }
     if (password === '') {
       setloading(false);
       Alert.alert(strings.appName, strings.passwordCanNotBlank);
@@ -63,6 +68,13 @@ export default function LoginScreen({navigation}) {
     return true;
   }, [email, password]);
 
+  const validateEmail = (emailText) => {
+    if (/^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w\w+)+$/.test(emailText)) {
+      return true;
+    }
+
+    return false;
+  };
   const getRedirectionScreenName = useCallback(
     (townscupUser) =>
       new Promise((resolve, reject) => {
@@ -308,6 +320,7 @@ export default function LoginScreen({navigation}) {
 
   const onLogin = useCallback(async () => {
     setloading(true);
+    console.log('Valide', validate());
     if (validate()) {
       if (authContext.networkConnected) {
         login();
@@ -322,7 +335,7 @@ export default function LoginScreen({navigation}) {
       <View style={{marginTop: 35}}>
         <TCButton
           title={'LOG IN'}
-          extraStyle={{marginTop: hp('3%')}}
+          extraStyle={{marginTop: hp('0%')}}
           onPress={onLogin}
         />
         <TouchableOpacity
@@ -331,6 +344,23 @@ export default function LoginScreen({navigation}) {
             {strings.forgotPassword}
           </Text>
         </TouchableOpacity>
+        <View>
+          <TouchableOpacity
+            hitSlop={getHitSlop(15)}
+            onPress={() => navigation.navigate('SignupScreen')}
+            style={styles.alreadyView}>
+            <Text style={styles.alreadyMemberText}>
+              {strings.notAMemberYetSignup}
+              <Text
+                style={{
+                  textDecorationLine: 'underline',
+                  fontFamily: fonts.RBold,
+                }}>
+                Sign Up
+              </Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     ),
     [navigation, onLogin],
@@ -342,7 +372,8 @@ export default function LoginScreen({navigation}) {
           onPress={() => {
             // navigation.navigate('LoginScreen');
             // navigation.dispatch(StackActions.popToTop());
-            navigation.dispatch(StackActions.replace('WelcomeScreen'));
+            navigation.pop();
+            // navigation.dispatch(StackActions.replace('WelcomeScreen'));
           }}>
           <Image
             source={images.backArrow}
@@ -370,7 +401,7 @@ export default function LoginScreen({navigation}) {
       />
       <TCKeyboardView>
         <Text style={styles.loginText}>{strings.loginText}</Text>
-        <View style={{marginTop: 55}}>
+        <View style={{marginTop: 30}}>
           {renderEmailInput}
           {renderPasswordInput}
         </View>
@@ -389,17 +420,16 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginTop: hp('3%'),
+    fontSize: 14,
+    marginTop: hp('2.5%'),
     textAlign: 'center',
   },
   loginText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginBottom: hp('3%'),
     marginTop: hp('11%'),
-    paddingLeft: 30,
+    paddingLeft: 25,
     textAlign: 'left',
   },
   mainContainer: {
@@ -434,8 +464,7 @@ const styles = StyleSheet.create({
 
   passwordInput: {
     alignSelf: 'center',
-    paddingVertical: 0,
-    paddingHorizontal: 10,
+    paddingHorizontal: 0,
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
@@ -452,5 +481,15 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
+  },
+  alreadyMemberText: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  alreadyView: {
+    marginVertical: 25,
+    alignSelf: 'center',
   },
 });
