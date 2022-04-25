@@ -19,6 +19,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@fawazahmed/react-native-read-more": "^2.3.5",
     "@invertase/react-native-apple-authentication": "^2.1.5",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "@react-native-community/art": "^1.2.0",

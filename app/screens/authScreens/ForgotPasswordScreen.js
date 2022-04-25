@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {View, Text, Alert, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  Alert,
+  StyleSheet,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
 import {
   heightPercentageToDP as hp,
@@ -70,52 +77,55 @@ export default function ForgotPasswordScreen({navigation}) {
       });
   };
   return (
-    <LinearGradient
-      colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
-      <FastImage
-        resizeMode={'stretch'}
-        style={styles.background}
-        source={images.loginBg}
-      />
-      <Text style={styles.forgotText}>{strings.forgotPassword}</Text>
-      <Text style={styles.resetText}>{strings.resetText}</Text>
-      <TCTextField
-        placeholderTextColor={colors.darkYellowColor}
-        style={{...styles.textFieldStyle}}
-        placeholder={strings.enterEmailPlaceholder}
-        secureText={false}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-      />
-      <View style={{flex: 1}} />
-
-      <View style={{marginBottom: 20}}>
-        <TCButton
-          title={strings.nextTitle}
-          onPress={() => {
-            if (checkValidation()) {
-              forgotPassword(email);
-            }
-          }}
-          extraStyle={{marginBottom: 10}}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <LinearGradient
+        colors={[colors.themeColor1, colors.themeColor3]}
+        style={styles.mainContainer}>
+        <ActivityLoader visible={loading} />
+        <FastImage
+          resizeMode={'stretch'}
+          style={styles.background}
+          source={images.loginBg}
         />
-        <TCButton
-          title={strings.cancelTitle}
-          onPress={() => navigation.goBack()}
-          textColor={{color: colors.whiteColor}}
-          extraStyle={{
-            borderColor: colors.whiteColor,
-            borderWidth: 1,
-
-            backgroundColor: 'transparent',
-          }}
+        <Text style={styles.forgotText}>{strings.forgotPassword}</Text>
+        <Text style={styles.resetText}>{strings.resetText}</Text>
+        <TCTextField
+          placeholderTextColor={colors.darkYellowColor}
+          style={{...styles.textFieldStyle}}
+          placeholder={strings.enterEmailPlaceholder}
+          secureText={false}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          onChangeText={(text) => setEmail(text)}
+          value={email}
         />
-      </View>
-    </LinearGradient>
+
+        {/* <View style={{flex: 1}} /> */}
+
+        <View style={{marginBottom: 20}}>
+          <TCButton
+            title={strings.nextTitle}
+            onPress={() => {
+              if (checkValidation()) {
+                forgotPassword(email);
+              }
+            }}
+            extraStyle={{marginBottom: 10}}
+          />
+          {/* <TCButton
+            title={strings.cancelTitle}
+            onPress={() => navigation.goBack()}
+            textColor={{color: colors.whiteColor}}
+            extraStyle={{
+              borderColor: colors.whiteColor,
+              borderWidth: 1,
+
+              backgroundColor: 'transparent',
+            }}
+          /> */}
+        </View>
+      </LinearGradient>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -130,7 +140,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 25,
     marginTop: hp('12%'),
-    paddingLeft: 30,
+    paddingLeft: 25,
     textAlign: 'left',
   },
   mainContainer: {
@@ -141,20 +151,20 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
     fontSize: 14,
-    marginBottom: hp('11%'),
+    marginBottom: hp('4%'),
     marginTop: hp('0.5%'),
-    paddingLeft: 30,
+    paddingLeft: 25,
     textAlign: 'left',
   },
   textFieldStyle: {
-    backgroundColor: colors.whiteColor,
+    // backgroundColor: colors.whiteColor,
     fontFamily: fonts.RRegular,
     flex: 0,
-    marginBottom: 10,
-    marginLeft: 32,
-    marginRight: 32,
+    marginBottom: 35,
+    marginLeft: 35,
+    marginRight: 35,
 
-    paddingLeft: 8,
+    paddingLeft: 2,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.4,

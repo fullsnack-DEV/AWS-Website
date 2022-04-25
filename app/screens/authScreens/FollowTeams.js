@@ -25,6 +25,7 @@ import AuthContext from '../../auth/context';
 import * as Utility from '../../utils/index';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import strings from '../../Constants/String';
 
 export default function FollowTeams({route, navigation}) {
   const [teams, setTeams] = useState(['1']);
@@ -224,7 +225,8 @@ export default function FollowTeams({route, navigation}) {
   );
 
   const signUpLastStep = () => {
-    updateProfile({club_ids: followed});
+    // updateProfile({club_ids: followed});
+    updateProfile({group_id: followed});
   };
   return (
     <LinearGradient
@@ -237,7 +239,7 @@ export default function FollowTeams({route, navigation}) {
         source={images.loginBg}
       />
 
-      <Text style={styles.sportText}>Follow sport teams.</Text>
+      <Text style={styles.sportText}>{strings.followSportTeam}</Text>
       <FlatList
         style={{padding: 15}}
         data={teams}

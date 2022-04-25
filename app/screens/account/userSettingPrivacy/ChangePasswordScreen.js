@@ -54,10 +54,10 @@ export default function ChangePasswordScreen({navigation}) {
       return false;
     }
     if (newPassword.length < 6) {
-      Alert.alert(strings.appName, 'Password should be atleast 8 characters.');
+      Alert.alert(strings.appName, strings.passwordWarningMessage);
       return false;
     }
-    
+
     if (newPassword !== confirmPassword) {
       Alert.alert(
         strings.appName,

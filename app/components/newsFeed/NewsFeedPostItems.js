@@ -6,12 +6,12 @@ import React, {
   useRef,
   useState,
   useMemo,
- // useContext,
+  // useContext,
 } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { Text } from 'react-native-elements';
+import {StyleSheet, View, Image} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {Text} from 'react-native-elements';
 import ActionSheet from 'react-native-actionsheet';
 import Share from 'react-native-share';
 // import Clipboard from '@react-native-community/clipboard';
@@ -22,14 +22,14 @@ import VideoPost from './VideoPost';
 import PostImageSet from './PostImageSet';
 import MultiPostVideo from './MultiPostVideo';
 import NewsFeedDescription from './NewsFeedDescription';
-import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
+import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 // import AuthContext from '../../auth/context';
 import CommentModal from './CommentModal';
 import LikersModal from '../modals/LikersModal';
 import CustomURLPreview from '../account/CustomURLPreview';
-import { getHitSlop } from '../../utils';
+import {getHitSlop} from '../../utils';
 
 const NewsFeedPostItems = memo(
   ({
@@ -79,14 +79,15 @@ const NewsFeedPostItems = memo(
       setShowThreeDot(
         item?.ownerId === caller_id || item?.foreign_id === caller_id,
       );
-      const dummyItem = typeof item?.object === 'string'
+      const dummyItem =
+        typeof item?.object === 'string'
           ? JSON.parse(item?.object)
           : item?.object;
-      setMyItem({ ...dummyItem });
+      setMyItem({...dummyItem});
       if (dummyItem) {
         if (
-          dummyItem?.attachments !== undefined
-          && dummyItem?.attachments?.length > 0
+          dummyItem?.attachments !== undefined &&
+          dummyItem?.attachments?.length > 0
         ) {
           setAttachedImages([...dummyItem?.attachments]);
         }
@@ -146,7 +147,7 @@ const NewsFeedPostItems = memo(
     );
 
     const renderMultiplePostItems = useCallback(
-      ({ item: multiAttachItem, index }) => {
+      ({item: multiAttachItem, index}) => {
         if (multiAttachItem?.type === 'image') {
           return (
             <PostImageSet
@@ -267,7 +268,7 @@ const NewsFeedPostItems = memo(
               source={
                 !item?.actor?.data?.full_image
                   ? images.profilePlaceHolder
-                  : { uri: item?.actor?.data?.full_image }
+                  : {uri: item?.actor?.data?.full_image}
               }
               resizeMode={'cover'}
             />
@@ -309,7 +310,8 @@ const NewsFeedPostItems = memo(
     );
 
     const renderURLPreview = useMemo(() => {
-      const obj = typeof item?.object === 'string'
+      const obj =
+        typeof item?.object === 'string'
           ? JSON.parse(item?.object)
           : item?.object;
       return <CustomURLPreview text={obj?.text} />;
@@ -319,7 +321,8 @@ const NewsFeedPostItems = memo(
       () => (
         <NewsFeedDescription
           descriptions={descriptions}
-          character={attachedImages?.length > 0 ? 140 : 480}
+          // character={attachedImages?.length > 0 ? 140 : 480}
+          numberOfLineDisplay={attachedImages?.length > 0 ? 3 : 14}
           tagData={myItem?.format_tagged_data ?? []}
           navigation={navigation}
         />
@@ -337,7 +340,7 @@ const NewsFeedPostItems = memo(
     }, []);
 
     return (
-      <View style={{ flex: 1, marginBottom: 15}}>
+      <View style={{flex: 1, marginBottom: 15}}>
         {renderProfileInfo}
         <View>
           {attachedImages && attachedImages?.length === 1 ? (
@@ -356,7 +359,7 @@ const NewsFeedPostItems = memo(
           {renderURLPreview}
           {renderDescription}
 
-          <View style={{ marginTop: 10, marginLeft: 10 }} />
+          <View style={{marginTop: 10, marginLeft: 10}} />
           <View style={styles.commentShareLikeView}>
             <View
               style={{
@@ -410,10 +413,10 @@ const NewsFeedPostItems = memo(
                 marginLeft: 20,
               }}>
               <TouchableOpacity
-                style={{ marginRight: 5 }}
+                style={{marginRight: 5}}
                 onPress={() => {
                   console.log('Like obj:=>', item);
-                  likersModalRef.current.open()
+                  likersModalRef.current.open();
                 }}>
                 <Text
                   style={[
@@ -449,12 +452,16 @@ const NewsFeedPostItems = memo(
           <ActionSheet
             ref={shareActionSheet}
             title={'News Feed Post'}
-            options={['More', 'Cancel']}// ['Repost', 'Copy Link', 'More', 'Cancel']
+            options={['More', 'Cancel']} // ['Repost', 'Copy Link', 'More', 'Cancel']
             cancelButtonIndex={1}
             onPress={onShareActionSheetItemPress}
           />
         </View>
-        <LikersModal likersModalRef={likersModalRef} navigation={navigation} data={item}/>
+        <LikersModal
+          likersModalRef={likersModalRef}
+          navigation={navigation}
+          data={item}
+        />
         <CommentModal
           navigation={navigation}
           commentModalRef={commentModalRef}
@@ -519,7 +526,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: 15,
     marginBottom: 15,
-    marginTop:15
+    marginTop: 15,
   },
   userNameTxt: {
     color: colors.lightBlackColor,
@@ -539,7 +546,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     borderRadius: 50,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.16,
     shadowRadius: 6,
     elevation: 6,

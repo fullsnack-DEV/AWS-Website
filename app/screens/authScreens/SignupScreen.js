@@ -36,6 +36,8 @@ import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context';
 import apiCall from '../../utils/apiCall';
 import {checkTownscupEmail, createUser} from '../../api/Users';
+import {getHitSlop} from '../../utils/index';
+
 import {
   QBconnectAndSubscribe,
   QBcreateUser,
@@ -103,8 +105,8 @@ export default function SignupScreen({navigation}) {
       Alert.alert(strings.appName, strings.confirmAndPasswordNotMatch);
       return false;
     }
-    if (password.length < 8) {
-      Alert.alert(strings.appName, 'Password should be atleast 8 characters.');
+    if (password.length < 6) {
+      Alert.alert(strings.appName, strings.passwordWarningMessage);
       return false;
     }
     return true;
@@ -534,7 +536,12 @@ export default function SignupScreen({navigation}) {
                     ? {uri: profilePic?.path}
                     : images.profilePlaceHolder
                 }
-                style={{width: 100, height: 100, borderRadius: 50}}
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 50,
+                  backgroundColor: '#FED378',
+                }}
               />
             </TouchableOpacity>
             <TouchableOpacity
@@ -623,10 +630,11 @@ export default function SignupScreen({navigation}) {
               )}
             </TouchableOpacity>
           </View>
-
           <TCButton
             title={strings.signUpCapitalText}
-            extraStyle={{marginTop: hp('10%')}}
+            extraStyle={{
+              marginTop: hp('2%'),
+            }}
             onPress={() => {
               if (validate()) {
                 if (authContext.networkConnected) {
@@ -637,6 +645,21 @@ export default function SignupScreen({navigation}) {
               }
             }}
           />
+          <TouchableOpacity
+            hitSlop={getHitSlop(15)}
+            onPress={() => navigation.navigate('LoginScreen')}
+            style={styles.alreadyView}>
+            <Text style={styles.alreadyMemberText}>
+              {strings.alreadyMember}
+              <Text
+                style={{
+                  textDecorationLine: 'underline',
+                  fontFamily: fonts.RBold,
+                }}>
+                Log In
+              </Text>
+            </Text>
+          </TouchableOpacity>
         </TCKeyboardView>
       </LinearGradient>
     </>
@@ -682,6 +705,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: 100,
     borderRadius: 50,
+
+    // borderWidth: 1,
+    // borderColor: '#FED378',
   },
   textInput: {
     paddingVertical: 0,
@@ -711,5 +737,15 @@ const styles = StyleSheet.create({
   cameraIcon: {
     height: 22,
     width: 22,
+  },
+  alreadyMemberText: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  alreadyView: {
+    marginVertical: 25,
+    alignSelf: 'center',
   },
 });

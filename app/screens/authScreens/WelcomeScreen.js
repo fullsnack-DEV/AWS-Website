@@ -639,7 +639,7 @@ export default function WelcomeScreen({navigation}) {
       }
     } catch (e) {
       setloading(false);
-      Alert.alert(e.message);
+      Alert.alert('Your sign up couldn\'t be completed.');
     }
   };
 
@@ -799,14 +799,13 @@ export default function WelcomeScreen({navigation}) {
                   textDecorationLine: 'underline',
                   fontFamily: fonts.RBold,
                 }}>
-                {' '}
                 Log In
               </Text>
             </Text>
           </TouchableOpacity>
         </View>
         <Text style={styles.privacyText}>
-          By continuing or signing up you agree to Townty’s{'\n'}
+          By continuing or signing up you agree to our{'\n'}
           <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
             Terms of Service.
           </Text>{' '}
