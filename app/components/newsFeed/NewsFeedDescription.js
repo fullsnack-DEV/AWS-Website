@@ -47,6 +47,7 @@ const NewsFeedDescription = ({
       const indices = [];
       // eslint-disable-next-line no-cond-assign
       while (
+        // eslint-disable-next-line no-cond-assign
         (index = str
           .toLowerCase()
           .indexOf(searchStr.toLowerCase(), startIndex)) > -1
