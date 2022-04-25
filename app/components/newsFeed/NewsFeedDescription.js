@@ -218,10 +218,6 @@ const NewsFeedDescription = ({
 };
 
 const styles = StyleSheet.create({
-  descText: {
-    color: 'gray',
-    fontSize: 12,
-  },
   username: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
