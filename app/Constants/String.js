@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 const strings = {
   townsCupTitle: 'TownsCup',
   alertmessagetitle: 'TownsCup',
