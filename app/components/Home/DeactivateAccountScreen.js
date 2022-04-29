@@ -6,7 +6,6 @@ import {
   ScrollView,
   SafeAreaView,
   Alert,
- 
 } from 'react-native';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../loader/ActivityLoader';
@@ -14,9 +13,9 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import strings from '../../Constants/String';
 import TCGradientButton from '../TCGradientButton';
-import * as Utility from '../../utils';
-import {userDeactivate} from '../../api/Users';
+import {userActivate, userDeactivate} from '../../api/Users';
 import {getGroups} from '../../api/Groups';
+import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 
 export default function DeactivateAccountScreen({navigation, route}) {
   const [sportObj] = useState(route?.params?.sport);
@@ -57,19 +56,60 @@ export default function DeactivateAccountScreen({navigation, route}) {
       });
   }, [authContext]);
 
-  const deactivateSport = () => {
-   setloading(true);
-    userDeactivate( authContext)
-      .then(async (response) => {
+  const deactivateAccount = () => {
+    setloading(true);
+    userDeactivate(authContext)
+      .then((response) => {
         console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+            navigation.pop(2);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+            navigation.pop(2);
+          });
+      })
+      .catch((e) => {
         setloading(false);
-        const entity = authContext.entity;
-        entity.auth.user = response.payload;
-        entity.obj = response.payload;
-        authContext.setEntity({...entity});
-        await Utility.setStorage('authContextUser', response.payload);
-        await Utility.setStorage('authContextEntity', {...entity});
-        navigation.pop(2);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+  const activateAccount = () => {
+    setloading(true);
+    userActivate(authContext)
+      .then((response) => {
+        console.log('activate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+            navigation.pop(2);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+            navigation.pop(2);
+          });
       })
       .catch((e) => {
         setloading(false);
@@ -107,7 +147,11 @@ export default function DeactivateAccountScreen({navigation, route}) {
       </ScrollView>
       <SafeAreaView>
         <TCGradientButton
-          title={strings.deactivateAccountTitle}
+          title={
+            authContext?.entity?.obj?.is_deactivate === true
+              ? 'REACTIVATE MY ACCOUNT'
+              : 'DEACTIVE MY ACCOUNT '
+          }
           onPress={() => {
             // Alert.alert('',
             //   'Please leave all clubs, leagues and seasons before you deactivate Tennis Singles.');
@@ -122,7 +166,11 @@ export default function DeactivateAccountScreen({navigation, route}) {
             //   );
             // } else {
             Alert.alert(
-              'Are you sure you want to deactivate your account?',
+              `Are you sure you want to ${
+                authContext?.entity?.obj?.is_deactivate === true
+                  ? 'activate'
+                  : 'deactivate'
+              } your account?`,
               '',
               [
                 {
@@ -130,19 +178,17 @@ export default function DeactivateAccountScreen({navigation, route}) {
                   style: 'cancel',
                 },
                 {
-                  text: 'Deactivate',
+                  text:
+                    authContext?.entity?.obj?.is_deactivate === true
+                      ? 'Activate'
+                      : 'Deactivate',
                   style: 'destructive',
                   onPress: () => {
-                    // if (type === 'referee') {
-                    //   patchReferee();
-                    // }
-                    // if (type === 'scorekeeper') {
-                    //   patchScorekeeper();
-                    // }
-                    // if (type === 'player') {
-                    //   patchPlayerIn();
-                    // }
-                    deactivateSport();
+                    if (authContext?.entity?.obj?.is_deactivate === true) {
+                      activateAccount();
+                    } else {
+                      deactivateAccount();
+                    }
                   },
                 },
               ],
@@ -151,7 +197,6 @@ export default function DeactivateAccountScreen({navigation, route}) {
             // }
           }}
         />
-       
       </SafeAreaView>
     </>
   );
@@ -162,7 +207,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
-  
+
   descText: {
     marginLeft: 15,
     marginRight: 15,
@@ -171,10 +216,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  
 
   mailContainer: {
     flex: 1,
   },
-  
 });

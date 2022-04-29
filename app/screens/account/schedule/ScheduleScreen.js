@@ -5,7 +5,6 @@
 /* eslint-disable no-nested-ternary */
 import React, {
   useState,
-  useLayoutEffect,
   useRef,
   useEffect,
   useContext,
@@ -63,6 +62,10 @@ import * as Utility from '../../../utils/index';
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import MonthHeader from '../../../components/Schedule/Monthheader';
 import {getGameIndex} from '../../../api/elasticSearch';
+import TCAccountDeactivate from '../../../components/TCAccountDeactivate';
+import {userActivate} from '../../../api/Users';
+import {groupUnpaused} from '../../../api/Groups';
+import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 
 let selectedCalendarDate = moment(new Date());
 
@@ -127,55 +130,30 @@ export default function ScheduleScreen({navigation, route}) {
   const [blockedGroups, setBlockedGroups] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.eventTitleTextStyle}>Schedule</Text>
-      ),
-      headerLeft: () => (
-        <TouchableOpacity
-          style={{marginLeft: 15}}
-          onPress={() => {
-            if (route?.params?.isBackVisible) {
-              navigation.navigate('HomeScreen', {
-                uid: route?.params?.uid,
-                role: route?.params?.role,
-                backButtonVisible: true,
-                menuBtnVisible: false,
-              });
-            }
-          }}>
-          <FastImage
-            source={
-              route?.params?.isBackVisible
-                ? images.backArrow
-                : images.tc_message_top_icon
-            }
-            resizeMode={'contain'}
-            style={
-              route?.params?.isBackVisible
-                ? styles.backStyle
-                : styles.backImageStyle
-            }
-          />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <TouchableOpacity onPress={onThreeDotPress}>
-          <Image
-            source={images.scheduleThreeDot}
-            style={styles.headerRightImg}
-          />
-        </TouchableOpacity>
-      ),
-      headerStyle: {
-        // shadowColor: 'transparent',
-        shadowOpacity: 0,
-        backgroundColor: '#fff',
-        borderBottomWidth: 0,
-      },
-    });
-  }, [authContext.entity.role, authContext.entity.uid, navigation]);
+  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
+  const [pointEvent, setPointEvent] = useState('auto');
+
+  useEffect(() => {
+    setIsAccountDeactivated(false);
+    setPointEvent('auto');
+    if (isFocused) {
+      console.log('its called....', authContext.entity.role);
+      if (authContext?.entity?.obj?.is_pause === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+      if (authContext?.entity?.obj?.is_deactivate === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+    }
+  }, [
+    authContext.entity?.obj.entity_type,
+    authContext.entity?.obj?.is_deactivate,
+    authContext.entity?.obj?.is_pause,
+    authContext.entity.role,
+    isFocused,
+  ]);
 
   useEffect(() => {
     getBlockedSlots();
@@ -739,10 +717,164 @@ export default function ScheduleScreen({navigation, route}) {
     onReachedCalenderTop(event);
   };
 
+  const unPauseGroup = () => {
+    setloading(true);
+    groupUnpaused(authContext)
+      .then((response) => {
+        setIsAccountDeactivated(false);
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+          });
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const reActivateUser = () => {
+    setloading(true);
+    userActivate(authContext)
+      .then((response) => {
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+          });
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   return (
-    <>
-      <View style={styles.separateLine} />
-      <View style={styles.mainContainer} needsOffscreenAlphaCompositing>
+    <View style={{flex: 1}}>
+      <View
+        style={{opacity: isAccountDeactivated ? 0.5 : 1}}
+        pointerEvents={pointEvent}>
+        <Header
+          leftComponent={
+            <TouchableOpacity
+              onPress={() => {
+                if (route?.params?.isBackVisible) {
+                  navigation.navigate('HomeScreen', {
+                    uid: route?.params?.uid,
+                    role: route?.params?.role,
+                    backButtonVisible: true,
+                    menuBtnVisible: false,
+                  });
+                }
+              }}>
+              <FastImage
+                source={
+                  route?.params?.isBackVisible
+                    ? images.backArrow
+                    : images.tc_message_top_icon
+                }
+                resizeMode={'contain'}
+                style={
+                  route?.params?.isBackVisible
+                    ? styles.backStyle
+                    : styles.backImageStyle
+                }
+              />
+            </TouchableOpacity>
+          }
+          showBackgroundColor={true}
+          centerComponent={
+            <Text style={styles.eventTitleTextStyle}>Schedule</Text>
+          }
+          rightComponent={
+            <TouchableOpacity onPress={onThreeDotPress}>
+              <Image
+                source={images.scheduleThreeDot}
+                style={styles.headerRightImg}
+              />
+            </TouchableOpacity>
+          }
+        />
+        <View style={styles.separateLine} />
+      </View>
+      {isAccountDeactivated && (
+        <TCAccountDeactivate
+          type={
+            authContext?.entity?.obj?.is_pause === true
+              ? 'pause'
+              : authContext?.entity?.obj?.under_terminate === true
+              ? 'terminate'
+              : 'deactivate'
+          }
+          onPress={() => {
+            Alert.alert(
+              `Are you sure you want to ${
+                authContext?.entity?.obj?.is_pause === true
+                  ? 'unpause'
+                  : 'reactivate'
+              } this account?`,
+              '',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text:
+                    authContext?.entity?.obj?.is_pause === true
+                      ? 'Unpause'
+                      : 'Reactivate',
+                  style: 'destructive',
+                  onPress: () => {
+                    if (authContext?.entity?.obj?.is_pause === true) {
+                      unPauseGroup();
+                    } else {
+                      reActivateUser();
+                    }
+                  },
+                },
+              ],
+              {cancelable: false},
+            );
+          }}
+        />
+      )}
+      <View
+        style={[
+          styles.mainContainer,
+          {opacity: isAccountDeactivated ? 0.5 : 1},
+        ]}
+        pointerEvents={pointEvent}
+        needsOffscreenAlphaCompositing>
         <View style={{flex: 1}}>
           <View
             style={{
@@ -1248,7 +1380,7 @@ export default function ScheduleScreen({navigation, route}) {
           }}
         />
       </View>
-    </>
+    </View>
   );
 }
 
@@ -1304,7 +1436,6 @@ const styles = StyleSheet.create({
     height: 25,
     resizeMode: 'contain',
     width: 25,
-    marginRight: 15,
   },
   eventTitleTextStyle: {
     fontSize: 16,

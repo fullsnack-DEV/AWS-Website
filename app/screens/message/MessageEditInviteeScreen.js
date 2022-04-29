@@ -42,6 +42,7 @@ const MessageEditInviteeScreen = ({ navigation, route }) => {
   const [leaguesData, setLeaguesData] = useState([]);
   const [searchData, setSearchData] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [dialog] = useState(route?.params?.dialog);
 
   useEffect(() => {
     const setParticipants = async () => {
@@ -158,8 +159,8 @@ const MessageEditInviteeScreen = ({ navigation, route }) => {
 
   const toggleSelection = useCallback((isChecked, user) => {
     if (isChecked) {
-      if (route?.params?.dialog) {
-        const fromExistingUser = route?.params?.dialog?.occupantsIds?.findIndex((item) => item === user?.id)
+      if (dialog) {
+        const fromExistingUser =dialog?.occupantsIds?.findIndex((item) => item === user?.id)
         if (!route?.params?.isAdmin && fromExistingUser !== -1) {
           Alert.alert('TownsCup', 'Group admin can remove user')
         } else {
@@ -171,7 +172,7 @@ const MessageEditInviteeScreen = ({ navigation, route }) => {
       selectedInvitees.push(user);
     }
     setSelectedInvitees([...selectedInvitees]);
-  }, [route?.params?.dialog, route?.params?.isAdmin, selectedInvitees]);
+  }, [dialog, route?.params?.isAdmin, selectedInvitees]);
 
   const renderSelectedContactList = useCallback(({ item }) => {
     const customData = item && item.customData ? JSON.parse(item.customData) : {};
@@ -260,26 +261,27 @@ const MessageEditInviteeScreen = ({ navigation, route }) => {
   }, [clubsData, currentTab, inviteeData, leaguesData, loading, peopleData, renderSingleTab, searchData, searchText, teamsData])
 
   const handlePress = useCallback(() => {
-    if (route?.params?.dialog) {
+    if (dialog) {
       const occupantsIds = [];
       selectedInvitees.filter((item) => occupantsIds.push(item.id))
       const participantsIds = [];
       const participants = route?.params?.participants ?? [];
       participants.filter((item) => participantsIds.push(item.id))
-      const dialogId = route?.params?.dialog?.id;
+      const dialogId = dialog?.id;
       const myQbUserID = authContext?.entity?.QB?.id;
 
       const removeUsers = participantsIds.filter((item) => item !== myQbUserID && !occupantsIds.includes(item));
       const addUsers = occupantsIds.filter((item) => myQbUserID !== item && !participantsIds.includes(item));
       QBupdateDialogInvitees(dialogId, addUsers, removeUsers).then((res) => {
         setSelectedInvitees([]);
-        route.params.onPressDone(res);
-        navigation.navigate('MessageChat', {dialog : route?.params?.dialog});
+        console.log('RRRRRRRRRR',res);
+        
+          navigation.navigate('MessageChat', {res});
       }).catch((error) => {
         console.log(error);
       })
     }
-  }, [authContext?.entity?.QB?.id, navigation, route.params, selectedInvitees])
+  }, [authContext?.entity?.QB?.id, dialog, navigation, route?.params?.participants, selectedInvitees])
 
   const renderHeader = useMemo(() => (
     <Header

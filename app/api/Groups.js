@@ -208,3 +208,11 @@ export const groupUnpaused = (authContext) =>
     authContext,
   });
 
+
+
+export const groupTerminate = (authContext) =>
+  makeAPIRequest({
+    method: 'delete',
+    url: `${Config.BASE_URL}/groups/terminate`,
+    authContext,
+  });

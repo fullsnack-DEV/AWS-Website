@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable array-callback-return */
 import React, {
   useEffect,
@@ -5,7 +6,6 @@ import React, {
   useContext,
   useRef,
   useCallback,
-  useMemo,
 } from 'react';
 import {
   View,
@@ -44,6 +44,7 @@ import {
   getTeamsOfClub,
   getGroupRequest,
   getTeamPendingRequest,
+  groupUnpaused,
 } from '../../api/Groups';
 
 import {getUnreadCount} from '../../api/Notificaitons';
@@ -57,6 +58,8 @@ import {
   QBconnectAndSubscribe,
   QBlogin,
   QBLogout,
+  getQBAccountType,
+  QBupdateUser,
 } from '../../utils/QuickBlox';
 import strings from '../../Constants/String';
 import Header from '../../components/Home/Header';
@@ -64,6 +67,7 @@ import TCGradientButton from '../../components/TCGradientButton';
 import TCThinDivider from '../../components/TCThinDivider';
 import {getSportIcon} from '../../utils/index';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
+import {userActivate} from '../../api/Users';
 
 export default function AccountScreen({navigation}) {
   const scrollRef = useRef();
@@ -82,7 +86,7 @@ export default function AccountScreen({navigation}) {
   const [club, setClub] = useState([]);
   // eslint-disable-next-line no-unused-vars
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-
+  const [pointEvent, setPointEvent] = useState('auto');
   const [sportsSelection, setSportsSelection] = useState();
   const [sports, setSports] = useState('');
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
@@ -164,39 +168,67 @@ export default function AccountScreen({navigation}) {
         {opetions: 'Transactions'},
       ],
     },
+    {key: 'Setting'},
     {key: 'Log out'},
   ];
 
-  const renderTopRightNotificationButton = useMemo(
+  useEffect(() => {
+    setIsAccountDeactivated(false);
+    setPointEvent('auto');
+    if (isFocused) {
+      console.log('its called....', authContext.entity.role);
+      if (authContext?.entity?.obj?.is_pause === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+      if (authContext?.entity?.obj?.is_deactivate === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+    }
+  }, [
+    authContext.entity?.obj?.is_deactivate,
+    authContext.entity?.obj?.is_pause,
+    authContext.entity.role,
+    pointEvent,
+    isAccountDeactivated,
+    isFocused,
+  ]);
+
+  const renderTopRightNotificationButton = useCallback(
     () => (
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate('NotificationsListScreen');
-        }}
-        hitSlop={Utility.getHitSlop(15)}>
-        <ImageBackground
-          source={
-            notificationCounter > 0
-              ? images.notificationBell
-              : images.tab_notification
-          }
-          style={styles.headerRightImg}>
-          {notificationCounter > 0 && (
-            <View
-              style={
-                notificationCounter > 9
-                  ? styles.eclipseBadge
-                  : styles.roundBadge
-              }>
-              <Text style={styles.notificationCounterStyle}>
-                {notificationCounter > 9 ? '9+' : notificationCounter}
-              </Text>
-            </View>
-          )}
-        </ImageBackground>
-      </TouchableOpacity>
+      <View
+        style={{opacity: isAccountDeactivated ? 0.5 : 1}}
+        pointerEvents={pointEvent}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('NotificationsListScreen');
+          }}
+          hitSlop={Utility.getHitSlop(15)}>
+          <ImageBackground
+            source={
+              notificationCounter > 0
+                ? images.notificationBell
+                : images.tab_notification
+            }
+            style={styles.headerRightImg}>
+            {notificationCounter > 0 && (
+              <View
+                style={
+                  notificationCounter > 9
+                    ? styles.eclipseBadge
+                    : styles.roundBadge
+                }>
+                <Text style={styles.notificationCounterStyle}>
+                  {notificationCounter > 9 ? '9+' : notificationCounter}
+                </Text>
+              </View>
+            )}
+          </ImageBackground>
+        </TouchableOpacity>
+      </View>
     ),
-    [navigation, notificationCounter],
+    [isAccountDeactivated, navigation, notificationCounter, pointEvent],
   );
 
   const getData = () =>
@@ -421,7 +453,7 @@ export default function AccountScreen({navigation}) {
       console.log('switch profile Called..');
 
       let currentEntity = authContext.entity;
-      delete currentEntity?.QB;
+      // delete currentEntity?.QB;
       if (item?.entity_type === 'player' || item?.entity_type === 'user') {
         if (currentEntity.obj.entity_type === 'team') {
           team.push(currentEntity.obj);
@@ -1019,45 +1051,52 @@ export default function AccountScreen({navigation}) {
   const renderMenuItems = useCallback(
     (rowItem, rowId, sectionId) => (
       <View>
-        {authContext.entity.role === 'user' && sectionId === 4 && (
-          <FlatList
-            style={{marginVertical: 10}}
-            data={authContext?.entity?.obj?.registered_sports?.filter(
-              (obj) => obj?.sport && obj?.sport_type,
-            )}
-            keyExtractor={keyExtractorID}
-            renderItem={renderSportsList}
-            ItemSeparatorComponent={() => (
-              <View style={styles.subItemSeparator} />
-            )}
-            scrollEnabled={false}
-          />
-        )}
-        {authContext.entity.role === 'user' && sectionId === 5 && (
-          <FlatList
-            style={{marginVertical: 10}}
-            data={authContext?.entity?.obj?.referee_data}
-            keyExtractor={keyExtractorID}
-            renderItem={renderRefereesList}
-            ItemSeparatorComponent={() => (
-              <View style={styles.subItemSeparator} />
-            )}
-            scrollEnabled={false}
-          />
-        )}
-        {authContext.entity.role === 'user' && sectionId === 6 && (
-          <FlatList
-            style={{marginVertical: 10}}
-            data={authContext?.entity?.obj?.scorekeeper_data}
-            keyExtractor={keyExtractorID}
-            renderItem={renderScorekeepersList}
-            ItemSeparatorComponent={() => (
-              <View style={styles.subItemSeparator} />
-            )}
-            scrollEnabled={false}
-          />
-        )}
         {authContext.entity.role === 'user' &&
+          sectionId === 4 &&
+          !isAccountDeactivated && (
+            <FlatList
+              style={{marginVertical: 10}}
+              data={authContext?.entity?.obj?.registered_sports?.filter(
+                (obj) => obj?.sport && obj?.sport_type,
+              )}
+              keyExtractor={keyExtractorID}
+              renderItem={renderSportsList}
+              ItemSeparatorComponent={() => (
+                <View style={styles.subItemSeparator} />
+              )}
+              scrollEnabled={false}
+            />
+          )}
+        {authContext.entity.role === 'user' &&
+          sectionId === 5 &&
+          !isAccountDeactivated && (
+            <FlatList
+              style={{marginVertical: 10}}
+              data={authContext?.entity?.obj?.referee_data}
+              keyExtractor={keyExtractorID}
+              renderItem={renderRefereesList}
+              ItemSeparatorComponent={() => (
+                <View style={styles.subItemSeparator} />
+              )}
+              scrollEnabled={false}
+            />
+          )}
+        {authContext.entity.role === 'user' &&
+          sectionId === 6 &&
+          !isAccountDeactivated && (
+            <FlatList
+              style={{marginVertical: 10}}
+              data={authContext?.entity?.obj?.scorekeeper_data}
+              keyExtractor={keyExtractorID}
+              renderItem={renderScorekeepersList}
+              ItemSeparatorComponent={() => (
+                <View style={styles.subItemSeparator} />
+              )}
+              scrollEnabled={false}
+            />
+          )}
+        {authContext.entity.role === 'user' &&
+          !isAccountDeactivated &&
           (sectionId === 7 || sectionId === 8) && (
             <FlatList
               style={{marginVertical: 10}}
@@ -1070,90 +1109,98 @@ export default function AccountScreen({navigation}) {
               scrollEnabled={false}
             />
           )}
-        {authContext.entity.role === 'club' && sectionId === 2 && (
-          <FlatList
-            style={{marginVertical: 10}}
-            data={teamList}
-            keyExtractor={keyExtractorID}
-            renderItem={renderTeamsList}
-            ItemSeparatorComponent={() => (
-              <View style={styles.subItemSeparator} />
-            )}
-            scrollEnabled={false}
-          />
-        )}
-
-        <TouchableWithoutFeedback
-          style={styles.listContainer}
-          onPress={() => {
-            handleOptions(rowItem.opetions);
-          }}>
-          {rowItem.opetions === 'Add a sport' && (
-            <Image source={images.addSport} style={styles.subMenuItem} />
-          )}
-          {rowItem.opetions === 'Register as a referee' && (
-            <Image source={images.registerReferee} style={styles.subMenuItem} />
-          )}
-          {rowItem.opetions === 'Register as a scorekeeper' && (
-            <Image
-              source={images.registerScorekeeper}
-              style={styles.subMenuItem}
+        {authContext.entity.role === 'club' &&
+          sectionId === 2 &&
+          !isAccountDeactivated && (
+            <FlatList
+              style={{marginVertical: 10}}
+              data={teamList}
+              keyExtractor={keyExtractorID}
+              renderItem={renderTeamsList}
+              ItemSeparatorComponent={() => (
+                <View style={styles.subItemSeparator} />
+              )}
+              scrollEnabled={false}
             />
           )}
-          {rowItem.opetions === 'Create Team' && (
-            <Image source={images.createTeam} style={styles.subMenuItem} />
-          )}
-          {rowItem.opetions === 'Create Club' && (
-            <Image source={images.createClub} style={styles.subMenuItem} />
-          )}
-          {rowItem.opetions === 'Create a League' && (
-            <Image source={images.createLeague} style={styles.subMenuItem} />
-          )}
-          <View style={{marginVertical: 5}}>
-            {rowItem.opetions === 'Payment Method' && (
-              <Image
-                source={images.Payment_method}
-                style={{...styles.subMenuItem}}
-              />
-            )}
 
-            {rowItem.opetions === 'Payout Method' && (
+        {!isAccountDeactivated && (
+          <TouchableWithoutFeedback
+            style={styles.listContainer}
+            onPress={() => {
+              handleOptions(rowItem.opetions);
+            }}>
+            {rowItem.opetions === 'Add a sport' && (
+              <Image source={images.addSport} style={styles.subMenuItem} />
+            )}
+            {rowItem.opetions === 'Register as a referee' && (
               <Image
-                source={images.Payout_method}
-                style={{...styles.subMenuItem}}
+                source={images.registerReferee}
+                style={styles.subMenuItem}
               />
             )}
-            {rowItem.opetions === 'Invoicing' && (
+            {rowItem.opetions === 'Register as a scorekeeper' && (
               <Image
-                source={images.Invoicing}
-                style={{...styles.subMenuItem}}
+                source={images.registerScorekeeper}
+                style={styles.subMenuItem}
               />
             )}
-            {rowItem.opetions === 'Invoices' && (
-              <Image
-                source={images.Invoicing}
-                style={{...styles.subMenuItem}}
-              />
+            {rowItem.opetions === 'Create Team' && (
+              <Image source={images.createTeam} style={styles.subMenuItem} />
             )}
-            {rowItem.opetions === 'Transactions' && (
-              <Image
-                source={images.Transations}
-                style={{...styles.subMenuItem}}
-              />
+            {rowItem.opetions === 'Create Club' && (
+              <Image source={images.createClub} style={styles.subMenuItem} />
             )}
-          </View>
-          <Text style={styles.listItems}>{rowItem.opetions}</Text>
-          <Image source={images.nextArrow} style={styles.nextArrow} />
-        </TouchableWithoutFeedback>
+            {rowItem.opetions === 'Create a League' && (
+              <Image source={images.createLeague} style={styles.subMenuItem} />
+            )}
+            <View style={{marginVertical: 5}}>
+              {rowItem.opetions === 'Payment Method' && (
+                <Image
+                  source={images.Payment_method}
+                  style={{...styles.subMenuItem}}
+                />
+              )}
+
+              {rowItem.opetions === 'Payout Method' && (
+                <Image
+                  source={images.Payout_method}
+                  style={{...styles.subMenuItem}}
+                />
+              )}
+              {rowItem.opetions === 'Invoicing' && (
+                <Image
+                  source={images.Invoicing}
+                  style={{...styles.subMenuItem}}
+                />
+              )}
+              {rowItem.opetions === 'Invoices' && (
+                <Image
+                  source={images.Invoicing}
+                  style={{...styles.subMenuItem}}
+                />
+              )}
+              {rowItem.opetions === 'Transactions' && (
+                <Image
+                  source={images.Transations}
+                  style={{...styles.subMenuItem}}
+                />
+              )}
+            </View>
+            <Text style={styles.listItems}>{rowItem.opetions}</Text>
+            <Image source={images.nextArrow} style={styles.nextArrow} />
+          </TouchableWithoutFeedback>
+        )}
       </View>
     ),
     [
-      authContext.entity?.auth?.user?.referee_data,
-      authContext.entity?.auth?.user?.registered_sports,
-      authContext.entity?.auth?.user?.scorekeeper_data,
+      authContext.entity?.obj?.referee_data,
+      authContext.entity?.obj?.registered_sports,
+      authContext.entity?.obj?.scorekeeper_data,
       authContext.entity.role,
       clubList,
       handleOptions,
+      isAccountDeactivated,
       keyExtractorID,
       renderEntityList,
       renderRefereesList,
@@ -1172,30 +1219,6 @@ export default function AccountScreen({navigation}) {
   } else {
     placeHolder = images.profilePlaceHolder;
   }
-  const renderTopHeader = useMemo(
-    () => (
-      <>
-        <Header
-          leftComponent={
-            <View>
-              <FastImage
-                source={images.tc_message_top_icon}
-                resizeMode={'contain'}
-                style={styles.backImageStyle}
-              />
-            </View>
-          }
-          showBackgroundColor={true}
-          centerComponent={
-            <Text style={styles.eventTitleTextStyle}>Account</Text>
-          }
-          rightComponent={renderTopRightNotificationButton}
-        />
-        <View style={styles.separateLine} />
-      </>
-    ),
-    [renderTopRightNotificationButton],
-  );
 
   const onNextPressed = () => {
     setIsRulesModalVisible(false);
@@ -1266,16 +1289,128 @@ export default function AccountScreen({navigation}) {
     </TouchableOpacity>
   );
 
+  const unPauseGroup = () => {
+    setloading(true);
+    groupUnpaused(authContext)
+      .then((response) => {
+        setIsAccountDeactivated(false);
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+          });
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const reActivateUser = () => {
+    setloading(true);
+    userActivate(authContext)
+      .then((response) => {
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+          });
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
 
-      {renderTopHeader}
+      <Header
+        leftComponent={
+          <View>
+            <FastImage
+              source={images.tc_message_top_icon}
+              resizeMode={'contain'}
+              style={styles.backImageStyle}
+            />
+          </View>
+        }
+        showBackgroundColor={true}
+        centerComponent={
+          <Text style={styles.eventTitleTextStyle}>Account</Text>
+        }
+        rightComponent={renderTopRightNotificationButton()}
+      />
+      <View style={styles.separateLine} />
+
       {isAccountDeactivated && (
         <TCAccountDeactivate
-          type={'terminate'}
+          type={
+            authContext?.entity?.obj?.is_pause === true
+              ? 'pause'
+              : authContext?.entity?.obj?.under_terminate === true
+              ? 'terminate'
+              : 'deactivate'
+          }
           onPress={() => {
-            Alert.alert('This is under development.');
+            Alert.alert(
+              `Are you sure you want to ${
+                authContext?.entity?.obj?.is_pause === true
+                  ? 'unpause'
+                  : 'reactivate'
+              } this account?`,
+              '',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text:
+                    authContext?.entity?.obj?.is_pause === true
+                      ? 'Unpause'
+                      : 'Reactivate',
+                  style: 'destructive',
+                  onPress: () => {
+                    if (authContext?.entity?.obj?.is_pause === true) {
+                      unPauseGroup();
+                    } else {
+                      reActivateUser();
+                    }
+                  },
+                },
+              ],
+              {cancelable: false},
+            );
           }}
         />
       )}
@@ -1578,8 +1713,23 @@ export default function AccountScreen({navigation}) {
           renderSectionHeaderX={(section, sectionID, isSectionOpen) => {
             const secData = userMenu?.find((item) => item.key === section);
             return (
-              <>
+              <View
+                style={{
+                  opacity:
+                    isAccountDeactivated &&
+                    section !== 'Log out' &&
+                    section !== 'Setting' &&
+                    section !== 'Setting & Privacy'
+                      ? 0.5
+                      : 1,
+                }}>
                 <TouchableWithoutFeedback
+                  disabled={
+                    isAccountDeactivated &&
+                    section !== 'Log out' &&
+                    section !== 'Setting' &&
+                    section !== 'Setting & Privacy'
+                  }
                   style={styles.listContainer}
                   onPress={() => {
                     handleSections(section);
@@ -1704,7 +1854,7 @@ export default function AccountScreen({navigation}) {
                     </>
                   )}
                 </TouchableWithoutFeedback>
-              </>
+              </View>
             );
           }}
         />
@@ -1728,91 +1878,6 @@ export default function AccountScreen({navigation}) {
           scrollEnabled={false}
         />
         <View style={styles.separatorView} />
-
-        {/* Sport created modal */}
-        {/* <Modal
-          isVisible={isSportCreateModalVisible}
-          backdropColor="black"
-          style={{
-            margin: 0,
-            justifyContent: 'flex-end',
-            backgroundColor: colors.blackOpacityColor,
-            flex: 1,
-          }}
-          hasBackdrop
-          onBackdropPress={() => setIsSportCreateModalVisible(false)}
-          backdropOpacity={0}>
-            
-          <View style={styles.modalContainerViewStyle}>
-            <Image style={styles.background} source={images.orangeLayer} />
-            <Image style={styles.background} source={images.entityCreatedBG} />
-            <TouchableOpacity
-              onPress={() => setIsSportCreateModalVisible(false)}
-              style={{ alignSelf: 'flex-end' }}>
-              <Image
-                source={images.cancelWhite}
-                style={{
-                  marginTop: 25,
-                  marginRight: 25,
-                  height: 15,
-                  width: 15,
-                  resizeMode: 'contain',
-                  tintColor: colors.whiteColor,
-                }}
-              />
-            </TouchableOpacity>
-
-            <View
-              style={{
-                alignItems: 'center',
-                flex: 1,
-                justifyContent: 'center',
-              }}>
-              <View
-                style={{
-                  height: 77,
-                  width: 77,
-                  backgroundColor: colors.whiteColor,
-                  borderRadius: 154,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Image
-                  source={images.profilePlaceHolder}
-                  style={styles.groupsImg}
-                />
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}></View>
-              <Text style={styles.foundText}>
-                {`${route?.params?.createdSportName}\nadded as your sports`}
-              </Text>
-            </View>
-            <Text style={styles.manageChallengeDetailTitle}>
-              {strings.manageChallengeDetailText}
-            </Text>
-            <TouchableOpacity
-              style={styles.goToProfileButton}
-              onPress={() => {
-                // Alert.alert('Manage challenge');
-                setIsSportCreateModalVisible(false);
-                navigation.navigate('ManageChallengeScreen', {
-                  sportName: route?.params?.createdSportName,
-                  sportType: route?.params?.sportType,
-                });
-              }}>
-              <Text style={styles.goToProfileTitle}>
-                {strings.manageChallengeText}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </Modal> */}
-
-        {/* Sport created modal */}
 
         {/* Rules notes modal */}
         <Modal
@@ -2421,5 +2486,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: colors.lightBlackColor,
   },
- 
 });
