@@ -15,11 +15,11 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  
 } from 'react-native';
 
 import firebase from '@react-native-firebase/app';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {useIsFocused} from '@react-navigation/native';
 
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
@@ -29,13 +29,39 @@ import Header from '../../../components/Home/Header';
 
 export default function UserSettingPrivacyScreen({navigation}) {
   const authContext = useContext(AuthContext);
+  const isFocused = useIsFocused();
 
+  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
+  const [pointEvent, setPointEvent] = useState('auto');
   const [userSetting, setUserSetting] = useState();
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, [navigation]);
+
+  useEffect(() => {
+    setIsAccountDeactivated(false);
+    setPointEvent('auto');
+    if (isFocused) {
+      console.log('its called....', authContext.entity.role);
+      if (authContext?.entity?.obj?.is_pause === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+      if (authContext?.entity?.obj?.is_deactivate === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+    }
+  }, [
+    authContext.entity?.obj.entity_type,
+    authContext.entity?.obj?.is_deactivate,
+    authContext.entity?.obj?.is_pause,
+    authContext.entity.role,
+    isFocused,
+    pointEvent,
+  ]);
 
   const getUserSettingMenu = useCallback(() => {
     checkUserIsRegistratedOrNotWithFirebase(authContext.entity.obj.email)
@@ -106,13 +132,20 @@ export default function UserSettingPrivacyScreen({navigation}) {
     }
   };
 
-  const renderMenu = ({item}) => (
+  const renderMenu = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
       }}>
-      <View style={{flexDirection: 'row'}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          opacity: isAccountDeactivated && index <= 3 ? 0.5 : 1,
+        }}
+        pointerEvents={
+          isAccountDeactivated && index <= 3 ? pointEvent : 'auto'
+        }>
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Currency' && authContext?.entity?.obj?.currency_type && (
           <Text style={styles.currencyTypeStyle}>

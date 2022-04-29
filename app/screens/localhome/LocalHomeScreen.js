@@ -6,13 +6,11 @@
 /* eslint-disable no-underscore-dangle */
 import React, {
   useCallback,
-  Fragment,
   useState,
   useContext,
   useEffect,
   useRef,
-  useLayoutEffect,
-  useMemo
+  useMemo,
 } from 'react';
 import {
   View,
@@ -64,14 +62,18 @@ import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
 import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
-import {getUserSettings} from '../../api/Users';
+import {getUserSettings, userActivate} from '../../api/Users';
 import TCUpcomingMatchCard from '../../components/TCUpcomingMatchCard';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import TCShortsPlaceholder from '../../components/TCShortsPlaceholder';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import { ImageUploadContext } from '../../context/ImageUploadContext';
-import { createPost } from '../../api/NewsFeeds';
+import {ImageUploadContext} from '../../context/ImageUploadContext';
+import {createPost} from '../../api/NewsFeeds';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
+import Header from '../../components/Home/Header';
+import {groupUnpaused} from '../../api/Groups';
+import ActivityLoader from '../../components/loader/ActivityLoader';
+import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 
 const defaultPageSize = 5;
 export default function LocalHomeScreen({navigation, route}) {
@@ -115,67 +117,39 @@ export default function LocalHomeScreen({navigation, route}) {
   const [referees, setReferees] = useState([]);
   const [scorekeepers, setScorekeepers] = useState([]);
 
+  const [pointEvent, setPointEvent] = useState('auto');
+
   const [filters, setFilters] = useState({
     sport: selectedSport,
     sport_type: sportType,
     location,
   });
 
-  console.log('route?.params?.locationText::=>', route?.params?.locationText);
+  console.log('Auth Object', authContext.entity.obj);
 
   console.log('authContextttt::=>', authContext.entity.role);
-
-  
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: () => (
-        <TouchableOpacity
-          style={styles.titleHeaderView}
-          onPress={() => {
-            setLocationPopup(true);
-          }}
-          hitSlop={getHitSlop(15)}>
-          <Text style={styles.headerTitle}>
-            {location?.charAt?.(0)?.toUpperCase() + location?.slice(1)}
-          </Text>
-          <Image source={images.home_gps} style={styles.gpsIconStyle} />
-        </TouchableOpacity>
-      ),
-      headerLeft: () => (
-        <View style={{marginLeft: 15}}>
-          <FastImage
-            source={images.tc_message_top_icon}
-            resizeMode={'contain'}
-            style={styles.backImageStyle}
-          />
-        </View>
-      ),
-
-      headerRight: () => (
-        <View style={styles.rightHeaderView}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('EntitySearchScreen', {
-                sportsList: customSports,
-              });
-            }}>
-            <Image source={images.home_search} style={styles.townsCupIcon} />
-          </TouchableOpacity>
-          {/* <TouchableOpacity onPress={() => setSettingPopup(true)}>
-            <Image source={images.home_setting} style={styles.townsCupIcon} />
-          </TouchableOpacity> */}
-        </View>
-      ),
-
-      headerStyle: {
-        // shadowColor: 'transparent',
-        shadowOpacity: 0,
-        backgroundColor: '#fff',
-        borderBottomWidth: 0,
-      },
-    });
-  }, [authContext.entity?.role, authContext.entity?.uid, location, navigation]);
+  useEffect(() => {
+    setIsAccountDeactivated(false);
+    setPointEvent('auto');
+    if (isFocused) {
+      console.log('its called....', authContext.entity.role);
+      if (authContext?.entity?.obj?.is_pause === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+      if (authContext?.entity?.obj?.is_deactivate === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+    }
+  }, [
+    authContext.entity?.obj.entity_type,
+    authContext.entity?.obj?.is_deactivate,
+    authContext.entity?.obj?.is_pause,
+    authContext.entity.role,
+    isFocused,
+    pointEvent,
+  ]);
 
   useEffect(() => {
     if (isFocused) {
@@ -195,11 +169,10 @@ export default function LocalHomeScreen({navigation, route}) {
   }, [authContext, isFocused]);
 
   useEffect(() => {
-   
-      getSportsList(authContext).then(async (res) => {
-        console.log('sports list',res.payload );
-        await authContext.setSports([...res.payload]);
-        const sport = [];
+    getSportsList(authContext).then(async (res) => {
+      console.log('sports list', res.payload);
+      await authContext.setSports([...res.payload]);
+      const sport = [];
       res.payload.map((item) =>
         sport.push({
           label: item?.sport_name,
@@ -207,8 +180,7 @@ export default function LocalHomeScreen({navigation, route}) {
         }),
       );
       setCustomSports([...sport]);
-      });
-   
+    });
   }, []);
 
   useEffect(() => {
@@ -424,6 +396,7 @@ export default function LocalHomeScreen({navigation, route}) {
                   must: [
                     {match: {'setting.availibility': 'On'}},
                     {term: {entity_type: 'team'}},
+                    {term: {is_pause: false}},
                   ],
                 },
               },
@@ -839,30 +812,34 @@ export default function LocalHomeScreen({navigation, route}) {
   );
   const renderChallengerItems = useCallback(
     ({item}) => {
-console.log('ttttt',item);
-return (
-  <View
-    style={{marginBottom: 15, flex: 1, backgroundColor: colors.whiteColor}}>
-    <TCChallengerCard
-      data={item}
-      entityType={item.entity_type}
-      selectedSport={selectedSport}
-      sportType={sportType}
-      onPress={() => {
-        navigation.navigate('HomeScreen', {
-          uid: ['user', 'player']?.includes(item?.entity_type)
-            ? item?.user_id
-            : item?.group_id,
-          role: ['user', 'player']?.includes(item?.entity_type)
-            ? 'user'
-            : item.entity_type,
-          backButtonVisible: true,
-          menuBtnVisible: false,
-        });
-      }}
-    />
-  </View>
-)
+      console.log('ttttt', item);
+      return (
+        <View
+          style={{
+            marginBottom: 15,
+            flex: 1,
+            backgroundColor: colors.whiteColor,
+          }}>
+          <TCChallengerCard
+            data={item}
+            entityType={item.entity_type}
+            selectedSport={selectedSport}
+            sportType={sportType}
+            onPress={() => {
+              navigation.navigate('HomeScreen', {
+                uid: ['user', 'player']?.includes(item?.entity_type)
+                  ? item?.user_id
+                  : item?.group_id,
+                role: ['user', 'player']?.includes(item?.entity_type)
+                  ? 'user'
+                  : item.entity_type,
+                backButtonVisible: true,
+                menuBtnVisible: false,
+              });
+            }}
+          />
+        </View>
+      );
     },
     [navigation, selectedSport, sportType],
   );
@@ -989,13 +966,12 @@ return (
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
-
   const createPostAfterUpload = useCallback(
     (dataParams) => {
       console.log('create post -> feedsScreen');
       createPost(dataParams, authContext)
         .then((response) => {
-         console.log(response.payload);
+          console.log(response.payload);
         })
         .catch((e) => {
           Alert.alert('', e.messages);
@@ -1025,18 +1001,18 @@ return (
         }
       }
       if (postDesc.trim().length > 0 && data?.length === 0) {
-         dataParams = {
-           ...dataParams,
+        dataParams = {
+          ...dataParams,
           text: postDesc,
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
         };
-       
+
         createPostAfterUpload(dataParams);
       } else if (data) {
         const imageArray = data.map((dataItem) => dataItem);
-         dataParams = {
-           ...dataParams,
+        dataParams = {
+          ...dataParams,
           text: postDesc && postDesc,
           attachments: [],
           tagged: tagsOfEntity ?? [],
@@ -1053,7 +1029,6 @@ return (
     [authContext, createPostAfterUpload, imageUploadContext],
   );
 
-
   const onCreateTeamActionSheetItemPress = (index) => {
     if (index === 0) {
       navigation.navigate('CreateTeamForm1');
@@ -1067,67 +1042,216 @@ return (
       navigation.navigate('CreateTeamForm1');
     } else if (index === 1) {
       navigation.navigate('CreateClubForm1');
-    }else if (index === 2) {
+    } else if (index === 2) {
       Alert.alert('This is under development');
     }
   };
+
+  const unPauseGroup = () => {
+    setloading(true);
+    groupUnpaused(authContext)
+      .then((response) => {
+        setIsAccountDeactivated(false);
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+          });
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const reActivateUser = () => {
+    setloading(true);
+    userActivate(authContext)
+      .then((response) => {
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+          });
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   return (
-    <View style={{flex: 1}}>
-      <View style={styles.separateLine} />
-      {/* <ActivityLoader visible={loading} /> */}
-      <View style={styles.sportsListView}>
-        <FlatList
-          ref={refContainer}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={[
-            ...[
-              {
-                sport: 'All',
-              },
-            ],
-            ...sports,
-          ]}
-          keyExtractor={keyExtractor}
-          renderItem={sportsListView}
-          // initialScrollIndex={sports.indexOf(selectedSport)}
-          initialNumToRender={sports?.length}
-          onScrollToIndexFailed={(info) => {
-            const wait = new Promise((resolve) => setTimeout(resolve, 500));
-            wait.then(() => {
-              refContainer.current.scrollToIndex({
-                animated: true,
-                index: info.index,
+    <View>
+      <ActivityLoader visible={loading} />
+      <View
+        pointerEvents={pointEvent}
+        style={{opacity: isAccountDeactivated ? 0.5 : 1}}>
+        <Header
+          leftComponent={
+            <View>
+              <FastImage
+                source={images.tc_message_top_icon}
+                resizeMode={'contain'}
+                style={styles.backImageStyle}
+              />
+            </View>
+          }
+          showBackgroundColor={true}
+          centerComponent={
+            <TouchableOpacity
+              style={styles.titleHeaderView}
+              onPress={() => {
+                setLocationPopup(true);
+              }}
+              hitSlop={getHitSlop(15)}>
+              <Text style={styles.headerTitle}>
+                {location?.charAt?.(0)?.toUpperCase() + location?.slice(1)}
+              </Text>
+              <Image source={images.home_gps} style={styles.gpsIconStyle} />
+            </TouchableOpacity>
+          }
+          rightComponent={
+            <View style={styles.rightHeaderView}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('EntitySearchScreen', {
+                    sportsList: customSports,
+                  });
+                }}>
+                <Image
+                  source={images.home_search}
+                  style={styles.townsCupIcon}
+                />
+              </TouchableOpacity>
+              {/* <TouchableOpacity onPress={() => setSettingPopup(true)}>
+            <Image source={images.home_setting} style={styles.townsCupIcon} />
+          </TouchableOpacity> */}
+            </View>
+          }
+        />
+        <View style={styles.separateLine} />
+        <View style={styles.sportsListView}>
+          <FlatList
+            ref={refContainer}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            data={[
+              ...[
+                {
+                  sport: 'All',
+                },
+              ],
+              ...sports,
+            ]}
+            keyExtractor={keyExtractor}
+            renderItem={sportsListView}
+            // initialScrollIndex={sports.indexOf(selectedSport)}
+            initialNumToRender={sports?.length}
+            onScrollToIndexFailed={(info) => {
+              const wait = new Promise((resolve) => setTimeout(resolve, 500));
+              wait.then(() => {
+                refContainer.current.scrollToIndex({
+                  animated: true,
+                  index: info.index,
+                });
               });
-            });
-          }}
-          style={{
-            width: '100%',
-            height: 50,
-            alignContent: 'center',
+            }}
+            style={{
+              width: '100%',
+              height: 50,
+              alignContent: 'center',
+            }}
+          />
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('SportSettingScreen', {
+                sports,
+              });
+            }}>
+            <Image
+              source={images.threeDotIcon}
+              style={styles.townsCupthreeDotIcon}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {isAccountDeactivated && (
+        <TCAccountDeactivate
+          type={
+            authContext?.entity?.obj?.is_pause === true
+            ? 'pause'
+            : authContext?.entity?.obj?.under_terminate === true
+            ? 'terminate'
+            : 'deactivate'
+          }
+          onPress={() => {
+            Alert.alert(
+              `Are you sure you want to ${
+                authContext?.entity?.obj?.is_pause === true
+                  ? 'unpause'
+                  : 'reactivate'
+              } this account?`,
+              '',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text:
+                    authContext?.entity?.obj?.is_pause === true
+                      ? 'Unpause'
+                      : 'Reactivate',
+                  style: 'destructive',
+                  onPress: () => {
+                    if (authContext?.entity?.obj?.is_pause === true) {
+                      unPauseGroup();
+                    } else {
+                      reActivateUser();
+                    }
+                  },
+                },
+              ],
+              {cancelable: false},
+            );
           }}
         />
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('SportSettingScreen', {
-              sports,
-            });
-          }}>
-          <Image
-            source={images.threeDotIcon}
-            style={styles.townsCupthreeDotIcon}
-          />
-        </TouchableOpacity>
-      </View>
-      {isAccountDeactivated && (
-        <TCAccountDeactivate type={'terminate'} onPress={() => {
-          Alert.alert('This is under development.');
-        }}/>
       )}
       {loading ? (
         <LocalHomeScreenShimmer />
       ) : (
-        <Fragment>
+        <View
+          pointerEvents={pointEvent}
+          style={{opacity: isAccountDeactivated ? 0.8 : 1}}>
           <ScrollView>
             <View>
               <TCTitleWithArrow
@@ -1145,14 +1269,16 @@ return (
                 keyExtractor={keyExtractor}
                 renderItem={shortsListView}
                 ListEmptyComponent={() => (
-                  <TCShortsPlaceholder onPress={()=>{
-                    navigation.navigate('WritePostScreen', {
-                      comeFrom:'LocalHomeScreen',
-                      postData: authContext.entity.obj,
-                      onPressDone,
-                      selectedImageList: [],
-                    });
-                  }}/>
+                  <TCShortsPlaceholder
+                    onPress={() => {
+                      navigation.navigate('WritePostScreen', {
+                        comeFrom: 'LocalHomeScreen',
+                        postData: authContext.entity.obj,
+                        onPressDone,
+                        selectedImageList: [],
+                      });
+                    }}
+                  />
                 )}
               />
             </View>
@@ -1271,7 +1397,7 @@ return (
                     cardWidth={'94%'}
                     placeholderText={'NO AVAILABLE TEAMS OR PLAYERS'}
                     buttonTitle={'Create a team or register as a player >'}
-                    onPress={()=>{
+                    onPress={() => {
                       actionSheet.current.show();
                     }}
                   />
@@ -1304,8 +1430,8 @@ return (
                     cardWidth={'94%'}
                     placeholderText={strings.refereesPlaceholderText}
                     buttonText={'Register as a referee >'}
-                    onPress={() =>{
-                      navigation.navigate('RegisterReferee')
+                    onPress={() => {
+                      navigation.navigate('RegisterReferee');
                     }}
                   />
                 )}
@@ -1337,8 +1463,8 @@ return (
                     cardWidth={'94%'}
                     placeholderText={strings.scorekeepersPlaceholderText}
                     buttonText={'Register as a scorekeeper >'}
-                    onPress={() =>{
-                      navigation.navigate('RegisterScorekeeper')
+                    onPress={() => {
+                      navigation.navigate('RegisterScorekeeper');
                     }}
                   />
                 )}
@@ -1377,7 +1503,7 @@ return (
                     cardWidth={'94%'}
                     placeholderText={strings.hiringPlayersPlaceholderText}
                     buttonTitle={'Create your group >'}
-                    onPress={()=>{
+                    onPress={() => {
                       actionSheetTeamClub.current.show();
                     }}
                   />
@@ -1412,15 +1538,15 @@ return (
                     cardWidth={'94%'}
                     placeholderText={strings.lookingTeamsPlaceholderText}
                     buttonText={'Register as a player >'}
-                    onPress={() =>{
-                      navigation.navigate('RegisterPlayer')
+                    onPress={() => {
+                      navigation.navigate('RegisterPlayer');
                     }}
                   />
                 )}
               />
             </View>
           </ScrollView>
-        </Fragment>
+        </View>
       )}
       <Modal
         onBackdropPress={() => setLocationPopup(false)}
@@ -1625,20 +1751,20 @@ return (
         </View>
       </Modal>
       <ActionSheet
-            ref={actionSheet}
-            title={'Create a team or register as a player'}
-            options={['Create Team',' Register as Player', 'Cancel']}
-            cancelButtonIndex={2}
-            onPress={onCreateTeamActionSheetItemPress}
-          />
+        ref={actionSheet}
+        title={'Create a team or register as a player'}
+        options={['Create Team', ' Register as Player', 'Cancel']}
+        cancelButtonIndex={2}
+        onPress={onCreateTeamActionSheetItemPress}
+      />
 
       <ActionSheet
-            ref={actionSheetTeamClub}
-            title={'Create a team or club or league'}
-            options={['Create Team',' Create Club','Create League' ,'Cancel']}
-            cancelButtonIndex={3}
-            onPress={onCreateGroupActionSheetItemPress}
-          />
+        ref={actionSheetTeamClub}
+        title={'Create a team or club or league'}
+        options={['Create Team', ' Create Club', 'Create League', 'Cancel']}
+        cancelButtonIndex={3}
+        onPress={onCreateGroupActionSheetItemPress}
+      />
       {renderImageProgress}
     </View>
   );
@@ -1663,8 +1789,6 @@ const styles = StyleSheet.create({
   },
   rightHeaderView: {
     flexDirection: 'row',
-    marginRight: 15,
-    // marginLeft: 25,
   },
   headerTitle: {
     fontFamily: fonts.RBold,
@@ -1798,7 +1922,7 @@ const styles = StyleSheet.create({
     height: 35,
     width: 35,
   },
- 
+
   townsCupthreeDotIcon: {
     resizeMode: 'contain',
     height: 15,
@@ -1807,7 +1931,7 @@ const styles = StyleSheet.create({
     tintColor: colors.lightBlackColor,
     marginRight: 15,
   },
-  
+
   separateLine: {
     borderColor: colors.veryLightGray,
     borderWidth: 0.5,

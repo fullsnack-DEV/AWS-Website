@@ -12,6 +12,7 @@ import {
   NativeEventEmitter,
   Text,
   FlatList,
+  Alert,
 } from 'react-native';
 
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -31,17 +32,26 @@ import {
   QBconnectAndSubscribe,
   QBgetDialogs,
   QBsetupSettings,
+  getQBAccountType,
+  QBupdateUser,
 } from '../../utils/QuickBlox';
-import {widthPercentageToDP as wp} from '../../utils';
+import { widthPercentageToDP as wp} from '../../utils';
 import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
+import TCAccountDeactivate from '../../components/TCAccountDeactivate';
+import {groupUnpaused} from '../../api/Groups';
+import strings from '../../Constants/String';
+import {userActivate} from '../../api/Users';
 
 const QbMessageEmitter = new NativeEventEmitter(QB);
 
 const MessageMainScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
-  
+
+  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
+  const [pointEvent, setPointEvent] = useState('auto');
+
   const [endReachedCalled, setEndReachedCalled] = useState(false);
   const [pressStatus, setPressStatus] = useState(null);
   const [savedDialogsData, setSavedDialogsData] = useState({
@@ -56,6 +66,28 @@ const MessageMainScreen = ({navigation}) => {
   useEffect(() => {
     if (!authContext?.entity?.QB) navigation.dispatch(StackActions.popToTop());
   }, [authContext?.entity?.QB, navigation]);
+
+  useEffect(() => {
+    setIsAccountDeactivated(false);
+    setPointEvent('auto');
+    if (isFocused) {
+      console.log('its called....', authContext.entity.role);
+      if (authContext?.entity?.obj?.is_pause === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+      if (authContext?.entity?.obj?.is_deactivate === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+    }
+  }, [
+    authContext.entity?.obj.entity_type,
+    authContext.entity?.obj?.is_deactivate,
+    authContext.entity?.obj?.is_pause,
+    authContext.entity.role,
+    isFocused,
+  ]);
 
   useEffect(() => {
     if (authContext?.entity?.QB && isFocused) {
@@ -201,9 +233,7 @@ const MessageMainScreen = ({navigation}) => {
         </TouchableOpacity> */}
         <View style={styles.centerMsgContainer}>
           <Text style={styles.noMsgText}>No Chat</Text>
-          <Text style={styles.msgAppearText}>
-            New chats will appear here.
-          </Text>
+          <Text style={styles.msgAppearText}>New chats will appear here.</Text>
         </View>
       </View>
     ),
@@ -271,16 +301,124 @@ const MessageMainScreen = ({navigation}) => {
     [authContext?.entity?.QB, pressStatus, navigation],
   );
 
+  const unPauseGroup = () => {
+    setLoading(true);
+    groupUnpaused(authContext)
+      .then((response) => {
+        setIsAccountDeactivated(false);
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setLoading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setLoading(false);
+          });
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const reActivateUser = () => {
+    setLoading(true);
+    userActivate(authContext)
+      .then((response) => {
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setLoading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setLoading(false);
+          });
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   return (
     <View style={styles.mainContainer}>
-      {renderHeader}
-      <View style={styles.separateLine} />
-     
-      {/* eslint-disable-next-line no-nested-ternary */}
-      {loading
-         ? (
-           <UserListShimmer />
-        ) : (savedDialogsData.dialogs?.length > 0  && authContext?.entity?.QB  )? (
+      <View
+        style={{opacity: isAccountDeactivated ? 0.5 : 1}}
+        pointerEvents={pointEvent}>
+        {renderHeader}
+        <View style={styles.separateLine} />
+      </View>
+      {isAccountDeactivated && (
+        <TCAccountDeactivate
+          type={
+            authContext?.entity?.obj?.is_pause === true
+            ? 'pause'
+            : authContext?.entity?.obj?.under_terminate === true
+            ? 'terminate'
+            : 'deactivate'
+          }
+          onPress={() => {
+            Alert.alert(
+              `Are you sure you want to ${
+                authContext?.entity?.obj?.is_pause === true
+                  ? 'unpause'
+                  : 'reactivate'
+              } this account?`,
+              '',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text:
+                    authContext?.entity?.obj?.is_pause === true
+                      ? 'Unpause'
+                      : 'Reactivate',
+                  style: 'destructive',
+                  onPress: () => {
+                    if (authContext?.entity?.obj?.is_pause === true) {
+                      unPauseGroup();
+                    } else {
+                      reActivateUser();
+                    }
+                  },
+                },
+              ],
+              {cancelable: false},
+            );
+          }}
+        />
+      )}
+      <View
+        style={{flex: 1, opacity: isAccountDeactivated ? 0.5 : 1}}
+        pointerEvents={pointEvent}>
+        {/* eslint-disable-next-line no-nested-ternary */}
+        {loading ? (
+          <UserListShimmer />
+        ) : savedDialogsData.dialogs?.length > 0 && authContext?.entity?.QB ? (
           <FlatList
             refreshing={loading}
             data={savedDialogsData.dialogs ?? []}
@@ -293,15 +431,14 @@ const MessageMainScreen = ({navigation}) => {
           />
         ) : (
           LiseEmptyComponent
-        )
-      }
+        )}
+      </View>
     </View>
   );
 };
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    alignItems: 'center',
   },
   backImageStyle: {
     height: 35,
@@ -322,13 +459,13 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     width: wp(100),
   },
- 
+
   chatMainContainer: {
     flex: 1,
     width: '100%',
     height: '100%',
   },
- 
+
   centerMsgContainer: {
     flex: 1,
     alignItems: 'center',

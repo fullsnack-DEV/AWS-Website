@@ -148,7 +148,7 @@ import ReservationStatus from '../Constants/ReservationStatus';
           style={styles.overlayStyle}>
         <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
        
-        <Text style={styles.startTitle}>{'Challenge now >'}</Text>
+      
       
       </LinearGradient>
     </View>
@@ -296,12 +296,7 @@ const styles = StyleSheet.create({
       textAlign: 'center',
   },
   
-  startTitle: {
-    fontSize: 20,
-    fontFamily: fonts.RMedium,
-    color: colors.tabFontColor,
-    alignSelf: 'center',
-  },
+ 
 });
 
 export default memo(TCGameCardPlaceholder)

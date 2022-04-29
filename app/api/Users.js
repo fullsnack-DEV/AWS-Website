@@ -242,13 +242,21 @@ export const sportDeactivate = (params, authContext) =>
 export const userActivate = (authContext) =>
   makeAPIRequest({
     method: 'put',
-    url: `${Config.BASE_URL}users/activateAccount`,
+    url: `${Config.BASE_URL}users/activate`,
     authContext,
   });
 
 export const userDeactivate = (authContext) =>
   makeAPIRequest({
     method: 'delete',
-    url: `${Config.BASE_URL}users/activateAccount`,
+    url: `${Config.BASE_URL}users/activate`,
+    authContext,
+  });
+
+
+export const userTerminate = (authContext) =>
+  makeAPIRequest({
+    method: 'delete',
+    url: `${Config.BASE_URL}/users/terminate`,
     authContext,
   });
