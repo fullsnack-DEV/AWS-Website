@@ -102,7 +102,8 @@ const FeedsScreen = ({navigation}) => {
   const onPressDone = useCallback(
     (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
       let dataParams = {};
-      const entityID = currentUserDetail?.group_id  ?? currentUserDetail?.user_id;
+      const entityID =
+        currentUserDetail?.group_id ?? currentUserDetail?.user_id;
       if (entityID !== authContext.entity.uid) {
         if (
           currentUserDetail?.entity_type === 'team' ||
@@ -119,18 +120,18 @@ const FeedsScreen = ({navigation}) => {
         }
       }
       if (postDesc.trim().length > 0 && data?.length === 0) {
-         dataParams = {
-           ...dataParams,
+        dataParams = {
+          ...dataParams,
           text: postDesc,
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
         };
-       
+
         createPostAfterUpload(dataParams);
       } else if (data) {
         const imageArray = data.map((dataItem) => dataItem);
-         dataParams = {
-           ...dataParams,
+        dataParams = {
+          ...dataParams,
           text: postDesc && postDesc,
           attachments: [],
           tagged: tagsOfEntity ?? [],
@@ -392,6 +393,7 @@ const FeedsScreen = ({navigation}) => {
         onLikePress={onLikePress}
         onEndReached={onEndReached}
         feedAPI={feedCalled}
+        isNewsFeedScreen={true}
       />
     ),
     [

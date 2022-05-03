@@ -221,7 +221,26 @@ export const heightPercentageToDP = (heightPercent) => {
   const elemHeight = parseFloat(heightPercent);
   return PixelRatio.roundToNearestPixel((screenHeight * elemHeight) / 100);
 };
+export const convertFirstCharacterAllWordsToUppercase = (stringToConvert) => {
+  let stringObj = '';
+  if (stringToConvert === undefined) {
+    stringObj = '';
+  } else {
+    stringObj = stringToConvert;
+  }
+  const wordsArray = stringObj.split(' ');
+  const convertedWordsArray = wordsArray.map((word) => {
+    return convertFirstCharacterToUppercase(word);
+  });
 
+  return convertedWordsArray.join(' ');
+};
+const convertFirstCharacterToUppercase = (stringToConvert) => {
+  const firstCharacter = stringToConvert.substring(0, 1);
+  const restString = stringToConvert.substring(1);
+
+  return firstCharacter.toUpperCase() + restString;
+};
 const backgroundColors = [
   '#53c6a2',
   '#fdd762',
@@ -687,31 +706,32 @@ export const getSportIcon = (sport) => {
   }
 };
 
-export const getSportLogo = (sportObj,sportContext) => {
- console.log('aaaaaaa0000aaaaa',sportObj);
+export const getSportLogo = (sportObj, sportContext) => {
+  console.log('aaaaaaa0000aaaaa', sportObj);
 
- const arrData = [];
- for (const outer of sportContext) {
-   for (const inner of outer.format) {
-     const temp = {
-       ...inner,
-       player_image: outer.player_image,
-     };
-     arrData.push(temp);
-   }
- }
-let url = '';
- console.log('AAA:->', arrData);
-   getStorage('appSetting').then((setting) => {
-   console.log('appSetting index', setting);
-  
-   const selectedObj = arrData?.filter((obj) => obj.sport === sportObj.sport && obj.sport_type === sportObj.sport_type)
-   console.log('image aaaa ',selectedObj);
-   url = setting.base_url_sporticon;
- });
- return `${url}${selectedObj[0]?.player_image}`
+  const arrData = [];
+  for (const outer of sportContext) {
+    for (const inner of outer.format) {
+      const temp = {
+        ...inner,
+        player_image: outer.player_image,
+      };
+      arrData.push(temp);
+    }
+  }
+  let url = '';
+  console.log('AAA:->', arrData);
+  getStorage('appSetting').then((setting) => {
+    console.log('appSetting index', setting);
 
-
+    const selectedObj = arrData?.filter(
+      (obj) =>
+        obj.sport === sportObj.sport && obj.sport_type === sportObj.sport_type,
+    );
+    console.log('image aaaa ', selectedObj);
+    url = setting.base_url_sporticon;
+  });
+  return `${url}${selectedObj[0]?.player_image}`;
 };
 
 export const roundValue = (value, decimals) =>

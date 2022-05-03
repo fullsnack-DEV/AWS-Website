@@ -11,7 +11,8 @@ import {
   StyleSheet,
   SafeAreaView,
   Text,
-  TextInput,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -23,9 +24,8 @@ import colors from '../../Constants/Colors';
 import TCThinDivider from '../../components/TCThinDivider';
 import fonts from '../../Constants/Fonts';
 import SportsListView from '../../components/localHome/SportsListView';
-import strings from '../../Constants/String';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import {widthPercentageToDP} from '../../utils';
+import images from '../../Constants/ImagePath';
 
 let selectedSports = [];
 
@@ -34,23 +34,39 @@ export default function AddOrDeleteSport({navigation, route}) {
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [systemSports, setSystemSports] = useState([]);
-  const [searchData, setSearchData] = useState();
   const [defaultSportsList, setDefaultSportsList] = useState();
   const [sportsSource] = useState(route?.params?.sports);
   const authContext = useContext(AuthContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTitle: () => (
+        <Text style={styles.navTitle}>{'Add or Delete Sports'}</Text>
+      ),
       headerRight: () => (
-        <Text style={styles.nextButtonStyle} onPress={() => onPressApply()}>
-          Apply
+        <Text
+          style={styles.nextButtonStyle}
+          onPress={() => {
+            route.params.pressBack();
+            onPressApply();
+          }}>
+          Save
         </Text>
       ),
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            route.params.pressBack();
+            navigation.popToTop();
+          }}>
+          <Image source={images.backArrow} style={styles.backStyle} />
+        </TouchableOpacity>
+      ),
     });
-  }, [navigation, sportsSource, systemSports, defaultSportsList]);
+  }, [navigation, sportsSource, systemSports, defaultSportsList, route.params]);
 
   useEffect(() => {
-    selectedSports = systemSports.filter((e) => e.isChecked);
+    // selectedSports = systemSports.filter((e) => e.isChecked);
     console.log('selectedSports::1::=>', selectedSports);
 
     const arr = [];
@@ -67,17 +83,19 @@ export default function AddOrDeleteSport({navigation, route}) {
       ...scorekeeperSport,
       ...playerSport,
     ];
+    console.log('allSports :=>', allSports);
     const uniqSports = {};
     const uniqueSports = allSports.filter(
       (obj) => !uniqSports[obj.sport] && (uniqSports[obj.sport] = true),
     );
+    console.log('Unique sport:=>', uniqSports);
 
     const result = uniqueSports.map((obj) => ({
       sport: obj.sport,
     }));
     setDefaultSportsList(result);
-    console.log('Unique sport:=>', result);
-  }, [authContext]);
+    console.log('Unique sport results:=>', result);
+  }, [authContext, systemSports]);
 
   useEffect(() => {
     if (isFocused) {
@@ -96,7 +114,6 @@ export default function AddOrDeleteSport({navigation, route}) {
           }
         }
         setSystemSports(arr);
-        setSearchData(arr);
 
         console.log('All system sports:=>', arr);
         setTimeout(() => setloading(false), 1000);
@@ -105,50 +122,32 @@ export default function AddOrDeleteSport({navigation, route}) {
   }, [authContext, isFocused, sportsSource]);
 
   const onPressApply = () => {
-
     Utility.setStorage('sportSetting', selectedSports).then(() => {
-      navigation.pop(2);
+      navigation.pop();
+      route.params.pressBack();
     });
-
     console.log('DONE::', selectedSports);
   };
 
   const isIconCheckedOrNot = useCallback(
     ({item, index}) => {
       systemSports[index].isChecked = !item.isChecked;
-
+      const obj = systemSports[index];
       setSystemSports([...systemSports]);
-      selectedSports = systemSports.filter((e) => e.isChecked);
+      selectedSports = systemSports.filter((e) => e.isChecked && e !== obj);
+      if (obj.isChecked) {
+        selectedSports.push(obj);
+      }
+
       console.log('Slected sports', selectedSports);
     },
     [systemSports],
   );
-  const searchSportsFunction = (text) => {
-    const result = systemSports.filter((x) =>
-      x.sport?.toLowerCase().includes(text?.toLowerCase()),
-    );
-    if (text.length > 0) {
-      setSystemSports(result);
-    } else {
-      setSystemSports(searchData);
-    }
-  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
-      <View style={styles.searchView}>
-        <View style={styles.searchViewContainer}>
-          <TextInput
-            placeholder={strings.searchText}
-            style={styles.searchTxt}
-            onChangeText={(text) => {
-              searchSportsFunction(text);
-            }}
-            // value={search}
-          />
-        </View>
-      </View>
-      <View style={{height: '80%'}}>
+      <View style={{height: '100%'}}>
         <TCThinDivider width={'100%'} marginBottom={15} />
         <SportsListView
           sports={systemSports}
@@ -161,32 +160,20 @@ export default function AddOrDeleteSport({navigation, route}) {
 }
 const styles = StyleSheet.create({
   nextButtonStyle: {
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginRight: 15,
   },
-  searchView: {
-    backgroundColor: colors.grayBackgroundColor,
-    height: 55,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  searchViewContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 40,
-    width: widthPercentageToDP('92%'),
-    borderRadius: 20,
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
-    backgroundColor: colors.offwhite,
-  },
-  searchTxt: {
+  backStyle: {
+    height: 20,
+    width: 15,
+    resizeMode: 'contain',
     marginLeft: 15,
-    fontSize: widthPercentageToDP('3.8%'),
-    width: widthPercentageToDP('75%'),
+    // tintColor: colors.whiteColor,
+  },
+  navTitle: {
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    color: colors.lightBlackColor,
   },
 });
