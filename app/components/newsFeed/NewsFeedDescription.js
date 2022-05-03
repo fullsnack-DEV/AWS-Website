@@ -1,5 +1,5 @@
 /* eslint-disable no-useless-escape */
-import React, {useState, useContext, useCallback, useMemo, useRef} from 'react';
+import React, {useContext, useCallback, useMemo, useRef} from 'react';
 import {StyleSheet, View, Text, FlatList} from 'react-native';
 import ReadMore from '@fawazahmed/react-native-read-more';
 
@@ -21,7 +21,6 @@ const tagRegex = /(?!\w)@\w+/gim;
 
 const NewsFeedDescription = ({
   descriptions,
-  character,
   descriptionTxt,
   descText,
   containerStyle,
@@ -29,12 +28,10 @@ const NewsFeedDescription = ({
   navigation,
   disableTouch = false,
   numberOfLineDisplay,
+  isNewsFeedScreen,
 }) => {
   const taggedModalRef = useRef(null);
   const authContext = useContext(AuthContext);
-  const [readMore, setReadMore] = useState();
-
-  const toggleNumberOfLines = useCallback(() => setReadMore((val) => !val), []);
 
   const getIndicesOf = useCallback(
     (searchStr, str = descriptions) => {
@@ -70,12 +67,17 @@ const NewsFeedDescription = ({
       const fetchedAllEntity = tagData?.filter(
         (item) => item?.entity_data?.tagged_formatted_name === name,
       );
+
       if (fetchedAllEntity?.length > 0) {
         let fetchedEntity = fetchedAllEntity?.[0];
         if (fetchedAllEntity?.length > 1 && isExistIndex !== -1)
           fetchedEntity = fetchedAllEntity?.[isExistIndex];
         if (fetchedEntity?.entity_id) {
-          if (fetchedEntity?.entity_id !== authContext?.entity?.uid) {
+          if (
+            fetchedEntity?.entity_id !== authContext?.entity?.uid ||
+            (fetchedEntity?.entity_id === authContext?.entity?.uid &&
+              isNewsFeedScreen)
+          ) {
             navigation.push('HomeScreen', {
               uid: fetchedEntity?.entity_id,
               role: ['user', 'player']?.includes(fetchedEntity?.entity_type)
@@ -87,7 +89,13 @@ const NewsFeedDescription = ({
         }
       }
     },
-    [authContext?.entity?.uid, getIndicesOf, navigation, tagData],
+    [
+      authContext?.entity?.uid,
+      getIndicesOf,
+      isNewsFeedScreen,
+      navigation,
+      tagData,
+    ],
   );
 
   const renderTagText = useCallback(
@@ -191,14 +199,11 @@ const NewsFeedDescription = ({
         </View>
       ),
     [
-      character,
       descText,
       descriptionTxt,
       descriptions,
-      readMore,
       renderTagText,
       renderURLText,
-      toggleNumberOfLines,
       numberOfLineDisplay,
     ],
   );

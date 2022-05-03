@@ -36,6 +36,7 @@ const NewsFeedList = ({
   updateCommentCount,
   noDataFoundText = 'No Post Found',
   feedAPI,
+  isNewsFeedScreen = false,
 }) => {
   const [userID, setUserID] = useState('');
 
@@ -53,8 +54,13 @@ const NewsFeedList = ({
 
   const onProfilePress = useCallback(
     (item) => {
+      console.log('News feed screen', isNewsFeedScreen);
       if (item?.actor?.id) {
-        if (item?.actor?.id !== authContext?.entity?.uid) {
+        if (
+          item?.actor?.id !== authContext?.entity?.uid ||
+          (item?.actor?.id === authContext?.entity?.uid &&
+            isNewsFeedScreen === true)
+        ) {
           navigation.push('HomeScreen', {
             uid: item.actor.id,
             backButtonVisible: true,
@@ -66,7 +72,7 @@ const NewsFeedList = ({
         }
       }
     },
-    [authContext?.entity?.uid, navigation],
+    [authContext?.entity?.uid, isNewsFeedScreen, navigation],
   );
 
   const renderNewsFeed = useCallback(
@@ -87,6 +93,7 @@ const NewsFeedList = ({
             onImageProfilePress={() => onProfilePress(item)}
             onLikePress={onLikeButtonPress}
             onDeletePost={onDeleteButtonPress}
+            isNewsFeedScreen={isNewsFeedScreen}
           />
           <View
             style={{backgroundColor: colors.grayBackgroundColor, height: 7}}
@@ -101,6 +108,7 @@ const NewsFeedList = ({
       navigation,
       userID,
       onEditPressDone,
+      isNewsFeedScreen,
       onDeletePost,
       onLikePress,
       onProfilePress,

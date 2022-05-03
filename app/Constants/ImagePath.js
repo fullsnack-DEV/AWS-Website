@@ -81,6 +81,8 @@ const images = {
   tagImage: require('../assets/images/tag.png'),
   tagGreenImage: require('../assets/images/Tag_Icon.png'),
   cancelImage: require('../assets/images/cancel.png'),
+  crossImage: require('../assets/images/cross.png'),
+
   createEventImage: require('../assets/images/create_event_image.png'),
   cancelWhite: require('../assets/images/cancelWhite.png'),
   tab_home_selected: require('../assets/images/tab_home_selected.png'),
@@ -279,7 +281,7 @@ const images = {
   scorekeeperPH: require('../assets/images/scorekeeper_placeholder.png'),
   notificationBell: require('../assets/images/notification_bell.png'),
   tabFeed: require('../assets/images/tab_feed.png'),
-tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
+  tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
 
   teamPatch: require('../assets/images/team_patch.png'),
   clubPatch: require('../assets/images/club_patch.png'),
@@ -293,7 +295,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   orangeStar: require('../assets/images/ic_star.png'),
 
   homeSetting: require('../assets/images/ic_home_setting.png'),
-settingInvoice: require('../assets/images/setting_invoice.png'),
+  settingInvoice: require('../assets/images/setting_invoice.png'),
 
   arrowDown: require('../assets/images/arrow_down.png'),
   moveIcon: require('../assets/images/ic_move.png'),
@@ -367,7 +369,7 @@ settingInvoice: require('../assets/images/setting_invoice.png'),
   selectMessageSearchButton: require('../assets/images/selectMessageSearchButton.png'),
   challengerInvitePlane: require('../assets/images/challenger_invite_plane.png'),
   savedIcon: require('../assets/images/savedIcon.png'),
-arrowGT: require('../assets/images/arrow_gt.png'),
+  arrowGT: require('../assets/images/arrow_gt.png'),
 
   messageIcon: require('../assets/images/message_ic.png'),
   navigationBack: require('../assets/images/navigation_back.png'),
@@ -379,7 +381,7 @@ arrowGT: require('../assets/images/arrow_gt.png'),
   commentDeleteIcon: require('../assets/images/commentDeleteIcon.png'),
   commentReportIcon: require('../assets/images/commentReportIcon.png'),
 
-//  Sports Icons
+  //  Sports Icons
   soccerIcon: require('../assets/images/soccerIcon.png'),
   tennisIcon: require('../assets/images/tennisIcon.png'),
 
@@ -399,12 +401,9 @@ arrowGT: require('../assets/images/arrow_gt.png'),
   uncheckBox: require('../assets/images/uncheckBox.png'),
   profileLevel: require('../assets/images/profile_level.png'),
   chatPlus: require('../assets/images/chat_plus.png'),
-  recentMatch : require('../assets/images/recentMatch.png'),
-  upcomingMatch : require('../assets/images/upcomingMatch.png'),
-  shortCard : require('../assets/images/shortCard.png'),
-
-
-
+  recentMatch: require('../assets/images/recentMatch.png'),
+  upcomingMatch: require('../assets/images/upcomingMatch.png'),
+  shortCard: require('../assets/images/shortCard.png'),
 };
 
 export default images;

@@ -43,6 +43,7 @@ const NewsFeedPostItems = memo(
     onImageProfilePress,
     onEditPressDone,
     updateCommentCount,
+    isNewsFeedScreen,
   }) => {
     const likersModalRef = useRef(null);
     const commentModalRef = useRef(null);
@@ -325,11 +326,13 @@ const NewsFeedPostItems = memo(
           numberOfLineDisplay={attachedImages?.length > 0 ? 3 : 14}
           tagData={myItem?.format_tagged_data ?? []}
           navigation={navigation}
+          isNewsFeedScreen={isNewsFeedScreen}
         />
       ),
       [
         attachedImages?.length,
         descriptions,
+        isNewsFeedScreen,
         myItem?.format_tagged_data,
         navigation,
       ],

@@ -427,6 +427,7 @@ const FeedsScreen = ({navigation}) => {
         onLikePress={onLikePress}
         onEndReached={onEndReached}
         feedAPI={feedCalled}
+        isNewsFeedScreen={true}
       />
     ),
     [
