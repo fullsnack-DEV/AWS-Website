@@ -8,7 +8,7 @@ const TCBadge = ({value = '', align = 'center', style = {}}) => (
   <View style={{...styles.badgeContainer, alignSelf: align, ...style}}>
     <Text
       style={{
-        fontFamily: fonts.RRegular,
+        fontFamily: fonts.LRegular,
         fontSize: 12,
         color: colors.whiteColor,
       }}>

@@ -79,7 +79,7 @@ const MessageChat = ({route, navigation}) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploadImageInProgress, setUploadImageInProgress] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [dialogData, setDialogData] = useState(null);
+  const [dialogData, setDialogData] = useState(route?.params?.dialog);
   const [dialogMenu, setDialogMenu] = useState(route?.params?.dialog);
   const [chatType, setChatType] = useState('');
   const [headingTitle, setHeadingTitle] = useState('');
@@ -534,23 +534,23 @@ const MessageChat = ({route, navigation}) => {
                 source={images.searchLocation}
                 style={[
                   styles.rightSearchImageStyle,
-                  {marginRight: occupantsData?.length > 2 ? 15 : 0},
+                  {marginRight: 15},
                 ]}
               />
             </TouchableOpacity>
-            {occupantsData?.length > 2 && (
-              <TouchableOpacity
+            
+            <TouchableOpacity
                 itSlop={getHitSlop(15)}
                 onPress={() => {
                   commentModalRef.current.open();
                   // navigation.setParams({participants: [occupantsData]});
                 }}>
-                <Image
+              <Image
                   source={images.threeDotIcon}
                   style={styles.rightImageStyle}
                 />
-              </TouchableOpacity>
-            )}
+            </TouchableOpacity>
+          
           </View>
         }
       />
@@ -563,7 +563,7 @@ const MessageChat = ({route, navigation}) => {
   }, [getMessages]);
 
   const ListEmptyComponent = useMemo(
-    () => <Text style={styles.noMessagesText}>No Messages</Text>,
+    () => !loading && <Text style={styles.noMessagesText}>No Messages</Text>,
     [],
   );
 

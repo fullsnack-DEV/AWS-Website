@@ -109,11 +109,11 @@ export default function AccountScreen({navigation}) {
   // Account menu
   const userMenu = [
     {key: 'Reservations'},
-    {key: 'Manage Challenge'},
+    {key: 'Challenge Settings'},
     {key: 'Referee Reservation Settings'},
     {key: 'Scorekeeper Reservation Settings'},
 
-    {key: 'Sports', member: [{opetions: 'Add a sport'}]},
+    {key: 'Playing', member: [{opetions: 'Add a sport'}]},
     {key: 'Refereeing', member: [{opetions: 'Register as a referee'}]},
     {key: 'Scorekeeping', member: [{opetions: 'Register as a scorekeeper'}]},
     {key: 'Teams', member: [{opetions: 'Create Team'}]},
@@ -133,15 +133,15 @@ export default function AccountScreen({navigation}) {
       ],
     },
     // { key: 'Currency' },
-    {key: 'Setting & Privacy'},
-    {key: 'Log out'},
+    {key: 'Settings'},
   ];
   const teamMenu = [
     {key: 'Reservations'},
-    {key: 'Manage Challenge'},
+    {key: 'Challenge Settings'},
     {key: 'Members'},
-    // {key: 'My Leagues'},
-    // { key: 'Clubs', member: [{ opetions: 'Create Club' }] },
+    
+    { key: 'Clubs', member: [{ opetions: 'Create Club' }] },
+    // {key: 'Leagues',member: [{ opetions: 'Create League' }]},
     {
       key: 'Payment & Payout',
       member: [
@@ -151,11 +151,10 @@ export default function AccountScreen({navigation}) {
         {opetions: 'Transactions'},
       ],
     },
-    {key: 'Setting'},
-    {key: 'Log out'},
+    {key: 'Settings'},
+   
   ];
   const clubMenu = [
-    {key: 'Reservations'},
     {key: 'Members'},
     {key: 'Teams', member: [{opetions: 'Create Team'}]},
     // {key: 'My Leagues'},
@@ -168,8 +167,8 @@ export default function AccountScreen({navigation}) {
         {opetions: 'Transactions'},
       ],
     },
-    {key: 'Setting'},
-    {key: 'Log out'},
+    {key: 'Settings'},
+   
   ];
 
   useEffect(() => {
@@ -642,17 +641,17 @@ export default function AccountScreen({navigation}) {
       navigation.navigate('RegisterScorekeeper');
     } else if (section === 'Create Club') {
       navigation.navigate('CreateClubForm1');
-    } else if (section === 'Setting & Privacy') {
+    } else if (section === 'Settings') {
       const entity = authContext.entity;
       if (entity.role === 'user') {
         navigation.navigate('UserSettingPrivacyScreen');
+      }else{
+        navigation.navigate('GroupSettingPrivacyScreen');
       }
-    } else if (section === 'Setting') {
-      navigation.navigate('GroupSettingPrivacyScreen');
-    } else if (section === 'Members') {
+    }else if (section === 'Members') {
       const entity = authContext.entity;
       navigation.navigate('GroupMembersScreen', {groupID: entity.uid});
-    } else if (section === 'Manage Challenge') {
+    } else if (section === 'Challenge Settings') {
       setClickedUserType('user');
       const entity = authContext.entity;
 
@@ -1110,7 +1109,7 @@ export default function AccountScreen({navigation}) {
             />
           )}
         {authContext.entity.role === 'club' &&
-          sectionId === 2 &&
+          sectionId === 1 &&
           !isAccountDeactivated && (
             <FlatList
               style={{marginVertical: 10}}
@@ -1717,18 +1716,14 @@ export default function AccountScreen({navigation}) {
                 style={{
                   opacity:
                     isAccountDeactivated &&
-                    section !== 'Log out' &&
-                    section !== 'Setting' &&
-                    section !== 'Setting & Privacy'
+                    section !== 'Settings'
                       ? 0.5
                       : 1,
                 }}>
                 <TouchableWithoutFeedback
                   disabled={
                     isAccountDeactivated &&
-                    section !== 'Log out' &&
-                    section !== 'Setting' &&
-                    section !== 'Setting & Privacy'
+                    section !== 'Settings'
                   }
                   style={styles.listContainer}
                   onPress={() => {
@@ -1746,7 +1741,7 @@ export default function AccountScreen({navigation}) {
                         style={{...styles.menuItem}}
                       />
                     )}
-                    {section === 'Sports' && (
+                    {section === 'Playing' && (
                       <Image
                         source={images.accountMySports}
                         style={{...styles.menuItem}}
@@ -1782,7 +1777,7 @@ export default function AccountScreen({navigation}) {
                         style={{...styles.menuItem}}
                       />
                     )}
-                    {section === 'Manage Challenge' && (
+                    {section === 'Challenge Settings' && (
                       <Image
                         source={images.manageChallengeIcon}
                         style={styles.menuItem}
@@ -1807,18 +1802,13 @@ export default function AccountScreen({navigation}) {
                       />
                     )}
 
-                    {section === 'Setting & Privacy' && (
+                    {section === 'Settings' && (
                       <Image
                         source={images.accountSettingPrivacy}
                         style={{...styles.menuItem}}
                       />
                     )}
-                    {section === 'Setting' && (
-                      <Image
-                        source={images.accountSettingPrivacy}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
+                   
                     {section === 'Log out' && (
                       <Image
                         source={images.logoutIcon}
@@ -1878,6 +1868,15 @@ export default function AccountScreen({navigation}) {
           scrollEnabled={false}
         />
         <View style={styles.separatorView} />
+        {/* Log out section */}
+        <TouchableWithoutFeedback
+          style={{flexDirection: 'row'}}
+          onPress={() => {
+            handleLogOut();
+          }}>
+          <Image source={images.logoutIcon} style={styles.switchAccountIcon} />
+          <Text style={styles.switchAccount}>Log out</Text>
+        </TouchableWithoutFeedback>
 
         {/* Rules notes modal */}
         <Modal

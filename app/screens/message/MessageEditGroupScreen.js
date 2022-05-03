@@ -1,8 +1,13 @@
 import React, {
-  useState, useEffect, useMemo, useCallback, useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useContext,
+  useRef,
 } from 'react';
 import {
-  Alert, Platform,
+  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -11,140 +16,215 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import ImagePicker from 'react-native-image-crop-picker';
-import QB from 'quickblox-react-native-sdk';
-import ImageResizer from 'react-native-image-resizer';
+import ActionSheet from 'react-native-actionsheet';
+
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
-import { QB_MAX_ASSET_SIZE_UPLOAD, QBgetFileURL, QBupdateDialogNameAndPhoto } from '../../utils/QuickBlox';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from '../../utils';
+import {QBupdateDialogNameAndPhoto} from '../../utils/QuickBlox';
 import TCInputBox from '../../components/TCInputBox';
-import TCInnerLoader from '../../components/TCInnerLoader';
 import AuthContext from '../../auth/context';
-import { T_COMPRESSION_RATE, thumbnailImageSize } from '../../utils/imageAction';
+import uploadImages from '../../utils/imageAction';
+import strings from '../../Constants/String';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
-const MessageEditGroupScreen = ({ route, navigation }) => {
+const MessageEditGroupScreen = ({route, navigation}) => {
   const authContext = useContext(AuthContext);
+  const actionSheet = useRef();
+  const actionSheetWithDelete = useRef();
   const [groupName, setGroupName] = useState('');
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [uploadImageInProgress, setUploadImageInProgress] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState(null);
+  const [profileImageChanged, setProfileImageChanged] = useState(false);
+  const [groupProfile, setGroupProfile] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (route?.params?.dialog) {
-      setGroupName(route?.params?.dialog?.name)
-      setSelectedImage(route?.params?.dialog?.photo)
+      console.log('route?.params?.dialog', route?.params?.dialog);
+      setGroupName(route?.params?.dialog?.name);
+      setGroupProfile({...groupProfile,thumbnail: route?.params?.dialog?.photo})
     }
-  }, [])
+  }, []);
 
-  const uploadImage = useCallback(() => {
+  const openCamera = (width = 400, height = 400) => {
+    ImagePicker.openCamera({
+      width,
+      height,
+      cropping: true,
+    }).then((data) => {
+      setGroupProfile({...groupProfile, thumbnail: data.path});
+      setProfileImageChanged(true);
+    });
+  };
+  const openImagePicker = (width = 400, height = 400) => {
     ImagePicker.openPicker({
-      width: 400,
-      height: 400,
-      mediaType: 'photo',
-    }).then(async (image) => {
-      setUploadImageInProgress(true);
-      setSelectedImage(image ?? null);
-      const imagePath = Platform?.OS === 'ios' ? image?.sourceURL : image?.path;
-      const validImageSize = image?.size <= QB_MAX_ASSET_SIZE_UPLOAD;
+      width,
+      height,
+      cropping: true,
+      cropperCircleOverlay: true,
+    }).then((data) => {
+      setGroupProfile({...groupProfile, thumbnail: data.path});
+      setProfileImageChanged(true);
+    });
+  };
 
-      if (!validImageSize) {
-        Alert.alert('file image size error')
-      } else {
-        const thumbImgData = thumbnailImageSize(image)
-        const resThumb = await ImageResizer.createResizedImage(imagePath, thumbImgData.width, thumbImgData.height, 'JPEG', T_COMPRESSION_RATE, 0, null)
-        QB.content.subscribeUploadProgress({ url: resThumb?.uri });
-        QB.content.upload({ url: imagePath, public: false }).then((file) => {
-          setUploadImageInProgress(false);
-          setUploadedFile(file);
-        }).catch((e) => {
-          setUploadImageInProgress(false);
-          Alert.alert(e.message);
-        });
-      }
-    })
-  }, [])
+  const deleteImage = () => {
+    setGroupProfile({...groupProfile, thumbnail: '', full_image: ''});
+    setProfileImageChanged(false);
+  };
 
-  const updateDialog = useCallback((dialogId, photo) => {
-    QBupdateDialogNameAndPhoto(dialogId, groupName, photo, authContext).then((res) => {
-      if (res?.status === 'error') {
-        console.log('QB :', res?.error)
-      } else {
-        route.params.onPressDone(res);
-        navigation.goBack();
-      }
-    }).catch((error) => {
-      console.log(error);
-    })
-  }, [authContext, groupName, navigation, route.params])
+  const onBGImageClicked = () => {
+    if (groupProfile?.thumbnail) {
+      actionSheetWithDelete.current.show();
+    } else {
+      actionSheet.current.show();
+    }
+  };
 
-  const onDonePress = useCallback(() => {
-    if (groupName !== '') {
-      if (route?.params?.dialog) {
-        const dialogId = route?.params?.dialog?.id;
-        if (uploadedFile) {
-          QBgetFileURL(uploadedFile.uid).then((fileUrl) => {
-            updateDialog(dialogId, fileUrl)
-          }).catch(() => {
-            navigation.goBack();
+  const checkValidation = () => {
+    if (groupName === '') {
+      Alert.alert('Enter Chatroom Name');
+      return false;
+    }
+    return true;
+  };
+  const onSaveButtonClicked = useCallback(() => {
+    if (checkValidation()) {
+      setLoading(true);
+      const groupData = {...groupProfile};
+      if (groupData?.thumbnail && groupData?.thumbnail !== '') {
+        const imageArray = [];
+        if (profileImageChanged) {
+          imageArray.push({path: groupData.thumbnail});
+        }
+        uploadImages(imageArray, authContext)
+          .then((responses) => {
+            console.log('image response', responses);
+
+            if (profileImageChanged) {
+              setGroupProfile({
+                ...groupProfile,
+                thumbnail: responses[0].thumbnail,
+                full_image: responses[0].fullImage,
+              });
+              groupData.full_image = responses[0].thumbnail;
+              groupData.thumbnail = responses[0].fullImage;
+            }
+            console.log('if press',groupData);
+
+            onDonePress(groupData);
           })
+          .catch((e) => {
+            setTimeout(() => {
+              Alert.alert(strings.appName, e.messages);
+            }, 0.1);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      } else {
+        console.log('else press',groupData);
+        onDonePress(groupData);
+      }
+    }
+  },[authContext, checkValidation, groupProfile, profileImageChanged])
+
+  const updateDialog = useCallback(
+    (dialogId, photo) => {
+      console.log('dialogId----',dialogId);
+      console.log('groupName----',groupName);
+      console.log('photo----',photo);
+
+
+
+      QBupdateDialogNameAndPhoto(dialogId, groupName, photo, authContext)
+        .then((res) => {
+          if (res?.status === 'error') {
+            console.log('QB :', res?.error);
+          } else {
+            route.params.onPressDone(res);
+            navigation.pop(2);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    [authContext, groupName, navigation, route.params],
+  );
+
+  const onDonePress = useCallback(
+    (data) => {
+      if (route?.params?.dialog) {
+        
+        const dialogId = route?.params?.dialog?.id;
+        if (data?.thumbnail && data?.thumbnail !== '') {
+          console.log('if update call',data);
+          updateDialog(dialogId, data?.thumbnail);
         } else {
-          updateDialog(dialogId, '')
+          console.log('else update call',data);
+
+          updateDialog(dialogId, '');
         }
       }
-    } else {
-      Alert.alert('Enter Chatroom Name')
-    }
-  }, [groupName, navigation, route?.params?.dialog, updateDialog, uploadedFile])
+    },
+    [route?.params?.dialog, updateDialog],
+  );
 
-  const renderHeader = useMemo(() => (
-    <Header
-          leftComponent={
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <FastImage resizeMode={'contain'} source={images.backArrow} style={styles.backImageStyle}/>
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={styles.eventTitleTextStyle}>Message</Text>
-          }
-          rightComponent={!uploadImageInProgress
-            && <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
-              <Text style={{ ...styles.eventTextStyle, width: 100, textAlign: 'right' }}>Done</Text>
-            </TouchableOpacity>
-          }
+  const renderHeader = useMemo(
+    () => (
+      <Header
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <FastImage
+              resizeMode={'contain'}
+              source={images.backArrow}
+              style={styles.backImageStyle}
+            />
+          </TouchableOpacity>
+        }
+        centerComponent={
+          <Text style={styles.eventTitleTextStyle}>Message</Text>
+        }
+        rightComponent={
+          <TouchableOpacity style={{padding: 2}} onPress={onSaveButtonClicked}>
+            <Text
+              style={{
+                ...styles.eventTextStyle,
+                width: 100,
+                textAlign: 'right',
+              }}>
+              Done
+            </Text>
+          </TouchableOpacity>
+        }
       />
-  ), [navigation, onDonePress, uploadImageInProgress])
+    ),
+    [navigation, onSaveButtonClicked],
+  );
 
   return (
     <SafeAreaView style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
       {renderHeader}
-      <View style={styles.separateLine}/>
+      <View style={styles.separateLine} />
       <View style={styles.avatarContainer}>
-        <TouchableOpacity onPress={uploadImage}>
-          {uploadImageInProgress
-          && <View style={{
-            top: 0,
-            bottom: 0,
-            right: 0,
-            left: 0,
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            borderRadius: 50,
-            position: 'absolute',
-            zIndex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
+        <TouchableOpacity
+          onPress={() => {
+            onBGImageClicked();
           }}>
-            <TCInnerLoader visible={true} />
-          </View>}
           <FastImage
             resizeMode={'cover'}
-            // eslint-disable-next-line no-nested-ternary
-            source={selectedImage?.path
-                ? { uri: selectedImage?.path }
-                : selectedImage
-                    ? { uri: selectedImage }
-                    : images.groupUsers}
+            source={
+              // eslint-disable-next-line no-nested-ternary
+              groupProfile?.thumbnail && groupProfile?.thumbnail !== ''
+                ? {uri: groupProfile?.thumbnail}
+                : images.groupUsers
+            }
             style={styles.imageContainer}
           />
           <FastImage
@@ -155,11 +235,49 @@ const MessageEditGroupScreen = ({ route, navigation }) => {
         </TouchableOpacity>
         <View style={styles.inputBoxContainer}>
           <Text style={styles.chatRoomName}>Chatroom Name</Text>
-          <TCInputBox placeHolderText={'New Group'} value={groupName} onChangeText={setGroupName}/>
+          <TCInputBox
+            placeHolderText={'New Group'}
+            value={groupName}
+            onChangeText={setGroupName}
+          />
         </View>
       </View>
+      <ActionSheet
+        ref={actionSheet}
+        // title={'News Feed Post'}
+        options={[strings.camera, strings.album, strings.cancelTitle]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker();
+          }
+        }}
+      />
+      <ActionSheet
+        ref={actionSheetWithDelete}
+        // title={'News Feed Post'}
+        options={[
+          strings.camera,
+          strings.album,
+          strings.deleteTitle,
+          strings.cancelTitle,
+        ]}
+        cancelButtonIndex={3}
+        destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker();
+          } else if (index === 2) {
+            deleteImage();
+          }
+        }}
+      />
     </SafeAreaView>
-  )
+  );
 };
 
 const styles = StyleSheet.create({

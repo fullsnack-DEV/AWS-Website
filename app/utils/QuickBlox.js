@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable default-param-last */
 /* eslint-disable consistent-return */
 /* eslint-disable import/no-cycle */
@@ -406,6 +407,8 @@ export const QBcreateDialog = (
         dialogParams.name = groupName;
         dialogParams.type = type;
       }
+     
+      console.log('dialogParamsdialogParams',dialogParams);
       return QB.chat.createDialog(dialogParams);
     }
     throw new Error('server-not-connected');
@@ -420,26 +423,34 @@ export const QBupdateDialogNameAndPhoto = (
   QBChatConnected().then(async (connected) => {
     if (connected) {
       const update = {dialogId};
-      if (name) update.name = name;
-      if (photo) update.photo = photo;
-      if (!photo) {
+      if (name !== '') update.name = name;
+      if (photo !== '') {
+        update.photo = photo;
+      }else{
+        
         return QB.chat.updateDialog(update);
       }
+     
       const qbObj = authContext?.entity?.QB;
       const url = `${QUICKBLOX_BASE_URL}/chat/Dialog/${dialogId}.json`;
+
+      console.log('URL::=>',url);
       return qbApiCall({
         url,
         method: 'PUT',
         qbToken: qbObj?.token,
         data: update,
       })
-        .then((res) => ({
-          // eslint-disable-next-line no-underscore-dangle
+        .then((res) => {
+          console.log('reeererererer',res);
+         return {
           dialogId: res?._id,
           name: res?.name,
           occupantsIds: res?.occupants_ids,
           dialogType: res?.type,
-        }))
+          photo: res?.photo,
+          created_at: res?.created_at,
+        }})
         .catch((error) => ({status: 'error', error}));
     }
     throw new Error('server-not-connected');

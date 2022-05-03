@@ -34,7 +34,7 @@ function SingleImage({
       updateCommentCount,
       onLikePress,
     })
-  }, [item, navigation, updateCommentCount]);
+  }, [item, navigation, onLikePress, updateCommentCount]);
 
   return (
     <View
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     backgroundColor: colors.whiteColor,
-    borderRadius: wp('4%'),
+    borderRadius:10,
     shadowColor: colors.blackColor,
     shadowOpacity: 0.16,
     shadowOffset: { width: 0, height: 5 },
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
-    borderRadius: wp('5%'),
+    borderRadius: 10,
     height: wp('96%'),
     width: wp('96%'),
   },

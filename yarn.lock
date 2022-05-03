@@ -880,6 +880,13 @@
   "resolved" "https://registry.npmjs.org/@expo/sdk-runtime-versions/-/sdk-runtime-versions-1.0.0.tgz"
   "version" "1.0.0"
 
+"@fawazahmed/react-native-read-more@^2.3.5":
+  "integrity" "sha512-UXVvD2hRncegtAPdG67Fgj5x/NQv+sq9jPDr6jZLWCDch4qUj9DE4u+1xAUvzHXeHgWDE5+mk3vLePy2+xsSyA=="
+  "resolved" "https://registry.npmjs.org/@fawazahmed/react-native-read-more/-/react-native-read-more-2.3.6.tgz"
+  "version" "2.3.6"
+  dependencies:
+    "prop-types" "^15.7.2"
+
 "@formatjs/ecma402-abstract@1.11.3":
   "integrity" "sha512-kP/Buv5vVFMAYLHNvvUzr0lwRTU0u2WTy44Tqwku1X3C3lJ5dKqDCYVqA8wL+Y19Bq+MwHgxqd5FZJRCIsLRyQ=="
   "resolved" "https://registry.npmjs.org/@formatjs/ecma402-abstract/-/ecma402-abstract-1.11.3.tgz"

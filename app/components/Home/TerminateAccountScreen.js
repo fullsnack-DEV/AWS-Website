@@ -15,7 +15,7 @@ import strings from '../../Constants/String';
 import TCGradientButton from '../TCGradientButton';
 import {userTerminate} from '../../api/Users';
 import {getGroups, groupTerminate} from '../../api/Groups';
-import { getQBAccountType, QBupdateUser } from '../../utils/QuickBlox';
+import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 
 export default function TerminateAccountScreen({navigation, route}) {
   const [sportObj] = useState(route?.params?.sport);
@@ -61,7 +61,7 @@ export default function TerminateAccountScreen({navigation, route}) {
     setloading(true);
 
     userTerminate(authContext)
-      .then( (response) => {
+      .then((response) => {
         console.log('terminate user ', response);
         const QBAccountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
@@ -80,7 +80,6 @@ export default function TerminateAccountScreen({navigation, route}) {
             setloading(false);
             navigation.pop(2);
           });
-        
       })
       .catch((e) => {
         setloading(false);
@@ -92,9 +91,8 @@ export default function TerminateAccountScreen({navigation, route}) {
 
   const terminateGroup = () => {
     setloading(true);
-
     groupTerminate(authContext)
-      .then( (response) => {
+      .then((response) => {
         console.log('terminate group ', response);
         const QBaccountType = getQBAccountType(response?.payload?.entity_type);
         QBupdateUser(
@@ -150,22 +148,18 @@ export default function TerminateAccountScreen({navigation, route}) {
       </ScrollView>
       <SafeAreaView>
         <TCGradientButton
-          title={strings.terminateAccount}
+          title={
+            authContext?.entity?.obj?.under_terminate === true
+              ? 'REACTIVATE ACCOUNT'
+              : 'TERMINATE ACCOUNT'
+          }
           onPress={() => {
-            // Alert.alert('',
-            //   'Please leave all clubs, leagues and seasons before you deactivate Tennis Singles.');
-
-            // if (showLeaveMsg) {
-            //   Alert.alert(
-            //     '',
-            //     `Please leave all teams, clubs and leagues before you deactivate ${Utility.getSportName(
-            //       sportObj,
-            //       authContext,
-            //     )}.`,
-            //   );
-            // } else {
             Alert.alert(
-              'Are you sure you want to terminate your TownsCup account?',
+              `Are you sure you want to ${
+                authContext?.entity?.obj?.under_terminate === true
+                  ? 'reactivate'
+                  : 'terminate'
+              } your TownsCup account?`,
               '',
               [
                 {
@@ -173,7 +167,10 @@ export default function TerminateAccountScreen({navigation, route}) {
                   style: 'cancel',
                 },
                 {
-                  text: 'Terminate',
+                  text:
+                    authContext?.entity?.obj?.under_terminate === true
+                      ? 'Reactivate'
+                      : 'Terminate',
                   style: 'destructive',
                   onPress: () => {
                     if (accountType === 'team') {
