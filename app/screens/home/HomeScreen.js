@@ -656,7 +656,6 @@ const HomeScreen = ({navigation, route}) => {
               style={{
                 height: 15,
                 width: 15,
-                marginLeft: 5,
                 resizeMode: 'cover',
               }}
             />
@@ -6292,12 +6291,12 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   userNavigationTextStyle: {
-    width: 120,
+  
+    width: 210,
     fontSize: 22,
     fontFamily: fonts.RBold,
     textAlign: 'left',
-    marginLeft: 15,
-    paddingRight: 15,
+    marginRight: 10,
     // paddingLeft:15
   },
 

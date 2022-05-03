@@ -63,10 +63,7 @@ const MessageSearchScreen = ({ navigation }) => {
   }
 
   const onDialogPress = useCallback((dialog) => {
-    navigation.replace('MessageChat', {
-      screen: 'MessageChat',
-      params: { dialog },
-    });
+    navigation.navigate('MessageChat', {dialog});
   }, [navigation]);
 
   useEffect(() => {

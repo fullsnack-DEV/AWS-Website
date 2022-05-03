@@ -379,6 +379,9 @@ export default function WelcomeScreen({navigation}) {
         if (error.code === 'auth/invalid-email') {
           message = strings.validEmailMessage;
         }
+        if (error.code === 'auth/user-disabled') {
+          message = strings.terminationAlert;
+        }
         if (error.code === 'auth/account-exists-with-different-credential') {
           message = 'You are already registrated with different login method ';
         }
@@ -497,25 +500,6 @@ export default function WelcomeScreen({navigation}) {
         console.log('providerData::=>', providerData);
         if (providerData?.length > 0 || !providerData) {
           successCallback();
-          // registerWithAnotherProvider(providerData)
-          //   .then(async () => {
-          //     successCallback();
-          //   })
-          //   .catch(async (error) => {
-          //     if (error?.provider !== provider) {
-          //       errorCallback();
-          //       console.log(error);
-          //       setloading(false);
-          //       setTimeout(() => {
-          //         Alert.alert(
-          //           'Townscup',
-          //           `This email is already registrated with ${error?.provider}`,
-          //         );
-          //       }, 100);
-          //     } else {
-          //       successCallback();
-          //     }
-          //   });
         }
         // else {
         //   successCallback();
@@ -526,75 +510,6 @@ export default function WelcomeScreen({navigation}) {
         successCallback();
       });
   };
-
-  // const handleIOSAppleLogin = async () => {
-  //   console.log('Apple login clicked..');
-  //   if (!appleAuth.isSupported) {
-  //     alert('Apple Login not supported');
-  //   } else {
-  //     setloading(true);
-  //     let email, firstName, lastName;
-
-  //     const appleAuthRequestResponse = await appleAuth
-  //       .performRequest({
-  //         requestedOperation: appleAuth.Operation.LOGIN,
-  //         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-  //       })
-
-  //         console.log('appleAuthRequestResponse', appleAuthRequestResponse);
-  //         if (appleAuthRequestResponse.email) {
-  //           email = appleAuthRequestResponse.email;
-  //           firstName = appleAuthRequestResponse.fullName.givenName;
-  //           lastName = appleAuthRequestResponse.fullName.familyName;
-
-  //           AsyncStorage.setItem('appleemail', appleAuthRequestResponse.email);
-  //           AsyncStorage.setItem('applefirstname', appleAuthRequestResponse.fullName.givenName);
-  //           AsyncStorage.setItem('applelastname', appleAuthRequestResponse.fullName.familyName);
-
-  //           console.log('email found in apple');
-  //         } else {
-  //          const e = await AsyncStorage.getItem('appleemail');
-  //          const f = await AsyncStorage.getItem('applefirstname');
-  //          const l = await AsyncStorage.getItem('applelastname');
-
-  //           alert(email);
-  //           console.log('appleDetail storage', e, f, l);
-  //         }
-
-  //         // if (!appleAuthRequestResponse?.identityToken) {
-  //         //   setloading(false);
-  //         //   setTimeout(() => {
-  //         //     Alert.alert('Apple Sign-In failed - no identify token returned');
-  //         //   }, 200);
-  //         // } else {
-  //         //   // Create a Firebase credential from the response
-
-  //         //   const { identityToken, nonce } = appleAuthRequestResponse;
-  //         //   console.log(
-  //         //     'appleAuthRequestResponse',
-  //         //     JSON.stringify(appleAuthRequestResponse),
-  //         //   );
-
-  //           // commonCheckEmailVerification({
-  //           //   email,
-  //           //   provider: 'apple',
-  //           //   successCallback: async () => {
-  //           //     const appleCredential = await auth.AppleAuthProvider.credential(
-  //           //       identityToken,
-  //           //       nonce,
-  //           //     );
-  //           //     await signInSignUpWithSocialCredential(
-  //           //       appleCredential,
-  //           //       'APPLE iOS| ',
-  //           //       {
-  //           //         first_name: firstName,
-  //           //         last_name: lastName,
-  //           //       },
-  //           //     );
-  //           //   },
-  //           // });
-  //         }
-  // };
 
   const handleIOSAppleLogin = async () => {
     try {

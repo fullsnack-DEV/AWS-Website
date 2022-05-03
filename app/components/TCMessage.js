@@ -50,6 +50,7 @@ const TCMessage = ({
   useEffect(() => {
     attachments.map((item) =>
       QBgetFileURL(item.id).then((fileUrl) => {
+        console.log('fileUrlfileUrl',fileUrl);
         setFileUrls((urls) => [...urls, fileUrl]);
       }),
     );

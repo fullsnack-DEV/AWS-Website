@@ -1,10 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Video from 'react-native-video';
-import {
-  View, StyleSheet,
-} from 'react-native';
-import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../utils';
+import {View, StyleSheet} from 'react-native';
+import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from '../utils';
 import colors from '../Constants/Colors';
 
 const CustomVideoPlayer = ({
@@ -16,6 +14,7 @@ const CustomVideoPlayer = ({
   onPlayerStatusChanged = () => {},
   onClick = () => {},
 }) => {
+  console.log('sourceURLsourceURL',sourceURL);
   const videoPlayerRef = useRef();
   // const [videoMetaData, setVideoMetaData] = useState(null);
   const [duration, setDuration] = useState(0);
@@ -27,15 +26,18 @@ const CustomVideoPlayer = ({
   const [shouldVideoScroll, setShouldVideoScroll] = useState(true);
 
   useEffect(() => {
-    if ([PLAYER_STATES.PAUSED, PLAYER_STATES.ENDED]?.includes(playerState)) setShouldVideoScroll(true);
+    if ([PLAYER_STATES.PAUSED, PLAYER_STATES.ENDED]?.includes(playerState))
+      setShouldVideoScroll(true);
     else setShouldVideoScroll(false);
   }, [playerState]);
 
-  useEffect(() => onPlayerStatusChanged(shouldVideoScroll), [shouldVideoScroll])
+  useEffect(() => onPlayerStatusChanged(shouldVideoScroll), [
+    shouldVideoScroll,
+  ]);
   const onSeek = (seek) => {
     if (!shouldVideoScroll) setShouldVideoScroll(true);
     videoPlayerRef.current.seek(seek);
-  }
+  };
 
   const onPaused = (pState) => {
     onClick(!paused);
@@ -73,51 +75,57 @@ const CustomVideoPlayer = ({
   const onSeeking = (currTime) => {
     if (shouldVideoScroll) setShouldVideoScroll(false);
     setCurrentTime(currTime);
-  }
+  };
 
   return (
-    <View
-        style={{ ...containerStyle }}>
+    <View style={{...containerStyle}}>
       <Video
-              focusable={true}
-              source={{ uri: sourceURL }}
-              ref={videoPlayerRef}
-              style={{
- ...styles.mediaPlayer, backgroundColor: 'black', ...videoStyle,
-              }}
-              onEnd={onEnd}
-              onLoad={onLoad}
-              onLoadStart={onLoadStart}
-              onProgress={onProgress}
-              paused={paused}
-              resizeMode={resizeMode}
-              // onFullScreen={isFullScreen}
-              // fullscreen={isFullScreen}
-              fullscreenAutorotate={true}
-          />
+        focusable={true}
+        source={{uri: sourceURL,type: 'mp4'}}
+        ref={videoPlayerRef}
+        style={{
+          ...styles.mediaPlayer,
+          backgroundColor: 'black',
+          ...videoStyle,
+        }}
+        onEnd={onEnd}
+        onLoad={onLoad}
+        onLoadStart={onLoadStart}
+        onProgress={onProgress}
+        paused={paused}
+        resizeMode={resizeMode}
+        // onFullScreen={isFullScreen}
+        // fullscreen={isFullScreen}
+        fullscreenAutorotate={true}
+      />
       <MediaControls
-              containerStyle={{ backgroundColor: 'rgba(0,0,0,0)', zIndex: 100 }}
-              sliderStyle={{ containerStyle: { zIndex: 100, paddingBottom: isLandscape ? wp(16) : hp(5) } }}
-              // isFullScreen={false}
-              // onFullScreen={onFullScreen}
-              duration={duration}
-              isLoading={isLoading}
-              mainColor={'rgba(0,0,0,0.5)'}
-              onPaused={onPaused}
-              onReplay={onReplay}
-              onSeek={onSeek}
-              onSeeking={onSeeking}
-              playerState={playerState}
-              progress={currentTime}
-          />
+        containerStyle={{backgroundColor: 'rgba(0,0,0,0)', zIndex: 100}}
+        sliderStyle={{
+          containerStyle: {
+            zIndex: 100,
+            paddingBottom: isLandscape ? wp(16) : hp(5),
+          },
+        }}
+        // isFullScreen={false}
+        // onFullScreen={onFullScreen}
+        duration={duration}
+        isLoading={isLoading}
+        mainColor={'rgba(0,0,0,0.5)'}
+        onPaused={onPaused}
+        onReplay={onReplay}
+        onSeek={onSeek}
+        onSeeking={onSeeking}
+        playerState={playerState}
+        progress={currentTime}
+      />
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   mediaPlayer: {
     backgroundColor: colors.blackColor,
     justifyContent: 'center',
   },
-})
+});
 export default CustomVideoPlayer;

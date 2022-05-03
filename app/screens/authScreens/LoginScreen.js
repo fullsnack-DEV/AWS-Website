@@ -52,12 +52,12 @@ export default function LoginScreen({navigation}) {
   const validate = useCallback(() => {
     if (email === '') {
       setloading(false);
-      Alert.alert(strings.appName, 'Email cannot be blank');
+      Alert.alert('Email cannot be blank');
       return false;
     }
     if (validateEmail(email) === false) {
       setloading(false);
-      Alert.alert('', strings.validEmailMessage);
+      Alert.alert(strings.validEmailMessage);
       return false;
     }
     if (password === '') {
@@ -69,7 +69,8 @@ export default function LoginScreen({navigation}) {
   }, [email, password]);
 
   const validateEmail = (emailText) => {
-    if (/^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w\w+)+$/.test(emailText)) {
+    console.log('email text', emailText);
+    if (/^[\w-.+]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailText)) {
       return true;
     }
 
@@ -257,6 +258,9 @@ export default function LoginScreen({navigation}) {
         }
         if (error.code === 'auth/invalid-email') {
           message = strings.validEmailMessage;
+        }
+        if (error.code === 'auth/user-disabled') {
+          message = strings.terminationAlert;
         }
         if (error.code === 'auth/wrong-password') {
           message = 'The email and password you entered do not match.';
