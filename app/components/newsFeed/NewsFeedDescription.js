@@ -1,5 +1,5 @@
 /* eslint-disable no-useless-escape */
-import React, {useState, useContext, useCallback, useMemo, useRef} from 'react';
+import React, {useContext, useCallback, useMemo, useRef} from 'react';
 import {StyleSheet, View, Text, FlatList} from 'react-native';
 import ReadMore from '@fawazahmed/react-native-read-more';
 
