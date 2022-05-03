@@ -238,7 +238,7 @@ import DeactivatedSportsListScreen from '../components/Home/DeactivatedSportsLis
 import ActivitySettingScreen from '../screens/account/userSettingPrivacy/sportsActivity/ActivitySettingScreen';
 import DeactivateAccountScreen from '../components/Home/DeactivateAccountScreen';
 import TerminateAccountScreen from '../components/Home/TerminateAccountScreen';
-import PauseTeamScreen from '../components/Home/PauseTeamScreen';
+import PauseGroupScreen from '../components/Home/PauseGroupScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -463,6 +463,7 @@ const AccountNavigator = () => (
       component={ScheduleScreen}
       options={{
         title: 'Schedule',
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -3211,8 +3212,8 @@ const AccountNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="PauseTeamScreen"
-      component={PauseTeamScreen}
+      name="PauseGroupScreen"
+      component={PauseGroupScreen}
       options={{
         title: 'Pause Team',
         headerTintColor: colors.blackColor,

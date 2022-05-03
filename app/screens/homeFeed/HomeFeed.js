@@ -332,11 +332,12 @@ const HomeFeed = ({
     () => (
       <>
         {homeFeedHeaderComponent()}
-        {/* {(isAdmin && currentTab === 0) ? StickyHeaderComponent : null} */}
-        {StickyHeaderComponent}
+        {isAdmin || !['user','player'].includes(currentUserData?.entity_type) ? StickyHeaderComponent : null}
+       
+        
       </>
     ),
-    [StickyHeaderComponent, homeFeedHeaderComponent],
+    [StickyHeaderComponent, currentUserData?.entity_type, homeFeedHeaderComponent, isAdmin],
   );
 
   const updateCommentCount = (updatedComment) => {

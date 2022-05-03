@@ -203,6 +203,7 @@ const ScheduleNavigator = () => (
       component={ScheduleScreen}
       options={{
         title: 'Schedule',
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

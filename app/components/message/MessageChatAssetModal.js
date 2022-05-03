@@ -2,11 +2,10 @@ import React from 'react';
 import {
   View,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
   Image,
   TouchableOpacity,
-  Text, Dimensions,
+  Text,
+  Dimensions,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -27,137 +26,147 @@ export default function MessageChatAssetModal({
   assetType,
   assetURI,
 }) {
-  const portraitImgDimention = { width: wp(100), height: hp(100) }
+  const portraitImgDimention = {width: wp(100), height: hp(100)};
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: colors.blackColor }}
-      behavior={ Platform.OS === 'ios' ? 'padding' : null }>
-      <View style={{ flex: 1 }}>
+    <View style={{flex: 1, backgroundColor: colors.blackColor}}>
+      <View style={{flex: 1}}>
         {assetType === 'video' ? (
-          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+          <View
+            style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
             <Image
-                  source={images.portraitVideoImage}
-                  resizeMode={'cover'}
-                  style={{
-                    height: portraitImgDimention.height,
-                    width: portraitImgDimention.width,
-                  }}
-              />
+              source={images.portraitVideoImage}
+              resizeMode={'cover'}
+              style={{
+                height: portraitImgDimention.height,
+                width: portraitImgDimention.width,
+              }}
+            />
             <View
-                  style={[
-                    styles.singleImageDisplayStyle,
-                    {
-                      width: portraitImgDimention.width,
-                      height: portraitImgDimention.height,
-                      position: 'absolute',
-                    },
-                  ]}>
+              style={[
+                styles.singleImageDisplayStyle,
+                {
+                  width: portraitImgDimention.width,
+                  height: portraitImgDimention.height,
+                  position: 'absolute',
+                },
+              ]}>
               <FastImage
-                    style={styles.loadimageStyle}
-                    source={images.imageLoadingGIF}
-                    resizeMode={FastImage.resizeMode.contain}
-                />
+                style={styles.loadimageStyle}
+                source={images.imageLoadingGIF}
+                resizeMode={FastImage.resizeMode.contain}
+              />
               <Text style={styles.loadingTextStyle}>Loading...</Text>
             </View>
             <CustomVideoPlayer
-                  isLandscape={false}
-                  sourceURL={assetURI}
-                  containerStyle={{
-                    ...styles.singleImageDisplayStyle,
-                    position: 'absolute',
-                    height: portraitImgDimention.height,
-                    width: portraitImgDimention.width,
-                  }}
-                  videoStyle={{
-                    height: portraitImgDimention.height,
-                    width: portraitImgDimention.width,
-                  }}
-              />
+              isLandscape={false}
+              sourceURL={assetURI}
+              containerStyle={{
+                ...styles.singleImageDisplayStyle,
+                position: 'absolute',
+                height: portraitImgDimention.height,
+                width: portraitImgDimention.width,
+              }}
+              videoStyle={{
+                height: portraitImgDimention.height,
+                width: portraitImgDimention.width,
+              }}
+            />
           </View>
         ) : (
           <ImageZoom
-                doubleClickInterval={250}
-                cropWidth={Dimensions.get('window').width}
-                cropHeight={Dimensions.get('window').height}
-                imageWidth={portraitImgDimention.width}
-                imageHeight={portraitImgDimention.height}
-            >
+            doubleClickInterval={250}
+            cropWidth={Dimensions.get('window').width}
+            cropHeight={Dimensions.get('window').height}
+            imageWidth={portraitImgDimention.width}
+            imageHeight={portraitImgDimention.height}>
             <View
-                style={[
-                  styles.singleImageDisplayStyle,
-                  {
-                    width: portraitImgDimention.width,
-                    height: portraitImgDimention.height,
-                    position: 'absolute',
-                  },
-                ]}>
+              style={[
+                styles.singleImageDisplayStyle,
+                {
+                  width: portraitImgDimention.width,
+                  height: portraitImgDimention.height,
+                  position: 'absolute',
+                },
+              ]}>
               <FastImage
-                  style={styles.loadimageStyle}
-                  source={images.imageLoadingGIF}
-                  resizeMode={FastImage.resizeMode.contain}
+                style={styles.loadimageStyle}
+                source={images.imageLoadingGIF}
+                resizeMode={FastImage.resizeMode.contain}
               />
               <Text style={styles.loadingTextStyle}>Loading...</Text>
             </View>
             <FastImage
-                  style={[styles.uploadedImage, {
-                    height: portraitImgDimention.height,
-                    width: portraitImgDimention.width,
-                  }]}
-                  source={{ uri: assetURI }}
-                  resizeMode={ FastImage.resizeMode.contain }
-              />
+              style={[
+                styles.uploadedImage,
+                {
+                  height: portraitImgDimention.height,
+                  width: portraitImgDimention.width,
+                },
+              ]}
+              source={{uri: assetURI}}
+              resizeMode={FastImage.resizeMode.contain}
+            />
             <Image
-                  style={{
-                    position: 'absolute',
-                    height: hp('10%'),
-                    width: portraitImgDimention.width,
-                  }}
-                  source={images.landscapeTopImage}
-                  resizeMode={'stretch'}
-              />
+              style={{
+                position: 'absolute',
+                height: hp('10%'),
+                width: portraitImgDimention.width,
+              }}
+              source={images.landscapeTopImage}
+              resizeMode={'stretch'}
+            />
             <Image
-                  style={{
-                    position: 'absolute',
-                    height: hp('10%'),
-                    width: portraitImgDimention.width,
-                    bottom: 0,
-                  }}
-                  source={images.landscapeBottomImage}
-                  resizeMode={'stretch'}
-              />
+              style={{
+                position: 'absolute',
+                height: hp('10%'),
+                width: portraitImgDimention.width,
+                bottom: 0,
+              }}
+              source={images.landscapeBottomImage}
+              resizeMode={'stretch'}
+            />
           </ImageZoom>
         )}
-        <View style={{ position: 'absolute' }}>
+        <View style={{position: 'absolute'}}>
           <Header
-            mainContainerStyle={{ paddingVertical: 5, width: wp(100) }}
+            mainContainerStyle={{paddingVertical: 5, width: wp(100)}}
             leftComponent={
-              <TouchableOpacity onPress={() => {
-                Orientation.lockToPortrait();
-                backBtnPress()
-              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  Orientation.lockToPortrait();
+                  backBtnPress();
+                }}>
                 <Image
                   source={images.backArrow}
                   resizeMode={'contain'}
-                  style={{ height: 22, width: 16, tintColor: colors.whiteColor }}
+                  style={{height: 22, width: 16, tintColor: colors.blackColor}}
                 />
               </TouchableOpacity>
             }
-            centerComponent={<Text style={{
- fontFamily: fonts.RBold, fontSize: 16, color: colors.whiteColor, textAlign: 'center',
-            }}>{title}</Text>}
+            centerComponent={
+              <Text
+                style={{
+                  fontFamily: fonts.RBold,
+                  fontSize: 16,
+                  color: colors.blackColor,
+                  textAlign: 'center',
+                }}>
+                {title}
+              </Text>
+            }
             rightComponent={
               <TouchableOpacity onPress={() => {}}>
                 <Image
                   source={images.vertical3Dot}
                   resizeMode={'contain'}
-                  style={{ height: 22, width: 22, tintColor: colors.whiteColor }}
+                  style={{height: 18, width: 10, tintColor: colors.blackColor}}
                 />
               </TouchableOpacity>
             }
           />
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

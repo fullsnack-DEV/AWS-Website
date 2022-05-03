@@ -10,6 +10,8 @@ const fonts = {
   RBold: 'Roboto-Bold',
   RThinItalic: 'Roboto-ThinItalic',
   RBlackItalic: 'Roboto-BlackItalic',
+  Roboto: 'Roboto',
+  LRegular:'Lato-Regular'
 };
 
 export default fonts;

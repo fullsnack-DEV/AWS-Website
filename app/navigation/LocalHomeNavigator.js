@@ -65,7 +65,7 @@ const LocalHomeNavigator = () => (
         headerTitleStyle: {
           fontWeight: '500',
         },
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,

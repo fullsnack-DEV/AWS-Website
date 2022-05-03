@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-unused-vars */
 import React, {
@@ -13,6 +14,7 @@ import {StyleSheet, View, Alert, Text} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
+import {useIsFocused} from '@react-navigation/native';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
@@ -31,12 +33,18 @@ import NewsFeedShimmer from '../../components/shimmer/newsFeed/NewsFeedShimmer';
 import {ImageUploadContext} from '../../context/GetContexts';
 import Header from '../../components/Home/Header';
 import fonts from '../../Constants/Fonts';
-import {widthPercentageToDP as wp} from '../../utils';
+import {setStorage, widthPercentageToDP as wp} from '../../utils';
 import strings from '../../Constants/String';
 import {getShortsList, getSportsList} from '../../api/Games'; // getRecentGameDetails
+import TCAccountDeactivate from '../../components/TCAccountDeactivate';
+import {userActivate} from '../../api/Users';
+import {groupUnpaused} from '../../api/Groups';
+import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 
 const FeedsScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
+  const isFocused = useIsFocused();
+
   const imageUploadContext = useContext(ImageUploadContext);
   const [postData, setPostData] = useState([]);
   const [firstTimeLoading, setFirstTimeLoading] = useState(false);
@@ -50,6 +58,32 @@ const FeedsScreen = ({navigation}) => {
   const galleryRef = useRef();
   const [isAdmin, setIsAdmin] = useState(true);
   const [sports, setSports] = useState([]);
+
+  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
+  const [pointEvent, setPointEvent] = useState('auto');
+
+  useEffect(() => {
+    setIsAccountDeactivated(false);
+    setPointEvent('auto');
+    if (isFocused) {
+      console.log('its called....', authContext.entity.role);
+      if (authContext?.entity?.obj?.is_pause === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+      if (authContext?.entity?.obj?.is_deactivate === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+    }
+  }, [
+    authContext.entity?.obj.entity_type,
+    authContext.entity?.obj?.is_deactivate,
+    authContext.entity?.obj?.is_pause,
+    authContext.entity.role,
+    isFocused,
+    pointEvent,
+  ]);
 
   useEffect(() => {
     setFirstTimeLoading(true);
@@ -434,13 +468,123 @@ const FeedsScreen = ({navigation}) => {
     ),
     [topRightButton],
   );
+  const unPauseGroup = () => {
+    setloading(true);
+    groupUnpaused(authContext)
+      .then((response) => {
+        setIsAccountDeactivated(false);
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+          });
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const reActivateUser = () => {
+    setloading(true);
+    userActivate(authContext)
+      .then((response) => {
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+          });
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      {renderTopHeader}
-      {firstTimeLoading ? <NewsFeedShimmer /> : renderNewsFeedList}
-      {renderImageProgress}
+      <View
+        style={{opacity: isAccountDeactivated ? 0.5 : 1}}
+        pointerEvents={pointEvent}>
+        {renderTopHeader}
+      </View>
+      {isAccountDeactivated && (
+        <TCAccountDeactivate
+          type={
+            authContext?.entity?.obj?.is_pause === true
+              ? 'pause'
+              : authContext?.entity?.obj?.under_terminate === true
+              ? 'terminate'
+              : 'deactivate'
+          }
+          onPress={() => {
+            Alert.alert(
+              `Are you sure you want to ${
+                authContext?.entity?.obj?.is_pause === true
+                  ? 'unpause'
+                  : 'reactivate'
+              } this account?`,
+              '',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text:
+                    authContext?.entity?.obj?.is_pause === true
+                      ? 'Unpause'
+                      : 'Reactivate',
+                  style: 'destructive',
+                  onPress: () => {
+                    if (authContext?.entity?.obj?.is_pause === true) {
+                      unPauseGroup();
+                    } else {
+                      reActivateUser();
+                    }
+                  },
+                },
+              ],
+              {cancelable: false},
+            );
+          }}
+        />
+      )}
+      <View
+        style={{flex: 1, opacity: isAccountDeactivated ? 0.5 : 1}}
+        pointerEvents={pointEvent}>
+        {firstTimeLoading ? <NewsFeedShimmer /> : renderNewsFeedList}
+        {renderImageProgress}
+      </View>
     </View>
   );
 };

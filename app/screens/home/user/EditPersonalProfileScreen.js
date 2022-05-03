@@ -33,7 +33,6 @@ import fonts from '../../../Constants/Fonts';
 import uploadImages from '../../../utils/imageAction';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import AuthContext from '../../../auth/context';
-import * as Utility from '../../../utils';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import images from '../../../Constants/ImagePath';
 import TCImage from '../../../components/TCImage';
@@ -210,7 +209,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
   const callUpdateUserAPI = (userProfile) => {
     console.log('userProfileuserProfile', userProfile);
 
-    updateUserProfile(userProfile, authContext).then(async (response) => {
+    updateUserProfile(userProfile, authContext).then((response) => {
       if (response && response.status === true) {
         const entity = authContext.entity;
         entity.obj = response.payload;
@@ -221,24 +220,20 @@ export default function EditPersonalProfileScreen({navigation, route}) {
           ? response?.payload?.user_id
           : response?.payload?.group_id;
         const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(entity_id, response?.payload, accountType, authContext)
-          .then(async (responseJSON) => {
-            const qbUser = responseJSON?.user;
-            entity.QB = {
-              ...entity.QB,
-              fullName: qbUser?.full_name,
-              customData: qbUser?.custom_data,
-              lastRequestAt: qbUser?.last_request_at,
-            };
-            authContext.setEntity({...entity});
-            await Utility.setStorage('authContextEntity', {...entity});
+        QBupdateUser(
+          entity_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
             setloading(false);
             navigation.goBack();
           })
-          .catch(async (error) => {
+          .catch((error) => {
             console.log('QB error : ', error);
-            authContext.setEntity({...entity});
-            await Utility.setStorage('authContextEntity', {...entity});
+
             setloading(false);
             navigation.goBack();
           });

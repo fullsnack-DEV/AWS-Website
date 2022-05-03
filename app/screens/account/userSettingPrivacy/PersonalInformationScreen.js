@@ -49,6 +49,7 @@ import TCTextField from '../../../components/TCTextField';
 import TCThickDivider from '../../../components/TCThickDivider';
 import TCImage from '../../../components/TCImage';
 import uploadImages from '../../../utils/imageAction';
+import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 
 export default function PersonalInformationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -198,7 +199,6 @@ export default function PersonalInformationScreen({navigation, route}) {
     return true;
   };
 
- 
   const isIconCheckedOrNot = ({item, index}) => {
     console.log('SELECTED:::', index);
 
@@ -282,21 +282,27 @@ export default function PersonalInformationScreen({navigation, route}) {
 
   const updateUser = (params) => {
     console.log('bodyPARAMS:: ', params);
-    setloading(true);
     updateUserProfile(params, authContext)
-      .then(async (response) => {
-        const currentEntity = {
-          ...authContext.entity,
-          obj: response.payload,
-        };
-        authContext.setEntity({...currentEntity});
-        Utility.setStorage('authContextEntity', {...currentEntity});
-       
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.appName, 'Profile changed sucessfully');
-          navigation.goBack();
-        }, 1000);
+      .then((response) => {
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+
+            navigation.goBack();
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+
+            setloading(false);
+            navigation.goBack();
+          });
       })
       .catch((e) => {
         setTimeout(() => {
@@ -339,8 +345,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           marginRight: 15,
           justifyContent: 'space-between',
         }}>
-        <View
-          style={{...styles.halfMatchFeeView}}>
+        <View style={{...styles.halfMatchFeeView}}>
           <TextInput
             placeholder={'Height'}
             style={{...styles.halffeeText}}
@@ -354,7 +359,6 @@ export default function PersonalInformationScreen({navigation, route}) {
                 },
               });
             }}
-           
             value={userInfo?.height?.height}
           />
         </View>
@@ -377,7 +381,6 @@ export default function PersonalInformationScreen({navigation, route}) {
             });
           }}
           value={userInfo?.height?.height_type}
-         
           useNativeAndroidPickerStyle={false}
           style={{
             inputIOS: {
@@ -389,7 +392,6 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-              
             },
             inputAndroid: {
               fontSize: wp('4%'),
@@ -400,7 +402,6 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-             
             },
           }}
           Icon={() => (
@@ -422,8 +423,7 @@ export default function PersonalInformationScreen({navigation, route}) {
           marginRight: 15,
           justifyContent: 'space-between',
         }}>
-        <View
-          style={{...styles.halfMatchFeeView}}>
+        <View style={{...styles.halfMatchFeeView}}>
           <TextInput
             placeholder={'Weight'}
             style={{...styles.halffeeText}}
@@ -437,7 +437,6 @@ export default function PersonalInformationScreen({navigation, route}) {
                 },
               });
             }}
-           
             value={userInfo?.weight?.weight}
           />
         </View>
@@ -460,7 +459,6 @@ export default function PersonalInformationScreen({navigation, route}) {
             });
           }}
           value={userInfo?.weight?.weight_type}
-          
           useNativeAndroidPickerStyle={false}
           style={{
             inputIOS: {
@@ -472,7 +470,6 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-              
             },
             inputAndroid: {
               fontSize: wp('4%'),
@@ -483,7 +480,6 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-             
             },
           }}
           Icon={() => (
@@ -536,7 +532,6 @@ export default function PersonalInformationScreen({navigation, route}) {
             });
           }}
           value={item.country_code}
-         
           useNativeAndroidPickerStyle={false}
           style={{
             inputIOS: {
@@ -548,7 +543,6 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-             
             },
             inputAndroid: {
               fontSize: wp('4%'),
@@ -559,15 +553,13 @@ export default function PersonalInformationScreen({navigation, route}) {
               paddingRight: 30,
               backgroundColor: colors.offwhite,
               borderRadius: 5,
-              
             },
           }}
           Icon={() => (
             <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
           )}
         />
-        <View
-          style={{...styles.halfMatchFeeView}}>
+        <View style={{...styles.halfMatchFeeView}}>
           <TextInput
             placeholder={'Phone number'}
             style={{...styles.halffeeText}}
@@ -592,14 +584,12 @@ export default function PersonalInformationScreen({navigation, route}) {
                 ),
               });
             }}
-           
             value={item.phone_number}
           />
         </View>
       </View>
     </View>
   );
- 
 
   const onProfileImageClicked = () => {
     setTimeout(() => {
@@ -716,7 +706,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             style={styles.headerRightButton}
             onPress={() => {
               // if (!editMode) changeEditMode();
-              // else 
+              // else
               onSavePress();
             }}>
             Done
@@ -745,7 +735,6 @@ export default function PersonalInformationScreen({navigation, route}) {
           />
 
           <TouchableOpacity
-           
             style={styles.profileCameraButtonStyle}
             onPress={() => onProfileImageClicked()}>
             <Image
@@ -756,48 +745,43 @@ export default function PersonalInformationScreen({navigation, route}) {
         </View>
 
         <TCLabel title={'Name'} />
-  
 
-  
         <View style={{marginHorizontal: 15, flexDirection: 'row'}}>
           <TextInput
-                placeholder={strings.fnameText}
-                style={{
-                  ...styles.matchFeeTxt,
-                  flex: 1,
-                  marginRight: 5,
-                 
-                }}
-                onChangeText={(text) => {
-                  setUserInfo({...userInfo, first_name: text});
-                }}
-                value={userInfo.first_name}
-              />
+            placeholder={strings.fnameText}
+            style={{
+              ...styles.matchFeeTxt,
+              flex: 1,
+              marginRight: 5,
+            }}
+            onChangeText={(text) => {
+              setUserInfo({...userInfo, first_name: text});
+            }}
+            value={userInfo.first_name}
+          />
           <TextInput
-                placeholder={strings.lnameText}
-                style={{
-                  ...styles.matchFeeTxt,
-                  flex: 1,
-                  marginLeft: 5,
-                }}
-                onChangeText={(text) => {
-                  setUserInfo({...userInfo, last_name: text});
-                }}
-                value={userInfo.last_name}
-              />
+            placeholder={strings.lnameText}
+            style={{
+              ...styles.matchFeeTxt,
+              flex: 1,
+              marginLeft: 5,
+            }}
+            onChangeText={(text) => {
+              setUserInfo({...userInfo, last_name: text});
+            }}
+            value={userInfo.last_name}
+          />
         </View>
-      
 
         <View style={styles.fieldView}>
           <TCLabel title={strings.locationTitle} />
           <TouchableOpacity
-           
             onPress={() => {
               // eslint-disable-next-line no-unused-expressions
-             
-                navigation.navigate('SearchLocationScreen', {
-                  comeFrom: 'PersonalInformationScreen',
-                });
+
+              navigation.navigate('SearchLocationScreen', {
+                comeFrom: 'PersonalInformationScreen',
+              });
             }}>
             <TextInput
               placeholder={strings.searchCityPlaceholder}
@@ -819,7 +803,6 @@ export default function PersonalInformationScreen({navigation, route}) {
             onChangeText={(text) =>
               setUserInfo({...userInfo, description: text})
             }
-           
             multiline
             maxLength={150}
             value={userInfo.description}
@@ -858,23 +841,21 @@ export default function PersonalInformationScreen({navigation, route}) {
           keyExtractor={(index) => index.toString()}
           renderItem={renderPhoneNumber}
         />
-     
+
         <TCMessageButton
-            title={strings.addPhone}
-            width={85}
-            alignSelf="center"
-            marginTop={15}
-            onPress={() => addPhoneNumber()}
-          />
-       
+          title={strings.addPhone}
+          width={85}
+          alignSelf="center"
+          marginTop={15}
+          onPress={() => addPhoneNumber()}
+        />
 
         <TCLabel title={strings.languageTitle} />
         <TouchableOpacity
           style={{...styles.searchView}}
-         
           onPress={() => {
             // eslint-disable-next-line no-unused-expressions
-           toggleModal();
+            toggleModal();
           }}>
           <TextInput
             style={styles.searchTextField}
@@ -895,7 +876,6 @@ export default function PersonalInformationScreen({navigation, route}) {
         <View>
           <TCLabel title={'Address'} />
           <TCTextField
-            
             value={streetAddress}
             onChangeText={(text) => setStreetAddress(text)}
             placeholder={strings.addressPlaceholder}
@@ -907,7 +887,6 @@ export default function PersonalInformationScreen({navigation, route}) {
         </View>
 
         <TouchableOpacity
-          
           onPress={() =>
             navigation.navigate('SearchLocationScreen', {
               comeFrom: 'PersonalInformationScreen',
@@ -924,7 +903,6 @@ export default function PersonalInformationScreen({navigation, route}) {
 
         <View>
           <TCTextField
-           
             value={postalCode}
             onChangeText={(text) => setPostalCode(text)}
             placeholder={strings.postalCodeText}
@@ -1111,7 +1089,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginTop: 20,
   },
- 
+
   matchFeeTxt: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,

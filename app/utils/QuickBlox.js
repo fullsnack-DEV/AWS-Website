@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable default-param-last */
 /* eslint-disable consistent-return */
 /* eslint-disable import/no-cycle */
@@ -8,21 +9,6 @@ import QB from 'quickblox-react-native-sdk';
 import images from '../Constants/ImagePath';
 import qbApiCall from './qbApiCall';
 import * as Utility from './index';
-
-// const QBSetting = {
-//   accountKey: 'S3jzJdhgvNjrHTT8VRMi',
-//   appId: '92185',
-//   authKey: 'NGpyPS265yy4QBS',
-//   authSecret: 'bdxqa7sDzbODJew',
-// };
-// QB.settings
-//   .init(QBSetting)
-//   .then(() => {})
-//   .catch(() => {
-//     // Some error occured, look at the exception message for more details
-//   });
-
-console.log('constant::=>');
 
 let QUICKBLOX_BASE_URL;
 let QB_Auth_Password;
@@ -93,85 +79,6 @@ export const getQBSetting = async () => {
     }
   });
 };
-
-// export const getQBSetting = () => Utility.getStorage('appSetting').then(async (setting) => {
-//     console.log('Setting utility:=>', setting);
-
-//     if (setting !== null && setting.quickblox !== null) {
-//       console.log('setting is not null');
-
-//       QUICKBLOX_BASE_URL = setting.quickblox.QUICKBLOX_BASE_URL;
-//       QB_Auth_Password = setting.quickblox.QB_Auth_Password;
-//       MESSAGE_LIMIT = setting.quickblox.MESSAGE_LIMIT;
-//       DIALOG_LIST_LIMIT = setting.quickblox.DIALOG_LIST_LIMIT;
-//       USERS_LIST_LIMIT = setting.quickblox.USERS_LIST_LIMIT;
-//       return setting;
-//     }
-//     if (setting === null) {
-//       console.log('setting is  null');
-
-//       return {
-//         base_url_sporticon:
-//           'https://dev-townscup-gallery.s3.amazonaws.com/sporticon/',
-//         setting_id: '1d5db8a3-0334-4e4d-bdc5-70172438f221',
-
-//         publishableKey: 'pk_test_ArfgYsDvhFEnPImjf2QHH5YH00ozgvzrTO',
-
-//         quickblox: {
-//           authKey: 'NGpyPS265yy4QBS',
-//           DIALOG_LIST_LIMIT: 1000,
-//           authSecret: 'bdxqa7sDzbODJew',
-//           USERS_LIST_LIMIT: 1000,
-//           appId: '92185',
-//           QUICKBLOX_BASE_URL: 'https://api.quickblox.com',
-//           MESSAGE_LIMIT: 50,
-//           accountKey: 'S3jzJdhgvNjrHTT8VRMi',
-//           QB_Auth_Password: 'qbPassword',
-//         },
-//         elastic: {
-//           host: 'https://townscup.es.us-east-1.aws.found.io:9243',
-//           APIVersion: '7.x',
-//           username: 'elastic',
-//           password: 'tqRPhYFnjqGuh99bLp4F6jZZ',
-//         },
-//         firebaseConfig: {
-//           apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
-//           authDomain: 'townscup-fee6e.firebaseapp.com',
-//           databaseURL: 'https://townscup-fee6e.firebaseio.com',
-//           projectId: 'townscup-fee6e',
-//           storageBucket: 'townscup-fee6e.appspot.com',
-//           messagingSenderId: '1003329053001',
-//           appId: '1:1003329053001:web:f079b7ed53716fa8463a98',
-//           measurementId: 'G-N44NC0Z1Q7',
-//         },
-//       };
-
-//       // axios({
-//       //   method: 'get',
-//       //   url: `${Config.BASE_URL}/app/settings`,
-//       //   withCredentials: true,
-//       //   headers: {
-//       //     Accept: 'application/json',
-//       //     setting_token: '3c5a5976-4831-41b3-a0cb-1aeb9d2e2c1c',
-//       //   },
-//       // }).then(async (response) => {
-//       //   if (!response.data.status) {
-//       //     console.log('ERROR RESPONSE ::', response.data);
-//       //     throw response.data.messages || response;
-//       //   } else {
-//       //     console.log('setting response:=>', response.data.payload.app.quickblox);
-//       //     QUICKBLOX_BASE_URL = response.data.payload.app.quickblox.QUICKBLOX_BASE_URL;
-//       //     QB_Auth_Password = response.data.payload.app.quickblox.QB_Auth_Password;
-//       //     MESSAGE_LIMIT = response.data.payload.app.quickblox.MESSAGE_LIMIT;
-//       //     DIALOG_LIST_LIMIT = response.data.payload.app.quickblox.DIALOG_LIST_LIMIT;
-//       //     USERS_LIST_LIMIT = response.data.payload.app.quickblox.USERS_LIST_LIMIT;
-//       //     await Utility.setStorage('appSetting', response.data.payload.app);
-
-//       //     return response.data.payload.app;
-//       //   }
-//       // });
-//     }
-//   });
 
 export const QB_MAX_ASSET_SIZE_UPLOAD = 104857600;
 
@@ -282,6 +189,10 @@ export const QBcreateUser = (uniqueID, customData, userAccountType) => {
     createdAt = '',
     createdBy = {},
     group_name = '',
+    is_pause = false,
+    is_deactivate = false,
+    is_terminate = false,
+    under_terminate = false,
   } = customData;
 
   const custData = {
@@ -295,6 +206,10 @@ export const QBcreateUser = (uniqueID, customData, userAccountType) => {
     createdBy,
     group_id,
     group_name,
+    is_pause,
+    is_deactivate,
+    is_terminate,
+    under_terminate,
   };
   custData.full_name = pureName;
   console.log('create user call');
@@ -306,14 +221,14 @@ export const QBcreateUser = (uniqueID, customData, userAccountType) => {
   });
 };
 
-const getQBObject = async (authContext) => authContext?.entity?.QB;
-
 export const QBupdateUser = async (
   uniqueID,
   customData,
   userAccountType,
+  currentData,
   authContext,
 ) => {
+  console.log('customDatacustomData', customData);
   const nameType =
     customData?.entity_type === 'player' ? 'full_name' : 'group_name';
   const fullName = userAccountType + _.get(customData, [nameType], 'Full Name');
@@ -329,6 +244,10 @@ export const QBupdateUser = async (
     createdAt = '',
     createdBy = {},
     group_name = '',
+    is_pause = false,
+    is_deactivate = false,
+    is_terminate = false,
+    under_terminate = false,
   } = customData;
 
   const custData = {
@@ -342,9 +261,14 @@ export const QBupdateUser = async (
     createdBy,
     group_id,
     group_name,
+    is_pause,
+    is_deactivate,
+    is_terminate,
+    under_terminate,
   };
   custData.full_name = pureName;
-  const qbObj = await getQBObject(authContext);
+  const qbObj = authContext?.entity?.QB;
+  console.log('get QB OBJ---', custData);
   const url = `${QUICKBLOX_BASE_URL}/users/${qbObj?.id}.json`;
   const userObj = {
     user: {
@@ -353,6 +277,9 @@ export const QBupdateUser = async (
     },
   };
   if (qbObj?.token) {
+    console.log('urlurl', url);
+    console.log('qbObj?.token', qbObj?.token);
+
     return fetch(url, {
       method: 'PUT',
       headers: {
@@ -360,7 +287,35 @@ export const QBupdateUser = async (
         'QB-Token': qbObj?.token,
       },
       body: JSON.stringify(userObj),
-    }).then((response) => response.json());
+    })
+      .then((response) => response.json())
+      .then(async (data) => {
+        console.log('quick blox update call', data);
+        const entity = authContext.entity;
+        const qbUser = data?.user;
+        entity.QB = {
+          ...entity.QB,
+          fullName: qbUser?.full_name,
+          customData: qbUser?.custom_data,
+          lastRequestAt: qbUser?.last_request_at,
+        };
+        entity.obj = currentData;
+        if (
+          currentData.entity_type === 'player' ||
+          currentData.entity_type === 'user'
+        ) {
+          entity.auth.user = currentData;
+        }
+        authContext.setEntity({...entity});
+        if (
+          currentData.entity_type === 'player' ||
+          currentData.entity_type === 'user'
+        ) {
+          await Utility.setStorage('authContextUser', currentData);
+        }
+        await Utility.setStorage('authContextEntity', {...entity});
+        return true;
+      });
   }
   return false;
 };
@@ -428,6 +383,7 @@ export const QBsendMessage = (dialogId, body, file = null) =>
           },
         ];
       }
+
       return QB.chat.sendMessage(message);
     }
     throw new Error('server-not-connected');
@@ -451,6 +407,8 @@ export const QBcreateDialog = (
         dialogParams.name = groupName;
         dialogParams.type = type;
       }
+     
+      console.log('dialogParamsdialogParams',dialogParams);
       return QB.chat.createDialog(dialogParams);
     }
     throw new Error('server-not-connected');
@@ -465,26 +423,34 @@ export const QBupdateDialogNameAndPhoto = (
   QBChatConnected().then(async (connected) => {
     if (connected) {
       const update = {dialogId};
-      if (name) update.name = name;
-      if (photo) update.photo = photo;
-      if (!photo) {
+      if (name !== '') update.name = name;
+      if (photo !== '') {
+        update.photo = photo;
+      }else{
+        
         return QB.chat.updateDialog(update);
       }
-      const qbObj = await getQBObject(authContext);
+     
+      const qbObj = authContext?.entity?.QB;
       const url = `${QUICKBLOX_BASE_URL}/chat/Dialog/${dialogId}.json`;
+
+      console.log('URL::=>',url);
       return qbApiCall({
         url,
         method: 'PUT',
         qbToken: qbObj?.token,
         data: update,
       })
-        .then((res) => ({
-          // eslint-disable-next-line no-underscore-dangle
+        .then((res) => {
+          console.log('reeererererer',res);
+         return {
           dialogId: res?._id,
           name: res?.name,
           occupantsIds: res?.occupants_ids,
           dialogType: res?.type,
-        }))
+          photo: res?.photo,
+          created_at: res?.created_at,
+        }})
         .catch((error) => ({status: 'error', error}));
     }
     throw new Error('server-not-connected');
@@ -502,7 +468,18 @@ export const QBupdateDialogInvitees = async (
         addUsers,
         removeUsers,
       };
-      return QB.chat.updateDialog(update);
+      console.log('updateupdate', update);
+
+      return QB.chat
+        .updateDialog(update)
+        .then((updatedDialog) => {
+          // handle as necessary
+          return updatedDialog;
+        })
+        .catch((e) => {
+          // handle error
+          console.log(e);
+        });
     }
     throw new Error('server-not-connected');
   });
@@ -513,7 +490,7 @@ export const QBupdateDialogInvitees2 = async (
   removeUsers = [],
   authContext,
 ) => {
-  const qbObj = await getQBObject(authContext);
+  const qbObj = authContext?.entity?.QB;
   return QBChatConnected().then((connected) => {
     if (connected) {
       const update = {};
@@ -557,10 +534,10 @@ export const QBgetAllUsers = () =>
   });
 
 export const QBgetUserDetail = (field, fieldType, value) =>
-   QBChatConnected().then((connected) => {
+  QBChatConnected().then((connected) => {
     console.log('connected:', connected);
     if (connected) {
-     return Utility.getStorage('appSetting').then(async (setting) => {
+      return Utility.getStorage('appSetting').then(async (setting) => {
         console.log('SETTTTTTING USERS_LIST_LIMIT:', setting);
         const filter = {
           field,
@@ -574,9 +551,8 @@ export const QBgetUserDetail = (field, fieldType, value) =>
           filter,
         });
       });
-    } 
-      throw new Error('server-not-connected');
-    
+    }
+    throw new Error('server-not-connected');
   });
 
 export const QBgetFileURL = (fileID) =>
@@ -601,7 +577,7 @@ export const QBconnectAndSubscribe = async (entity) => {
     const {id} = entity.QB;
     const connectParams = {
       userId: id ?? 12345,
-      password: QB_Auth_Password ?? 'passw0rd!'
+      password: QB_Auth_Password ?? 'passw0rd!',
     };
     if (!connected) {
       return QB.chat

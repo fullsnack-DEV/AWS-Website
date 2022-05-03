@@ -24,6 +24,8 @@ const TCHorizontalMessageOverview = memo((
     occupantsIds,
   },
 ) => {
+  console.log('dialogType',dialogType);
+  console.log();
   // eslint-disable-next-line no-restricted-globals
   const getDateAndMonth = useMemo(() => ((!isNaN(lastMessageDate)) ? moment(lastMessageDate).format('DD MMM') : ''), [lastMessageDate]);
   return (

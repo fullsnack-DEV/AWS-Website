@@ -15,7 +15,6 @@ import React, {
   useContext,
   useMemo,
   useCallback,
-  useLayoutEffect,
 } from 'react';
 import FastImage from 'react-native-fast-image';
 import MarqueeText from 'react-native-marquee';
@@ -71,6 +70,7 @@ import {
   inviteUser,
   patchRegisterRefereeDetails,
   patchRegisterScorekeeperDetails,
+  userActivate,
 } from '../../api/Users';
 import {createPost, createReaction} from '../../api/NewsFeeds';
 import {
@@ -83,6 +83,7 @@ import {
   joinTeam,
   leaveTeam,
   inviteTeam,
+  groupUnpaused,
 } from '../../api/Groups';
 import * as RefereeUtils from '../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../scorekeeper/ScorekeeperUtility';
@@ -196,8 +197,10 @@ const HomeScreen = ({navigation, route}) => {
   // const viewRef = useRef();
   const mainFlatListRef = useRef();
   const confirmationRef = useRef();
-    // eslint-disable-next-line no-unused-vars
-    const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
+  const [pointEvent, setPointEvent] = useState('auto');
+
   const [mainFlatListFromTop] = useState(new Animated.Value(0));
   const [isUserHome, setIsUserHome] = useState(false);
   const [isClubHome, setIsClubHome] = useState(false);
@@ -321,6 +324,29 @@ const HomeScreen = ({navigation, route}) => {
       SetHideScore(true);
     }, 5000);
   }, []);
+
+  useEffect(() => {
+    setIsAccountDeactivated(false);
+    setPointEvent('auto');
+    if (isFocused) {
+      console.log('its called....', authContext.entity.role);
+      if (authContext?.entity?.obj?.is_pause === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+      if (authContext?.entity?.obj?.is_deactivate === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+    }
+  }, [
+    authContext.entity?.obj?.is_deactivate,
+    authContext.entity?.obj?.is_pause,
+    authContext.entity.role,
+    pointEvent,
+    isAccountDeactivated,
+    isFocused,
+  ]);
 
   useEffect(() => {
     if (route?.params?.isEntityCreated) {
@@ -592,83 +618,76 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: true,
-      headerTitle: '',
-      headerLeft: () => (
-        <TouchableOpacity
-          style={{flexDirection: 'row', alignItems: 'center'}}
-          disabled={!route?.params?.backButtonVisible}
-          onPress={() => navigation.goBack()}>
-          {route?.params?.backButtonVisible === true && (
-            <Image
-              source={images.backArrow}
-              style={{
-                height: 20,
-                width: 20,
-                resizeMode: 'contain',
-                tintColor: colors.lightBlackColor,
-                marginLeft: 15,
-                marginRight: 15,
-              }}
-            />
-          )}
-          <MarqueeText
-            style={styles.userNavigationTextStyle}
-            duration={3000}
-            marqueeOnStart
-            loop={true}
-            // marqueeDelay={0}
-            // marqueeResetDelay={1000}
-          >
-            {currentUserData?.full_name || currentUserData?.group_name}
-          </MarqueeText>
-          {/* <Text style={styles.userNavigationTextStyle}>
-           
-          </Text> */}
-
-          <Image
-            source={
-              (currentUserData.entity_type === 'team' && images.teamPatch) ||
-              (currentUserData.entity_type === 'club' && images.clubPatch)
-            }
-            style={{
-              height: 15,
-              width: 15,
-              marginLeft: 5,
-              resizeMode: 'cover',
-            }}
-          />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <View>
-          {isAdmin && (isUserHome || isTeamHome) && (
-            <TouchableOpacity onPress={onThreeDotPressed}>
+  const renderHeader = useMemo(
+    () => (
+      <Header
+        showBackgroundColor={true}
+        mainContainerStyle={{paddingBottom: 0}}
+        leftComponent={
+          <TouchableOpacity
+            style={{flexDirection: 'row', alignItems: 'center'}}
+            disabled={!route?.params?.backButtonVisible}
+            onPress={() => navigation.goBack()}>
+            {route?.params?.backButtonVisible === true && (
               <Image
-                source={images.threeDotIcon}
+                source={images.backArrow}
                 style={{
-                  height: 15,
-                  width: 15,
-                  tintColor: colors.lightBlackColor,
+                  height: 20,
+                  width: 20,
                   resizeMode: 'contain',
+                  tintColor: colors.lightBlackColor,
                   marginRight: 15,
                 }}
               />
-            </TouchableOpacity>
-          )}
-        </View>
-      ),
+            )}
+            <MarqueeText
+              style={styles.userNavigationTextStyle}
+              duration={3000}
+              marqueeOnStart
+              loop={true}>
+              {currentUserData?.full_name || currentUserData?.group_name}
+            </MarqueeText>
 
-      headerStyle: {
-        // shadowColor: 'transparent',
-        shadowOpacity: 0,
-        backgroundColor: '#fff',
-        borderBottomWidth: 0,
-      },
-    });
-  }, [currentUserData]);
+            <Image
+              source={
+                (currentUserData.entity_type === 'team' && images.teamPatch) ||
+                (currentUserData.entity_type === 'club' && images.clubPatch)
+              }
+              style={{
+                height: 15,
+                width: 15,
+                resizeMode: 'cover',
+              }}
+            />
+          </TouchableOpacity>
+        }
+        centerComponent={<View></View>}
+        rightComponent={
+          <View>
+            {isAdmin && (isUserHome || isTeamHome) && (
+              <View
+                style={{opacity: isAccountDeactivated ? 0.5 : 1}}
+                pointerEvents={pointEvent}>
+                <TouchableOpacity onPress={onThreeDotPressed}>
+                  <Image
+                    source={images.threeDotIcon}
+                    style={{
+                      height: 15,
+                      width: 15,
+                      tintColor: colors.lightBlackColor,
+                      resizeMode: 'contain',
+                      marginRight: 15,
+                    }}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        }
+      />
+    ),
+    [currentUserData],
+  );
 
   const getSettingOfBoth = (details) => {
     settingUtils
@@ -2278,29 +2297,6 @@ const HomeScreen = ({navigation, route}) => {
       isAdmin,
     });
   };
-  // <View style={{flex: 1}}>
-  //   {isUserHome && (
-  //     <UserInfo
-  //       navigation={navigation}
-  //       userDetails={currentUserData}
-  //       isAdmin={isAdmin}
-  //       onGroupListPress={onGroupListPress}
-  //       onGroupPress={onTeamPress}
-  //       onRefereesInPress={refereesInModal}
-  //       onPlayInPress={playInModel}
-  //     />
-  //   )}
-  //   {(isClubHome || isTeamHome) && (
-  //     <GroupInfo
-  //       navigation={navigation}
-  //       groupDetails={currentUserData}
-  //       isAdmin={isAdmin}
-  //       onGroupListPress={onGroupListPress}
-  //       onGroupPress={onTeamPress}
-  //       onMemberPress={onMemberPress}
-  //     />
-  //   )}
-  // </View>
 
   const renderMainScoreboardTab = () => {
     console.log('onScoreboardSearchTextChange', onScoreboardSearchTextChange);
@@ -3096,39 +3092,62 @@ const HomeScreen = ({navigation, route}) => {
             !currentUserData?.player_leaved) &&
           (!('player_leaved' in myGroupDetail) || !myGroupDetail?.player_leaved)
         ) {
-          navigation.navigate('InviteChallengeScreen', {
-            setting: mySettingObject,
-            sportName: currentUserData?.sport,
-            sportType: currentUserData?.sport_type,
-            groupObj: currentUserData,
-          });
+          if (myGroupDetail.is_pause === true) {
+            Alert.alert(`${myGroupDetail.group_name} is paused.`);
+          } else {
+            navigation.navigate('InviteChallengeScreen', {
+              setting: mySettingObject,
+              sportName: currentUserData?.sport,
+              sportType: currentUserData?.sport_type,
+              groupObj: currentUserData,
+            });
+          }
         } else {
           console.log('in else');
-          if (
-            'player_deactivated' in myGroupDetail ||
-            myGroupDetail?.player_deactivated
-          ) {
-            Alert.alert('Player deactiveted sport.');
-          } else if (
-            'player_leaved' in currentUserData ||
-            currentUserData?.player_leaved
-          ) {
-            Alert.alert(
-              `${currentUserData?.group_name} have't 2 players in team.`,
-            );
-          } else if (
-            'player_leaved' in myGroupDetail ||
-            myGroupDetail?.player_leaved
-          ) {
-            Alert.alert('You have\'t 2 players in team.');
+          if (myGroupDetail.sport_type === 'double') {
+            if (
+              'player_deactivated' in myGroupDetail ||
+              myGroupDetail?.player_deactivated
+            ) {
+              Alert.alert('Player deactiveted sport.');
+            } else if (
+              'player_leaved' in currentUserData ||
+              currentUserData?.player_leaved
+            ) {
+              Alert.alert(
+                `${currentUserData?.group_name} have't 2 players in team.`,
+              );
+            } else if (
+              'player_leaved' in myGroupDetail ||
+              myGroupDetail?.player_leaved
+            ) {
+              Alert.alert('You have\'t 2 players in team.');
+            }
+          } else {
+            console.log('invite block');
+            if (myGroupDetail.is_pause === true) {
+              Alert.alert(`${myGroupDetail.group_name} is paused.`);
+            } else {
+              navigation.navigate('InviteChallengeScreen', {
+                setting: mySettingObject,
+                sportName: currentUserData?.sport,
+                sportType: currentUserData?.sport_type,
+                groupObj: currentUserData,
+              });
+            }
           }
         }
       } else {
-        navigation.navigate('ManageChallengeScreen', {
-          groupObj: currentUserData,
-          sportName: currentUserData?.sport,
-          sportType: currentUserData?.sport_type,
-        });
+        console.log('manage block');
+        if (currentUserData?.is_pause === true) {
+          Alert.alert('Your team is paused.');
+        } else {
+          navigation.navigate('ManageChallengeScreen', {
+            groupObj: currentUserData,
+            sportName: currentUserData?.sport,
+            sportType: currentUserData?.sport_type,
+          });
+        }
       }
     }
   };
@@ -3566,11 +3585,16 @@ const HomeScreen = ({navigation, route}) => {
 
         setTimeout(() => {
           console.log('Sport name:=>', item.sport);
-          navigation.navigate('ManageChallengeScreen', {
-            groupObj: currentUserData,
-            sportName: item.sport,
-            sportType: currentUserData?.sport_type,
-          });
+
+          if (currentUserData?.is_pause === true) {
+            Alert.alert('Your team is paused.');
+          } else {
+            navigation.navigate('ManageChallengeScreen', {
+              groupObj: currentUserData,
+              sportName: item.sport,
+              sportType: currentUserData?.sport_type,
+            });
+          }
         }, 300);
       }}>
       <View
@@ -4004,616 +4028,409 @@ const HomeScreen = ({navigation, route}) => {
         }, 10);
       });
   };
+  const unPauseGroup = () => {
+    setloading(true);
+    groupUnpaused(authContext)
+      .then(async (response) => {
+        setIsAccountDeactivated(false);
+        console.log('deactivate account ', response);
+        setloading(false);
+        const entity = authContext.entity;
+        entity.obj = response.payload;
+        authContext.setEntity({...entity});
+        await Utility.setStorage('authContextEntity', {...entity});
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const reActivateUser = () => {
+    setloading(true);
+    userActivate(authContext)
+      .then(async (response) => {
+        console.log('deactivate account ', response);
+        setloading(false);
+        const entity = authContext.entity;
+        entity.auth.user = response.payload;
+        entity.obj = response.payload;
+        authContext.setEntity({...entity});
+        await Utility.setStorage('authContextUser', response.payload);
+        await Utility.setStorage('authContextEntity', {...entity});
+        navigation.pop(2);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   return (
     <View style={styles.mainContainer}>
+      {renderHeader}
+
       {isAccountDeactivated && (
-        <TCAccountDeactivate type={'paused'} onPress={() => {
-          Alert.alert('This is under development.');
-        }}/>
-      )}
-      <ActionSheet
-        ref={addRoleActionSheet}
-        options={[
-          strings.addPlaying,
-          strings.addRefereeing,
-          strings.addScorekeeping,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={3}
-        onPress={(index) => {
-          if (index === 0) {
-            // Add Playing
-            navigation.navigate('RegisterPlayer', {comeFrom: 'HomeScreen'});
-          } else if (index === 1) {
-            // Add Refereeing
-            navigation.navigate('RegisterReferee');
-          } else if (index === 2) {
-            // Add Scorekeeper
-            navigation.navigate('RegisterScorekeeper');
+        <TCAccountDeactivate
+          type={
+            authContext?.entity?.obj?.is_pause === true ? 'pause' : 'deactivate'
           }
-        }}
-      />
-
-      <ActionSheet
-        ref={manageChallengeActionSheet}
-        options={[
-          strings.manageChallengeShhetItem,
-          strings.sportActivity,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            // Add Playing
-
-            const entity = authContext.entity;
-
-            if (entity.role === 'user') {
-              if (entity?.obj?.registered_sports?.length > 0) {
-                setVisibleSportsModal(true);
-              } else {
-                Alert.alert('There is no registerd sports.');
-              }
-            }
-            if (entity.role === 'team') {
-              navigation.navigate('ManageChallengeScreen', {
-                groupObj: currentUserData,
-                sportName: currentUserData?.sport,
-                sportType: currentUserData?.sport_type,
-              });
-            }
-          } else if (index === 1) {
-            navigation.navigate('SportActivityScreen');
-          }
-        }}
-      />
-      <ActionSheet
-        ref={offerActionSheet}
-        options={offerOpetions()}
-        cancelButtonIndex={offerOpetions().length - 1}
-        onPress={(index) => {
-          if (offerOpetions()[index] === strings.refereeOffer) {
-            setloading(true);
-            const headers = {};
-            headers.caller_id = currentUserData?.group_id;
-
-            const promiseArr = [
-              // getGameSlots(
-              //   'referees',
-              //   authContext?.entity?.uid,
-              //   `status=accepted&sport=${currentUserData?.sport}&refereeDetail=true`,
-              //   headers,
-              //   authContext,
-              // ),
-              getGamesForReferee(
-                authContext?.entity?.uid,
-                currentUserData?.group_id,
-              ),
-              settingUtils.getSetting(
-                authContext?.entity?.uid,
-                'referee',
-                currentUserData?.sport,
-                authContext,
-              ),
-            ];
-
-            Promise.all(promiseArr).then(([gameList, refereeSetting]) => {
-              setloading(false);
-              console.log('Game slots:=>', gameList);
-              console.log('refereeSetting:=>', refereeSetting);
-              if (gameList) {
-                setMatchData([...gameList]);
-              }
-              if (
-                refereeSetting?.refereeAvailibility &&
-                refereeSetting?.game_fee &&
-                refereeSetting?.refund_policy &&
-                refereeSetting?.available_area
-              ) {
-                gameListRefereeModalRef.current.open();
-                setRefereeSettingObject(refereeSetting);
-              } else {
-                setTimeout(() => {
-                  Alert.alert(
-                    'You can\'t send offer, please configure your referee setting first.',
-                  );
-                }, 10);
-              }
-            });
-          } else if (offerOpetions()[index] === strings.scorekeeperOffer) {
-            setloading(true);
-            const headers = {};
-            headers.caller_id = currentUserData?.group_id;
-
-            const promiseArr = [
-              // getGameSlots(
-              //   'referees',
-              //   authContext?.entity?.uid,
-              //   `status=accepted&sport=${currentUserData?.sport}&refereeDetail=true`,
-              //   headers,
-              //   authContext,
-              // ),
-              getGamesForScorekeeper(
-                authContext?.entity?.uid,
-                currentUserData?.group_id,
-              ),
-              settingUtils.getSetting(
-                authContext?.entity?.uid,
-                'scorekeeper',
-                currentUserData?.sport,
-                authContext,
-              ),
-            ];
-
-            Promise.all(promiseArr).then(([gameList, scorekeeperSetting]) => {
-              setloading(false);
-              console.log('Game slots:=>', gameList);
-              console.log('scorekeeperSetting:=>', scorekeeperSetting);
-              if (gameList.length > 0) {
-                setMatchData([...gameList]);
-              }
-              if (
-                scorekeeperSetting?.scorekeeperAvailibility &&
-                scorekeeperSetting?.game_fee &&
-                scorekeeperSetting?.refund_policy &&
-                scorekeeperSetting?.available_area
-              ) {
-                gameListScorekeeperModalRef.current.open();
-                setScorekeeperSettingObject(scorekeeperSetting);
-              } else {
-                setTimeout(() => {
-                  Alert.alert(
-                    'You can\'t send offer, please configure your scorekeeper setting first.',
-                  );
-                }, 10);
-              }
-            });
-          } else if (offerOpetions()[index] === strings.cancel) {
-          }
-        }}
-      />
-
-      <ActivityLoader visible={loading} />
-
-      <View style={{flex: 1}}>
-        {/* renderUserTopFixedButtons */}
-        {/* {!isUserHome && renderTopFixedButtons} */}
-        {/* {!isUserHome && fixedHeader} */}
-        {firstTimeLoading &&
-          (route?.params?.role === 'user' ??
-            authContext?.entity?.role === 'user') && (
-              <UserProfileScreenShimmer />
-          )}
-        {firstTimeLoading &&
-          (route?.params?.role !== 'user' ??
-            authContext?.entity?.role !== 'user') && <ProfileScreenShimmer />}
-        {!firstTimeLoading && (
-          <HomeFeed
-            onFeedScroll={handleMainRefOnScroll}
-            refs={mainFlatListRef}
-            homeFeedHeaderComponent={MainHeaderComponent}
-            currentTab={currentTab}
-            currentUserData={currentUserData}
-            isAdmin={route?.params?.uid === authContext.entity.uid}
-            navigation={navigation}
-            setGalleryData={() => {}}
-            userID={route?.params?.uid ?? authContext.entity?.uid}
-          />
-        )}
-      </View>
-
-      {useMemo(
-        () =>
-          playsInModalVisible && (
-            <PlayInModule
-              visible={playsInModalVisible}
-              openPlayInModal={openPlayInModal}
-              onModalClose={onPlayInModalClose}
-              navigation={navigation}
-              userData={currentUserData}
-              playInObject={currentPlayInObject}
-              isAdmin={isAdmin}
-              opponentSetting={settingObject}
-              mySetting={mySettingObject}
-            />
-          ),
-        [
-          currentPlayInObject,
-          currentUserData,
-          isAdmin,
-          navigation,
-          onPlayInModalClose,
-          openPlayInModal,
-          playsInModalVisible,
-        ],
-      )}
-
-      {/* Referee In Modal */}
-      {refereesInModalVisible && (
-        <Modal
-          isVisible={refereesInModalVisible}
-          backdropColor="black"
-          style={{
-            margin: 0,
-            justifyContent: 'flex-end',
-            backgroundColor: colors.blackOpacityColor,
+          onPress={() => {
+           
+              Alert.alert(
+                `Are you sure you want to ${
+                  authContext?.entity?.obj?.is_pause === true
+                    ? 'unpause'
+                    : 'reactivate'
+                } this account?`,
+                '',
+                [
+                  {
+                    text: 'Cancel',
+                    style: 'cancel',
+                  },
+                  {
+                    text:
+                      authContext?.entity?.obj?.is_pause === true
+                        ? 'Unpause'
+                        : 'Reactivate',
+                    style: 'destructive',
+                    onPress: () => {
+                      if (authContext?.entity?.obj?.is_pause === true) {
+                        unPauseGroup();
+                      } else {
+                        reActivateUser();
+                      }
+                    },
+                  },
+                ],
+                {cancelable: false},
+              );
+            
           }}
-          hasBackdrop
-          onBackdropPress={() => setRefereesInModalVisible(false)}
-          backdropOpacity={0}>
-          <View style={styles.modalContainerViewStyle}>
-            <SafeAreaView style={{flex: 1}}>
-              {renderRefereeHeader}
-              {/* <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/> */}
-              <TCGradientDivider width={'100%'} height={3} />
-              <RefereesProfileSection
-                isReferee={true}
-                isAdmin={isAdmin}
-                navigation={navigation}
-                sport_name={sportName}
-                bookRefereeButtonVisible={
-                  authContext?.entity?.uid !== currentUserData?.user_id
-                }
-                onModalClose={(value) => setRefereesInModalVisible(value)}
-                profileImage={
-                  userThumbnail
-                    ? {uri: userThumbnail}
-                    : images.profilePlaceHolder
-                }
-                userName={fullName}
-                location={location}
-                feesCount={
-                  refereeSettingObject?.game_fee
-                    ? refereeSettingObject?.game_fee?.fee
-                    : 0
-                }
-                onBookRefereePress={() => {
-                  if (
-                    refereeSettingObject?.refereeAvailibility &&
-                    refereeSettingObject?.game_fee &&
-                    refereeSettingObject?.refund_policy &&
-                    refereeSettingObject?.available_area
-                  ) {
-                    setRefereesInModalVisible(false);
-                    navigation.navigate('RefereeBookingDateAndTime', {
-                      settingObj: refereeSettingObject,
-                      userData: currentUserData,
-                      showMatches: true,
-                      navigationName: 'HomeScreen',
-                      sportName,
-                    });
-                  } else {
-                    Alert.alert('Referee setting not configured yet.');
-                  }
-                }}
-              />
+        />
+      )}
+      <View
+        style={{flex: 1, opacity: isAccountDeactivated ? 0.5 : 1}}
+        pointerEvents={pointEvent}>
+        <ActionSheet
+          ref={addRoleActionSheet}
+          options={[
+            strings.addPlaying,
+            strings.addRefereeing,
+            strings.addScorekeeping,
+            strings.cancel,
+          ]}
+          cancelButtonIndex={3}
+          onPress={(index) => {
+            if (index === 0) {
+              // Add Playing
+              navigation.navigate('RegisterPlayer', {comeFrom: 'HomeScreen'});
+            } else if (index === 1) {
+              // Add Refereeing
+              navigation.navigate('RegisterReferee');
+            } else if (index === 2) {
+              // Add Scorekeeper
+              navigation.navigate('RegisterScorekeeper');
+            }
+          }}
+        />
 
-              <TCScrollableProfileTabs
-                tabItem={TAB_ITEMS}
-                onChangeTab={(ChangeTab) => setRefereeCurrentTab(ChangeTab.i)}
-                currentTab={currentRefereeTab}
-                renderTabContain={renderRefereesTabContainer}
-                tabVerticalScroll={false}
-              />
-            </SafeAreaView>
-          </View>
+        <ActionSheet
+          ref={manageChallengeActionSheet}
+          options={[
+            strings.manageChallengeShhetItem,
+            strings.sportActivity,
+            strings.cancel,
+          ]}
+          cancelButtonIndex={2}
+          onPress={(index) => {
+            if (index === 0) {
+              // Add Playing
 
-          {/* Review Detail View */}
-          {reviewDetailModalVisible && (
-            <Modal
-              isVisible={reviewDetailModalVisible}
-              backdropColor="black"
-              style={{
-                margin: 0,
-                justifyContent: 'flex-end',
-                backgroundColor: colors.blackOpacityColor,
-              }}
-              hasBackdrop
-              onBackdropPress={() => setRefereeInfoModalVisible(false)}
-              backdropOpacity={0}>
-              <SafeAreaView
-                style={[
-                  styles.modalContainerViewStyle,
-                  {backgroundColor: colors.whiteColor},
-                ]}>
-                <Header
-                  mainContainerStyle={styles.headerMainContainerStyle}
-                  leftComponent={
-                    <TouchableOpacity
-                      onPress={() => setReviewDetailModalVisible(false)}>
-                      <Image
-                        source={images.backArrow}
-                        style={styles.cancelImageStyle}
-                        resizeMode={'contain'}
-                      />
-                    </TouchableOpacity>
-                  }
-                  centerComponent={
-                    <View style={styles.headerCenterViewStyle}>
-                      <Image
-                        source={images.refereesInImage}
-                        style={styles.refereesImageStyle}
-                        resizeMode={'contain'}
-                      />
-                      <Text style={styles.playInTextStyle}>{'Reviews'}</Text>
-                    </View>
-                  }
-                  rightComponent={
-                    <TouchableOpacity
-                      onPress={() => setReviewDetailModalVisible(false)}>
-                      <Image
-                        source={images.cancelWhite}
-                        style={styles.cancelImageStyle}
-                        resizeMode={'contain'}
-                      />
-                    </TouchableOpacity>
-                  }
-                />
-                <TCGradientDivider width={'100%'} height={3} />
+              const entity = authContext.entity;
 
-                <FlatList
-                  removeClippedSubviews={true}
-                  maxToRenderPerBatch={10}
-                  initialNumToRender={5}
-                  bounces={true}
-                  data={
-                    refereeReviewData?.reviews?.results?.[feedDataIndex]
-                      ?.reviews ?? []
-                  }
-                  ItemSeparatorComponent={newsFeedListItemSeperator}
-                  ListHeaderComponent={feedScreenHeader}
-                  scrollEnabled={true}
-                  initialScrollIndex={orangeFeed ? 2 : feedDetailIndex}
-                  // ListFooterComponent={newsFeedListFooterComponent}
-                  showsVerticalScrollIndicator={false}
-                  renderItem={renderNewsFeed}
-                  // onEndReached={onEndReached}
-                  // onEndReachedThreshold={0.5}
-                  // refreshing={pullRefresh}
-                  // onRefresh={newsFeedOnRefresh}
-                  keyExtractor={(item) => `feeds${item?.id?.toString()}`}
-                />
-                {/* <NewsFeedPostItems
-          // pullRefresh={pullRefresh}
-          item={reviewFeedData}
-          navigation={navigation}
-          caller_id={userID}
-          // onEditPressDone={onEditPressDone}
-          // onImageProfilePress={onProfileButtonPress}
-          // onLikePress={onLikeButtonPress}
-          // onDeletePost={onDeleteButtonPress}
-      /> */}
-              </SafeAreaView>
-            </Modal>
+              if (entity.role === 'user') {
+                if (entity?.obj?.registered_sports?.length > 0) {
+                  setVisibleSportsModal(true);
+                } else {
+                  Alert.alert('There is no registerd sports.');
+                }
+              }
+              if (entity.role === 'team') {
+                if (currentUserData?.is_pause === true) {
+                  Alert.alert('Your team is paused.');
+                } else {
+                  navigation.navigate('ManageChallengeScreen', {
+                    groupObj: currentUserData,
+                    sportName: currentUserData?.sport,
+                    sportType: currentUserData?.sport_type,
+                  });
+                }
+              }
+            } else if (index === 1) {
+              navigation.navigate('SportActivityScreen');
+            }
+          }}
+        />
+        <ActionSheet
+          ref={offerActionSheet}
+          options={offerOpetions()}
+          cancelButtonIndex={offerOpetions().length - 1}
+          onPress={(index) => {
+            if (offerOpetions()[index] === strings.refereeOffer) {
+              setloading(true);
+              const headers = {};
+              headers.caller_id = currentUserData?.group_id;
+
+              const promiseArr = [
+                // getGameSlots(
+                //   'referees',
+                //   authContext?.entity?.uid,
+                //   `status=accepted&sport=${currentUserData?.sport}&refereeDetail=true`,
+                //   headers,
+                //   authContext,
+                // ),
+                getGamesForReferee(
+                  authContext?.entity?.uid,
+                  currentUserData?.group_id,
+                ),
+                settingUtils.getSetting(
+                  authContext?.entity?.uid,
+                  'referee',
+                  currentUserData?.sport,
+                  authContext,
+                ),
+              ];
+
+              Promise.all(promiseArr).then(([gameList, refereeSetting]) => {
+                setloading(false);
+                console.log('Game slots:=>', gameList);
+                console.log('refereeSetting:=>', refereeSetting);
+                if (gameList) {
+                  setMatchData([...gameList]);
+                }
+                if (
+                  refereeSetting?.refereeAvailibility &&
+                  refereeSetting?.game_fee &&
+                  refereeSetting?.refund_policy &&
+                  refereeSetting?.available_area
+                ) {
+                  gameListRefereeModalRef.current.open();
+                  setRefereeSettingObject(refereeSetting);
+                } else {
+                  setTimeout(() => {
+                    Alert.alert(
+                      'You can\'t send offer, please configure your referee setting first.',
+                    );
+                  }, 10);
+                }
+              });
+            } else if (offerOpetions()[index] === strings.scorekeeperOffer) {
+              setloading(true);
+              const headers = {};
+              headers.caller_id = currentUserData?.group_id;
+
+              const promiseArr = [
+                // getGameSlots(
+                //   'referees',
+                //   authContext?.entity?.uid,
+                //   `status=accepted&sport=${currentUserData?.sport}&refereeDetail=true`,
+                //   headers,
+                //   authContext,
+                // ),
+                getGamesForScorekeeper(
+                  authContext?.entity?.uid,
+                  currentUserData?.group_id,
+                ),
+                settingUtils.getSetting(
+                  authContext?.entity?.uid,
+                  'scorekeeper',
+                  currentUserData?.sport,
+                  authContext,
+                ),
+              ];
+
+              Promise.all(promiseArr).then(([gameList, scorekeeperSetting]) => {
+                setloading(false);
+                console.log('Game slots:=>', gameList);
+                console.log('scorekeeperSetting:=>', scorekeeperSetting);
+                if (gameList.length > 0) {
+                  setMatchData([...gameList]);
+                }
+                if (
+                  scorekeeperSetting?.scorekeeperAvailibility &&
+                  scorekeeperSetting?.game_fee &&
+                  scorekeeperSetting?.refund_policy &&
+                  scorekeeperSetting?.available_area
+                ) {
+                  gameListScorekeeperModalRef.current.open();
+                  setScorekeeperSettingObject(scorekeeperSetting);
+                } else {
+                  setTimeout(() => {
+                    Alert.alert(
+                      'You can\'t send offer, please configure your scorekeeper setting first.',
+                    );
+                  }, 10);
+                }
+              });
+            } else if (offerOpetions()[index] === strings.cancel) {
+            }
+          }}
+        />
+
+        <ActivityLoader visible={loading} />
+
+        <View style={{flex: 1}}>
+          {/* renderUserTopFixedButtons */}
+          {/* {!isUserHome && renderTopFixedButtons} */}
+          {/* {!isUserHome && fixedHeader} */}
+          {firstTimeLoading &&
+            (route?.params?.role === 'user' ??
+              authContext?.entity?.role === 'user') && (
+                <UserProfileScreenShimmer />
+            )}
+          {firstTimeLoading &&
+            (route?.params?.role !== 'user' ??
+              authContext?.entity?.role !== 'user') && <ProfileScreenShimmer />}
+          {!firstTimeLoading && (
+            <HomeFeed
+              onFeedScroll={handleMainRefOnScroll}
+              refs={mainFlatListRef}
+              homeFeedHeaderComponent={MainHeaderComponent}
+              currentTab={currentTab}
+              currentUserData={currentUserData}
+              isAdmin={route?.params?.uid === authContext.entity.uid}
+              navigation={navigation}
+              setGalleryData={() => {}}
+              userID={route?.params?.uid ?? authContext.entity?.uid}
+            />
           )}
+        </View>
 
-          {/* Review Detail View */}
-          {refereeInfoModalVisible && (
-            <Modal
-              isVisible={refereeInfoModalVisible}
-              backdropColor="black"
-              style={{
-                margin: 0,
-                justifyContent: 'flex-end',
-                backgroundColor: colors.blackOpacityColor,
-              }}
-              hasBackdrop
-              onBackdropPress={() => setRefereeInfoModalVisible(false)}
-              backdropOpacity={0}>
-              <SafeAreaView
-                style={[
-                  styles.modalContainerViewStyle,
-                  {backgroundColor: colors.whiteColor},
-                ]}>
-                <LinearGradient
-                  colors={[colors.orangeColor, colors.yellowColor]}
-                  end={{x: 0.0, y: 0.25}}
-                  start={{x: 1, y: 0.5}}
-                  style={styles.gradiantHeaderViewStyle}></LinearGradient>
-                <Header
-                  mainContainerStyle={styles.headerMainContainerStyle}
-                  leftComponent={
-                    <TouchableOpacity
-                      onPress={() => setRefereeInfoModalVisible(false)}>
-                      <Image
-                        source={images.backArrow}
-                        style={styles.cancelImageStyle}
-                        resizeMode={'contain'}
-                      />
-                    </TouchableOpacity>
+        {useMemo(
+          () =>
+            playsInModalVisible && (
+              <PlayInModule
+                visible={playsInModalVisible}
+                openPlayInModal={openPlayInModal}
+                onModalClose={onPlayInModalClose}
+                navigation={navigation}
+                userData={currentUserData}
+                playInObject={currentPlayInObject}
+                isAdmin={isAdmin}
+                opponentSetting={settingObject}
+                mySetting={mySettingObject}
+              />
+            ),
+          [
+            currentPlayInObject,
+            currentUserData,
+            isAdmin,
+            navigation,
+            onPlayInModalClose,
+            openPlayInModal,
+            playsInModalVisible,
+          ],
+        )}
+
+        {/* Referee In Modal */}
+        {refereesInModalVisible && (
+          <Modal
+            isVisible={refereesInModalVisible}
+            backdropColor="black"
+            style={{
+              margin: 0,
+              justifyContent: 'flex-end',
+              backgroundColor: colors.blackOpacityColor,
+            }}
+            hasBackdrop
+            onBackdropPress={() => setRefereesInModalVisible(false)}
+            backdropOpacity={0}>
+            <View style={styles.modalContainerViewStyle}>
+              <SafeAreaView style={{flex: 1}}>
+                {renderRefereeHeader}
+                {/* <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/> */}
+                <TCGradientDivider width={'100%'} height={3} />
+                <RefereesProfileSection
+                  isReferee={true}
+                  isAdmin={isAdmin}
+                  navigation={navigation}
+                  sport_name={sportName}
+                  bookRefereeButtonVisible={
+                    authContext?.entity?.uid !== currentUserData?.user_id
                   }
-                  centerComponent={
-                    <View style={styles.headerCenterViewStyle}>
-                      <Image
-                        source={images.refereesInImage}
-                        style={styles.refereesImageStyle}
-                        resizeMode={'contain'}
-                      />
-                      <Text style={styles.playInTextStyle}>{'Info'}</Text>
-                    </View>
+                  onModalClose={(value) => setRefereesInModalVisible(value)}
+                  profileImage={
+                    userThumbnail
+                      ? {uri: userThumbnail}
+                      : images.profilePlaceHolder
                   }
-                  rightComponent={
-                    <TouchableOpacity
-                      onPress={() => setRefereeInfoModalVisible(false)}>
-                      <Image
-                        source={images.cancelWhite}
-                        style={styles.cancelImageStyle}
-                        resizeMode={'contain'}
-                      />
-                    </TouchableOpacity>
+                  userName={fullName}
+                  location={location}
+                  feesCount={
+                    refereeSettingObject?.game_fee
+                      ? refereeSettingObject?.game_fee?.fee
+                      : 0
                   }
-                />
-                <RefereeInfoSection
-                  data={currentUserData}
-                  refereeSetting={refereeSettingObject}
-                  selectRefereeData={selectRefereeData}
-                  searchLocation={searchLocation}
-                  languagesName={languagesName}
-                  onSavePress={(params) => {
-                    let languagesListName = [];
-                    patchRegisterRefereeDetails(params, authContext)
-                      .then((res) => {
-                        const changedata = currentUserData;
-                        changedata.referee_data = res.payload.referee_data;
-                        changedata.gender = res.payload.gender;
-                        changedata.birthday = res.payload.birthday;
-
-                        entityObject = changedata;
-
-                        setCurrentUserData(changedata);
-
-                        if (res.payload.referee_data) {
-                          res.payload.referee_data.map((refereeItem) => {
-                            if (refereeItem.sport === sportName) {
-                              setSelectRefereeData(refereeItem);
-                              languagesListName = refereeItem.language;
-                            }
-                            return null;
-                          });
-                        }
-                        if (languagesListName.length > 0) {
-                          languagesListName.map((langItem, index) => {
-                            language_string =
-                              language_string +
-                              (index ? ', ' : '') +
-                              langItem.language_name;
-                            return null;
-                          });
-                          setLanguagesName(language_string);
-                        }
-                      })
-                      .catch((error) => {
-                        console.log('error coming', error);
-                        Alert.alert(strings.alertmessagetitle, error.message);
+                  onBookRefereePress={() => {
+                    if (
+                      refereeSettingObject?.refereeAvailibility &&
+                      refereeSettingObject?.game_fee &&
+                      refereeSettingObject?.refund_policy &&
+                      refereeSettingObject?.available_area
+                    ) {
+                      setRefereesInModalVisible(false);
+                      navigation.navigate('RefereeBookingDateAndTime', {
+                        settingObj: refereeSettingObject,
+                        userData: currentUserData,
+                        showMatches: true,
+                        navigationName: 'HomeScreen',
+                        sportName,
                       });
+                    } else {
+                      Alert.alert('Referee setting not configured yet.');
+                    }
                   }}
                 />
-              </SafeAreaView>
-            </Modal>
-          )}
 
-          {refereeMatchModalVisible && (
-            <Modal
-              isVisible={refereeMatchModalVisible}
-              backdropColor="black"
-              style={{
-                margin: 0,
-                justifyContent: 'flex-end',
-                backgroundColor: colors.blackOpacityColor,
-              }}
-              hasBackdrop
-              onBackdropPress={() => setRefereeMatchModalVisible(false)}
-              backdropOpacity={0}>
-              <SafeAreaView
-                style={[
-                  styles.modalContainerViewStyle,
-                  {backgroundColor: colors.whiteColor},
-                ]}>
-                <View>
-                  <LinearGradient
-                    colors={[colors.orangeColor, colors.yellowColor]}
-                    end={{x: 0.0, y: 0.25}}
-                    start={{x: 1, y: 0.5}}
-                    style={styles.gradiantHeaderViewStyle}></LinearGradient>
-                  <Header
-                    mainContainerStyle={styles.headerMainContainerStyle}
-                    leftComponent={
-                      <TouchableOpacity
-                        onPress={() => setRefereeMatchModalVisible(false)}>
-                        <Image
-                          source={images.backArrow}
-                          style={styles.cancelImageStyle}
-                          resizeMode={'contain'}
-                        />
-                      </TouchableOpacity>
-                    }
-                    centerComponent={
-                      <View style={styles.headerCenterViewStyle}>
-                        <Image
-                          source={images.refereesInImage}
-                          style={styles.refereesImageStyle}
-                          resizeMode={'contain'}
-                        />
-                        <Text style={styles.playInTextStyle}>
-                          {'Scoreboard'}
-                        </Text>
-                      </View>
-                    }
-                    rightComponent={
-                      <TouchableOpacity
-                        onPress={() => setRefereeMatchModalVisible(false)}>
-                        <Image
-                          source={images.cancelWhite}
-                          style={styles.cancelImageStyle}
-                          resizeMode={'contain'}
-                        />
-                      </TouchableOpacity>
-                    }
-                  />
-                </View>
-                <ScheduleTabView
-                  firstTabTitle={`Completed (${refereeRecentMatch.length})`}
-                  secondTabTitle={`Upcoming (${refereeUpcomingMatch.length})`}
-                  indexCounter={scoreboardTabNumber}
-                  eventPrivacyContianer={{width: wp('70%')}}
-                  onFirstTabPress={() => setScroboardTabNumber(0)}
-                  onSecondTabPress={() => setScroboardTabNumber(1)}
+                <TCScrollableProfileTabs
+                  tabItem={TAB_ITEMS}
+                  onChangeTab={(ChangeTab) => setRefereeCurrentTab(ChangeTab.i)}
+                  currentTab={currentRefereeTab}
+                  renderTabContain={renderRefereesTabContainer}
+                  tabVerticalScroll={false}
                 />
-                {scoreboardTabNumber === 0 && (
-                  <ScoreboardSportsScreen
-                    sportsData={refereeRecentMatch}
-                    showEventNumbers={false}
-                    showAssistReferee={true}
-                    navigation={navigation}
-                    onItemPress={() => {
-                      setRefereeMatchModalVisible(false);
-                      setRefereesInModalVisible(false);
-                    }}
-                  />
-                )}
-                {scoreboardTabNumber === 1 && (
-                  <UpcomingMatchScreen
-                    sportsData={refereeUpcomingMatch}
-                    showEventNumbers={true}
-                    navigation={navigation}
-                    onItemPress={() => {
-                      setPlaysInModalVisible(false);
-                    }}
-                  />
-                )}
               </SafeAreaView>
-            </Modal>
-          )}
+            </View>
 
-          {reviewsModalVisible && (
-            <Modal
-              isVisible={reviewsModalVisible}
-              backdropColor="black"
-              style={{
-                margin: 0,
-                justifyContent: 'flex-end',
-                backgroundColor: colors.blackOpacityColor,
-              }}
-              hasBackdrop
-              onBackdropPress={() => setReviewsModalVisible(false)}
-              backdropOpacity={0}>
-              <SafeAreaView
-                style={[
-                  styles.modalContainerViewStyle,
-                  {backgroundColor: colors.whiteColor},
-                ]}>
-                <View>
-                  <LinearGradient
-                    colors={[colors.orangeColor, colors.yellowColor]}
-                    end={{x: 0.0, y: 0.25}}
-                    start={{x: 1, y: 0.5}}
-                    style={styles.gradiantHeaderViewStyle}></LinearGradient>
+            {/* Review Detail View */}
+            {reviewDetailModalVisible && (
+              <Modal
+                isVisible={reviewDetailModalVisible}
+                backdropColor="black"
+                style={{
+                  margin: 0,
+                  justifyContent: 'flex-end',
+                  backgroundColor: colors.blackOpacityColor,
+                }}
+                hasBackdrop
+                onBackdropPress={() => setRefereeInfoModalVisible(false)}
+                backdropOpacity={0}>
+                <SafeAreaView
+                  style={[
+                    styles.modalContainerViewStyle,
+                    {backgroundColor: colors.whiteColor},
+                  ]}>
                   <Header
                     mainContainerStyle={styles.headerMainContainerStyle}
                     leftComponent={
                       <TouchableOpacity
-                        onPress={() => setReviewsModalVisible(false)}>
+                        onPress={() => setReviewDetailModalVisible(false)}>
                         <Image
                           source={images.backArrow}
                           style={styles.cancelImageStyle}
@@ -4633,7 +4450,7 @@ const HomeScreen = ({navigation, route}) => {
                     }
                     rightComponent={
                       <TouchableOpacity
-                        onPress={() => setReviewsModalVisible(false)}>
+                        onPress={() => setReviewDetailModalVisible(false)}>
                         <Image
                           source={images.cancelWhite}
                           style={styles.cancelImageStyle}
@@ -4642,263 +4459,31 @@ const HomeScreen = ({navigation, route}) => {
                       </TouchableOpacity>
                     }
                   />
-                </View>
-                <ReviewSection
-                  reviewsData={averageRefereeReview}
-                  reviewsFeed={refereeReviewData}
-                  onFeedPress={() => alert(3)}
-                  onReadMorePress={() => {
-                    reviewerDetailModal();
-                  }}
-                />
-              </SafeAreaView>
+                  <TCGradientDivider width={'100%'} height={3} />
 
-              {reviewerDetailModalVisible && (
-                <Modal
-                  isVisible={reviewerDetailModalVisible}
-                  backdropColor="black"
-                  style={{
-                    margin: 0,
-                    justifyContent: 'flex-end',
-                    backgroundColor: colors.blackOpacityColor,
-                  }}
-                  hasBackdrop
-                  onBackdropPress={() => setReviewerDetailModalVisible(false)}
-                  backdropOpacity={0}>
-                  <SafeAreaView
-                    style={[
-                      styles.modalContainerViewStyle,
-                      {backgroundColor: colors.whiteColor},
-                    ]}>
-                    <View>
-                      <LinearGradient
-                        colors={[colors.orangeColor, colors.yellowColor]}
-                        end={{x: 0.0, y: 0.25}}
-                        start={{x: 1, y: 0.5}}
-                        style={styles.gradiantHeaderViewStyle}></LinearGradient>
-                      <Header
-                        mainContainerStyle={styles.headerMainContainerStyle}
-                        leftComponent={
-                          <TouchableOpacity
-                            onPress={() =>
-                              setReviewerDetailModalVisible(false)
-                            }>
-                            <Image
-                              source={images.backArrow}
-                              style={styles.cancelImageStyle}
-                              resizeMode={'contain'}
-                            />
-                          </TouchableOpacity>
-                        }
-                        centerComponent={
-                          <View style={styles.headerCenterViewStyle}>
-                            <Image
-                              source={images.refereesInImage}
-                              style={styles.refereesImageStyle}
-                              resizeMode={'contain'}
-                            />
-                            <Text style={styles.playInTextStyle}>
-                              {'Reviews'}
-                            </Text>
-                          </View>
-                        }
-                        rightComponent={
-                          <TouchableOpacity
-                            onPress={() =>
-                              setReviewerDetailModalVisible(false)
-                            }>
-                            <Image
-                              source={images.cancelWhite}
-                              style={styles.cancelImageStyle}
-                              resizeMode={'contain'}
-                            />
-                          </TouchableOpacity>
-                        }
-                      />
-                    </View>
-                    <ScrollView>
-                      <ReviewRecentMatch
-                        eventColor={colors.yellowColor}
-                        startDate1={'Sep'}
-                        startDate2={'25'}
-                        title={'Soccer'}
-                        startTime={'7:00pm -'}
-                        endTime={'9:10pm'}
-                        location={'BC Stadium'}
-                        firstUserImage={images.team_ph}
-                        firstTeamText={'Vancouver Whitecaps'}
-                        secondUserImage={images.team_ph}
-                        secondTeamText={'Newyork City FC'}
-                        firstTeamPoint={3}
-                        secondTeamPoint={1}
-                      />
-                      <RefereeReviewerList
-                        navigation={navigation}
-                        postData={[]}
-                        userID={userID}
-                      />
-                    </ScrollView>
-                  </SafeAreaView>
-                </Modal>
-              )}
-            </Modal>
-          )}
-        </Modal>
-      )}
-
-      {/* Scorekeeper model */}
-      {scorekeeperInModalVisible && (
-        <Modal
-          isVisible={scorekeeperInModalVisible}
-          backdropColor="black"
-          style={{
-            margin: 0,
-            justifyContent: 'flex-end',
-            backgroundColor: colors.blackOpacityColor,
-          }}
-          hasBackdrop
-          onBackdropPress={() => setScorekeeperInModalVisible(false)}
-          backdropOpacity={0}>
-          <View style={styles.modalContainerViewStyle}>
-            {/* <Image style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]} source={images.orangeLayer} /> */}
-            <SafeAreaView style={{flex: 1}}>
-              {renderScorekeeperHeader}
-              <TCThinDivider
-                backgroundColor={colors.refereeHomeDividerColor}
-                width={'100%'}
-                height={2}
-              />
-              <RefereesProfileSection
-                isReferee={false}
-                isAdmin={isAdmin}
-                navigation={navigation}
-                sport_name={sportName}
-                bookRefereeButtonVisible={
-                  authContext?.entity?.uid !== currentUserData?.user_id
-                }
-                onModalClose={(value) => setScorekeeperInModalVisible(value)}
-                profileImage={
-                  userThumbnail
-                    ? {uri: userThumbnail}
-                    : images.profilePlaceHolder
-                }
-                userName={fullName}
-                location={location}
-                feesCount={
-                  scorekeeperSettingObject?.game_fee
-                    ? scorekeeperSettingObject?.game_fee?.fee
-                    : 0
-                }
-                onBookRefereePress={() => {
-                  if (
-                    scorekeeperSettingObject?.scorekeeperAvailibility &&
-                    scorekeeperSettingObject?.game_fee &&
-                    scorekeeperSettingObject?.refund_policy &&
-                    scorekeeperSettingObject?.available_area
-                  ) {
-                    setScorekeeperInModalVisible(false);
-                    navigation.navigate('ScorekeeperBookingDateAndTime', {
-                      settingObj: scorekeeperSettingObject,
-                      userData: currentUserData,
-                      showMatches: true,
-                      navigationName: 'HomeScreen',
-                      sportName,
-                    });
-                  } else {
-                    Alert.alert('Scorekeeper setting not configured yet.');
-                  }
-                }}
-              />
-
-              <TCScrollableProfileTabs
-                tabItem={TAB_ITEMS_SCOREKEEPER}
-                onChangeTab={(ChangeTab) =>
-                  setScorekeeperCurrentTab(ChangeTab.i)
-                }
-                currentTab={currentScorekeeperTab}
-                renderTabContain={(tabKey) =>
-                  renderScorekeeperTabContainer(tabKey)
-                }
-                tabVerticalScroll={false}
-              />
-            </SafeAreaView>
-          </View>
-          {/* Review Detail View */}
-          {reviewDetailModalVisible && (
-            <Modal
-              isVisible={reviewDetailModalVisible}
-              backdropColor="black"
-              style={{
-                margin: 0,
-                justifyContent: 'flex-end',
-                backgroundColor: colors.blackOpacityColor,
-              }}
-              hasBackdrop
-              onBackdropPress={() => setRefereeInfoModalVisible(false)}
-              backdropOpacity={0}>
-              <SafeAreaView
-                style={[
-                  styles.modalContainerViewStyle,
-                  {backgroundColor: colors.whiteColor},
-                ]}>
-                <Header
-                  mainContainerStyle={styles.headerMainContainerStyle}
-                  leftComponent={
-                    <TouchableOpacity
-                      onPress={() => setReviewDetailModalVisible(false)}>
-                      <Image
-                        source={images.backArrow}
-                        style={styles.cancelImageStyle}
-                        resizeMode={'contain'}
-                      />
-                    </TouchableOpacity>
-                  }
-                  centerComponent={
-                    <View style={styles.headerCenterViewStyle}>
-                      <Image
-                        source={images.myScoreKeeping}
-                        style={styles.refereesImageStyle}
-                        resizeMode={'contain'}
-                      />
-                      <Text style={styles.playInTextStyle}>{'Reviews'}</Text>
-                    </View>
-                  }
-                  rightComponent={
-                    <TouchableOpacity
-                      onPress={() => setReviewDetailModalVisible(false)}>
-                      <Image
-                        source={images.cancelWhite}
-                        style={styles.cancelImageStyle}
-                        resizeMode={'contain'}
-                      />
-                    </TouchableOpacity>
-                  }
-                />
-                <TCGradientDivider width={'100%'} height={3} />
-
-                <FlatList
-                  removeClippedSubviews={true}
-                  maxToRenderPerBatch={10}
-                  initialNumToRender={5}
-                  bounces={true}
-                  data={
-                    scorekeeperReviewData?.reviews?.results?.[feedDataIndex]
-                      ?.reviews ?? []
-                  }
-                  ItemSeparatorComponent={newsFeedListItemSeperator}
-                  ListHeaderComponent={feedScreenHeader}
-                  scrollEnabled={true}
-                  initialScrollIndex={orangeFeed ? 2 : feedDetailIndex}
-                  // ListFooterComponent={newsFeedListFooterComponent}
-                  showsVerticalScrollIndicator={false}
-                  renderItem={renderScorekeeperFeed}
-                  // onEndReached={onEndReached}
-                  // onEndReachedThreshold={0.5}
-                  // refreshing={pullRefresh}
-                  // onRefresh={newsFeedOnRefresh}
-                  keyExtractor={(item) => `feeds${item?.id?.toString()}`}
-                />
-                {/* <NewsFeedPostItems
+                  <FlatList
+                    removeClippedSubviews={true}
+                    maxToRenderPerBatch={10}
+                    initialNumToRender={5}
+                    bounces={true}
+                    data={
+                      refereeReviewData?.reviews?.results?.[feedDataIndex]
+                        ?.reviews ?? []
+                    }
+                    ItemSeparatorComponent={newsFeedListItemSeperator}
+                    ListHeaderComponent={feedScreenHeader}
+                    scrollEnabled={true}
+                    initialScrollIndex={orangeFeed ? 2 : feedDetailIndex}
+                    // ListFooterComponent={newsFeedListFooterComponent}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={renderNewsFeed}
+                    // onEndReached={onEndReached}
+                    // onEndReachedThreshold={0.5}
+                    // refreshing={pullRefresh}
+                    // onRefresh={newsFeedOnRefresh}
+                    keyExtractor={(item) => `feeds${item?.id?.toString()}`}
+                  />
+                  {/* <NewsFeedPostItems
           // pullRefresh={pullRefresh}
           item={reviewFeedData}
           navigation={navigation}
@@ -4908,235 +4493,472 @@ const HomeScreen = ({navigation, route}) => {
           // onLikePress={onLikeButtonPress}
           // onDeletePost={onDeleteButtonPress}
       /> */}
-              </SafeAreaView>
-            </Modal>
-          )}
+                </SafeAreaView>
+              </Modal>
+            )}
 
-          {/* Review Detail View */}
-          {scorekeeperInfoModalVisible && (
-            <Modal
-              isVisible={scorekeeperInfoModalVisible}
-              backdropColor="black"
-              style={{
-                margin: 0,
-                justifyContent: 'flex-end',
-                backgroundColor: colors.blackOpacityColor,
-              }}
-              hasBackdrop
-              onBackdropPress={() => setScorekeeperInfoModalVisible(false)}
-              backdropOpacity={0}>
-              <SafeAreaView
-                style={[
-                  styles.modalContainerViewStyle,
-                  {backgroundColor: colors.whiteColor},
-                ]}>
-                <LinearGradient
-                  colors={[colors.orangeColor, colors.yellowColor]}
-                  end={{x: 0.0, y: 0.25}}
-                  start={{x: 1, y: 0.5}}
-                  style={styles.gradiantHeaderViewStyle}></LinearGradient>
-                <Header
-                  mainContainerStyle={styles.headerMainContainerStyle}
-                  leftComponent={
-                    <TouchableOpacity
-                      onPress={() => setScorekeeperInfoModalVisible(false)}>
-                      <Image
-                        source={images.backArrow}
-                        style={styles.cancelImageStyle}
-                        resizeMode={'contain'}
-                      />
-                    </TouchableOpacity>
-                  }
-                  centerComponent={
-                    <View style={styles.headerCenterViewStyle}>
-                      <Image
-                        source={images.refereesInImage}
-                        style={styles.refereesImageStyle}
-                        resizeMode={'contain'}
-                      />
-                      <Text style={styles.playInTextStyle}>{'Info'}</Text>
-                    </View>
-                  }
-                  rightComponent={
-                    <TouchableOpacity
-                      onPress={() => setScorekeeperInfoModalVisible(false)}>
-                      <Image
-                        source={images.cancelWhite}
-                        style={styles.cancelImageStyle}
-                        resizeMode={'contain'}
-                      />
-                    </TouchableOpacity>
-                  }
-                />
-                <ScorekeeperInfoSection
-                  data={currentUserData}
-                  selectScorekeeperData={selectScorekeeperData}
-                  searchLocation={searchLocation}
-                  languagesName={languagesName}
-                  onSavePress={(params) => {
-                    let languagesListName = [];
-                    patchRegisterScorekeeperDetails(params, authContext)
-                      .then((res) => {
-                        const changedata = currentUserData;
-                        changedata.scorekeeper_data =
-                          res.payload.scorekeeper_data;
-                        changedata.gender = res.payload.gender;
-                        changedata.birthday = res.payload.birthday;
-                        setCurrentUserData(changedata);
+            {/* Review Detail View */}
+            {refereeInfoModalVisible && (
+              <Modal
+                isVisible={refereeInfoModalVisible}
+                backdropColor="black"
+                style={{
+                  margin: 0,
+                  justifyContent: 'flex-end',
+                  backgroundColor: colors.blackOpacityColor,
+                }}
+                hasBackdrop
+                onBackdropPress={() => setRefereeInfoModalVisible(false)}
+                backdropOpacity={0}>
+                <SafeAreaView
+                  style={[
+                    styles.modalContainerViewStyle,
+                    {backgroundColor: colors.whiteColor},
+                  ]}>
+                  <LinearGradient
+                    colors={[colors.orangeColor, colors.yellowColor]}
+                    end={{x: 0.0, y: 0.25}}
+                    start={{x: 1, y: 0.5}}
+                    style={styles.gradiantHeaderViewStyle}></LinearGradient>
+                  <Header
+                    mainContainerStyle={styles.headerMainContainerStyle}
+                    leftComponent={
+                      <TouchableOpacity
+                        onPress={() => setRefereeInfoModalVisible(false)}>
+                        <Image
+                          source={images.backArrow}
+                          style={styles.cancelImageStyle}
+                          resizeMode={'contain'}
+                        />
+                      </TouchableOpacity>
+                    }
+                    centerComponent={
+                      <View style={styles.headerCenterViewStyle}>
+                        <Image
+                          source={images.refereesInImage}
+                          style={styles.refereesImageStyle}
+                          resizeMode={'contain'}
+                        />
+                        <Text style={styles.playInTextStyle}>{'Info'}</Text>
+                      </View>
+                    }
+                    rightComponent={
+                      <TouchableOpacity
+                        onPress={() => setRefereeInfoModalVisible(false)}>
+                        <Image
+                          source={images.cancelWhite}
+                          style={styles.cancelImageStyle}
+                          resizeMode={'contain'}
+                        />
+                      </TouchableOpacity>
+                    }
+                  />
+                  <RefereeInfoSection
+                    data={currentUserData}
+                    refereeSetting={refereeSettingObject}
+                    selectRefereeData={selectRefereeData}
+                    searchLocation={searchLocation}
+                    languagesName={languagesName}
+                    onSavePress={(params) => {
+                      let languagesListName = [];
+                      patchRegisterRefereeDetails(params, authContext)
+                        .then((res) => {
+                          const changedata = currentUserData;
+                          changedata.referee_data = res.payload.referee_data;
+                          changedata.gender = res.payload.gender;
+                          changedata.birthday = res.payload.birthday;
 
-                        if (res.payload.scorekeeper_data) {
-                          res.payload.scorekeeper_data.map(
-                            (scorekeeperItem) => {
-                              if (scorekeeperItem.sport === sportName) {
-                                setSelectScorekeeperData(scorekeeperItem);
-                                languagesListName = scorekeeperItem.language;
+                          entityObject = changedata;
+
+                          setCurrentUserData(changedata);
+
+                          if (res.payload.referee_data) {
+                            res.payload.referee_data.map((refereeItem) => {
+                              if (refereeItem.sport === sportName) {
+                                setSelectRefereeData(refereeItem);
+                                languagesListName = refereeItem.language;
                               }
                               return null;
-                            },
-                          );
-                        }
-                        if (languagesListName.length > 0) {
-                          languagesListName.map((langItem, index) => {
-                            language_string =
-                              language_string +
-                              (index ? ', ' : '') +
-                              langItem.language_name;
-                            return null;
-                          });
-                          setLanguagesName(language_string);
-                        }
-                      })
-                      .catch((error) => {
-                        console.log('error coming', error);
-                        Alert.alert(strings.alertmessagetitle, error.message);
+                            });
+                          }
+                          if (languagesListName.length > 0) {
+                            languagesListName.map((langItem, index) => {
+                              language_string =
+                                language_string +
+                                (index ? ', ' : '') +
+                                langItem.language_name;
+                              return null;
+                            });
+                            setLanguagesName(language_string);
+                          }
+                        })
+                        .catch((error) => {
+                          console.log('error coming', error);
+                          Alert.alert(strings.alertmessagetitle, error.message);
+                        });
+                    }}
+                  />
+                </SafeAreaView>
+              </Modal>
+            )}
+
+            {refereeMatchModalVisible && (
+              <Modal
+                isVisible={refereeMatchModalVisible}
+                backdropColor="black"
+                style={{
+                  margin: 0,
+                  justifyContent: 'flex-end',
+                  backgroundColor: colors.blackOpacityColor,
+                }}
+                hasBackdrop
+                onBackdropPress={() => setRefereeMatchModalVisible(false)}
+                backdropOpacity={0}>
+                <SafeAreaView
+                  style={[
+                    styles.modalContainerViewStyle,
+                    {backgroundColor: colors.whiteColor},
+                  ]}>
+                  <View>
+                    <LinearGradient
+                      colors={[colors.orangeColor, colors.yellowColor]}
+                      end={{x: 0.0, y: 0.25}}
+                      start={{x: 1, y: 0.5}}
+                      style={styles.gradiantHeaderViewStyle}></LinearGradient>
+                    <Header
+                      mainContainerStyle={styles.headerMainContainerStyle}
+                      leftComponent={
+                        <TouchableOpacity
+                          onPress={() => setRefereeMatchModalVisible(false)}>
+                          <Image
+                            source={images.backArrow}
+                            style={styles.cancelImageStyle}
+                            resizeMode={'contain'}
+                          />
+                        </TouchableOpacity>
+                      }
+                      centerComponent={
+                        <View style={styles.headerCenterViewStyle}>
+                          <Image
+                            source={images.refereesInImage}
+                            style={styles.refereesImageStyle}
+                            resizeMode={'contain'}
+                          />
+                          <Text style={styles.playInTextStyle}>
+                            {'Scoreboard'}
+                          </Text>
+                        </View>
+                      }
+                      rightComponent={
+                        <TouchableOpacity
+                          onPress={() => setRefereeMatchModalVisible(false)}>
+                          <Image
+                            source={images.cancelWhite}
+                            style={styles.cancelImageStyle}
+                            resizeMode={'contain'}
+                          />
+                        </TouchableOpacity>
+                      }
+                    />
+                  </View>
+                  <ScheduleTabView
+                    firstTabTitle={`Completed (${refereeRecentMatch.length})`}
+                    secondTabTitle={`Upcoming (${refereeUpcomingMatch.length})`}
+                    indexCounter={scoreboardTabNumber}
+                    eventPrivacyContianer={{width: wp('70%')}}
+                    onFirstTabPress={() => setScroboardTabNumber(0)}
+                    onSecondTabPress={() => setScroboardTabNumber(1)}
+                  />
+                  {scoreboardTabNumber === 0 && (
+                    <ScoreboardSportsScreen
+                      sportsData={refereeRecentMatch}
+                      showEventNumbers={false}
+                      showAssistReferee={true}
+                      navigation={navigation}
+                      onItemPress={() => {
+                        setRefereeMatchModalVisible(false);
+                        setRefereesInModalVisible(false);
+                      }}
+                    />
+                  )}
+                  {scoreboardTabNumber === 1 && (
+                    <UpcomingMatchScreen
+                      sportsData={refereeUpcomingMatch}
+                      showEventNumbers={true}
+                      navigation={navigation}
+                      onItemPress={() => {
+                        setPlaysInModalVisible(false);
+                      }}
+                    />
+                  )}
+                </SafeAreaView>
+              </Modal>
+            )}
+
+            {reviewsModalVisible && (
+              <Modal
+                isVisible={reviewsModalVisible}
+                backdropColor="black"
+                style={{
+                  margin: 0,
+                  justifyContent: 'flex-end',
+                  backgroundColor: colors.blackOpacityColor,
+                }}
+                hasBackdrop
+                onBackdropPress={() => setReviewsModalVisible(false)}
+                backdropOpacity={0}>
+                <SafeAreaView
+                  style={[
+                    styles.modalContainerViewStyle,
+                    {backgroundColor: colors.whiteColor},
+                  ]}>
+                  <View>
+                    <LinearGradient
+                      colors={[colors.orangeColor, colors.yellowColor]}
+                      end={{x: 0.0, y: 0.25}}
+                      start={{x: 1, y: 0.5}}
+                      style={styles.gradiantHeaderViewStyle}></LinearGradient>
+                    <Header
+                      mainContainerStyle={styles.headerMainContainerStyle}
+                      leftComponent={
+                        <TouchableOpacity
+                          onPress={() => setReviewsModalVisible(false)}>
+                          <Image
+                            source={images.backArrow}
+                            style={styles.cancelImageStyle}
+                            resizeMode={'contain'}
+                          />
+                        </TouchableOpacity>
+                      }
+                      centerComponent={
+                        <View style={styles.headerCenterViewStyle}>
+                          <Image
+                            source={images.refereesInImage}
+                            style={styles.refereesImageStyle}
+                            resizeMode={'contain'}
+                          />
+                          <Text style={styles.playInTextStyle}>
+                            {'Reviews'}
+                          </Text>
+                        </View>
+                      }
+                      rightComponent={
+                        <TouchableOpacity
+                          onPress={() => setReviewsModalVisible(false)}>
+                          <Image
+                            source={images.cancelWhite}
+                            style={styles.cancelImageStyle}
+                            resizeMode={'contain'}
+                          />
+                        </TouchableOpacity>
+                      }
+                    />
+                  </View>
+                  <ReviewSection
+                    reviewsData={averageRefereeReview}
+                    reviewsFeed={refereeReviewData}
+                    onFeedPress={() => alert(3)}
+                    onReadMorePress={() => {
+                      reviewerDetailModal();
+                    }}
+                  />
+                </SafeAreaView>
+
+                {reviewerDetailModalVisible && (
+                  <Modal
+                    isVisible={reviewerDetailModalVisible}
+                    backdropColor="black"
+                    style={{
+                      margin: 0,
+                      justifyContent: 'flex-end',
+                      backgroundColor: colors.blackOpacityColor,
+                    }}
+                    hasBackdrop
+                    onBackdropPress={() => setReviewerDetailModalVisible(false)}
+                    backdropOpacity={0}>
+                    <SafeAreaView
+                      style={[
+                        styles.modalContainerViewStyle,
+                        {backgroundColor: colors.whiteColor},
+                      ]}>
+                      <View>
+                        <LinearGradient
+                          colors={[colors.orangeColor, colors.yellowColor]}
+                          end={{x: 0.0, y: 0.25}}
+                          start={{x: 1, y: 0.5}}
+                          style={
+                            styles.gradiantHeaderViewStyle
+                          }></LinearGradient>
+                        <Header
+                          mainContainerStyle={styles.headerMainContainerStyle}
+                          leftComponent={
+                            <TouchableOpacity
+                              onPress={() =>
+                                setReviewerDetailModalVisible(false)
+                              }>
+                              <Image
+                                source={images.backArrow}
+                                style={styles.cancelImageStyle}
+                                resizeMode={'contain'}
+                              />
+                            </TouchableOpacity>
+                          }
+                          centerComponent={
+                            <View style={styles.headerCenterViewStyle}>
+                              <Image
+                                source={images.refereesInImage}
+                                style={styles.refereesImageStyle}
+                                resizeMode={'contain'}
+                              />
+                              <Text style={styles.playInTextStyle}>
+                                {'Reviews'}
+                              </Text>
+                            </View>
+                          }
+                          rightComponent={
+                            <TouchableOpacity
+                              onPress={() =>
+                                setReviewerDetailModalVisible(false)
+                              }>
+                              <Image
+                                source={images.cancelWhite}
+                                style={styles.cancelImageStyle}
+                                resizeMode={'contain'}
+                              />
+                            </TouchableOpacity>
+                          }
+                        />
+                      </View>
+                      <ScrollView>
+                        <ReviewRecentMatch
+                          eventColor={colors.yellowColor}
+                          startDate1={'Sep'}
+                          startDate2={'25'}
+                          title={'Soccer'}
+                          startTime={'7:00pm -'}
+                          endTime={'9:10pm'}
+                          location={'BC Stadium'}
+                          firstUserImage={images.team_ph}
+                          firstTeamText={'Vancouver Whitecaps'}
+                          secondUserImage={images.team_ph}
+                          secondTeamText={'Newyork City FC'}
+                          firstTeamPoint={3}
+                          secondTeamPoint={1}
+                        />
+                        <RefereeReviewerList
+                          navigation={navigation}
+                          postData={[]}
+                          userID={userID}
+                        />
+                      </ScrollView>
+                    </SafeAreaView>
+                  </Modal>
+                )}
+              </Modal>
+            )}
+          </Modal>
+        )}
+
+        {/* Scorekeeper model */}
+        {scorekeeperInModalVisible && (
+          <Modal
+            isVisible={scorekeeperInModalVisible}
+            backdropColor="black"
+            style={{
+              margin: 0,
+              justifyContent: 'flex-end',
+              backgroundColor: colors.blackOpacityColor,
+            }}
+            hasBackdrop
+            onBackdropPress={() => setScorekeeperInModalVisible(false)}
+            backdropOpacity={0}>
+            <View style={styles.modalContainerViewStyle}>
+              {/* <Image style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]} source={images.orangeLayer} /> */}
+              <SafeAreaView style={{flex: 1}}>
+                {renderScorekeeperHeader}
+                <TCThinDivider
+                  backgroundColor={colors.refereeHomeDividerColor}
+                  width={'100%'}
+                  height={2}
+                />
+                <RefereesProfileSection
+                  isReferee={false}
+                  isAdmin={isAdmin}
+                  navigation={navigation}
+                  sport_name={sportName}
+                  bookRefereeButtonVisible={
+                    authContext?.entity?.uid !== currentUserData?.user_id
+                  }
+                  onModalClose={(value) => setScorekeeperInModalVisible(value)}
+                  profileImage={
+                    userThumbnail
+                      ? {uri: userThumbnail}
+                      : images.profilePlaceHolder
+                  }
+                  userName={fullName}
+                  location={location}
+                  feesCount={
+                    scorekeeperSettingObject?.game_fee
+                      ? scorekeeperSettingObject?.game_fee?.fee
+                      : 0
+                  }
+                  onBookRefereePress={() => {
+                    if (
+                      scorekeeperSettingObject?.scorekeeperAvailibility &&
+                      scorekeeperSettingObject?.game_fee &&
+                      scorekeeperSettingObject?.refund_policy &&
+                      scorekeeperSettingObject?.available_area
+                    ) {
+                      setScorekeeperInModalVisible(false);
+                      navigation.navigate('ScorekeeperBookingDateAndTime', {
+                        settingObj: scorekeeperSettingObject,
+                        userData: currentUserData,
+                        showMatches: true,
+                        navigationName: 'HomeScreen',
+                        sportName,
                       });
+                    } else {
+                      Alert.alert('Scorekeeper setting not configured yet.');
+                    }
                   }}
                 />
-              </SafeAreaView>
-            </Modal>
-          )}
 
-          {scorekeeperMatchModalVisible && (
-            <Modal
-              isVisible={scorekeeperMatchModalVisible}
-              backdropColor="black"
-              style={{
-                margin: 0,
-                justifyContent: 'flex-end',
-                backgroundColor: colors.blackOpacityColor,
-              }}
-              hasBackdrop
-              onBackdropPress={() => setScorekeeperMatchModalVisible(false)}
-              backdropOpacity={0}>
-              <SafeAreaView
-                style={[
-                  styles.modalContainerViewStyle,
-                  {backgroundColor: colors.whiteColor},
-                ]}>
-                <View>
-                  <LinearGradient
-                    colors={[colors.orangeColor, colors.yellowColor]}
-                    end={{x: 0.0, y: 0.25}}
-                    start={{x: 1, y: 0.5}}
-                    style={styles.gradiantHeaderViewStyle}></LinearGradient>
-                  <Header
-                    mainContainerStyle={styles.headerMainContainerStyle}
-                    leftComponent={
-                      <TouchableOpacity
-                        onPress={() => setScorekeeperMatchModalVisible(false)}>
-                        <Image
-                          source={images.backArrow}
-                          style={styles.cancelImageStyle}
-                          resizeMode={'contain'}
-                        />
-                      </TouchableOpacity>
-                    }
-                    centerComponent={
-                      <View style={styles.headerCenterViewStyle}>
-                        <Image
-                          source={images.refereesInImage}
-                          style={styles.refereesImageStyle}
-                          resizeMode={'contain'}
-                        />
-                        <Text style={styles.playInTextStyle}>
-                          {'Scoreboard'}
-                        </Text>
-                      </View>
-                    }
-                    rightComponent={
-                      <TouchableOpacity
-                        onPress={() => setScorekeeperMatchModalVisible(false)}>
-                        <Image
-                          source={images.cancelWhite}
-                          style={styles.cancelImageStyle}
-                          resizeMode={'contain'}
-                        />
-                      </TouchableOpacity>
-                    }
-                  />
-                </View>
-                <ScheduleTabView
-                  firstTabTitle={`Completed (${scorekeeperRecentMatch.length})`}
-                  secondTabTitle={`Upcoming (${scorekeeperUpcomingMatch.length})`}
-                  indexCounter={scoreboardTabNumber}
-                  eventPrivacyContianer={{width: wp('70%')}}
-                  onFirstTabPress={() => setScroboardTabNumber(0)}
-                  onSecondTabPress={() => setScroboardTabNumber(1)}
+                <TCScrollableProfileTabs
+                  tabItem={TAB_ITEMS_SCOREKEEPER}
+                  onChangeTab={(ChangeTab) =>
+                    setScorekeeperCurrentTab(ChangeTab.i)
+                  }
+                  currentTab={currentScorekeeperTab}
+                  renderTabContain={(tabKey) =>
+                    renderScorekeeperTabContainer(tabKey)
+                  }
+                  tabVerticalScroll={false}
                 />
-                {scoreboardTabNumber === 0 && (
-                  <ScoreboardSportsScreen
-                    sportsData={scorekeeperRecentMatch}
-                    showEventNumbers={false}
-                    showAssistReferee={true}
-                    navigation={navigation}
-                    onItemPress={() => {
-                      setScorekeeperMatchModalVisible(false);
-                      setScorekeeperInModalVisible(false);
-                    }}
-                  />
-                )}
-                {scoreboardTabNumber === 1 && (
-                  <UpcomingMatchScreen
-                    sportsData={scorekeeperUpcomingMatch}
-                    showEventNumbers={true}
-                    navigation={navigation}
-                    onItemPress={() => {
-                      setPlaysInModalVisible(false);
-                    }}
-                  />
-                )}
               </SafeAreaView>
-            </Modal>
-          )}
-
-          {reviewsModalVisible && (
-            <Modal
-              isVisible={reviewsModalVisible}
-              backdropColor="black"
-              style={{
-                margin: 0,
-                justifyContent: 'flex-end',
-                backgroundColor: colors.blackOpacityColor,
-              }}
-              hasBackdrop
-              onBackdropPress={() => setReviewsModalVisible(false)}
-              backdropOpacity={0}>
-              <SafeAreaView
-                style={[
-                  styles.modalContainerViewStyle,
-                  {backgroundColor: colors.whiteColor},
-                ]}>
-                <View>
-                  <LinearGradient
-                    colors={[colors.orangeColor, colors.yellowColor]}
-                    end={{x: 0.0, y: 0.25}}
-                    start={{x: 1, y: 0.5}}
-                    style={styles.gradiantHeaderViewStyle}></LinearGradient>
+            </View>
+            {/* Review Detail View */}
+            {reviewDetailModalVisible && (
+              <Modal
+                isVisible={reviewDetailModalVisible}
+                backdropColor="black"
+                style={{
+                  margin: 0,
+                  justifyContent: 'flex-end',
+                  backgroundColor: colors.blackOpacityColor,
+                }}
+                hasBackdrop
+                onBackdropPress={() => setRefereeInfoModalVisible(false)}
+                backdropOpacity={0}>
+                <SafeAreaView
+                  style={[
+                    styles.modalContainerViewStyle,
+                    {backgroundColor: colors.whiteColor},
+                  ]}>
                   <Header
                     mainContainerStyle={styles.headerMainContainerStyle}
                     leftComponent={
                       <TouchableOpacity
-                        onPress={() => setReviewsModalVisible(false)}>
+                        onPress={() => setReviewDetailModalVisible(false)}>
                         <Image
                           source={images.backArrow}
                           style={styles.cancelImageStyle}
@@ -5147,7 +4969,7 @@ const HomeScreen = ({navigation, route}) => {
                     centerComponent={
                       <View style={styles.headerCenterViewStyle}>
                         <Image
-                          source={images.refereesInImage}
+                          source={images.myScoreKeeping}
                           style={styles.refereesImageStyle}
                           resizeMode={'contain'}
                         />
@@ -5156,7 +4978,7 @@ const HomeScreen = ({navigation, route}) => {
                     }
                     rightComponent={
                       <TouchableOpacity
-                        onPress={() => setReviewsModalVisible(false)}>
+                        onPress={() => setReviewDetailModalVisible(false)}>
                         <Image
                           source={images.cancelWhite}
                           style={styles.cancelImageStyle}
@@ -5165,127 +4987,618 @@ const HomeScreen = ({navigation, route}) => {
                       </TouchableOpacity>
                     }
                   />
-                </View>
-                <ReviewSection
-                  reviewsData={averageScorekeeperReview}
-                  reviewsFeed={scorekeeperReviewData}
-                  onFeedPress={() => alert(6)}
-                  onReadMorePress={() => {
-                    reviewerDetailModal();
+                  <TCGradientDivider width={'100%'} height={3} />
+
+                  <FlatList
+                    removeClippedSubviews={true}
+                    maxToRenderPerBatch={10}
+                    initialNumToRender={5}
+                    bounces={true}
+                    data={
+                      scorekeeperReviewData?.reviews?.results?.[feedDataIndex]
+                        ?.reviews ?? []
+                    }
+                    ItemSeparatorComponent={newsFeedListItemSeperator}
+                    ListHeaderComponent={feedScreenHeader}
+                    scrollEnabled={true}
+                    initialScrollIndex={orangeFeed ? 2 : feedDetailIndex}
+                    // ListFooterComponent={newsFeedListFooterComponent}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={renderScorekeeperFeed}
+                    // onEndReached={onEndReached}
+                    // onEndReachedThreshold={0.5}
+                    // refreshing={pullRefresh}
+                    // onRefresh={newsFeedOnRefresh}
+                    keyExtractor={(item) => `feeds${item?.id?.toString()}`}
+                  />
+                  {/* <NewsFeedPostItems
+          // pullRefresh={pullRefresh}
+          item={reviewFeedData}
+          navigation={navigation}
+          caller_id={userID}
+          // onEditPressDone={onEditPressDone}
+          // onImageProfilePress={onProfileButtonPress}
+          // onLikePress={onLikeButtonPress}
+          // onDeletePost={onDeleteButtonPress}
+      /> */}
+                </SafeAreaView>
+              </Modal>
+            )}
+
+            {/* Review Detail View */}
+            {scorekeeperInfoModalVisible && (
+              <Modal
+                isVisible={scorekeeperInfoModalVisible}
+                backdropColor="black"
+                style={{
+                  margin: 0,
+                  justifyContent: 'flex-end',
+                  backgroundColor: colors.blackOpacityColor,
+                }}
+                hasBackdrop
+                onBackdropPress={() => setScorekeeperInfoModalVisible(false)}
+                backdropOpacity={0}>
+                <SafeAreaView
+                  style={[
+                    styles.modalContainerViewStyle,
+                    {backgroundColor: colors.whiteColor},
+                  ]}>
+                  <LinearGradient
+                    colors={[colors.orangeColor, colors.yellowColor]}
+                    end={{x: 0.0, y: 0.25}}
+                    start={{x: 1, y: 0.5}}
+                    style={styles.gradiantHeaderViewStyle}></LinearGradient>
+                  <Header
+                    mainContainerStyle={styles.headerMainContainerStyle}
+                    leftComponent={
+                      <TouchableOpacity
+                        onPress={() => setScorekeeperInfoModalVisible(false)}>
+                        <Image
+                          source={images.backArrow}
+                          style={styles.cancelImageStyle}
+                          resizeMode={'contain'}
+                        />
+                      </TouchableOpacity>
+                    }
+                    centerComponent={
+                      <View style={styles.headerCenterViewStyle}>
+                        <Image
+                          source={images.refereesInImage}
+                          style={styles.refereesImageStyle}
+                          resizeMode={'contain'}
+                        />
+                        <Text style={styles.playInTextStyle}>{'Info'}</Text>
+                      </View>
+                    }
+                    rightComponent={
+                      <TouchableOpacity
+                        onPress={() => setScorekeeperInfoModalVisible(false)}>
+                        <Image
+                          source={images.cancelWhite}
+                          style={styles.cancelImageStyle}
+                          resizeMode={'contain'}
+                        />
+                      </TouchableOpacity>
+                    }
+                  />
+                  <ScorekeeperInfoSection
+                    data={currentUserData}
+                    selectScorekeeperData={selectScorekeeperData}
+                    searchLocation={searchLocation}
+                    languagesName={languagesName}
+                    onSavePress={(params) => {
+                      let languagesListName = [];
+                      patchRegisterScorekeeperDetails(params, authContext)
+                        .then((res) => {
+                          const changedata = currentUserData;
+                          changedata.scorekeeper_data =
+                            res.payload.scorekeeper_data;
+                          changedata.gender = res.payload.gender;
+                          changedata.birthday = res.payload.birthday;
+                          setCurrentUserData(changedata);
+
+                          if (res.payload.scorekeeper_data) {
+                            res.payload.scorekeeper_data.map(
+                              (scorekeeperItem) => {
+                                if (scorekeeperItem.sport === sportName) {
+                                  setSelectScorekeeperData(scorekeeperItem);
+                                  languagesListName = scorekeeperItem.language;
+                                }
+                                return null;
+                              },
+                            );
+                          }
+                          if (languagesListName.length > 0) {
+                            languagesListName.map((langItem, index) => {
+                              language_string =
+                                language_string +
+                                (index ? ', ' : '') +
+                                langItem.language_name;
+                              return null;
+                            });
+                            setLanguagesName(language_string);
+                          }
+                        })
+                        .catch((error) => {
+                          console.log('error coming', error);
+                          Alert.alert(strings.alertmessagetitle, error.message);
+                        });
+                    }}
+                  />
+                </SafeAreaView>
+              </Modal>
+            )}
+
+            {scorekeeperMatchModalVisible && (
+              <Modal
+                isVisible={scorekeeperMatchModalVisible}
+                backdropColor="black"
+                style={{
+                  margin: 0,
+                  justifyContent: 'flex-end',
+                  backgroundColor: colors.blackOpacityColor,
+                }}
+                hasBackdrop
+                onBackdropPress={() => setScorekeeperMatchModalVisible(false)}
+                backdropOpacity={0}>
+                <SafeAreaView
+                  style={[
+                    styles.modalContainerViewStyle,
+                    {backgroundColor: colors.whiteColor},
+                  ]}>
+                  <View>
+                    <LinearGradient
+                      colors={[colors.orangeColor, colors.yellowColor]}
+                      end={{x: 0.0, y: 0.25}}
+                      start={{x: 1, y: 0.5}}
+                      style={styles.gradiantHeaderViewStyle}></LinearGradient>
+                    <Header
+                      mainContainerStyle={styles.headerMainContainerStyle}
+                      leftComponent={
+                        <TouchableOpacity
+                          onPress={() =>
+                            setScorekeeperMatchModalVisible(false)
+                          }>
+                          <Image
+                            source={images.backArrow}
+                            style={styles.cancelImageStyle}
+                            resizeMode={'contain'}
+                          />
+                        </TouchableOpacity>
+                      }
+                      centerComponent={
+                        <View style={styles.headerCenterViewStyle}>
+                          <Image
+                            source={images.refereesInImage}
+                            style={styles.refereesImageStyle}
+                            resizeMode={'contain'}
+                          />
+                          <Text style={styles.playInTextStyle}>
+                            {'Scoreboard'}
+                          </Text>
+                        </View>
+                      }
+                      rightComponent={
+                        <TouchableOpacity
+                          onPress={() =>
+                            setScorekeeperMatchModalVisible(false)
+                          }>
+                          <Image
+                            source={images.cancelWhite}
+                            style={styles.cancelImageStyle}
+                            resizeMode={'contain'}
+                          />
+                        </TouchableOpacity>
+                      }
+                    />
+                  </View>
+                  <ScheduleTabView
+                    firstTabTitle={`Completed (${scorekeeperRecentMatch.length})`}
+                    secondTabTitle={`Upcoming (${scorekeeperUpcomingMatch.length})`}
+                    indexCounter={scoreboardTabNumber}
+                    eventPrivacyContianer={{width: wp('70%')}}
+                    onFirstTabPress={() => setScroboardTabNumber(0)}
+                    onSecondTabPress={() => setScroboardTabNumber(1)}
+                  />
+                  {scoreboardTabNumber === 0 && (
+                    <ScoreboardSportsScreen
+                      sportsData={scorekeeperRecentMatch}
+                      showEventNumbers={false}
+                      showAssistReferee={true}
+                      navigation={navigation}
+                      onItemPress={() => {
+                        setScorekeeperMatchModalVisible(false);
+                        setScorekeeperInModalVisible(false);
+                      }}
+                    />
+                  )}
+                  {scoreboardTabNumber === 1 && (
+                    <UpcomingMatchScreen
+                      sportsData={scorekeeperUpcomingMatch}
+                      showEventNumbers={true}
+                      navigation={navigation}
+                      onItemPress={() => {
+                        setPlaysInModalVisible(false);
+                      }}
+                    />
+                  )}
+                </SafeAreaView>
+              </Modal>
+            )}
+
+            {reviewsModalVisible && (
+              <Modal
+                isVisible={reviewsModalVisible}
+                backdropColor="black"
+                style={{
+                  margin: 0,
+                  justifyContent: 'flex-end',
+                  backgroundColor: colors.blackOpacityColor,
+                }}
+                hasBackdrop
+                onBackdropPress={() => setReviewsModalVisible(false)}
+                backdropOpacity={0}>
+                <SafeAreaView
+                  style={[
+                    styles.modalContainerViewStyle,
+                    {backgroundColor: colors.whiteColor},
+                  ]}>
+                  <View>
+                    <LinearGradient
+                      colors={[colors.orangeColor, colors.yellowColor]}
+                      end={{x: 0.0, y: 0.25}}
+                      start={{x: 1, y: 0.5}}
+                      style={styles.gradiantHeaderViewStyle}></LinearGradient>
+                    <Header
+                      mainContainerStyle={styles.headerMainContainerStyle}
+                      leftComponent={
+                        <TouchableOpacity
+                          onPress={() => setReviewsModalVisible(false)}>
+                          <Image
+                            source={images.backArrow}
+                            style={styles.cancelImageStyle}
+                            resizeMode={'contain'}
+                          />
+                        </TouchableOpacity>
+                      }
+                      centerComponent={
+                        <View style={styles.headerCenterViewStyle}>
+                          <Image
+                            source={images.refereesInImage}
+                            style={styles.refereesImageStyle}
+                            resizeMode={'contain'}
+                          />
+                          <Text style={styles.playInTextStyle}>
+                            {'Reviews'}
+                          </Text>
+                        </View>
+                      }
+                      rightComponent={
+                        <TouchableOpacity
+                          onPress={() => setReviewsModalVisible(false)}>
+                          <Image
+                            source={images.cancelWhite}
+                            style={styles.cancelImageStyle}
+                            resizeMode={'contain'}
+                          />
+                        </TouchableOpacity>
+                      }
+                    />
+                  </View>
+                  <ReviewSection
+                    reviewsData={averageScorekeeperReview}
+                    reviewsFeed={scorekeeperReviewData}
+                    onFeedPress={() => alert(6)}
+                    onReadMorePress={() => {
+                      reviewerDetailModal();
+                    }}
+                  />
+                </SafeAreaView>
+
+                {reviewerDetailModalVisible && (
+                  <Modal
+                    isVisible={reviewerDetailModalVisible}
+                    backdropColor="black"
+                    style={{
+                      margin: 0,
+                      justifyContent: 'flex-end',
+                      backgroundColor: colors.blackOpacityColor,
+                    }}
+                    hasBackdrop
+                    onBackdropPress={() => setReviewerDetailModalVisible(false)}
+                    backdropOpacity={0}>
+                    <SafeAreaView
+                      style={[
+                        styles.modalContainerViewStyle,
+                        {backgroundColor: colors.whiteColor},
+                      ]}>
+                      <View>
+                        <LinearGradient
+                          colors={[colors.orangeColor, colors.yellowColor]}
+                          end={{x: 0.0, y: 0.25}}
+                          start={{x: 1, y: 0.5}}
+                          style={
+                            styles.gradiantHeaderViewStyle
+                          }></LinearGradient>
+                        <Header
+                          mainContainerStyle={styles.headerMainContainerStyle}
+                          leftComponent={
+                            <TouchableOpacity
+                              onPress={() =>
+                                setReviewerDetailModalVisible(false)
+                              }>
+                              <Image
+                                source={images.backArrow}
+                                style={styles.cancelImageStyle}
+                                resizeMode={'contain'}
+                              />
+                            </TouchableOpacity>
+                          }
+                          centerComponent={
+                            <View style={styles.headerCenterViewStyle}>
+                              <Image
+                                source={images.refereesInImage}
+                                style={styles.refereesImageStyle}
+                                resizeMode={'contain'}
+                              />
+                              <Text style={styles.playInTextStyle}>
+                                {'Reviews'}
+                              </Text>
+                            </View>
+                          }
+                          rightComponent={
+                            <TouchableOpacity
+                              onPress={() =>
+                                setReviewerDetailModalVisible(false)
+                              }>
+                              <Image
+                                source={images.cancelWhite}
+                                style={styles.cancelImageStyle}
+                                resizeMode={'contain'}
+                              />
+                            </TouchableOpacity>
+                          }
+                        />
+                      </View>
+                      <ScrollView>
+                        <ReviewRecentMatch
+                          eventColor={colors.yellowColor}
+                          startDate1={'Sep'}
+                          startDate2={'25'}
+                          title={'Soccer'}
+                          startTime={'7:00pm -'}
+                          endTime={'9:10pm'}
+                          location={'BC Stadium'}
+                          firstUserImage={images.team_ph}
+                          firstTeamText={'Vancouver Whitecaps'}
+                          secondUserImage={images.team_ph}
+                          secondTeamText={'Newyork City FC'}
+                          firstTeamPoint={3}
+                          secondTeamPoint={1}
+                        />
+                        <RefereeReviewerList
+                          navigation={navigation}
+                          postData={[]}
+                          userID={userID}
+                        />
+                      </ScrollView>
+                    </SafeAreaView>
+                  </Modal>
+                )}
+              </Modal>
+            )}
+          </Modal>
+        )}
+
+        {/* Entity create modal */}
+        <Portal>
+          <Modalize
+            disableScrollIfPossible={true}
+            withHandle={false}
+            modalStyle={{
+              margin: 0,
+              justifyContent: 'flex-end',
+              backgroundColor: colors.blackOpacityColor,
+              flex: 1,
+            }}
+            ref={confirmationRef}>
+            <View style={styles.modalContainerViewStyle}>
+              <Image style={styles.background} source={images.orangeLayer} />
+              <Image
+                style={styles.background}
+                source={images.entityCreatedBG}
+              />
+              <TouchableOpacity
+                onPress={() => confirmationRef.current.close()}
+                style={{alignSelf: 'flex-end'}}>
+                <Image
+                  source={images.cancelWhite}
+                  style={{
+                    marginTop: 25,
+                    marginRight: 25,
+                    height: 15,
+                    width: 15,
+                    resizeMode: 'contain',
+                    tintColor: colors.whiteColor,
                   }}
                 />
-              </SafeAreaView>
+              </TouchableOpacity>
 
-              {reviewerDetailModalVisible && (
-                <Modal
-                  isVisible={reviewerDetailModalVisible}
-                  backdropColor="black"
+              <View
+                style={{
+                  alignItems: 'center',
+                  flex: 1,
+                  justifyContent: 'center',
+                }}>
+                <ImageBackground
+                  source={
+                    (route?.params?.entityObj?.thumbnail && {
+                      uri: route?.params?.entityObj?.thumbnail,
+                    }) ||
+                    route?.params?.role === 'club'
+                      ? images.clubPlaceholder
+                      : images.teamGreenPH
+                  }
+                  style={styles.groupsImg}>
+                  <Text
+                    style={{
+                      color: colors.whiteColor,
+                      fontSize: 20,
+                      fontFamily: fonts.RBlack,
+                      marginBottom: 4,
+                    }}>{`${route?.params?.groupName
+                    ?.charAt(0)
+                    ?.toUpperCase()}`}</Text>
+                </ImageBackground>
+                <View
                   style={{
-                    margin: 0,
-                    justifyContent: 'flex-end',
-                    backgroundColor: colors.blackOpacityColor,
-                  }}
-                  hasBackdrop
-                  onBackdropPress={() => setReviewerDetailModalVisible(false)}
-                  backdropOpacity={0}>
-                  <SafeAreaView
-                    style={[
-                      styles.modalContainerViewStyle,
-                      {backgroundColor: colors.whiteColor},
-                    ]}>
-                    <View>
-                      <LinearGradient
-                        colors={[colors.orangeColor, colors.yellowColor]}
-                        end={{x: 0.0, y: 0.25}}
-                        start={{x: 1, y: 0.5}}
-                        style={styles.gradiantHeaderViewStyle}></LinearGradient>
-                      <Header
-                        mainContainerStyle={styles.headerMainContainerStyle}
-                        leftComponent={
-                          <TouchableOpacity
-                            onPress={() =>
-                              setReviewerDetailModalVisible(false)
-                            }>
-                            <Image
-                              source={images.backArrow}
-                              style={styles.cancelImageStyle}
-                              resizeMode={'contain'}
-                            />
-                          </TouchableOpacity>
-                        }
-                        centerComponent={
-                          <View style={styles.headerCenterViewStyle}>
-                            <Image
-                              source={images.refereesInImage}
-                              style={styles.refereesImageStyle}
-                              resizeMode={'contain'}
-                            />
-                            <Text style={styles.playInTextStyle}>
-                              {'Reviews'}
-                            </Text>
-                          </View>
-                        }
-                        rightComponent={
-                          <TouchableOpacity
-                            onPress={() =>
-                              setReviewerDetailModalVisible(false)
-                            }>
-                            <Image
-                              source={images.cancelWhite}
-                              style={styles.cancelImageStyle}
-                              resizeMode={'contain'}
-                            />
-                          </TouchableOpacity>
-                        }
-                      />
-                    </View>
-                    <ScrollView>
-                      <ReviewRecentMatch
-                        eventColor={colors.yellowColor}
-                        startDate1={'Sep'}
-                        startDate2={'25'}
-                        title={'Soccer'}
-                        startTime={'7:00pm -'}
-                        endTime={'9:10pm'}
-                        location={'BC Stadium'}
-                        firstUserImage={images.team_ph}
-                        firstTeamText={'Vancouver Whitecaps'}
-                        secondUserImage={images.team_ph}
-                        secondTeamText={'Newyork City FC'}
-                        firstTeamPoint={3}
-                        secondTeamPoint={1}
-                      />
-                      <RefereeReviewerList
-                        navigation={navigation}
-                        postData={[]}
-                        userID={userID}
-                      />
-                    </ScrollView>
-                  </SafeAreaView>
-                </Modal>
-              )}
-            </Modal>
-          )}
-        </Modal>
-      )}
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={[styles.foundText, {fontFamily: fonts.RBold}]}>
+                    {`${route?.params?.groupName}`}
+                  </Text>
+                  <View
+                    style={{
+                      height: 22,
+                      width: 22,
+                      borderRadius: 44,
+                      borderColor: colors.whiteColor,
+                      borderWidth: 2,
+                      marginLeft: 10,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Image
+                      source={
+                        route?.params?.role === 'team'
+                          ? images.teamPatch
+                          : images.clubPatch
+                      }
+                      style={styles.entityPatchImage}
+                    />
+                  </View>
+                </View>
+                <Text style={[styles.foundText, {fontFamily: fonts.RRegular}]}>
+                  {'has been created.'}
+                </Text>
+                <Text style={[styles.manageChallengeDetailTitle, {margin: 15}]}>
+                  {`Your account has been switched to the ${route?.params?.groupName} account.`}
+                </Text>
+              </View>
 
-      {/* Entity create modal */}
-      <Portal>
-        <Modalize
-          disableScrollIfPossible={true}
-          withHandle={false}
-          modalStyle={{
+              {route?.params?.role === 'team' && (
+                <Text style={styles.manageChallengeDetailTitle}>
+                  {strings.manageChallengeDetailText}
+                </Text>
+              )}
+              <TouchableOpacity
+                style={styles.goToProfileButton}
+                onPress={() => {
+                  confirmationRef.current.close();
+                  if (route?.params?.role !== 'club') {
+                    if (currentUserData?.is_pause === true) {
+                      Alert.alert('Your team is paused.');
+                    } else {
+                      navigation.navigate('ManageChallengeScreen', {
+                        groupObj: currentUserData,
+                        sportName: route?.params?.entityObj?.sport,
+                        sportType: currentUserData?.sport_type,
+                      });
+                    }
+                  }
+                }}>
+                <Text style={styles.goToProfileTitle}>
+                  {route?.params?.role === 'club'
+                    ? 'OK'
+                    : strings.manageChallengeText}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Modalize>
+        </Portal>
+        <Portal>
+          <Modalize
+            visible={refereeOfferModalVisible}
+            onOpen={() => setRefereeOfferModalVisible(true)}
+            snapPoint={hp(50)}
+            withHandle={false}
+            overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
+            modalStyle={{
+              borderTopRightRadius: 25,
+              borderTopLeftRadius: 25,
+              shadowColor: colors.blackColor,
+              shadowOffset: {width: 0, height: -2},
+              shadowOpacity: 0.3,
+              shadowRadius: 10,
+              elevation: 10,
+            }}
+            onPositionChange={(position) => {
+              if (position === 'top') {
+                setRefereeOfferModalVisible(false);
+              }
+            }}
+            ref={gameListRefereeModalRef}
+            HeaderComponent={ModalRefereeHeader}
+            flatListProps={flatListRefereeProps}
+          />
+        </Portal>
+
+        {/* Scorekeeper offer */}
+
+        <Portal>
+          <Modalize
+            visible={scorekeeperOfferModalVisible}
+            onOpen={() => setScorekeeperOfferModalVisible(true)}
+            snapPoint={hp(50)}
+            withHandle={false}
+            overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
+            modalStyle={{
+              borderTopRightRadius: 25,
+              borderTopLeftRadius: 25,
+              shadowColor: colors.blackColor,
+              shadowOffset: {width: 0, height: -2},
+              shadowOpacity: 0.3,
+              shadowRadius: 10,
+              elevation: 10,
+            }}
+            onPositionChange={(position) => {
+              if (position === 'top') {
+                setScorekeeperOfferModalVisible(false);
+              }
+            }}
+            ref={gameListScorekeeperModalRef}
+            HeaderComponent={ModalScorekeeperHeader}
+            flatListProps={flatListScorekeeperProps}
+          />
+        </Portal>
+        <Modal
+          isVisible={isDoubleSportTeamCreatedVisible} // isDoubleSportTeamCreatedVisible
+          backdropColor="black"
+          style={{
             margin: 0,
             justifyContent: 'flex-end',
             backgroundColor: colors.blackOpacityColor,
             flex: 1,
           }}
-          ref={confirmationRef}>
+          hasBackdrop
+          onBackdropPress={() => {
+            navigation.popToTop();
+            setTimeout(() => {
+              setIsDoubleSportTeamCreatedVisible(false);
+            }, 10);
+          }}
+          backdropOpacity={0}>
           <View style={styles.modalContainerViewStyle}>
             <Image style={styles.background} source={images.orangeLayer} />
             <Image style={styles.background} source={images.entityCreatedBG} />
             <TouchableOpacity
-              onPress={() => confirmationRef.current.close()}
+              onPress={() => {
+                navigation.popToTop();
+                setTimeout(() => {
+                  setIsDoubleSportTeamCreatedVisible(false);
+                }, 10);
+              }}
               style={{alignSelf: 'flex-end'}}>
               <Image
                 source={images.cancelWhite}
@@ -5306,521 +5619,372 @@ const HomeScreen = ({navigation, route}) => {
                 flex: 1,
                 justifyContent: 'center',
               }}>
-              <ImageBackground
-                source={
-                  (route?.params?.entityObj?.thumbnail && {
-                    uri: route?.params?.entityObj?.thumbnail,
-                  }) ||
-                  route?.params?.role === 'club'
-                    ? images.clubPlaceholder
-                    : images.teamGreenPH
-                }
-                style={styles.groupsImg}>
-                <Text
-                  style={{
-                    color: colors.whiteColor,
-                    fontSize: 20,
-                    fontFamily: fonts.RBlack,
-                    marginBottom: 4,
-                  }}>{`${route?.params?.groupName
-                  ?.charAt(0)
-                  ?.toUpperCase()}`}</Text>
-              </ImageBackground>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
-                <Text style={[styles.foundText, {fontFamily: fonts.RBold}]}>
-                  {`${route?.params?.groupName}`}
+              <Text
+                style={[
+                  styles.doubleSportCreatedText,
+                  {fontFamily: fonts.RRegular},
+                ]}>
+                {`You have completed all the process to create a team at your end. An invite will be sent to ${route?.params?.name}.`}
+              </Text>
+
+              <Text style={styles.inviteText}>
+                When
+                <Text style={{fontFamily: fonts.RBold}}>
+                  {' '}
+                  {route?.params?.name}{' '}
                 </Text>
-                <View
-                  style={{
-                    height: 22,
-                    width: 22,
-                    borderRadius: 44,
-                    borderColor: colors.whiteColor,
-                    borderWidth: 2,
-                    marginLeft: 10,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <Image
-                    source={
-                      route?.params?.role === 'team'
-                        ? images.teamPatch
-                        : images.clubPatch
-                    }
-                    style={styles.entityPatchImage}
-                  />
-                </View>
-              </View>
-              <Text style={[styles.foundText, {fontFamily: fonts.RRegular}]}>
-                {'has been created.'}
+                accepts your invite, the team will be created.
               </Text>
-              <Text style={[styles.manageChallengeDetailTitle, {margin: 15}]}>
-                {`Your account has been switched to the ${route?.params?.groupName} account.`}
-              </Text>
+              <Image
+                source={images.doubleTeamCreated}
+                style={styles.doubleTeamImage}
+              />
             </View>
 
-            {route?.params?.role === 'team' && (
-              <Text style={styles.manageChallengeDetailTitle}>
-                {strings.manageChallengeDetailText}
-              </Text>
-            )}
             <TouchableOpacity
               style={styles.goToProfileButton}
               onPress={() => {
-                confirmationRef.current.close();
-                if (route?.params?.role !== 'club') {
-                  navigation.navigate('ManageChallengeScreen', {
-                    groupObj: currentUserData,
-                    sportName: route?.params?.entityObj?.sport,
-                    sportType: currentUserData?.sport_type,
-                  });
-                }
+                navigation.popToTop();
+                setTimeout(() => {
+                  setIsDoubleSportTeamCreatedVisible(false);
+                }, 10);
               }}>
-              <Text style={styles.goToProfileTitle}>
-                {route?.params?.role === 'club'
-                  ? 'OK'
-                  : strings.manageChallengeText}
-              </Text>
+              <Text style={styles.goToProfileTitle}>OK</Text>
             </TouchableOpacity>
           </View>
-        </Modalize>
-      </Portal>
-      <Portal>
-        <Modalize
-          visible={refereeOfferModalVisible}
-          onOpen={() => setRefereeOfferModalVisible(true)}
-          snapPoint={hp(50)}
-          withHandle={false}
-          overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
-          modalStyle={{
-            borderTopRightRadius: 25,
-            borderTopLeftRadius: 25,
-            shadowColor: colors.blackColor,
-            shadowOffset: {width: 0, height: -2},
-            shadowOpacity: 0.3,
-            shadowRadius: 10,
-            elevation: 10,
-          }}
-          onPositionChange={(position) => {
-            if (position === 'top') {
-              setRefereeOfferModalVisible(false);
-            }
-          }}
-          ref={gameListRefereeModalRef}
-          HeaderComponent={ModalRefereeHeader}
-          flatListProps={flatListRefereeProps}
-        />
-      </Portal>
+        </Modal>
+        {/* Entity create modal */}
 
-      {/* Scorekeeper offer */}
-
-      <Portal>
-        <Modalize
-          visible={scorekeeperOfferModalVisible}
-          onOpen={() => setScorekeeperOfferModalVisible(true)}
-          snapPoint={hp(50)}
-          withHandle={false}
-          overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
-          modalStyle={{
-            borderTopRightRadius: 25,
-            borderTopLeftRadius: 25,
-            shadowColor: colors.blackColor,
-            shadowOffset: {width: 0, height: -2},
-            shadowOpacity: 0.3,
-            shadowRadius: 10,
-            elevation: 10,
-          }}
-          onPositionChange={(position) => {
-            if (position === 'top') {
-              setScorekeeperOfferModalVisible(false);
-            }
-          }}
-          ref={gameListScorekeeperModalRef}
-          HeaderComponent={ModalScorekeeperHeader}
-          flatListProps={flatListScorekeeperProps}
-        />
-      </Portal>
-      <Modal
-        isVisible={isDoubleSportTeamCreatedVisible} // isDoubleSportTeamCreatedVisible
-        backdropColor="black"
-        style={{
-          margin: 0,
-          justifyContent: 'flex-end',
-          backgroundColor: colors.blackOpacityColor,
-          flex: 1,
-        }}
-        hasBackdrop
-        onBackdropPress={() => {
-          navigation.popToTop();
-          setTimeout(() => {
-            setIsDoubleSportTeamCreatedVisible(false);
-          }, 10);
-        }}
-        backdropOpacity={0}>
-        <View style={styles.modalContainerViewStyle}>
-          <Image style={styles.background} source={images.orangeLayer} />
-          <Image style={styles.background} source={images.entityCreatedBG} />
-          <TouchableOpacity
-            onPress={() => {
-              navigation.popToTop();
-              setTimeout(() => {
-                setIsDoubleSportTeamCreatedVisible(false);
-              }, 10);
-            }}
-            style={{alignSelf: 'flex-end'}}>
-            <Image
-              source={images.cancelWhite}
-              style={{
-                marginTop: 25,
-                marginRight: 25,
-                height: 15,
-                width: 15,
-                resizeMode: 'contain',
-                tintColor: colors.whiteColor,
-              }}
-            />
-          </TouchableOpacity>
-
-          <View
-            style={{
-              alignItems: 'center',
-              flex: 1,
-              justifyContent: 'center',
-            }}>
-            <Text
-              style={[
-                styles.doubleSportCreatedText,
-                {fontFamily: fonts.RRegular},
-              ]}>
-              {`You have completed all the process to create a team at your end. An invite will be sent to ${route?.params?.name}.`}
-            </Text>
-
-            <Text style={styles.inviteText}>
-              When
-              <Text style={{fontFamily: fonts.RBold}}>
-                {' '}
-                {route?.params?.name}{' '}
-              </Text>
-              accepts your invite, the team will be created.
-            </Text>
-            <Image
-              source={images.doubleTeamCreated}
-              style={styles.doubleTeamImage}
-            />
-          </View>
-
-          <TouchableOpacity
-            style={styles.goToProfileButton}
-            onPress={() => {
-              navigation.popToTop();
-              setTimeout(() => {
-                setIsDoubleSportTeamCreatedVisible(false);
-              }, 10);
-            }}>
-            <Text style={styles.goToProfileTitle}>OK</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
-      {/* Entity create modal */}
-
-      {/* Create Challenge modal */}
-      <Modal
-        onBackdropPress={() => setChallengePopup(false)}
-        backdropOpacity={1}
-        animationType="slide"
-        hasBackdrop
-        style={{
-          margin: 0,
-          backgroundColor: colors.blackOpacityColor,
-        }}
-        visible={challengePopup}>
-        <View style={styles.bottomPopupContainer}>
-          <View style={styles.viewsContainer}>
-            <Text
-              onPress={() => setChallengePopup(false)}
-              style={styles.cancelText}>
-              Cancel
-            </Text>
-            <Text style={styles.locationText}>Challenge</Text>
-            <Text style={styles.locationText}> </Text>
-          </View>
-          <TCThinDivider width={'100%'} marginBottom={15} />
-          <TouchableWithoutFeedback
-            onPress={() => {
-              setSelectedChallengeOption(0);
-              const obj = settingObject;
-              if (obj?.availibility === 'On') {
-                if (
-                  currentUserData.sport_type === 'double' &&
-                  (!('player_deactivated' in currentUserData) ||
-                    !currentUserData?.player_deactivated) &&
-                  (!('player_leaved' in currentUserData) ||
-                    !currentUserData?.player_leaved) &&
-                  (!('player_leaved' in myGroupDetail) ||
-                    !myGroupDetail?.player_leaved)
-                ) {
-                  if (
-                    obj?.game_duration &&
-                    obj?.availibility &&
-                    obj?.special_rules !== undefined &&
-                    obj?.general_rules !== undefined &&
-                    obj?.responsible_for_referee &&
-                    obj?.responsible_for_scorekeeper &&
-                    obj?.game_fee &&
-                    obj?.venue &&
-                    obj?.refund_policy &&
-                    obj?.home_away &&
-                    obj?.game_type
-                  ) {
-                    console.log('currentUserData1111', currentUserData);
-
-                    setChallengePopup(false);
-                    navigation.navigate('ChallengeScreen', {
-                      setting: obj,
-                      sportName: currentUserData?.sport,
-                      sportType: currentUserData?.sport_type,
-                      groupObj: currentUserData,
-                    });
-                  } else {
-                    Alert.alert(
-                      'This team has no completed challenge setting.',
-                    );
-                  }
-                } else {
-                  console.log('in else continue :', currentUserData);
-                  if (currentUserData?.player_deactivated) {
-                    Alert.alert('Player deactiveted sport.');
-                  } else if (
-                    'player_leaved' in currentUserData &&
-                    currentUserData?.player_leaved
-                  ) {
-                    Alert.alert(
-                      `${currentUserData?.group_name} have't 2 players in team.`,
-                    );
-                  } else if (
-                    'player_leaved' in myGroupDetail &&
-                    myGroupDetail?.player_leaved
-                  ) {
-                    Alert.alert('You have\'t 2 players in team.');
-                  }
-                }
-              } else {
-                Alert.alert(
-                  'Opponent player or team not availble for challenge.',
-                );
-              }
-              // setTimeout(() => {
-              //   setChallengePopup(false);
-              //   navigation.navigate('ChallengeScreen', {
-              //     sportName: currentUserData.sport,
-              //     groupObj: currentUserData,
-              //   });
-              // }, 300);
-            }}>
-            {selectedChallengeOption === 0 ? (
-              <LinearGradient
-                colors={[colors.yellowColor, colors.orangeGradientColor]}
-                style={styles.backgroundView}>
-                <Text
-                  style={[
-                    styles.curruentLocationText,
-                    {color: colors.whiteColor},
-                  ]}>
-                  Continue to Challenge
-                </Text>
-              </LinearGradient>
-            ) : (
-              <View style={styles.backgroundView}>
-                <Text style={styles.curruentLocationText}>
-                  Continue to Challenge
-                </Text>
-              </View>
-            )}
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              setSelectedChallengeOption(1);
-              const obj = mySettingObject;
-              if (obj?.availibility === 'On') {
-                if (
-                  myGroupDetail.sport_type === 'double' &&
-                  (!('player_deactivated' in myGroupDetail) ||
-                    !myGroupDetail?.player_deactivated) &&
-                  (!('player_leaved' in currentUserData) ||
-                    !currentUserData?.player_leaved) &&
-                  (!('player_leaved' in myGroupDetail) ||
-                    !myGroupDetail?.player_leaved)
-                ) {
-                  if (
-                    obj?.game_duration &&
-                    obj?.availibility &&
-                    obj?.special_rules !== undefined &&
-                    obj?.general_rules !== undefined &&
-                    obj?.responsible_for_referee &&
-                    obj?.responsible_for_scorekeeper &&
-                    obj?.game_fee &&
-                    obj?.venue &&
-                    obj?.refund_policy &&
-                    obj?.home_away &&
-                    obj?.game_type
-                  ) {
-                    setChallengePopup(false);
-                    navigation.navigate('InviteChallengeScreen', {
-                      setting: obj,
-                      sportName: currentUserData?.sport,
-                      sportType: currentUserData?.sport_type,
-                      groupObj: currentUserData,
-                    });
-                  } else {
-                    setTimeout(() => {
-                      Alert.alert(
-                        'Please complete your all setting before send a challenge invitation.',
-                        '',
-                        [
-                          {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed!'),
-                          },
-                          {
-                            text: 'OK',
-                            onPress: () => {
-                              navigation.navigate('ManageChallengeScreen', {
-                                groupObj: currentUserData,
-                                sportName: currentUserData.sport,
-                                sportType: currentUserData?.sport_type,
-                              });
-                            },
-                          },
-                        ],
-                        {cancelable: false},
-                      );
-                    }, 1000);
-                  }
-                } else {
-                  console.log('in else');
-                  if (
-                    'player_deactivated' in myGroupDetail ||
-                    myGroupDetail?.player_deactivated
-                  ) {
-                    Alert.alert('Player deactiveted sport.');
-                  } else if (
-                    'player_leaved' in currentUserData ||
-                    currentUserData?.player_leaved
-                  ) {
-                    Alert.alert(
-                      `${currentUserData?.group_name} have't 2 players in team.`,
-                    );
-                  } else if (
-                    'player_leaved' in myGroupDetail ||
-                    myGroupDetail?.player_leaved
-                  ) {
-                    Alert.alert('You have\'t 2 players in team.');
-                  }
-                }
-              } else {
-                Alert.alert('Your availability for challenge is off.');
-              }
-            }}>
-            {selectedChallengeOption === 1 ? (
-              <LinearGradient
-                colors={[colors.yellowColor, colors.orangeGradientColor]}
-                style={styles.backgroundView}>
-                <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
-                  Invite to Challenge
-                </Text>
-              </LinearGradient>
-            ) : (
-              <View style={styles.backgroundView}>
-                <Text style={styles.myCityText}>Invite to Challenge</Text>
-              </View>
-            )}
-          </TouchableWithoutFeedback>
-        </View>
-      </Modal>
-      {/* Create Challenge modal */}
-
-      {/* Sports list  modal */}
-      <Modal
-        isVisible={visibleSportsModal}
-        backdropColor="black"
-        onBackdropPress={() => setVisibleSportsModal(false)}
-        onRequestClose={() => setVisibleSportsModal(false)}
-        backdropOpacity={0}
-        style={{
-          margin: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-        }}>
-        <View
+        {/* Create Challenge modal */}
+        <Modal
+          onBackdropPress={() => setChallengePopup(false)}
+          backdropOpacity={1}
+          animationType="slide"
+          hasBackdrop
           style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
+            margin: 0,
+            backgroundColor: colors.blackOpacityColor,
+          }}
+          visible={challengePopup}>
+          <View style={styles.bottomPopupContainer}>
+            <View style={styles.viewsContainer}>
+              <Text
+                onPress={() => setChallengePopup(false)}
+                style={styles.cancelText}>
+                Cancel
+              </Text>
+              <Text style={styles.locationText}>Challenge</Text>
+              <Text style={styles.locationText}> </Text>
+            </View>
+            <TCThinDivider width={'100%'} marginBottom={15} />
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setSelectedChallengeOption(0);
+                const obj = settingObject;
+                if (obj?.availibility === 'On') {
+                  if (
+                    currentUserData.sport_type === 'double' &&
+                    (!('player_deactivated' in currentUserData) ||
+                      !currentUserData?.player_deactivated) &&
+                    (!('player_leaved' in currentUserData) ||
+                      !currentUserData?.player_leaved) &&
+                    (!('player_leaved' in myGroupDetail) ||
+                      !myGroupDetail?.player_leaved)
+                  ) {
+                    if (
+                      obj?.game_duration &&
+                      obj?.availibility &&
+                      obj?.special_rules !== undefined &&
+                      obj?.general_rules !== undefined &&
+                      obj?.responsible_for_referee &&
+                      obj?.responsible_for_scorekeeper &&
+                      obj?.game_fee &&
+                      obj?.venue &&
+                      obj?.refund_policy &&
+                      obj?.home_away &&
+                      obj?.game_type
+                    ) {
+                      console.log('currentUserData1111', currentUserData);
+
+                      setChallengePopup(false);
+                      navigation.navigate('ChallengeScreen', {
+                        setting: obj,
+                        sportName: currentUserData?.sport,
+                        sportType: currentUserData?.sport_type,
+                        groupObj: currentUserData,
+                      });
+                    } else {
+                      Alert.alert(
+                        'This team has no completed challenge setting.',
+                      );
+                    }
+                  } else {
+                    console.log('in else continue :', currentUserData);
+                    if (currentUserData.sport_type === 'double') {
+                      if (currentUserData?.player_deactivated) {
+                        Alert.alert('Player deactiveted sport.');
+                      } else if (
+                        'player_leaved' in currentUserData &&
+                        currentUserData?.player_leaved
+                      ) {
+                        Alert.alert(
+                          `${currentUserData?.group_name} have't 2 players in team.`,
+                        );
+                      } else if (
+                        'player_leaved' in myGroupDetail &&
+                        myGroupDetail?.player_leaved
+                      ) {
+                        Alert.alert('You have\'t 2 players in team.');
+                      }
+                    } else {
+                      setChallengePopup(false);
+
+                      navigation.navigate('ChallengeScreen', {
+                        setting: obj,
+                        sportName: currentUserData?.sport,
+                        sportType: currentUserData?.sport_type,
+                        groupObj: currentUserData,
+                      });
+                    }
+                  }
+                } else {
+                  Alert.alert(
+                    'Opponent player or team not availble for challenge.',
+                  );
+                }
+                // setTimeout(() => {
+                //   setChallengePopup(false);
+                //   navigation.navigate('ChallengeScreen', {
+                //     sportName: currentUserData.sport,
+                //     groupObj: currentUserData,
+                //   });
+                // }, 300);
+              }}>
+              {selectedChallengeOption === 0 ? (
+                <LinearGradient
+                  colors={[colors.yellowColor, colors.orangeGradientColor]}
+                  style={styles.backgroundView}>
+                  <Text
+                    style={[
+                      styles.curruentLocationText,
+                      {color: colors.whiteColor},
+                    ]}>
+                    Continue to Challenge
+                  </Text>
+                </LinearGradient>
+              ) : (
+                <View style={styles.backgroundView}>
+                  <Text style={styles.curruentLocationText}>
+                    Continue to Challenge
+                  </Text>
+                </View>
+              )}
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setSelectedChallengeOption(1);
+                const obj = mySettingObject;
+                if (obj?.availibility === 'On') {
+                  if (
+                    myGroupDetail.sport_type === 'double' &&
+                    (!('player_deactivated' in myGroupDetail) ||
+                      !myGroupDetail?.player_deactivated) &&
+                    (!('player_leaved' in currentUserData) ||
+                      !currentUserData?.player_leaved) &&
+                    (!('player_leaved' in myGroupDetail) ||
+                      !myGroupDetail?.player_leaved)
+                  ) {
+                    if (
+                      obj?.game_duration &&
+                      obj?.availibility &&
+                      obj?.special_rules !== undefined &&
+                      obj?.general_rules !== undefined &&
+                      obj?.responsible_for_referee &&
+                      obj?.responsible_for_scorekeeper &&
+                      obj?.game_fee &&
+                      obj?.venue &&
+                      obj?.refund_policy &&
+                      obj?.home_away &&
+                      obj?.game_type
+                    ) {
+                      setChallengePopup(false);
+                      if (myGroupDetail.is_pause === true) {
+                        Alert.alert(`${myGroupDetail.group_name} is paused.`);
+                      } else {
+                        navigation.navigate('InviteChallengeScreen', {
+                          setting: obj,
+                          sportName: currentUserData?.sport,
+                          sportType: currentUserData?.sport_type,
+                          groupObj: currentUserData,
+                        });
+                      }
+                    } else {
+                      setTimeout(() => {
+                        Alert.alert(
+                          'Please complete your all setting before send a challenge invitation.',
+                          '',
+                          [
+                            {
+                              text: 'Cancel',
+                              onPress: () => console.log('Cancel Pressed!'),
+                            },
+                            {
+                              text: 'OK',
+                              onPress: () => {
+                                if (currentUserData?.is_pause === true) {
+                                  Alert.alert('Your team is paused.');
+                                } else {
+                                  navigation.navigate('ManageChallengeScreen', {
+                                    groupObj: currentUserData,
+                                    sportName: currentUserData.sport,
+                                    sportType: currentUserData?.sport_type,
+                                  });
+                                }
+                              },
+                            },
+                          ],
+                          {cancelable: false},
+                        );
+                      }, 1000);
+                    }
+                  } else {
+                    console.log('in else');
+                    if (myGroupDetail.sport_type === 'double') {
+                      if (
+                        'player_deactivated' in myGroupDetail ||
+                        myGroupDetail?.player_deactivated
+                      ) {
+                        Alert.alert('Player deactiveted sport.');
+                      } else if (
+                        'player_leaved' in currentUserData ||
+                        currentUserData?.player_leaved
+                      ) {
+                        Alert.alert(
+                          `${currentUserData?.group_name} have't 2 players in team.`,
+                        );
+                      } else if (
+                        'player_leaved' in myGroupDetail ||
+                        myGroupDetail?.player_leaved
+                      ) {
+                        Alert.alert('You have\'t 2 players in team.');
+                      }
+                    } else {
+                      console.log('invite block');
+                      setChallengePopup(false);
+                      if (myGroupDetail.is_pause === true) {
+                        Alert.alert('Your team is paused.');
+                      } else {
+                        setChallengePopup(false);
+                        navigation.navigate('InviteChallengeScreen', {
+                          setting: obj,
+                          sportName: currentUserData?.sport,
+                          sportType: currentUserData?.sport_type,
+                          groupObj: currentUserData,
+                        });
+                      }
+                    }
+                  }
+                } else {
+                  Alert.alert('Your availability for challenge is off.');
+                }
+              }}>
+              {selectedChallengeOption === 1 ? (
+                <LinearGradient
+                  colors={[colors.yellowColor, colors.orangeGradientColor]}
+                  style={styles.backgroundView}>
+                  <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
+                    Invite to Challenge
+                  </Text>
+                </LinearGradient>
+              ) : (
+                <View style={styles.backgroundView}>
+                  <Text style={styles.myCityText}>Invite to Challenge</Text>
+                </View>
+              )}
+            </TouchableWithoutFeedback>
+          </View>
+        </Modal>
+        {/* Create Challenge modal */}
+
+        {/* Sports list  modal */}
+        <Modal
+          isVisible={visibleSportsModal}
+          backdropColor="black"
+          onBackdropPress={() => setVisibleSportsModal(false)}
+          onRequestClose={() => setVisibleSportsModal(false)}
+          backdropOpacity={0}
+          style={{
+            margin: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
           }}>
           <View
             style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              width: '100%',
+              height: Dimensions.get('window').height / 1.3,
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              shadowColor: '#000',
+              shadowOffset: {width: 0, height: 1},
+              shadowOpacity: 0.5,
+              shadowRadius: 5,
+              elevation: 15,
             }}>
-            <TouchableOpacity
-              hitSlop={Utility.getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
+            <View
               style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}>
-              Sports
-            </Text>
+              <TouchableOpacity
+                hitSlop={Utility.getHitSlop(15)}
+                style={styles.closeButton}
+                onPress={() => setVisibleSportsModal(false)}>
+                <Image source={images.cancelImage} style={styles.closeButton} />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RBold,
+                  color: colors.lightBlackColor,
+                }}>
+                Sports
+              </Text>
 
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-                color: colors.themeColor,
-              }}></Text>
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: colors.themeColor,
+                }}></Text>
+            </View>
+            <View style={styles.separatorLine} />
+            <FlatList
+              ItemSeparatorComponent={() => <TCThinDivider />}
+              data={authContext?.entity?.obj?.registered_sports}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderSports}
+            />
           </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            data={authContext?.entity?.obj?.registered_sports}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderSports}
+        </Modal>
+
+        {!createEventModal && currentTab === 3 && (
+          <CreateEventButton
+            source={images.plus}
+            onPress={() => setCreateEventModal(true)}
           />
-        </View>
-      </Modal>
+        )}
 
-      {!createEventModal && currentTab === 3 && (
-        <CreateEventButton
-          source={images.plus}
-          onPress={() => setCreateEventModal(true)}
-        />
-      )}
-
-      {renderImageProgress}
+        {renderImageProgress}
+      </View>
     </View>
   );
 };
@@ -6127,11 +6291,12 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   userNavigationTextStyle: {
+  
+    width: 210,
     fontSize: 22,
     fontFamily: fonts.RBold,
     textAlign: 'left',
-    marginLeft: 15,
-    paddingRight: 15,
+    marginRight: 10,
     // paddingLeft:15
   },
 

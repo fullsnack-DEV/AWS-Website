@@ -841,7 +841,7 @@ const strings = {
   sportActivity: 'Sports Activities',
   refereeRegisteredSuccess: 'Registered as a referee.',
   scorekeeperRegisteredSuccess: 'Registered as a scorekeeper.',
-
+  terminationAlert: 'The email and password you entered don\'t match.'
   // Signup & login text
 };
 export default strings;

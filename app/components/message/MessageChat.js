@@ -79,7 +79,7 @@ const MessageChat = ({route, navigation}) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploadImageInProgress, setUploadImageInProgress] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [dialogData, setDialogData] = useState(null);
+  const [dialogData, setDialogData] = useState(route?.params?.dialog);
   const [dialogMenu, setDialogMenu] = useState(route?.params?.dialog);
   const [chatType, setChatType] = useState('');
   const [headingTitle, setHeadingTitle] = useState('');
@@ -89,6 +89,8 @@ const MessageChat = ({route, navigation}) => {
   const [savedMessagesData, setSavedMessagesData] = useState([]);
   const [searchMessageData, setSearchMessageData] = useState([]);
 
+  const [pointEvent, setPointEvent] = useState('auto');
+  const [placeholderText, setPlaceholderText] = useState('Type a message');
   const [occupantsData, setOccupantsData] = useState([]);
   const [hideSearchView, setHideSearchView] = useState(true);
 
@@ -101,9 +103,17 @@ const MessageChat = ({route, navigation}) => {
   );
 
   useEffect(() => {
+    
+    if (isFocused) {
+      onRefresh()
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
     console.log(1);
     if (occupantsData?.length) {
       navigation.setParams({participants: [...occupantsData]});
+      
     }
   }, [occupantsData]);
 
@@ -213,8 +223,10 @@ const MessageChat = ({route, navigation}) => {
             )
               .then((res) => {
                 console.log('USER:::::===> ', res?.users);
-                setLoading(false);
+                getPlaceholderText([...res?.users]);
                 setOccupantsData([...res?.users]);
+
+                setLoading(false);
               })
               .catch((e) => {
                 setLoading(false);
@@ -313,7 +325,10 @@ const MessageChat = ({route, navigation}) => {
       const userData =
         occupantsData &&
         occupantsData.filter((oItem) => oItem.id === item.senderId);
-
+      const customData =
+        userData.length > 0 && userData[0]?.customData
+          ? JSON.parse(userData[0].customData)
+          : {};
       console.log('userData--->', userData);
       console.log('occupantsData--->', occupantsData);
       console.log('item--->', item);
@@ -334,11 +349,6 @@ const MessageChat = ({route, navigation}) => {
       console.log('fullName--->', fullName);
       let finalImage = images.profilePlaceHolder;
       if (isReceiver) {
-        const customData =
-          userData.length > 0 && userData[0]?.customData
-            ? JSON.parse(userData[0].customData)
-            : {};
-
         console.log('customData ::==>', customData);
         const entityType = customData?.entity_type ?? '';
         let fullImage = null;
@@ -395,6 +405,12 @@ const MessageChat = ({route, navigation}) => {
                       flexDirection: 'row',
                       alignItems: 'center',
                       marginVertical: hp(1),
+                      opacity:
+                        customData?.is_deactivate === true ||
+                        customData?.is_pause === true || 
+                        customData?.under_terminate === true
+                          ? 0.5
+                          : 1,
                     }}>
                     <View style={{...styles.avatarContainer}}>
                       <FastImage
@@ -412,13 +428,13 @@ const MessageChat = ({route, navigation}) => {
                         marginLeft: 8,
                       }}>
                       {/* eslint-disable-next-line no-mixed-operators */}
-                      {fullName}
+                      {customData?.is_terminate === true  ? 'Unknown' : fullName}
                     </Text>
                   </View>
                 )}
 
                 <TCMessage
-                  fullName={fullName}
+                  fullName={customData?.is_terminate === true  ? 'Unknown' : fullName}
                   attachments={item.attachments}
                   date={new Date(item.dateSent)}
                   body={item.body}
@@ -451,6 +467,9 @@ const MessageChat = ({route, navigation}) => {
       uploadedFile && messageBody.trim() === ''
         ? '[attachment]'
         : messageBody.trim();
+        console.log('dialogData?.dialogId',dialogData?.dialogId);
+        console.log('message',message);
+
     QBsendMessage(dialogData?.dialogId, message, uploadedFile).then(() => {
       setMessageBody('');
       setSelectedImage(null);
@@ -515,23 +534,23 @@ const MessageChat = ({route, navigation}) => {
                 source={images.searchLocation}
                 style={[
                   styles.rightSearchImageStyle,
-                  {marginRight: occupantsData?.length > 2 ? 15 : 0},
+                  {marginRight: 15},
                 ]}
               />
             </TouchableOpacity>
-            {occupantsData?.length > 2 && (
-              <TouchableOpacity
+            
+            <TouchableOpacity
                 itSlop={getHitSlop(15)}
                 onPress={() => {
                   commentModalRef.current.open();
                   // navigation.setParams({participants: [occupantsData]});
                 }}>
-                <Image
+              <Image
                   source={images.threeDotIcon}
                   style={styles.rightImageStyle}
                 />
-              </TouchableOpacity>
-            )}
+            </TouchableOpacity>
+          
           </View>
         }
       />
@@ -544,7 +563,7 @@ const MessageChat = ({route, navigation}) => {
   }, [getMessages]);
 
   const ListEmptyComponent = useMemo(
-    () => <Text style={styles.noMessagesText}>No Messages</Text>,
+    () => !loading && <Text style={styles.noMessagesText}>No Messages</Text>,
     [],
   );
 
@@ -564,21 +583,69 @@ const MessageChat = ({route, navigation}) => {
     ),
     [ListEmptyComponent, loading, onRefresh, renderMessages, savedMessagesData],
   );
+  console.log('occupantsData?.length', occupantsData?.length);
 
-  const renderBottomChatTools = useMemo(
-    () => (
-      <View
-        style={{
-          ...styles.bottomTextUpperContainer,
-          height: selectedImage ? hp(18) : hp(8),
-          borderTopWidth: selectedImage ? 1 : 0,
-          borderTopColor: selectedImage ? colors.userPostTimeColor : '',
-        }}>
-        {selectedImage && (
-          <View style={styles.selectedImageContainer}>
-            {selectedImage?.mime?.includes('image') ? (
-              <FastImage
-                resizeMode={'cover'}
+  const getPlaceholderText = (occData) => {
+    const filterOcc = (occData || []).filter(
+      (obj) =>
+        JSON.parse(obj.customData).is_pause === true ||
+        JSON.parse(obj.customData).is_deactivate === true,
+    );
+    console.log('filterOccfilterOcc', occData?.length - filterOcc.length);
+    if (occData?.length - filterOcc.length <= 1) {
+      setPointEvent('none');
+      setPlaceholderText('No recipients in this chatroom');
+    }
+  };
+
+  const renderBottomChatTools = () => (
+    <View
+      style={{
+        ...styles.bottomTextUpperContainer,
+        height: selectedImage ? hp(18) : hp(8),
+        borderTopWidth: selectedImage ? 1 : 0,
+        borderTopColor: selectedImage ? colors.userPostTimeColor : '',
+      }}>
+      {selectedImage && (
+        <View style={styles.selectedImageContainer}>
+          {selectedImage?.mime?.includes('image') ? (
+            <FastImage
+              resizeMode={'cover'}
+              source={{uri: selectedImage?.path}}
+              style={{
+                borderRadius: 5,
+                height: 50,
+                width: 50,
+                marginVertical: hp(2),
+              }}
+            />
+          ) : (
+            <View>
+              <View
+                style={{
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'absolute',
+                }}>
+                <FastImage
+                  source={images.videoPlayBtn}
+                  tintColor={'white'}
+                  resizeMode={'contain'}
+                  style={{
+                    height: 20,
+                    width: 20,
+                  }}
+                />
+              </View>
+              <Video
+                ref={videoPlayerRef}
+                paused={true}
+                muted={true}
                 source={{uri: selectedImage?.path}}
                 style={{
                   borderRadius: 5,
@@ -586,121 +653,84 @@ const MessageChat = ({route, navigation}) => {
                   width: 50,
                   marginVertical: hp(2),
                 }}
+                resizeMode={'cover'}
+                onLoad={() => {
+                  videoPlayerRef.current.seek(0);
+                }}
               />
-            ) : (
-              <View>
-                <View
-                  style={{
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    zIndex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'absolute',
-                  }}>
-                  <FastImage
-                    source={images.videoPlayBtn}
-                    tintColor={'white'}
-                    resizeMode={'contain'}
-                    style={{
-                      height: 20,
-                      width: 20,
-                    }}
-                  />
-                </View>
-                <Video
-                  ref={videoPlayerRef}
-                  paused={true}
-                  muted={true}
-                  source={{uri: selectedImage?.path}}
-                  style={{
-                    borderRadius: 5,
-                    height: 50,
-                    width: 50,
-                    marginVertical: hp(2),
-                  }}
-                  resizeMode={'cover'}
-                  onLoad={() => {
-                    videoPlayerRef.current.seek(0);
-                  }}
-                />
-              </View>
-            )}
-            <Text style={{fontSize: 15, marginLeft: 15}}>
-              {uploadImageInProgress
-                ? `Uploading ${
-                    selectedImage?.mime?.includes('image')
-                      ? 'an image'
-                      : 'video'
-                  }...`
-                : `${
-                    selectedImage?.mime?.includes('image') ? 'Image' : 'Video'
-                  } uploaded`}
-            </Text>
-            <TouchableOpacity
-              style={{flex: 1, alignItems: 'flex-end'}}
-              onPress={() => {
-                setSelectedImage(null);
-                setUploadImageInProgress(false);
-                setUploadedFile(null);
-              }}>
-              <FastImage
-                source={images.cancelImage}
-                style={{height: 20, width: 20}}
-                resizeMode={'contain'}
-              />
-            </TouchableOpacity>
-          </View>
-        )}
-        <View style={styles.bottomTextInputContainer}>
-          <TouchableOpacity onPress={uploadImage}>
-            <Image
-              source={images.messageCamera}
-              style={{
-                ...styles.sideButton,
-                marginHorizontal: wp(3),
-                height: 25,
-                width: 23,
-              }}
+            </View>
+          )}
+          <Text style={{fontSize: 15, marginLeft: 15}}>
+            {uploadImageInProgress
+              ? `Uploading ${
+                  selectedImage?.mime?.includes('image') ? 'an image' : 'video'
+                }...`
+              : `${
+                  selectedImage?.mime?.includes('image') ? 'Image' : 'Video'
+                } uploaded`}
+          </Text>
+          <TouchableOpacity
+            style={{flex: 1, alignItems: 'flex-end'}}
+            onPress={() => {
+              setSelectedImage(null);
+              setUploadImageInProgress(false);
+              setUploadedFile(null);
+            }}>
+            <FastImage
+              source={images.cancelImage}
+              style={{height: 20, width: 20}}
+              resizeMode={'contain'}
             />
           </TouchableOpacity>
-          <View style={{flex: 1, marginRight: 15, zIndex: -1}}>
-            <TCInputBox
-              onFocus={onInputBoxFocus}
-              value={messageBody}
-              placeHolderText={'Type a message'}
-              onChangeText={setMessageBody}
-              style={{width: '100%'}}
+        </View>
+      )}
+      <View style={styles.bottomTextInputContainer}>
+        <TouchableOpacity onPress={uploadImage}>
+          <Image
+            source={images.messageCamera}
+            style={{
+              ...styles.sideButton,
+              marginHorizontal: wp(3),
+              height: 25,
+              width: 23,
+            }}
+          />
+        </TouchableOpacity>
+
+        <View style={{flex: 1, marginRight: 15, zIndex: -1}}>
+          <TCInputBox
+            editable={pointEvent !== 'none'}
+            onFocus={onInputBoxFocus}
+            value={messageBody}
+            placeHolderText={placeholderText}
+            onChangeText={setMessageBody}
+            style={{width: '100%'}}
+            isClear={false}
+          />
+        </View>
+        <View
+          style={{
+            position: 'absolute',
+            right: '4%',
+            opacity: pointEvent === 'none' ? 0.5 : 1,
+          }}
+          pointerEvents={pointEvent}>
+          {uploadImageInProgress ? (
+            <FastImage
+              source={images.imageUploadingGIF}
+              style={styles.imageUploadingLoader}
+              resizeMode={'contain'}
             />
-          </View>
-          <View style={{position: 'absolute', right: '4%'}}>
-            {uploadImageInProgress ? (
-              <FastImage
-                source={images.imageUploadingGIF}
-                style={styles.imageUploadingLoader}
-                resizeMode={'contain'}
-              />
-            ) : (
-              <TouchableOpacity onPress={sendMessage}>
-                <GradiantContainer style={styles.sendButtonContainer}>
-                  <Image source={images.sendButton} style={styles.sendButton} />
-                </GradiantContainer>
-              </TouchableOpacity>
-            )}
-          </View>
+          ) : (
+            <TouchableOpacity onPress={sendMessage}>
+              <GradiantContainer style={styles.sendButtonContainer}>
+                <Image source={images.sendButton} style={styles.sendButton} />
+              </GradiantContainer>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
-    ),
-    [
-      messageBody,
-      onInputBoxFocus,
-      selectedImage,
-      sendMessage,
-      uploadImage,
-      uploadImageInProgress,
-    ],
+    </View>
   );
   const ModalHeader = () => (
     <View style={styles.headerStyle}>
@@ -709,7 +739,12 @@ const MessageChat = ({route, navigation}) => {
   );
   const onPressDone = useCallback(
     (newDialog) => {
+      console.log('cacacacacacaca');
+      console.log('{...dialogData, ...}',{...dialogData});
+      console.log('{..., ...newDialog}',{...newDialog});
+
       navigation.setParams({dialog: {...dialogData, ...newDialog}});
+      setDialogData({...dialogData, ...newDialog})
     },
     [dialogData, navigation],
   );
@@ -824,7 +859,7 @@ const MessageChat = ({route, navigation}) => {
           style={{flex: 1}}
           behavior={Platform.OS === 'ios' ? 'padding' : null}>
           {messageList}
-          {hideSearchView && renderBottomChatTools}
+          {hideSearchView && renderBottomChatTools()}
         </KeyboardAvoidingView>
       )}
       <Portal>

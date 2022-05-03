@@ -1,18 +1,21 @@
-import React, { memo } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { widthPercentageToDP as wp } from '../utils';
+import React, {memo} from 'react';
+import {Text, View, StyleSheet} from 'react-native';
+import {widthPercentageToDP as wp} from '../utils';
 import fonts from '../Constants/Fonts';
 import colors from '../Constants/Colors';
 
-const TCBadge = ({
-  value = '',
-  align = 'center',
-  style = {},
-}) => (
-  <View style={{ ...styles.badgeContainer, alignSelf: align, ...style }}>
-    <Text style={styles.valueText}>{value}</Text>
+const TCBadge = ({value = '', align = 'center', style = {}}) => (
+  <View style={{...styles.badgeContainer, alignSelf: align, ...style}}>
+    <Text
+      style={{
+        fontFamily: fonts.LRegular,
+        fontSize: 12,
+        color: colors.whiteColor,
+      }}>
+      @<Text style={styles.valueText}>{value}</Text>
+    </Text>
   </View>
-)
+);
 
 const styles = StyleSheet.create({
   badgeContainer: {
@@ -28,5 +31,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.whiteColor,
   },
-})
+});
 export default memo(TCBadge);

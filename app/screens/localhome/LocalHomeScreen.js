@@ -6,12 +6,10 @@
 /* eslint-disable no-underscore-dangle */
 import React, {
   useCallback,
-  Fragment,
   useState,
   useContext,
   useEffect,
   useRef,
-  useLayoutEffect,
   useMemo,
 } from 'react';
 import {
@@ -65,7 +63,7 @@ import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
 import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
-import {getUserSettings} from '../../api/Users';
+import {getUserSettings, userActivate} from '../../api/Users';
 import TCUpcomingMatchCard from '../../components/TCUpcomingMatchCard';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import TCShortsPlaceholder from '../../components/TCShortsPlaceholder';
@@ -73,6 +71,10 @@ import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 import {createPost} from '../../api/NewsFeeds';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
+import Header from '../../components/Home/Header';
+import {groupUnpaused} from '../../api/Groups';
+import ActivityLoader from '../../components/loader/ActivityLoader';
+import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 
 const defaultPageSize = 5;
 export default function LocalHomeScreen({navigation, route}) {
@@ -117,64 +119,39 @@ export default function LocalHomeScreen({navigation, route}) {
   const [scorekeepers, setScorekeepers] = useState([]);
   const [image_base_url, setImageBaseUrl] = useState();
 
+  const [pointEvent, setPointEvent] = useState('auto');
+
   const [filters, setFilters] = useState({
     sport: selectedSport,
     sport_type: sportType,
     location,
   });
-  console.log('route?.params?.locationText::=>', route?.params?.locationText);
+
+  console.log('Auth Object', authContext.entity.obj);
 
   console.log('authContextttt::=>', authContext.entity.role);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: () => (
-        <TouchableOpacity
-          style={styles.titleHeaderView}
-          onPress={() => {
-            setLocationPopup(true);
-          }}
-          hitSlop={getHitSlop(15)}>
-          <Text style={styles.headerTitle}>
-            {location?.charAt?.(0)?.toUpperCase() + location?.slice(1)}
-          </Text>
-          <Image source={images.home_gps} style={styles.gpsIconStyle} />
-        </TouchableOpacity>
-      ),
-      headerLeft: () => (
-        <View style={{marginLeft: 15}}>
-          <FastImage
-            source={images.tc_message_top_icon}
-            resizeMode={'contain'}
-            style={styles.backImageStyle}
-          />
-        </View>
-      ),
-
-      headerRight: () => (
-        <View style={styles.rightHeaderView}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('EntitySearchScreen', {
-                sportsList: customSports,
-              });
-            }}>
-            <Image source={images.home_search} style={styles.townsCupIcon} />
-          </TouchableOpacity>
-          {/* <TouchableOpacity onPress={() => setSettingPopup(true)}>
-            <Image source={images.home_setting} style={styles.townsCupIcon} />
-          </TouchableOpacity> */}
-        </View>
-      ),
-
-      headerStyle: {
-        // shadowColor: 'transparent',
-        shadowOpacity: 0,
-        backgroundColor: '#fff',
-        borderBottomWidth: 0,
-      },
-    });
-  }, [authContext.entity?.role, authContext.entity?.uid, location, navigation]);
+  useEffect(() => {
+    setIsAccountDeactivated(false);
+    setPointEvent('auto');
+    if (isFocused) {
+      console.log('its called....', authContext.entity.role);
+      if (authContext?.entity?.obj?.is_pause === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+      if (authContext?.entity?.obj?.is_deactivate === true) {
+        setIsAccountDeactivated(true);
+        setPointEvent('none');
+      }
+    }
+  }, [
+    authContext.entity?.obj.entity_type,
+    authContext.entity?.obj?.is_deactivate,
+    authContext.entity?.obj?.is_pause,
+    authContext.entity.role,
+    isFocused,
+    pointEvent,
+  ]);
 
   useEffect(() => {
     if (isFocused) {
@@ -458,6 +435,7 @@ export default function LocalHomeScreen({navigation, route}) {
                   must: [
                     {match: {'setting.availibility': 'On'}},
                     {term: {entity_type: 'team'}},
+                    {term: {is_pause: false}},
                   ],
                 },
               },
@@ -1118,16 +1096,6 @@ export default function LocalHomeScreen({navigation, route}) {
       navigation.navigate('RegisterPlayer');
     }
   };
-
-  const onCreateGroupActionSheetItemPress = (index) => {
-    if (index === 0) {
-      navigation.navigate('CreateTeamForm1');
-    } else if (index === 1) {
-      navigation.navigate('CreateClubForm1');
-    } else if (index === 2) {
-      Alert.alert('This is under development');
-    }
-  };
   const renderSportsView = useCallback(
     ({item}) =>
       item.sport !== 'All' && (
@@ -1178,60 +1146,215 @@ export default function LocalHomeScreen({navigation, route}) {
     console.log('called getback');
     setSettingPopup(true);
   };
+  const onCreateGroupActionSheetItemPress = (index) => {
+    if (index === 0) {
+      navigation.navigate('CreateTeamForm1');
+    } else if (index === 1) {
+      navigation.navigate('CreateClubForm1');
+    } else if (index === 2) {
+      Alert.alert('This is under development');
+    }
+  };
+
+  const unPauseGroup = () => {
+    setloading(true);
+    groupUnpaused(authContext)
+      .then((response) => {
+        setIsAccountDeactivated(false);
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+          });
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const reActivateUser = () => {
+    setloading(true);
+    userActivate(authContext)
+      .then((response) => {
+        console.log('deactivate account ', response);
+
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(
+          response?.payload?.user_id,
+          response?.payload,
+          accountType,
+          response.payload,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+          })
+          .catch((error) => {
+            console.log('QB error : ', error);
+            setloading(false);
+          });
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   return (
-    <View style={{flex: 1}}>
-      <View style={styles.separateLine} />
-      {/* <ActivityLoader visible={loading} /> */}
-      <View style={styles.sportsListView}>
-        <FlatList
-          ref={refContainer}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={[
-            ...[
-              {
-                sport: 'All',
-              },
-            ],
-            ...sports.slice(0, 12),
-            ...[
-              {
-                sport: 'more',
-              },
-            ],
-          ]}
-          keyExtractor={keyExtractor}
-          renderItem={sportsListView}
-          // initialScrollIndex={sports.indexOf(selectedSport)}
-          initialNumToRender={sports?.length}
-          onScrollToIndexFailed={(info) => {
-            const wait = new Promise((resolve) => setTimeout(resolve, 500));
-            wait.then(() => {
-              refContainer.current.scrollToIndex({
-                animated: true,
-                index: info.index,
-              });
-            });
-          }}
-          style={{
-            width: '100%',
-            height: 50,
-            alignContent: 'center',
-          }}
+    <View>
+      <ActivityLoader visible={loading} />
+      <View
+        pointerEvents={pointEvent}
+        style={{opacity: isAccountDeactivated ? 0.5 : 1}}>
+        <Header
+          leftComponent={
+            <View>
+              <FastImage
+                source={images.tc_message_top_icon}
+                resizeMode={'contain'}
+                style={styles.backImageStyle}
+              />
+            </View>
+          }
+          showBackgroundColor={true}
+          centerComponent={
+            <TouchableOpacity
+              style={styles.titleHeaderView}
+              onPress={() => {
+                setLocationPopup(true);
+              }}
+              hitSlop={getHitSlop(15)}>
+              <Text style={styles.headerTitle}>
+                {location?.charAt?.(0)?.toUpperCase() + location?.slice(1)}
+              </Text>
+              <Image source={images.home_gps} style={styles.gpsIconStyle} />
+            </TouchableOpacity>
+          }
+          rightComponent={
+            <View style={styles.rightHeaderView}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('EntitySearchScreen', {
+                    sportsList: customSports,
+                  });
+                }}>
+                <Image
+                  source={images.home_search}
+                  style={styles.townsCupIcon}
+                />
+              </TouchableOpacity>
+              {/* <TouchableOpacity onPress={() => setSettingPopup(true)}>
+            <Image source={images.home_setting} style={styles.townsCupIcon} />
+          </TouchableOpacity> */}
+            </View>
+          }
         />
+        <View style={styles.separateLine} />
+        <View style={styles.sportsListView}>
+          <FlatList
+            ref={refContainer}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            data={[
+              ...[
+                {
+                  sport: 'All',
+                },
+              ],
+              ...sports.slice(0, 12),
+              ...[
+                {
+                  sport: 'more',
+                },
+              ],
+            ]}
+            keyExtractor={keyExtractor}
+            renderItem={sportsListView}
+            // initialScrollIndex={sports.indexOf(selectedSport)}
+            initialNumToRender={sports?.length}
+            onScrollToIndexFailed={(info) => {
+              const wait = new Promise((resolve) => setTimeout(resolve, 500));
+              wait.then(() => {
+                refContainer.current.scrollToIndex({
+                  animated: true,
+                  index: info.index,
+                });
+              });
+            }}
+            style={{
+              width: '100%',
+              height: 50,
+              alignContent: 'center',
+            }}
+          />
+        </View>
       </View>
+
       {isAccountDeactivated && (
         <TCAccountDeactivate
-          type={'terminate'}
+          type={
+            authContext?.entity?.obj?.is_pause === true
+              ? 'pause'
+              : authContext?.entity?.obj?.under_terminate === true
+              ? 'terminate'
+              : 'deactivate'
+          }
           onPress={() => {
-            Alert.alert('This is under development.');
+            Alert.alert(
+              `Are you sure you want to ${
+                authContext?.entity?.obj?.is_pause === true
+                  ? 'unpause'
+                  : 'reactivate'
+              } this account?`,
+              '',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text:
+                    authContext?.entity?.obj?.is_pause === true
+                      ? 'Unpause'
+                      : 'Reactivate',
+                  style: 'destructive',
+                  onPress: () => {
+                    if (authContext?.entity?.obj?.is_pause === true) {
+                      unPauseGroup();
+                    } else {
+                      reActivateUser();
+                    }
+                  },
+                },
+              ],
+              {cancelable: false},
+            );
           }}
         />
       )}
       {loading ? (
         <LocalHomeScreenShimmer />
       ) : (
-        <Fragment>
+        <View
+          pointerEvents={pointEvent}
+          style={{opacity: isAccountDeactivated ? 0.8 : 1}}>
           <ScrollView>
             <View>
               <TCTitleWithArrow
@@ -1506,7 +1629,7 @@ export default function LocalHomeScreen({navigation, route}) {
               />
             </View>
           </ScrollView>
-        </Fragment>
+        </View>
       )}
       <Modal
         // onBackdropPress={() => setLocationPopup(false)}
@@ -1743,8 +1866,6 @@ const styles = StyleSheet.create({
   },
   rightHeaderView: {
     flexDirection: 'row',
-    marginRight: 15,
-    // marginLeft: 25,
   },
   headerTitle: {
     fontFamily: fonts.RBold,
