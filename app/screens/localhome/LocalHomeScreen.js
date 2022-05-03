@@ -1831,8 +1831,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
-    justifyContent: 'center', //Centered horizontally
-    alignItems: 'center', //Centered vertically
+    justifyContent: 'center',
+    alignItems: 'center',
     marginLeft: widthPercentageToDP('40%'),
   },
   closeButton: {
