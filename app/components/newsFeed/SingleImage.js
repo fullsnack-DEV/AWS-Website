@@ -67,6 +67,25 @@ function SingleImage({
   console.log('givenRatioSecond:', givenRatioSecond);
   console.log('originalImageRatio:', originalImageRatio);
 
+  // eslint-disable-next-line no-unused-vars
+  const getImageDimention = () => {
+    const isPortrait = data.media_height > data.media_width;
+    const imageRatio = parseFloat(data.media_height / data.media_width).toFixed(
+      2,
+    );
+    const defaultPortraitRatio = parseFloat(900 / 700).toFixed(2);
+    if (isPortrait) {
+      if (imageRatio > defaultPortraitRatio) {
+        return {height: data.media_width * imageRatio, width: data.media_width};
+      }
+      return {height: data.media_height, width: data.media_width};
+    }
+    if (imageRatio > defaultPortraitRatio) {
+      return {height: data.media_height, width: data.media_height * imageRatio};
+    }
+    return {height: data.media_height, width: data.media_width};
+  };
+
   const toggleModal = useCallback(() => {
     navigation.navigate('FeedViewScreen', {
       feedItem: item,
