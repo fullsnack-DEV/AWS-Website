@@ -1,11 +1,6 @@
+/* eslint-disable consistent-return */
 import React, {memo, useCallback} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableWithoutFeedback,
-  Dimensions,
-} from 'react-native';
+import {StyleSheet, View, Text, TouchableWithoutFeedback} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
@@ -19,71 +14,54 @@ function SingleImage({
   updateCommentCount,
   onLikePress,
 }) {
+  const defaultImageWidth = 500;
+  const defaultImageHeight = 700;
   const uploadImageURL =
     data &&
     typeof data.thumbnail === 'string' &&
     (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1])
       ? null
       : data.thumbnail;
-  let height = wp('96%');
-  if (data.media_height > data.media_width) {
-    // height = wp('124%');
-    const originalImageRatio = data.media_height / data.media_width;
-    const givenRatioFirst = 500 / 700;
-    const givenRatioSecond = 900 / 700;
-    if (
-      givenRatioFirst <= originalImageRatio &&
-      originalImageRatio <= givenRatioSecond
-    ) {
-      height = data.media_height;
-      console.log('show actual height', height);
-      console.log('show actual width', data.media_width);
-    } else if (originalImageRatio < givenRatioFirst) {
-      height = data.media_width * givenRatioFirst;
-      console.log('show height with ration 500/700', height);
-    } else if (originalImageRatio > givenRatioSecond) {
-      height = data.media_width * givenRatioSecond;
-      console.log('show height with ration 900/700', height);
-    }
-  } else if (data.media_height < data.media_width) {
-    const originalImageRatio = data.media_width / data.media_height;
-    const givenRatioFirst = 700 / 500;
 
-    if (originalImageRatio < givenRatioFirst) {
-      height = data.media_width * givenRatioFirst;
-
-      console.log('show height with ration 500/700', height);
-    }
-    // height = wp('68%');
-  } else {
-    height = wp('96%');
-    console.log('height3:===>', height);
-  }
-  // height /width
-  const givenRatioFirst = 500 / 700;
-  const givenRatioSecond = 900 / 700;
-  const originalImageRatio = data.media_height / data.media_width;
-  console.log('givenRatioFirst:', givenRatioFirst);
-  console.log('givenRatioSecond:', givenRatioSecond);
-  console.log('originalImageRatio:', originalImageRatio);
-
-  // eslint-disable-next-line no-unused-vars
   const getImageDimention = () => {
     const isPortrait = data.media_height > data.media_width;
-    const imageRatio = parseFloat(data.media_height / data.media_width).toFixed(
-      2,
-    );
-    const defaultPortraitRatio = parseFloat(900 / 700).toFixed(2);
+    const imagePRatio = parseFloat(
+      data.media_width / data.media_height,
+    ).toFixed(2);
+    const imageLRatio = parseFloat(
+      data.media_height / data.media_width,
+    ).toFixed(2);
+    console.log('image height', data.media_height);
+    console.log('image width', data.media_width);
+    console.log('isPortrait', isPortrait);
+    console.log('image ratio', imagePRatio);
+
     if (isPortrait) {
-      if (imageRatio > defaultPortraitRatio) {
-        return {height: data.media_width * imageRatio, width: data.media_width};
+      if (data.media_height >= defaultImageHeight) {
+        console.log('1');
+        return {
+          height: defaultImageHeight * imagePRatio,
+          width: defaultImageWidth,
+        };
       }
+      console.log('2');
       return {height: data.media_height, width: data.media_width};
     }
-    if (imageRatio > defaultPortraitRatio) {
-      return {height: data.media_height, width: data.media_height * imageRatio};
+    if (imagePRatio === 1) {
+      console.log('5');
+      return {height: data.media_height, width: data.media_width};
     }
-    return {height: data.media_height, width: data.media_width};
+    if (!isPortrait) {
+      if (data.media_width >= defaultImageHeight) {
+        console.log('3');
+        return {
+          height: defaultImageWidth,
+          width: defaultImageHeight * imageLRatio,
+        };
+      }
+      console.log('4');
+      return {height: data.media_height, width: data.media_width};
+    }
   };
 
   const toggleModal = useCallback(() => {
@@ -99,7 +77,7 @@ function SingleImage({
       style={[
         styles.mainContainer,
         {
-          height,
+          height: getImageDimention().height,
         },
       ]}>
       <View
@@ -108,7 +86,7 @@ function SingleImage({
           {
             borderWidth: 1,
             borderColor: colors.lightgrayColor,
-            height,
+            height: getImageDimention().height,
           },
         ]}>
         <FastImage
@@ -125,7 +103,11 @@ function SingleImage({
           }
         }}>
         <FastImage
-          style={{...styles.uploadedImage, height, position: 'absolute'}}
+          style={{
+            ...styles.uploadedImage,
+            height: getImageDimention().height,
+            position: 'absolute',
+          }}
           source={{uri: uploadImageURL}}
           resizeMode={FastImage.resizeMode.cover}
         />
