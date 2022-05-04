@@ -21,11 +21,11 @@ import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 
 import fonts from '../../Constants/Fonts';
-import images from '../../Constants/ImagePath';
 import Header from '../../components/Home/Header';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import {getSportName} from '../../utils';
+import images from '../../Constants/ImagePath';
 
 export default function SportAccountSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);

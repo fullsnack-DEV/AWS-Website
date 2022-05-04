@@ -62,8 +62,8 @@ export default function LookingForSettingScreen({navigation, route}) {
     setloading(true);
     const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) =>
-        obj?.sport === sportObj?.sport &&
-        obj?.sport_type === sportObj?.sport_type,
+        obj?.sport !== sportObj?.sport &&
+        obj?.sport_type !== sportObj?.sport_type,
     );
 
     console.log('registerdPlayerData:', registerdPlayerData);
