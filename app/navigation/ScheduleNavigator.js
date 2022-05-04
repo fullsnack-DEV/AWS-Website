@@ -181,6 +181,7 @@ import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/
 import EditMemberAuthInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberAuthInfoScreen';
 import MessageNavigator from './MessageNavigator';
 import SportSettingScreen from '../screens/localhome/SportSettingScreen';
+import SportAccountSettingScreen from '../screens/account/SportAccountSettingScreen';
 // Scorekeeper Review Screen
 
 
@@ -2298,6 +2299,23 @@ const ScheduleNavigator = () => (
       component={SportSettingScreen}
       options={{
         title: 'Sports',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="SportAccountSettingScreen"
+      component={SportAccountSettingScreen}
+      options={{
+        title: 'Settings',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

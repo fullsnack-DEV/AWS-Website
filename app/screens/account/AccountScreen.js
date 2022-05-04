@@ -109,10 +109,6 @@ export default function AccountScreen({navigation}) {
   // Account menu
   const userMenu = [
     {key: 'Reservations'},
-    {key: 'Challenge Settings'},
-    {key: 'Referee Reservation Settings'},
-    {key: 'Scorekeeper Reservation Settings'},
-
     {key: 'Playing', member: [{opetions: 'Add a sport'}]},
     {key: 'Refereeing', member: [{opetions: 'Register as a referee'}]},
     {key: 'Scorekeeping', member: [{opetions: 'Register as a scorekeeper'}]},
@@ -139,8 +135,8 @@ export default function AccountScreen({navigation}) {
     {key: 'Reservations'},
     {key: 'Challenge Settings'},
     {key: 'Members'},
-    
-    { key: 'Clubs', member: [{ opetions: 'Create Club' }] },
+
+    {key: 'Clubs', member: [{opetions: 'Create Club'}]},
     // {key: 'Leagues',member: [{ opetions: 'Create League' }]},
     {
       key: 'Payment & Payout',
@@ -152,7 +148,6 @@ export default function AccountScreen({navigation}) {
       ],
     },
     {key: 'Settings'},
-   
   ];
   const clubMenu = [
     {key: 'Members'},
@@ -168,7 +163,6 @@ export default function AccountScreen({navigation}) {
       ],
     },
     {key: 'Settings'},
-   
   ];
 
   useEffect(() => {
@@ -645,10 +639,10 @@ export default function AccountScreen({navigation}) {
       const entity = authContext.entity;
       if (entity.role === 'user') {
         navigation.navigate('UserSettingPrivacyScreen');
-      }else{
+      } else {
         navigation.navigate('GroupSettingPrivacyScreen');
       }
-    }else if (section === 'Members') {
+    } else if (section === 'Members') {
       const entity = authContext.entity;
       navigation.navigate('GroupMembersScreen', {groupID: entity.uid});
     } else if (section === 'Challenge Settings') {
@@ -753,7 +747,15 @@ export default function AccountScreen({navigation}) {
 
   const renderSportsList = useCallback(
     ({item}) => (
-      <View style={styles.listContainer}>
+      <TouchableOpacity
+        style={styles.listContainer}
+        onPress={() => {
+          console.log('renderSportsList', item);
+          navigation.navigate('SportAccountSettingScreen', {
+            type: 'player',
+            sport: item,
+          });
+        }}>
         <View style={styles.entityTextContainer}>
           <Image
             source={getSportIcon(item.sport)}
@@ -763,15 +765,23 @@ export default function AccountScreen({navigation}) {
             {Utility.getSportName(item, authContext)}
           </Text>
         </View>
-        <Image source={images.nextArrow} style={styles.nextArrow} />
-      </View>
+        <Image source={images.settingSport} style={styles.nextArrow} />
+      </TouchableOpacity>
     ),
-    [],
+    [authContext, navigation],
   );
 
   const renderRefereesList = useCallback(
     ({item}) => (
-      <View style={styles.listContainer}>
+      <TouchableOpacity
+        style={styles.listContainer}
+        onPress={() => {
+          console.log('renderRefereesList', item);
+          navigation.navigate('SportAccountSettingScreen', {
+            type: 'referee',
+            sport: item,
+          });
+        }}>
         <View style={styles.entityTextContainer}>
           <Image
             source={getSportIcon(item.sport)}
@@ -781,15 +791,23 @@ export default function AccountScreen({navigation}) {
             {Utility.getSportName(item, authContext)}
           </Text>
         </View>
-        <Image source={images.nextArrow} style={styles.nextArrow} />
-      </View>
+        <Image source={images.settingSport} style={styles.nextArrow} />
+      </TouchableOpacity>
     ),
-    [],
+    [authContext, navigation],
   );
 
   const renderScorekeepersList = useCallback(
     ({item}) => (
-      <View style={styles.listContainer}>
+      <TouchableOpacity
+        style={styles.listContainer}
+        onPress={() => {
+          console.log('renderSportsList', item);
+          navigation.navigate('SportAccountSettingScreen', {
+            type: 'scorekeeper',
+            sport: item,
+          });
+        }}>
         <View style={styles.entityTextContainer}>
           <Image
             source={getSportIcon(item.sport)}
@@ -799,8 +817,8 @@ export default function AccountScreen({navigation}) {
             {Utility.getSportName(item, authContext)}
           </Text>
         </View>
-        <Image source={images.nextArrow} style={styles.nextArrow} />
-      </View>
+        <Image source={images.settingSport} style={styles.nextArrow} />
+      </TouchableOpacity>
     ),
     [],
   );
@@ -1051,7 +1069,7 @@ export default function AccountScreen({navigation}) {
     (rowItem, rowId, sectionId) => (
       <View>
         {authContext.entity.role === 'user' &&
-          sectionId === 4 &&
+          sectionId === 1 &&
           !isAccountDeactivated && (
             <FlatList
               style={{marginVertical: 10}}
@@ -1067,7 +1085,7 @@ export default function AccountScreen({navigation}) {
             />
           )}
         {authContext.entity.role === 'user' &&
-          sectionId === 5 &&
+          sectionId === 2 &&
           !isAccountDeactivated && (
             <FlatList
               style={{marginVertical: 10}}
@@ -1081,7 +1099,7 @@ export default function AccountScreen({navigation}) {
             />
           )}
         {authContext.entity.role === 'user' &&
-          sectionId === 6 &&
+          sectionId === 3 &&
           !isAccountDeactivated && (
             <FlatList
               style={{marginVertical: 10}}
@@ -1096,10 +1114,10 @@ export default function AccountScreen({navigation}) {
           )}
         {authContext.entity.role === 'user' &&
           !isAccountDeactivated &&
-          (sectionId === 7 || sectionId === 8) && (
+          (sectionId === 4 || sectionId === 5) && (
             <FlatList
               style={{marginVertical: 10}}
-              data={sectionId === 7 ? teamList : clubList}
+              data={sectionId === 4 ? teamList : clubList}
               keyExtractor={keyExtractorID}
               renderItem={renderEntityList}
               ItemSeparatorComponent={() => (
@@ -1108,6 +1126,21 @@ export default function AccountScreen({navigation}) {
               scrollEnabled={false}
             />
           )}
+        {authContext.entity.role === 'team' &&
+          !isAccountDeactivated &&
+          sectionId === 3 && (
+            <FlatList
+              style={{marginVertical: 10}}
+              data={clubList}
+              keyExtractor={keyExtractorID}
+              renderItem={renderEntityList}
+              ItemSeparatorComponent={() => (
+                <View style={styles.subItemSeparator} />
+              )}
+              scrollEnabled={false}
+            />
+          )}
+
         {authContext.entity.role === 'club' &&
           sectionId === 1 &&
           !isAccountDeactivated && (
@@ -1715,16 +1748,10 @@ export default function AccountScreen({navigation}) {
               <View
                 style={{
                   opacity:
-                    isAccountDeactivated &&
-                    section !== 'Settings'
-                      ? 0.5
-                      : 1,
+                    isAccountDeactivated && section !== 'Settings' ? 0.5 : 1,
                 }}>
                 <TouchableWithoutFeedback
-                  disabled={
-                    isAccountDeactivated &&
-                    section !== 'Settings'
-                  }
+                  disabled={isAccountDeactivated && section !== 'Settings'}
                   style={styles.listContainer}
                   onPress={() => {
                     handleSections(section);
@@ -1783,18 +1810,7 @@ export default function AccountScreen({navigation}) {
                         style={styles.menuItem}
                       />
                     )}
-                    {section === 'Referee Reservation Settings' && (
-                      <Image
-                        source={images.manageChallengeIcon}
-                        style={styles.menuItem}
-                      />
-                    )}
-                    {section === 'Scorekeeper Reservation Settings' && (
-                      <Image
-                        source={images.manageChallengeIcon}
-                        style={styles.menuItem}
-                      />
-                    )}
+
                     {section === 'Payment & Payout' && (
                       <Image
                         source={images.accountPaymentPayout}
@@ -1808,13 +1824,7 @@ export default function AccountScreen({navigation}) {
                         style={{...styles.menuItem}}
                       />
                     )}
-                   
-                    {section === 'Log out' && (
-                      <Image
-                        source={images.logoutIcon}
-                        style={{...styles.menuItem}}
-                      />
-                    )}
+
                     {section === 'Members' && (
                       <Image
                         source={images.Members}
@@ -2105,7 +2115,7 @@ const styles = StyleSheet.create({
   entityTextContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    height: 40,
+    height: 55,
     justifyContent: 'center',
     marginLeft: 30,
     marginRight: 20,
@@ -2166,7 +2176,6 @@ const styles = StyleSheet.create({
   nextArrow: {
     tintColor: colors.lightBlackColor,
     alignSelf: 'center',
-    flex: 0.1,
     height: 15,
     width: 15,
     marginRight: 15,

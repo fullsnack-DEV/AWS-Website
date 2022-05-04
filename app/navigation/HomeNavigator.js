@@ -196,6 +196,7 @@ import MessageNavigator from './MessageNavigator';
 import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 import DeactivatedSportsListScreen from '../components/Home/DeactivatedSportsListScreen';
 import ActivitySettingScreen from '../screens/account/userSettingPrivacy/sportsActivity/ActivitySettingScreen';
+import SportAccountSettingScreen from '../screens/account/SportAccountSettingScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2553,6 +2554,23 @@ const HomeNavigator = () => (
       component={SportSettingScreen}
       options={{
         title: 'Sports',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="SportAccountSettingScreen"
+      component={SportAccountSettingScreen}
+      options={{
+        title: 'Settings',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

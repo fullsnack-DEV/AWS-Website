@@ -1218,7 +1218,7 @@ export default function LocalHomeScreen({navigation, route}) {
   };
 
   return (
-    <View>
+    <View style={{flex:1}}>
       <ActivityLoader visible={loading} />
       <View
         pointerEvents={pointEvent}
@@ -1354,7 +1354,7 @@ export default function LocalHomeScreen({navigation, route}) {
       ) : (
         <View
           pointerEvents={pointEvent}
-          style={{opacity: isAccountDeactivated ? 0.8 : 1}}>
+          style={{flex:1,opacity: isAccountDeactivated ? 0.8 : 1}}>
           <ScrollView>
             <View>
               <TCTitleWithArrow
