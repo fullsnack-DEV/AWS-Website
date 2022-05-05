@@ -1,6 +1,12 @@
 /* eslint-disable consistent-return */
 import React, {memo, useCallback} from 'react';
-import {StyleSheet, View, Text, TouchableWithoutFeedback} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableWithoutFeedback,
+  Dimensions,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
@@ -14,8 +20,14 @@ function SingleImage({
   updateCommentCount,
   onLikePress,
 }) {
-  const defaultImageWidth = 500;
-  const defaultImageHeight = 700;
+  const imageRatio = data.media_height / data.media_width;
+  console.log('imageRatio', imageRatio);
+  const defaultLandscapRatio = 0.71;
+  const defaultPortraitRatio = 1.29;
+  const defaultScreenWidth = Dimensions.get('window').width - 30;
+  const defaultLandscapHeight = 250;
+  const defaultPortraitHeight = 450;
+
   const uploadImageURL =
     data &&
     typeof data.thumbnail === 'string' &&
@@ -24,43 +36,26 @@ function SingleImage({
       : data.thumbnail;
 
   const getImageDimention = () => {
-    const isPortrait = data.media_height > data.media_width;
-    const imagePRatio = parseFloat(
-      data.media_width / data.media_height,
-    ).toFixed(2);
-    const imageLRatio = parseFloat(
-      data.media_height / data.media_width,
-    ).toFixed(2);
-    console.log('image height', data.media_height);
-    console.log('image width', data.media_width);
-    console.log('isPortrait', isPortrait);
-    console.log('image ratio', imagePRatio);
-
-    if (isPortrait) {
-      if (data.media_height >= defaultImageHeight) {
-        console.log('1');
-        return {
-          height: defaultImageHeight * imagePRatio,
-          width: defaultImageWidth,
-        };
-      }
-      console.log('2');
-      return {height: data.media_height, width: data.media_width};
+    if (imageRatio < defaultLandscapRatio) {
+      return {
+        height: defaultLandscapHeight,
+        width: defaultScreenWidth,
+      };
     }
-    if (imagePRatio === 1) {
-      console.log('5');
-      return {height: data.media_height, width: data.media_width};
+    if (
+      imageRatio >= defaultLandscapRatio &&
+      imageRatio <= defaultPortraitRatio
+    ) {
+      return {
+        height: imageRatio * defaultScreenWidth,
+        width: defaultScreenWidth,
+      };
     }
-    if (!isPortrait) {
-      if (data.media_width >= defaultImageHeight) {
-        console.log('3');
-        return {
-          height: defaultImageWidth,
-          width: defaultImageHeight * imageLRatio,
-        };
-      }
-      console.log('4');
-      return {height: data.media_height, width: data.media_width};
+    if (imageRatio >= defaultPortraitRatio) {
+      return {
+        height: defaultPortraitHeight,
+        width: defaultScreenWidth,
+      };
     }
   };
 
