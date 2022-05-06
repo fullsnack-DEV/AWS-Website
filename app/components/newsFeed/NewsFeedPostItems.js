@@ -44,6 +44,7 @@ const NewsFeedPostItems = memo(
     onEditPressDone,
     updateCommentCount,
     isNewsFeedScreen,
+    openProfilId,
   }) => {
     const likersModalRef = useRef(null);
     const commentModalRef = useRef(null);
@@ -327,6 +328,7 @@ const NewsFeedPostItems = memo(
           tagData={myItem?.format_tagged_data ?? []}
           navigation={navigation}
           isNewsFeedScreen={isNewsFeedScreen}
+          openProfilId={openProfilId}
         />
       ),
       [
@@ -335,6 +337,7 @@ const NewsFeedPostItems = memo(
         isNewsFeedScreen,
         myItem?.format_tagged_data,
         navigation,
+        openProfilId,
       ],
     );
 

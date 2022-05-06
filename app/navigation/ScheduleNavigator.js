@@ -2263,7 +2263,7 @@ const ScheduleNavigator = () => (
         name="GroupMembersScreen"
         component={ GroupMembersScreen }
         options={ {
-          title: 'Connection',
+          title: 'Members',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

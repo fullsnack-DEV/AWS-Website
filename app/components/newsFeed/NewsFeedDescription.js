@@ -29,6 +29,7 @@ const NewsFeedDescription = ({
   disableTouch = false,
   numberOfLineDisplay,
   isNewsFeedScreen,
+  openProfilId,
 }) => {
   const taggedModalRef = useRef(null);
   const authContext = useContext(AuthContext);
@@ -73,8 +74,21 @@ const NewsFeedDescription = ({
         if (fetchedAllEntity?.length > 1 && isExistIndex !== -1)
           fetchedEntity = fetchedAllEntity?.[isExistIndex];
         if (fetchedEntity?.entity_id) {
+          // if (
+          //   fetchedEntity?.entity_id !== authContext?.entity?.uid ||
+          //   (fetchedEntity?.entity_id === authContext?.entity?.uid &&
+          //     isNewsFeedScreen)
+          // ) {
+          //   navigation.push('HomeScreen', {
+          //     uid: fetchedEntity?.entity_id,
+          //     role: ['user', 'player']?.includes(fetchedEntity?.entity_type)
+          //       ? 'user'
+          //       : fetchedEntity?.entity_type,
+          //     backButtonVisible: true,
+          //   });
+          // }
           if (
-            fetchedEntity?.entity_id !== authContext?.entity?.uid ||
+            fetchedEntity?.entity_id !== openProfilId ||
             (fetchedEntity?.entity_id === authContext?.entity?.uid &&
               isNewsFeedScreen)
           ) {
@@ -94,6 +108,7 @@ const NewsFeedDescription = ({
       getIndicesOf,
       isNewsFeedScreen,
       navigation,
+      openProfilId,
       tagData,
     ],
   );

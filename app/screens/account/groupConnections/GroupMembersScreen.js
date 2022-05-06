@@ -170,7 +170,7 @@ export default function GroupMembersScreen({navigation, route}) {
         return null;
       });
     }
-    console.log('UIDsUIDs',UIDs);
+    console.log('UIDsUIDs', UIDs);
     if (UIDs.length > 0) {
       QBgetUserDetail(
         QB.users.USERS_FILTER.FIELD.LOGIN,
@@ -183,7 +183,7 @@ export default function GroupMembersScreen({navigation, route}) {
           const groupName = authContext?.entity?.obj?.group_name;
           QBcreateDialog(IDs, QB_DIALOG_TYPE.GROUP, groupName)
             .then((dialog) => {
-              console.log('dialogdialogdialog',dialog);
+              console.log('dialogdialogdialog', dialog);
               setloading(false);
               navigation.navigate('MessageChat', {
                 screen: 'MessageChat',
@@ -293,6 +293,40 @@ export default function GroupMembersScreen({navigation, route}) {
     },
     [callFollowUser, callUnfollowUser, navigation],
   );
+  const onPressProfilePhotoAndTitle = useCallback(
+    (item) => {
+      console.log('Profile photo & title press', item);
+      if (item.connected) {
+        navigation.navigate('HomeScreen', {
+          uid: item?.user_id,
+          role: 'user',
+          backButtonVisible: true,
+          menuBtnVisible: false,
+        });
+      }
+    },
+    [navigation],
+  );
+
+  const renderFirstNameAndLastName = useCallback((item) => {
+    if (item.connected) {
+      return (
+        <Text style={styles.nameText} numberOfLines={1}>
+          {item.first_name} {item.last_name}
+        </Text>
+      );
+    }
+    return (
+      <Text
+        style={{
+          ...styles.nameText,
+          color: colors.userPostTimeColor,
+        }}
+        numberOfLines={1}>
+        {item.first_name} {item.last_name}
+      </Text>
+    );
+  }, []);
 
   const renderMembers = useCallback(
     ({item: data, index}) => (
@@ -310,20 +344,28 @@ export default function GroupMembersScreen({navigation, route}) {
               flex: 1,
             }}>
             <View style={styles.topViewContainer}>
-              <View style={styles.profileView}>
-                <Image
-                  source={
-                    data.thumbnail
-                      ? {uri: data.thumbnail}
-                      : images.profilePlaceHolder
-                  }
-                  style={styles.profileImage}
-                />
-              </View>
+              <TouchableOpacity
+                onPress={() => onPressProfilePhotoAndTitle(data)}
+                style={styles.imageTouchStyle}>
+                <View style={styles.profileView}>
+                  <Image
+                    source={
+                      data.thumbnail
+                        ? {uri: data.thumbnail}
+                        : images.profilePlaceHolder
+                    }
+                    style={styles.profileImage}
+                  />
+                </View>
+              </TouchableOpacity>
+
               <View style={styles.topTextContainer}>
-                <Text style={styles.nameText} numberOfLines={1}>
-                  {data.first_name} {data.last_name}
-                </Text>
+                <TouchableOpacity
+                  onPress={() => onPressProfilePhotoAndTitle(data)}>
+                  <Text style={styles.nameText} numberOfLines={1}>
+                    {renderFirstNameAndLastName(data)}
+                  </Text>
+                </TouchableOpacity>
                 <View style={{flexDirection: 'row'}}>
                   {data?.is_admin && (
                     <TCUserRoleBadge
@@ -358,16 +400,18 @@ export default function GroupMembersScreen({navigation, route}) {
             </View>
           </View>
           {authContext.entity.role === 'club' ||
-          authContext.entity.role === 'team'  ? (
-           authContext.entity.uid === groupID && <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() => onPressProfile(data)}
-              hitSlop={getHitSlop(15)}>
-             <Image
-                source={images.arrowGraterthan}
-                style={styles.arrowStyle}
-              />
-           </TouchableOpacity>
+          authContext.entity.role === 'team' ? (
+            authContext.entity.uid === groupID && (
+              <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={() => onPressProfile(data)}
+                hitSlop={getHitSlop(15)}>
+                <Image
+                  source={images.arrowGraterthan}
+                  style={styles.arrowStyle}
+                />
+              </TouchableOpacity>
+            )
           ) : data.is_following ? (
             <TCFollowUnfollwButton
               outerContainerStyle={styles.firstButtonOuterStyle}
@@ -443,7 +487,8 @@ export default function GroupMembersScreen({navigation, route}) {
                 'Send Request For Basic Info',
                 'Privacy Setting',
                 'Cancel',
-        ]
+                // eslint-disable-next-line react/jsx-indent
+              ]
         }
         cancelButtonIndex={switchUser.role === 'club' ? 6 : 5}
         // destructiveButtonIndex={1}
@@ -459,7 +504,7 @@ export default function GroupMembersScreen({navigation, route}) {
               groupID,
             });
           } else if (index === 4) {
-            navigation.navigate('RequestMultipleBasicInfoScreen',{groupID});
+            navigation.navigate('RequestMultipleBasicInfoScreen', {groupID});
           } else if (index === 5) {
             navigation.navigate('MembersViewPrivacyScreen');
           } else if (index === 6) {
@@ -610,5 +655,9 @@ const styles = StyleSheet.create({
     width: 15,
     resizeMode: 'contain',
     tintColor: colors.lightBlackColor,
+  },
+  imageTouchStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

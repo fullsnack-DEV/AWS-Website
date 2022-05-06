@@ -37,6 +37,7 @@ const NewsFeedList = ({
   noDataFoundText = 'No Post Found',
   feedAPI,
   isNewsFeedScreen = false,
+  openProfilId,
 }) => {
   const [userID, setUserID] = useState('');
 
@@ -54,10 +55,31 @@ const NewsFeedList = ({
 
   const onProfilePress = useCallback(
     (item) => {
-      console.log('News feed screen', isNewsFeedScreen);
+      console.log('item:', item);
+      console.log('News feed screen:', isNewsFeedScreen);
+      console.log('item actor id:', item?.actor?.id);
+      console.log('authContext entity id:', authContext?.entity?.uid);
+      console.log('user id::', userID);
+      console.log('openProfilId:', openProfilId);
+
       if (item?.actor?.id) {
+        // if (
+        //   item?.actor?.id !== authContext?.entity?.uid ||
+        //   (item?.actor?.id === authContext?.entity?.uid &&
+        //     isNewsFeedScreen === true)
+        // ) {
+        //   navigation.push('HomeScreen', {
+        //     uid: item.actor.id,
+        //     backButtonVisible: true,
+        //     role:
+        //       item?.actor?.data?.entity_type === 'player'
+        //         ? 'user'
+        //         : item?.actor?.data?.entity_type,
+        //   });
+        // }
+
         if (
-          item?.actor?.id !== authContext?.entity?.uid ||
+          item?.actor?.id !== openProfilId ||
           (item?.actor?.id === authContext?.entity?.uid &&
             isNewsFeedScreen === true)
         ) {
@@ -94,6 +116,7 @@ const NewsFeedList = ({
             onLikePress={onLikeButtonPress}
             onDeletePost={onDeleteButtonPress}
             isNewsFeedScreen={isNewsFeedScreen}
+            openProfilId={openProfilId}
           />
           <View
             style={{backgroundColor: colors.grayBackgroundColor, height: 7}}
