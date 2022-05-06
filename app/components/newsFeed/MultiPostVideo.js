@@ -99,11 +99,9 @@ function MultiPostVideo({
           repeat={true}
           ref={videoPlayerRef}
           paused={
-            !(
-              isFocused &&
-              parentIndex === currentParentIndex &&
-              childIndex === currentChildIndex
-            )
+            !isFocused &&
+            parentIndex !== currentParentIndex &&
+            childIndex !== currentChildIndex
           }
           muted={mute}
           onProgress={onProgress}
