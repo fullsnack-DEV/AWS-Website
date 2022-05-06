@@ -86,15 +86,15 @@ const LeaveReviewTennis = ({navigation, route}) => {
       'route?.params?.gameReviewData?.results[0]?.object',
       route?.params?.gameReviewData,
     );
-    if (route?.params?.gameReviewData?.results[0]?.object) {
-      const reviewObj =
+    if (route?.params?.gameReviewData) {
+      const reviewObj = route?.params?.gameReviewData ??
         JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
           ?.playerReview ??
         JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
           ?.gameReview;
       setReviewsData({...reviewObj});
     }
-  }, [route?.params?.gameReviewData?.results]);
+  }, [route?.params?.gameReviewData, route?.params?.gameReviewData?.results]);
 
   useEffect(() => {
     const obj = {...reviewsData};

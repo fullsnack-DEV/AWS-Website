@@ -207,32 +207,24 @@ const HomeScreen = ({navigation, route}) => {
   const [isTeamHome, setIsTeamHome] = useState(false);
   const [playsInModalVisible, setPlaysInModalVisible] = useState(false);
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false);
-  const [scorekeeperInModalVisible, setScorekeeperInModalVisible] = useState(
-    false,
-  );
-  const [reviewDetailModalVisible, setReviewDetailModalVisible] = useState(
-    false,
-  );
+  const [scorekeeperInModalVisible, setScorekeeperInModalVisible] =
+    useState(false);
+  const [reviewDetailModalVisible, setReviewDetailModalVisible] =
+    useState(false);
   const [feedDataIndex, setFeedDataIndex] = useState(0);
   const [feedDetailIndex, setFeedDetailIndex] = useState(0);
   const [orangeFeed, setOrangeFeed] = useState(false);
   const [reviewGameData, setReviewGameData] = useState();
   const [refereeInfoModalVisible, setRefereeInfoModalVisible] = useState(false);
-  const [
-    scorekeeperInfoModalVisible,
-    setScorekeeperInfoModalVisible,
-  ] = useState(false);
-  const [refereeMatchModalVisible, setRefereeMatchModalVisible] = useState(
-    false,
-  );
-  const [
-    scorekeeperMatchModalVisible,
-    setScorekeeperMatchModalVisible,
-  ] = useState(false);
+  const [scorekeeperInfoModalVisible, setScorekeeperInfoModalVisible] =
+    useState(false);
+  const [refereeMatchModalVisible, setRefereeMatchModalVisible] =
+    useState(false);
+  const [scorekeeperMatchModalVisible, setScorekeeperMatchModalVisible] =
+    useState(false);
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false);
-  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(
-    false,
-  );
+  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] =
+    useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserData, setCurrentUserData] = useState({});
   const [myGroupDetail] = useState(
@@ -292,22 +284,17 @@ const HomeScreen = ({navigation, route}) => {
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
   const [refereeOfferModalVisible, setRefereeOfferModalVisible] = useState();
-  const [
-    scorekeeperOfferModalVisible,
-    setScorekeeperOfferModalVisible,
-  ] = useState();
+  const [scorekeeperOfferModalVisible, setScorekeeperOfferModalVisible] =
+    useState();
 
-  const [
-    isDoubleSportTeamCreatedVisible,
-    setIsDoubleSportTeamCreatedVisible,
-  ] = useState(false);
+  const [isDoubleSportTeamCreatedVisible, setIsDoubleSportTeamCreatedVisible] =
+    useState(false);
 
   // const [reviewsData] = useState(reviews_data);
 
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
-  const timeTableSelectionDate = moment(timetableSelectDate).format(
-    'YYYY-MM-DD',
-  );
+  const timeTableSelectionDate =
+    moment(timetableSelectDate).format('YYYY-MM-DD');
 
   const [sportsSelection, setSportsSelection] = useState();
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
@@ -3106,19 +3093,19 @@ const HomeScreen = ({navigation, route}) => {
           console.log('in else');
           if (myGroupDetail.sport_type === 'double') {
             if (
-              'player_deactivated' in myGroupDetail ||
+              'player_deactivated' in myGroupDetail &&
               myGroupDetail?.player_deactivated
             ) {
               Alert.alert('Player deactiveted sport.');
             } else if (
-              'player_leaved' in currentUserData ||
+              'player_leaved' in currentUserData &&
               currentUserData?.player_leaved
             ) {
               Alert.alert(
                 `${currentUserData?.group_name} have't 2 players in team.`,
               );
             } else if (
-              'player_leaved' in myGroupDetail ||
+              'player_leaved' in myGroupDetail &&
               myGroupDetail?.player_leaved
             ) {
               Alert.alert('You have\'t 2 players in team.');
@@ -3778,7 +3765,8 @@ const HomeScreen = ({navigation, route}) => {
             {term: {'status.keyword': 'accepted'}},
             {
               term: {
-                'challenge_referee.who_secure.responsible_team_id.keyword': teamId,
+                'challenge_referee.who_secure.responsible_team_id.keyword':
+                  teamId,
               },
             },
           ],
@@ -3950,7 +3938,8 @@ const HomeScreen = ({navigation, route}) => {
             {term: {'status.keyword': 'accepted'}},
             {
               term: {
-                'challenge_scorekeepers.who_secure.responsible_team_id.keyword': teamId,
+                'challenge_scorekeepers.who_secure.responsible_team_id.keyword':
+                  teamId,
               },
             },
           ],
@@ -4080,37 +4069,35 @@ const HomeScreen = ({navigation, route}) => {
             authContext?.entity?.obj?.is_pause === true ? 'pause' : 'deactivate'
           }
           onPress={() => {
-           
-              Alert.alert(
-                `Are you sure you want to ${
-                  authContext?.entity?.obj?.is_pause === true
-                    ? 'unpause'
-                    : 'reactivate'
-                } this account?`,
-                '',
-                [
-                  {
-                    text: 'Cancel',
-                    style: 'cancel',
+            Alert.alert(
+              `Are you sure you want to ${
+                authContext?.entity?.obj?.is_pause === true
+                  ? 'unpause'
+                  : 'reactivate'
+              } this account?`,
+              '',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text:
+                    authContext?.entity?.obj?.is_pause === true
+                      ? 'Unpause'
+                      : 'Reactivate',
+                  style: 'destructive',
+                  onPress: () => {
+                    if (authContext?.entity?.obj?.is_pause === true) {
+                      unPauseGroup();
+                    } else {
+                      reActivateUser();
+                    }
                   },
-                  {
-                    text:
-                      authContext?.entity?.obj?.is_pause === true
-                        ? 'Unpause'
-                        : 'Reactivate',
-                    style: 'destructive',
-                    onPress: () => {
-                      if (authContext?.entity?.obj?.is_pause === true) {
-                        unPauseGroup();
-                      } else {
-                        reActivateUser();
-                      }
-                    },
-                  },
-                ],
-                {cancelable: false},
-              );
-            
+                },
+              ],
+              {cancelable: false},
+            );
           }}
         />
       )}
@@ -5721,7 +5708,10 @@ const HomeScreen = ({navigation, route}) => {
                   } else {
                     console.log('in else continue :', currentUserData);
                     if (currentUserData.sport_type === 'double') {
-                      if (currentUserData?.player_deactivated) {
+                      if (
+                        'player_deactivated' in currentUserData &&
+                        currentUserData?.player_deactivated
+                      ) {
                         Alert.alert('Player deactiveted sport.');
                       } else if (
                         'player_leaved' in currentUserData &&
@@ -5851,7 +5841,7 @@ const HomeScreen = ({navigation, route}) => {
                     console.log('in else');
                     if (myGroupDetail.sport_type === 'double') {
                       if (
-                        'player_deactivated' in myGroupDetail ||
+                        'player_deactivated' in myGroupDetail &&
                         myGroupDetail?.player_deactivated
                       ) {
                         Alert.alert('Player deactiveted sport.');
@@ -6291,7 +6281,6 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   userNavigationTextStyle: {
-  
     width: 210,
     fontSize: 22,
     fontFamily: fonts.RBold,

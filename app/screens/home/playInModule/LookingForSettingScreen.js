@@ -60,11 +60,12 @@ export default function LookingForSettingScreen({navigation, route}) {
   ]);
   const updateProfile = () => {
     setloading(true);
-    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) =>
-        obj?.sport === sportObj?.sport &&
-        obj?.sport_type === sportObj?.sport_type,
-    );
+    const registerdPlayerData =
+      authContext?.entity?.obj?.registered_sports?.filter(
+        (obj) =>
+          obj?.sport !== sportObj?.sport &&
+          obj?.sport_type !== sportObj?.sport_type,
+      );
 
     console.log('registerdPlayerData:', registerdPlayerData);
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(

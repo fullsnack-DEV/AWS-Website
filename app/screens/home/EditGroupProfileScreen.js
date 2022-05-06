@@ -387,7 +387,6 @@ export default function EditGroupProfileScreen({navigation, route}) {
               showNextArrow={true}
             />
           </View>
-
           <View
             style={{
               flexDirection: 'row',

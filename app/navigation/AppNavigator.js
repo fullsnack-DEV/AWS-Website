@@ -266,7 +266,8 @@ const getTabBarVisibility = (route) => {
     routeName === 'LeaveReviewTennis' ||
     routeName === 'GroupSettingPrivacyScreen' ||
     routeName === 'UserSettingPrivacyScreen' || 
-    routeName === 'PauseGroupScreen'
+    routeName === 'PauseGroupScreen' ||
+    routeName === 'SportAccountSettingScreen'
   ) {
     return false;
   }
