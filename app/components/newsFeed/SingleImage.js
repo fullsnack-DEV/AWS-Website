@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     backgroundColor: colors.whiteColor,
     borderRadius: 10,
-    shadowColor: colors.blackColor,
+    shadowColor: colors.whiteColor,
     shadowOpacity: 0.16,
     shadowOffset: {width: 0, height: 5},
     shadowRadius: 15,

@@ -242,7 +242,7 @@ const HomeFeed = ({
   const onPressDone = useCallback(
     (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
       let dataParams = {};
-      const entityID = currentUserData?.group_id  ?? currentUserData?.user_id;
+      const entityID = currentUserData?.group_id ?? currentUserData?.user_id;
       if (entityID !== authContext.entity.uid) {
         if (
           currentUserData?.entity_type === 'team' ||
@@ -259,18 +259,18 @@ const HomeFeed = ({
         }
       }
       if (postDesc.trim().length > 0 && data?.length === 0) {
-         dataParams = {
-           ...dataParams,
+        dataParams = {
+          ...dataParams,
           text: postDesc,
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
         };
-       
+
         createPostAfterUpload(dataParams);
       } else if (data) {
         const imageArray = data.map((dataItem) => dataItem);
-         dataParams = {
-           ...dataParams,
+        dataParams = {
+          ...dataParams,
           text: postDesc && postDesc,
           attachments: [],
           tagged: tagsOfEntity ?? [],
@@ -332,12 +332,17 @@ const HomeFeed = ({
     () => (
       <>
         {homeFeedHeaderComponent()}
-        {isAdmin || !['user','player'].includes(currentUserData?.entity_type) ? StickyHeaderComponent : null}
-       
-        
+        {isAdmin || !['user', 'player'].includes(currentUserData?.entity_type)
+          ? StickyHeaderComponent
+          : null}
       </>
     ),
-    [StickyHeaderComponent, currentUserData?.entity_type, homeFeedHeaderComponent, isAdmin],
+    [
+      StickyHeaderComponent,
+      currentUserData?.entity_type,
+      homeFeedHeaderComponent,
+      isAdmin,
+    ],
   );
 
   const updateCommentCount = (updatedComment) => {
@@ -372,6 +377,7 @@ const HomeFeed = ({
           onEndReachedCalledDuringMomentum = false;
         }}
         footerLoading={footerLoading && isNextDataLoading}
+        openProfilId={userID}
       />
     </View>
   );

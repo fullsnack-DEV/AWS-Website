@@ -1,15 +1,9 @@
-import React, {
- memo,
-} from 'react';
-import {
-  StyleSheet, View, Text, TouchableWithoutFeedback,
-} from 'react-native';
+import React, {memo} from 'react';
+import {StyleSheet, View, Text, TouchableWithoutFeedback} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
 function PostImageSet({
@@ -21,8 +15,12 @@ function PostImageSet({
   updateCommentCount,
   onLikePress,
 }) {
-  const uploadImageURL = data && typeof data.thumbnail === 'string'
-  && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
+  const uploadImageURL =
+    data &&
+    typeof data.thumbnail === 'string' &&
+    (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1])
+      ? null
+      : data.thumbnail;
 
   const toggleModal = () => {
     // setModalVisible(!isModalVisible);
@@ -31,28 +29,32 @@ function PostImageSet({
       currentPage: itemNumber,
       updateCommentCount,
       onLikePress,
-    })
+    });
   };
 
   return (
-    <View style={ styles.mainContainer }>
-      <View style={ [styles.uploadedImage, { borderWidth: 1, borderColor: colors.lightgrayColor }] }>
+    <View style={styles.mainContainer}>
+      <View
+        style={[
+          styles.uploadedImage,
+          {borderWidth: 1, borderColor: colors.lightgrayColor},
+        ]}>
         <FastImage
-          style={ styles.imageStyle }
-          source={ images.imageLoadingGIF }
-          resizeMode={ FastImage.resizeMode.contain }
+          style={styles.imageStyle}
+          source={images.imageLoadingGIF}
+          resizeMode={FastImage.resizeMode.contain}
         />
-        <Text style={ styles.loadingTextStyle }>Loading...</Text>
+        <Text style={styles.loadingTextStyle}>Loading...</Text>
       </View>
       <TouchableWithoutFeedback onPress={toggleModal}>
         <FastImage
-          style={ [styles.uploadedImage, { position: 'absolute' }] }
-          source={{ uri: uploadImageURL }}
-          resizeMode={ FastImage.resizeMode.cover }
+          style={[styles.uploadedImage, {position: 'absolute'}]}
+          source={{uri: uploadImageURL}}
+          resizeMode={FastImage.resizeMode.cover}
         />
       </TouchableWithoutFeedback>
-      <View style={ styles.lengthViewStyle }>
-        <Text style={ styles.lengthTextStyle }>
+      <View style={styles.lengthViewStyle}>
+        <Text style={styles.lengthTextStyle}>
           {itemNumber}
           {'/'}
           {totalItemNumber}
@@ -93,9 +95,9 @@ const styles = StyleSheet.create({
   mainContainer: {
     backgroundColor: colors.whiteColor,
     borderRadius: wp('4%'),
-    shadowColor: colors.blackColor,
+    shadowColor: colors.whiteColor,
     shadowOpacity: 0.16,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowRadius: 15,
     elevation: 2,
     height: wp('91%'),
