@@ -100,8 +100,7 @@ const MessageEditGroupScreen = ({route, navigation}) => {
         const imageArray = [];
         if (profileImageChanged) {
           imageArray.push({path: groupData.thumbnail});
-        }
-        uploadImages(imageArray, authContext)
+          uploadImages(imageArray, authContext)
           .then((responses) => {
             console.log('image response', responses);
 
@@ -126,6 +125,10 @@ const MessageEditGroupScreen = ({route, navigation}) => {
           .finally(() => {
             setLoading(false);
           });
+        }else{
+          onDonePress(groupData);
+        }
+        
       } else {
         console.log('else press',groupData);
         onDonePress(groupData);
@@ -135,12 +138,6 @@ const MessageEditGroupScreen = ({route, navigation}) => {
 
   const updateDialog = useCallback(
     (dialogId, photo) => {
-      console.log('dialogId----',dialogId);
-      console.log('groupName----',groupName);
-      console.log('photo----',photo);
-
-
-
       QBupdateDialogNameAndPhoto(dialogId, groupName, photo, authContext)
         .then((res) => {
           if (res?.status === 'error') {

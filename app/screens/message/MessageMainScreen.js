@@ -188,7 +188,7 @@ const MessageMainScreen = ({navigation}) => {
           dialogType={item?.type}
           onPress={() => onDialogPress(item)}
           title={fullName}
-          subTitle={item?.lastMessage}
+          subTitle={item?.lastMessage === '[attachment]' ? 'Photo (or Video)' : item?.lastMessage}
           numberOfMembers={item?.occupantsIds}
           lastMessageDate={new Date(item?.lastMessageDateSent)}
           numberOfUnreadMessages={
@@ -254,7 +254,7 @@ const MessageMainScreen = ({navigation}) => {
             />
           </View>
         }
-        centerComponent={<Text style={styles.eventTextStyle}>Chat</Text>}
+        centerComponent={<Text style={styles.eventTextStyle}>Chats</Text>}
         rightComponent={
           authContext?.entity?.QB && (
             <View style={{flexDirection: 'row'}}>

@@ -54,7 +54,7 @@ const TCMessage = ({
         setFileUrls((urls) => [...urls, fileUrl]);
       }),
     );
-  }, []);
+  }, [attachments]);
 
   return (
     <Fragment>
@@ -83,8 +83,8 @@ const TCMessage = ({
                 ...styles.messageText,
                 color:
                   type === 'sender'
-                    ? colors.lightBlackColor
-                    : colors.lightBlackColor,
+                    ? colors.userPostTimeColor // lightBlackColor
+                    : colors.userPostTimeColor,
               }}>
               {body}
             </Text>
@@ -225,11 +225,11 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontFamily: fonts.RRegular,
-    fontSize: 16,
+    fontSize: 14,
     flex: 1,
     maxWidth: wp(60),
     textAlign: 'left',
-    color: colors.whiteColor,
+    color: colors.userPostTimeColor,
   },
 });
 

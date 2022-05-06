@@ -93,6 +93,8 @@ const MessageChat = ({route, navigation}) => {
   const [placeholderText, setPlaceholderText] = useState('Type a message');
   const [occupantsData, setOccupantsData] = useState([]);
   const [hideSearchView, setHideSearchView] = useState(true);
+  const [progressNumber, setProgressNumber] = useState(0);
+
 
   const scrollRef = useRef(null);
   const refSavedMessagesData = useRef(savedMessagesData);
@@ -103,9 +105,8 @@ const MessageChat = ({route, navigation}) => {
   );
 
   useEffect(() => {
-    
     if (isFocused) {
-      onRefresh()
+      onRefresh();
     }
   }, [isFocused]);
 
@@ -113,7 +114,6 @@ const MessageChat = ({route, navigation}) => {
     console.log(1);
     if (occupantsData?.length) {
       navigation.setParams({participants: [...occupantsData]});
-      
     }
   }, [occupantsData]);
 
@@ -245,6 +245,17 @@ const MessageChat = ({route, navigation}) => {
       }
     }
   }, [dialogData, isFocused]);
+
+  const uploadProgressChangeHandler = (event) => {
+    // const {type, payload} = event;
+    const { payload} = event;
+    setProgressNumber(payload.progress)
+  };
+  const contentEmitter = new NativeEventEmitter(QB.content);
+  const subscription = contentEmitter.addListener(
+    QB.content.EVENT_TYPE.FILE_UPLOAD_PROGRESS,
+    uploadProgressChangeHandler,
+  );
 
   const newMessageHandler = (event) => {
     const {type, payload} = event;
@@ -407,7 +418,7 @@ const MessageChat = ({route, navigation}) => {
                       marginVertical: hp(1),
                       opacity:
                         customData?.is_deactivate === true ||
-                        customData?.is_pause === true || 
+                        customData?.is_pause === true ||
                         customData?.under_terminate === true
                           ? 0.5
                           : 1,
@@ -415,7 +426,7 @@ const MessageChat = ({route, navigation}) => {
                     <View style={{...styles.avatarContainer}}>
                       <FastImage
                         source={finalImage}
-                        style={{height: 26, width: 26, borderRadius: 25}}
+                        style={{height: 27, width: 27, borderRadius: 54}}
                       />
                     </View>
                     <Text
@@ -428,13 +439,15 @@ const MessageChat = ({route, navigation}) => {
                         marginLeft: 8,
                       }}>
                       {/* eslint-disable-next-line no-mixed-operators */}
-                      {customData?.is_terminate === true  ? 'Unknown' : fullName}
+                      {customData?.is_terminate === true ? 'Unknown' : fullName}
                     </Text>
                   </View>
                 )}
 
                 <TCMessage
-                  fullName={customData?.is_terminate === true  ? 'Unknown' : fullName}
+                  fullName={
+                    customData?.is_terminate === true ? 'Unknown' : fullName
+                  }
                   attachments={item.attachments}
                   date={new Date(item.dateSent)}
                   body={item.body}
@@ -467,8 +480,8 @@ const MessageChat = ({route, navigation}) => {
       uploadedFile && messageBody.trim() === ''
         ? '[attachment]'
         : messageBody.trim();
-        console.log('dialogData?.dialogId',dialogData?.dialogId);
-        console.log('message',message);
+    console.log('dialogData?.dialogId', dialogData?.dialogId);
+    console.log('message', message);
 
     QBsendMessage(dialogData?.dialogId, message, uploadedFile).then(() => {
       setMessageBody('');
@@ -490,19 +503,37 @@ const MessageChat = ({route, navigation}) => {
       const imagePath = Platform?.OS === 'ios' ? image?.sourceURL : image?.path;
       const validImageSize = image?.size <= QB_MAX_ASSET_SIZE_UPLOAD;
 
+      console.log('imageimage', image);
       if (!validImageSize) {
         Alert.alert('file image size error');
       } else {
-        QB.content.subscribeUploadProgress({url: imagePath});
+        const url = imagePath;
+        const subscribeProgressParam = {url};
+        const contentUploadParam = {url, public: false};
+
         QB.content
-          .upload({url: imagePath, public: false})
+          .subscribeUploadProgress(subscribeProgressParam)
+          .then(() => {
+            // subscribed to upload progress events for this file
+            return QB.content.upload(contentUploadParam);
+          })
           .then((file) => {
+            // file uploaded successfully
             setUploadImageInProgress(false);
             setUploadedFile(file);
+            setProgressNumber(0);
+            // unscubscribe from upload progress events for this file
+            return QB.content.unsubscribeUploadProgress({url});
           })
-          .catch((e) => {
+          .then(() => {
+            // unsubscribed from upload progress events for this file
+            // remove subscription if it is not needed
+            subscription.remove();
+          })
+          .catch((error) => {
+            // handle error
             setUploadImageInProgress(false);
-            Alert.alert(e.message);
+            console.log(error);
           });
       }
     });
@@ -524,33 +555,25 @@ const MessageChat = ({route, navigation}) => {
         )
         }
         rightComponent={
-          <View
-            style={{padding: 2, flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
               onPress={() => {
                 setHideSearchView(!hideSearchView);
               }}>
               <Image
-                source={images.searchLocation}
-                style={[
-                  styles.rightSearchImageStyle,
-                  {marginRight: 15},
-                ]}
+                source={images.chatSearch}
+                style={[styles.rightSearchImageStyle, {marginRight: 10}]}
               />
             </TouchableOpacity>
-            
+
             <TouchableOpacity
-                itSlop={getHitSlop(15)}
-                onPress={() => {
-                  commentModalRef.current.open();
-                  // navigation.setParams({participants: [occupantsData]});
-                }}>
-              <Image
-                  source={images.threeDotIcon}
-                  style={styles.rightImageStyle}
-                />
+              itSlop={getHitSlop(15)}
+              onPress={() => {
+                commentModalRef.current.open();
+                // navigation.setParams({participants: [occupantsData]});
+              }}>
+              <Image source={images.chat3Dot} style={styles.rightImageStyle} />
             </TouchableOpacity>
-          
           </View>
         }
       />
@@ -585,18 +608,22 @@ const MessageChat = ({route, navigation}) => {
   );
   console.log('occupantsData?.length', occupantsData?.length);
 
-  const getPlaceholderText = (occData) => {
+  const getPlaceholderText = useCallback((occData) => {
     const filterOcc = (occData || []).filter(
       (obj) =>
         JSON.parse(obj.customData).is_pause === true ||
         JSON.parse(obj.customData).is_deactivate === true,
     );
+    console.log('filterOccfilterOcc',filterOcc);
+    console.log('occData?.length', occData?.length);
+    console.log('filterOccfilterOcc', filterOcc.length);
+
     console.log('filterOccfilterOcc', occData?.length - filterOcc.length);
     if (occData?.length - filterOcc.length <= 1) {
       setPointEvent('none');
       setPlaceholderText('No recipients in this chatroom');
     }
-  };
+  },[]);
 
   const renderBottomChatTools = () => (
     <View
@@ -664,7 +691,7 @@ const MessageChat = ({route, navigation}) => {
             {uploadImageInProgress
               ? `Uploading ${
                   selectedImage?.mime?.includes('image') ? 'an image' : 'video'
-                }...`
+                }...${progressNumber}%`
               : `${
                   selectedImage?.mime?.includes('image') ? 'Image' : 'Video'
                 } uploaded`}
@@ -708,7 +735,7 @@ const MessageChat = ({route, navigation}) => {
             isClear={false}
           />
         </View>
-        <View
+        {/* <View
           style={{
             position: 'absolute',
             right: '4%',
@@ -728,6 +755,22 @@ const MessageChat = ({route, navigation}) => {
               </GradiantContainer>
             </TouchableOpacity>
           )}
+        </View> */}
+        <View
+          style={{
+            position: 'absolute',
+            right: '4%',
+            opacity: pointEvent === 'none' ? 0.5 : 1,
+          }}
+          pointerEvents={pointEvent}>
+          {((selectedImage && !uploadImageInProgress) ||
+            messageBody.length > 0) && (
+              <TouchableOpacity onPress={sendMessage}>
+                <GradiantContainer style={styles.sendButtonContainer}>
+                  <Image source={images.sendButton} style={styles.sendButton} />
+                </GradiantContainer>
+              </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
@@ -740,11 +783,11 @@ const MessageChat = ({route, navigation}) => {
   const onPressDone = useCallback(
     (newDialog) => {
       console.log('cacacacacacaca');
-      console.log('{...dialogData, ...}',{...dialogData});
-      console.log('{..., ...newDialog}',{...newDialog});
+      console.log('{...dialogData, ...}', {...dialogData});
+      console.log('{..., ...newDialog}', {...newDialog});
 
       navigation.setParams({dialog: {...dialogData, ...newDialog}});
-      setDialogData({...dialogData, ...newDialog})
+      setDialogData({...dialogData, ...newDialog});
     },
     [dialogData, navigation],
   );
@@ -807,7 +850,7 @@ const MessageChat = ({route, navigation}) => {
     };
     Alert.alert(
       '',
-      'Are you sure you want to \n' + 'Leave this chatroom?',
+      'Are you sure you want to \n' + 'leave this chatroom?',
       [
         {
           text: 'Cancel',
@@ -828,7 +871,6 @@ const MessageChat = ({route, navigation}) => {
     return (
       <View style={styles.searchContainer}>
         <View style={styles.sectionStyle}>
-          <Image source={images.searchLocation} style={styles.searchImg} />
           <TextInput
             style={styles.textInput}
             placeholder={'Search'}
@@ -961,7 +1003,7 @@ const MessageChat = ({route, navigation}) => {
                 style={styles.inviteImage}
                 source={images.leave_chat_room}
               />
-              <Text style={styles.grayText}>LEAVE CHAT ROOM</Text>
+              <Text style={styles.grayText}>LEAVE CHATROOM</Text>
             </TouchableOpacity>
           </View>
         </Modalize>
@@ -989,14 +1031,14 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   rightSearchImageStyle: {
-    // height: 15,
-    width: 20,
+    height: 25,
+    width: 25,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },
   rightImageStyle: {
-    // height: 20,
-    width: 4,
+    height: 25,
+    width: 25,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },
@@ -1057,12 +1099,12 @@ const styles = StyleSheet.create({
     paddingBottom: hp(2),
   },
   avatarContainer: {
-    width: 32,
-    height: 32,
+    width: 30,
+    height: 30,
     padding: 7,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: wp(5),
+    borderRadius: 60,
     backgroundColor: colors.whiteColor,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 0},
@@ -1088,13 +1130,6 @@ const styles = StyleSheet.create({
     width: wp(100),
     alignItems: 'center',
   },
-  imageUploadingLoader: {
-    height: wp(10),
-    alignSelf: 'center',
-    width: wp(10),
-    margin: wp(1),
-  },
-
   headerStyle: {
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
@@ -1176,7 +1211,7 @@ const styles = StyleSheet.create({
     height: 45,
     paddingLeft: 17,
     paddingRight: 5,
-    width: wp('90%'),
+    width: wp('88%'),
     shadowColor: colors.grayColor,
     shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.3,
@@ -1184,19 +1219,13 @@ const styles = StyleSheet.create({
     elevation: 2,
     marginLeft: 10,
   },
-  searchImg: {
-    alignSelf: 'center',
-    height: 15,
-    tintColor: colors.magnifyIconColor,
-    resizeMode: 'contain',
-    width: 15,
-  },
+
   searchClose: {
     alignSelf: 'center',
-    height: 10,
-    tintColor: colors.lightBlackColor,
+    height: 12,
+    tintColor: colors.blackColor,
     resizeMode: 'contain',
-    width: 10,
+    width: 12,
     marginRight: 10,
   },
   textInput: {
@@ -1213,12 +1242,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 55,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    // shadowColor: colors.grayColor,
-    // shadowOffset: { width: 0, height: 5 },
-    // shadowOpacity: 0.2,
-    // shadowRadius: 10,
-    // elevation: 2,
+    justifyContent: 'space-around',
+    shadowColor: colors.grayColor,
+    shadowOffset: {width: 0, height: 5},
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 2,
   },
 });
 

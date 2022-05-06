@@ -15,6 +15,8 @@ const images = {
   profilePlaceHolder: require('../assets/images/profileplaceholder.png'),
   dummyPhoto: require('../assets/images/dummy_photo.png'),
   searchLocation: require('../assets/images/ic_search_orange.png'),
+  chatSearch: require('../assets/images/chatSearch.png'),
+
   archerySport: require('../assets/images/ic_archery.png'),
   bandySport: require('../assets/images/ic_Bandy.png'),
   baseballSport: require('../assets/images/ic_Baseball.png'),
@@ -49,6 +51,7 @@ const images = {
   backArrow: require('../assets/images/ic_back_arrow.png'),
   menu: require('../assets/images/menu.png'),
   threeDotIcon: require('../assets/images/three_dot_icon.png'),
+  chat3Dot: require('../assets/images/chat3Dot.png'),
   scheduleThreeDot: require('../assets/images/scheduleThreeDot.png'),
   vertical3Dot: require('../assets/images/ic_dot.png'),
   horizontal3Dot: require('../assets/images/ic_horizontal_dot.png'),
