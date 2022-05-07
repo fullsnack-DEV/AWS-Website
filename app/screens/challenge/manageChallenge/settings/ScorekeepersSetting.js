@@ -36,16 +36,18 @@ export default function ScorekeepersSetting({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
-  
+
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
 
   const [selection, setSelection] = useState(
-    
-    route?.params?.settingObj && route?.params?.settingObj?.responsible_for_scorekeeper && route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
-      ? route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure?.length
+    route?.params?.settingObj &&
+      route?.params?.settingObj?.responsible_for_scorekeeper &&
+      route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
+      ? route?.params?.settingObj?.responsible_for_scorekeeper?.who_secure
+          ?.length
       : 'None',
   );
 
@@ -377,10 +379,12 @@ export default function ScorekeepersSetting({navigation, route}) {
         </Text>
         <Modal
           isVisible={visibleModal}
-          backdropColor="black"
           onBackdropPress={() => setVisibleModal(false)}
           onRequestClose={() => setVisibleModal(false)}
-          backdropOpacity={0}
+          animationInTiming={300}
+          animationOutTiming={800}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={800}
           style={styles.modalStyle}>
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
@@ -501,6 +505,5 @@ const styles = StyleSheet.create({
   },
   modalStyle: {
     margin: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
   },
 });

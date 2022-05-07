@@ -921,7 +921,7 @@ export default function AccountScreen({navigation}) {
                         right: 10,
                         top: 10,
                       },
-              ]
+                    ]
               }>
               <Text
                 style={{
@@ -1538,7 +1538,7 @@ export default function AccountScreen({navigation}) {
                                 alignSelf: 'flex-start',
                                 color: colors.lightBlackColor,
                               },
-                      ]
+                            ]
                       }
                       duration={3000}
                       marqueeOnStart
@@ -1573,7 +1573,7 @@ export default function AccountScreen({navigation}) {
                               alignSelf: 'flex-start',
                               color: colors.lightBlackColor,
                             },
-                    ]
+                          ]
                     }>
                     {authContext?.entity?.obj?.city || ''},{' '}
                     {authContext?.entity?.obj?.state_abbr || ''}
@@ -1585,8 +1585,8 @@ export default function AccountScreen({navigation}) {
         )}
         {(authContext.entity.role === 'team' ||
           authContext.entity.role === 'club') && (
-            <View style={styles.profileView}>
-              <ImageBackground
+          <View style={styles.profileView}>
+            <ImageBackground
               source={
                 authContext?.entity?.obj?.background_thumbnail
                   ? {uri: authContext?.entity?.obj?.background_thumbnail}
@@ -1594,7 +1594,7 @@ export default function AccountScreen({navigation}) {
               }
               style={styles.profileView}
               blurRadius={10}>
-                <TouchableOpacity
+              <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('HomeScreen', {
                     uid: authContext.entity.uid,
@@ -1609,9 +1609,9 @@ export default function AccountScreen({navigation}) {
                   marginRight: 20,
                   alignContent: 'center',
                 }}>
-                  <View style={styles.profileImageContainer}>
-                    {authContext?.entity?.obj?.thumbnail ? (
-                      <Image
+                <View style={styles.profileImageContainer}>
+                  {authContext?.entity?.obj?.thumbnail ? (
+                    <Image
                       source={{uri: authContext?.entity?.obj?.thumbnail}}
                       style={styles.profileImg}
                     />
@@ -1651,19 +1651,19 @@ export default function AccountScreen({navigation}) {
                       </View>
                     </View>
                   )}
-                  </View>
-                  <View
+                </View>
+                <View
                   style={{
                     marginLeft: 15,
                     width: Dimensions.get('window').width / 1.6,
                   }}>
-                    <View
+                  <View
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
                       marginRight: 10,
                     }}>
-                      <MarqueeText
+                    <MarqueeText
                       style={
                         authContext?.entity?.obj?.background_thumbnail
                           ? [styles.nameText, {alignSelf: 'flex-start'}]
@@ -1673,15 +1673,15 @@ export default function AccountScreen({navigation}) {
                                 alignSelf: 'flex-start',
                                 color: colors.lightBlackColor,
                               },
-                      ]
+                            ]
                       }
                       duration={3000}
                       marqueeOnStart
                       loop={true}>
-                        {authContext?.entity?.obj?.group_name}
-                      </MarqueeText>
+                      {authContext?.entity?.obj?.group_name}
+                    </MarqueeText>
 
-                      <Image
+                    <Image
                       source={
                         authContext.entity.role === 'team'
                           ? images.teamPatch
@@ -1694,7 +1694,7 @@ export default function AccountScreen({navigation}) {
                         resizeMode: 'cover',
                       }}
                     />
-                      <Image
+                    <Image
                       source={images.arrowGraterthan}
                       style={{
                         height: 14,
@@ -1707,8 +1707,8 @@ export default function AccountScreen({navigation}) {
                           : colors.lightBlackColor,
                       }}
                     />
-                    </View>
-                    <Text
+                  </View>
+                  <Text
                     style={
                       authContext?.entity?.obj?.background_thumbnail
                         ? [styles.locationText, {alignSelf: 'flex-start'}]
@@ -1718,15 +1718,15 @@ export default function AccountScreen({navigation}) {
                               alignSelf: 'flex-start',
                               color: colors.lightBlackColor,
                             },
-                    ]
+                          ]
                     }>
-                      {authContext?.entity?.obj?.city},{' '}
-                      {authContext?.entity?.obj?.state_abbr}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </ImageBackground>
-            </View>
+                    {authContext?.entity?.obj?.city},{' '}
+                    {authContext?.entity?.obj?.state_abbr}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </ImageBackground>
+          </View>
         )}
 
         <ExpanableList
@@ -1825,6 +1825,12 @@ export default function AccountScreen({navigation}) {
                       />
                     )}
 
+                    {section === 'Log out' && (
+                      <Image
+                        source={images.logoutIcon}
+                        style={{...styles.menuItem}}
+                      />
+                    )}
                     {section === 'Members' && (
                       <Image
                         source={images.Members}
@@ -1890,14 +1896,15 @@ export default function AccountScreen({navigation}) {
 
         {/* Rules notes modal */}
         <Modal
-          isVisible={isRulesModalVisible} // isRulesModalVisible
-          backdropColor="black"
+          isVisible={isRulesModalVisible}
           onBackdropPress={() => setIsRulesModalVisible(false)}
           onRequestClose={() => setIsRulesModalVisible(false)}
-          backdropOpacity={0}
+          animationInTiming={300}
+          animationOutTiming={800}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
           }}>
           <SafeAreaView
             style={{
@@ -1961,13 +1968,14 @@ export default function AccountScreen({navigation}) {
 
         <Modal
           isVisible={visibleSportsModal}
-          backdropColor="black"
           onBackdropPress={() => setVisibleSportsModal(false)}
           onRequestClose={() => setVisibleSportsModal(false)}
-          backdropOpacity={0}
+          animationInTiming={300}
+          animationOutTiming={800}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
           }}>
           <View
             style={{

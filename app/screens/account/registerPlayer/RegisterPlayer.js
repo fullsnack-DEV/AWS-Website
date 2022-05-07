@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -28,9 +28,9 @@ import AuthContext from '../../../auth/context';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCGradientButton from '../../../components/TCGradientButton';
-import { getHitSlop, getSportName } from '../../../utils';
+import {getHitSlop, getSportName} from '../../../utils';
 
-export default function RegisterPlayer({ navigation }) {
+export default function RegisterPlayer({navigation}) {
   const authContext = useContext(AuthContext);
   const [sportsSelection, setSportsSelection] = useState();
 
@@ -40,7 +40,7 @@ export default function RegisterPlayer({ navigation }) {
   useEffect(() => {
     let sportArr = [];
 
-    console.log('authContext.sports',authContext.sports);
+    console.log('authContext.sports', authContext.sports);
     authContext.sports.map((item) => {
       sportArr = [...sportArr, ...item.format];
       return null;
@@ -48,7 +48,7 @@ export default function RegisterPlayer({ navigation }) {
     setSportsData([...sportArr]);
   }, [authContext.sports]);
 
-  const renderSports = ({ item }) => (
+  const renderSports = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
@@ -65,9 +65,12 @@ export default function RegisterPlayer({ navigation }) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{getSportName(item, authContext)}</Text>
+        <Text style={styles.languageList}>
+          {getSportName(item, authContext)}
+        </Text>
         <View style={styles.checkbox}>
-          {sportsSelection?.sport === item?.sport && sportsSelection?.sport_type === item?.sport_type ? (
+          {sportsSelection?.sport === item?.sport &&
+          sportsSelection?.sport_type === item?.sport_type ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -81,14 +84,14 @@ export default function RegisterPlayer({ navigation }) {
   );
 
   const nextOnPress = () => {
-    console.log(
-      'authContext?.entity?.obj',
-      authContext?.entity?.obj,
-    );
+    console.log('authContext?.entity?.obj', authContext?.entity?.obj);
     if (sportsSelection.sport !== '') {
       if (
         authContext?.entity?.obj?.registered_sports?.some(
-          (e) => e.sport === sportsSelection.sport && e.sport_type === sportsSelection.sport_type && e.is_published,
+          (e) =>
+            e.sport === sportsSelection.sport &&
+            e.sport_type === sportsSelection.sport_type &&
+            e.is_published,
         )
       ) {
         Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd);
@@ -105,7 +108,7 @@ export default function RegisterPlayer({ navigation }) {
     }
   };
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <TCFormProgress totalSteps={2} curruentStep={1} />
 
       <Text style={styles.LocationText}>{strings.sportsText}</Text>
@@ -121,16 +124,17 @@ export default function RegisterPlayer({ navigation }) {
           />
         </View>
       </TouchableOpacity>
-      <View style={{ flex: 1 }} />
+      <View style={{flex: 1}} />
       <Modal
         isVisible={visibleSportsModal}
-        backdropColor="black"
         onBackdropPress={() => setVisibleSportsModal(false)}
         onRequestClose={() => setVisibleSportsModal(false)}
-        backdropOpacity={0}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
         }}>
         <View
           style={{
@@ -143,7 +147,7 @@ export default function RegisterPlayer({ navigation }) {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: {width: 0, height: 1},
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
@@ -156,7 +160,7 @@ export default function RegisterPlayer({ navigation }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
-             hitSlop={getHitSlop(15)}
+              hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -193,7 +197,7 @@ export default function RegisterPlayer({ navigation }) {
       <TCGradientButton
         isDisabled={!sportsSelection}
         title={strings.nextTitle}
-        style={{ marginBottom: 30 }}
+        style={{marginBottom: 30}}
         onPress={nextOnPress}
       />
     </View>
@@ -234,7 +238,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'ios' ? 12 : 0,
     paddingLeft: 15,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('92%'),
