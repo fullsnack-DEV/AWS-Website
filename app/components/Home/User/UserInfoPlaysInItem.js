@@ -19,7 +19,7 @@ const UserInfoPlaysInItem = ({
     <View style={styles.containerStyle}>
       <Image source={thumbURL} style={styles.imageStyle} />
       <View style={{ marginLeft: 10, marginRight: 12 }}>
-        <Text style={styles.titleStyle}>{title}</Text>
+        <Text style={[styles.titleStyle,{fontSize: title.length > 12 ? 12 : 14}]}>{title}</Text>
         {/* <Text style={styles.subTitleStyle}>
           {`${totalGames} ${strings.totalGames}` }
         </Text> */}
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     fontFamily: fonts.RMedium,
-    fontSize: 16,
+    fontSize: 14,
     color: colors.lightBlackColor,
   },
   subTitleStyle: { fontFamily: fonts.RLight, fontSize: 12 },

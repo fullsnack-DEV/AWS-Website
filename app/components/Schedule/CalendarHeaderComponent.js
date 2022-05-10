@@ -8,7 +8,6 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import { getHitSlop } from '../../utils';
-import TCThinDivider from '../TCThinDivider';
 
 const weekDaysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const now = moment();
@@ -80,7 +79,7 @@ class CalendarHeaderComponent extends React.PureComponent {
           </View>
 
         </View>
-        <TCThinDivider height={1} width={'100%'} marginBottom={10} />
+       
         {
           // not showing week day in case of horizontal calendar, this will be handled by day component
           this.props.horizontal ? null : (

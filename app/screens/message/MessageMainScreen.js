@@ -35,7 +35,7 @@ import {
   getQBAccountType,
   QBupdateUser,
 } from '../../utils/QuickBlox';
-import { widthPercentageToDP as wp} from '../../utils';
+import {widthPercentageToDP as wp} from '../../utils';
 import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
@@ -188,7 +188,11 @@ const MessageMainScreen = ({navigation}) => {
           dialogType={item?.type}
           onPress={() => onDialogPress(item)}
           title={fullName}
-          subTitle={item?.lastMessage === '[attachment]' ? 'Photo (or Video)' : item?.lastMessage}
+          subTitle={
+            item?.lastMessage === '[attachment]'
+              ? 'Photo (or Video)'
+              : item?.lastMessage
+          }
           numberOfMembers={item?.occupantsIds}
           lastMessageDate={new Date(item?.lastMessageDateSent)}
           numberOfUnreadMessages={
@@ -374,10 +378,10 @@ const MessageMainScreen = ({navigation}) => {
         <TCAccountDeactivate
           type={
             authContext?.entity?.obj?.is_pause === true
-            ? 'pause'
-            : authContext?.entity?.obj?.under_terminate === true
-            ? 'terminate'
-            : 'deactivate'
+              ? 'pause'
+              : authContext?.entity?.obj?.under_terminate === true
+              ? 'terminate'
+              : 'deactivate'
           }
           onPress={() => {
             Alert.alert(

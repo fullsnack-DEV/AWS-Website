@@ -250,6 +250,7 @@ export default function RegisterScorekeeper({navigation}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           marginRight: 0,
           marginBottom: 0,
+          marginTop:0
         }}>
         <View
           style={{
@@ -333,6 +334,7 @@ export default function RegisterScorekeeper({navigation}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           marginRight: 0,
           marginBottom: 0,
+          marginTop:0
         }}>
         <View
           style={{

@@ -230,6 +230,7 @@ const images = {
   radioUnSelectGreen: require('../assets/images/uncheck_no_tick.png'),
   radioSelectGreen: require('../assets/images/check_green_tick.png'),
   menuClose: require('../assets/images/menu_close.png'),
+  closeSearch:  require('../assets/images/close_search.png'),
 
   // create challenge
   swapTeam: require('../assets/images/swap_team.png'),

@@ -107,6 +107,7 @@ export default function SportAccountSettingScreen({navigation, route}) {
       }
     } else if (opetions === 'Looking for club') {
       navigation.navigate('LookingForSettingScreen', {
+        type,
         sport,
       });
     } else if (opetions === 'Deactivate this activity') {

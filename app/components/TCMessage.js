@@ -83,8 +83,8 @@ const TCMessage = ({
                 ...styles.messageText,
                 color:
                   type === 'sender'
-                    ? colors.userPostTimeColor // lightBlackColor
-                    : colors.userPostTimeColor,
+                    ? colors.lightBlackColor // lightBlackColor
+                    : colors.lightBlackColor,
               }}>
               {body}
             </Text>
@@ -225,11 +225,11 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontFamily: fonts.RRegular,
-    fontSize: 14,
+    fontSize: 16,
     flex: 1,
     maxWidth: wp(60),
     textAlign: 'left',
-    color: colors.userPostTimeColor,
+    color: colors.lightBlackColor,
   },
 });
 

@@ -16,9 +16,8 @@ export default function UserInfoRefereesInItem({
 
       <Image source={thumbURL} style={styles.imageStyle}/>
       <View style={{ marginLeft: 10, marginRight: 12 }}>
-        <Text style={styles.titleStyle}>
-          {title}
-        </Text>
+        <Text style={[styles.titleStyle,{fontSize: title.length > 12 ? 12 : 14}]}>{title}</Text>
+
       </View>
       <LinearGradient
         colors={[colors.yellowColor, colors.darkThemeColor]}
@@ -55,7 +54,7 @@ resizeMode: 'contain',
     borderColor: colors.whiteColor,
     borderWidth: 2,
   },
-  titleStyle: { fontFamily: fonts.RMedium, fontSize: 16, color: colors.lightBlackColor },
+  titleStyle: { fontFamily: fonts.RMedium, fontSize: 14, color: colors.lightBlackColor },
   overlayStyle: {
     position: 'absolute',
     bottom: 0,
