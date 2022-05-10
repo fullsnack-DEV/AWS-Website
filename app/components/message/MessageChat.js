@@ -549,7 +549,7 @@ const MessageChat = ({route, navigation}) => {
         }
         centerComponent={
           headingTitle ? (
-            <Text style={styles.eventTextStyle}>{headingTitle}</Text>
+            <Text style={styles.eventTextStyle} numberOfLines={1}>{headingTitle}</Text>
           ) : (
             <ShimmerView style={{alignSelf: 'center'}} />
         )
@@ -880,7 +880,7 @@ const MessageChat = ({route, navigation}) => {
           />
         </View>
         <TouchableOpacity onPress={() => setHideSearchView(true)}>
-          <Image source={images.menuClose} style={styles.searchClose} />
+          <Image source={images.closeSearch} style={styles.searchClose} />
         </TouchableOpacity>
       </View>
     );
@@ -1064,6 +1064,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     alignSelf: 'center',
+    width: wp(60)
   },
   bottomTextUpperContainer: {
     backgroundColor: colors.whiteColor,
@@ -1208,10 +1209,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 25,
     flexDirection: 'row',
-    height: 45,
+    height: 40,
     paddingLeft: 17,
     paddingRight: 5,
-    width: wp('88%'),
+    width: wp('84%'),
     shadowColor: colors.grayColor,
     shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.3,
@@ -1222,10 +1223,10 @@ const styles = StyleSheet.create({
 
   searchClose: {
     alignSelf: 'center',
-    height: 12,
+    height: 15,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
-    width: 12,
+    width: 15,
     marginRight: 10,
   },
   textInput: {

@@ -24,6 +24,7 @@ export default function LookingForSettingScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [lookingFor, setLookingFor] = useState(false);
   const [sportObj] = useState(route?.params?.sport);
+  const [type] = useState(route?.params?.type);
   const lookingOpetions = [
     {key: 'Yes', id: 1},
     {key: 'No', id: 2},
@@ -47,43 +48,93 @@ export default function LookingForSettingScreen({navigation, route}) {
   }, [navigation, lookingFor, sportObj.sport]);
 
   useEffect(() => {
-    const selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) =>
-        obj?.sport === sportObj?.sport &&
-        obj?.sport_type === sportObj?.sport_type,
-    )[0];
+    let selectedSport;
+    if (type === 'referee') {
+      selectedSport = authContext?.entity?.obj?.referee_data?.filter(
+        (obj) => obj?.sport === sportObj?.sport,
+      )[0];
+    } else if (type === 'scorekeeper') {
+      selectedSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
+        (obj) => obj?.sport === sportObj?.sport,
+      )[0];
+    } else {
+      selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+        (obj) =>
+          obj?.sport === sportObj?.sport &&
+          obj?.sport_type === sportObj?.sport_type,
+      )[0];
+    }
+
     setLookingFor(selectedSport?.lookingForTeamClub);
   }, [
+    authContext?.entity?.obj?.referee_data,
     authContext?.entity?.obj?.registered_sports,
+    authContext?.entity?.obj?.scorekeeper_data,
     sportObj?.sport,
     sportObj?.sport_type,
+    type,
   ]);
   const updateProfile = () => {
     setloading(true);
-    const registerdPlayerData =
-      authContext?.entity?.obj?.registered_sports?.filter(
+    let registerdData, refereeData, scorekeeperData, selectedSport;
+    if (type === 'referee') {
+      refereeData = authContext?.entity?.obj?.referee_data?.filter(
+        (obj) => obj?.sport !== sportObj?.sport,
+      );
+      console.log('rerererer', refereeData);
+      selectedSport = authContext?.entity?.obj?.referee_data?.filter(
+        (obj) => obj?.sport === sportObj?.sport,
+      )[0];
+    } else if (type === 'scorekeeper') {
+      scorekeeperData = authContext?.entity?.obj?.scorekeeper_data?.filter(
+        (obj) => obj?.sport !== sportObj?.sport,
+      );
+      selectedSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
+        (obj) => obj?.sport === sportObj?.sport,
+      )[0];
+    } else {
+      registerdData = authContext?.entity?.obj?.registered_sports?.filter(
         (obj) =>
           obj?.sport !== sportObj?.sport &&
           obj?.sport_type !== sportObj?.sport_type,
       );
+      selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+        (obj) =>
+          obj?.sport === sportObj?.sport &&
+          obj?.sport_type === sportObj?.sport_type,
+      )[0];
+    }
 
-    console.log('registerdPlayerData:', registerdPlayerData);
-    let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) =>
-        obj?.sport === sportObj?.sport &&
-        obj?.sport_type === sportObj?.sport_type,
-    )[0];
+    console.log('registerdPlayerData:', registerdData);
+    console.log('refereeData:', refereeData);
+    console.log('scorekeeperData:', scorekeeperData);
 
-    selectedSport = {...selectedSport, lookingForTeamClub: lookingFor};
+    selectedSport.lookingForTeamClub = lookingFor;
     console.log('selectedSport:', selectedSport);
 
-    registerdPlayerData.push(selectedSport);
-    console.log('Final data:', registerdPlayerData);
+    let body = {};
+    if (type === 'referee') {
+      refereeData.push(selectedSport);
 
-    const body = {
-      ...authContext?.entity?.obj,
-      registered_sports: registerdPlayerData,
-    };
+      body = {
+        ...authContext?.entity?.obj,
+        referee_data: refereeData,
+      };
+    } else if (type === 'scorekeeper') {
+      scorekeeperData.push(selectedSport);
+
+      body = {
+        ...authContext?.entity?.obj,
+        scorekeeper_data: scorekeeperData,
+      };
+    } else {
+      registerdData.push(selectedSport);
+
+      body = {
+        ...authContext?.entity?.obj,
+        registered_sports: registerdData,
+      };
+    }
     console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)

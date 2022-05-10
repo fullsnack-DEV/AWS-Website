@@ -711,7 +711,14 @@ export default function AccountScreen({navigation}) {
         navigation.navigate('RegisterPlayer');
       } else if (options === 'Create Team') {
         setCreateEntity('team');
-        setIsRulesModalVisible(true);
+
+        const entity = authContext.entity;
+        if (entity.role === 'user') {
+          setIsRulesModalVisible(false);
+          navigation.navigate('CreateTeamForm1');
+        } else {
+          setIsRulesModalVisible(true);
+        }
       } else if (options === 'Create Club') {
         const entity = authContext.entity;
         setCreateEntity('club');
@@ -1254,7 +1261,6 @@ export default function AccountScreen({navigation}) {
 
   const onNextPressed = () => {
     setIsRulesModalVisible(false);
-    console.log('************************************');
     const entity = authContext.entity;
     if (createEntity === 'team') {
       if (entity.role === 'user') {

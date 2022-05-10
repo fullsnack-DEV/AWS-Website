@@ -931,6 +931,8 @@ export default function ScheduleScreen({navigation, route}) {
                 onPress={() => {
                   setIsMenu(!isMenu);
                   setShowTimeTable(false);
+                  setEventSelectDate(null)
+                  
                 }}>
                 <Image
                   source={isMenu ? images.menuOrange : images.menuGray}
@@ -952,10 +954,11 @@ export default function ScheduleScreen({navigation, route}) {
                 onScroll={onScrollCalender}
                 nestedScrollEnabled
                 stickyHeaderIndices={[0]}>
-                <View>
-                  {isMenu && <MonthHeader />}
-                  {!isMenu && (
-                    <EventAgendaSection
+                
+                {isMenu && <MonthHeader />}
+                {!isMenu && (
+                  <EventAgendaSection
+                  onScrollCalender={onScrollCalender}
                       showTimeTable={showTimeTable}
                       isMenu={isMenu}
                       horizontal={listView}
@@ -966,7 +969,7 @@ export default function ScheduleScreen({navigation, route}) {
                       calendarMarkedDates={markingDays}
                     />
                   )}
-                  <EventScheduleScreen
+                <EventScheduleScreen
                     eventData={
                       eventSelectDate
                         ? (eventData || []).filter(
@@ -1015,7 +1018,7 @@ export default function ScheduleScreen({navigation, route}) {
                     }}
                     entity={authContext.entity}
                   />
-                </View>
+               
               </ScrollView>
 
               {!createEventModal && (

@@ -34,7 +34,7 @@ const TCHorizontalMessageOverview = memo((
       <View style={styles.rightContainer}>
         <View style={styles.rightTitleContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.title} numberOfLines={1}>{title}</Text>
             <Text style={styles.numberOfMembers}>{numberOfMembers && dialogType === 2 && numberOfMembers.length}</Text>
           </View>
           <View>
@@ -80,11 +80,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 16,
     color: colors.lightBlackColor,
+
   },
   subTitle: {
-    fontFamily: fonts.RLight,
-    fontSize: 16,
-    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 14,
+    color: colors.userPostTimeColor,
   },
   numberOfMembers: {
     color: colors.userPostTimeColor,

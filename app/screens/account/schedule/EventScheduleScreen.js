@@ -78,7 +78,7 @@ export default function EventScheduleScreen({
     <View style={styles.mainContainer}>
       {filterData && (
         <SectionList
-        scrollEnabled={false}
+        scrollEnabled={true}
           ListEmptyComponent={
             <Text style={styles.dataNotFoundText}>Data Not Found</Text>
           }

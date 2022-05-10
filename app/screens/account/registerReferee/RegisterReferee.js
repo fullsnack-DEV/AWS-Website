@@ -254,6 +254,7 @@ export default function RegisterReferee({navigation}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           marginRight: 0,
           marginBottom: 0,
+          marginTop:0
         }}>
         <View
           style={{
@@ -328,7 +329,10 @@ export default function RegisterReferee({navigation}) {
 
       <Modal
         isVisible={visibleSportsModal}
-        backdropColor="black"
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         onBackdropPress={() => setVisibleSportsModal(false)}
         onRequestClose={() => setVisibleSportsModal(false)}
         backdropOpacity={0}
@@ -337,6 +341,7 @@ export default function RegisterReferee({navigation}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           marginRight: 0,
           marginBottom: 0,
+          marginTop:0
         }}>
         <View
           style={{

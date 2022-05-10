@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     backgroundColor: colors.whiteColor,
-    borderRadius: 10,
+    borderRadius: 0,
     shadowColor: colors.whiteColor,
     shadowOpacity: 0.16,
     shadowOffset: {width: 0, height: 5},
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
-    borderRadius: 10,
+    borderRadius: 0,
     height: wp('96%'),
     width: wp('96%'),
   },

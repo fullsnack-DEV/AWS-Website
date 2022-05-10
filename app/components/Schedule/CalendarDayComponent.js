@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
-const weekDaysNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const weekDaysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 class CalendarDayComponent extends React.PureComponent {
   constructor(props) {

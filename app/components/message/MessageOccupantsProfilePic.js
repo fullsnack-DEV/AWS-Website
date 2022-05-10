@@ -88,7 +88,7 @@ const ProfileView = ({ data }) => {
 
 const ProfilePreview = ({ data, isSingle = false }) => {
     const outerCircleSize = isSingle ? 45 : 38;
-    const innerCircleSize = isSingle ? 38 : 35;
+    const innerCircleSize = isSingle ? 42 : 35;
 
     let defaultImage = images.profilePlaceHolder;
     if (data?.entity_type === 'team') defaultImage = images.teamCover
@@ -98,7 +98,7 @@ const ProfilePreview = ({ data, isSingle = false }) => {
     const display_first_character = !['user', 'player']?.includes(data?.entity_type);
 
     let imageSize = '100%';
-    if (!['user', 'player']?.includes(data?.entity_type) && !data?.full_image) imageSize = '80%'
+    if (!['user', 'player']?.includes(data?.entity_type) && !data?.full_image) imageSize = '100%'
 
     return (
       <View style={{ ...styles.profilePreViewContainer, height: outerCircleSize, width: outerCircleSize }}>
