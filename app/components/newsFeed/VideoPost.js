@@ -5,7 +5,6 @@ import {
   Text,
   TouchableWithoutFeedback,
   TouchableHighlight,
-  Dimensions,
 } from 'react-native';
 import Video from 'react-native-video';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
@@ -31,44 +30,12 @@ const VideoPost = memo(
     const [mute, setMute] = useState(true);
     const [currentTime, setCurrentTime] = useState(0);
     const [videoLoad, setVideoLoad] = useState(false);
-    // const [height, setHeight] = useState(wp(68));
+    const [height, setHeight] = useState(wp(68));
     const [videoDuration, setVideoDuration] = useState(0);
     const setVideoHeight = useCallback((orientation) => {
-      if (orientation === 'portrait')
-        toggleView(() => getImageDimention().height, 300);
+      if (orientation === 'portrait') toggleView(() => setHeight(wp(124)), 300);
     }, []);
 
-    const imageRatio = data.media_height / data.media_width;
-    console.log('imageRatio', imageRatio);
-    const defaultLandscapRatio = 0.71;
-    const defaultPortraitRatio = 1.29;
-    const defaultScreenWidth = Dimensions.get('window').width - 30;
-    const defaultLandscapHeight = 250;
-    const defaultPortraitHeight = 450;
-    // eslint-disable-next-line consistent-return
-    const getImageDimention = () => {
-      if (imageRatio < defaultLandscapRatio) {
-        return {
-          height: defaultLandscapHeight,
-          width: defaultScreenWidth,
-        };
-      }
-      if (
-        imageRatio >= defaultLandscapRatio &&
-        imageRatio <= defaultPortraitRatio
-      ) {
-        return {
-          height: imageRatio * defaultScreenWidth,
-          width: defaultScreenWidth,
-        };
-      }
-      if (imageRatio >= defaultPortraitRatio) {
-        return {
-          height: defaultPortraitHeight,
-          width: defaultScreenWidth,
-        };
-      }
-    };
     const toggleModal = useCallback(() => {
       navigation.navigate('FeedViewScreen', {
         feedItem: item,
@@ -123,14 +90,13 @@ const VideoPost = memo(
       [],
     );
     return (
-      <View
-        style={{...styles.mainContainer, height: getImageDimention().height}}>
+      <View style={{...styles.mainContainer, height}}>
         <View
           style={{
             ...styles.singleImageDisplayStyle,
             borderWidth: 1,
             borderColor: colors.lightgrayColor,
-            height: getImageDimention().height,
+            height,
           }}>
           <FastImage
             style={styles.loadimageStyle}
@@ -150,7 +116,7 @@ const VideoPost = memo(
             source={{uri: data.url}}
             style={{
               ...styles.singleImageDisplayStyle,
-              height: getImageDimention().height,
+              height,
               position: 'absolute',
             }}
             resizeMode={'cover'}
@@ -199,7 +165,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-end',
     backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 10,
+    borderRadius: wp('5%'),
     justifyContent: 'center',
     padding: wp('2%'),
     position: 'absolute',
@@ -215,14 +181,14 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     backgroundColor: colors.whiteColor,
-    shadowColor: colors.whiteColor,
+    shadowColor: colors.googleColor,
     shadowOpacity: 0.16,
     shadowOffset: {width: 0, height: 5},
     shadowRadius: 15,
     elevation: 2,
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 10,
+    borderRadius: wp('4%'),
     height: wp('96%'),
     justifyContent: 'center',
     marginVertical: wp('1%'),
@@ -231,7 +197,7 @@ const styles = StyleSheet.create({
   singleImageDisplayStyle: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 10,
+    borderRadius: wp('4%'),
     height: wp('96%'),
     justifyContent: 'center',
     width: wp('96%'),
