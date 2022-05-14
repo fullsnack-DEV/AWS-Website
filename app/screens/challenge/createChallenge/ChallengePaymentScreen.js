@@ -40,7 +40,11 @@ import * as Utility from '../../../utils';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import images from '../../../Constants/ImagePath';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
-import {acceptDeclineChallenge, createChallenge, getFeesEstimation} from '../../../api/Challenge';
+import {
+  acceptDeclineChallenge,
+  createChallenge,
+  getFeesEstimation,
+} from '../../../api/Challenge';
 import TCFormProgress from '../../../components/TCFormProgress';
 
 let entity = {};
@@ -53,12 +57,14 @@ export default function ChallengePaymentScreen({route, navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [refundValue, setRefundValue] = useState();
 
-  const [challengeData,setChallengeData] = useState(route?.params?.challengeObj);
+  const [challengeData, setChallengeData] = useState(
+    route?.params?.challengeObj,
+  );
   console.log(' route?.params?.challengeObj,', route?.params?.challengeObj);
   const [groupObj] = useState(route?.params?.groupObj);
   const [defaultCard, setDefaultCard] = useState();
 
-const [type] = useState(route?.params?.type);
+  const [type] = useState(route?.params?.type);
 
   const getChallenger = () => {
     if (
@@ -102,8 +108,11 @@ const [type] = useState(route?.params?.type);
   useEffect(() => {
     if (isFocused) {
       if (route?.params?.paymentMethod) {
-        console.log('route?.params?.paymentMethod',route?.params?.paymentMethod);
-        getFeeDetail()
+        console.log(
+          'route?.params?.paymentMethod',
+          route?.params?.paymentMethod,
+        );
+        getFeeDetail();
         setDefaultCard(route?.params?.paymentMethod);
       }
     }
@@ -125,7 +134,6 @@ const [type] = useState(route?.params?.type);
     return `${hours}h ${minutes}m`;
   };
 
-
   const getFeeDetail = () => {
     const feeBody = {};
     console.log('challengeData check:=>', challengeData);
@@ -133,14 +141,14 @@ const [type] = useState(route?.params?.type);
     feeBody.source = route?.params?.paymentMethod?.id;
     feeBody.challenge_id = challengeData?.challenge_id;
     feeBody.payment_method_type = 'card';
-    feeBody.currency_type = challengeData?.game_fee?.currency_type?.toLowerCase();
+    feeBody.currency_type =
+      challengeData?.game_fee?.currency_type?.toLowerCase();
     feeBody.total_game_fee = Number(
       parseFloat(challengeData?.game_fee?.fee).toFixed(2),
     );
     setloading(true);
     getFeesEstimation(feeBody, authContext)
       .then((response) => {
-       
         setChallengeData({
           ...challengeData,
           total_game_fee: response.payload?.total_game_fee,
@@ -170,25 +178,23 @@ const [type] = useState(route?.params?.type);
   const sendChallenge = () => {
     entity = authContext.entity;
     console.log('Entity:=>', entity);
-    const res_secure_referee = challengeData?.responsible_for_referee?.who_secure?.map(
-      (obj) => ({
+    const res_secure_referee =
+      challengeData?.responsible_for_referee?.who_secure?.map((obj) => ({
         ...obj,
         responsible_team_id:
           obj.responsible_to_secure_referee === 'challengee'
             ? challengeData.challengee
             : challengeData.challenger,
-      }),
-    );
+      }));
 
-    const res_secure_scorekeeper = challengeData?.responsible_for_scorekeeper?.who_secure?.map(
-      (obj) => ({
+    const res_secure_scorekeeper =
+      challengeData?.responsible_for_scorekeeper?.who_secure?.map((obj) => ({
         ...obj,
         responsible_team_id:
           obj.responsible_to_secure_scorekeeper === 'challengee'
             ? challengeData.challengee
             : challengeData.challenger,
-      }),
-    );
+      }));
 
     const body = {
       ...challengeData,
@@ -198,18 +204,16 @@ const [type] = useState(route?.params?.type);
       ),
       end_datetime: Number(parseFloat(challengeData?.end_datetime).toFixed(0)),
     };
-    console.log('res_secure_referee?.length',res_secure_referee?.length);
-    if(res_secure_referee?.length > 0){
+    console.log('res_secure_referee?.length', res_secure_referee?.length);
+    if (res_secure_referee?.length > 0) {
       body.responsible_for_referee.who_secure = res_secure_referee;
-
     }
-    if(res_secure_scorekeeper?.length > 0){
+    if (res_secure_scorekeeper?.length > 0) {
       body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
-
     }
     console.log('body:=>', body);
-    const homeID = body.home_team.group_id ?? body.home_team.user_id;
-    const awayID = body.away_team.group_id ?? body.away_team.user_id;
+    const homeID = challengeData?.sport_type === 'single' ? body.home_team.user_id : body.home_team.group_id;
+    const awayID = challengeData?.sport_type === 'single' ? body.away_team.user_id : body.away_team.group_id;
     delete body.home_team;
     delete body.away_team;
     body.home_team = homeID;
@@ -218,7 +222,8 @@ const [type] = useState(route?.params?.type);
     if (defaultCard) {
       body.source = defaultCard.id;
     }
-    console.log('Challenge Object:=>', body);
+    console.log('Challenge Object111:=>', body);
+    
     setloading(true);
     createChallenge(body, authContext)
       .then((response) => {
@@ -336,11 +341,9 @@ const [type] = useState(route?.params?.type);
               />
             </View>
             <Text style={styles.teamNameText}>
-              {getChallenger()?.group_id
-                ? `${getChallenger()?.group_name}`
-                : `${getChallenger()?.first_name} ${
-                    getChallenger()?.last_name
-                  }`}
+              {getChallenger()?.user_id
+                ? `${getChallenger()?.first_name} ${getChallenger()?.last_name}`
+                : `${getChallenger()?.group_name}`}
             </Text>
           </View>
         </View>
@@ -362,11 +365,9 @@ const [type] = useState(route?.params?.type);
               />
             </View>
             <Text style={styles.teamNameText}>
-              {getChallengee()?.group_id
-                ? `${getChallengee()?.group_name}`
-                : `${getChallengee()?.first_name} ${
-                    getChallengee()?.last_name
-                  }`}
+              {getChallengee()?.user_id
+                ? `${getChallengee()?.first_name} ${getChallengee()?.last_name}`
+                : `${getChallengee()?.group_name}`}
             </Text>
           </View>
         </View>
@@ -525,7 +526,7 @@ const [type] = useState(route?.params?.type);
             'MMMM DD',
           )}, you will get a ${refundValue}% refund, minus the service fee.`}
       </Text>
-      <TCThickDivider/>
+      <TCThickDivider />
 
       <Text style={styles.termsTextStyle}>
         By selecting the button below, I agree to the Game Rules cancellation

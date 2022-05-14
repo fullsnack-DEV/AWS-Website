@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-useless-escape */
 import React, {
@@ -41,7 +42,8 @@ import {getPickedData, MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
 import TCGameCard from '../../components/TCGameCard';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 
-const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
+const urlRegex =
+  /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
 const tagRegex = /(?!\w)@\w+/gim;
 
@@ -265,8 +267,10 @@ export default function WritePostScreen({navigation, route}) {
   }, [letModalVisible, searchTag]);
 
   useEffect(() => {
-    if (route?.params?.comeFrom === 'LocalHomeScreen'){
-    Alert.alert('A vertical video that is 30 seconds long or less may be shown in Shorts.')
+    if (route?.params?.comeFrom === 'LocalHomeScreen') {
+      Alert.alert(
+        'A vertical video that is 30 seconds long or less may be shown in Shorts.',
+      );
     }
   }, [route?.params?.comeFrom]);
 
@@ -574,9 +578,20 @@ export default function WritePostScreen({navigation, route}) {
       maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
     })
       .then((data) => {
-        console.log('PICKED DATA:=>', data);
+        let temp = [];
+        temp = data.map((obj) => {
+          if (obj?.filename?.includes('.MOV') && Platform.OS === 'ios') {
+            return {
+              ...obj,
+              width: obj.height,
+              height: obj.width,
+            };
+          }
+          return obj;
+        });
 
-        const pickedData = getPickedData(data, selectImage?.length);
+        console.log('PICKED DATA:=>', temp);
+        const pickedData = getPickedData(temp, selectImage?.length);
 
         let allSelectData = [];
         const secondData = [];

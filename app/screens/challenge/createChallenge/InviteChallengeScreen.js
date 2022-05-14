@@ -49,6 +49,8 @@ export default function InviteChallengeScreen({navigation, route}) {
   const [setting] = useState(route?.params?.setting);
   const [groupObj] = useState(route?.params?.groupObj);
 
+console.log('sportTypesportTypesportType---->',sportType);
+
   // const [startDate, setStartDate] = useState(
   //   new Date().setHours(new Date().getHours() + 10),
   // );
@@ -102,6 +104,9 @@ export default function InviteChallengeScreen({navigation, route}) {
   useEffect(() => {
     entity = authContext.entity;
     if (groupObj) {
+      console.log('entity.objentity.obj::',entity.obj);
+console.log('groupObjgroupObj :::',groupObj);
+
       setteams([{...entity.obj}, {...groupObj}]);
     }
     if (settingObject?.game_fee?.fee || settingObject?.game_fee?.fee >= 0) {
@@ -255,7 +260,7 @@ export default function InviteChallengeScreen({navigation, route}) {
     ) {
       res_secure_referee.push({
         ...settingObject?.responsible_for_referee?.who_secure[i],
-        responsible_team_id: teams?.[0]?.group_id || teams?.[0]?.user_id,
+        responsible_team_id: sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
       });
     }
     for (
@@ -265,7 +270,7 @@ export default function InviteChallengeScreen({navigation, route}) {
     ) {
       res_secure_scorekeeper.push({
         ...settingObject?.responsible_for_scorekeeper?.who_secure[i],
-        responsible_team_id: teams?.[0]?.group_id || teams?.[0]?.user_id,
+        responsible_team_id: sportType === 'single' ? teams?.[0]?.user_id :  teams?.[0]?.group_id
       });
     }
 
@@ -277,17 +282,17 @@ export default function InviteChallengeScreen({navigation, route}) {
       venue,
       start_datetime: route?.params?.startTime / 1000,
       end_datetime: route?.params?.endTime / 1000,
-      challenger: teams?.[1]?.group_id || teams?.[1]?.user_id,
-      challengee: teams?.[0]?.group_id || teams?.[0]?.user_id,
+      challenger: sportType === 'single' ? teams?.[1]?.user_id :  teams?.[1]?.group_id,
+      challengee: sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
       home_team:
         settingObject?.home_away === 'Home'
           ? entity?.uid
-          : groupObj?.group_id || groupObj?.user_id,
+          : sportType === 'single' ? groupObj?.user_id : groupObj?.group_id,
       away_team:
         settingObject?.home_away === 'Home'
-          ? groupObj?.group_id || groupObj?.user_id
+          ? sportType === 'single' ? groupObj?.user_id : groupObj?.group_id
           : entity?.uid,
-      user_challenge: !groupObj?.group_id,
+      user_challenge: sportType === 'single',
     };
     if (res_secure_referee?.length > 0) {
       body.responsible_for_referee.who_secure = res_secure_referee;
@@ -308,6 +313,8 @@ export default function InviteChallengeScreen({navigation, route}) {
       type: 'invite',
     });
   };
+
+console.log('teams ===>',teams);
 
   return (
     <TCKeyboardView>
@@ -366,9 +373,9 @@ export default function InviteChallengeScreen({navigation, route}) {
                 />
               </View>
               <Text style={styles.teamNameText}>
-                {teams?.[1]?.group_id
-                  ? `${teams?.[1]?.group_name}`
-                  : `${teams?.[1]?.first_name} ${teams?.[1]?.last_name}`}
+                {sportType === 'single'
+                  ? `${teams?.[1]?.first_name} ${teams?.[1]?.last_name}`
+                  : `${teams?.[1]?.group_name}`}
               </Text>
             </View>
           </View>
@@ -390,9 +397,9 @@ export default function InviteChallengeScreen({navigation, route}) {
                 />
               </View>
               <Text style={styles.teamNameText}>
-                {teams?.[0]?.group_id
-                  ? `${teams?.[0]?.group_name}`
-                  : `${teams?.[0]?.first_name} ${teams?.[0]?.last_name}`}
+                {sportType === 'single'
+                  ? `${teams?.[0]?.first_name} ${teams?.[0]?.last_name}`
+                  : `${teams?.[0]?.group_name}` }
               </Text>
             </View>
           </View>

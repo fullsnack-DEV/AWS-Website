@@ -39,6 +39,7 @@ const uploadData = (dispatch) => (
   imageArray,
   callBack,
 ) => {
+  console.log('imageArrayimageArray',imageArray);
   const currentImagesDataUploadID = `IMAGE_UPLOAD_${new Date().getTime()}`;
   const obj = {id: currentImagesDataUploadID, dataArray: [...imageArray]};
   dispatch({type: 'createUploadingData', payload: obj});
@@ -61,6 +62,7 @@ const uploadData = (dispatch) => (
 
   uploadImages(imageArray, authContext, progressStatus, cancelRequest)
     .then((responses) => {
+      console.log('responsesresponsesresponsesresponses',responses);
       const attachments = [];
       responses.map((item, index) => {
         const objAttachment = {

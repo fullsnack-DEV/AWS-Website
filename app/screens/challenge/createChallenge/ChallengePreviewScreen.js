@@ -60,7 +60,6 @@ import CurruentReservationView from '../alterChallenge/CurrentReservationView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
 import {paymentMethods} from '../../../api/Users';
 
-
 let entity = {};
 export default function ChallengePreviewScreen({navigation, route}) {
   console.log('route?.params?.challengeObj[0]', route?.params?.challengeObj[0]);
@@ -150,13 +149,12 @@ export default function ChallengePreviewScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-     
       if (route?.params?.paymentMethod) {
         setDefaultCard(route?.params?.paymentMethod);
       } else if (!defaultCard && challengeData?.source) {
         getPaymentMethods(challengeData?.source);
       }
-      getFeeDetail()
+      getFeeDetail();
     }
   }, [
     challengeData?.source,
@@ -187,49 +185,45 @@ export default function ChallengePreviewScreen({navigation, route}) {
       });
   }, [authContext, challengeData?.challengee, challengeData?.sport]);
 
-
-
   const getFeeDetail = () => {
-    if(defaultCard){
+    if (defaultCard) {
       const feeBody = {};
-    console.log('challengeObj check:=>', defaultCard);
-    feeBody.challenge_id = challengeData?.challenge_id;
-    feeBody.payment_method_type = 'card';
-    feeBody.currency_type = challengeData?.game_fee?.currency_type?.toLowerCase();
-    feeBody.total_game_fee = Number(
-      parseFloat(challengeData?.game_fee?.fee).toFixed(2),
-    );
-    feeBody.source = defaultCard?.id;
-    setloading(true);
-    getFeesEstimation(feeBody, authContext)
-      .then((response) => {
-        
-        setChallengeData({
-          ...challengeData,
-          source:defaultCard?.id,
-          total_game_fee: response.payload?.total_game_fee,
-          total_service_fee1: response.payload?.total_service_fee1,
-          total_service_fee2: response.payload?.total_service_fee2,
-          international_card_fee: response.payload?.international_card_fee,
-          total_stripe_fee: response.payload?.total_stripe_fee,
-          total_payout: response.payload?.total_payout,
-          total_amount: response.payload?.total_amount,
+      console.log('challengeObj check:=>', defaultCard);
+      feeBody.challenge_id = challengeData?.challenge_id;
+      feeBody.payment_method_type = 'card';
+      feeBody.currency_type =
+        challengeData?.game_fee?.currency_type?.toLowerCase();
+      feeBody.total_game_fee = Number(
+        parseFloat(challengeData?.game_fee?.fee).toFixed(2),
+      );
+      feeBody.source = defaultCard?.id;
+      setloading(true);
+      getFeesEstimation(feeBody, authContext)
+        .then((response) => {
+          setChallengeData({
+            ...challengeData,
+            source: defaultCard?.id,
+            total_game_fee: response.payload?.total_game_fee,
+            total_service_fee1: response.payload?.total_service_fee1,
+            total_service_fee2: response.payload?.total_service_fee2,
+            international_card_fee: response.payload?.international_card_fee,
+            total_stripe_fee: response.payload?.total_stripe_fee,
+            total_payout: response.payload?.total_payout,
+            total_amount: response.payload?.total_amount,
+          });
+
+          console.log('Body estimate fee:=>', response.payload);
+
+          setloading(false);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
         });
-
-        console.log('Body estimate fee:=>', response.payload);
-
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
     }
   };
-
-
 
   const checkSenderOrReceiver = (challengeObj) => {
     console.log('sender & receiver Obj', challengeObj);
@@ -384,7 +378,6 @@ export default function ChallengePreviewScreen({navigation, route}) {
   ) => {
     setloading(true);
 
-    
     acceptDeclineAlterChallenge(
       teamID,
       ChallengeId,
@@ -728,19 +721,19 @@ export default function ChallengePreviewScreen({navigation, route}) {
               title={strings.acceptTitle}
               onPress={() => {
                 let paymentObj = {};
-               
-                  paymentObj = {
-                    source: defaultCard?.id,
-                    payment_method_type: 'card',
-                    total_game_fee: challengeData?.total_game_fee,
-                    total_service_fee1: challengeData?.total_service_fee1,
-                    total_service_fee2: challengeData?.total_service_fee2,
-                    international_card_fee: challengeData?.international_card_fee,
-                    total_stripe_fee: challengeData?.total_stripe_fee,
-                    total_payout: challengeData?.total_payout,
-                    total_amount: challengeData?.total_amount,
-                  };
-                
+
+                paymentObj = {
+                  source: defaultCard?.id,
+                  payment_method_type: 'card',
+                  total_game_fee: challengeData?.total_game_fee,
+                  total_service_fee1: challengeData?.total_service_fee1,
+                  total_service_fee2: challengeData?.total_service_fee2,
+                  international_card_fee: challengeData?.international_card_fee,
+                  total_stripe_fee: challengeData?.total_stripe_fee,
+                  total_payout: challengeData?.total_payout,
+                  total_amount: challengeData?.total_amount,
+                };
+
                 console.log('paymentObj1:::', paymentObj);
                 alterChallengeOperation(
                   entity.uid,
@@ -1009,11 +1002,11 @@ export default function ChallengePreviewScreen({navigation, route}) {
                   />
                 </View>
                 <Text style={styles.teamNameText}>
-                  {getChallenger()?.group_id
-                    ? `${getChallenger()?.group_name}`
-                    : `${getChallenger()?.first_name} ${
+                  {getChallenger()?.user_id
+                    ? `${getChallenger()?.first_name} ${
                         getChallenger()?.last_name
-                      }`}
+                      }`
+                    : `${getChallenger()?.group_name}`}
                 </Text>
               </View>
             </View>
@@ -1035,11 +1028,11 @@ export default function ChallengePreviewScreen({navigation, route}) {
                   />
                 </View>
                 <Text style={styles.teamNameText}>
-                  {getChallengee()?.group_id
-                    ? `${getChallengee()?.group_name}`
-                    : `${getChallengee()?.first_name} ${
+                  {getChallengee()?.user_id
+                    ? `${getChallengee()?.first_name} ${
                         getChallengee()?.last_name
-                      }`}
+                      }`
+                    : `${getChallengee()?.group_name}`}
                 </Text>
               </View>
             </View>

@@ -268,6 +268,7 @@ const HomeFeed = ({
 
         createPostAfterUpload(dataParams);
       } else if (data) {
+        console.log('asasasasas else',data);
         const imageArray = data.map((dataItem) => dataItem);
         dataParams = {
           ...dataParams,
