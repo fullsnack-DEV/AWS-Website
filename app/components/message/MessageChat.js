@@ -24,6 +24,8 @@ import {
   TextInput,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import * as Progress from 'react-native-progress';
+
 import {useIsFocused} from '@react-navigation/native';
 import {Modalize} from 'react-native-modalize';
 import {Portal} from 'react-native-portalize';
@@ -629,26 +631,30 @@ const MessageChat = ({route, navigation}) => {
     <View
       style={{
         ...styles.bottomTextUpperContainer,
-        height: selectedImage ? hp(18) : hp(8),
-        borderTopWidth: selectedImage ? 1 : 0,
-        borderTopColor: selectedImage ? colors.userPostTimeColor : '',
+        height: selectedImage ? hp(14) : hp(8),
+        shadowColor: colors.grayColor,
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+        elevation: 2,
       }}>
       {selectedImage && (
-        <View style={styles.selectedImageContainer}>
-          {selectedImage?.mime?.includes('image') ? (
-            <FastImage
+        <View>
+          <View style={styles.selectedImageContainer}>
+            {selectedImage?.mime?.includes('image') ? (
+              <FastImage
               resizeMode={'cover'}
               source={{uri: selectedImage?.path}}
               style={{
                 borderRadius: 5,
-                height: 50,
-                width: 50,
+                height: 30,
+                width: 30,
                 marginVertical: hp(2),
               }}
             />
-          ) : (
-            <View>
-              <View
+            ) : (
+              <View>
+                <View
                 style={{
                   top: 0,
                   left: 0,
@@ -659,25 +665,25 @@ const MessageChat = ({route, navigation}) => {
                   justifyContent: 'center',
                   position: 'absolute',
                 }}>
-                <FastImage
+                  <FastImage
                   source={images.videoPlayBtn}
                   tintColor={'white'}
                   resizeMode={'contain'}
                   style={{
-                    height: 20,
-                    width: 20,
+                    height: 10,
+                    width: 10,
                   }}
                 />
-              </View>
-              <Video
+                </View>
+                <Video
                 ref={videoPlayerRef}
                 paused={true}
                 muted={true}
                 source={{uri: selectedImage?.path}}
                 style={{
                   borderRadius: 5,
-                  height: 50,
-                  width: 50,
+                  height: 30,
+                  width: 30,
                   marginVertical: hp(2),
                 }}
                 resizeMode={'cover'}
@@ -685,30 +691,40 @@ const MessageChat = ({route, navigation}) => {
                   videoPlayerRef.current.seek(0);
                 }}
               />
-            </View>
-          )}
-          <Text style={{fontSize: 15, marginLeft: 15}}>
-            {uploadImageInProgress
+              </View>
+            )}
+            <Text style={{fontSize: 15, marginLeft: 15}}>
+              {uploadImageInProgress
               ? `Uploading ${
                   selectedImage?.mime?.includes('image') ? 'an image' : 'video'
                 }...${progressNumber}%`
               : `${
                   selectedImage?.mime?.includes('image') ? 'Image' : 'Video'
                 } uploaded`}
-          </Text>
-          <TouchableOpacity
+            </Text>
+            <TouchableOpacity
             style={{flex: 1, alignItems: 'flex-end'}}
             onPress={() => {
               setSelectedImage(null);
               setUploadImageInProgress(false);
               setUploadedFile(null);
             }}>
-            <FastImage
+              <FastImage
               source={images.cancelImage}
-              style={{height: 20, width: 20}}
+              style={{height: 14, width: 14}}
               resizeMode={'contain'}
             />
-          </TouchableOpacity>
+            </TouchableOpacity>
+
+          </View>
+          {uploadImageInProgress && <Progress.Bar
+          progress={progressNumber / 100}
+          width={wp('100%')}
+          borderRadius={0}
+          borderWidth={0}
+          unfilledColor={colors.offGrayColor}
+          color={colors.themeColor}
+        />}
         </View>
       )}
       <View style={styles.bottomTextInputContainer}>
@@ -733,6 +749,7 @@ const MessageChat = ({route, navigation}) => {
             onChangeText={setMessageBody}
             style={{width: '100%'}}
             isClear={false}
+            backgroundColor = {colors.lightGrayBackground}
           />
         </View>
         {/* <View
@@ -1082,11 +1099,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     bottom: 0,
     left: 0,
-    // shadowColor: colors.googleColor,
-    // shadowOffset: { width: 0, height: -2 },
-    // shadowOpacity: 0.5,
-    // shadowRadius: 4,
-    // elevation: 10,
     paddingVertical: hp(1),
   },
   messageViewContainer: {
@@ -1125,7 +1137,6 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   selectedImageContainer: {
-    flex: 1,
     paddingHorizontal: wp(3),
     flexDirection: 'row',
     width: wp(100),

@@ -43,8 +43,6 @@ import * as RefereeUtils from '../../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../../scorekeeper/ScorekeeperUtility';
 import * as Utils from '../../challenge/ChallengeUtility';
 import {getEventById} from '../../../api/Schedule';
-import CreateEventButton from '../../../components/Schedule/CreateEventButton';
-import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModal';
 import strings from '../../../Constants/String';
 import {
   getRefereeReservationDetails,
@@ -101,6 +99,7 @@ export default function ScheduleScreen({navigation, route}) {
   }
 
   const actionSheet = useRef();
+  const plusActionSheet = useRef();
   const isFocused = useIsFocused();
 
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
@@ -109,7 +108,6 @@ export default function ScheduleScreen({navigation, route}) {
   const [selectedEventItem, setSelectedEventItem] = useState(null);
   const [eventSelectDate, setEventSelectDate] = useState(new Date());
   const [loading, setloading] = useState(false);
-  const [createEventModal, setCreateEventModal] = useState(false);
   const [isRefereeModal, setIsRefereeModal] = useState(false);
   const [isScorekeeperModal, setIsScorekeeperModal] = useState(false);
   const [refereeReservData, setRefereeReserveData] = useState([]);
@@ -365,7 +363,6 @@ export default function ScheduleScreen({navigation, route}) {
         // blockedSlots(entityRole, uid, authContext)
         .then((response) => {
           console.log('calender list:=>', response);
-
           response = (response || []).filter((obj) => {
             if (obj.cal_type === 'blocked') {
               return obj;
@@ -604,6 +601,10 @@ export default function ScheduleScreen({navigation, route}) {
     actionSheet.current.show();
   }, []);
 
+  const onAddPlusPress = useCallback(() => {
+    plusActionSheet.current.show();
+  }, []);
+
   const onPressListView = useCallback((value, buttonIndex) => {
     console.log('List view Pressed:=>', value, buttonIndex);
     if (buttonIndex === 2) {
@@ -816,12 +817,25 @@ export default function ScheduleScreen({navigation, route}) {
             <Text style={styles.eventTitleTextStyle}>Schedule</Text>
           }
           rightComponent={
-            <TouchableOpacity onPress={onThreeDotPress}>
-              <Image
-                source={images.scheduleThreeDot}
-                style={styles.headerRightImg}
-              />
-            </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+              <TouchableOpacity onPress={onAddPlusPress}>
+                <Image
+                  source={images.addEvent}
+                  style={[styles.headerRightImg, {marginRight: 10}]}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onThreeDotPress}>
+                <Image
+                  source={images.threeDotIcon}
+                  style={styles.headerRight3DotImg}
+                />
+              </TouchableOpacity>
+            </View>
           }
         />
         <View style={styles.separateLine} />
@@ -931,8 +945,7 @@ export default function ScheduleScreen({navigation, route}) {
                 onPress={() => {
                   setIsMenu(!isMenu);
                   setShowTimeTable(false);
-                  setEventSelectDate(null)
-                  
+                  setEventSelectDate(null);
                 }}>
                 <Image
                   source={isMenu ? images.menuOrange : images.menuGray}
@@ -950,85 +963,77 @@ export default function ScheduleScreen({navigation, route}) {
           {!loading && scheduleIndexCounter === 0 && (
             <View style={{flex: 1}}>
               <ScrollView
-                style={{flex: 1}}
+                style={{flex: 1, backgroundColor: colors.lightGrayBackground}}
                 onScroll={onScrollCalender}
                 nestedScrollEnabled
                 stickyHeaderIndices={[0]}>
-                
                 {isMenu && <MonthHeader />}
                 {!isMenu && (
                   <EventAgendaSection
-                  onScrollCalender={onScrollCalender}
-                      showTimeTable={showTimeTable}
-                      isMenu={isMenu}
-                      horizontal={listView}
-                      onPressListView={onPressListView}
-                      onPressGridView={onPressGridView}
-                      onDayPress={onDayPress}
-                      selectedCalendarDate={selectedCalendarDateString}
-                      calendarMarkedDates={markingDays}
-                    />
-                  )}
-                <EventScheduleScreen
-                    eventData={
-                      eventSelectDate
-                        ? (eventData || []).filter(
-                            (e) =>
-                              moment(eventSelectDate).format('YYYY-MM-DD') ===
-                              moment(e.start_datetime * 1000).format(
-                                'YYYY-MM-DD',
-                              ),
-                          )
-                        : eventData
-                    }
-                    navigation={navigation}
-                    profileID={authContext.entity.uid}
-                    onThreeDotPress={(item) => {
-                      setSelectedEventItem(item);
-                    }}
-                    onItemPress={async (item) => {
-                      console.log('Clicked ITEM:=>', item);
-                      const entity = authContext.entity;
-                      if (item?.game_id) {
-                        if (item?.game?.sport) {
-                          const gameHome = getGameHomeScreen(
-                            item.game.sport.replace(' ', '_'),
-                          );
-                          navigation.navigate(gameHome, {
-                            gameId: item?.game_id,
-                          });
-                        }
-                      } else {
-                        getEventById(
-                          entity.role === 'user' ? 'users' : 'groups',
-                          entity.uid || entity.auth.user_id,
-                          item.cal_id,
-                          authContext,
-                        )
-                          .then((response) => {
-                            navigation.navigate('EventScreen', {
-                              data: response.payload,
-                              gameData: item,
-                            });
-                          })
-                          .catch((e) => {
-                            console.log('Error :-', e);
-                          });
-                      }
-                    }}
-                    entity={authContext.entity}
+                    onScrollCalender={onScrollCalender}
+                    showTimeTable={showTimeTable}
+                    isMenu={isMenu}
+                    horizontal={listView}
+                    onPressListView={onPressListView}
+                    onPressGridView={onPressGridView}
+                    onDayPress={onDayPress}
+                    selectedCalendarDate={selectedCalendarDateString}
+                    calendarMarkedDates={markingDays}
                   />
-               
+                )}
+                <EventScheduleScreen
+                isMenu={isMenu}
+                  eventData={
+                    eventSelectDate
+                      ? (eventData || []).filter(
+                          (e) =>
+                            moment(eventSelectDate).format('YYYY-MM-DD') ===
+                            moment(e.start_datetime * 1000).format(
+                              'YYYY-MM-DD',
+                            ),
+                        )
+                      : eventData
+                  }
+                  navigation={navigation}
+                  profileID={authContext.entity.uid}
+                  onThreeDotPress={(item) => {
+                    setSelectedEventItem(item);
+                  }}
+                  onItemPress={async (item) => {
+                    console.log('Clicked ITEM:=>', item);
+                    const entity = authContext.entity;
+                    if (item?.game_id) {
+                      if (item?.game?.sport) {
+                        const gameHome = getGameHomeScreen(
+                          item.game.sport.replace(' ', '_'),
+                        );
+                        navigation.navigate(gameHome, {
+                          gameId: item?.game_id,
+                        });
+                      }
+                    } else {
+                      getEventById(
+                        entity.role === 'user' ? 'users' : 'groups',
+                        entity.uid || entity.auth.user_id,
+                        item.cal_id,
+                        authContext,
+                      )
+                        .then((response) => {
+                          navigation.navigate('EventScreen', {
+                            data: response.payload,
+                            gameData: item,
+                          });
+                        })
+                        .catch((e) => {
+                          console.log('Error :-', e);
+                        });
+                    }
+                  }}
+                  entity={authContext.entity}
+                />
               </ScrollView>
 
-              {!createEventModal && (
-                <CreateEventButton
-                  source={images.plus}
-                  onPress={() => {
-                    setCreateEventModal(true);
-                  }}
-                />
-              )}
+            
             </View>
           )}
           {!loading && scheduleIndexCounter === 1 && (
@@ -1085,29 +1090,10 @@ export default function ScheduleScreen({navigation, route}) {
                   />
                 </View>
               </ScrollView>
-              {!createEventModal && (
-                <CreateEventButton
-                  source={images.plus}
-                  onPress={() => setCreateEventModal(true)}
-                />
-              )}
+             
             </View>
           )}
         </View>
-        <CreateEventBtnModal
-          visible={createEventModal}
-          onCancelPress={() => setCreateEventModal(false)}
-          onCreateEventPress={() => {
-            setCreateEventModal(false);
-            navigation.navigate('CreateEventScreen', {
-              comeName: 'ScheduleScreen',
-            });
-          }}
-          onChallengePress={() => {
-            setCreateEventModal(false);
-            navigation.navigate('EditChallengeAvailability');
-          }}
-        />
         <ActionSheet
           ref={actionSheet}
           options={
@@ -1383,6 +1369,21 @@ export default function ScheduleScreen({navigation, route}) {
           }}
         />
       </View>
+      <ActionSheet
+        ref={plusActionSheet}
+        options={['Set challenge availibility', 'Create an event', 'Cancel']}
+        cancelButtonIndex={2}
+        // destructiveButtonIndex={3}
+        onPress={(index) => {
+          if (index === 0) {
+            navigation.navigate('EditChallengeAvailability');
+          } else if (index === 1) {
+            navigation.navigate('CreateEventScreen', {
+              comeName: 'ScheduleScreen',
+            });
+          }
+        }}
+      />
     </View>
   );
 }
@@ -1427,7 +1428,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
     fontSize: 16,
     fontFamily: fonts.RBlack,
-    color: colors.themeColor,
+    color: colors.darkYellowColor,
   },
   inActiveButton: {
     marginRight: 20,
@@ -1439,6 +1440,13 @@ const styles = StyleSheet.create({
     height: 25,
     resizeMode: 'contain',
     width: 25,
+    tintColor: colors.lightBlackColor,
+  },
+  headerRight3DotImg: {
+    height: 18,
+    resizeMode: 'contain',
+    width: 20,
+    tintColor: colors.lightBlackColor,
   },
   eventTitleTextStyle: {
     fontSize: 16,

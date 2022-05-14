@@ -2431,7 +2431,7 @@ const HomeNavigator = () => (
       name="SportActivityTagScreen"
       component={SportActivityTagScreen}
       options={{
-        title: 'Sports Activity Tags Order',
+        title: 'Order',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

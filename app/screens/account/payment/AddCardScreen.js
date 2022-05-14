@@ -35,7 +35,7 @@ export default function AddCardScreen({navigation}) {
 
     if (error) {
       Alert.alert(`Error code: ${error.code}`, error.message);
-      console.log(`Error: ${JSON.stringify(error)}`);
+      console.log(`Error1: ${JSON.stringify(error)}`);
       setloading(false);
     } else if (paymentMethod) {
       console.log('createPaymentMethod ', paymentMethod);

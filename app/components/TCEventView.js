@@ -1,4 +1,4 @@
-import React,{useContext} from 'react';
+import React, {useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -24,9 +24,8 @@ export default function TCEventView({
   eventBetweenSection,
   // entity,
   profileID,
-  
 }) {
-  const authContext  = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
 
   console.log('data::=>', data);
   let showDot = false;
@@ -110,20 +109,21 @@ export default function TCEventView({
     }
   }
   const refereeFound = (dataObj) =>
-    (dataObj?.game?.referees || []).some((e) => authContext.entity.uid === e.referee_id);
+    (dataObj?.game?.referees || []).some(
+      (e) => authContext.entity.uid === e.referee_id,
+    );
   const scorekeeperFound = (dataObj) =>
     (dataObj?.game?.scorekeepers || []).some(
       (e) => authContext.entity.uid === e.scorekeeper_id,
     );
-
-  
 
   if (
     data?.game?.home_team?.group_id === authContext.entity.uid ||
     data?.game?.away_team?.group_id === authContext.entity.uid ||
     data?.game?.home_team?.user_id === authContext.entity.uid ||
     data?.game?.away_team?.user_id === authContext.entity.uid ||
-    (!data?.game && data?.participants?.[0]?.entity_id === authContext.entity.uid) ||
+    (!data?.game &&
+      data?.participants?.[0]?.entity_id === authContext.entity.uid) ||
     refereeFound(data) ||
     scorekeeperFound(data)
   ) {
@@ -143,10 +143,21 @@ export default function TCEventView({
                 eventColor[0] !== '#' ? `#${eventColor}` : eventColor,
             },
           ]}>
-          <Text style={styles.dateMonthText}>
-            {moment(startDate).format('MMM')}
-          </Text>
-          <Text style={styles.dateText}>{moment(startDate).format('DD')}</Text>
+          {data?.allDay && data?.allDay === true ? (
+            <Text style={styles.allTypeText}>{'All'}</Text>
+          ) : (
+            <Text style={styles.dateMonthText}>
+              {moment(startDate).format('h')}
+              <Text style={styles.dateMonthSmallText}>
+                :{moment(startDate).format('mm')}
+              </Text>
+            </Text>
+          )}
+          {data?.allDay && data?.allDay === true ? (
+            <Text style={styles.dateText}>Day</Text>
+          ) : (
+            <Text style={styles.dateText}>{moment(startDate).format('a')}</Text>
+          )}
         </View>
         <View style={styles.eventText}>
           <View style={styles.eventTitlewithDot}>
@@ -171,9 +182,11 @@ export default function TCEventView({
           </Text>
           <View style={styles.bottomView}>
             <Text style={styles.eventTime}>{`${moment(startDate).format(
-              'LT',
+              'h:mma',
             )} - `}</Text>
-            <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
+            <Text style={styles.eventTime}>
+              {moment(endDate).format('h:mma')}
+            </Text>
             {(location !== '' || venue !== '') && (
               <Text style={[styles.eventTime, {marginHorizontal: 5}]}> | </Text>
             )}
@@ -249,13 +262,23 @@ const styles = StyleSheet.create({
   },
   dateMonthText: {
     color: colors.whiteColor,
-    fontSize: 16,
-    fontFamily: fonts.RLight,
+    fontSize: 20,
+    fontFamily: fonts.RBold,
   },
-  dateText: {
+  dateMonthSmallText: {
+    color: colors.whiteColor,
+    fontSize: 10,
+    fontFamily: fonts.RBold,
+  },
+  allTypeText: {
     color: colors.whiteColor,
     fontSize: 20,
     fontFamily: fonts.RBold,
+  },
+  dateText: {
+    color: colors.whiteColor,
+    fontSize: 16,
+    fontFamily: fonts.RLight,
   },
   eventDescription: {
     fontSize: 14,

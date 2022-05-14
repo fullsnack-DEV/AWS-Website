@@ -9,7 +9,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import { getHitSlop } from '../../utils';
 
-const weekDaysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const weekDaysNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const now = moment();
 
 class CalendarHeaderComponent extends React.PureComponent {
@@ -63,7 +63,7 @@ class CalendarHeaderComponent extends React.PureComponent {
                   disabled={this.shouldLeftArrowBeDisabled()}>
                 <Image
                     style={[styles.icon, styles.leftIcon]}
-                    source={images.nextArrow}
+                    source={images.calNextArrow}
                   />
               </TouchableOpacity>
             </View>
@@ -74,7 +74,7 @@ class CalendarHeaderComponent extends React.PureComponent {
                 style={styles.iconContainer}
                 hitSlop={getHitSlop(15)}
                 onPress={this.onPressArrowRight}>
-              <Image style={styles.icon} source={images.nextArrow} />
+              <Image style={styles.icon} source={images.calNextArrow} />
             </TouchableOpacity>
           </View>
 
@@ -129,13 +129,13 @@ const styles = StyleSheet.create({
     width: 32,
     textAlign: 'center',
     fontSize: 12,
-    fontWeight: 'bold',
-    color: '#7c7c7c',
+    fontFamily: fonts.RBlack,
+    color: colors.lightBlackColor,
   },
   dateText: {
     fontSize: 15,
-    fontFamily: fonts.RBold,
-    color: colors.themeColor,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
   },
   iconContainer: {
     justifyContent: 'center',
@@ -147,8 +147,8 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '180deg' }],
   },
   icon: {
-    width: 12,
-    height: 12,
+    width: 15,
+    height: 15,
     tintColor: colors.grayColor,
   },
   disabled: {

@@ -811,9 +811,11 @@ const HomeScreen = ({navigation, route}) => {
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
         };
-        console.log('createPostAfterUpload in home');
+        console.log('createPostAfterUpload in home',data);
         createPostAfterUpload(dataParams);
       } else if (data) {
+        console.log('createPostAfterUpload in home else',data);
+
         const imageArray = data.map((dataItem) => dataItem);
         const dataParams = {
           text: postDesc && postDesc,
