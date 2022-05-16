@@ -91,15 +91,42 @@ export default function RegisterRefereeForm2({navigation, route}) {
         const refereeData = currentRefereeData;
         refereeData.push(bodyParams);
         
-        const refereeObject = {
+        const auth = {
           ...authContext?.entity?.obj,
-          referee_data:refereeData,
           sport_setting: {},
         };
 
-      
-        console.log('All data:=>', refereeObject);
-        patchRegisterRefereeDetails(refereeObject, authContext)
+        let registerdRefereeData =
+          authContext?.entity?.obj?.referee_data || [];
+
+        if (
+          authContext?.entity?.obj?.referee_data?.some(
+            (obj) =>
+              obj.sport === bodyParams.sport &&
+              obj.sport_type === bodyParams.sport_type,
+          )
+        ) {
+          registerdRefereeData =
+            authContext?.entity?.obj?.referee_data.map((item) => {
+              return item.sport === bodyParams.sport &&
+                item.sport_type === bodyParams.sport_type
+                ? {
+                    ...item,
+                    is_published: true,
+                  }
+                : item;
+            });
+        } else {
+          registerdRefereeData.push(bodyParams);
+        }
+
+        const body = {
+          ...auth,
+          referee_data: registerdRefereeData,
+        };
+
+        console.log('All data:=>', body);
+        patchRegisterRefereeDetails(body, authContext)
           .then(async (res) => {
             setloading(false);
             console.log('User data:=>', res.payload);

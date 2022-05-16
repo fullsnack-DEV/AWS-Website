@@ -14,6 +14,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 
 import FlatList from 'react-native-drag-flatlist';
@@ -157,16 +158,17 @@ export default function SportActivityTagScreen({navigation}) {
     [],
   );
   return (
-    <ScrollView scrollEnabled={false}>
-      <ActivityLoader visible={loading} />
+    <SafeAreaView>
+      <ScrollView scrollEnabled={false}>
+        <ActivityLoader visible={loading} />
 
-      <Text style={styles.listTitle}>Preview</Text>
-      <FlatList
+        <Text style={styles.listTitle}>Preview</Text>
+        <FlatList
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
 
-        data={activityList}
+        data={activityList?.filter((obj) => obj?.is_active)}
         keyExtractor={keyExtractor}
         renderItem={({item}) => (
           <UserInfoAddRole
@@ -186,17 +188,17 @@ export default function SportActivityTagScreen({navigation}) {
         )}
         style={{margin: 15}}
       />
-      <TCThinDivider width={'100%'} marginBottom={15} />
+        <TCThinDivider width={'100%'} marginBottom={15} />
 
-      <TouchableOpacity
+        <TouchableOpacity
         style={styles.radioView}
         onPress={() => {
           setSelectedRadio(0);
         }}>
-        <Text style={styles.radioTitle}>
-          Display the later-done sports activity first
-        </Text>
-        <Image
+          <Text style={styles.radioTitle}>
+            Display the later-done sports activity first
+          </Text>
+          <Image
           source={
             selectedRadio === 0
               ? images.radioSelectYellow
@@ -204,31 +206,31 @@ export default function SportActivityTagScreen({navigation}) {
           }
           style={styles.radioImage}
         />
-      </TouchableOpacity>
+        </TouchableOpacity>
 
-      {selectedRadio === 0 && (
-        <View>
-          <TouchableOpacity
+        {selectedRadio === 0 && (
+          <View>
+            <TouchableOpacity
             style={styles.checkView}
             onPress={() => {
               setSelectedCheck(!selectedCheck);
             }}>
-            <Image
+              <Image
               source={selectedCheck ? images.orangeCheckBox : images.uncheckBox}
               style={styles.checkImage}
             />
-            <Text style={styles.radioTitle}>
-              Classfy sports activites by categoires and display the categories
-              in the order below.
-            </Text>
-          </TouchableOpacity>
+              <Text style={styles.radioTitle}>
+                Classfy sports activites by categoires and display the categories
+                in the order below.
+              </Text>
+            </TouchableOpacity>
 
-          <View
+            <View
             pointerEvents={selectedCheck ? 'auto' : 'none'}
             style={{
               opacity: selectedCheck ? 1 : 0.4,
             }}>
-            <FlatList
+              <FlatList
               showsHorizontalScrollIndicator={false}
               data={entitySource}
               keyExtractor={keyExtractor}
@@ -271,16 +273,16 @@ export default function SportActivityTagScreen({navigation}) {
                 console.log('DATATATATATA:=', [...list]);
               }}
             />
+            </View>
           </View>
-        </View>
       )}
-      <TouchableOpacity
+        <TouchableOpacity
         style={styles.radioView}
         onPress={() => {
           setSelectedRadio(1);
         }}>
-        <Text style={styles.radioTitle}>Display in the fixed order</Text>
-        <Image
+          <Text style={styles.radioTitle}>Display in the fixed order</Text>
+          <Image
           source={
             selectedRadio === 1
               ? images.radioSelectYellow
@@ -288,14 +290,16 @@ export default function SportActivityTagScreen({navigation}) {
           }
           style={styles.radioImage}
         />
-      </TouchableOpacity>
-      {selectedRadio === 1 && (
-        <FlatList
+        </TouchableOpacity>
+        {selectedRadio === 1 && (
+        
+          <FlatList
           showsHorizontalScrollIndicator={false}
-          data={activityList}
+          data={activityList.filter((obj)=> obj?.type && obj?.is_active === true)}
           keyExtractor={keyExtractor}
           renderItem={renderSportsActivityView}
           style={{
+            flex:1,
             width: '100%',
             alignContent: 'center',
             marginBottom: 15,
@@ -312,9 +316,10 @@ export default function SportActivityTagScreen({navigation}) {
             console.log('DATATATATATA:=', data);
           }}
         />
+       
       )}
 
-      <ActionSheet
+        <ActionSheet
         ref={actionSheet}
         options={[
           'Add New Sports Activity',
@@ -335,7 +340,8 @@ export default function SportActivityTagScreen({navigation}) {
           }
         }}
       />
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

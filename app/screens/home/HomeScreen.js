@@ -655,7 +655,9 @@ const HomeScreen = ({navigation, route}) => {
               <View
                 style={{opacity: isAccountDeactivated ? 0.5 : 1}}
                 pointerEvents={pointEvent}>
-                <TouchableOpacity onPress={onThreeDotPressed}>
+                <TouchableOpacity onPress={()=>{
+                   manageChallengeActionSheet.current.show();
+                }}>
                   <Image
                     source={images.threeDotIcon}
                     style={{
@@ -673,7 +675,7 @@ const HomeScreen = ({navigation, route}) => {
         }
       />
     ),
-    [currentUserData],
+    [currentUserData,isAdmin,isUserHome,isTeamHome],
   );
 
   const getSettingOfBoth = (details) => {
@@ -2723,9 +2725,7 @@ const HomeScreen = ({navigation, route}) => {
     {nativeEvent: {contentOffset: {y: mainFlatListFromTop}}},
   ]);
 
-  const onThreeDotPressed = useCallback(() => {
-    manageChallengeActionSheet.current.show();
-  }, []);
+
 
   const offerOpetions = () => {
     const opetionArray = [];
@@ -3597,7 +3597,7 @@ const HomeScreen = ({navigation, route}) => {
           {Utility.getSportName(item, authContext)}
         </Text>
         <View style={styles.checkbox}>
-          {sportsSelection.sport === item?.sport ? (
+          {sportsSelection?.sport === item?.sport ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -4162,7 +4162,8 @@ const HomeScreen = ({navigation, route}) => {
                 }
               }
             } else if (index === 1) {
-              navigation.navigate('SportActivityScreen');
+             // navigation.navigate('SportActivityScreen');
+             navigation.navigate('SportActivitiesScreen');
             }
           }}
         />
@@ -5961,7 +5962,7 @@ const HomeScreen = ({navigation, route}) => {
             <View style={styles.separatorLine} />
             <FlatList
               ItemSeparatorComponent={() => <TCThinDivider />}
-              data={authContext?.entity?.obj?.registered_sports}
+              data={authContext?.entity?.obj?.registered_sports?.filter((obj)=> obj?.type)}
               keyExtractor={(item, index) => index.toString()}
               renderItem={renderSports}
             />

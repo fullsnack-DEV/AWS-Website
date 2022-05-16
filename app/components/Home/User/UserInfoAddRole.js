@@ -10,12 +10,13 @@ const UserInfoAddRole = ({
   title,
   onPress,
   thumbURL,
+  isOpacity = false
 }) => (
   <TouchableOpacity onPress={ onPress }>
-    <View style={styles.containerStyle}>
+    <View style={[styles.containerStyle,{opacity: isOpacity ? 0.4 : 1}]}>
       <Image source={thumbURL} style={styles.imageStyle}/>
       <View style={{ marginLeft: 10, marginRight: 12 }}>
-        <Text style={styles.titleStyle}>
+        <Text style={[styles.titleStyle,{fontSize: title.length > 9 ? 12 : 14}]}>
           {title}
         </Text>
       </View>

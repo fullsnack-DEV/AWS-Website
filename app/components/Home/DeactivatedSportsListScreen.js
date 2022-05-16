@@ -3,7 +3,6 @@
 import React, {
   useContext,
   useCallback,
-  useLayoutEffect,
   useRef,
   useState,
   useEffect,
@@ -26,7 +25,6 @@ import * as Utility from '../../utils';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import images from '../../Constants/ImagePath';
 import {getUserDetails, sportActivate} from '../../api/Users';
 import strings from '../../Constants/String';
 import ActivityLoader from '../loader/ActivityLoader';
@@ -49,18 +47,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
     image_url = setting.base_url_sporticon;
   });
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={() => actionSheet.current.show()}>
-          <Image
-            source={images.vertical3Dot}
-            style={styles.navigationRightItem}
-          />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
+  
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
@@ -241,7 +228,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
               showsHorizontalScrollIndicator={false}
               data={userObject?.registered_sports?.filter(
                 (obj) => obj.type === 'player' && !obj.is_active,
-              )}
+              ).sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={sportsView}
             />
@@ -257,7 +244,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
               showsHorizontalScrollIndicator={false}
               data={userObject?.referee_data?.filter(
                 (obj) => obj.type === 'referee' && !obj.is_active,
-              )}
+              ).sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={refereeSportsView}
             />
@@ -273,7 +260,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
               showsHorizontalScrollIndicator={false}
               data={userObject?.scorekeeper_data?.filter(
                 (obj) => obj.type === 'scorekeeper' && !obj.is_active,
-              )}
+              ).sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={scorekeeperSportsView}
             />
@@ -384,13 +371,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  navigationRightItem: {
-    height: 15,
-    marginRight: 15,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    width: 15,
-  },
+  
   activateButtonText: {
     fontFamily: fonts.RBold,
     fontSize: 12,
