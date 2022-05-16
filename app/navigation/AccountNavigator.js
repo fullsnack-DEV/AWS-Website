@@ -239,6 +239,8 @@ import DeactivateAccountScreen from '../components/Home/DeactivateAccountScreen'
 import TerminateAccountScreen from '../components/Home/TerminateAccountScreen';
 import PauseGroupScreen from '../components/Home/PauseGroupScreen';
 import SportAccountSettingScreen from '../screens/account/SportAccountSettingScreen';
+import SportHideUnhideScreen from '../screens/home/SportHideUnhideScreen';
+import SportActivitiesScreen from '../components/Home/SportActivitiesScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2398,10 +2400,42 @@ const AccountNavigator = () => (
     />
 
     <Stack.Screen
+      name="SportActivitiesScreen"
+      component={SportActivitiesScreen}
+      options={{
+        title: 'Sports Activities',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
       name="SportActivityTagScreen"
       component={SportActivityTagScreen}
       options={{
         title: 'Order',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="SportHideUnhideScreen"
+      component={SportHideUnhideScreen}
+      options={{
+        title: 'Hide & Unhide',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

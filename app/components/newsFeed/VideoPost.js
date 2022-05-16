@@ -39,7 +39,6 @@ const VideoPost = memo(
     }, []);
 
     const imageRatio = data.media_height / data.media_width;
-    console.log('imageRatio', imageRatio);
     const defaultLandscapRatio = 0.71;
     const defaultPortraitRatio = 1.29;
     const defaultScreenWidth = Dimensions.get('window').width - 30;

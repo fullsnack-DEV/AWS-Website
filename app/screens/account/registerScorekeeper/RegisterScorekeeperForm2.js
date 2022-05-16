@@ -95,15 +95,43 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
         const scorekeeperData = currentScorekeeperData;
         scorekeeperData.push(bodyParams);
 
-        const scorekeeperObject = {
+        const auth = {
           ...authContext?.entity?.obj,
-          scorekeeper_data: scorekeeperData,
           sport_setting: {},
         };
 
-        console.log('All data:=>', scorekeeperObject);
+        let registerdScorekeeperData =
+          authContext?.entity?.obj?.scorekeeper_data || [];
 
-        patchRegisterScorekeeperDetails(scorekeeperObject, authContext)
+        if (
+          authContext?.entity?.obj?.scorekeeper_data?.some(
+            (obj) =>
+              obj.sport === bodyParams.sport &&
+              obj.sport_type === bodyParams.sport_type,
+          )
+        ) {
+          registerdScorekeeperData =
+            authContext?.entity?.obj?.scorekeeper_data.map((item) => {
+              return item.sport === bodyParams.sport &&
+                item.sport_type === bodyParams.sport_type
+                ? {
+                    ...item,
+                    is_published: true,
+                  }
+                : item;
+            });
+        } else {
+          registerdScorekeeperData.push(bodyParams);
+        }
+
+        const body = {
+          ...auth,
+          scorekeeper_data: registerdScorekeeperData,
+        };
+
+        console.log('All data:=>', body);
+
+        patchRegisterScorekeeperDetails(body, authContext)
           .then(async (res) => {
             console.log('scorekeeper Data:=>', res.payload);
             setloading(false);

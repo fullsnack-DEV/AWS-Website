@@ -3,8 +3,7 @@
 import React, {
   useContext,
   useCallback,
-  useLayoutEffect,
-  useRef,
+ 
   useEffect,
   useState,
 } from 'react';
@@ -15,12 +14,10 @@ import {
   Text,
   Image,
   ScrollView,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   Alert,
 } from 'react-native';
 
-import ActionSheet from 'react-native-actionsheet';
 
 import {useIsFocused} from '@react-navigation/native';
 import * as Utility from '../../utils';
@@ -35,7 +32,6 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 
 export default function SportActivityScreen({navigation}) {
-  const actionSheet = useRef();
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
@@ -44,18 +40,7 @@ export default function SportActivityScreen({navigation}) {
 
   console.log('authContext', authContext.entity.obj);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={() => actionSheet.current.show()}>
-          <Image
-            source={images.vertical3Dot}
-            style={styles.navigationRightItem}
-          />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
+
 
   useEffect(() => {
     if (isFocused) {
@@ -102,7 +87,7 @@ export default function SportActivityScreen({navigation}) {
           <Text style={styles.listTitle}>Playing</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
-            data={userObject?.registered_sports?.filter((obj) => obj.is_active)}
+            data={userObject?.registered_sports?.filter((obj) => obj.is_active).sort((a, b) => a.sport.localeCompare(b.sport))}
             keyExtractor={keyExtractor}
             renderItem={renderSports}
           />
@@ -114,7 +99,7 @@ export default function SportActivityScreen({navigation}) {
           <Text style={styles.listTitle}>Refereeing</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
-            data={userObject?.referee_data?.filter((obj) => obj.is_active)}
+            data={userObject?.referee_data?.filter((obj) => obj.is_active).sort((a, b) => a.sport.localeCompare(b.sport))}
             keyExtractor={keyExtractor}
             renderItem={renderSports}
           />
@@ -126,7 +111,7 @@ export default function SportActivityScreen({navigation}) {
           <Text style={styles.listTitle}>Scorekeepering</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
-            data={userObject?.scorekeeper_data?.filter((obj) => obj.is_active)}
+            data={userObject?.scorekeeper_data?.filter((obj) => obj.is_active).sort((a, b) => a.sport.localeCompare(b.sport))}
             keyExtractor={keyExtractor}
             renderItem={renderSports}
           />
@@ -147,16 +132,7 @@ export default function SportActivityScreen({navigation}) {
         </TouchableWithoutFeedback>
       </View>
 
-      <ActionSheet
-        ref={actionSheet}
-        options={['Sports Activity Tags Order', 'Cancel']}
-        cancelButtonIndex={1}
-        onPress={(index) => {
-          if (index === 0) {
-            navigation.navigate('SportActivityTagScreen');
-          }
-        }}
-      />
+      
     </ScrollView>
   );
 }
@@ -174,13 +150,6 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
 
-  navigationRightItem: {
-    height: 15,
-    marginRight: 15,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    width: 15,
-  },
 
   listItems: {
     flex: 1,
