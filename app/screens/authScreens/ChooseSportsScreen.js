@@ -71,6 +71,9 @@ export default function ChooseSportsScreen({navigation, route}) {
   }, [navigation]);
 
   useEffect(() => {
+    console.log('authContext', authContext);
+    console.log('authContext token', authContext.tokenData);
+
     getSportsList(authContext)
       .then((response) => {
         console.log('Sport list:::', response);
@@ -101,8 +104,10 @@ export default function ChooseSportsScreen({navigation, route}) {
         }
         setSports(arr);
         setTimeout(() => setloading(false), 1000);
+        console.log('Loading closed ');
       })
       .catch((e) => {
+        console.log('eeeee', e);
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
@@ -143,6 +148,26 @@ export default function ChooseSportsScreen({navigation, route}) {
         callback();
       })
       .catch(() => setloading(false));
+  };
+  const navigateToFollowScreen = (response) => {
+    console.log('selected sport', selected);
+    if (response) {
+      navigation.navigate('FollowTeams', {
+        teamData: response,
+        city: route.params.city,
+        state: route.params.state,
+        country: route.params.country,
+        sports: selected,
+        profilePicData: route.params.profilePicData,
+        birthday: route.params.birthday,
+        gender: route.params.gender,
+        emailAddress: route.params.emailAddress,
+        first_name: route.params.first_name,
+        last_name: route.params.last_name,
+      });
+    } else {
+      finalStepSignUp();
+    }
   };
   const getTeamsData = async () => {
     console.log('Call getTeamData');
@@ -234,22 +259,24 @@ export default function ChooseSportsScreen({navigation, route}) {
     console.log('query --->', JSON.stringify(queryParams));
     getGroupIndex(queryParams)
       .then((response) => {
-        setloading(false);
+        // setloading(false);
+        setTimeout(() => setloading(false), 1000);
         console.log('groupIndex:=>', response);
-        updateProfile({sports: selected}, () => {
-          if (response) {
-            navigation.navigate('FollowTeams', {
-              teamData: response,
-              city: route.params.city,
-              state: route.params.state,
-              country: route.params.country,
-              sports: selected,
-            });
-          } else {
-            setloading(false);
-            finalStepSignUp();
-          }
-        });
+        // updateProfile({sports: selected}, () => {
+        //   if (response) {
+        //     navigation.navigate('FollowTeams', {
+        //       teamData: response,
+        //       city: route.params.city,
+        //       state: route.params.state,
+        //       country: route.params.country,
+        //       sports: selected,
+        //     });
+        //   } else {
+        //     setloading(false);
+        //     finalStepSignUp();
+        //   }
+        // });
+        navigateToFollowScreen(response);
       })
       .catch((e) => {
         setloading(false);

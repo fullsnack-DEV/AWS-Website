@@ -43,7 +43,7 @@ import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getGroupIndex} from '../../api/elasticSearch';
 
-export default function ChooseLocationScreen({navigation}) {
+export default function ChooseLocationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
   const [currentLocation, setCurrentLocation] = useState();
@@ -188,14 +188,16 @@ export default function ChooseLocationScreen({navigation}) {
       state_abbr: currentLocation.stateAbbr,
       country: currentLocation.country,
     };
-    updateProfile(userData, () => {
-      navigation.navigate('ChooseSportsScreen', {
-        city: currentLocation?.city,
-        state: currentLocation?.stateAbbr,
-        country: currentLocation?.country,
-      });
-    });
+    // updateProfile(userData, () => {
+    //   navigation.navigate('ChooseSportsScreen', {
+    //     city: currentLocation?.city,
+    //     state: currentLocation?.stateAbbr,
+    //     country: currentLocation?.country,
+    //   });
+    // });
+    navigateToChooseSportScreen(userData);
   };
+  /*
   const updateProfile = async (params, callback) => {
     setLoading(true);
     updateUserProfile(params, authContext)
@@ -214,6 +216,30 @@ export default function ChooseLocationScreen({navigation}) {
       })
       .catch(() => setLoading(false));
   };
+*/
+  const navigateToChooseSportScreen = (params) => {
+    setLoading(false);
+    console.log('route=====>', route);
+    console.log('params ====>', params);
+    console.log('city===>', params.city);
+    console.log('country===>', params.country);
+    console.log('state==>', params.state_abbr);
+    console.log('profilePicData===>', route.params.profilePicData);
+    console.log('birthday===>', route.params.birthday);
+    console.log('gender=====>', route.params.gender);
+
+    navigation.navigate('ChooseSportsScreen', {
+      city: params.city,
+      state: params.state_abbr,
+      country: params.country,
+      profilePicData: route.params.profilePicData,
+      birthday: route.params.birthday,
+      gender: route.params.gender,
+      emailAddress: route.params.emailAddress,
+      first_name: route.params.first_name,
+      last_name: route.params.last_name,
+    });
+  };
 
   const getTeamsData = async (item) => {
     console.log('item location data:=>', item);
@@ -223,14 +249,17 @@ export default function ChooseLocationScreen({navigation}) {
       state_abbr: item?.terms?.[1]?.value,
       country: item?.terms?.[2]?.value,
     };
-    updateProfile(userData, () => {
-      setLoading(false);
-      navigation.navigate('ChooseSportsScreen', {
-        city: item?.terms?.[0]?.value,
-        state: item?.terms?.[1]?.value,
-        country: item?.terms?.[2]?.value,
-      });
-    });
+    // updateProfile(userData, () => {
+    //   setLoading(false);
+    //   navigation.navigate('ChooseSportsScreen', {
+    //     city: item?.terms?.[0]?.value,
+    //     state: item?.terms?.[1]?.value,
+    //     country: item?.terms?.[2]?.value,
+    //   });
+
+    // });
+
+    navigateToChooseSportScreen(userData);
   };
 
   const renderItem = ({item, index}) => (

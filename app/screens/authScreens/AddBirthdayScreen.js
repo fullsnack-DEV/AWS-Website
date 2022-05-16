@@ -24,7 +24,7 @@ import {updateUserProfile} from '../../api/Users';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
-export default function AddBirthdayScreen({navigation}) {
+export default function AddBirthdayScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   console.log(
@@ -66,7 +66,7 @@ export default function AddBirthdayScreen({navigation}) {
     setMinDateValue(mindate);
     setMaxDateValue(maxdate);
   }, []);
-
+  /*
   const updateProfile = async (params, callback) => {
     setLoading(true);
     updateUserProfile(params, authContext)
@@ -84,6 +84,19 @@ export default function AddBirthdayScreen({navigation}) {
         callback();
       })
       .catch(() => setLoading(false));
+  };
+  */
+  const navigateToGenderScreen = (params) => {
+    console.log('Addbirthday route=====>', route);
+    console.log('Add birthday param', params);
+    console.log('Add birthday ', params.birthday);
+    navigation.navigate('ChooseGenderScreen', {
+      profilePicData: route.params?.profilePicData,
+      birthday: params.birthday,
+      emailAddress: route.params?.emailAddress,
+      first_name: route.params?.first_name,
+      last_name: route.params?.last_name,
+    });
   };
 
   return (
@@ -144,9 +157,10 @@ export default function AddBirthdayScreen({navigation}) {
           title={strings.continueCapTitle}
           onPress={() => {
             const userParams = {birthday: new Date(dateValue).getTime() / 1000};
-            updateProfile(userParams, () => {
-              navigation.navigate('ChooseGenderScreen');
-            });
+            // updateProfile(userParams, () => {
+            //   navigation.navigate('ChooseGenderScreen');
+            // });
+            navigateToGenderScreen(userParams);
           }}
           extraStyle={{marginTop: 50}}
         />

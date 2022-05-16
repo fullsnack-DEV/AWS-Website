@@ -7,16 +7,17 @@ import {
   TouchableWithoutFeedback,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {useNavigationState} from '@react-navigation/native';
-
+import QB from 'quickblox-react-native-sdk';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
-import {updateUserProfile} from '../../api/Users';
+import {updateUserProfile, createUser} from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
 import TCButton from '../../components/TCButton';
@@ -26,6 +27,13 @@ import * as Utility from '../../utils/index';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import strings from '../../Constants/String';
+
+import {
+  QBconnectAndSubscribe,
+  QBcreateUser,
+  QBlogin,
+  QB_ACCOUNT_TYPE,
+} from '../../utils/QuickBlox';
 
 export default function FollowTeams({route, navigation}) {
   const [teams, setTeams] = useState(['1']);
@@ -37,6 +45,7 @@ export default function FollowTeams({route, navigation}) {
 
   const followedTeam = [];
   const routes = useNavigationState((state) => state);
+  const dummyAuthContext = {...authContext};
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -160,18 +169,18 @@ export default function FollowTeams({route, navigation}) {
 
   const followUnfollowClicked = ({item, index}) => {
     console.log('SELECTED:::', index);
-
     teams[index].follow = !item.follow;
-
     setTeams([...teams]);
-
     for (const temp of teams) {
       if (temp.follow) {
-        followedTeam.push(temp.group_id);
+        const obj = {
+          group_id: temp.group_id,
+          entity_type: temp.entity_type,
+        };
+        followedTeam.push(obj);
       }
     }
     setFollowed(followedTeam);
-
     console.log('Followed Team:::', followedTeam);
   };
 
@@ -226,8 +235,101 @@ export default function FollowTeams({route, navigation}) {
 
   const signUpLastStep = () => {
     // updateProfile({club_ids: followed});
-    updateProfile({group_id: followed});
+    // updateProfile({group_ids: followed});
+    signUpToTownsCup();
   };
+  const setDummyAuthContext = (key, value) => {
+    dummyAuthContext[key] = value;
+  };
+  // Signup to Towncup
+  const signUpToTownsCup = async () => {
+    setloading(true);
+    const data = {
+      first_name: route.params.first_name,
+      last_name: route.params.last_name,
+      email: route.params.emailAddress,
+      thumbnail: route.params.profilePicData?.thumbnail ?? '',
+      full_image: route.params.profilePicData?.full_image ?? '',
+      birthday: route.params.birthday,
+      gender: route.params.gender,
+      city: route.params.city,
+      country: route.params.country,
+      state: route.params.state,
+      sports: route.params.sports,
+      group_ids: followed,
+    };
+    console.log('Data before cretae a user ===>', data);
+    createUser(data, authContext)
+      .then((createdUser) => {
+        console.log('QB CreatedUser:', createdUser);
+        const authEntity = {...dummyAuthContext.entity};
+        authEntity.obj = createdUser?.payload;
+        authEntity.auth.user = createdUser?.payload;
+        authEntity.role = 'user';
+        setDummyAuthContext('entity', authEntity);
+        setDummyAuthContext('user', createdUser?.payload);
+        signUpWithQB(createdUser?.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+  const signUpWithQB = async (response) => {
+    console.log('QB signUpWithQB : ', response);
+
+    let qbEntity = {...dummyAuthContext.entity};
+    console.log('QB qbEntity : ', qbEntity);
+
+    const setting = await Utility.getStorage('appSetting');
+    console.log('App QB Setting:=>', setting);
+
+    authContext.setQBCredential(setting);
+    QB.settings.enableAutoReconnect({enable: true});
+    QBlogin(qbEntity.uid, response)
+      .then(async (res) => {
+        qbEntity = {
+          ...qbEntity,
+          QB: {...res.user, connected: true, token: res?.session?.token},
+        };
+        QBconnectAndSubscribe(qbEntity);
+        setDummyAuthContext('entity', qbEntity);
+        await wholeSignUpProcessComplete(response);
+      })
+      .catch(async (error) => {
+        console.log('QB Login Error : ', error.message);
+        qbEntity = {...qbEntity, QB: {connected: false}};
+        setDummyAuthContext('entity', qbEntity);
+        QBcreateUser(qbEntity.uid, response, QB_ACCOUNT_TYPE.USER)
+          .then(() => {
+            QBlogin(qbEntity.uid).then((loginRes) => {
+              console.log('QB loginRes', loginRes);
+            });
+          })
+          .catch((e) => {
+            console.log('QB error', e);
+          });
+        await wholeSignUpProcessComplete(response);
+      });
+  };
+  const wholeSignUpProcessComplete = async (userData) => {
+    const entity = dummyAuthContext?.entity;
+    const tokenData = dummyAuthContext?.tokenData;
+    entity.auth.user = {...userData};
+    entity.obj = {...userData};
+    entity.uid = userData?.user_id;
+    entity.isLoggedIn = true;
+    await Utility.setStorage('loggedInEntity', {...entity});
+    await Utility.setStorage('authContextEntity', {...entity});
+    await Utility.setStorage('authContextUser', {...userData});
+    await authContext.setTokenData(tokenData);
+    await authContext.setUser({...userData});
+    await authContext.setEntity({...entity});
+    setloading(false);
+  };
+
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}

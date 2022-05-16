@@ -266,6 +266,9 @@ export default function SignupScreen({navigation}) {
             role: 'user',
           };
           setDummyAuthContext('tokenData', token);
+          await authContext.setTokenData(token);
+          await authContext.setEntity(entity);
+
           if (profilePic) {
             const apiResponse = await apiCall(uploadImageConfig);
             const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
@@ -284,21 +287,35 @@ export default function SignupScreen({navigation}) {
               .then(async ([fullImage, thumbnail]) => {
                 setDummyAuthContext('entity', entity);
                 const uploadedProfilePic = {full_image: fullImage, thumbnail};
-                await signUpToTownsCup(uploadedProfilePic);
+                // await signUpToTownsCup(uploadedProfilePic);
+                navigateToEmailVarificationScreen(uploadedProfilePic);
               })
               .catch(async () => {
                 setDummyAuthContext('entity', entity);
-                await signUpToTownsCup();
+
+                // await signUpToTownsCup();
+                navigateToEmailVarificationScreen();
               });
           } else {
             setDummyAuthContext('entity', entity);
-            await signUpToTownsCup();
+
+            // await signUpToTownsCup();
+            navigateToEmailVarificationScreen();
           }
         })
         .catch(() => setloading(false));
     }
   };
-
+  const navigateToEmailVarificationScreen = (uploadedProfilePic) => {
+    setloading(false);
+    navigation.navigate('EmailVerificationScreen', {
+      emailAddress: email,
+      password,
+      first_name: fName,
+      last_name: lName,
+      profilePicData: uploadedProfilePic,
+    });
+  };
   const signUpWithFirebase = () => {
     firebase
       .auth()
@@ -312,6 +329,7 @@ export default function SignupScreen({navigation}) {
               saveUserDetails(user);
             }
           });
+
         signUpOnAuthChanged();
       })
       .catch((e) => {
@@ -356,6 +374,7 @@ export default function SignupScreen({navigation}) {
   const signupUser = () => {
     setloading(true);
     checkUserIsRegistratedOrNotWithTownscup().then((userExist) => {
+      console.log('hhhhhhh', userExist);
       if (userExist) {
         setloading(false);
         setTimeout(() => {

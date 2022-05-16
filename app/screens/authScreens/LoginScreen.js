@@ -221,9 +221,41 @@ export default function LoginScreen({navigation}) {
               QBInitialLogin(user, response.payload);
             })
             .catch((error) => {
-              // eslint-disable-next-line no-underscore-dangle
+              console.log('User name===>', dummyAuthContext);
+              console.log('User last===>', dummyAuthContext);
               setloading(false);
-              setTimeout(() => Alert.alert('TownsCup', error.message), 100);
+              // eslint-disable-next-line no-underscore-dangle
+              console.log('error=======>', error);
+              console.log('user=======>', user);
+              // eslint-disable-next-line no-underscore-dangle
+              console.log('email=======>', user._user.email);
+
+              // eslint-disable-next-line no-underscore-dangle
+              if (!user?._user?.emailVerified) {
+                navigation.navigate('EmailVerificationScreen', {
+                  // eslint-disable-next-line no-underscore-dangle
+                  emailAddress: user._user.email,
+                  password,
+                  // first_name: fName,
+                  // last_name: lName,
+                  // profilePicData: uploadedProfilePic,
+                });
+                // eslint-disable-next-line no-underscore-dangle
+              } else if (user?._user?.emailVerified) {
+                user.sendEmailVerification();
+                setloading(false);
+                navigation.replace('AddBirthdayScreen', {
+                  // profilePicData: route.params.profilePicData,
+                  // eslint-disable-next-line no-underscore-dangle
+                  emailAddress: user._user.email,
+                  // first_name: route.params.first_name,
+                  // last_name: route.params.last_name,
+                });
+
+                // eslint-disable-next-line no-underscore-dangle
+              } else {
+                setTimeout(() => Alert.alert('TownsCup', error.message), 100);
+              }
             });
         });
       }

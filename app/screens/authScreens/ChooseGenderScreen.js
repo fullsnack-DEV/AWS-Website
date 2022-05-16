@@ -19,7 +19,7 @@ import {updateUserProfile} from '../../api/Users';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
-export default function ChooseGenderScreen({navigation}) {
+export default function ChooseGenderScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   console.log('authContextauthContext', authContext);
   const [selected, setSelected] = useState(
@@ -43,10 +43,13 @@ export default function ChooseGenderScreen({navigation}) {
             const routeName =
               routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
             if (routeName === 'AddBirthdayScreen') {
+              console.log('first condition');
               navigation.pop(1);
             } else {
               // navigation.navigate('AddBirthdayScreen');
-              navigation.dispatch(StackActions.replace('AddBirthdayScreen'));
+              console.log('scond condition');
+              // navigation.dispatch(StackActions.replace('AddBirthdayScreen'));
+              navigation.pop();
             }
           }}>
           <Image
@@ -93,7 +96,7 @@ export default function ChooseGenderScreen({navigation}) {
       </TouchableOpacity>
     </View>
   );
-
+  /*
   const updateProfile = async (params, callback) => {
     setLoading(true);
     updateUserProfile(params, authContext)
@@ -112,7 +115,21 @@ export default function ChooseGenderScreen({navigation}) {
       })
       .catch(() => setLoading(false));
   };
-
+*/
+  const navigateToChooseLocationScreen = (genderParam) => {
+    console.log('Gender route=====>', route);
+    console.log('Gender profilePicData', route.params.profilePicData);
+    console.log('Gender birthday ', route.params.birthday);
+    console.log('Gender ', genderParam);
+    navigation.navigate('ChooseLocationScreen', {
+      profilePicData: route.params.profilePicData,
+      birthday: route.params.birthday,
+      gender: genderParam,
+      emailAddress: route.params.emailAddress,
+      first_name: route.params.first_name,
+      last_name: route.params.last_name,
+    });
+  };
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
@@ -182,9 +199,7 @@ export default function ChooseGenderScreen({navigation}) {
           if (selected === 0) gender = 'male';
           else if (selected === 1) gender = 'female';
           else if (selected === 2) gender = 'other';
-          updateProfile({gender}, () => {
-            navigation.navigate('ChooseLocationScreen');
-          });
+          navigateToChooseLocationScreen(gender);
         }}
         extraStyle={{bottom: hp('4%'), position: 'absolute'}}
       />

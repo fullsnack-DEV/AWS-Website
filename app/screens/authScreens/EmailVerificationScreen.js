@@ -35,7 +35,12 @@ export default function EmailVerificationScreen({navigation, route}) {
       .then(async (res) => {
         setLoading(false);
         if (res.user.emailVerified) {
-          navigation.replace('AddBirthdayScreen');
+          navigation.replace('AddBirthdayScreen', {
+            profilePicData: route.params.profilePicData,
+            emailAddress: route.params.emailAddress,
+            first_name: route.params.first_name,
+            last_name: route.params.last_name,
+          });
         } else {
           setTimeout(() => {
             Alert.alert('Your email hasn’t been verified yet.');
