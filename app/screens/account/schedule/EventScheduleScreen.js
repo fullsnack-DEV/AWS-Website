@@ -7,7 +7,15 @@ import TCEventView from '../../../components/TCEventView';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const days = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
 // const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July','Aug','Sep','Oct','Nov','Dec'];
 
 export default function EventScheduleScreen({
@@ -21,7 +29,6 @@ export default function EventScheduleScreen({
   const [filterData, setFilterData] = useState(null);
 
   useEffect(() => {
-  
     // const d = new Date(dateString);
     // var dayName = days[d.getDay()];
 
@@ -34,12 +41,12 @@ export default function EventScheduleScreen({
 
       const filData = [];
       for (const property in result) {
-        let temp = {};     
-          const value = result[property];
-          temp = {
-            title: property,
-            data: result[property].length > 0 ? value : [],
-          };
+        let temp = {};
+        const value = result[property];
+        temp = {
+          title: property,
+          data: result[property].length > 0 ? value : [],
+        };
         filData.push(temp);
       }
       setFilterData([...filData]);
@@ -101,12 +108,12 @@ export default function EventScheduleScreen({
 
   return (
     <View style={styles.mainContainer}>
-      
       {filterData && (
         <SectionList
           scrollEnabled={true}
+          showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <View>
+            <View style={{marginTop: 15}}>
               <Text style={styles.noEventText}>No Events</Text>
               <Text style={styles.dataNotFoundText}>
                 New events will appear here.
@@ -136,8 +143,11 @@ export default function EventScheduleScreen({
             return null;
           }}
           renderSectionHeader={({section}) =>
-            section.data.length > 0 && (
-              <Text style={styles.sectionHeader}>{days[new Date(section.title).getDay()]}, {section.title}</Text>
+            (section?.data || [])?.filter((obj) => obj.cal_type === 'event')
+              .length > 0 && (
+                <Text style={styles.sectionHeader}>
+                  {days[new Date(section.title).getDay()]}, {section.title}
+                </Text>
           )
           }
           sections={filterData}
@@ -151,6 +161,7 @@ export default function EventScheduleScreen({
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    backgroundColor: colors.lightGrayBackground,
   },
   sectionHeader: {
     fontSize: 16,
@@ -159,6 +170,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 12,
     backgroundColor: colors.lightGrayBackground,
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   dataNotFoundText: {
     fontSize: 16,

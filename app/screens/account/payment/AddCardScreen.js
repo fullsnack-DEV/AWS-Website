@@ -27,11 +27,12 @@ export default function AddCardScreen({navigation}) {
   const authContext = useContext(AuthContext);
   const [card, setCard] = useState({valid: false, params: {}});
   const [valid, setValid] = useState(false);
-
   const {createPaymentMethod} = useStripe();
 
   const createPaymentMethodByCard = async () => {
-    const {paymentMethod, error} = await createPaymentMethod({type: 'Card'});
+    const {paymentMethod, error} = await createPaymentMethod({
+      paymentMethodType: 'Card',
+      });
 
     if (error) {
       Alert.alert(`Error code: ${error.code}`, error.message);

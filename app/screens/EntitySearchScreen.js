@@ -347,15 +347,28 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [playerFilter, pageSize, pageFrom, playerList]);
 
   const getRefereesList = useCallback(() => {
-    const refereeQuery = {
+    const refereeQuery =  {
       size: pageSize,
       from: refereesPageFrom,
       query: {
         bool: {
-          must: [{term: {'referee_data.is_published': true}}],
+          must: [
+            {
+              nested: {
+                path: 'referee_data',
+                query: {
+                  bool: {must: [{term: {'referee_data.is_published': true}}]},
+                },
+              },
+            },
+          ],
         },
       },
     };
+
+
+
+   
     // Location filter
     if (refereeFilters.location !== 'world') {
       refereeQuery.query.bool.must.push({
@@ -367,7 +380,7 @@ export default function EntitySearchScreen({navigation, route}) {
     }
     // Sport Filter
     if (refereeFilters.sport !== 'All') {
-      refereeQuery.query.bool.must.push({
+      refereeQuery.query.bool.must[0].nested.query.bool.must.push({
         term: {
           'referee_data.sport_name.keyword': {
             value: `${refereeFilters.sport.toLowerCase()}`,
@@ -378,8 +391,8 @@ export default function EntitySearchScreen({navigation, route}) {
     }
     // Referee game fee filter
     if (refereeFilters.fee) {
-      refereeQuery.query.bool.must.push({
-        range: {
+      refereeQuery.query.bool.must[0].nested.query.bool.must.push({
+        term: {
           'referee_data.setting.game_fee.fee': {
             gte: Number(refereeFilters.fee.split('-')[0]),
             lte: Number(refereeFilters.fee.split('-')[1]),

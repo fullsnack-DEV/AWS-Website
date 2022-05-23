@@ -6,9 +6,9 @@ import React, {
   useRef,
   useState,
   useMemo,
-  // useContext,
+  useContext,
 } from 'react';
-import {StyleSheet, View, Image} from 'react-native';
+import {StyleSheet, View, Image, Alert} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {Text} from 'react-native-elements';
@@ -16,6 +16,7 @@ import ActionSheet from 'react-native-actionsheet';
 import Share from 'react-native-share';
 // import Clipboard from '@react-native-community/clipboard';
 import Carousel from 'react-native-snap-carousel';
+import Clipboard from '@react-native-community/clipboard';
 import images from '../../Constants/ImagePath';
 import SingleImage from './SingleImage';
 import VideoPost from './VideoPost';
@@ -25,11 +26,13 @@ import NewsFeedDescription from './NewsFeedDescription';
 import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-// import AuthContext from '../../auth/context';
 import CommentModal from './CommentModal';
 import LikersModal from '../modals/LikersModal';
 import CustomURLPreview from '../account/CustomURLPreview';
 import {getHitSlop} from '../../utils';
+import {createRePost} from '../../api/NewsFeeds';
+import AuthContext from '../../auth/context';
+import strings from '../../Constants/String';
 
 const NewsFeedPostItems = memo(
   ({
@@ -48,7 +51,7 @@ const NewsFeedPostItems = memo(
   }) => {
     const likersModalRef = useRef(null);
     const commentModalRef = useRef(null);
-    // const authContext = useContext(AuthContext);
+    const authContext = useContext(AuthContext);
     const [childIndex, setChildIndex] = useState(0);
     const [like, setLike] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
@@ -81,11 +84,19 @@ const NewsFeedPostItems = memo(
       setShowThreeDot(
         item?.ownerId === caller_id || item?.foreign_id === caller_id,
       );
-      const dummyItem =
-        typeof item?.object === 'string'
-          ? JSON.parse(item?.object)
-          : item?.object;
+      let dummyItem = {};
+      if (typeof item?.object === 'string') {
+        if (JSON.parse(item.object)?.activity) {
+          const temp = JSON.parse(item.object)?.activity;
+          dummyItem = {...JSON.parse(temp.object), ...JSON.parse(item.object)};
+        } else {
+          dummyItem = JSON.parse(item.object);
+        }
+      } else {
+        dummyItem = item.object;
+      }
       setMyItem({...dummyItem});
+
       if (dummyItem) {
         if (
           dummyItem?.attachments !== undefined &&
@@ -140,6 +151,7 @@ const NewsFeedPostItems = memo(
         caller_id,
         currentParentIndex,
         item,
+        myItem,
         navigation,
         onImageProfilePress,
         onLikePress,
@@ -211,6 +223,27 @@ const NewsFeedPostItems = memo(
       onLikePress();
     }, [like, onLikePress]);
 
+    const rePostCall = useCallback(() => {
+      const temp = {
+        ...JSON.parse(item.object),
+      };
+
+      const body = {
+        ...temp,
+        activity_id: item.id,
+      };
+      createRePost(body, authContext)
+        .then((response) => {
+          console.log('reposted post', response);
+          console.log('repost object', JSON.parse(response.payload.object));
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }, [authContext, item.id, item.object]);
+
     const onActionSheetItemPress = useCallback(
       (index) => {
         if (index === 0) {
@@ -227,22 +260,10 @@ const NewsFeedPostItems = memo(
 
     const onShareActionSheetItemPress = useCallback(
       (index) => {
-        // if (index === 1) {
-        //   authContext.showAlert({ visible: true });
-        //   Clipboard.setString(descriptions);
-        // } else if (index === 2) {
-        //   const options = {
-        //     message: descriptions,
-        //   };
-        //   Share.open(options)
-        //     .then((res) => {
-        //       console.log('res :-', res);
-        //     })
-        //     .catch((err) => {
-        //       console.log('err :-', err);
-        //     });
-        // }
-        if (index === 0) {
+        if (index === 1) {
+          authContext.showAlert({visible: true});
+          Clipboard.setString(descriptions);
+        } else if (index === 2) {
           const options = {
             message: descriptions,
           };
@@ -254,8 +275,11 @@ const NewsFeedPostItems = memo(
               console.log('err :-', err);
             });
         }
+        if (index === 0) {
+          rePostCall();
+        }
       },
-      [descriptions],
+      [authContext, descriptions, rePostCall],
     );
 
     const renderProfileInfo = useMemo(
@@ -341,31 +365,118 @@ const NewsFeedPostItems = memo(
       ],
     );
 
+    const renderRepost = useMemo(
+      () => (
+        <View style={{flexDirection: 'row'}}>
+          {myItem?.post_type === 'repost' && (
+            <>
+              <View style={{flex: 1}}>
+                {renderProfileInfo}
+                <NewsFeedDescription
+                  descriptions={descriptions}
+                  numberOfLineDisplay={attachedImages?.length > 0 ? 3 : 14}
+                  tagData={myItem?.format_tagged_data ?? []}
+                  navigation={navigation}
+                  isNewsFeedScreen={isNewsFeedScreen}
+                  openProfilId={openProfilId}
+                />
+              </View>
+            </>
+          )}
+        </View>
+      ),
+      [
+        attachedImages?.length,
+        descriptions,
+        isNewsFeedScreen,
+        myItem?.format_tagged_data,
+        myItem?.post_type,
+        navigation,
+        openProfilId,
+        renderProfileInfo,
+      ],
+    );
     const onWriteCommentPress = useCallback(() => {
       commentModalRef.current.open();
     }, []);
 
-    return (
-      <View style={{flex: 1, marginBottom: 15}}>
-        {renderProfileInfo}
-        <View>
-          {attachedImages && attachedImages?.length === 1 ? (
-            <>{RenderSinglePostItems(attachedImages?.[0])}</>
-          ) : (
-            <Carousel
-              onSnapToItem={setChildIndex}
-              data={attachedImages}
-              renderItem={renderMultiplePostItems}
-              inactiveSlideScale={1}
-              inactiveSlideOpacity={1}
-              sliderWidth={wp(100)}
-              itemWidth={wp(94)}
-            />
-          )}
-          {renderURLPreview}
-          {renderDescription}
+    const renderPost = useMemo(() => {
+      const myData = myItem?.post_type === 'repost' ? myItem?.activity : item;
+      return (
+        <View >
+          <View style={{flexDirection: 'row', flex: 1}}>
+            {myItem?.post_type === 'repost' && (
+              <View
+                style={{
+                  width: 2,
+                  marginLeft: 15,
+                  marginRight: 5,
+                  backgroundColor: colors.grayBackgroundColor,
+                }}
+              />
+            )}
+            <View style={{flex: 1}}>
+              <View style={myItem?.post_type === 'repost' ? styles.mainRepostContainer : styles.mainContainer}>
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={onImageProfilePress}
+                  style={styles.imageMainContainer}>
+                  <Image
+                    style={styles.background}
+                    source={
+                      !myData?.actor?.data?.full_image
+                        ? images.profilePlaceHolder
+                        : {uri: myData?.actor?.data?.full_image}
+                    }
+                    resizeMode={'cover'}
+                  />
+                </TouchableOpacity>
+                <View style={styles.userNameView}>
+                  <Text
+                    numberOfLines={1}
+                    style={styles.userNameTxt}
+                    onPress={onImageProfilePress}>
+                    {myData?.actor?.data?.full_name}
+                  </Text>
+                  <Text style={styles.activeTimeAgoTxt}>
+                    {commentPostTimeCalculate(myData?.time, true)}
+                  </Text>
+                </View>
 
-          <View style={{marginTop: 10, marginLeft: 10}} />
+                {showThreeDot && myItem?.post_type !== 'repost' && (
+                  <TouchableOpacity
+                    hitSlop={getHitSlop(15)}
+                    style={styles.dotImageTouchStyle}
+                    onPress={() => {
+                      actionSheet.current.show();
+                    }}>
+                    <Image
+                      style={styles.dotImageStyle}
+                      source={images.threeDotIcon}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+              <View style={{flex: 1}}>
+                {attachedImages && attachedImages?.length === 1 ? (
+                  <>{RenderSinglePostItems(attachedImages?.[0])}</>
+                ) : (
+                  <Carousel
+                    onSnapToItem={setChildIndex}
+                    data={attachedImages}
+                    renderItem={renderMultiplePostItems}
+                    inactiveSlideScale={1}
+                    inactiveSlideOpacity={1}
+                    sliderWidth={wp(100)}
+                    itemWidth={wp(94)}
+                  />
+                )}
+                {renderURLPreview}
+                {renderDescription}
+              </View>
+              <View style={{marginTop: 10, marginLeft: 10}} />
+            </View>
+          </View>
           <View style={styles.commentShareLikeView}>
             <View
               style={{
@@ -446,23 +557,15 @@ const NewsFeedPostItems = memo(
               </TouchableOpacity>
             </View>
           </View>
-          <ActionSheet
-            ref={actionSheet}
-            title={'News Feed Post'}
-            options={['Edit Post', 'Delete Post', 'Cancel']}
-            cancelButtonIndex={2}
-            destructiveButtonIndex={1}
-            onPress={onActionSheetItemPress}
-          />
-
-          <ActionSheet
-            ref={shareActionSheet}
-            title={'News Feed Post'}
-            options={['More', 'Cancel']} // ['Repost', 'Copy Link', 'More', 'Cancel']
-            cancelButtonIndex={1}
-            onPress={onShareActionSheetItemPress}
-          />
         </View>
+      );
+    }, [RenderSinglePostItems, attachedImages, commentCount, item, like, likeCount, myItem?.activity, myItem?.post_type, onImageProfilePress, onNewsFeedLikePress, onWriteCommentPress, renderDescription, renderMultiplePostItems, renderURLPreview, showThreeDot]);
+
+    console.log('ittttttm', myItem);
+    return (
+      <View style={{flex: 1, marginBottom: 15}}>
+        {renderRepost}
+        {renderPost}
         <LikersModal
           likersModalRef={likersModalRef}
           navigation={navigation}
@@ -476,6 +579,22 @@ const NewsFeedPostItems = memo(
             updateCommentCount(updatedCommentData);
             setCommentCount(updatedCommentData?.count);
           }}
+        />
+        <ActionSheet
+          ref={actionSheet}
+          title={'News Feed Post'}
+          options={['Edit Post', 'Delete Post', 'Cancel']}
+          cancelButtonIndex={2}
+          destructiveButtonIndex={1}
+          onPress={onActionSheetItemPress}
+        />
+
+        <ActionSheet
+          ref={shareActionSheet}
+          title={'News Feed Post'}
+          options={['Repost', 'Copy Link', 'More', 'Cancel']} // ['Repost', 'Copy Link', 'More', 'Cancel']
+          cancelButtonIndex={3}
+          onPress={onShareActionSheetItemPress}
         />
       </View>
     );
@@ -528,9 +647,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   mainContainer: {
+    flex: 1,
     alignItems: 'center',
     flexDirection: 'row',
     marginHorizontal: 15,
+    marginBottom: 15,
+    marginTop: 15,
+  },
+  mainRepostContainer:{
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'row',
     marginBottom: 15,
     marginTop: 15,
   },

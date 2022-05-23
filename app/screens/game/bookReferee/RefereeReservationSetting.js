@@ -16,6 +16,8 @@ import React, {
 
    import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
    import LinearGradient from 'react-native-linear-gradient';
+   import {useIsFocused} from '@react-navigation/native';
+
    import AuthContext from '../../../auth/context';
    import colors from '../../../Constants/Colors';
    import fonts from '../../../Constants/Fonts';
@@ -23,6 +25,8 @@ import React, {
    import strings from '../../../Constants/String';
 
    export default function RefereeReservationSetting({ navigation, route }) {
+    const isFocused = useIsFocused();
+
      const [settingObject, setSettingObject] = useState();
      const [showBottomNotes, setShowBottomNotes] = useState(true);
      const authContext = useContext(AuthContext);
@@ -34,12 +38,14 @@ import React, {
      }, [authContext, sportName]);
 
      useEffect(() => {
-       if (route?.params?.settingObj) {
-         setSettingObject(route?.params?.settingObj);
-       } else {
-         getSettings();
-       }
-     }, [authContext, getSettings, route?.params?.settingObj, sportName]);
+      if(isFocused){
+        if (route?.params?.settingObj) {
+          setSettingObject(route?.params?.settingObj);
+        } else {
+          getSettings();
+        }
+      }
+     }, [authContext, getSettings, isFocused, route?.params?.settingObj, sportName]);
 
      const challengeSettingMenu = [
        { key: 'Availability', id: 1 },
@@ -108,8 +114,8 @@ import React, {
      };
      const getSettingValue = (item) => {
        if (item.key === 'Availability') {
-         if (settingObject?.refereeAvailibility) {
-           return settingObject?.refereeAvailibility;
+         if (settingObject?.referee_availibility) {
+           return settingObject?.referee_availibility;
          }
        }
 

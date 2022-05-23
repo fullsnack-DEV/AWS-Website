@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -16,10 +16,10 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import Modal from 'react-native-modal';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import AuthContext from '../../../../auth/context';
 
 import images from '../../../../Constants/ImagePath';
@@ -39,9 +39,9 @@ import TCGradientButton from '../../../../components/TCGradientButton';
 import TCSearchBox from '../../../../components/TCSearchBox';
 import TCFollowerList from '../../../../components/TCFollowerList';
 
-export default function CreateTeamForm2({ navigation, route }) {
+export default function CreateTeamForm2({navigation, route}) {
   const [createTeamForm1] = useState(route?.params?.createTeamForm1);
-  const [followersList]  = useState(route?.params?.followersList);
+  const [followersList] = useState(route?.params?.followersList);
 
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
@@ -75,14 +75,14 @@ export default function CreateTeamForm2({ navigation, route }) {
     if (isFocused) {
       const minAgeArray = [];
       let maxAgeArray = [];
-      for (let i = 1; i <= 70; i++) {
+      for (let i = 1; i <= 120; i++) {
         const dataSource = {
           label: `${i}`,
           value: i,
         };
         minAgeArray.push(dataSource);
       }
-      for (let i = minAge; i <= 70; i++) {
+      for (let i = minAge; i <= 120; i++) {
         const dataSource = {
           label: `${i}`,
           value: i,
@@ -118,17 +118,16 @@ export default function CreateTeamForm2({ navigation, route }) {
     setLanguages(arr);
   }, []);
 
-  const isIconCheckedOrNot = ({ item, index }) => {
+  const isIconCheckedOrNot = ({item, index}) => {
     languages[index].isChecked = !item.isChecked;
-
     setLanguages([...languages]);
   };
 
-  const renderLanguage = ({ item, index }) => (
+  const renderLanguage = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-        isIconCheckedOrNot({ item, index });
+        isIconCheckedOrNot({item, index});
       }}>
       <View
         style={{
@@ -149,7 +148,7 @@ export default function CreateTeamForm2({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 
-  const renderFollowers = ({ item }) => (
+  const renderFollowers = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
@@ -162,7 +161,7 @@ export default function CreateTeamForm2({ navigation, route }) {
       <View
         style={{
           padding: 20,
-           alignItems: 'center',
+          alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
           // backgroundColor: 'red',
@@ -171,7 +170,9 @@ export default function CreateTeamForm2({ navigation, route }) {
           type={'medium'}
           name={item.full_name}
           location={item.city}
-          image={item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder}
+          image={
+            item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
+          }
         />
         <View style={styles.checkbox}>
           {followersSelection === item.user_id ? (
@@ -187,7 +188,7 @@ export default function CreateTeamForm2({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 
-  const renderGenders = ({ item }) => (
+  const renderGenders = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
@@ -221,8 +222,9 @@ export default function CreateTeamForm2({ navigation, route }) {
 
   const searchFilterFunction = (text) => {
     const result = searchFollowers.filter(
-      (x) => x.full_name.toLowerCase().includes(text.toLowerCase())
-        || x.city.toLowerCase().includes(text.toLowerCase()),
+      (x) =>
+        x.full_name.toLowerCase().includes(text.toLowerCase()) ||
+        x.city.toLowerCase().includes(text.toLowerCase()),
     );
     setFollowers(result);
   };
@@ -233,8 +235,9 @@ export default function CreateTeamForm2({ navigation, route }) {
 
   const nextOnPress = () => {
     if (
-      createTeamForm1.sport === 'tennis' && createTeamForm1.sport_type === 'double'
-      && authContext?.entity?.role === ('user' || 'player')
+      createTeamForm1.sport === 'tennis' &&
+      createTeamForm1.sport_type === 'double' &&
+      authContext?.entity?.role === ('user' || 'player')
     ) {
       const obj = {
         player1: authContext?.entity?.obj,
@@ -299,7 +302,11 @@ export default function CreateTeamForm2({ navigation, route }) {
                     type={'medium'}
                     name={follower?.full_name}
                     location={follower?.city}
-                    image={follower?.thumbnail ? { uri: follower?.thumbnail } : images.profilePlaceHolder}
+                    image={
+                      follower?.thumbnail
+                        ? {uri: follower?.thumbnail}
+                        : images.profilePlaceHolder
+                    }
                   />
                   <TouchableOpacity
                     style={styles.closeButton}
@@ -316,7 +323,6 @@ export default function CreateTeamForm2({ navigation, route }) {
                 </View>
               )}
               {!follower && (
-
                 <TouchableOpacity
                   style={styles.languageView}
                   onPress={() => setVisibleFollowersModal(true)}>
@@ -329,7 +335,7 @@ export default function CreateTeamForm2({ navigation, route }) {
               )}
             </View>
           ) : (
-            <View style={{ flex: 1 }}>
+            <View style={{flex: 1}}>
               <View style={styles.fieldView}>
                 <TCLabel title={strings.genderTitle} />
                 <TouchableOpacity onPress={() => setVisibleGendersModal(true)}>
@@ -387,7 +393,7 @@ export default function CreateTeamForm2({ navigation, route }) {
 
                         borderRadius: 5,
                         shadowColor: colors.googleColor,
-                        shadowOffset: { width: 0, height: 1 },
+                        shadowOffset: {width: 0, height: 1},
                         shadowOpacity: 0.5,
                         shadowRadius: 1,
                       },
@@ -440,7 +446,7 @@ export default function CreateTeamForm2({ navigation, route }) {
 
                         borderRadius: 5,
                         shadowColor: colors.googleColor,
-                        shadowOffset: { width: 0, height: 1 },
+                        shadowOffset: {width: 0, height: 1},
                         shadowOpacity: 0.5,
                         shadowRadius: 1,
                       },
@@ -512,7 +518,7 @@ export default function CreateTeamForm2({ navigation, route }) {
             : gender === '' || languagesName === ''
         }
         title={strings.nextTitle}
-        style={{ marginBottom: 30 }}
+        style={{marginBottom: 30}}
         onPress={nextOnPress}
       />
       <Modal
@@ -538,7 +544,7 @@ export default function CreateTeamForm2({ navigation, route }) {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: {width: 0, height: 1},
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
@@ -551,7 +557,7 @@ export default function CreateTeamForm2({ navigation, route }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
-             hitSlop={getHitSlop(15)}
+              hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setModalVisible(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -619,7 +625,7 @@ export default function CreateTeamForm2({ navigation, route }) {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: {width: 0, height: 1},
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
@@ -632,7 +638,7 @@ export default function CreateTeamForm2({ navigation, route }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
-             hitSlop={getHitSlop(15)}
+              hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleGendersModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -687,7 +693,7 @@ export default function CreateTeamForm2({ navigation, route }) {
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: {width: 0, height: 1},
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
@@ -700,7 +706,7 @@ export default function CreateTeamForm2({ navigation, route }) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
-             hitSlop={getHitSlop(15)}
+              hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleFollowersModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
@@ -783,7 +789,7 @@ const styles = StyleSheet.create({
 
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('92%'),
@@ -827,7 +833,7 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
 
@@ -847,7 +853,7 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
 
@@ -916,7 +922,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,

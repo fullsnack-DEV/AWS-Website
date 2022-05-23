@@ -18,8 +18,8 @@ export default function AvailibilityScorekeeoer({navigation, route}) {
 
   const [loading, setloading] = useState(false);
   const [acceptChallenge, setAcceptChallenge] = useState(
-    route?.params?.settingObj?.scorekeeperAvailibility
-      ? route?.params?.settingObj?.scorekeeperAvailibility === 'On'
+    route?.params?.settingObj?.scorekeeper_availibility
+      ? route?.params?.settingObj?.scorekeeper_availibility === 'On'
       : true,
   );
 
@@ -46,7 +46,7 @@ export default function AvailibilityScorekeeoer({navigation, route}) {
       ...scorekeeperSetting,
       sport: sportName,
       entity_type: 'scorekeeper',
-      scorekeeperAvailibility: acceptChallenge ? 'On' : 'Off',
+      scorekeeper_availibility: acceptChallenge ? 'On' : 'Off',
     };
 
     setloading(true);

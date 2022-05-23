@@ -106,3 +106,11 @@ export const getAllGames = async (teamId, authContext) =>
     url: `${Config.BASE_URL}teams/${teamId}/games/`,
     authContext,
   });
+
+  export const createRePost = async (bodyParams, authContext) =>
+  makeAPIRequest({
+    method: 'post',
+    url: `${Config.BASE_URL}/posts/repost`,
+    data: bodyParams,
+    authContext,
+  });

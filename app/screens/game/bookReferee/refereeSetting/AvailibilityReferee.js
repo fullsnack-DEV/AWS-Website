@@ -19,8 +19,8 @@ export default function AvailibilityReferee({navigation, route}) {
 
   const [loading, setloading] = useState(false);
   const [acceptChallenge, setAcceptChallenge] = useState(
-    route?.params?.settingObj?.refereeAvailibility
-      ? route?.params?.settingObj?.refereeAvailibility === 'On'
+    route?.params?.settingObj?.referee_availibility
+      ? route?.params?.settingObj?.referee_availibility === 'On'
       : true,
   );
 
@@ -38,6 +38,10 @@ export default function AvailibilityReferee({navigation, route}) {
     });
   }, [navigation, acceptChallenge]);
 
+
+
+
+  
   const onSavePressed = () => {
 
     const refereeSetting = (
@@ -48,7 +52,7 @@ export default function AvailibilityReferee({navigation, route}) {
       ...refereeSetting,
       sport: sportName,
       entity_type: 'referee',
-      refereeAvailibility: acceptChallenge ? 'On' : 'Off',
+      referee_availibility: acceptChallenge ? 'On' : 'Off',
     };
     console.log('data::=>', modifiedSetting);
     setloading(true);

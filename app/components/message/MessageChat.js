@@ -97,7 +97,6 @@ const MessageChat = ({route, navigation}) => {
   const [hideSearchView, setHideSearchView] = useState(true);
   const [progressNumber, setProgressNumber] = useState(0);
 
-
   const scrollRef = useRef(null);
   const refSavedMessagesData = useRef(savedMessagesData);
 
@@ -250,8 +249,8 @@ const MessageChat = ({route, navigation}) => {
 
   const uploadProgressChangeHandler = (event) => {
     // const {type, payload} = event;
-    const { payload} = event;
-    setProgressNumber(payload.progress)
+    const {payload} = event;
+    setProgressNumber(payload.progress);
   };
   const contentEmitter = new NativeEventEmitter(QB.content);
   const subscription = contentEmitter.addListener(
@@ -429,6 +428,7 @@ const MessageChat = ({route, navigation}) => {
                       <FastImage
                         source={finalImage}
                         style={{height: 27, width: 27, borderRadius: 54}}
+                        
                       />
                     </View>
                     <Text
@@ -551,7 +551,9 @@ const MessageChat = ({route, navigation}) => {
         }
         centerComponent={
           headingTitle ? (
-            <Text style={styles.eventTextStyle} numberOfLines={1}>{headingTitle}</Text>
+            <Text style={styles.eventTextStyle} numberOfLines={1}>
+              {headingTitle}
+            </Text>
           ) : (
             <ShimmerView style={{alignSelf: 'center'}} />
         )
@@ -616,7 +618,7 @@ const MessageChat = ({route, navigation}) => {
         JSON.parse(obj.customData).is_pause === true ||
         JSON.parse(obj.customData).is_deactivate === true,
     );
-    console.log('filterOccfilterOcc',filterOcc);
+    console.log('filterOccfilterOcc', filterOcc);
     console.log('occData?.length', occData?.length);
     console.log('filterOccfilterOcc', filterOcc.length);
 
@@ -625,7 +627,7 @@ const MessageChat = ({route, navigation}) => {
       setPointEvent('none');
       setPlaceholderText('No recipients in this chatroom');
     }
-  },[]);
+  }, []);
 
   const renderBottomChatTools = () => (
     <View
@@ -633,7 +635,7 @@ const MessageChat = ({route, navigation}) => {
         ...styles.bottomTextUpperContainer,
         height: selectedImage ? hp(14) : hp(8),
         shadowColor: colors.grayColor,
-        shadowOffset: { width: 0, height: 5 },
+        shadowOffset: {width: 0, height: 5},
         shadowOpacity: 0.2,
         shadowRadius: 10,
         elevation: 2,
@@ -643,42 +645,7 @@ const MessageChat = ({route, navigation}) => {
           <View style={styles.selectedImageContainer}>
             {selectedImage?.mime?.includes('image') ? (
               <FastImage
-              resizeMode={'cover'}
-              source={{uri: selectedImage?.path}}
-              style={{
-                borderRadius: 5,
-                height: 30,
-                width: 30,
-                marginVertical: hp(2),
-              }}
-            />
-            ) : (
-              <View>
-                <View
-                style={{
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  zIndex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'absolute',
-                }}>
-                  <FastImage
-                  source={images.videoPlayBtn}
-                  tintColor={'white'}
-                  resizeMode={'contain'}
-                  style={{
-                    height: 10,
-                    width: 10,
-                  }}
-                />
-                </View>
-                <Video
-                ref={videoPlayerRef}
-                paused={true}
-                muted={true}
+                resizeMode={'cover'}
                 source={{uri: selectedImage?.path}}
                 style={{
                   borderRadius: 5,
@@ -686,45 +653,83 @@ const MessageChat = ({route, navigation}) => {
                   width: 30,
                   marginVertical: hp(2),
                 }}
-                resizeMode={'cover'}
-                onLoad={() => {
-                  videoPlayerRef.current.seek(0);
-                }}
               />
+            ) : (
+              <View>
+                <View
+                  style={{
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'absolute',
+                  }}>
+                  <FastImage
+                    source={images.videoPlayBtn}
+                    tintColor={'white'}
+                    resizeMode={'contain'}
+                    style={{
+                      height: 10,
+                      width: 10,
+                    }}
+                  />
+                </View>
+                <Video
+                  ref={videoPlayerRef}
+                  paused={true}
+                  muted={true}
+                  source={{uri: selectedImage?.path}}
+                  style={{
+                    borderRadius: 5,
+                    height: 30,
+                    width: 30,
+                    marginVertical: hp(2),
+                  }}
+                  resizeMode={'cover'}
+                  onLoad={() => {
+                    videoPlayerRef.current.seek(0);
+                  }}
+                />
               </View>
             )}
             <Text style={{fontSize: 15, marginLeft: 15}}>
               {uploadImageInProgress
-              ? `Uploading ${
-                  selectedImage?.mime?.includes('image') ? 'an image' : 'video'
-                }...${progressNumber}%`
-              : `${
-                  selectedImage?.mime?.includes('image') ? 'Image' : 'Video'
-                } uploaded`}
+                ? `Uploading ${
+                    selectedImage?.mime?.includes('image')
+                      ? 'an image'
+                      : 'video'
+                  }...${progressNumber}%`
+                : `${
+                    selectedImage?.mime?.includes('image') ? 'Image' : 'Video'
+                  } uploaded`}
             </Text>
             <TouchableOpacity
-            style={{flex: 1, alignItems: 'flex-end'}}
-            onPress={() => {
-              setSelectedImage(null);
-              setUploadImageInProgress(false);
-              setUploadedFile(null);
-            }}>
+              style={{flex: 1, alignItems: 'flex-end'}}
+              onPress={() => {
+                setSelectedImage(null);
+                setUploadImageInProgress(false);
+                setUploadedFile(null);
+              }}>
               <FastImage
-              source={images.cancelImage}
-              style={{height: 14, width: 14}}
-              resizeMode={'contain'}
-            />
+                source={images.cancelImage}
+                style={{height: 14, width: 14}}
+                resizeMode={'contain'}
+              />
             </TouchableOpacity>
-
           </View>
-          {uploadImageInProgress && <Progress.Bar
-          progress={progressNumber / 100}
-          width={wp('100%')}
-          borderRadius={0}
-          borderWidth={0}
-          unfilledColor={colors.offGrayColor}
-          color={colors.themeColor}
-        />}
+          {uploadImageInProgress && (
+            <Progress.Bar
+              progress={progressNumber / 100}
+              width={wp('100%')}
+              borderRadius={0}
+              borderWidth={0}
+              unfilledColor={colors.offGrayColor}
+              color={colors.themeColor}
+            />
+          )}
         </View>
       )}
       <View style={styles.bottomTextInputContainer}>
@@ -749,7 +754,7 @@ const MessageChat = ({route, navigation}) => {
             onChangeText={setMessageBody}
             style={{width: '100%'}}
             isClear={false}
-            backgroundColor = {colors.lightGrayBackground}
+            backgroundColor={colors.lightGrayBackground}
           />
         </View>
         {/* <View
@@ -867,14 +872,19 @@ const MessageChat = ({route, navigation}) => {
     };
     Alert.alert(
       '',
-      'Are you sure you want to \n' + 'leave this chatroom?',
+      'Are you sure you want to \n' +
+        `${occupantsData.length > 2 ? 'leave' : 'delete'} this chatroom?`,
       [
         {
           text: 'Cancel',
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        {text: 'Leave', onPress: () => okPress(), style: 'destructive'},
+        {
+          text: occupantsData.length > 2 ? 'Leave' : 'Delete',
+          onPress: () => okPress(),
+          style: 'destructive',
+        },
       ],
       {cancelable: false},
     );
@@ -1020,7 +1030,11 @@ const MessageChat = ({route, navigation}) => {
                 style={styles.inviteImage}
                 source={images.leave_chat_room}
               />
-              <Text style={styles.grayText}>LEAVE CHATROOM</Text>
+              <Text style={styles.grayText}>
+                {occupantsData.length > 2
+                  ? 'LEAVE CHATROOM'
+                  : 'DELETE CHATROOM'}
+              </Text>
             </TouchableOpacity>
           </View>
         </Modalize>
@@ -1081,7 +1095,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     alignSelf: 'center',
-    width: wp(60)
+    width: wp(60),
   },
   bottomTextUpperContainer: {
     backgroundColor: colors.whiteColor,
