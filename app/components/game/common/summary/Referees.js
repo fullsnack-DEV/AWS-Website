@@ -267,7 +267,7 @@ const Referees = ({
         setRefereeSetting(response);
 
         if (
-          response?.refereeAvailibility &&
+          response?.referee_availibility &&
           response?.game_fee &&
           response?.refund_policy &&
           response?.available_area

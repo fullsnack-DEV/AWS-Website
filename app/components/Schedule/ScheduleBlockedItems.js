@@ -1,22 +1,17 @@
-/* eslint-disable no-nested-ternary */
 import React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
-export default function BlockSlotView({
-  item,
+export default function ScheduleBlockedItems({
   startDate,
   endDate,
   allDay = false,
   selected,
 }) {
-  const getTimeFormat = (dateValue) =>
-    moment(new Date(dateValue * 1000)).format('h:mma');
-  console.log('asasasasa', item.blocked);
-
+  const getTimeFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('hh:mm A');
   return (
     <>
       {selected ? (
@@ -33,40 +28,20 @@ export default function BlockSlotView({
             alignItems: 'center',
             justifyContent: 'center',
             shadowColor: colors.googleColor,
-            shadowOffset: {width: 0, height: 2},
+            shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.5,
             shadowRadius: 2,
           }}>
-          <Text
-            style={[styles.fieldValue, {color: colors.whiteColor}]}
-            numberOfLines={3}>
+          <Text style={[styles.fieldValue, { color: colors.whiteColor }]} numberOfLines={3}>
             {allDay
               ? 'All day'
               : `${getTimeFormat(startDate)} - ${getTimeFormat(endDate)}`}
           </Text>
         </LinearGradient>
-      ) : item.blocked ? (
-        <View
-          style={{
-            marginTop: 5,
-            marginBottom: 5,
-            height: 20,
-            width: '80%',
-            alignSelf: 'center',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text style={styles.blockFieldValue} numberOfLines={3}>
-            {allDay
-              ? 'All day'
-              : `${getTimeFormat(startDate)} - ${getTimeFormat(endDate)}`}
-          </Text>
-        </View>
       ) : (
         <View
           style={{
             marginTop: 8,
-
             marginBottom: 8,
             backgroundColor: colors.whiteColor,
             height: 35,
@@ -76,7 +51,7 @@ export default function BlockSlotView({
             alignItems: 'center',
             justifyContent: 'center',
             shadowColor: colors.googleColor,
-            shadowOffset: {width: 0, height: 2},
+            shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.5,
             shadowRadius: 2,
             elevation: 1,
@@ -95,12 +70,6 @@ const styles = StyleSheet.create({
   fieldValue: {
     fontSize: 16,
     color: colors.greenGradientStart,
-    fontFamily: fonts.RMedium,
-    textAlign: 'center',
-  },
-  blockFieldValue: {
-    fontSize: 16,
-    color: colors.linesepratorColor,
     fontFamily: fonts.RMedium,
     textAlign: 'center',
   },

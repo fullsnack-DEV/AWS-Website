@@ -104,8 +104,8 @@ import React, {
      };
      const getSettingValue = (item) => {
        if (item.key === 'Availability') {
-         if (settingObject?.scorekeeperAvailibility) {
-           return settingObject?.scorekeeperAvailibility;
+         if (settingObject?.scorekeeper_availibility) {
+           return settingObject?.scorekeeper_availibility;
          }
        }
 

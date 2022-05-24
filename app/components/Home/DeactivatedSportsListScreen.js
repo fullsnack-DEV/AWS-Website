@@ -47,8 +47,6 @@ export default function DeactivatedSportsListScreen({navigation}) {
     image_url = setting.base_url_sporticon;
   });
 
-  
-
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   useEffect(() => {
@@ -90,9 +88,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
       })
       .catch((e) => {
         setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
-        }, 10);
+        Alert.alert(strings.alertmessagetitle, e.message);
       });
   };
 
@@ -226,9 +222,9 @@ export default function DeactivatedSportsListScreen({navigation}) {
             <Text style={styles.listTitle}>Playing</Text>
             <FlatList
               showsHorizontalScrollIndicator={false}
-              data={userObject?.registered_sports?.filter(
-                (obj) => obj.type === 'player' && !obj.is_active,
-              ).sort((a, b) => a.sport.localeCompare(b.sport))}
+              data={userObject?.registered_sports
+                ?.filter((obj) => obj.type === 'player' && !obj.is_active)
+                .sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={sportsView}
             />
@@ -242,9 +238,9 @@ export default function DeactivatedSportsListScreen({navigation}) {
             <Text style={styles.listTitle}>Refereeing</Text>
             <FlatList
               showsHorizontalScrollIndicator={false}
-              data={userObject?.referee_data?.filter(
-                (obj) => obj.type === 'referee' && !obj.is_active,
-              ).sort((a, b) => a.sport.localeCompare(b.sport))}
+              data={userObject?.referee_data
+                ?.filter((obj) => obj.type === 'referee' && !obj.is_active)
+                .sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={refereeSportsView}
             />
@@ -258,9 +254,9 @@ export default function DeactivatedSportsListScreen({navigation}) {
             <Text style={styles.listTitle}>Scorekeeping</Text>
             <FlatList
               showsHorizontalScrollIndicator={false}
-              data={userObject?.scorekeeper_data?.filter(
-                (obj) => obj.type === 'scorekeeper' && !obj.is_active,
-              ).sort((a, b) => a.sport.localeCompare(b.sport))}
+              data={userObject?.scorekeeper_data
+                ?.filter((obj) => obj.type === 'scorekeeper' && !obj.is_active)
+                .sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={scorekeeperSportsView}
             />
@@ -371,7 +367,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  
   activateButtonText: {
     fontFamily: fonts.RBold,
     fontSize: 12,

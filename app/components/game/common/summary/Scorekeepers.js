@@ -251,7 +251,7 @@ const Scorekeepers = ({
         setScorekeeperSetting(response);
 
         if (
-          response?.scorekeeperAvailibility &&
+          response?.scorekeeper_availibility &&
           response?.game_fee &&
           response?.refund_policy &&
           response?.available_area

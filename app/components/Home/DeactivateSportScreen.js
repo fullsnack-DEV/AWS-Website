@@ -92,9 +92,7 @@ export default function DeactivateSportScreen({navigation, route}) {
       })
       .catch((e) => {
         setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
-        }, 10);
+        Alert.alert(strings.alertmessagetitle, e.message);
       });
   };
 

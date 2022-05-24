@@ -68,17 +68,22 @@ const UserHomeTopSection = ({
       userDetails?.sport_setting?.activity_order &&
       userDetails?.sport_setting?.activity_order?.length > 0
     ) {
-      if(isAdmin){
+      if (isAdmin) {
         return [
-          ...(userDetails?.sport_setting?.activity_order.filter((obj)=>  obj.is_active === true) ?? []),
+          ...(userDetails?.sport_setting?.activity_order.filter(
+            (obj) => obj.is_active === true,
+          ) ?? []),
           {sport_name: strings.addrole, item_type: EntityStatus.addNew},
         ];
       }
-        return [
-          ...(userDetails?.sport_setting?.activity_order.filter((obj)=>  'is_hide' in obj && obj.is_active === true && obj.is_hide === false) ?? []),
-          {sport_name: strings.addrole, item_type: EntityStatus.addNew},
-        ];
-      
+      return [
+        ...(userDetails?.sport_setting?.activity_order.filter(
+          (obj) =>
+            (!('is_hide' in obj) || obj?.is_hide === false) &&
+            obj.is_active === true,
+        ) ?? []),
+        {sport_name: strings.addrole, item_type: EntityStatus.addNew},
+      ];
     }
     return [
       ...(userDetails?.registered_sports?.filter(
@@ -161,14 +166,13 @@ const UserHomeTopSection = ({
 
   const renderRefereesIn = useCallback(
     ({item}) => {
-      
       if (item.item_type) {
         return renderAddRefereeRole({item});
       }
 
       return (
         <UserInfoRefereesInItem
-        isOpacity={isAdmin ? item?.is_hide : false}
+          isOpacity={isAdmin ? item?.is_hide : false}
           title={Utility.getSportName(item, authContext)}
           thumbURL={
             item?.type
@@ -196,7 +200,7 @@ const UserHomeTopSection = ({
 
       return (
         <UserInfoScorekeeperInItem
-        isOpacity={isAdmin ? item?.is_hide : false}
+          isOpacity={isAdmin ? item?.is_hide : false}
           title={Utility.getSportName(item, authContext)}
           thumbURL={
             item?.type
@@ -221,7 +225,7 @@ const UserHomeTopSection = ({
       if (isAdmin) {
         return (
           <UserInfoAddRole
-          isOpacity={isAdmin ? item?.is_hide : false}
+            isOpacity={isAdmin ? item?.is_hide : false}
             title={Utility.getSportName(item, authContext)}
             thumbURL={images.addRole}
             onPress={() => {

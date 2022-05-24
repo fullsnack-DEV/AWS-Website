@@ -21,7 +21,6 @@ import {
   SafeAreaView,
   ScrollView,
   Animated,
-  SectionList,
 } from 'react-native';
 
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -51,14 +50,12 @@ import {
 import Header from '../../../components/Home/Header';
 import RefereeReservationItem from '../../../components/Schedule/RefereeReservationItem';
 import {getGameHomeScreen} from '../../../utils/gameUtils';
-import TCInnerLoader from '../../../components/TCInnerLoader';
 import ScorekeeperReservationItem from '../../../components/Schedule/ScorekeeperReservationItem';
 import {getHitSlop} from '../../../utils';
 import {getUnreadCount} from '../../../api/Notificaitons';
 import * as Utility from '../../../utils/index';
 
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
-import MonthHeader from '../../../components/Schedule/Monthheader';
 import {getGameIndex} from '../../../api/elasticSearch';
 import TCAccountDeactivate from '../../../components/TCAccountDeactivate';
 import {userActivate} from '../../../api/Users';
@@ -106,7 +103,6 @@ export default function ScheduleScreen({navigation, route}) {
   const [eventData, setEventData] = useState([]);
   const [timeTable, setTimeTable] = useState([]);
   const [selectedEventItem, setSelectedEventItem] = useState(null);
-  const [eventSelectDate, setEventSelectDate] = useState(new Date());
   const [loading, setloading] = useState(false);
   const [isRefereeModal, setIsRefereeModal] = useState(false);
   const [isScorekeeperModal, setIsScorekeeperModal] = useState(false);
@@ -125,7 +121,6 @@ export default function ScheduleScreen({navigation, route}) {
 
   const [animatedOpacityValue] = useState(new Animated.Value(0));
   const [slots, setSlots] = useState();
-  const [blockedGroups, setBlockedGroups] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
@@ -248,14 +243,7 @@ export default function ScheduleScreen({navigation, route}) {
           groups[title].push(data);
           return groups;
         }, {});
-        const groupArrays = Object.keys(group).map((date) => ({
-          title: date,
-          data: group[date],
-        }));
 
-        setBlockedGroups(
-          groupArrays.sort((b, a) => new Date(b.title) - new Date(a.title)),
-        );
         console.log('Groups:=>', group);
         // eslint-disable-next-line array-callback-return
         bookSlots?.map((e) => {
@@ -337,7 +325,12 @@ export default function ScheduleScreen({navigation, route}) {
       });
 
       const tempMarkDate = {};
-      (eventsData || []).filter((event_item) => {
+
+      const onlyEvents = (eventsData || []).filter(
+        (obj) => obj.cal_type === 'event',
+      );
+      console.log('onlyEvents', onlyEvents);
+      onlyEvents.map((event_item) => {
         const startDate = new Date(event_item.start_datetime * 1000);
         const eventDate = moment(startDate).format('YYYY-MM-DD');
         tempMarkDate[eventDate] = {
@@ -659,40 +652,61 @@ export default function ScheduleScreen({navigation, route}) {
     [markingDays],
   );
 
-  const onDayPress = (dateObj) => {
-    selectedCalendarDate = moment(dateObj.dateString);
-    getSelectedDayEvents(dateObj.dateString);
-    // setselectedCalendarMonthString(selectedCalendarDateStr);
-    setEventSelectDate(dateObj.dateString);
-    const date = moment(dateObj.dateString).format('YYYY-MM-DD');
-    setSelectedDate(moment(dateObj.dateString).format('YYYY-MM-DD'));
-    const dataItem = [];
-    (timeTable || []).filter((time_table_item) => {
-      const startDate = new Date(time_table_item.start_datetime * 1000);
-      const endDate = new Date(time_table_item.end_datetime * 1000);
-      const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
-      if (eventDateSelect === date) {
-        const obj = {
-          ...time_table_item,
-          start: moment(startDate).format('YYYY-MM-DD hh:mm:ss'),
-          end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-        };
-        dataItem.push(obj);
+  const createCalenderTimeSlots = (startTime, hours, blockedSlots) => {
+    console.log('dsdsad', blockedSlots);
+    const tSlots = [];
+    let startSlotTime = startTime;
+    const lastSlotTime = startTime + hours * 60 * 60;
+    for (const blockedSlot of blockedSlots) {
+      if (lastSlotTime > blockedSlot.start_datetime) {
+        tSlots.push({
+          start_datetime: startSlotTime,
+          end_datetime: blockedSlot.start_datetime,
+          blocked: false,
+        });
+
+        tSlots.push({
+          start_datetime: blockedSlot.start_datetime,
+          end_datetime: blockedSlot.end_datetime,
+          blocked: true,
+        });
+
+        startSlotTime = blockedSlot.end_datetime;
       }
-      return null;
+    }
+
+    tSlots.push({
+      start_datetime: startSlotTime,
+      end_datetime: lastSlotTime,
+      blocked: false,
     });
 
-    const temp = [];
-    (slots || []).map((e) => {
-      if (
-        getSimpleDateFormat(new Date(e.start_datetime)) ===
-        getSimpleDateFormat(new Date(dateObj.dateString))
-      ) {
-        temp.push(e);
-      }
-    });
-    // setBlockedSlot(temp);
-    return null;
+    return tSlots;
+  };
+
+  const onDayPress = (dateObj) => {
+    console.log('dateObjdateObj', dateObj);
+    selectedCalendarDate = moment(dateObj.dateString);
+    getSelectedDayEvents(dateObj.dateString);
+    setSelectedDate(moment(dateObj.dateString).format('YYYY-MM-DD'));
+    console.log('timeTableeee', timeTable);
+    let temp = [];
+    temp = timeTable.filter(
+      (e) =>
+        getSimpleDateFormat(
+          new Date(e?.start_datetime * 1000) ===
+            getSimpleDateFormat(new Date(dateObj.dateString)),
+        ) && e.blocked,
+    );
+
+    const start = new Date(dateObj.timestamp);
+    start.setHours(0, 0, 0, 0);
+    const timeSlots = createCalenderTimeSlots(
+      Number(parseFloat(new Date(start).getTime() / 1000).toFixed(0)),
+      24,
+      temp,
+    );
+    setSlots(timeSlots);
   };
 
   const onReachedCalenderTop = ({nativeEvent: e}) => {
@@ -890,208 +904,119 @@ export default function ScheduleScreen({navigation, route}) {
         pointerEvents={pointEvent}
         needsOffscreenAlphaCompositing>
         <View style={{flex: 1}}>
-          <View
-            style={{
-              flexDirection: 'row',
-              margin: 15,
-              justifyContent: 'space-between',
-            }}>
-            <View style={{flexDirection: 'row'}}>
-              <Text
-                style={
-                  scheduleIndexCounter === 0
-                    ? styles.activeButton
-                    : styles.inActiveButton
-                }
-                onPress={() => {
-                  setScheduleIndexCounter(0);
-                }}>
-                Events
-              </Text>
-              <Text
-                style={
-                  scheduleIndexCounter === 1
-                    ? styles.activeButton
-                    : styles.inActiveButton
-                }
-                onPress={() => {
-                  setScheduleIndexCounter(1);
-                }}>
-                Availability
-              </Text>
-            </View>
-            <View style={{flexDirection: 'row'}}>
-              {/* {!isMenu && scheduleIndexCounter !== 1 && (
-              <TouchableOpacity
-                hitSlop={getHitSlop(15)}
-                style={{marginRight: 15}}
-                onPress={() => {
-                  setShowTimeTable(!showTimeTable);
-                }}>
-                <Image
-                  source={
-                    showTimeTable ? images.scheduleOrange : images.scheduleGray
-                  }
-                  style={{
-                    resizeMode: 'contain',
-                    height: 25,
-                    width: 25,
-                  }}
-                />
-              </TouchableOpacity>
-            )} */}
-              <TouchableOpacity
-                hitSlop={getHitSlop(15)}
-                onPress={() => {
-                  setIsMenu(!isMenu);
-                  setShowTimeTable(false);
-                  setEventSelectDate(null);
-                }}>
-                <Image
-                  source={isMenu ? images.menuOrange : images.menuGray}
-                  style={{
-                    resizeMode: 'contain',
-                    height: 25,
-                    width: 25,
-                  }}
-                />
-              </TouchableOpacity>
-            </View>
+          <View style={{flexDirection: 'row', margin: 15}}>
+            <Text
+              style={
+                scheduleIndexCounter === 0
+                  ? styles.activeButton
+                  : styles.inActiveButton
+              }
+              onPress={() => {
+                setScheduleIndexCounter(0);
+              }}>
+              Events
+            </Text>
+            <Text
+              style={
+                scheduleIndexCounter === 1
+                  ? styles.activeButton
+                  : styles.inActiveButton
+              }
+              onPress={() => {
+                setScheduleIndexCounter(1);
+              }}>
+              Availability
+            </Text>
           </View>
-          <View style={[styles.separateLine, {marginBottom: 12}]} />
-          <TCInnerLoader visible={loading} />
+          <View style={styles.separateLine} />
           {!loading && scheduleIndexCounter === 0 && (
-            <View style={{flex: 1}}>
-              <ScrollView
-                style={{flex: 1, backgroundColor: colors.lightGrayBackground}}
-                onScroll={onScrollCalender}
-                nestedScrollEnabled
-                stickyHeaderIndices={[0]}>
-                {isMenu && <MonthHeader />}
-                {!isMenu && (
-                  <EventAgendaSection
-                    onScrollCalender={onScrollCalender}
-                    showTimeTable={showTimeTable}
-                    isMenu={isMenu}
-                    horizontal={listView}
-                    onPressListView={onPressListView}
-                    onPressGridView={onPressGridView}
-                    onDayPress={onDayPress}
-                    selectedCalendarDate={selectedCalendarDateString}
-                    calendarMarkedDates={markingDays}
-                  />
-                )}
-                <EventScheduleScreen
-                isMenu={isMenu}
-                  eventData={
-                    eventSelectDate
-                      ? (eventData || []).filter(
-                          (e) =>
-                            moment(eventSelectDate).format('YYYY-MM-DD') ===
-                            moment(e.start_datetime * 1000).format(
-                              'YYYY-MM-DD',
-                            ),
-                        )
-                      : eventData
+            <EventScheduleScreen
+              eventData={eventData}
+              navigation={navigation}
+              profileID={authContext.entity.uid}
+              onThreeDotPress={(item) => {
+                setSelectedEventItem(item);
+              }}
+              onItemPress={async (item) => {
+                console.log('Clicked ITEM:=>', item);
+                const entity = authContext.entity;
+                if (item?.game_id) {
+                  if (item?.game?.sport) {
+                    const gameHome = getGameHomeScreen(
+                      item.game.sport.replace(' ', '_'),
+                    );
+                    navigation.navigate(gameHome, {
+                      gameId: item?.game_id,
+                    });
                   }
-                  navigation={navigation}
-                  profileID={authContext.entity.uid}
-                  onThreeDotPress={(item) => {
-                    setSelectedEventItem(item);
-                  }}
-                  onItemPress={async (item) => {
-                    console.log('Clicked ITEM:=>', item);
-                    const entity = authContext.entity;
-                    if (item?.game_id) {
-                      if (item?.game?.sport) {
-                        const gameHome = getGameHomeScreen(
-                          item.game.sport.replace(' ', '_'),
-                        );
-                        navigation.navigate(gameHome, {
-                          gameId: item?.game_id,
-                        });
-                      }
-                    } else {
-                      getEventById(
-                        entity.role === 'user' ? 'users' : 'groups',
-                        entity.uid || entity.auth.user_id,
-                        item.cal_id,
-                        authContext,
-                      )
-                        .then((response) => {
-                          navigation.navigate('EventScreen', {
-                            data: response.payload,
-                            gameData: item,
-                          });
-                        })
-                        .catch((e) => {
-                          console.log('Error :-', e);
-                        });
-                    }
-                  }}
-                  entity={authContext.entity}
-                />
-              </ScrollView>
-
-            
-            </View>
+                } else {
+                  getEventById(
+                    entity.role === 'user' ? 'users' : 'groups',
+                    entity.uid || entity.auth.user_id,
+                    item.cal_id,
+                    authContext,
+                  )
+                    .then((response) => {
+                      navigation.navigate('EventScreen', {
+                        data: response.payload,
+                        gameData: item,
+                      });
+                    })
+                    .catch((e) => {
+                      console.log('Error :-', e);
+                    });
+                }
+              }}
+              entity={authContext.entity}
+            />
           )}
           {!loading && scheduleIndexCounter === 1 && (
-            <View style={{flex: 1}}>
-              <ScrollView
-                style={{flex: 1}}
-                onScroll={onScrollCalender}
-                nestedScrollEnabled
-                stickyHeaderIndices={[0]}>
-                {/* <EventAgendaSection
-              showTimeTable={showTimeTable}
-              isMenu={isMenu}
-              horizontal={listView}
-              onPressListView={onPressListView}
-              onPressGridView={onPressGridView}
-              onDayPress={onDayPress}
-              selectedCalendarDate={selectedCalendarDateString}
-              calendarMarkedDates={markingDays}
-            /> */}
-                {isMenu && <MonthHeader />}
-                {!isMenu && (
-                  <EventAgendaSection
-                    showTimeTable={showTimeTable}
-                    isMenu={isMenu}
-                    horizontal={listView}
-                    onPressListView={onPressListView}
-                    onPressGridView={onPressGridView}
-                    onDayPress={onDayPress}
-                    selectedCalendarDate={selectedCalendarDateString}
-                    calendarMarkedDates={markingDays}
-                  />
-                )}
-                {/* Availibility bottom view */}
+            <ScrollView
+              style={{
+                flex: 1,
+                backgroundColor: colors.lightGrayBackground,
+                marginTop: 15,
+              }}
+              onScroll={onScrollCalender}
+              nestedScrollEnabled
+              stickyHeaderIndices={[0]}>
+              <EventAgendaSection
+                showTimeTable={showTimeTable}
+                isMenu={isMenu}
+                horizontal={listView}
+                onPressListView={onPressListView}
+                onPressGridView={onPressGridView}
+                onDayPress={onDayPress}
+                selectedCalendarDate={selectedCalendarDateString}
+                calendarMarkedDates={markingDays}
+              />
 
-                <View>
-                  {/* <Text style={styles.slotHeader}>
-                Available time For challenge
-              </Text> */}
-                  <SectionList
-                    sections={blockedGroups}
-                    renderItem={({item}) => (
-                      <BlockSlotView
-                        startDate={item.start_datetime}
-                        endDate={item.end_datetime}
-                        allDay={item.allDay}
-                      />
-                    )}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderSectionHeader={({section: {title}}) => (
-                      <Text style={styles.sectionHeader}>
-                        {moment(new Date(title)).format('dddd, MMM DD, YYYY')}
-                      </Text>
-                    )}
-                  />
-                </View>
-              </ScrollView>
-             
-            </View>
+              {/* Availibility bottom view */}
+
+              <View>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 16,
+                    fontFamily: fonts.RRegular,
+                    color: colors.lightBlackColor,
+                  }}>
+                  Available time For challenge
+                </Text>
+                <FlatList
+                  data={slots}
+                  renderItem={({item}) => (
+                    <BlockSlotView
+                      item={item}
+                      startDate={item.start_datetime}
+                      endDate={item.end_datetime}
+                      allDay={item.allDay}
+                    />
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              </View>
+            </ScrollView>
           )}
         </View>
         <ActionSheet
@@ -1455,14 +1380,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  sectionHeader: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginLeft: 15,
-    marginBottom: 8,
-    marginTop: 8,
-  },
   backImageStyle: {
     height: 35,
     width: 35,

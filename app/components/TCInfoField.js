@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
-    flex: 0.33,
+    flex: 0.30,
     // paddingTop: 4,
   },
   fieldValue: {

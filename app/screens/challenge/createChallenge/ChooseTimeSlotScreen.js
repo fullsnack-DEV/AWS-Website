@@ -30,8 +30,8 @@ import * as Utility from '../../../utils/index';
 
 import strings from '../../../Constants/String';
 
-import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
+import ScheduleBlockedItems from '../../../components/Schedule/ScheduleBlockedItems';
 
 let selectedDayMarking = {};
 export default function ChooseTimeSlotScreen({navigation, route}) {
@@ -332,7 +332,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
           setTo(dt.getTime());
         }
       }}>
-      <BlockSlotView
+      <ScheduleBlockedItems
         startDate={item.starttime}
         endDate={item.endtime}
         allDay={item.allDay}
@@ -415,7 +415,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
           {/* <SectionList
           sections={blockedGroups}
           renderItem={({ item }) => (
-            <BlockSlotView
+            <ScheduleBlockedItems
               startDate={item.start_datetime}
               endDate={item.end_datetime}
               allDay={item.allDay}
