@@ -436,6 +436,7 @@ export default function LocalHomeScreen({navigation, route}) {
                     {match: {'setting.availibility': 'On'}},
                     {term: {entity_type: 'team'}},
                     {term: {is_pause: false}},
+                    {term: {player_deactivated: false}},
                   ],
                 },
               },

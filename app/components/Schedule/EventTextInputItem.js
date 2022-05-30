@@ -21,7 +21,7 @@ function EventTextInputItem({
         value={value}
         multiline={multiline}
         textAlignVertical={multiline ? 'top' : 'center'}
-        placeholderTextColor={colors.lightgrayColor}
+        placeholderTextColor={colors.userPostTimeColor}
       />
     </View>
   );
@@ -35,23 +35,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   headerTextStyle: {
-    fontSize: 20,
-    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    fontFamily: fonts.RBold,
     marginVertical: 3,
   },
   textInputStyle: {
-    backgroundColor: colors.offwhite,
-    borderColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    borderWidth: 1,
     color: colors.lightBlackColor,
     padding: 10,
     marginTop: 10,
-    elevation: 3,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 0.8,
     fontSize: 16,
     fontFamily: fonts.RRegular,
   },
