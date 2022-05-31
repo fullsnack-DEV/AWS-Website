@@ -259,7 +259,8 @@ const PlayInModule = ({
     if (
       currentTab === 0 &&
       authContext?.entity?.uid !== currentUserData?.user_id &&
-      (authContext?.entity?.role === 'user' || authContext?.entity?.role === 'player') &&
+      (authContext?.entity?.role === 'user' ||
+        authContext?.entity?.role === 'player') &&
       mySport.length > 0
     ) {
       return (
@@ -437,7 +438,6 @@ const PlayInModule = ({
   return (
     <>
       <ActivityLoader visible={loading} />
-
       <Modal
         isVisible={visible}
         backdropColor="black"
@@ -452,7 +452,6 @@ const PlayInModule = ({
         <View style={styles.modalContainerViewStyle}>
           <SafeAreaView style={{flex: 1}}>
             {renderHeader}
-
             {/* Challenge Button */}
 
             {/* Profile View Section */}

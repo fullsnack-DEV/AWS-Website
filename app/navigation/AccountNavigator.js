@@ -241,6 +241,8 @@ import PauseGroupScreen from '../components/Home/PauseGroupScreen';
 import SportAccountSettingScreen from '../screens/account/SportAccountSettingScreen';
 import SportHideUnhideScreen from '../screens/home/SportHideUnhideScreen';
 import SportActivitiesScreen from '../components/Home/SportActivitiesScreen';
+import ChangeSportsOrderScreen from '../screens/account/schedule/ChangeSportsOrderScreen';
+import ChangeOtherListScreen from '../screens/account/schedule/ChangeOtherListScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2431,6 +2433,43 @@ const AccountNavigator = () => (
         },
       }}
     />
+    
+    
+    <Stack.Screen
+      name="ChangeSportsOrderScreen"
+      component={ChangeSportsOrderScreen}
+      options={{
+        title: 'Change List of Sports',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+
+    <Stack.Screen
+      name="ChangeOtherListScreen"
+      component={ChangeOtherListScreen}
+      options={{
+        title: 'Change List Of Orgernizers',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
     <Stack.Screen
       name="SportHideUnhideScreen"
       component={SportHideUnhideScreen}

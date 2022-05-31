@@ -420,6 +420,12 @@ const images = {
   refereeIcon : require('../assets/images/referee_ic.png'),
 
   scorekeeperIcon : require('../assets/images/scorekeeper_ic.png'),
+  localHomeFilter: require('../assets/images/Filter.png'),
+
+
+  addSportList: require('../assets/images/add_sport_list.png'),
+  removeSportList: require('../assets/images/remove_sport_list.png'),
+  choosePic: require('../assets/images/choose_pic.png'),
 
 
 

@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
     padding: wp('1.5%'),
   },
   headerTextStyle: {
-    fontSize: 20,
-    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    fontFamily: fonts.RBold,
     marginVertical: 3,
     color: colors.lightBlackColor,
   },

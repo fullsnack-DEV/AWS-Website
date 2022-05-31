@@ -10,21 +10,23 @@ import {
   Image,
   Text,
   SafeAreaView,
-  FlatList,
   ScrollView,
   Alert,
+  TextInput,
+  FlatList,
   Dimensions,
 } from 'react-native';
 import moment from 'moment';
 import {
-  heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {useIsFocused} from '@react-navigation/native';
 import Geolocation from '@react-native-community/geolocation';
+import RNPickerSelect from 'react-native-picker-select';
+import Modal from 'react-native-modal';
+import {useIsFocused} from '@react-navigation/native';
+
 import AuthContext from '../../../auth/context';
 import Header from '../../../components/Home/Header';
-import EventColorItem from '../../../components/Schedule/EventColorItem';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import EventMonthlySelection from '../../../components/Schedule/EventMonthlySelection';
@@ -36,14 +38,21 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
 import {createEvent} from '../../../api/Schedule';
+import TCProfileView from '../../../components/TCProfileView';
+
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {getLocationNameWithLatLong} from '../../../api/External';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
-import * as Utility from '../../../utils/index';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
+import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
+import TCThinDivider from '../../../components/TCThinDivider';
+import {getHitSlop, getSportName} from '../../../utils';
+import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
+import {getGroups} from '../../../api/Groups';
+import {getUserSettings} from '../../../api/Users';
+import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
 
 const getNearDateTime = (date) => {
   const start = moment(date);
@@ -53,11 +62,15 @@ const getNearDateTime = (date) => {
   return dateTime;
 };
 export default function CreateEventScreen({navigation, route}) {
+  const eventPostedList = ['Schedule only', 'Schedule & posts'];
+
   const isFocused = useIsFocused();
+
   const authContext = useContext(AuthContext);
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
-  const [singleSelectEventColor, setSingleSelectEventColor] = useState();
+  const [eventPosted, setEventPosted] = useState(0);
+
   const [toggle, setToggle] = useState(true);
   const [eventStartDateTime, setEventStartdateTime] = useState(
     toggle
@@ -70,46 +83,24 @@ export default function CreateEventScreen({navigation, route}) {
       ? new Date().setDate(new Date().getDate() + 1)
       : moment(eventStartDateTime).add(5, 'm').toDate(),
   );
-  const [eventUntilDateTime, setEventUntildateTime] = useState(
-    eventEndDateTime,
-  );
+  const [eventUntilDateTime, setEventUntildateTime] =
+    useState(eventEndDateTime);
   const [searchLocation, setSearchLocation] = useState();
   const [locationDetail, setLocationDetail] = useState(null);
   const [is_Blocked, setIsBlocked] = useState(false);
   const [loading, setloading] = useState(false);
-  const [addColorDoneButton, setAddColorDoneButton] = useState(false);
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  const [sportsSelection, setSportsSelection] = useState();
+  const [sportsData, setSportsData] = useState([]);
+  const [groupsList, setGroupsList] = useState([]);
+  const [isAll, setIsAll] = useState(false);
 
-  const [eventColors, setEventColors] = useState();
-  const [selectedEventColors, setSelectedEventColors] = useState([]);
-  const [isColorPickerModal, setIsColorPickerModal] = useState(false);
+  const [whoCanSee, setWhoCanSee] = useState('Only me');
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
   const [selectWeekMonth, setSelectWeekMonth] = useState('');
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
-      const eventColorData = await Utility.getStorage('eventColors');
-
-      if (eventColorData) {
-        setEventColors(eventColorData);
-      } else {
-        setEventColors([
-          ...Utility.createdEventData,
-          {
-            id: 10,
-            color: '0',
-            isSelected: false,
-            isNew: true,
-          },
-        ]);
-      }
-      // setEventColors(eventColorData);
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, [navigation]);
   const countNumberOfWeekFromDay = () => {
     const date = new Date();
     const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -187,16 +178,15 @@ export default function CreateEventScreen({navigation, route}) {
     setUntilDateVisible(!untilDateVisible);
   };
 
-  const colorToggleModal = () => {
-    setIsColorPickerModal(!isColorPickerModal);
-  };
-
   useEffect(() => {
-    if (route.params && route.params.locationName) {
-      setSearchLocation(route.params.locationName);
-      setLocationDetail(route.params.locationDetail);
+    if (isFocused) {
+      getSports();
+      if (route.params && route.params.locationName) {
+        setSearchLocation(route.params.locationName);
+        setLocationDetail(route.params.locationDetail);
+      }
     }
-  }, [isFocused]);
+  }, [isFocused, route.params]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -231,6 +221,51 @@ export default function CreateEventScreen({navigation, route}) {
       unsubscribe();
     };
   }, [route.params.comeName]);
+
+  useEffect(() => {
+    setloading(true);
+    // getGroups(authContext)
+    getGroups(authContext)
+      .then((response) => {
+        const {teams, clubs} = response.payload;
+
+        // const groups = [...teams, ...clubs].map((obj) => ({
+        //   ...obj,
+        //   isSelected: false,
+        // }));
+
+        getUserSettings(authContext).then((setting) => {
+          setloading(false);
+          console.log('Settings:=>', setting);
+          if (setting?.payload?.user?.schedule_group) {
+            const groups = [...teams, ...clubs].map((obj) =>
+              setting?.payload?.user?.schedule_group.includes(obj.group_id)
+                ? {
+                    ...obj,
+                    isSelected: true,
+                  }
+                : {
+                    ...obj,
+                    isSelected: false,
+                  },
+            );
+            setGroupsList([...groups]);
+          } else {
+            const groups = [...teams, ...clubs].map((obj) => ({
+              ...obj,
+              isSelected: false,
+            }));
+            setGroupsList([...groups]);
+          }
+          // await Utility.setStorage('appSetting', response.payload.app);
+        });
+      })
+      .catch((e) => {
+        setloading(false);
+        Alert.alert('', e.messages);
+      });
+  }, [authContext]);
+
   const ordinal_suffix_of = (i) => {
     const j = i % 10,
       k = i % 100;
@@ -246,67 +281,109 @@ export default function CreateEventScreen({navigation, route}) {
     return `${i}th`;
   };
 
-  const onChangeColorPressed = () => {
-    setAddColorDoneButton(false);
-    colorToggleModal();
-    setSelectedEventColors([]);
-  };
-  const getImageOfColor = (data) => {
-    if (data.isNew && data.isSelected) {
-      return images.check;
-    }
-    if (data.isNew) {
-      return images.plus;
-    }
-    if (data.isSelected) {
-      return images.check;
-    }
-    return null;
-  };
-  const renderColorItem = ({item}) => {
-    return (
-      <EventColorItem
-        item={item}
-        isNew={!!item?.isNew}
-        onChangeColorPressed={onChangeColorPressed}
-        imageStyle={{
-          tintColor:
-            item?.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
-        }}
-        onItemPress={() => {
-          if (item?.color === '0') {
-            setAddColorDoneButton(false);
-            colorToggleModal();
-            setSelectedEventColors([]);
-          } else {
-            eventColors.map(async (createEventItem) => {
-              const createEventData = createEventItem;
-              if (createEventData.id === item?.id) {
-                createEventData.isSelected = true;
-                setSingleSelectEventColor(createEventData.color);
-              } else {
-                createEventData.isSelected = false;
-              }
-              return null;
-            });
-
-            setEventColors([...eventColors]);
-          }
-        }}
-        source={getImageOfColor(item)}
-        eventColorViewStyle={{
-          backgroundColor: item.color === '0' ? colors.whiteColor : item.color,
-          borderWidth: item?.isSelected ? 2 : 0,
-          borderColor: colors.whiteColor,
-          marginRight: wp(3),
-        }}
-      />
-    );
-  };
-
   const convertDateToUTC = (date) => {
     const dt = new Date(date);
     return new Date(dt.getTime() + dt.getTimezoneOffset() * 60000);
+  };
+
+  const getSports = () => {
+    let sportArr = [];
+
+    authContext.sports.map((item) => {
+      const filterFormat = item.format.filter(
+        (obj) => obj.entity_type === 'team',
+      );
+      sportArr = [...sportArr, ...filterFormat];
+      return null;
+    });
+    setSportsData([...sportArr]);
+  };
+
+  const renderSports = ({item}) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => {
+        setSportsSelection(item);
+        setTimeout(() => {
+          setVisibleSportsModal(false);
+        }, 300);
+      }}>
+      <View
+        style={{
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginRight: 15,
+        }}>
+        <Text style={styles.languageList}>
+          {getSportName(item, authContext)}
+        </Text>
+        <View style={styles.checkbox}>
+          {sportsSelection?.sport === item?.sport ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderEventPostedOpetions = ({index, item}) => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          marginBottom: 15,
+
+          marginRight: 15,
+        }}>
+        <TouchableOpacity
+          onPress={() => {
+            setEventPosted(index);
+          }}>
+          <Image
+            source={
+              eventPosted === index
+                ? images.checkRoundOrange
+                : images.radioUnselect
+            }
+            style={styles.radioButtonStyle}
+          />
+        </TouchableOpacity>
+        <Text style={styles.eventPostedTitle}>{item}</Text>
+      </View>
+    );
+  };
+
+  const renderGroups = ({item, index}) => {
+    return (
+      <GroupEventItems
+        eventImageSource={
+          item.entity_type === 'team' ? images.teamPatch : images.clubPatch
+        }
+        eventText={item.group_name}
+        groupImageSource={
+          item.thumbnail
+            ? {uri: item.thumbnail}
+            : item.entity_type === 'team'
+            ? images.teamPlaceholder
+            : images.clubPlaceholder
+        }
+        checkBoxImage={
+          item.isSelected ? images.orangeCheckBox : images.uncheckWhite
+        }
+        onCheckBoxPress={() => {
+          groupsList[index].isSelected = !groupsList[index].isSelected;
+          setGroupsList([...groupsList]);
+          setIsAll(false);
+        }}
+      />
+    );
   };
 
   return (
@@ -356,7 +433,6 @@ export default function CreateEventScreen({navigation, route}) {
                     {
                       title: eventTitle,
                       descriptions: eventDescription,
-                      color: singleSelectEventColor,
                       allDay: toggle,
                       start_datetime: Number(
                         parseFloat(
@@ -388,7 +464,6 @@ export default function CreateEventScreen({navigation, route}) {
                     {
                       title: eventTitle,
                       descriptions: eventDescription,
-                      color: singleSelectEventColor,
                       allDay: toggle,
                       start_datetime: Number(
                         parseFloat(
@@ -463,16 +538,16 @@ export default function CreateEventScreen({navigation, route}) {
                   });
               }
             }}>
-            <Text>Save</Text>
+            <Text>Done</Text>
           </TouchableOpacity>
         }
       />
 
       <View style={styles.sperateLine} />
-      
       <TCKeyboardView>
         <ScrollView bounces={false}>
           <SafeAreaView>
+            <EventBackgroundPhoto isEdit={false} imageURL={''} />
             <EventTextInputItem
               title={strings.title}
               placeholder={strings.titlePlaceholder}
@@ -481,8 +556,29 @@ export default function CreateEventScreen({navigation, route}) {
               }}
               value={eventTitle}
             />
+
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>
+                {strings.sportCreateEvent}{' '}
+                <Text style={styles.opetionalTextStyle}>{'opetional'}</Text>
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setVisibleSportsModal(true);
+                }}>
+                <TextInput
+                  placeholder={strings.sportPlaceholder}
+                  style={styles.textInputStyle}
+                  pointerEvents={'none'}
+                  // onChangeText={onChangeText}
+                  value={getSportName(sportsSelection, authContext)}
+                  textAlignVertical={'center'}
+                  placeholderTextColor={colors.userPostTimeColor}
+                />
+              </TouchableOpacity>
+            </View>
             <EventTextInputItem
-              title={strings.about}
+              title={strings.description}
               placeholder={strings.aboutPlaceholder}
               onChangeText={(text) => {
                 setEventDescription(text);
@@ -581,7 +677,32 @@ export default function CreateEventScreen({navigation, route}) {
               )}
             </EventItemRender>
 
+            <EventItemRender title={''}>
+              <Text style={styles.availableSubHeader}>
+                {strings.availableSubTitle}
+              </Text>
+              <BlockAvailableTabView
+                blocked={is_Blocked}
+                firstTabTitle={'Blocked'}
+                secondTabTitle={'Available'}
+                onFirstTabPress={() => setIsBlocked(true)}
+                onSecondTabPress={() => setIsBlocked(false)}
+              />
+            </EventItemRender>
+
             <EventItemRender title={strings.place}>
+              <TextInput
+                placeholder={'Venue name'}
+                style={styles.textInputStyle}
+                onChangeText={() => {
+                  console.log('aa');
+                }}
+                // value={value}
+                // multiline={multiline}
+                textAlignVertical={'center'}
+                placeholderTextColor={colors.userPostTimeColor}
+              />
+
               <TCTouchableLabel
                 placeholder={strings.searchHereText}
                 title={searchLocation}
@@ -592,7 +713,11 @@ export default function CreateEventScreen({navigation, route}) {
                   });
                   navigation.setParams({comeName: null});
                 }}
-                style={{width: '98%', alignSelf: 'center'}}
+                style={{
+                  width: '98%',
+                  alignSelf: 'center',
+                  backgroundColor: colors.textFieldBackground,
+                }}
               />
               <EventMapView
                 region={{
@@ -606,34 +731,250 @@ export default function CreateEventScreen({navigation, route}) {
                   longitude: locationDetail ? locationDetail.lng : 0.0,
                 }}
               />
+              <TextInput
+                placeholder={'Details'}
+                style={styles.detailsInputStyle}
+                onChangeText={() => {
+                  console.log('aa');
+                }}
+                // value={value}
+                multiline={true}
+                textAlignVertical={'center'}
+                placeholderTextColor={colors.userPostTimeColor}
+              />
             </EventItemRender>
 
-            <EventItemRender
-              title={strings.availableTitle}
-              containerStyle={{marginTop: 10}}>
-              <Text style={styles.availableSubHeader}>
-                {strings.availableSubTitle}
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>
+                {strings.organizerTitle}
               </Text>
-              <BlockAvailableTabView
-                blocked={is_Blocked}
-                firstTabTitle={'Block'}
-                secondTabTitle={'Set available'}
-                onFirstTabPress={() => setIsBlocked(true)}
-                onSecondTabPress={() => setIsBlocked(false)}
+              <TCProfileView
+                type="medium"
+                name={
+                  authContext.entity.obj.group_name ??
+                  authContext.entity.obj.full_name
+                }
+                image={
+                  authContext?.entity?.obj?.thumbnail
+                    ? {uri: authContext?.entity?.obj?.thumbnail}
+                    : images.teamPH
+                }
+                alignSelf={'flex-start'}
+                marginTop={10}
               />
-            </EventItemRender>
-            <EventItemRender title={strings.eventColorTitle}>
-              <FlatList
-                numColumns={Dimensions.get('window').width > 360 ? 9 : 8}
-                scrollEnabled={false}
-                data={eventColors}
-                ItemSeparatorComponent={() => (
-                  <View style={{width: wp('1%')}} />
+            </View>
+
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>
+              <RNPickerSelect
+                items={[
+                  {label: 'Only me', value: 'Only me'},
+                  {label: 'Everyone', value: 'Everyone'},
+                  {
+                    label: 'Members in my groups',
+                    value: 'Members in my groups',
+                  },
+                  {
+                    label: 'Followers',
+                    value: 'Followers',
+                  },
+                ]}
+                onValueChange={(value) => {
+                  setWhoCanSee(value);
+                }}
+                useNativeAndroidPickerStyle={false}
+                style={{
+                  iconContainer: {
+                    top: 0,
+                    right: 0,
+                  },
+                  inputIOS: {
+                    height: 40,
+                    fontSize: wp('3.5%'),
+                    paddingVertical: 12,
+                    paddingHorizontal: 15,
+                    width: wp('92%'),
+                    color: 'black',
+                    paddingRight: 30,
+                    backgroundColor: colors.textFieldBackground,
+                    borderRadius: 5,
+                    textAlign: 'center',
+                  },
+                  inputAndroid: {
+                    height: 40,
+                    fontSize: wp('4%'),
+                    paddingVertical: 12,
+                    paddingHorizontal: 15,
+                    width: wp('45%'),
+                    color: 'black',
+
+                    backgroundColor: colors.offwhite,
+                    borderRadius: 5,
+                    borderWidth: 1,
+                    borderColor: '#fff',
+
+                    elevation: 3,
+                  },
+                }}
+                value={whoCanSee}
+                Icon={() => (
+                  <Image
+                    source={images.dropDownArrow}
+                    style={styles.downArrowWhoCan}
+                  />
                 )}
-                renderItem={renderColorItem}
-                keyExtractor={(item, index) => index.toString()}
               />
-            </EventItemRender>
+            </View>
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>
+                {strings.numberOfAttend}
+                <Text style={styles.opetionalTextStyle}>{' opetional'}</Text>
+              </Text>
+              <Text style={styles.subTitleText}>
+                The event may be canceled by the organizer if the minimum number
+                of the attendees isn’t met.
+              </Text>
+              <NumberOfAttendees />
+            </View>
+
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>
+                {strings.eventFeeTitle}
+              </Text>
+              <View style={styles.feeContainer}>
+                <TextInput
+                  style={styles.eventFeeStyle}
+                  // onChangeText={onChangeText}
+                  value={'100'}
+                  textAlignVertical={'center'}
+                  placeholderTextColor={colors.userPostTimeColor}
+                />
+                <Text style={styles.currencyStyle}>CAD</Text>
+              </View>
+            </View>
+
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>
+                {strings.refundPolicyTitle}
+              </Text>
+              <TextInput
+                placeholder={'Refund Policy'}
+                style={styles.detailsInputStyle}
+                onChangeText={() => {
+                  console.log('aa');
+                }}
+                // value={value}
+                multiline={true}
+                textAlignVertical={'center'}
+                placeholderTextColor={colors.userPostTimeColor}
+              />
+              <Text style={[styles.subTitleText, {marginTop: 0}]}>
+                Attendees must be refunded if the event is canceled or
+                rescheduled. Read payment policy for more information.
+              </Text>
+            </View>
+
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>
+                {strings.whereEventPosted}
+              </Text>
+              <FlatList
+                data={eventPostedList}
+                renderItem={renderEventPostedOpetions}
+                style={{marginTop: 15}}
+              />
+            </View>
+
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
+              <RNPickerSelect
+                items={[
+                  {label: 'Only me', value: 'Only me'},
+                  {label: 'Everyone', value: 'Everyone'},
+                  {
+                    label: 'Members in my groups',
+                    value: 'Members in my groups',
+                  },
+                  {
+                    label: 'Followers',
+                    value: 'Followers',
+                  },
+                ]}
+                onValueChange={(value) => {
+                  setWhoCanSee(value);
+                }}
+                useNativeAndroidPickerStyle={false}
+                style={{
+                  iconContainer: {
+                    top: 0,
+                    right: 0,
+                  },
+                  inputIOS: {
+                    height: 40,
+                    fontSize: wp('3.5%'),
+                    paddingVertical: 12,
+                    paddingHorizontal: 15,
+                    width: wp('92%'),
+                    color: 'black',
+                    paddingRight: 30,
+                    backgroundColor: colors.textFieldBackground,
+                    borderRadius: 5,
+                    textAlign: 'center',
+                  },
+                  inputAndroid: {
+                    height: 40,
+                    fontSize: wp('4%'),
+                    paddingVertical: 12,
+                    paddingHorizontal: 15,
+                    width: wp('45%'),
+                    color: 'black',
+
+                    backgroundColor: colors.offwhite,
+                    borderRadius: 5,
+                    borderWidth: 1,
+                    borderColor: '#fff',
+
+                    elevation: 3,
+                  },
+                }}
+                value={whoCanSee}
+                Icon={() => (
+                  <Image
+                    source={images.dropDownArrow}
+                    style={styles.downArrowWhoCan}
+                  />
+                )}
+              />
+            </View>
+            <View>
+              <View style={styles.allStyle}>
+                <Text style={styles.titleTextStyle}>{strings.all}</Text>
+                <TouchableOpacity
+                onPress={() => {
+                  setIsAll(!isAll);
+                  const groups = groupsList.map((obj) => ({
+                    ...obj,
+                    isSelected: !isAll,
+                  }));
+                  setGroupsList([...groups]);
+                }}>
+                  <Image
+                  source={isAll ? images.orangeCheckBox : images.uncheckWhite}
+                  style={styles.imageStyle}
+                />
+                </TouchableOpacity>
+              </View>
+              <FlatList
+            scrollEnabled={false}
+              data={[...groupsList]}
+              showsVerticalScrollIndicator={false}
+              ItemSeparatorComponent={() => <View style={{height: wp('4%')}} />}
+              renderItem={renderGroups}
+              keyExtractor={(item, index) => index.toString()}
+              style={styles.listStyle}
+            />
+            </View>
+
             <DateTimePickerView
               // date={eventStartDateTime}
               visible={startDateVisible}
@@ -670,33 +1011,78 @@ export default function CreateEventScreen({navigation, route}) {
               minutesGap={5}
               mode={toggle ? 'date' : 'datetime'}
             />
-            <DefaultColorModal
-              isModalVisible={isColorPickerModal}
-              onBackdropPress={() => setIsColorPickerModal(false)}
-              cancelImageSource={images.cancelImage}
-              containerStyle={{height: hp('55%')}}
-              onCancelImagePress={() => setIsColorPickerModal(false)}
-              headerCenterText={'Add color'}
-              onColorSelected={(selectColor) => {
-                setAddColorDoneButton(true);
-                setSelectedEventColors(selectColor);
-              }}
-              doneButtonDisplay={addColorDoneButton}
-              onDonePress={() => {
-                eventColors[10] = {
-                  id: 10,
-                  color: selectedEventColors,
-                  isSelected: false,
-                  isNew: true,
-                };
-                setEventColors([...eventColors]);
-                setEventColors([...eventColors]);
-                setIsColorPickerModal(false);
-              }}
-            />
           </SafeAreaView>
         </ScrollView>
       </TCKeyboardView>
+      <Modal
+        isVisible={visibleSportsModal}
+        backdropColor="black"
+        onBackdropPress={() => setVisibleSportsModal(false)}
+        onRequestClose={() => setVisibleSportsModal(false)}
+        backdropOpacity={0}
+        style={{
+          margin: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.3,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => setVisibleSportsModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              Sports
+            </Text>
+
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.themeColor,
+              }}></Text>
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
+            showsVerticalScrollIndicator={false}
+            data={sportsData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderSports}
+          />
+        </View>
+      </Modal>
     </>
   );
 }
@@ -705,7 +1091,6 @@ const styles = StyleSheet.create({
   sperateLine: {
     borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
-    marginVertical: hp('0.5%'),
   },
   backImageStyle: {
     height: 20,
@@ -747,5 +1132,142 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     position: 'absolute',
     right: wp(0),
+  },
+  textInputStyle: {
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
+    color: colors.lightBlackColor,
+    padding: 10,
+    marginTop: 10,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    marginBottom: 15,
+  },
+  detailsInputStyle: {
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
+    color: colors.lightBlackColor,
+    padding: 10,
+    marginTop: 10,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    marginBottom: 15,
+    height: 100,
+  },
+  containerStyle: {
+    width: wp('96%'),
+    alignSelf: 'center',
+    padding: wp('1.5%'),
+  },
+  headerTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    marginVertical: 3,
+  },
+  opetionalTextStyle: {
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
+    marginVertical: 3,
+    color: colors.userPostTimeColor,
+  },
+
+  closeButton: {
+    alignSelf: 'center',
+    width: 13,
+    height: 13,
+    marginLeft: 5,
+    resizeMode: 'contain',
+  },
+
+  separatorLine: {
+    alignSelf: 'center',
+    backgroundColor: colors.grayColor,
+    height: 0.5,
+    marginTop: 14,
+    width: wp('92%'),
+  },
+
+  languageList: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('4%'),
+  },
+
+  downArrowWhoCan: {
+    height: 15,
+    resizeMode: 'contain',
+    tintColor: colors.lightBlackColor,
+    top: 12,
+    width: 15,
+    right: 15,
+  },
+  eventFeeStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    height: 40,
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
+  },
+  currencyStyle: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 10,
+    marginRight: 15,
+    textAlign: 'right',
+  },
+  feeContainer: {
+    height: 40,
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  subTitleText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginTop: 10,
+  },
+  radioButtonStyle: {
+    height: 22,
+    width: 22,
+    resizeMode: 'cover',
+    alignSelf: 'center',
+  },
+  eventPostedTitle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    marginLeft: 15,
+  },
+  allStyle: {
+    flexDirection: 'row',
+    // backgroundColor:'red',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    margin: 15,
+    marginTop:0,
+    marginBottom: 0,
+  },
+  titleTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    marginLeft: 15,
+    marginRight: 15,
+  },
+
+  imageStyle: {
+    width: wp('5.5%'),
+    resizeMode: 'contain',
+    marginRight: 10,
+  },
+  listStyle: {
+    marginBottom: 15,
+    marginTop: 15,
+    paddingBottom:10
   },
 });

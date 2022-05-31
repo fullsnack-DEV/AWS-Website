@@ -1,21 +1,14 @@
 /* eslint-disable guard-for-in */
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {StyleSheet, Text, SectionList, View} from 'react-native';
 import moment from 'moment';
 import _ from 'lodash';
 import TCEventView from '../../../components/TCEventView';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import AuthContext from '../../../auth/context';
 
-const days = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
+const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 // const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July','Aug','Sep','Oct','Nov','Dec'];
 
 export default function EventScheduleScreen({
@@ -25,15 +18,117 @@ export default function EventScheduleScreen({
   entity,
   profileID,
   screenUserId,
+  filterOpetions,
+  selectedFilter,
 }) {
+  const authContext = useContext(AuthContext);
+
   const [filterData, setFilterData] = useState(null);
 
   useEffect(() => {
     // const d = new Date(dateString);
     // var dayName = days[d.getDay()];
 
-    if (eventData) {
-      const result = _(eventData)
+    let events = eventData.filter(
+      (obj) => (obj?.game_id && obj?.game) || obj?.title,
+    );
+
+    console.log('events', events);
+    console.log('filter Setting', filterOpetions);
+    console.log('selectedFILTER', selectedFilter);
+    if (
+      authContext.entity.role === 'player' ||
+      authContext.entity.role === 'user'
+    ) {
+      if (filterOpetions.time === 0) {
+        events = events.filter(
+          (x) =>
+            x.start_datetime >
+            Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+        );
+      } else {
+        events = events.filter(
+          (x) =>
+            x.start_datetime <
+            Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+        );
+      }
+
+      if (filterOpetions.sort === 0) {
+        if (selectedFilter.title.sport !== 'All') {
+          if (selectedFilter.title === 'Matches') {
+            events = events.filter(
+              (obj) =>
+                obj?.game &&
+                (obj?.game?.home_team?.user_id === authContext.entity.uid ||
+                obj?.game?.away_team?.user_id === authContext.entity.uid),
+            );
+          }
+          if (selectedFilter.title === 'Refeering') {
+            events = events.filter(
+              (obj) =>
+              obj?.game &&
+                obj?.referee_id === authContext.entity.uid
+            );
+          }
+          if (selectedFilter.title === 'Scorekeepering') {
+            events = events.filter(
+              (obj) =>
+              obj?.game &&
+              obj?.scorekeeper_id === authContext.entity.uid
+            );
+          }
+          if (selectedFilter.title === 'Others') {
+            events = events.filter(
+              (obj) =>
+                obj.created_by.uid !== authContext.entity.uid &&
+                obj?.game?.home_team?.user_id !== authContext.entity.uid &&
+                obj?.game?.away_team?.user_id !== authContext.entity.uid,
+            );
+          }
+        }
+      } else if (filterOpetions.sort === 1) {
+        if (selectedFilter.title.sport !== 'All') {
+          events = events.filter(
+            (obj) =>
+              obj?.game &&
+              obj.game.sport === selectedFilter.title.sport
+          );
+        }
+      } else if (filterOpetions.sort === 2) {
+        if (selectedFilter.title.group_name !== 'All') {
+          if (selectedFilter.title.group_name === 'Me') {
+            events = events.filter(
+              (obj) =>
+                obj.created_by.uid === authContext.entity.uid ||
+                obj?.game?.home_team?.user_id === authContext.entity.uid ||
+                obj?.game?.away_team?.user_id === authContext.entity.uid,
+            );
+          } else if (selectedFilter.title.group_name === 'Other') {
+            events = events.filter(
+              (obj) =>
+                obj.created_by.uid !== authContext.entity.uid &&
+                obj?.game?.home_team?.user_id !== authContext.entity.uid &&
+                obj?.game?.away_team?.user_id !== authContext.entity.uid,
+            );
+          } else {
+            events = events.filter(
+              (obj) =>
+                obj.created_by.uid === selectedFilter.title.group_id ||
+                obj.created_by.group_id === selectedFilter.title.group_id ||
+                [
+                  obj?.game?.home_team?.user_id,
+                  obj?.game?.away_team?.user_id,
+                  obj?.game?.home_team?.group_id,
+                  obj?.game?.away_team?.group_id,
+                ].includes(selectedFilter.title.group_id),
+            );
+          }
+        }
+      }
+    }
+    if (events.length > 0) {
+      const result = _(events)
         .groupBy((v) =>
           moment(new Date(v.start_datetime * 1000)).format('MMM DD, YYYY'),
         )
@@ -51,60 +146,10 @@ export default function EventScheduleScreen({
       }
       setFilterData([...filData]);
       console.log('resultresult', filData);
-      // const todayData = [];
-      // const tomorrowData = [];
-      // const futureData = [];
-      // eventData.map((item_filter) => {
-      //   const startDate = new Date(item_filter.start_datetime * 1000);
-      //   const dateFormat = moment(startDate).format('YYYY-MM-DD hh:mm:ss');
-      //   const dateText = moment(dateFormat).calendar(null, {
-      //     lastDay: '[Yesterday]',
-      //     sameDay: '[Today]',
-      //     nextDay: '[Tomorrow]',
-      //     nextWeek: '[Future]',
-      //     sameElse: '[Future]',
-      //   });
-      //   if (dateText === 'Today') {
-      //     todayData.push(item_filter);
-      //   }
-      //   if (dateText === 'Tomorrow') {
-      //     tomorrowData.push(item_filter);
-      //   }
-      //   if (dateText === 'Future') {
-      //     futureData.push(item_filter);
-      //   }
-      //   return null;
-      // });
-      // // let filData = [];
-      // if (todayData && tomorrowData && futureData) {
-      //   if (
-      //     todayData?.length > 0 ||
-      //     tomorrowData?.length > 0 ||
-      //     futureData?.length > 0
-      //   ) {
-      //     const filData = [
-      //       {
-      //         title: 'Today',
-      //         data: todayData,
-      //       },
-      //       {
-      //         title: 'Tomorrow',
-      //         data: tomorrowData,
-      //       },
-      //       {
-      //         title: 'Future',
-      //         data: futureData,
-      //       },
-      //     ];
-      //     setFilterData([...filData]);
-      //   } else {
-      //     setFilterData([]);
-      //   }
-      // }
     } else {
       setFilterData([]);
     }
-  }, [eventData]);
+  }, [eventData, filterOpetions, selectedFilter]);
 
   return (
     <View style={styles.mainContainer}>
@@ -161,15 +206,14 @@ export default function EventScheduleScreen({
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: colors.lightGrayBackground,
   },
   sectionHeader: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
+    fontSize: 20,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
     marginBottom: 10,
     paddingLeft: 12,
-    backgroundColor: colors.lightGrayBackground,
+    backgroundColor: colors.whiteColor,
     paddingTop: 10,
     paddingBottom: 10,
   },

@@ -58,7 +58,7 @@ const FeedsScreen = ({navigation}) => {
   const galleryRef = useRef();
   const [isAdmin, setIsAdmin] = useState(true);
   const [sports, setSports] = useState([]);
-
+  const [sportArr, setSportArr] = useState([]);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
 
@@ -102,7 +102,16 @@ const FeedsScreen = ({navigation}) => {
   }, [authContext, authContext.entity]);
   useEffect(() => {
     getSportsList(authContext).then((res) => {
-      const sport = [];
+      console.log('resresresres', res);
+      let sport = [];
+
+      res.payload.map((item) => {
+        sport = [...sport, ...item.format];
+        console.log('sportArrsportArr', sport);
+        return null;
+      });
+      setSportArr([...sport]);
+      sport = [];
       res.payload.map((item) =>
         sport.push({
           label: item?.sport_name,
@@ -114,10 +123,12 @@ const FeedsScreen = ({navigation}) => {
   }, [authContext]);
 
   const onThreeDotPress = useCallback(() => {
+    console.log('sdfdsfdasfasd', sports);
     navigation.navigate('EntitySearchScreen', {
       sportsList: sports,
+      sportsArray: sportArr,
     });
-  }, [navigation]);
+  }, [navigation, sports]);
 
   const createPostAfterUpload = useCallback(
     (dataParams) => {

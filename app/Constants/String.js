@@ -325,12 +325,19 @@ const strings = {
   deleteTitle: 'Delete',
   profilePhotoUser: 'Profile Photo Of User Account',
   titleOrDescriptionText: 'Title or Description',
-  title: 'Title',
-  titlePlaceholder: 'Enter Title',
+  title: 'TITLE',
+  sportCreateEvent: 'SPORT',
+  numberOfAttend: 'NUMBER OF ATTENDEES',
+  eventFeeTitle: 'EVENT FEE',
+  refundPolicyTitle: 'REFUND POLICY',
+  whereEventPosted: 'WHERE THE EVENT IS POSTED',
+  sportPlaceholder: 'Choose sport',
+  titlePlaceholder: 'Title',
   createTitleValue: 'Welcome Season Party',
   titleValue: 'Games with Vancouver Whitecaps',
   about: 'About',
-  aboutPlaceholder: 'Enter Description',
+  description:'DESCRIPTION',
+  aboutPlaceholder: 'Describe about event.',
   createAboutValue:
     'I love playing soccer, Association football, commonly known as football or soccer, [a] is a sport played between seven teams of eleven with a spherical ball.',
   aboutValue:
@@ -342,7 +349,7 @@ const strings = {
   eventImportedTitle: 'Event Imported From Other Groups',
   games: 'Games',
   scheduleMatchTitle: 'Scheduled Matches',
-  timeTitle: 'Time',
+  timeTitle: 'DATE & TIME',
   from: 'From',
   fromTime: 'Feb 15, 2019 1:00 am',
   date: 'Jan 25, 2019',
@@ -350,13 +357,13 @@ const strings = {
   to: 'To',
   repeat: 'Repeat',
   repeatTime: 'Weekly \n(Until Mar 25, 2019 12:00 am)',
-  place: 'Place',
+  place: 'VENUE',
   placeName: '800 Griffiths Way, Vancouver, BC V6B 6G1',
   availableTitle: 'Challenge Availability',
   scheduleTitle: 'Schedule',
   whoCanSeeShcedule: 'Who can see your schedule?',
   availableSubTitle:
-    'Do you want to set the time to be available to receive a challenge request during this event?',
+    'Do you want to be available for challenges during this event?',
   available: 'Available',
   blocked: 'Blocked',
   editChallengeTitle:
@@ -841,7 +848,11 @@ const strings = {
   sportActivity: 'Sports Activities',
   refereeRegisteredSuccess: 'Registered as a referee.',
   scorekeeperRegisteredSuccess: 'Registered as a scorekeeper.',
-  terminationAlert: 'The email and password you entered don\'t match.'
+  terminationAlert: 'The email and password you entered don\'t match.',
+  organizerTitle: 'ORGANIZER',
+  whoCanJoin: 'WHO CAN JOIN',
+  whoCanSee: 'WHO CAN SEE'
+
   // Signup & login text
 };
 export default strings;

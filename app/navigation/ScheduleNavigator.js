@@ -182,6 +182,8 @@ import EditMemberAuthInfoScreen from '../screens/account/groupConnections/editMe
 import MessageNavigator from './MessageNavigator';
 import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 import SportAccountSettingScreen from '../screens/account/SportAccountSettingScreen';
+import ChangeSportsOrderScreen from '../screens/account/schedule/ChangeSportsOrderScreen';
+import ChangeOtherListScreen from '../screens/account/schedule/ChangeOtherListScreen';
 // Scorekeeper Review Screen
 
 
@@ -2321,6 +2323,38 @@ const ScheduleNavigator = () => (
           fontWeight: '500',
         },
         headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="ChangeSportsOrderScreen"
+      component={ChangeSportsOrderScreen}
+      options={{
+        title: 'Change List of Sports',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="ChangeOtherListScreen"
+      component={ChangeOtherListScreen}
+      options={{
+        title: 'Change List Of Orgernizers',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,

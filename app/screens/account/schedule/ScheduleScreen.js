@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 /* eslint-disable no-undef */
 /* eslint-disable no-param-reassign */
 /* eslint-disable array-callback-return */
@@ -21,9 +22,13 @@ import {
   SafeAreaView,
   ScrollView,
   Animated,
+  Dimensions,
 } from 'react-native';
 
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
 // import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import {RRule} from 'rrule';
 
@@ -51,21 +56,33 @@ import Header from '../../../components/Home/Header';
 import RefereeReservationItem from '../../../components/Schedule/RefereeReservationItem';
 import {getGameHomeScreen} from '../../../utils/gameUtils';
 import ScorekeeperReservationItem from '../../../components/Schedule/ScorekeeperReservationItem';
-import {getHitSlop} from '../../../utils';
+import {getHitSlop, getSportName} from '../../../utils';
 import {getUnreadCount} from '../../../api/Notificaitons';
 import * as Utility from '../../../utils/index';
-
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import {getGameIndex} from '../../../api/elasticSearch';
 import TCAccountDeactivate from '../../../components/TCAccountDeactivate';
-import {userActivate} from '../../../api/Users';
-import {groupUnpaused} from '../../../api/Groups';
+import {getUserSettings, userActivate} from '../../../api/Users';
+import {getGroups, groupUnpaused} from '../../../api/Groups';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
+import TCThinDivider from '../../../components/TCThinDivider';
 
 let selectedCalendarDate = moment(new Date());
 
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
+  const refContainer = useRef();
+  const sortFilterData = ['Reservation Type', 'Sport', 'Event Organizer'];
+  const timeFilterData = ['Upcoming', 'Past'];
+  const reservationOpetions = [
+    'All',
+    'Matches',
+    'Refeering',
+    'Scorekeepering',
+    'Others',
+  ];
+  const [sports, setSports] = useState([]);
+  const [orgenizerOpetions, setOrgenizerOpetions] = useState([]);
 
   if (route?.params?.isBackVisible) {
     authContext = {
@@ -111,6 +128,18 @@ export default function ScheduleScreen({navigation, route}) {
   const [showTimeTable, setShowTimeTable] = useState(false);
   const [isMenu, setIsMenu] = useState(false);
   const [listView, setListView] = useState(true);
+  const [selectedOpetions, setSelectedOpetions] = useState({
+    opetion: 0,
+    title: 'All',
+  });
+  const [filterSetting, setFilterSetting] = useState({
+    sort: 0,
+    time: 0,
+  });
+
+  const [sortFilterOpetion, setSortFilterOpetion] = useState(0);
+  const [timeFilterOpetion, setTimeFilterOpetion] = useState(0);
+  const [filterPopup, setFilterPopup] = useState(false);
   const [selectedCalendarDateString] = useState(
     selectedCalendarDate.format('YYYY-MM-DD'),
   );
@@ -147,6 +176,12 @@ export default function ScheduleScreen({navigation, route}) {
     authContext.entity.role,
     isFocused,
   ]);
+
+  const fromGoBack = (flag) => {
+    if (flag) {
+      setFilterPopup(true);
+    }
+  };
 
   useEffect(() => {
     getBlockedSlots();
@@ -201,6 +236,183 @@ export default function ScheduleScreen({navigation, route}) {
     });
     return occr;
   };
+
+  // useEffect(() => {
+  //   setloading(true)
+  //   if (isFocused) {
+  //     Utility.getStorage('schedule_sport_filter')
+  //       .then((setting) => {
+  //         setloading(false)
+  //         console.log('Setting::1::=>', setting);
+  //         if (setting === null) {
+  //           const playerSport =
+  //             authContext?.entity?.auth?.user?.registered_sports || [];
+  //           const followedSport = authContext?.entity?.obj?.sports;
+  //           const res = ([...playerSport, ...followedSport] || []).map(
+  //             (obj) => ({
+  //               sport: obj.sport,
+  //               sport_type: obj.sport_type,
+  //             }),
+  //           );
+  //           const result = res.reduce((unique, o) => {
+  //             if (
+  //               !unique.some(
+  //                 (obj) =>
+  //                   obj.sport === o.sport && obj.sport_type === o.sport_type,
+  //               )
+  //             ) {
+  //               unique.push(o);
+  //             }
+  //             return unique;
+  //           }, []);
+  //           console.log(
+  //             'resultresult----',
+  //             result.filter((obj) => obj.sport && obj.sport_type),
+  //           );
+  //           setSports([...result.filter((obj) => obj.sport && obj.sport_type)]);
+  //         } else {
+  //           const arr = [];
+  //           for (const sport of sports) {
+  //             const isFound = setting.filter(
+  //               (obj) => obj.sport === sport.sport,
+  //             );
+  //             if (isFound.length > 0) {
+  //               arr.push(sport);
+  //             }
+  //           }
+
+  //           const allSport = [
+  //             ...arr,
+  //             ...setting,
+  //             ...authContext?.entity?.auth?.user?.registered_sports,
+  //           ];
+  //           const uniqSports = {};
+  //           const uniqueSports = allSport.filter(
+  //             (obj) => !uniqSports[obj.sport] && (uniqSports[obj.sport] = true),
+  //           );
+  //           console.log('unique ==>', uniqueSports);
+  //           setSports([...uniqueSports]);
+  //         }
+  //       })
+  //       // eslint-disable-next-line no-unused-vars
+  //       .catch((e) => {
+  //         setloading(false)
+  //         const playerSport =
+  //           authContext?.entity?.auth?.user?.registered_sports || [];
+  //         const followedSport = authContext?.entity?.obj?.sports;
+  //         const res = ([...playerSport, ...followedSport] || []).map((obj) => ({
+  //           sport: obj.sport,
+  //           sport_type: obj.sport_type,
+  //           sport_name: obj.sport_name,
+  //           player_image: obj.player_image,
+  //         }));
+  //         const result = res.reduce((unique, o) => {
+  //           if (
+  //             !unique.some(
+  //               (obj) =>
+  //                 obj.sport === o.sport &&
+  //                 obj.sport_type === o.sport_type &&
+  //                 obj.sport_name === o.sport_name &&
+  //                 obj.player_image === o.player_image,
+  //             )
+  //           ) {
+  //             unique.push(o);
+  //           }
+  //           // if (!unique.some((obj) => obj.sport === o.sport)) {
+  //           //   unique.push(o);
+  //           // }
+  //           return unique;
+  //         }, []);
+
+  //         setSports(result);
+  //       });
+  //   }
+  // }, [authContext, isFocused]);
+
+  useEffect(() => {
+    setloading(true);
+    getUserSettings(authContext)
+      .then((setting) => {
+        console.log('Settings:=>', setting);
+        if (setting?.payload?.user !== {}) {
+          if (
+            setting?.payload?.user?.schedule_group_filter &&
+            setting?.payload?.user?.schedule_group_filter?.length > 0
+          ) {
+            setOrgenizerOpetions([
+              {group_name: 'All', group_id: 0},
+              {group_name: 'Me', group_id: 1},
+              ...setting?.payload?.user?.schedule_group_filter,
+              {group_name: 'Other', group_id: 2},
+            ]);
+          }else{
+            getGroups(authContext)
+            .then((response) => {
+              const {teams, clubs} = response.payload ?? [];
+              console.log('fdsfdsfsdfas', response);
+
+              if (response.payload.length > 0) {
+                setOrgenizerOpetions([
+                  {group_name: 'All', group_id: 0},
+                  {group_name: 'Me', group_id: 1},
+                  ...teams,
+                  ...clubs,
+                  {group_name: 'Other', group_id: 2},
+                ]);
+              } else {
+                setOrgenizerOpetions([
+                  {group_name: 'All', group_id: 0},
+                  {group_name: 'Me', group_id: 1},
+                  {group_name: 'Other', group_id: 2},
+                ]);
+              }
+
+              setloading(false);
+            })
+            .catch((e) => {
+              setloading(false);
+              Alert.alert('sasasasa', e.message);
+            });
+          }
+          if (
+            setting?.payload?.user?.schedule_sport_filter &&
+            setting?.payload?.user?.schedule_sport_filter?.length > 0
+          ) {
+            setSports([
+              {sport: 'All'},
+              ...setting?.payload?.user?.schedule_sport_filter,
+              {sport: 'Other'},
+            ]);
+          }else{
+            const sportsList = [
+              ...(authContext?.entity?.obj?.registered_sports?.filter(
+                (obj) => obj.is_active,
+              ) || []),
+              ...(authContext?.entity?.obj?.referee_data?.filter(
+                (obj) => obj.is_active,
+              ) || []),
+              ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
+                (obj) => obj.is_active,
+              ) || []),
+            ];
+  
+            const res = sportsList.map((obj) => {
+              return {
+                sport: obj.sport,
+              };
+            });
+            const data = Utility.uniqueArray(res, 'sport');
+  
+            setSports([{sport: 'All'}, ...data, {sport: 'Other'}]);
+          }
+        } 
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        Alert.alert(e.message);
+      });
+  }, [authContext, isFocused]);
 
   const getBlockedSlots = () => {
     console.log('Other team Object:', authContext?.entity?.obj);
@@ -431,14 +643,10 @@ export default function ScheduleScreen({navigation, route}) {
         .catch((e) => {
           setloading(false);
           console.log('Error::=>', e);
-          Alert.alert(strings.alertmessagetitle, e.messages);
+          Alert.alert(strings.alertmessagetitle, e.message);
         });
     },
-    [
-      authContext?.entity?.obj?.group_id,
-      authContext?.entity?.obj?.user_id,
-      configureEvents,
-    ],
+    [authContext?.entity?.uid, configureEvents],
   );
 
   // useEffect(() => {
@@ -792,6 +1000,201 @@ export default function ScheduleScreen({navigation, route}) {
         }, 10);
       });
   };
+  const keyExtractor = useCallback((item, index) => index.toString(), []);
+
+  const makeOpetionsSelected = useCallback(
+    (item) => {
+      console.log('sortFilterOpetion', sortFilterOpetion);
+      console.log('selectedOpetions', selectedOpetions);
+      if (sortFilterOpetion === 0 || sortFilterOpetion === 2) {
+        if (selectedOpetions.title === item) {
+          return styles.sportSelectedName;
+        }
+        return styles.sportName;
+      }
+      if (sortFilterOpetion === 1) {
+        console.log('opetions is 1');
+
+        if (selectedOpetions.title.sport === item.sport) {
+          return styles.sportSelectedName;
+        }
+        return styles.sportName;
+      }
+    },
+    [selectedOpetions.title, sortFilterOpetion],
+  );
+
+  const opetionsListView = useCallback(
+    ({item, index}) => {
+      console.log('iiitititiiit', item);
+      console.log('selectedOpetions.title', selectedOpetions.title);
+      return (
+        <Text
+          style={makeOpetionsSelected(item)}
+          onPress={() => {
+            refContainer.current.scrollToIndex({
+              animated: true,
+              index,
+              viewPosition: 0.8,
+            });
+            console.log('selected sport::=>', item);
+            setSelectedOpetions({
+              opetion: sortFilterOpetion,
+              title: item,
+            });
+          }}>
+          {item?.sport
+            ? item?.sport === 'All'
+              ? 'All'
+              : getSportName(item, authContext)
+            : item}
+        </Text>
+      );
+    },
+    [
+      authContext,
+      makeOpetionsSelected,
+      selectedOpetions.title,
+      sortFilterOpetion,
+    ],
+  );
+
+  const sportOpetionsListView = useCallback(
+    ({item, index}) => {
+      console.log('iiitititiiit', item);
+      console.log('selectedOpetions.title', selectedOpetions.title);
+      return (
+        <Text
+          style={makeOpetionsSelected(item)}
+          onPress={() => {
+            refContainer.current.scrollToIndex({
+              animated: true,
+              index,
+              viewPosition: 0.5,
+            });
+            console.log('selected sport::=>', item);
+            setSelectedOpetions({
+              opetion: sortFilterOpetion,
+              title: item,
+            });
+          }}>
+          {item.sport[0].toUpperCase() + item.sport.slice(1)}
+        </Text>
+      );
+    },
+    [makeOpetionsSelected, selectedOpetions.title, sortFilterOpetion],
+  );
+
+  const orgenizerListView = useCallback(
+    ({item, index}) => {
+      console.log('selectedOpetions.title', selectedOpetions.title);
+      return (
+        <Text
+          style={makeOpetionsSelected(item)}
+          onPress={() => {
+            refContainer.current.scrollToIndex({
+              animated: true,
+              index,
+              viewPosition: 0.5,
+            });
+            console.log('selected sport::=>', item);
+            setSelectedOpetions({
+              opetion: sortFilterOpetion,
+              title: item,
+            });
+          }}>
+          {item.group_name}
+        </Text>
+      );
+    },
+    [makeOpetionsSelected, selectedOpetions.title, sortFilterOpetion],
+  );
+
+  const renderSortFilterOpetions = ({index, item}) => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          marginBottom: 15,
+          justifyContent: 'space-between',
+          marginLeft: 15,
+          marginRight: 15,
+        }}>
+        <View>
+          <Text style={styles.filterTitle}>{item}</Text>
+          {index === 1 && sortFilterOpetion === index && (
+            <Text
+              style={styles.changeOrderStyle}
+              onPress={() => {
+                setFilterPopup(false);
+                navigation.navigate('ChangeSportsOrderScreen', {
+                  onBackClick: fromGoBack,
+                });
+              }}>
+              Change order of sports
+            </Text>
+          )}
+          {index === 2 && sortFilterOpetion === index && (
+            <Text
+              style={styles.changeOrderStyle}
+              onPress={() => {
+                setFilterPopup(false);
+                navigation.navigate('ChangeOtherListScreen', {
+                  onBackClick: fromGoBack,
+                });
+              }}>
+              Change list of Orgernizers
+            </Text>
+          )}
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            setSortFilterOpetion(index);
+            setSelectedOpetions({
+              opetion: 0,
+              title: index === 1 ? {sport: 'All'} : 'All',
+            });
+          }}>
+          <Image
+            source={
+              sortFilterOpetion === index
+                ? images.checkRoundOrange
+                : images.radioUnselect
+            }
+            style={styles.radioButtonStyle}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderTimeFilterOpetions = ({index, item}) => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          marginBottom: 15,
+          justifyContent: 'space-between',
+          marginLeft: 15,
+          marginRight: 15,
+        }}>
+        <Text style={styles.filterTitle}>{item}</Text>
+        <TouchableOpacity
+          onPress={() => {
+            setTimeFilterOpetion(index);
+          }}>
+          <Image
+            source={
+              timeFilterOpetion === index
+                ? images.checkRoundOrange
+                : images.radioUnselect
+            }
+            style={styles.radioButtonStyle}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <View style={{flex: 1}}>
@@ -903,34 +1306,73 @@ export default function ScheduleScreen({navigation, route}) {
         ]}
         pointerEvents={pointEvent}
         needsOffscreenAlphaCompositing>
-        <View style={{flex: 1}}>
-          <View style={{flexDirection: 'row', margin: 15}}>
-            <Text
-              style={
-                scheduleIndexCounter === 0
-                  ? styles.activeButton
-                  : styles.inActiveButton
-              }
+        <View style={{flex: 1, backgroundColor: colors.offwhite}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              margin: 15,
+              justifyContent: 'space-between',
+            }}>
+            <View style={{flexDirection: 'row'}}>
+              <Text
+                style={
+                  scheduleIndexCounter === 0
+                    ? styles.activeButton
+                    : styles.inActiveButton
+                }
+                onPress={() => {
+                  setScheduleIndexCounter(0);
+                }}>
+                Events
+              </Text>
+              <Text
+                style={
+                  scheduleIndexCounter === 1
+                    ? styles.activeButton
+                    : styles.inActiveButton
+                }
+                onPress={() => {
+                  setScheduleIndexCounter(1);
+                }}>
+                Availability
+              </Text>
+            </View>
+            <TouchableOpacity
               onPress={() => {
-                setScheduleIndexCounter(0);
+                setFilterPopup(true);
               }}>
-              Events
-            </Text>
-            <Text
-              style={
-                scheduleIndexCounter === 1
-                  ? styles.activeButton
-                  : styles.inActiveButton
-              }
-              onPress={() => {
-                setScheduleIndexCounter(1);
-              }}>
-              Availability
-            </Text>
+              <FastImage
+                source={images.localHomeFilter}
+                style={{height: 25, width: 25}}
+                resizeMode={'contain'}
+              />
+            </TouchableOpacity>
           </View>
           <View style={styles.separateLine} />
           {!loading && scheduleIndexCounter === 0 && (
+            <View style={styles.sportsListView}>
+              <FlatList
+                ref={refContainer}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                data={
+                  (filterSetting.sort === 0 && reservationOpetions) ||
+                  (filterSetting.sort === 1 && sports) ||
+                  (filterSetting.sort === 2 && orgenizerOpetions)
+                }
+                keyExtractor={keyExtractor}
+                renderItem={
+                  (filterSetting.sort === 0 && opetionsListView) ||
+                  (filterSetting.sort === 1 && sportOpetionsListView) ||
+                  (filterSetting.sort === 2 && orgenizerListView)
+                }
+              />
+            </View>
+          )}
+          {!loading && scheduleIndexCounter === 0 && (
             <EventScheduleScreen
+              filterOpetions={filterSetting}
+              selectedFilter={selectedOpetions}
               eventData={eventData}
               navigation={navigation}
               profileID={authContext.entity.uid}
@@ -974,7 +1416,6 @@ export default function ScheduleScreen({navigation, route}) {
             <ScrollView
               style={{
                 flex: 1,
-                backgroundColor: colors.lightGrayBackground,
                 marginTop: 15,
               }}
               onScroll={onScrollCalender}
@@ -1040,19 +1481,24 @@ export default function ScheduleScreen({navigation, route}) {
           }
           // destructiveButtonIndex={3}
           onPress={(index) => {
-            if (index === 0) {
-              navigation.navigate('DefaultColorScreen');
-            } else if (index === 1) {
-              if (
-                authContext.entity.role === 'player' ||
-                authContext.entity.role === 'user'
-              ) {
+            if (
+              authContext.entity.role === 'player' ||
+              authContext.entity.role === 'user'
+            ) {
+              if (index === 0) {
+                navigation.navigate('DefaultColorScreen');
+              } else if (index === 1) {
                 navigation.navigate('GroupEventScreen');
-              } else {
+              } else if (index === 2) {
                 navigation.navigate('ViewPrivacyScreen');
               }
-            } else if (index === 2) {
-              navigation.navigate('ViewPrivacyScreen');
+            } else {
+              console.log('else block');
+              if (index === 0) {
+                navigation.navigate('DefaultColorScreen');
+              } else if (index === 1) {
+                navigation.navigate('ViewPrivacyScreen');
+              }
             }
           }}
         />
@@ -1162,6 +1608,64 @@ export default function ScheduleScreen({navigation, route}) {
               keyExtractor={(item, index) => index.toString()}
             />
           </SafeAreaView>
+        </Modal>
+        <Modal
+          onBackdropPress={() => setFilterPopup(false)}
+          isVisible={filterPopup}
+          animationInTiming={300}
+          animationOutTiming={800}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={800}
+          style={{
+            margin: 0,
+          }}>
+          <View
+            style={[
+              styles.bottomPopupContainer,
+              {height: Dimensions.get('window').height - 50},
+            ]}>
+            <View style={styles.topHeaderContainer}>
+              <TouchableOpacity
+                hitSlop={getHitSlop(15)}
+                style={styles.closeButton}
+                onPress={() => {
+                  setFilterPopup(false);
+                }}>
+                <Image source={images.crossImage} style={styles.closeButton} />
+              </TouchableOpacity>
+              <Text style={styles.applyText}>Filter</Text>
+              <Text
+                style={styles.applyText}
+                onPress={() => {
+                  setFilterPopup(false);
+                  setFilterSetting({
+                    ...filterSetting,
+                    sort: sortFilterOpetion,
+                    time: timeFilterOpetion,
+                  });
+                }}>
+                Apply
+              </Text>
+            </View>
+            <TCThinDivider width={'100%'} marginBottom={15} />
+            <View>
+              <Text style={styles.titleText}>Sort By</Text>
+              <FlatList
+                data={sortFilterData}
+                renderItem={renderSortFilterOpetions}
+                style={{marginTop: 15}}
+              />
+            </View>
+            <TCThinDivider width={'90%'} marginBottom={15} />
+            <View>
+              <Text style={styles.titleText}>Time</Text>
+              <FlatList
+                data={timeFilterData}
+                renderItem={renderTimeFilterOpetions}
+                style={{marginTop: 15}}
+              />
+            </View>
+          </View>
         </Modal>
         {/* Scorekeeper modal */}
         <ActionSheet
@@ -1379,7 +1883,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     alignSelf: 'center',
   },
-
   backImageStyle: {
     height: 35,
     width: 35,
@@ -1391,5 +1894,97 @@ const styles = StyleSheet.create({
   separateLine: {
     borderColor: colors.veryLightGray,
     borderWidth: 0.5,
+  },
+  sportsListView: {
+    flexDirection: 'row',
+    backgroundColor: colors.offwhite,
+    borderBottomColor: colors.veryLightGray,
+    borderBottomWidth: 0.5,
+    alignItems: 'center',
+  },
+  sportName: {
+    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+    margin: 10,
+  },
+  sportSelectedName: {
+    fontSize: 14,
+    fontFamily: fonts.RBold,
+    color: colors.themeColor,
+    alignSelf: 'center',
+    margin: 10,
+  },
+  bottomPopupContainer: {
+    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    backgroundColor: colors.whiteColor,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.googleColor,
+        shadowOffset: {width: 0, height: 3},
+        shadowOpacity: 0.5,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 15,
+      },
+    }),
+  },
+
+  titleText: {
+    fontSize: 18,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+    marginLeft: 15,
+  },
+  applyText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: widthPercentageToDP('40%'),
+  },
+  closeButton: {
+    alignSelf: 'center',
+    width: 25,
+    height: 25,
+    resizeMode: 'contain',
+    left: 5,
+  },
+
+  topHeaderContainer: {
+    height: 60,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    marginRight: 25,
+    marginLeft: 15,
+  },
+
+  radioButtonStyle: {
+    height: 22,
+    width: 22,
+    resizeMode: 'cover',
+    alignSelf: 'center',
+  },
+
+  filterTitle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  changeOrderStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    color: colors.themeColor,
+    textDecorationLine: 'underline',
+    marginLeft: 20,
   },
 });

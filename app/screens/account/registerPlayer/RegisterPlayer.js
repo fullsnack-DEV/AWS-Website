@@ -40,9 +40,10 @@ export default function RegisterPlayer({ navigation }) {
   useEffect(() => {
     let sportArr = [];
 
-    console.log('authContext.sports',authContext.sports);
+    console.log('authContext.sports111',authContext.sports);
     authContext.sports.map((item) => {
       sportArr = [...sportArr, ...item.format];
+      console.log('sportArrsportArr',sportArr);
       return null;
     });
     setSportsData([...sportArr]);
