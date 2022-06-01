@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, {useRef, useState, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import moment from 'moment';
-import { ScrollView } from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -23,10 +23,21 @@ import images from '../../../Constants/ImagePath';
 import EventTimeItem from '../../../components/Schedule/EventTimeItem';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import strings from '../../../Constants/String';
+import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
+import {getSportName} from '../../../utils';
+import AuthContext from '../../../auth/context';
+import TCThinDivider from '../../../components/TCThinDivider';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import { deleteEvent } from '../../../api/Schedule';
 
-export default function EventScreen({ navigation, route }) {
+export default function EventScreen({navigation, route}) {
   const actionSheet = useRef();
   const editactionsheet = useRef();
+  const authContext = useContext(AuthContext);
+
+  const [loading, setloading] = useState(false);
+
+  const [eventData] = useState(route?.params?.data);
   let titleValue = 'Game';
   let description = 'Game With';
   let description2 = '';
@@ -40,33 +51,33 @@ export default function EventScreen({ navigation, route }) {
   let gameDataLongi = null;
   let blocked = false;
   let venue = '';
-  if (route && route.params && route.params.data) {
-    if (route.params.data.title) {
-      titleValue = route.params.data.title;
+  if (eventData) {
+    if (eventData.title) {
+      titleValue = eventData.title;
     }
-    if (route.params.data.descriptions) {
-      description = route.params.data.descriptions;
+    if (eventData.descriptions) {
+      description = eventData.descriptions;
     }
-    if (route.params.data.color) {
-      eventColor = route.params.data.color;
+    if (eventData.color) {
+      eventColor = eventData.color;
     }
-    if (route.params.data.start_datetime) {
-      startTime = new Date(route.params.data.start_datetime * 1000);
+    if (eventData.start_datetime) {
+      startTime = new Date(eventData.start_datetime * 1000);
     }
-    if (route.params.data.end_datetime) {
-      endTime = new Date(route.params.data.end_datetime * 1000);
+    if (eventData.end_datetime) {
+      endTime = new Date(eventData.end_datetime * 1000);
     }
-    if (route.params.data.location) {
-      location = route.params.data.location;
+    if (eventData.location) {
+      location = eventData.location;
     }
-    if (route.params.data.latitude) {
-      lati = route.params.data.latitude;
+    if (eventData.latitude) {
+      lati = eventData.latitude;
     }
-    if (route.params.data.longitude) {
-      longi = route.params.data.longitude;
+    if (eventData.longitude) {
+      longi = eventData.longitude;
     }
-    if (route.params.data.isBlocked) {
-      blocked = route.params.data.isBlocked;
+    if (eventData.isBlocked) {
+      blocked = eventData.isBlocked;
     }
   }
   if (route && route.params && route.params.gameData) {
@@ -85,45 +96,67 @@ export default function EventScreen({ navigation, route }) {
   }
 
   return (
-    <SafeAreaView style={ styles.mainContainerStyle }>
+    <SafeAreaView style={styles.mainContainerStyle}>
+      <ActivityLoader visible={loading} />
+
       <Header
         leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack() }>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
         }
-        centerComponent={
-          <Text style={styles.eventTextStyle}>Event</Text>
-        }
+        centerComponent={<Text style={styles.eventTextStyle}>Event</Text>}
         rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={() => actionSheet.current.show()}>
-            <Image source={images.vertical3Dot} style={styles.threeDotImageStyle} />
+          <TouchableOpacity
+            style={{padding: 2}}
+            onPress={() => actionSheet.current.show()}>
+            <Image
+              source={images.vertical3Dot}
+              style={styles.threeDotImageStyle}
+            />
           </TouchableOpacity>
         }
       />
-      <View style={ styles.sperateLine } />
+      <View style={styles.sperateLine} />
       <ScrollView>
-        <EventItemRender
-          title={strings.title}
-        >
-          <Text style={styles.textValueStyle}>{titleValue}</Text>
+        <EventBackgroundPhoto
+          isEdit={!!route?.params?.data?.background_thumbnail}
+          isPreview={true}
+          imageURL={
+            route?.params?.data?.background_thumbnail
+              ? {uri: route?.params?.data?.background_thumbnail}
+              : images.backgroundGrayPlceholder
+          }
+        />
+
+        <Text style={styles.eventTitleStyle}>
+          {titleValue}
+          <Text style={styles.sportTitleStyle}>
+            {eventData?.selected_sport &&
+              getSportName(eventData?.selected_sport, authContext)}
+          </Text>
+        </Text>
+
+        <TCThinDivider marginTop={15} marginBootom={15}/>
+        <EventItemRender title={strings.description}>
+          <Text style={styles.textValueStyle}>
+            {description} {description2}
+          </Text>
+        </EventItemRender>
+        <TCThinDivider/>
+        <EventItemRender title={strings.eventColorTitle}>
+          <View
+            style={[
+              styles.eventColorViewStyle,
+              {
+                backgroundColor:
+                  eventColor[0] !== '#' ? `#${eventColor}` : eventColor,
+              },
+            ]}
+          />
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
-        <EventItemRender
-          title={strings.about}
-        >
-          <Text style={styles.textValueStyle}>{description} {description2}</Text>
-        </EventItemRender>
-        <View style={styles.sepratorViewStyle} />
-        <EventItemRender
-          title={strings.eventColorTitle}
-        >
-          <View style={[styles.eventColorViewStyle, { backgroundColor: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]} />
-        </EventItemRender>
-        <View style={styles.sepratorViewStyle} />
-        <EventItemRender
-          title={strings.timeTitle}
-        >
+        <EventItemRender title={strings.timeTitle}>
           <EventTimeItem
             from={strings.from}
             fromTime={moment(startTime).format('MMM DD, YYYY hh:mm a')}
@@ -134,10 +167,13 @@ export default function EventScreen({ navigation, route }) {
           />
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
-        <EventItemRender
-          title={strings.place}
-        >
-          <Text style={styles.textValueStyle}>{location !== '' ? location : venue}</Text>
+        <EventItemRender title={strings.place}>
+          <Text style={styles.textValueStyle}>
+            {location !== '' ? location : venue}
+          </Text>
+          <Text style={styles.textValueStyle}>
+            {location !== '' ? location : venue}
+          </Text>
           <EventMapView
             region={{
               latitude: lati !== null ? Number(lati) : Number(gameDataLati),
@@ -152,18 +188,33 @@ export default function EventScreen({ navigation, route }) {
           />
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
-        <EventItemRender
-          title={strings.availableTitle}
-        >
-          {!blocked ? <View style={{ flexDirection: 'row', marginTop: 3 }}>
-            <Image source={images.checkWhiteLanguage} style={styles.availableImageStyle} />
-            <Text style={styles.availableTextStyle}>{strings.available}</Text>
-          </View> : <View style={{ flexDirection: 'row', marginTop: 3 }}>
-            <View style={styles.blockedImageViewStyle}>
-              <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
+        <EventItemRender title={strings.availableTitle}>
+          {!blocked ? (
+            <View style={{flexDirection: 'row', marginTop: 3}}>
+              <Image
+                source={images.checkWhiteLanguage}
+                style={styles.availableImageStyle}
+              />
+              <Text style={styles.availableTextStyle}>{strings.available}</Text>
             </View>
-            <Text style={[styles.availableTextStyle, { color: colors.veryLightBlack }]}>{strings.blocked}</Text>
-          </View>}
+          ) : (
+            <View style={{flexDirection: 'row', marginTop: 3}}>
+              <View style={styles.blockedImageViewStyle}>
+                <Image
+                  source={images.cancelImage}
+                  style={styles.cancelImageStyle}
+                  resizeMode={'contain'}
+                />
+              </View>
+              <Text
+                style={[
+                  styles.availableTextStyle,
+                  {color: colors.veryLightBlack},
+                ]}>
+                {strings.blocked}
+              </Text>
+            </View>
+          )}
         </EventItemRender>
       </ScrollView>
       <ActionSheet
@@ -174,26 +225,47 @@ export default function EventScreen({ navigation, route }) {
         onPress={(index) => {
           if (index === 0) {
             // editactionsheet.current.show();
-            if (route && route.params && route.params.data) {
-              navigation.navigate('EditEventScreen', { data: route.params.data, gameData: route.params.gameData });
+            if (route && route.params && eventData) {
+              navigation.navigate('EditEventScreen', {
+                data: eventData,
+                gameData: route.params.gameData,
+              });
             }
           } else if (index === 1) {
             Alert.alert(
               'Do you want to delete this event ?',
               '',
-              [{
-                text: 'Delete',
-                style: 'destructive',
-                onPress: async () => {
+              [
+                {
+                  text: 'Delete',
+                  style: 'destructive',
+                  onPress: async () => {
+                    setloading(true);
+                        const entity = authContext.entity;
+                        const uid = entity.uid || entity.auth.user_id;
+                        const entityRole =
+                          entity.role === 'user' ? 'users' : 'groups';
+                        deleteEvent(
+                          entityRole,
+                          uid,
+                          eventData.cal_id,
+                          authContext,
+                        )
+                          .then(() =>
+                          navigation.goBack()
+                          )
+                          .catch((e) => {
+                            setloading(false);
+                            Alert.alert('', e.messages);
+                          });
+                  },
                 },
-              },
-              {
-                text: 'Cancel',
-                style: 'cancel',
-              },
-
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
               ],
-              { cancelable: false },
+              {cancelable: false},
             );
           }
         }}
@@ -203,8 +275,7 @@ export default function EventScreen({ navigation, route }) {
         options={['Change Event Color', 'Hide', 'Cancel']}
         cancelButtonIndex={2}
         // destructiveButtonIndex={1}
-        onPress={() => {
-        }}
+        onPress={() => {}}
       />
     </SafeAreaView>
   );
@@ -217,7 +288,6 @@ const styles = StyleSheet.create({
   sperateLine: {
     borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
-    marginVertical: hp('0.5%'),
   },
   backImageStyle: {
     height: 20,
@@ -247,7 +317,20 @@ const styles = StyleSheet.create({
     marginTop: 3,
     color: colors.lightBlackColor,
   },
+  eventTitleStyle: {
+    fontSize: 20,
+    fontFamily: fonts.RBold,
+    marginTop: 3,
+    marginLeft: 15,
+    color: colors.lightBlackColor,
+  },
   eventColorViewStyle: {
+    width: wp('16%'),
+    height: hp('3.5%'),
+    marginTop: 3,
+    borderRadius: 5,
+  },
+  sportTitleStyle: {
     width: wp('16%'),
     height: hp('3.5%'),
     marginTop: 3,

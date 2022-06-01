@@ -11,29 +11,30 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-function EventBackgroundPhoto({
-  imageURL,
-  isEdit= false,
-}) {
+function EventBackgroundPhoto({imageURL, isEdit = false, onPress,isPreview= false}) {
   return (
-    <View style={styles.containerStyle}>
-      <ImageBackground source={{uri: imageURL}} style={{resizeMode:'contain'}}>
-        <View>
-          {!isEdit && <View style={{ marginBottom: 15,}}>
+    <ImageBackground
+      source={imageURL}
+      style={styles.bgStyle}>
+      {!isPreview && <View>
+        {!isEdit && (
+          <View style={{marginBottom: 15}}>
             <Text style={styles.featuredImageStyle}>FEATURED PHOTO</Text>
             <Text style={styles.imageStyleText}>At least 1284x2778 pixels</Text>
-          </View>}
-          <TouchableOpacity style={styles.uploadPhoto}>
-            <FastImage
-              source={images.choosePic}
-              resizeMode={'cover'}
-              style={{height: 15, width: 15}}
-            />
-            <Text style={styles.uploadPhotoStyles}>{isEdit ? 'Edit photo' : 'Upload photo'}</Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
-    </View>
+          </View>
+        )}
+        <TouchableOpacity style={styles.uploadPhoto} onPress={onPress}>
+          <FastImage
+            source={images.choosePic}
+            resizeMode={'cover'}
+            style={{height: 15, width: 15}}
+          />
+          <Text style={styles.uploadPhotoStyles}>
+            {isEdit ? 'Edit photo' : 'Upload photo'}
+          </Text>
+        </TouchableOpacity>
+      </View>}
+    </ImageBackground>
   );
 }
 
@@ -55,16 +56,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-   
   },
-  containerStyle: {
-    height: 200,
-    width: '100%',
-    backgroundColor: colors.textFieldBackground,
-    marginBottom: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+
   imageStyleText: {
     fontFamily: fonts.RRegular,
     fontSize: 12,
@@ -76,6 +69,15 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 5,
   },
+  bgStyle:{
+    resizeMode: 'contain',
+    height: 200,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.textFieldBackground,
+    marginBottom: 15,
+  }
 });
 
 export default EventBackgroundPhoto;

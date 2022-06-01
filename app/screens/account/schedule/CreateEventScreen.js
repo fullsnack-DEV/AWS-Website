@@ -1,8 +1,15 @@
+/* eslint-disable default-case */
 /* eslint-disable no-dupe-else-if */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
-import React, {useEffect, useState, useContext} from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -17,13 +24,16 @@ import {
   Dimensions,
 } from 'react-native';
 import moment from 'moment';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import Geolocation from '@react-native-community/geolocation';
+import ActionSheet from 'react-native-actionsheet';
+
 import RNPickerSelect from 'react-native-picker-select';
 import Modal from 'react-native-modal';
 import {useIsFocused} from '@react-navigation/native';
+import ImagePicker from 'react-native-image-crop-picker';
+
+import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
 import AuthContext from '../../../auth/context';
 import Header from '../../../components/Home/Header';
@@ -48,29 +58,27 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
 import TCThinDivider from '../../../components/TCThinDivider';
-import {getHitSlop, getSportName} from '../../../utils';
+import {getHitSlop, getNearDateTime, getSportName} from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
 import {getUserSettings} from '../../../api/Users';
 import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
+import uploadImages from '../../../utils/imageAction';
 
-const getNearDateTime = (date) => {
-  const start = moment(date);
-  const nearTime = 5 - (start.minute() % 5);
-  const dateTime = moment(start).add(nearTime, 'm').toDate();
-  console.log('Start date/Time::=>', dateTime);
-  return dateTime;
-};
 export default function CreateEventScreen({navigation, route}) {
   const eventPostedList = ['Schedule only', 'Schedule & posts'];
-
+  const actionSheet = useRef();
+  const actionSheetWithDelete = useRef();
   const isFocused = useIsFocused();
 
   const authContext = useContext(AuthContext);
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [eventPosted, setEventPosted] = useState(0);
-
+  const [minAttendees, setMinAttendees] = useState(0);
+  const [maxAttendees, setMaxAttendees] = useState(0);
+  const [eventFee, setEventFee] = useState(0);
+  const [refundPolicy, setRefundPolicy] = useState('');
   const [toggle, setToggle] = useState(true);
   const [eventStartDateTime, setEventStartdateTime] = useState(
     toggle
@@ -96,10 +104,14 @@ export default function CreateEventScreen({navigation, route}) {
   const [isAll, setIsAll] = useState(false);
 
   const [whoCanSee, setWhoCanSee] = useState('Only me');
+  const [whoCanJoin, setWhoCanJoin] = useState('Only me');
+
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
   const [selectWeekMonth, setSelectWeekMonth] = useState('');
+  const [backgroundThumbnail, setBackgroundThumbnail] = useState();
+  const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
 
   const countNumberOfWeekFromDay = () => {
     const date = new Date();
@@ -135,7 +147,6 @@ export default function CreateEventScreen({navigation, route}) {
   };
   const handleStartDatePress = (date) => {
     console.log('Date::=>', new Date(new Date(date).getTime()));
-
     setEventStartdateTime(
       toggle
         ? new Date(date).setHours(0, 0, 0, 0)
@@ -183,10 +194,10 @@ export default function CreateEventScreen({navigation, route}) {
       getSports();
       if (route.params && route.params.locationName) {
         setSearchLocation(route.params.locationName);
-        setLocationDetail(route.params.locationDetail);
+        setLocationDetail({...locationDetail, ...route.params.locationDetail});
       }
     }
-  }, [isFocused, route.params]);
+  }, [isFocused, locationDetail, route.params]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -196,6 +207,7 @@ export default function CreateEventScreen({navigation, route}) {
             const latValue = position.coords.latitude;
             const longValue = position.coords.longitude;
             const obj = {
+              ...locationDetail,
               lat: latValue,
               lng: longValue,
             };
@@ -386,6 +398,272 @@ export default function CreateEventScreen({navigation, route}) {
     );
   };
 
+  const onBGImageClicked = () => {
+    setTimeout(() => {
+      if (backgroundThumbnail) {
+        actionSheetWithDelete.current.show();
+      } else {
+        actionSheet.current.show();
+      }
+    }, 0.1);
+  };
+
+  const openImagePicker = (width = 400, height = 400) => {
+    const cropCircle = false;
+
+    ImagePicker.openPicker({
+      width,
+      height,
+      cropping: true,
+      cropperCircleOverlay: cropCircle,
+    }).then((data) => {
+      setBackgroundThumbnail(data.path);
+      setBackgroundImageChanged(true);
+    });
+  };
+
+  const deleteImage = () => {
+    setBackgroundThumbnail();
+    setBackgroundImageChanged(false);
+  };
+
+  const openCamera = (width = 400, height = 400) => {
+    check(PERMISSIONS.IOS.CAMERA)
+      .then((result) => {
+        switch (result) {
+          case RESULTS.UNAVAILABLE:
+            Alert.alert(
+              'This feature is not available (on this device / in this context)',
+            );
+            break;
+          case RESULTS.DENIED:
+            request(PERMISSIONS.IOS.CAMERA).then(() => {
+              ImagePicker.openCamera({
+                width,
+                height,
+                cropping: true,
+              })
+                .then((data) => {
+                  setBackgroundThumbnail(data.path);
+                  setBackgroundImageChanged(true);
+                })
+                .catch((e) => {
+                  Alert.alert(e);
+                });
+            });
+            break;
+          case RESULTS.LIMITED:
+            console.log('The permission is limited: some actions are possible');
+            break;
+          case RESULTS.GRANTED:
+            ImagePicker.openCamera({
+              width,
+              height,
+              cropping: true,
+            })
+              .then((data) => {
+                setBackgroundThumbnail(data.path);
+                setBackgroundImageChanged(true);
+              })
+              .catch((e) => {
+                Alert.alert(e);
+              });
+            break;
+          case RESULTS.BLOCKED:
+            console.log('The permission is denied and not requestable anymore');
+            break;
+        }
+      })
+      .catch((error) => {
+        Alert.alert(error);
+      });
+  };
+
+  const checkValidation = useCallback(() => {
+    if (eventTitle === '') {
+      Alert.alert(strings.appName, 'Please Enter Event Title.');
+      return false;
+    }
+    if (eventDescription === '') {
+      Alert.alert(strings.appName, 'Please Enter Event Description.');
+      return false;
+    }
+    if (eventStartDateTime === '') {
+      Alert.alert(strings.appName, 'Please Select Event Start Date and Time.');
+      return false;
+    }
+    if (eventEndDateTime === '') {
+      Alert.alert(strings.appName, 'Please Select Event End Date and Time.');
+      return false;
+    }
+    if (eventEndDateTime === '') {
+      Alert.alert(strings.appName, 'Please Select Event End Date and Time.');
+      return false;
+    }
+    if (
+      Number(minAttendees) > Number(maxAttendees) ||
+      (Number(minAttendees) === 0 && Number(maxAttendees) === 0)
+    ) {
+      Alert.alert(strings.appName, 'Please enter valid attendees number.');
+      return false;
+    }
+    if (Number(eventFee) < 0) {
+      Alert.alert(strings.appName, 'Please enter valid event fee amount.');
+      return false;
+    }
+    if (refundPolicy.length < 0) {
+      Alert.alert(
+        strings.appName,
+        'Please enter valid refund policy description.',
+      );
+      return false;
+    }
+
+    return true;
+  }, [
+    eventDescription,
+    eventEndDateTime,
+    eventFee,
+    eventStartDateTime,
+    eventTitle,
+    maxAttendees,
+    minAttendees,
+    refundPolicy.length,
+  ]);
+
+  const createEventDone = (data) => {
+    const entity = authContext.entity;
+    const uid = entity.uid || entity.auth.user_id;
+    const entityRole = entity.role === 'user' ? 'users' : 'groups';
+    if (searchLocation) {
+      data[0].location = searchLocation;
+      data[0].latitude = locationDetail.lat;
+      data[0].longitude = locationDetail.lng;
+    }
+
+    let rule = '';
+    if (
+      selectWeekMonth === 'Daily' ||
+      selectWeekMonth === 'Weekly' ||
+      selectWeekMonth === 'Monthly' ||
+      selectWeekMonth === 'Yearly'
+    ) {
+      rule = selectWeekMonth.toUpperCase();
+    } else if (
+      selectWeekMonth ===
+      `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`
+    ) {
+      rule = `MONTHLY;BYDAY=${getTodayDay()
+        .substring(0, 2)
+        .toUpperCase()};BYSETPOS=${countNumberOfWeeks()}`;
+    } else if (
+      selectWeekMonth ===
+      `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`
+    ) {
+      rule = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`;
+    }
+    if (selectWeekMonth !== '') {
+      data[0].untilDate = Number(
+        parseFloat(new Date(eventUntilDateTime).getTime() / 1000).toFixed(0),
+      );
+      data[0].rrule = `FREQ=${rule}`;
+    }
+
+    console.log('DADADADAD', data);
+    setloading(true);
+    createEvent(entityRole, uid, data, authContext)
+      .then((response) => {
+        console.log('Response :-', response);
+        setTimeout(() => {
+          setloading(false);
+          navigation.goBack();
+        }, 5000);
+      })
+      .catch((e) => {
+        setloading(false);
+        console.log('Error ::--', e);
+        Alert.alert('', e.messages);
+      });
+  };
+
+  const onDonePress = () => {
+    if (checkValidation()) {
+      const entity = authContext.entity;
+      const entityRole = entity.role === 'user' ? 'users' : 'groups';
+      const data = [
+        {
+          title: eventTitle,
+          descriptions: eventDescription,
+          allDay: toggle,
+          start_datetime: Number(
+            parseFloat(
+              new Date(convertDateToUTC(eventStartDateTime)).getTime() / 1000,
+            ).toFixed(0),
+          ),
+          end_datetime: Number(
+            parseFloat(
+              new Date(convertDateToUTC(eventEndDateTime)).getTime() / 1000,
+            ).toFixed(0),
+          ),
+          is_recurring: selectWeekMonth !== '',
+          blocked: is_Blocked,
+          selected_sport: sportsSelection,
+          who_can_see: whoCanSee,
+          who_can_join: whoCanJoin,
+          event_posted: eventPosted,
+          event_fee: Number(eventFee),
+          refund_policy: refundPolicy,
+          organizer: authContext.entity.obj,
+          attendees: {
+            min: Number(minAttendees),
+            max: Number(maxAttendees),
+          },
+          participants: [
+            {
+              entity_id:
+                authContext.entity.obj.user_id ||
+                authContext.entity.obj.group_id,
+              entity_type: entityRole,
+            },
+          ],
+        },
+      ];
+
+      if (backgroundImageChanged) {
+        const imageArray = [];
+        imageArray.push({path: backgroundThumbnail});
+        uploadImages(imageArray, authContext)
+          .then((responses) => {
+            const attachments = responses.map((item) => ({
+              type: 'image',
+              url: item.fullImage,
+              thumbnail: item.thumbnail,
+            }));
+
+            let bgInfo = attachments[0];
+            if (attachments.length > 1) {
+              bgInfo = attachments[1];
+            }
+            data[0].background_thumbnail = bgInfo.thumbnail;
+            data[0].background_full_image = bgInfo.url;
+            setBackgroundImageChanged(false);
+
+            createEventDone(data);
+          })
+          .catch((e) => {
+            setTimeout(() => {
+              Alert.alert(strings.appName, e.messages);
+            }, 0.1);
+          })
+          .finally(() => {
+            setloading(false);
+          });
+      } else {
+        createEventDone(data);
+      }
+    }
+  };
+
   return (
     <>
       <ActivityLoader visible={loading} />
@@ -399,145 +677,7 @@ export default function CreateEventScreen({navigation, route}) {
           <Text style={styles.eventTextStyle}>Create an Event</Text>
         }
         rightComponent={
-          <TouchableOpacity
-            style={{padding: 2}}
-            onPress={async () => {
-              const entity = authContext.entity;
-              const uid = entity.uid || entity.auth.user_id;
-              const entityRole = entity.role === 'user' ? 'users' : 'groups';
-
-              if (eventTitle === '') {
-                Alert.alert(strings.appName, 'Please Enter Event Title.');
-              } else if (eventDescription === '') {
-                Alert.alert(strings.appName, 'Please Enter Event Description.');
-              } else if (eventStartDateTime === '') {
-                Alert.alert(
-                  strings.appName,
-                  'Please Select Event Start Date and Time.',
-                );
-              } else if (eventEndDateTime === '') {
-                Alert.alert(
-                  strings.appName,
-                  'Please Select Event End Date and Time.',
-                );
-              } else if (eventEndDateTime === '') {
-                Alert.alert(
-                  strings.appName,
-                  'Please Select Event End Date and Time.',
-                );
-              } else {
-                let data;
-
-                if (searchLocation) {
-                  data = [
-                    {
-                      title: eventTitle,
-                      descriptions: eventDescription,
-                      allDay: toggle,
-                      start_datetime: Number(
-                        parseFloat(
-                          new Date(eventStartDateTime).getTime() / 1000,
-                        ).toFixed(0),
-                      ),
-                      end_datetime: Number(
-                        parseFloat(
-                          new Date(eventEndDateTime).getTime() / 1000,
-                        ).toFixed(0),
-                      ),
-                      is_recurring: selectWeekMonth !== '',
-                      location: searchLocation,
-                      latitude: locationDetail.lat,
-                      longitude: locationDetail.lng,
-                      blocked: is_Blocked,
-                      participants: [
-                        {
-                          entity_id:
-                            authContext.entity.obj.user_id ||
-                            authContext.entity.obj.group_id,
-                          entity_type: entityRole,
-                        },
-                      ],
-                    },
-                  ];
-                } else {
-                  data = [
-                    {
-                      title: eventTitle,
-                      descriptions: eventDescription,
-                      allDay: toggle,
-                      start_datetime: Number(
-                        parseFloat(
-                          new Date(
-                            convertDateToUTC(eventStartDateTime),
-                          ).getTime() / 1000,
-                        ).toFixed(0),
-                      ),
-                      end_datetime: Number(
-                        parseFloat(
-                          new Date(
-                            convertDateToUTC(eventEndDateTime),
-                          ).getTime() / 1000,
-                        ).toFixed(0),
-                      ),
-                      is_recurring: selectWeekMonth !== '',
-                      blocked: is_Blocked,
-                      participants: [
-                        {
-                          entity_id:
-                            authContext.entity.obj.user_id ||
-                            authContext.entity.obj.group_id,
-                          entity_type: entityRole,
-                        },
-                      ],
-                    },
-                  ];
-                }
-
-                let rule = '';
-                if (
-                  selectWeekMonth === 'Daily' ||
-                  selectWeekMonth === 'Weekly' ||
-                  selectWeekMonth === 'Monthly' ||
-                  selectWeekMonth === 'Yearly'
-                ) {
-                  rule = selectWeekMonth.toUpperCase();
-                } else if (
-                  selectWeekMonth ===
-                  `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`
-                ) {
-                  rule = `MONTHLY;BYDAY=${getTodayDay()
-                    .substring(0, 2)
-                    .toUpperCase()};BYSETPOS=${countNumberOfWeeks()}`;
-                } else if (
-                  selectWeekMonth ===
-                  `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`
-                ) {
-                  rule = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`;
-                }
-                if (selectWeekMonth !== '') {
-                  data[0].untilDate = Number(
-                    parseFloat(
-                      new Date(eventUntilDateTime).getTime() / 1000,
-                    ).toFixed(0),
-                  );
-                  data[0].rrule = `FREQ=${rule}`;
-                }
-                setloading(true);
-                createEvent(entityRole, uid, data, authContext)
-                  .then((response) => {
-                    console.log('Response :-', response);
-                    setTimeout(() => {
-                      setloading(false);
-                      navigation.goBack();
-                    }, 5000);
-                  })
-                  .catch((e) => {
-                    setloading(false);
-                    console.log('Error ::--', e);
-                    Alert.alert('', e.messages);
-                  });
-              }
-            }}>
+          <TouchableOpacity style={{padding: 2}} onPress={onDonePress}>
             <Text>Done</Text>
           </TouchableOpacity>
         }
@@ -547,7 +687,16 @@ export default function CreateEventScreen({navigation, route}) {
       <TCKeyboardView>
         <ScrollView bounces={false}>
           <SafeAreaView>
-            <EventBackgroundPhoto isEdit={false} imageURL={''} />
+            <EventBackgroundPhoto
+              isEdit={!!backgroundThumbnail}
+              isPreview = {false}
+              imageURL={
+                backgroundThumbnail
+                  ? {uri: backgroundThumbnail}
+                  : images.backgroundGrayPlceholder
+              }
+              onPress={() => onBGImageClicked()}
+            />
             <EventTextInputItem
               title={strings.title}
               placeholder={strings.titlePlaceholder}
@@ -694,10 +843,10 @@ export default function CreateEventScreen({navigation, route}) {
               <TextInput
                 placeholder={'Venue name'}
                 style={styles.textInputStyle}
-                onChangeText={() => {
-                  console.log('aa');
+                onChangeText={(value) => {
+                  setLocationDetail({...locationDetail, venue_name: value});
                 }}
-                // value={value}
+                value={locationDetail?.venue_name}
                 // multiline={multiline}
                 textAlignVertical={'center'}
                 placeholderTextColor={colors.userPostTimeColor}
@@ -706,6 +855,7 @@ export default function CreateEventScreen({navigation, route}) {
               <TCTouchableLabel
                 placeholder={strings.searchHereText}
                 title={searchLocation}
+                showShadow={false}
                 showNextArrow={true}
                 onPress={() => {
                   navigation.navigate('SearchLocationScreen', {
@@ -734,10 +884,10 @@ export default function CreateEventScreen({navigation, route}) {
               <TextInput
                 placeholder={'Details'}
                 style={styles.detailsInputStyle}
-                onChangeText={() => {
-                  console.log('aa');
+                onChangeText={(value) => {
+                  setLocationDetail({...locationDetail, venue_detail: value});
                 }}
-                // value={value}
+                value={locationDetail?.venue_detail}
                 multiline={true}
                 textAlignVertical={'center'}
                 placeholderTextColor={colors.userPostTimeColor}
@@ -780,7 +930,7 @@ export default function CreateEventScreen({navigation, route}) {
                   },
                 ]}
                 onValueChange={(value) => {
-                  setWhoCanSee(value);
+                  setWhoCanJoin(value);
                 }}
                 useNativeAndroidPickerStyle={false}
                 style={{
@@ -816,7 +966,7 @@ export default function CreateEventScreen({navigation, route}) {
                     elevation: 3,
                   },
                 }}
-                value={whoCanSee}
+                value={whoCanJoin}
                 Icon={() => (
                   <Image
                     source={images.dropDownArrow}
@@ -834,7 +984,10 @@ export default function CreateEventScreen({navigation, route}) {
                 The event may be canceled by the organizer if the minimum number
                 of the attendees isn’t met.
               </Text>
-              <NumberOfAttendees />
+              <NumberOfAttendees
+                onChangeMinText={setMinAttendees}
+                onChangeMaxText={setMaxAttendees}
+              />
             </View>
 
             <View style={styles.containerStyle}>
@@ -844,8 +997,8 @@ export default function CreateEventScreen({navigation, route}) {
               <View style={styles.feeContainer}>
                 <TextInput
                   style={styles.eventFeeStyle}
-                  // onChangeText={onChangeText}
-                  value={'100'}
+                  onChangeText={(value) => setEventFee(value)}
+                  value={eventFee}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                 />
@@ -860,10 +1013,8 @@ export default function CreateEventScreen({navigation, route}) {
               <TextInput
                 placeholder={'Refund Policy'}
                 style={styles.detailsInputStyle}
-                onChangeText={() => {
-                  console.log('aa');
-                }}
-                // value={value}
+                onChangeText={(value) => setRefundPolicy(value)}
+                value={refundPolicy}
                 multiline={true}
                 textAlignVertical={'center'}
                 placeholderTextColor={colors.userPostTimeColor}
@@ -950,29 +1101,31 @@ export default function CreateEventScreen({navigation, route}) {
               <View style={styles.allStyle}>
                 <Text style={styles.titleTextStyle}>{strings.all}</Text>
                 <TouchableOpacity
-                onPress={() => {
-                  setIsAll(!isAll);
-                  const groups = groupsList.map((obj) => ({
-                    ...obj,
-                    isSelected: !isAll,
-                  }));
-                  setGroupsList([...groups]);
-                }}>
+                  onPress={() => {
+                    setIsAll(!isAll);
+                    const groups = groupsList.map((obj) => ({
+                      ...obj,
+                      isSelected: !isAll,
+                    }));
+                    setGroupsList([...groups]);
+                  }}>
                   <Image
-                  source={isAll ? images.orangeCheckBox : images.uncheckWhite}
-                  style={styles.imageStyle}
-                />
+                    source={isAll ? images.orangeCheckBox : images.uncheckWhite}
+                    style={styles.imageStyle}
+                  />
                 </TouchableOpacity>
               </View>
               <FlatList
-            scrollEnabled={false}
-              data={[...groupsList]}
-              showsVerticalScrollIndicator={false}
-              ItemSeparatorComponent={() => <View style={{height: wp('4%')}} />}
-              renderItem={renderGroups}
-              keyExtractor={(item, index) => index.toString()}
-              style={styles.listStyle}
-            />
+                scrollEnabled={false}
+                data={[...groupsList]}
+                showsVerticalScrollIndicator={false}
+                ItemSeparatorComponent={() => (
+                  <View style={{height: wp('4%')}} />
+                )}
+                renderItem={renderGroups}
+                keyExtractor={(item, index) => index.toString()}
+                style={styles.listStyle}
+              />
             </View>
 
             <DateTimePickerView
@@ -1083,6 +1236,40 @@ export default function CreateEventScreen({navigation, route}) {
           />
         </View>
       </Modal>
+      <ActionSheet
+        ref={actionSheet}
+        // title={'News Feed Post'}
+        options={[strings.camera, strings.album, strings.cancelTitle]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker(750, 348);
+          }
+        }}
+      />
+      <ActionSheet
+        ref={actionSheetWithDelete}
+        // title={'News Feed Post'}
+        options={[
+          strings.camera,
+          strings.album,
+          strings.deleteTitle,
+          strings.cancelTitle,
+        ]}
+        cancelButtonIndex={3}
+        destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker(750, 348);
+          } else if (index === 2) {
+            deleteImage();
+          }
+        }}
+      />
     </>
   );
 }
@@ -1202,11 +1389,14 @@ const styles = StyleSheet.create({
     right: 15,
   },
   eventFeeStyle: {
+    width: '82%',
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     height: 40,
+    textAlign: 'right',
     backgroundColor: colors.textFieldBackground,
+
     borderRadius: 5,
   },
   currencyStyle: {
@@ -1249,7 +1439,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     margin: 15,
-    marginTop:0,
+    marginTop: 0,
     marginBottom: 0,
   },
   titleTextStyle: {
@@ -1268,6 +1458,6 @@ const styles = StyleSheet.create({
   listStyle: {
     marginBottom: 15,
     marginTop: 15,
-    paddingBottom:10
+    paddingBottom: 10,
   },
 });

@@ -17,7 +17,7 @@ import {
   LayoutAnimation,
 } from 'react-native';
 import _ from 'lodash';
-
+import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
   heightPercentageToDP as hp,
@@ -830,6 +830,13 @@ export const getCalendar = async (
 export const uniqueArray = (array, propertyName) =>  {
   return array.filter((e, i) => array.findIndex(a => a[propertyName] === e[propertyName]) === i);
 }
+
+export const getNearDateTime = (date) => {
+  const start = moment(date);
+  const nearTime = 5 - (start.minute() % 5);
+  const dateTime = moment(start).add(nearTime, 'm').toDate();
+  return dateTime;
+};
 
 export const getSportName = (object, authContext) => {
   if (object?.sport_type && object?.sport_type !== '') {

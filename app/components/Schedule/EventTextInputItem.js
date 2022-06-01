@@ -22,6 +22,8 @@ function EventTextInputItem({
         multiline={multiline}
         textAlignVertical={multiline ? 'top' : 'center'}
         placeholderTextColor={colors.userPostTimeColor}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
     </View>
   );
