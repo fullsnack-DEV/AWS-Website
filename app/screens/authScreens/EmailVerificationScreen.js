@@ -1,5 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, Alert} from 'react-native';
+import React, {useEffect, useState, useLayoutEffect} from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Image,
+} from 'react-native';
 import firebase from '@react-native-firebase/app';
 import {
   widthPercentageToDP as wp,
@@ -23,23 +30,42 @@ export default function EmailVerificationScreen({navigation, route}) {
       timer > 0 && setInterval(() => setTimer(timer - 1), 1000);
     return () => clearInterval(timerController);
   }, [timer]);
-
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.pop();
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 20,
+              tintColor: colors.whiteColor,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  });
   const verifyUserEmail = () => {
     setLoading(true);
     firebase
       .auth()
       .signInWithEmailAndPassword(
-        route.params.emailAddress,
-        route.params.password,
+        route?.params?.signupInfo?.emailAddress,
+        route?.params?.signupInfo?.password,
       )
       .then(async (res) => {
         setLoading(false);
         if (res.user.emailVerified) {
-          navigation.replace('AddBirthdayScreen', {
-            profilePicData: route.params.profilePicData,
-            emailAddress: route.params.emailAddress,
-            first_name: route.params.first_name,
-            last_name: route.params.last_name,
+          console.log('route?.params?.signupInfo', route?.params?.signupInfo);
+          navigation.navigate('AddNameScreen', {
+            signupInfo: {
+              ...route?.params?.signupInfo,
+            },
           });
         } else {
           setTimeout(() => {
@@ -81,7 +107,7 @@ export default function EmailVerificationScreen({navigation, route}) {
   };
 
   const getVerificationEmailText = `We have sent an email to ${
-    route?.params?.emailAddress ?? ''
+    route?.params?.signupInfo?.emailAddress ?? ''
   }. You need to verify your email to continue. If you have not received the verification email, please check your spam folder or click the resend button below.`;
 
   // const auth = await firebase?.auth()?.currentUser;

@@ -2,7 +2,13 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable react-native/split-platform-components */
 /* eslint-disable no-nested-ternary */
-import React, {useState, useEffect, useContext, useLayoutEffect} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -30,6 +36,7 @@ import {
   searchLocations,
   getLocationNameWithLatLong,
   getLatLongFromPlaceID,
+  searchNearByCity,
 } from '../../api/External'; // getLatLongFromPlaceID
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
@@ -46,9 +53,15 @@ import {getGroupIndex} from '../../api/elasticSearch';
 export default function ChooseLocationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
-  const [currentLocation, setCurrentLocation] = useState();
+  const [nearByCity, setNearByCity] = useState([]);
+
+  const [currentLocation, setCurrentLocation] = useState(
+    route?.params?.signupInfo?.location,
+  );
   const [noData, setNoData] = useState(false);
-  const [searchText, setSearchText] = useState(authContext?.entity?.obj?.city);
+  // const [searchText, setSearchText] = useState(authContext?.entity?.obj?.city);
+  const [searchText, setSearchText] = useState('');
+
   const [loading, setLoading] = useState(false);
   const routes = useNavigationState((state) => state);
 
@@ -57,38 +70,111 @@ export default function ChooseLocationScreen({navigation, route}) {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            const routeObj = routes?.routes?.[routes?.index] ?? {};
-            const routeName =
-              routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
-            if (routeName === 'ChooseGenderScreen') {
-              navigation.pop(1);
-            } else {
-              navigation.navigate('ChooseGenderScreen');
-            }
+            navigation.pop();
           }}>
           <Image
             source={images.backArrow}
             style={{
               height: 20,
               width: 15,
-              marginLeft: 15,
+              marginLeft: 20,
               tintColor: colors.whiteColor,
             }}
           />
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
+  }, [navigation, nearByCity, cityData]);
+  const fetchNearestCity = useCallback(() => {
+    // position.coords.latitude
+    searchNearByCity(
+      route?.params?.signupInfo?.locationPosition?.coords?.latitude,
+      route?.params?.signupInfo?.locationPosition?.coords?.longitude,
+      2000000,
+      authContext,
+    )
+      .then((response) => {
+        const places = []; // This Array WIll contain locations received from google
+        const dataArray = [];
+        console.log('Places=====>', response.results);
+        for (const googlePlace of response.results) {
+          const place = {};
+          const lat = googlePlace.geometry.location.lat;
+          const lng = googlePlace.geometry.location.lng;
+          const coordinate = {
+            latitude: lat,
+            longitude: lng,
+          };
+          getLocationNameWithLatLong(
+            coordinate.latitude,
+            coordinate.longitude,
+            authContext,
+          ).then((res) => {
+            console.log('res====>', res);
+            console.log(
+              'Lat/long to address::=>',
+              res.results[0].address_components,
+            );
+            let stateAbbr, city, country;
+            res.results[0].address_components.map((e) => {
+              if (e.types.includes('administrative_area_level_1')) {
+                stateAbbr = e.short_name;
+              } else if (e.types.includes('locality')) {
+                city = e.short_name;
+              } else if (e.types.includes('country')) {
+                country = e.long_name;
+              }
+            });
+            // setCurrentLocation({stateAbbr, city, country});
+            const desc = `${city},${stateAbbr},${country}`;
+            const data = {description: desc};
+            dataArray.push(data);
+
+            console.log('desc===', desc);
+            console.log('stateAbbr=====>', stateAbbr);
+            console.log('city====>', city);
+            console.log('country====>', country);
+            console.log('desc=====>', desc);
+            console.log('data=====>', data);
+          });
+          place.placeTypes = googlePlace.types;
+          place.coordinate = coordinate;
+          place.placeId = googlePlace.place_id;
+          place.placeName = googlePlace.name;
+          places.push(place);
+          console.log('places--->', places);
+
+          // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
+        }
+        console.log('dataArray--->', dataArray);
+        setNearByCity([...dataArray]);
+      })
+      .catch((e) => {
+        console.log('cathh ---error', e);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [
+    authContext,
+    route?.params?.signupInfo?.locationPosition?.coords?.latitude,
+    route?.params?.signupInfo?.locationPosition?.coords?.longitude,
+  ]);
   useEffect(() => {
+    console.log('searchText', searchText);
+
+    // getNearestCity();
     getLocationData(searchText);
+    fetchNearestCity();
   }, [searchText]);
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      requestPermission();
-    } else {
-      getLocation();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (Platform.OS === 'android') {
+  //     requestPermission();
+  //   } else {
+  //     console.log('111');
+  //     getLocation();
+  //   }
+  // }, []);
 
   useEffect(() => {
     console.log('Settings useEffect clled:=>');
@@ -126,9 +212,14 @@ export default function ChooseLocationScreen({navigation, route}) {
   };
 
   const getLocation = () => {
+    Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
         console.log('Lat/long to position::=>', position);
+        console.log('222');
+        console.log('position.coords.latitude', position.coords.latitude);
+        console.log('position.coords.longitude', position.coords.longitude);
+
         // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
         getLocationNameWithLatLong(
           position.coords.latitude,
@@ -149,11 +240,14 @@ export default function ChooseLocationScreen({navigation, route}) {
               country = e.long_name;
             }
           });
+          console.log('333');
           setCurrentLocation({stateAbbr, city, country});
         });
+        console.log('444');
         console.log(position.coords.latitude);
       },
       (error) => {
+        console.log('555');
         // See error code charts below.
         console.log(error.code, error.message);
       },
@@ -175,6 +269,8 @@ export default function ChooseLocationScreen({navigation, route}) {
           }, 10);
         });
     } else {
+      console.log('Response ---9999');
+
       setNoData(true);
       setCityData([]);
     }
@@ -219,25 +315,15 @@ export default function ChooseLocationScreen({navigation, route}) {
 */
   const navigateToChooseSportScreen = (params) => {
     setLoading(false);
-    console.log('route=====>', route);
-    console.log('params ====>', params);
-    console.log('city===>', params.city);
-    console.log('country===>', params.country);
-    console.log('state==>', params.state_abbr);
-    console.log('profilePicData===>', route.params.profilePicData);
-    console.log('birthday===>', route.params.birthday);
-    console.log('gender=====>', route.params.gender);
+    console.log('genderInfo', route?.params?.signupInfo);
 
     navigation.navigate('ChooseSportsScreen', {
-      city: params.city,
-      state: params.state_abbr,
-      country: params.country,
-      profilePicData: route.params.profilePicData,
-      birthday: route.params.birthday,
-      gender: route.params.gender,
-      emailAddress: route.params.emailAddress,
-      first_name: route.params.first_name,
-      last_name: route.params.last_name,
+      locationInfo: {
+        ...route?.params?.signupInfo,
+        city: params.city,
+        state: params.state_abbr,
+        country: params.country,
+      },
     });
   };
 
@@ -271,7 +357,19 @@ export default function ChooseLocationScreen({navigation, route}) {
       <Separator />
     </TouchableWithoutFeedback>
   );
+  const renderItemNearCity = ({item, index}) => {
+    console.log('Near city1111 ==>', item.description);
 
+    return (
+      <TouchableWithoutFeedback
+        style={styles.listItem}
+        onPress={() => getTeamsData(item)}>
+        <Text style={styles.cityList}>{item.description}</Text>
+
+        <Separator />
+      </TouchableWithoutFeedback>
+    );
+  };
   const removeExtendedSpecialCharacters = (str) =>
     str.replace(/[^\x20-\x7E]/g, '');
   return (
@@ -285,6 +383,9 @@ export default function ChooseLocationScreen({navigation, route}) {
         source={images.loginBg}
       />
       <Text style={styles.LocationText}>{strings.locationText}</Text>
+      <Text style={styles.LocationDescription}>
+        {strings.locationDescription}
+      </Text>
 
       <View style={styles.sectionStyle}>
         <Image source={images.searchLocation} style={styles.searchImg} />
@@ -302,12 +403,13 @@ export default function ChooseLocationScreen({navigation, route}) {
           }
         />
       </View>
-      {noData && (
+      {noData && searchText?.length > 0 && (
         <Text style={styles.noDataText}>
           Please, enter at least 3 characters to see cities.
         </Text>
       )}
-      {currentLocation && (
+
+      <View style={{backgroundColor: colors.redColor, flex: 1}}>
         <TouchableWithoutFeedback
           style={styles.listItem}
           onPress={() => getTeamsDataByCurrentLocation()}>
@@ -318,15 +420,24 @@ export default function ChooseLocationScreen({navigation, route}) {
             </Text>
             <Text style={styles.curruentLocationText}>Current Location</Text>
           </View>
-
           <Separator />
         </TouchableWithoutFeedback>
-      )}
-      <FlatList
-        data={cityData}
-        renderItem={renderItem}
-        keyExtractor={(index) => index.toString()}
-      />
+        <FlatList
+          data={nearByCity}
+          renderItem={renderItemNearCity}
+          keyExtractor={(index) => index.toString()}
+          style={{backgroundColor: colors.yellowColor, flex: 1}}
+        />
+      </View>
+
+      {/* {cityData.length > 0 && (
+        <FlatList
+          data={cityData}
+          renderItem={renderItem}
+          keyExtractor={(index) => index.toString()}
+          style={{backgroundColor: colors.grayColor}}
+        />
+      )} */}
     </LinearGradient>
   );
 }
@@ -340,6 +451,15 @@ const styles = StyleSheet.create({
     paddingLeft: 30,
     textAlign: 'left',
   },
+  LocationDescription: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RMedium,
+    fontSize: wp('4%'),
+    marginTop: hp('1%'),
+    paddingLeft: 30,
+    paddingRight: 30,
+    textAlign: 'left',
+  },
   background: {
     height: hp('100%'),
     position: 'absolute',
@@ -349,7 +469,7 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontSize: wp('4%'),
     textAlign: 'left',
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
 
     // paddingLeft: wp('1%'),
     width: wp('70%'),
@@ -419,5 +539,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 16,
     paddingLeft: 10,
+  },
+  nextButtonStyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    marginRight: 10,
+    color: colors.whiteColor,
   },
 });

@@ -1,4 +1,10 @@
-import React, {useContext, useEffect, useState, useRef} from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  useLayoutEffect,
+} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -6,6 +12,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  SafeAreaView,
+  Image,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -16,6 +24,7 @@ import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import QB from 'quickblox-react-native-sdk';
 
 import firebase from '@react-native-firebase/app';
+
 import ActionSheet from 'react-native-actionsheet';
 
 import ImagePicker from 'react-native-image-crop-picker';
@@ -35,7 +44,11 @@ import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context';
 import apiCall from '../../utils/apiCall';
-import {checkTownscupEmail, createUser} from '../../api/Users';
+import {
+  checkTownscupEmail,
+  createUser,
+  updateUserProfile,
+} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
 
 import {
@@ -124,7 +137,41 @@ export default function SignupScreen({navigation}) {
   };
 
   useEffect(() => {}, []);
-
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.pop();
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 20,
+              tintColor: colors.whiteColor,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <Text
+          style={styles.nextButtonStyle}
+          onPress={() => {
+            if (validate()) {
+              if (authContext.networkConnected) {
+                signupUser();
+              } else {
+                authContext.showNetworkAlert();
+              }
+            }
+          }}>
+          {strings.signUp}
+        </Text>
+      ),
+    });
+  });
   const checkUserIsRegistratedOrNotWithTownscup = () =>
     new Promise((resolve) => {
       checkTownscupEmail(encodeURIComponent(email))
@@ -265,6 +312,7 @@ export default function SignupScreen({navigation}) {
             uid: user.uid,
             role: 'user',
           };
+          console.log('Signup token=========>', token);
           setDummyAuthContext('tokenData', token);
           await authContext.setTokenData(token);
           await authContext.setEntity(entity);
@@ -288,17 +336,18 @@ export default function SignupScreen({navigation}) {
                 setDummyAuthContext('entity', entity);
                 const uploadedProfilePic = {full_image: fullImage, thumbnail};
                 // await signUpToTownsCup(uploadedProfilePic);
-                navigateToEmailVarificationScreen(uploadedProfilePic);
+                navigateToEmailVarificationScreen();
+                console.log('1111');
               })
               .catch(async () => {
                 setDummyAuthContext('entity', entity);
-
+                console.log('2222');
                 // await signUpToTownsCup();
                 navigateToEmailVarificationScreen();
               });
           } else {
             setDummyAuthContext('entity', entity);
-
+            console.log('33333');
             // await signUpToTownsCup();
             navigateToEmailVarificationScreen();
           }
@@ -306,14 +355,14 @@ export default function SignupScreen({navigation}) {
         .catch(() => setloading(false));
     }
   };
-  const navigateToEmailVarificationScreen = (uploadedProfilePic) => {
+
+  const navigateToEmailVarificationScreen = () => {
     setloading(false);
     navigation.navigate('EmailVerificationScreen', {
-      emailAddress: email,
-      password,
-      first_name: fName,
-      last_name: lName,
-      profilePicData: uploadedProfilePic,
+      signupInfo: {
+        emailAddress: email,
+        password,
+      },
     });
   };
   const signUpWithFirebase = () => {
@@ -326,6 +375,7 @@ export default function SignupScreen({navigation}) {
           .onAuthStateChanged((user) => {
             if (user) {
               user.sendEmailVerification();
+
               saveUserDetails(user);
             }
           });
@@ -499,7 +549,7 @@ export default function SignupScreen({navigation}) {
 
   return (
     <>
-      <ActionSheet
+      {/* <ActionSheet
         ref={actionSheet}
         // title={'News Feed Post'}
         options={[strings.camera, strings.album, strings.cancelTitle]}
@@ -532,7 +582,7 @@ export default function SignupScreen({navigation}) {
             deleteImage();
           }
         }}
-      />
+      /> */}
       <LinearGradient
         colors={[colors.themeColor1, colors.themeColor3]}
         style={styles.mainContainer}>
@@ -542,9 +592,10 @@ export default function SignupScreen({navigation}) {
           style={styles.background}
           source={images.loginBg}
         />
+        <Text style={styles.checkEmailText}>{strings.signupwithemail}</Text>
         <TCKeyboardView>
-          <View style={{marginVertical: 20}}>
-            <TouchableOpacity
+          <View style={{marginVertical: 30}}>
+            {/* <TouchableOpacity
               style={styles.profile}
               onPress={() => {
                 onProfileImageClicked();
@@ -572,9 +623,87 @@ export default function SignupScreen({navigation}) {
                 source={images.certificateUpload}
                 style={styles.cameraIcon}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <TCTextField
+              placeholderTextColor={colors.darkYellowColor}
+              style={styles.textFieldStyle}
+              placeholder={strings.emailPlaceHolder}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              onChangeText={(text) => setEmail(text)}
+              value={email}
+            />
+            <View style={styles.passwordView}>
+              <TextInput
+                style={{...styles.textInput, zIndex: 100}}
+                placeholder={strings.passwordText}
+                onChangeText={(text) => setPassword(text)}
+                value={password}
+                placeholderTextColor={colors.darkYellowColor}
+                secureTextEntry={hidePassword}
+                keyboardType={'default'}
+              />
+              <View>
+                <TouchableOpacity
+                  onPress={() => hideShowPassword()}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginLeft: wp('5%'),
+                    top: 10,
+                  }}>
+                  {hidePassword ? (
+                    <Text style={styles.passwordEyes}>SHOW</Text>
+                  ) : (
+                    <Text style={styles.passwordEyes}>HIDE</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.passwordView}>
+              <TextInput
+                autoCapitalize="none"
+                style={{...styles.textInput, zIndex: 100}}
+                placeholder={strings.confirmPasswordText}
+                onChangeText={setCPassword}
+                value={cPassword}
+                placeholderTextColor={colors.darkYellowColor}
+                secureTextEntry={hideConfirmPassword}
+                keyboardType={'default'}
+              />
+              <TouchableOpacity
+                onPress={() => hideShowConfirmPassword()}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginLeft: wp('5%'),
+                }}>
+                {hideConfirmPassword ? (
+                  <Text style={styles.passwordEyes}>SHOW</Text>
+                ) : (
+                  <Text style={styles.passwordEyes}>HIDE</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+            {/* <TCButton
+              title={strings.signUpCapitalText}
+              extraStyle={{
+                marginTop: hp('2%'),
+              }}
+              onPress={() => {
+                if (validate()) {
+                  if (authContext.networkConnected) {
+                    signupUser();
+                  } else {
+                    authContext.showNetworkAlert();
+                  }
+                }
+              }}
+            /> */}
           </View>
-          <TCTextField
+          {/* <TCTextField
             placeholderTextColor={colors.darkYellowColor}
             style={styles.textFieldStyle}
             placeholder={strings.fnameText}
@@ -597,89 +726,28 @@ export default function SignupScreen({navigation}) {
             //   }
             // }}
             value={lName}
-          />
-          <TCTextField
-            placeholderTextColor={colors.darkYellowColor}
-            style={styles.textFieldStyle}
-            placeholder={strings.emailPlaceHolder}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-          />
-          <View style={styles.passwordView}>
-            <TextInput
-              style={{...styles.textInput, zIndex: 100}}
-              placeholder={strings.passwordText}
-              onChangeText={(text) => setPassword(text)}
-              value={password}
-              placeholderTextColor={colors.darkYellowColor}
-              secureTextEntry={hidePassword}
-              keyboardType={'default'}
-            />
-            <TouchableOpacity
-              onPress={() => hideShowPassword()}
-              style={{alignItems: 'center', justifyContent: 'center'}}>
-              {hidePassword ? (
-                <Text style={styles.passwordEyes}>SHOW</Text>
-              ) : (
-                <Text style={styles.passwordEyes}>HIDE</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.passwordView}>
-            <TextInput
-              autoCapitalize="none"
-              style={{...styles.textInput, zIndex: 100}}
-              placeholder={strings.confirmPasswordText}
-              onChangeText={setCPassword}
-              value={cPassword}
-              placeholderTextColor={colors.darkYellowColor}
-              secureTextEntry={hideConfirmPassword}
-              keyboardType={'default'}
-            />
-            <TouchableOpacity
-              onPress={() => hideShowConfirmPassword()}
-              style={{alignItems: 'center', justifyContent: 'center'}}>
-              {hideConfirmPassword ? (
-                <Text style={styles.passwordEyes}>SHOW</Text>
-              ) : (
-                <Text style={styles.passwordEyes}>HIDE</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-          <TCButton
-            title={strings.signUpCapitalText}
-            extraStyle={{
-              marginTop: hp('2%'),
-            }}
-            onPress={() => {
-              if (validate()) {
-                if (authContext.networkConnected) {
-                  signupUser();
-                } else {
-                  authContext.showNetworkAlert();
-                }
-              }
-            }}
-          />
-          <TouchableOpacity
-            hitSlop={getHitSlop(15)}
-            onPress={() => navigation.navigate('LoginScreen')}
-            style={styles.alreadyView}>
-            <Text style={styles.alreadyMemberText}>
-              {strings.alreadyMember}
-              <Text
-                style={{
-                  textDecorationLine: 'underline',
-                  fontFamily: fonts.RBold,
-                }}>
-                Log In
-              </Text>
-            </Text>
-          </TouchableOpacity>
+          /> */}
         </TCKeyboardView>
+        <SafeAreaView>
+          <View style={{bottom: 16}}>
+            <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              onPress={() => navigation.navigate('LoginScreen')}
+              style={styles.alreadyView}>
+              <Text style={styles.alreadyMemberText}>
+                {strings.alreadyMember}
+                <Text> </Text>
+                <Text
+                  style={{
+                    textDecorationLine: 'underline',
+                    fontFamily: fonts.RBold,
+                  }}>
+                  Log In
+                </Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
       </LinearGradient>
     </>
   );
@@ -714,7 +782,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
-    width: wp('85%'),
+    width: wp('81.3%'),
   },
   profile: {
     alignContent: 'center',
@@ -734,29 +802,19 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('75%'),
+    width: wp('65%'),
   },
   textFieldStyle: {
     marginVertical: 5,
     alignSelf: 'center',
-    width: wp('85%'),
+    width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
   },
-  profileCameraButtonStyle: {
-    height: 22,
-    width: 22,
-    marginTop: -40,
-    marginLeft: 60,
-    alignSelf: 'center',
-  },
-  cameraIcon: {
-    height: 22,
-    width: 22,
-  },
+
   alreadyMemberText: {
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
@@ -764,7 +822,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   alreadyView: {
-    marginVertical: 25,
     alignSelf: 'center',
+  },
+  nextButtonStyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    marginRight: 15,
+    color: colors.whiteColor,
+  },
+  checkEmailText: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 25,
+    marginLeft: wp('6.6%'),
+    marginTop: wp('24.6%'),
+    textAlign: 'left',
   },
 });

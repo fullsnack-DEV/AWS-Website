@@ -1,5 +1,12 @@
 import React, {useContext, useEffect, useState, useLayoutEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  Image,
+} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
@@ -49,14 +56,32 @@ export default function AddBirthdayScreen({navigation, route}) {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            // navigation.navigate('LoginScreen');
-            navigation.dispatch(StackActions.replace('WelcomeScreen'));
+            navigation.pop();
           }}>
-          <Text style={styles.quitText}>{strings.quitText}</Text>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 20,
+              tintColor: colors.whiteColor,
+            }}
+          />
         </TouchableOpacity>
       ),
+
+      headerRight: () => (
+        <Text
+          style={styles.nextButtonStyle}
+          onPress={() => {
+            const userParams = {birthday: new Date(dateValue).getTime() / 1000};
+            navigateToGenderScreen(userParams);
+          }}>
+          Next
+        </Text>
+      ),
     });
-  }, [navigation]);
+  });
   useEffect(() => {
     const mindate = new Date();
     const maxdate = new Date();
@@ -66,7 +91,19 @@ export default function AddBirthdayScreen({navigation, route}) {
     setMinDateValue(mindate);
     setMaxDateValue(maxdate);
   }, []);
-  /*
+  const navigateToGenderScreen = (userParams) => {
+    console.log('route?.params?.signupInfo', route?.params?.signupInfo);
+    console.log('userParams', userParams);
+
+    const profileData = {
+      ...route?.params?.signupInfo,
+      birthday: userParams.birthday,
+    };
+    console.log('Profile data gender ', profileData);
+    navigation.navigate('ChooseGenderScreen', {
+      signupInfo: {...profileData},
+    });
+  };
   const updateProfile = async (params, callback) => {
     setLoading(true);
     updateUserProfile(params, authContext)
@@ -85,26 +122,13 @@ export default function AddBirthdayScreen({navigation, route}) {
       })
       .catch(() => setLoading(false));
   };
-  */
-  const navigateToGenderScreen = (params) => {
-    console.log('Addbirthday route=====>', route);
-    console.log('Add birthday param', params);
-    console.log('Add birthday ', params.birthday);
-    navigation.navigate('ChooseGenderScreen', {
-      profilePicData: route.params?.profilePicData,
-      birthday: params.birthday,
-      emailAddress: route.params?.emailAddress,
-      first_name: route.params?.first_name,
-      last_name: route.params?.last_name,
-    });
-  };
 
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <View>
+      <View style={{flex: 1}}>
         <FastImage
           resizeMode={'stretch'}
           style={styles.background}
@@ -149,22 +173,26 @@ export default function AddBirthdayScreen({navigation, route}) {
           />
         </View>
       </View>
-      <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 50}}>
-        <Text style={styles.birthDateChangeNote}>
-          {strings.birthDateChangeNote}
-        </Text>
-        <TCButton
+      <SafeAreaView>
+        <View
+          style={{
+            bottom: 16,
+          }}>
+          <Text style={styles.birthDateChangeNote}>
+            {strings.birthDateChangeNote}
+          </Text>
+          {/* <TCButton
           title={strings.continueCapTitle}
           onPress={() => {
             const userParams = {birthday: new Date(dateValue).getTime() / 1000};
-            // updateProfile(userParams, () => {
-            //   navigation.navigate('ChooseGenderScreen');
-            // });
-            navigateToGenderScreen(userParams);
+            updateProfile(userParams, () => {
+              navigation.navigate('ChooseGenderScreen');
+            });
           }}
           extraStyle={{marginTop: 50}}
-        />
-      </View>
+        /> */}
+        </View>
+      </SafeAreaView>
     </LinearGradient>
   );
 }
@@ -234,7 +262,6 @@ const styles = StyleSheet.create({
     marginLeft: 35,
     marginRight: 35,
     textAlign: 'left',
-    top: 25,
   },
   quitText: {
     height: 25,
@@ -243,5 +270,11 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 15,
+  },
+  nextButtonStyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    marginRight: 15,
+    color: colors.whiteColor,
   },
 });

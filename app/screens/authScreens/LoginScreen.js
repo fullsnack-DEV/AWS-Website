@@ -13,6 +13,7 @@ import {
   TextInput,
   StyleSheet,
   Image,
+  SafeAreaView,
 } from 'react-native';
 
 import {
@@ -21,6 +22,7 @@ import {
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import firebase from '@react-native-firebase/app';
+
 import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../auth/context';
@@ -118,6 +120,7 @@ export default function LoginScreen({navigation}) {
       if (!firebaseUser?._user?.emailVerified) {
         firebaseUser.sendEmailVerification();
         setloading(false);
+
         navigation.navigate('EmailVerificationScreen', {
           emailAddress: email,
           password,
@@ -221,39 +224,16 @@ export default function LoginScreen({navigation}) {
               QBInitialLogin(user, response.payload);
             })
             .catch((error) => {
-              console.log('User name===>', dummyAuthContext);
-              console.log('User last===>', dummyAuthContext);
-              setloading(false);
-              // eslint-disable-next-line no-underscore-dangle
-              console.log('error=======>', error);
-              console.log('user=======>', user);
-              // eslint-disable-next-line no-underscore-dangle
-              console.log('email=======>', user._user.email);
-
+              // setloading(false)
+              // setTimeout(() => Alert.alert('TownsCup', error.message), 100);
               // eslint-disable-next-line no-underscore-dangle
               if (!user?._user?.emailVerified) {
-                navigation.navigate('EmailVerificationScreen', {
-                  // eslint-disable-next-line no-underscore-dangle
-                  emailAddress: user._user.email,
-                  password,
-                  // first_name: fName,
-                  // last_name: lName,
-                  // profilePicData: uploadedProfilePic,
-                });
+                navigateToEmailVarificationScreen(user);
                 // eslint-disable-next-line no-underscore-dangle
               } else if (user?._user?.emailVerified) {
-                user.sendEmailVerification();
-                setloading(false);
-                navigation.replace('AddBirthdayScreen', {
-                  // profilePicData: route.params.profilePicData,
-                  // eslint-disable-next-line no-underscore-dangle
-                  emailAddress: user._user.email,
-                  // first_name: route.params.first_name,
-                  // last_name: route.params.last_name,
-                });
-
-                // eslint-disable-next-line no-underscore-dangle
+                navigateToAddBirthdayScreen(user);
               } else {
+                setloading(false);
                 setTimeout(() => Alert.alert('TownsCup', error.message), 100);
               }
             });
@@ -263,6 +243,42 @@ export default function LoginScreen({navigation}) {
     [QBInitialLogin, dummyAuthContext],
   );
 
+  const navigateToEmailVarificationScreen = async (user) => {
+    const entity = {
+      auth: {user_id: user.uid},
+      uid: user.uid,
+      role: 'user',
+    };
+    const token = {...dummyAuthContext?.tokenData};
+    await authContext.setTokenData(token);
+    await authContext.setEntity(entity);
+    console.log('Entity ===>', entity);
+    user.sendEmailVerification();
+    setloading(false);
+    navigation.navigate('EmailVerificationScreen', {
+      signupInfo: {
+        emailAddress: email,
+        password,
+      },
+    });
+  };
+  const navigateToAddBirthdayScreen = async (user) => {
+    const entity = {
+      auth: {user_id: user.uid},
+      uid: user.uid,
+      role: 'user',
+    };
+    const token = {...dummyAuthContext?.tokenData};
+    await authContext.setTokenData(token);
+    await authContext.setEntity(entity);
+    setloading(false);
+    navigation.navigate('AddNameScreen', {
+      signupInfo: {
+        emailAddress: email,
+        password,
+      },
+    });
+  };
   const login = useCallback(async () => {
     await Utility.clearStorage();
     console.log('firebase:=>', firebase);
@@ -271,7 +287,6 @@ export default function LoginScreen({navigation}) {
       .signInWithEmailAndPassword(email, password)
       .then(() => {
         console.log('then:=>');
-
         const loginOnAuthStateChanged = firebase
           .auth()
           .onAuthStateChanged(onAuthStateChanged);
@@ -280,7 +295,6 @@ export default function LoginScreen({navigation}) {
       .catch((error) => {
         setloading(false);
         console.log('catch:=>');
-
         let message = error.message;
         if (error.code === 'auth/user-not-found') {
           message = strings.userNotFound;
@@ -368,7 +382,7 @@ export default function LoginScreen({navigation}) {
 
   const renderLoginAndForgotPasswordButtons = useMemo(
     () => (
-      <View style={{marginTop: 35}}>
+      <View style={{marginTop: hp('4.31%')}}>
         <TCButton
           title={'LOG IN'}
           extraStyle={{marginTop: hp('0%')}}
@@ -380,23 +394,6 @@ export default function LoginScreen({navigation}) {
             {strings.forgotPassword}
           </Text>
         </TouchableOpacity>
-        <View>
-          <TouchableOpacity
-            hitSlop={getHitSlop(15)}
-            onPress={() => navigation.navigate('SignupScreen')}
-            style={styles.alreadyView}>
-            <Text style={styles.alreadyMemberText}>
-              {strings.notAMemberYetSignup}
-              <Text
-                style={{
-                  textDecorationLine: 'underline',
-                  fontFamily: fonts.RBold,
-                }}>
-                Sign Up
-              </Text>
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
     ),
     [navigation, onLogin],
@@ -443,6 +440,26 @@ export default function LoginScreen({navigation}) {
         </View>
         {renderLoginAndForgotPasswordButtons}
       </TCKeyboardView>
+      <SafeAreaView>
+        <View style={{bottom: 16}}>
+          <TouchableOpacity
+            hitSlop={getHitSlop(15)}
+            onPress={() => navigation.navigate('SignupScreen')}
+            style={styles.alreadyView}>
+            <Text style={styles.alreadyMemberText}>
+              {strings.notAMemberYetSignup}
+              <Text> </Text>
+              <Text
+                style={{
+                  textDecorationLine: 'underline',
+                  fontFamily: fonts.RBold,
+                }}>
+                Sign Up
+              </Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     </LinearGradient>
   );
 }
@@ -457,15 +474,15 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 14,
-    marginTop: hp('2.5%'),
+    marginTop: hp('3.07%'),
     textAlign: 'center',
   },
   loginText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginTop: hp('11%'),
-    paddingLeft: 25,
+    marginTop: hp('11.39%'),
+    marginLeft: wp('6.6%'),
     textAlign: 'left',
   },
   mainContainer: {
@@ -484,7 +501,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('85%'),
+    width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     height: 40,
     color: 'black',
@@ -504,14 +521,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('70%'),
+    width: wp('65%'),
     height: 40,
     color: 'black',
   },
 
   textFieldStyle: {
     alignSelf: 'center',
-    width: wp('85%'),
+    width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
@@ -523,9 +540,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     textAlign: 'center',
+    // marginTop: hp('38%'),
   },
   alreadyView: {
-    marginVertical: 25,
     alignSelf: 'center',
   },
 });
