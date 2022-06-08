@@ -1,6 +1,5 @@
 import React, {useState, useLayoutEffect} from 'react';
 import {
-  View,
   Text,
   Alert,
   StyleSheet,
@@ -18,7 +17,6 @@ import {
 import firebase from '@react-native-firebase/app';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
-import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import strings from '../../Constants/String';
 import images from '../../Constants/ImagePath';

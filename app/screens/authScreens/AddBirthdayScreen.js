@@ -12,7 +12,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {StackActions} from '@react-navigation/native';
 
 import moment from 'moment';
 
@@ -20,14 +19,11 @@ import {Tooltip} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import DatePicker from 'react-native-date-picker';
-import TCButton from '../../components/TCButton';
-import * as Utility from '../../utils/index';
 
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import {updateUserProfile} from '../../api/Users';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
@@ -46,7 +42,7 @@ export default function AddBirthdayScreen({navigation, route}) {
   const [minDateValue, setMinDateValue] = useState(new Date());
   const [maxDateValue, setMaxDateValue] = useState(new Date());
 
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
   const onChange = (selectedDate) => {
     setDateValue(selectedDate);
@@ -103,24 +99,6 @@ export default function AddBirthdayScreen({navigation, route}) {
     navigation.navigate('ChooseGenderScreen', {
       signupInfo: {...profileData},
     });
-  };
-  const updateProfile = async (params, callback) => {
-    setLoading(true);
-    updateUserProfile(params, authContext)
-      .then(async (userResoponse) => {
-        const userData = userResoponse?.payload;
-        const entity = {...authContext?.entity};
-        entity.auth.user = userData;
-        entity.obj = userData;
-        await Utility.setStorage('loggedInEntity', {...entity});
-        await Utility.setStorage('authContextEntity', {...entity});
-        await Utility.setStorage('authContextUser', {...userData});
-        await authContext.setUser({...userData});
-        await authContext.setEntity({...entity});
-        setLoading(false);
-        callback();
-      })
-      .catch(() => setLoading(false));
   };
 
   return (
@@ -263,14 +241,7 @@ const styles = StyleSheet.create({
     marginRight: 35,
     textAlign: 'left',
   },
-  quitText: {
-    height: 25,
-    width: 60,
-    marginLeft: 20,
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 15,
-  },
+
   nextButtonStyle: {
     fontFamily: fonts.RBold,
     fontSize: 16,

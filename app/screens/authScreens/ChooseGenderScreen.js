@@ -15,19 +15,15 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {useNavigationState, StackActions} from '@react-navigation/native';
 import Geolocation from '@react-native-community/geolocation';
 
 import {Tooltip} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
-import * as Utility from '../../utils/index';
-import TCButton from '../../components/TCButton';
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import {updateUserProfile} from '../../api/Users';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getLocationNameWithLatLong, searchNearByCity} from '../../api/External';
@@ -47,7 +43,6 @@ export default function ChooseGenderScreen({navigation, route}) {
       : 0,
   );
   const [loading, setLoading] = useState(false);
-  const routes = useNavigationState((state) => state);
 
   // useLayoutEffect(() => {
   //   navigation.setOptions({
@@ -101,6 +96,7 @@ export default function ChooseGenderScreen({navigation, route}) {
               res.results[0].address_components,
             );
             let stateAbbr, city, country;
+            // eslint-disable-next-line array-callback-return
             res.results[0].address_components.map((e) => {
               if (e.types.includes('administrative_area_level_1')) {
                 stateAbbr = e.short_name;
@@ -205,13 +201,7 @@ export default function ChooseGenderScreen({navigation, route}) {
         </TouchableOpacity>
       ),
     });
-  }, [
-    fetchNearestCity,
-    navigateToChooseLocationScreen,
-    navigation,
-    nearByCity,
-    selected,
-  ]);
+  }, [navigation, nearByCity, selected]);
   useEffect(() => {
     if (Platform.OS === 'android') {
       requestPermission();
@@ -240,6 +230,7 @@ export default function ChooseGenderScreen({navigation, route}) {
             res.results[0].address_components,
           );
           let stateAbbr, city, country;
+          // eslint-disable-next-line array-callback-return
           res.results[0].address_components.map((e) => {
             if (e.types.includes('administrative_area_level_1')) {
               stateAbbr = e.short_name;

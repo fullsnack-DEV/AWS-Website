@@ -609,7 +609,7 @@ export default function WelcomeScreen({navigation}) {
       }
     } catch (e) {
       setloading(false);
-      Alert.alert("Your sign up couldn't be completed.");
+      Alert.alert('Your sign up could not be completed.');
     }
   };
 

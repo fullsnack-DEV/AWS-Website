@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useLayoutEffect,
-  useContext,
-  useEffect,
-} from 'react';
+import React, {useState, useRef, useLayoutEffect, useContext} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -32,7 +26,6 @@ import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import apiCall from '../../utils/apiCall';

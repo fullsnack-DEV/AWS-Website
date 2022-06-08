@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useRef,
-  useLayoutEffect,
-} from 'react';
+import React, {useContext, useEffect, useState, useLayoutEffect} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -19,15 +13,9 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-
-import QB from 'quickblox-react-native-sdk';
 
 import firebase from '@react-native-firebase/app';
 
-import ActionSheet from 'react-native-actionsheet';
-
-import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
 import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
@@ -40,37 +28,23 @@ import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context';
 import apiCall from '../../utils/apiCall';
-import {
-  checkTownscupEmail,
-  createUser,
-  updateUserProfile,
-} from '../../api/Users';
+import {checkTownscupEmail} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
-
-import {
-  QBconnectAndSubscribe,
-  QBcreateUser,
-  QBlogin,
-  QB_ACCOUNT_TYPE,
-} from '../../utils/QuickBlox';
 
 export default function SignupScreen({navigation}) {
   const authContext = useContext(AuthContext);
   const dummyAuthContext = {...authContext};
-  const [fName, setFName] = useState('Kishan');
-  const [lName, setLName] = useState('Makani');
+  const [fName] = useState('Kishan');
+  const [lName] = useState('Makani');
   const [email, setEmail] = useState('makani20@gmail.com');
   const [password, setPassword] = useState('123456');
   const [cPassword, setCPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(false);
   const [hideConfirmPassword, setHideConfirmPassword] = useState(false);
-  const [profilePic, setProfilePic] = useState(null);
-  const actionSheetWithDelete = useRef();
-  const actionSheet = useRef();
+  const [profilePic] = useState(null);
 
   // For activity indigator
   const [loading, setloading] = useState(false);
@@ -201,64 +175,7 @@ export default function SignupScreen({navigation}) {
         });
     });
 
-  const wholeSignUpProcessComplete = async (userData) => {
-    const entity = dummyAuthContext?.entity;
-    const tokenData = dummyAuthContext?.tokenData;
-    entity.auth.user = {...userData};
-    entity.obj = {...userData};
-    entity.uid = userData?.user_id;
-    await Utility.setStorage('loggedInEntity', {...entity});
-    await Utility.setStorage('authContextEntity', {...entity});
-    await Utility.setStorage('authContextUser', {...userData});
-    await authContext.setTokenData(tokenData);
-    await authContext.setUser({...userData});
-    await authContext.setEntity({...entity});
-    setloading(false);
-    navigation.navigate('EmailVerificationScreen', {
-      emailAddress: email,
-      password,
-      first_name: fName,
-    });
-  };
-
-  const signUpWithQB = async (response) => {
-    console.log('QB signUpWithQB : ', response);
-
-    let qbEntity = {...dummyAuthContext.entity};
-    console.log('QB qbEntity : ', qbEntity);
-
-    const setting = await Utility.getStorage('appSetting');
-    console.log('App QB Setting:=>', setting);
-
-    authContext.setQBCredential(setting);
-    QB.settings.enableAutoReconnect({enable: true});
-    QBlogin(qbEntity.uid, response)
-      .then(async (res) => {
-        qbEntity = {
-          ...qbEntity,
-          QB: {...res.user, connected: true, token: res?.session?.token},
-        };
-        QBconnectAndSubscribe(qbEntity);
-        setDummyAuthContext('entity', qbEntity);
-        await wholeSignUpProcessComplete(response);
-      })
-      .catch(async (error) => {
-        console.log('QB Login Error : ', error.message);
-        qbEntity = {...qbEntity, QB: {connected: false}};
-        setDummyAuthContext('entity', qbEntity);
-        QBcreateUser(qbEntity.uid, response, QB_ACCOUNT_TYPE.USER)
-          .then(() => {
-            QBlogin(qbEntity.uid).then((loginRes) => {
-              console.log('QB loginRes', loginRes);
-            });
-          })
-          .catch((e) => {
-            console.log('QB error', e);
-          });
-        await wholeSignUpProcessComplete(response);
-      });
-  };
-
+  /*
   const signUpToTownsCup = async (uploadedProfilePic) => {
     setloading(true);
     const data = {
@@ -287,6 +204,7 @@ export default function SignupScreen({navigation}) {
         }, 10);
       });
   };
+  */
 
   const setDummyAuthContext = (key, value) => {
     dummyAuthContext[key] = value;
@@ -332,10 +250,8 @@ export default function SignupScreen({navigation}) {
                 type: profilePic?.path.split('.')[1] || 'jpeg',
               }),
             ])
-              .then(async ([fullImage, thumbnail]) => {
+              .then(async () => {
                 setDummyAuthContext('entity', entity);
-                const uploadedProfilePic = {full_image: fullImage, thumbnail};
-                // await signUpToTownsCup(uploadedProfilePic);
                 navigateToEmailVarificationScreen();
                 console.log('1111');
               })
@@ -463,88 +379,6 @@ export default function SignupScreen({navigation}) {
   };
   const hideShowConfirmPassword = () => {
     setHideConfirmPassword(!hideConfirmPassword);
-  };
-
-  const openImagePicker = (width = 400, height = 400) => {
-    const cropCircle = true;
-    ImagePicker.openPicker({
-      width,
-      height,
-      cropping: true,
-      cropperCircleOverlay: cropCircle,
-    }).then((pickImages) => {
-      setProfilePic(pickImages);
-    });
-  };
-
-  const deleteImage = () => {
-    setProfilePic('');
-  };
-
-  const openCamera = (width = 400, height = 400) => {
-    check(PERMISSIONS.IOS.CAMERA)
-      .then((result) => {
-        switch (result) {
-          case RESULTS.UNAVAILABLE:
-            Alert.alert(
-              'This feature is not available (on this device / in this context)',
-            );
-            break;
-          case RESULTS.DENIED:
-            request(PERMISSIONS.IOS.CAMERA).then(() => {
-              const cropCircle = true;
-              ImagePicker.openCamera({
-                width,
-                height,
-                cropping: true,
-                cropperCircleOverlay: cropCircle,
-              })
-                .then((pickImages) => {
-                  setProfilePic(pickImages);
-                })
-                .catch((e) => {
-                  Alert.alert(e);
-                });
-            });
-            break;
-          case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
-            break;
-          case RESULTS.GRANTED:
-            {
-              const cropCircle = true;
-              ImagePicker.openCamera({
-                width,
-                height,
-                cropping: true,
-                cropperCircleOverlay: cropCircle,
-              })
-                .then((pickImages) => {
-                  setProfilePic(pickImages);
-                })
-                .catch((e) => {
-                  Alert.alert(e);
-                });
-            }
-            break;
-          case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
-            break;
-          default:
-        }
-      })
-      .catch((error) => {
-        Alert.alert(error);
-      });
-  };
-  const onProfileImageClicked = () => {
-    setTimeout(() => {
-      if (profilePic) {
-        actionSheetWithDelete.current.show();
-      } else {
-        actionSheet.current.show();
-      }
-    }, 0.1);
   };
 
   return (
@@ -783,18 +617,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 4,
     width: wp('81.3%'),
-  },
-  profile: {
-    alignContent: 'center',
-    alignSelf: 'center',
-    height: 100,
-    marginTop: 40,
-    marginBottom: 20,
-    width: 100,
-    borderRadius: 50,
-
-    // borderWidth: 1,
-    // borderColor: '#FED378',
   },
   textInput: {
     paddingVertical: 0,

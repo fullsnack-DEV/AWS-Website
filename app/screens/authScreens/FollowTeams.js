@@ -10,7 +10,6 @@ import {
   Alert,
   SafeAreaView,
 } from 'react-native';
-import {useNavigationState} from '@react-navigation/native';
 import QB from 'quickblox-react-native-sdk';
 import {
   widthPercentageToDP as wp,
@@ -19,10 +18,9 @@ import {
 
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
-import {updateUserProfile, createUser} from '../../api/Users';
+import {createUser} from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
-import TCButton from '../../components/TCButton';
 import Separator from '../../components/Separator';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils/index';
@@ -48,7 +46,6 @@ export default function FollowTeams({route, navigation}) {
   const [signUpData] = useState(route?.params?.sportInfo);
 
   const followedTeam = [];
-  const routes = useNavigationState((state) => state);
   const dummyAuthContext = {...authContext};
 
   // useLayoutEffect(() => {
@@ -155,26 +152,6 @@ export default function FollowTeams({route, navigation}) {
     };
     setFollowData();
   }, []);
-
-  const updateProfile = async (params, callback = () => {}) => {
-    setloading(true);
-    updateUserProfile(params, authContext)
-      .then(async (userResoponse) => {
-        const userData = userResoponse?.payload;
-        const entity = {...authContext?.entity};
-        entity.isLoggedIn = true;
-        entity.auth.user = userData;
-        entity.obj = userData;
-        await Utility.setStorage('loggedInEntity', {...entity});
-        await Utility.setStorage('authContextEntity', {...entity});
-        await Utility.setStorage('authContextUser', {...userData});
-        await authContext.setUser({...userData});
-        await authContext.setEntity({...entity});
-        setloading(false);
-        callback();
-      })
-      .catch(() => setloading(false));
-  };
 
   const followUnfollowClicked = ({item, index}) => {
     console.log('SELECTED:::', index);
@@ -448,13 +425,6 @@ const styles = StyleSheet.create({
     marginTop: hp('12%'),
     paddingHorizontal: 30,
     textAlign: 'left',
-  },
-  teamImg: {
-    alignSelf: 'center',
-    borderRadius: 6,
-    height: 45,
-    resizeMode: 'stretch',
-    width: 45,
   },
   teamNameText: {
     color: colors.whiteColor,

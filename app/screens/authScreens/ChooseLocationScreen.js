@@ -464,10 +464,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingLeft: 10,
   },
-  nextButtonStyle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    marginRight: 10,
-    color: colors.whiteColor,
-  },
 });
