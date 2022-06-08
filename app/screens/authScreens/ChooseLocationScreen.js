@@ -53,7 +53,9 @@ import {getGroupIndex} from '../../api/elasticSearch';
 export default function ChooseLocationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
-  const [nearByCity, setNearByCity] = useState([]);
+  const [nearByCity, setNearByCity] = useState(
+    route?.params?.signupInfo?.nearCity,
+  );
 
   const [currentLocation, setCurrentLocation] = useState(
     route?.params?.signupInfo?.location,
@@ -64,7 +66,7 @@ export default function ChooseLocationScreen({navigation, route}) {
 
   const [loading, setLoading] = useState(false);
   const routes = useNavigationState((state) => state);
-
+  console.log('route?.signupInfo?', route?.params?.signupInfo);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -84,88 +86,13 @@ export default function ChooseLocationScreen({navigation, route}) {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, nearByCity, cityData]);
-  const fetchNearestCity = useCallback(() => {
-    // position.coords.latitude
-    searchNearByCity(
-      route?.params?.signupInfo?.locationPosition?.coords?.latitude,
-      route?.params?.signupInfo?.locationPosition?.coords?.longitude,
-      2000000,
-      authContext,
-    )
-      .then((response) => {
-        const places = []; // This Array WIll contain locations received from google
-        const dataArray = [];
-        console.log('Places=====>', response.results);
-        for (const googlePlace of response.results) {
-          const place = {};
-          const lat = googlePlace.geometry.location.lat;
-          const lng = googlePlace.geometry.location.lng;
-          const coordinate = {
-            latitude: lat,
-            longitude: lng,
-          };
-          getLocationNameWithLatLong(
-            coordinate.latitude,
-            coordinate.longitude,
-            authContext,
-          ).then((res) => {
-            console.log('res====>', res);
-            console.log(
-              'Lat/long to address::=>',
-              res.results[0].address_components,
-            );
-            let stateAbbr, city, country;
-            res.results[0].address_components.map((e) => {
-              if (e.types.includes('administrative_area_level_1')) {
-                stateAbbr = e.short_name;
-              } else if (e.types.includes('locality')) {
-                city = e.short_name;
-              } else if (e.types.includes('country')) {
-                country = e.long_name;
-              }
-            });
-            // setCurrentLocation({stateAbbr, city, country});
-            const desc = `${city},${stateAbbr},${country}`;
-            const data = {description: desc};
-            dataArray.push(data);
+  }, [navigation]);
 
-            console.log('desc===', desc);
-            console.log('stateAbbr=====>', stateAbbr);
-            console.log('city====>', city);
-            console.log('country====>', country);
-            console.log('desc=====>', desc);
-            console.log('data=====>', data);
-          });
-          place.placeTypes = googlePlace.types;
-          place.coordinate = coordinate;
-          place.placeId = googlePlace.place_id;
-          place.placeName = googlePlace.name;
-          places.push(place);
-          console.log('places--->', places);
-
-          // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
-        }
-        console.log('dataArray--->', dataArray);
-        setNearByCity([...dataArray]);
-      })
-      .catch((e) => {
-        console.log('cathh ---error', e);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [
-    authContext,
-    route?.params?.signupInfo?.locationPosition?.coords?.latitude,
-    route?.params?.signupInfo?.locationPosition?.coords?.longitude,
-  ]);
   useEffect(() => {
     console.log('searchText', searchText);
 
     // getNearestCity();
     getLocationData(searchText);
-    fetchNearestCity();
   }, [searchText]);
   // useEffect(() => {
   //   if (Platform.OS === 'android') {
@@ -316,7 +243,6 @@ export default function ChooseLocationScreen({navigation, route}) {
   const navigateToChooseSportScreen = (params) => {
     setLoading(false);
     console.log('genderInfo', route?.params?.signupInfo);
-
     navigation.navigate('ChooseSportsScreen', {
       locationInfo: {
         ...route?.params?.signupInfo,
@@ -358,7 +284,7 @@ export default function ChooseLocationScreen({navigation, route}) {
     </TouchableWithoutFeedback>
   );
   const renderItemNearCity = ({item, index}) => {
-    console.log('Near city1111 ==>', item.description);
+    console.log('Near city1111 ==>', nearByCity);
 
     return (
       <TouchableWithoutFeedback
@@ -408,36 +334,34 @@ export default function ChooseLocationScreen({navigation, route}) {
           Please, enter at least 3 characters to see cities.
         </Text>
       )}
-
-      <View style={{backgroundColor: colors.redColor, flex: 1}}>
-        <TouchableWithoutFeedback
-          style={styles.listItem}
-          onPress={() => getTeamsDataByCurrentLocation()}>
-          <View>
-            <Text style={[styles.cityList, {marginBottom: 3}]}>
-              {currentLocation.city}, {currentLocation.stateAbbr},{' '}
-              {currentLocation.country}
-            </Text>
-            <Text style={styles.curruentLocationText}>Current Location</Text>
-          </View>
-          <Separator />
-        </TouchableWithoutFeedback>
-        <FlatList
-          data={nearByCity}
-          renderItem={renderItemNearCity}
-          keyExtractor={(index) => index.toString()}
-          style={{backgroundColor: colors.yellowColor, flex: 1}}
-        />
-      </View>
-
-      {/* {cityData.length > 0 && (
+      {noData && searchText?.length === 0 && nearByCity.length > 0 && (
+        <View style={{flex: 1}}>
+          <TouchableWithoutFeedback
+            style={styles.listItem}
+            onPress={() => getTeamsDataByCurrentLocation()}>
+            <View>
+              <Text style={[styles.cityList, {marginBottom: 3}]}>
+                {currentLocation.city}, {currentLocation.stateAbbr},{' '}
+                {currentLocation.country}
+              </Text>
+              <Text style={styles.curruentLocationText}>Current Location</Text>
+            </View>
+            <Separator />
+          </TouchableWithoutFeedback>
+          <FlatList
+            data={nearByCity}
+            renderItem={renderItemNearCity}
+            keyExtractor={(index) => index.toString()}
+          />
+        </View>
+      )}
+      {cityData.length > 0 && (
         <FlatList
           data={cityData}
           renderItem={renderItem}
           keyExtractor={(index) => index.toString()}
-          style={{backgroundColor: colors.grayColor}}
         />
-      )} */}
+      )}
     </LinearGradient>
   );
 }

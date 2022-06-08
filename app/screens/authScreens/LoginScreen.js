@@ -43,7 +43,7 @@ import {getAppSettingsWithoutAuth} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
 
 export default function LoginScreen({navigation}) {
-  const [email, setEmail] = useState('makani20@gmail.com');
+  const [email, setEmail] = useState('patidar.arvind1+1426@gmail.com');
   const [password, setPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);
