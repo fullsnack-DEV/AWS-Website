@@ -46,7 +46,6 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
 
   const [groupDetails] = useState(route?.params?.groupDetails);
 
-
   console.log('groupDetailsgroupDetails:', groupDetails);
   const [loading, setloading] = useState(false);
   const [groupData, setGroupData] = useState(groupDetails);
@@ -608,17 +607,15 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
         </View>
       </Modal>
       <Modal
-        isVisible={visibleSportsModal}
-        backdropColor="black"
         onBackdropPress={() => setVisibleSportsModal(false)}
-        onRequestClose={() => setVisibleSportsModal(false)}
-        backdropOpacity={0}
         style={{
-          marginLeft: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          marginRight: 0,
-          marginBottom: 0,
-        }}>
+          margin: 0,
+        }}
+        isVisible={visibleSportsModal}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}>
         <View
           style={{
             width: '100%',

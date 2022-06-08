@@ -85,7 +85,7 @@ export default function RefereesListScreen({navigation, route}) {
       // navigation.setParams({ locationText: null });
     }
   }, [route?.params?.locationText]);
-  
+
   useEffect(() => {
     const list = [
       {
@@ -159,7 +159,6 @@ export default function RefereesListScreen({navigation, route}) {
             'referee_data.setting.game_fee.fee': {
               gte: Number(filerReferee.refereeFee.split('-')[0]),
               lte: Number(filerReferee.refereeFee.split('-')[1]),
-              
             },
           },
         });
@@ -434,15 +433,14 @@ export default function RefereesListScreen({navigation, route}) {
       />
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
-        backdropOpacity={1}
-        animationType="slide"
-        hasBackdrop
         style={{
-          flex: 1,
           margin: 0,
-          backgroundColor: colors.blackOpacityColor,
         }}
-        visible={settingPopup}>
+        isVisible={settingPopup}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}>
         <View
           style={[
             styles.bottomPopupContainer,
@@ -463,9 +461,7 @@ export default function RefereesListScreen({navigation, route}) {
                 <Text
                   style={styles.doneText}
                   onPress={() => {
-                    
                     if (applyValidation()) {
-                      
                       setSettingPopup(false);
                       setTimeout(() => {
                         const tempFilter = {...filters};
@@ -637,7 +633,7 @@ export default function RefereesListScreen({navigation, route}) {
                         dataSource={sports}
                         placeholder={'Select Sport'}
                         onValueChange={(value) => {
-                          console.log('Sport value:=>',value);
+                          console.log('Sport value:=>', value);
                           if (value === 'All') {
                             setSelectedSport({
                               sport: 'All',
@@ -651,7 +647,11 @@ export default function RefereesListScreen({navigation, route}) {
                             );
                           }
                         }}
-                        value={selectedSport.sport !== 'All' ? Utility.getSportName(selectedSport, authContext) : 'All'}
+                        value={
+                          selectedSport.sport !== 'All'
+                            ? Utility.getSportName(selectedSport, authContext)
+                            : 'All'
+                        }
                       />
                     </View>
                   </View>

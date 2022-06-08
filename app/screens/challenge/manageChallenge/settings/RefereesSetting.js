@@ -37,7 +37,7 @@ export default function RefereesSetting({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
-  
+
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -389,10 +389,12 @@ export default function RefereesSetting({navigation, route}) {
 
         <Modal
           isVisible={visibleModal}
-          backdropColor="black"
           onBackdropPress={() => setVisibleModal(false)}
           onRequestClose={() => setVisibleModal(false)}
-          backdropOpacity={0}
+          animationInTiming={300}
+          animationOutTiming={800}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={800}
           style={styles.modalStyle}>
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
@@ -513,6 +515,5 @@ const styles = StyleSheet.create({
   },
   modalStyle: {
     margin: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
   },
 });
