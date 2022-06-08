@@ -56,7 +56,7 @@ const PlayInModule = ({
   navigation,
   openPlayInModal,
 }) => {
-  console.log('playInObject', playInObject);
+  console.log('userDatauserData', userData);
 
   const actionSheetRef = useRef();
   const actionSheetSettingRef = useRef();
@@ -71,7 +71,6 @@ const PlayInModule = ({
   const [loading, setloading] = useState(false);
 
   console.log('authContext?.entity111', authContext?.entity);
-
 
   const onClose = useCallback(() => {
     onModalClose();
@@ -253,58 +252,69 @@ const PlayInModule = ({
   // eslint-disable-next-line consistent-return
   const renderChallengeButton = () => {
     const mySport = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => obj?.sport ===  playInObject?.sport && obj?.sport_type === playInObject?.sport_type,
+      (obj) =>
+        obj?.sport === playInObject?.sport &&
+        obj?.sport_type === playInObject?.sport_type,
     );
     if (
       currentTab === 0 &&
       authContext?.entity?.uid !== currentUserData?.user_id &&
-      authContext?.entity?.role === 'user' && mySport.length > 0
+      (authContext?.entity?.role === 'user' ||
+        authContext?.entity?.role === 'player') &&
+      mySport.length > 0
     ) {
-      
-     
-          return (
-            playInObject?.sport_type !== 'double' &&
-            playInObject?.sport !== 'soccer' && (
-              <TouchableOpacity
-                onPress={onChallengePress}
-                style={styles.challengeButtonContainer}>
-                <LinearGradient
-                  colors={[colors.themeColor, '#FF3B00']}
-                  style={styles.challengeLinearContainer}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                    }}>
-                    {(challengeType === 'both' || challengeType === 'challenge') &&
-                      (oppSetting?.game_fee?.fee ? (
-                        <Text style={styles.challengeButtonTitle}>
-                          {strings.challenge}
-                          <Text>{` $${oppSetting?.game_fee?.fee} ${
-                            currentUserData?.currency_type ?? 'CAD'
-                          }${' / match'}`}</Text>
-                        </Text>
-                      ) : (
-                        <Text style={styles.challengeButtonTitle}>
-                          {strings.challenge}
-                        </Text>
-                      ))}
-                    {challengeType === 'invite' && (
-                      <Text style={styles.challengeButtonTitle}>
-                        {'Invite to challenge'}
-                      </Text>
-                    )}
-                  </View>
-                </LinearGradient>
-              </TouchableOpacity>
-            )
-          );
-        
-         // Alert.alert(`You have to registerd ${Utility.getSportName(playInObject)}, before make a challenge.`)
+      return (
+        playInObject?.sport_type !== 'double' &&
+        playInObject?.sport !== 'soccer' && (
+          <TouchableOpacity
+            onPress={onChallengePress}
+            style={styles.challengeButtonContainer}>
+            <LinearGradient
+              colors={[colors.themeColor, '#FF3B00']}
+              style={styles.challengeLinearContainer}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                }}>
+                {(challengeType === 'both' || challengeType === 'challenge') &&
+                  (oppSetting?.game_fee?.fee ? (
+                    <Text style={styles.challengeButtonTitle}>
+                      {strings.challenge}
+                      <Text>{` $${oppSetting?.game_fee?.fee} ${
+                        currentUserData?.currency_type ?? 'CAD'
+                      }${' / match'}`}</Text>
+                    </Text>
+                  ) : (
+                    <Text style={styles.challengeButtonTitle}>
+                      {strings.challenge}
+                    </Text>
+                  ))}
+                {challengeType === 'invite' && (
+                  <Text style={styles.challengeButtonTitle}>
+                    {'Invite to challenge'}
+                  </Text>
+                )}
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        )
+      );
+
+      // Alert.alert(`You have to registerd ${Utility.getSportName(playInObject)}, before make a challenge.`)
     }
   };
   const getSettingOfBoth = useCallback(() => {
-    oppSetting = playInObject.setting ?? {};
+    const filteredSport = userData.registered_sports.filter(
+      (obj) =>
+        obj.sport === playInObject.sport &&
+        obj.sport_type === playInObject.sport_type,
+    );
+
+    if (filteredSport.length > 0) {
+      oppSetting = filteredSport[0].setting ?? {};
+    }
+    console.log('oooooppppppp', oppSetting);
 
     mySetting =
       (authContext?.entity?.obj?.registered_sports ?? []).filter(
@@ -372,9 +382,9 @@ const PlayInModule = ({
     }
   }, [
     authContext?.entity?.obj?.registered_sports,
-    playInObject.setting,
-    playInObject?.sport,
-    playInObject?.sport_type,
+    playInObject.sport,
+    playInObject.sport_type,
+    userData.registered_sports,
   ]);
 
   const onMessageButtonPress = useCallback(() => {
@@ -407,19 +417,19 @@ const PlayInModule = ({
     } else if (challengeType === 'invite') {
       if (mySetting.availibility === 'On') {
         onClose();
-        console.log('currentUserDatacurrentUserData',playInObject);
+        console.log('currentUserDatacurrentUserData', playInObject);
         navigation.navigate('InviteChallengeScreen', {
           setting: mySetting,
-          sportName:  playInObject?.sport,
-          sportType:  playInObject?.sport_type,
+          sportName: playInObject?.sport,
+          sportType: playInObject?.sport_type,
           groupObj: currentUserData,
         });
       } else {
         onClose();
         navigation.navigate('ManageChallengeScreen', {
           groupObj: playInObject,
-          sportName:  playInObject?.sport,
-          sportType:  playInObject?.sport_type,
+          sportName: playInObject?.sport,
+          sportType: playInObject?.sport_type,
         });
       }
     }
@@ -428,7 +438,6 @@ const PlayInModule = ({
   return (
     <>
       <ActivityLoader visible={loading} />
-
       <Modal
         isVisible={visible}
         backdropColor="black"
@@ -443,7 +452,6 @@ const PlayInModule = ({
         <View style={styles.modalContainerViewStyle}>
           <SafeAreaView style={{flex: 1}}>
             {renderHeader}
-
             {/* Challenge Button */}
 
             {/* Profile View Section */}
@@ -584,7 +592,7 @@ const PlayInModule = ({
                     obj?.game_type
                   ) {
                     onClose();
-                    console.log('currentUserData->',playInObject);
+                    console.log('currentUserData->', playInObject);
                     navigation.navigate('InviteChallengeScreen', {
                       setting: obj,
                       sportName: playInObject.sport,
@@ -641,7 +649,7 @@ const PlayInModule = ({
           if (index === 0) {
             onClose();
             navigation.navigate('LookingForSettingScreen', {
-              sport: playInObject
+              sport: playInObject,
             });
           }
           if (index === 1) {

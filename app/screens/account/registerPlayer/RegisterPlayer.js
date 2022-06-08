@@ -43,6 +43,7 @@ export default function RegisterPlayer({navigation}) {
     console.log('authContext.sports', authContext.sports);
     authContext.sports.map((item) => {
       sportArr = [...sportArr, ...item.format];
+      console.log('sportArrsportArr',sportArr);
       return null;
     });
     setSportsData([...sportArr]);

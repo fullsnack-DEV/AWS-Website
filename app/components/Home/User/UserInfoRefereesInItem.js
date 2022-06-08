@@ -10,20 +10,24 @@ export default function UserInfoRefereesInItem({
   title,
   thumbURL,
   onRefereesInPress,
+  isOpacity = false
+
 }) {
+  console.log('isOpasity',isOpacity);
   return (
     <TouchableOpacity style={styles.containerStyle} onPress={onRefereesInPress}>
+      <View style={{flex:1,opacity: isOpacity ? 0.4 : 1,alignItems:'center',justifyContent:'center'}}>
+        <Image source={thumbURL} style={styles.imageStyle}/>
+        <View style={{ marginLeft: 10, marginRight: 12 }}>
+          <Text style={[styles.titleStyle,{fontSize: title.length > 12 ? 12 : 14}]}>{title}</Text>
 
-      <Image source={thumbURL} style={styles.imageStyle}/>
-      <View style={{ marginLeft: 10, marginRight: 12 }}>
-        <Text style={[styles.titleStyle,{fontSize: title.length > 12 ? 12 : 14}]}>{title}</Text>
-
-      </View>
-      <LinearGradient
+        </View>
+        <LinearGradient
         colors={[colors.yellowColor, colors.darkThemeColor]}
         style={styles.overlayStyle}
         end={{ x: 1, y: 1 }}
         start={{ x: 1, y: 0 }}></LinearGradient>
+      </View>
     </TouchableOpacity>
   );
 }

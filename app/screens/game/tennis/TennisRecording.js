@@ -91,7 +91,7 @@ export default function TennisRecording({navigation, route}) {
   );
   const [pickerShow, setPickerShow] = useState(false);
   const [timelineTimer, setTimelineTimer] = useState('00 : 00 : 00');
-  const [detailRecording, setDetailRecording] = useState(false);
+  const [detailRecording] = useState(false); //  const [detailRecording, setDetailRecording] = useState(false);
   const [gameObj, setGameObj] = useState();
   const [player1Selected, setPlayer1Selected] = useState(false);
   const [player2Selected, setPlayer2Selected] = useState(false);
@@ -1453,7 +1453,7 @@ export default function TennisRecording({navigation, route}) {
                           textColor={colors.darkGrayColor}
                           imageSize={25}
                         />
-                        {(gameObj.status === GameStatus.accepted ||
+                        {/* {(gameObj.status === GameStatus.accepted ||
                           gameObj.status === GameStatus.reset ||
                           gameObj.status === GameStatus.playing ||
                           gameObj.status === GameStatus.paused ||
@@ -1476,7 +1476,7 @@ export default function TennisRecording({navigation, route}) {
                             textColor={colors.gameDetailColor}
                             imageSize={30}
                           />
-                        )}
+                        )} */}
                       </View>
                     </ScrollView>
                   </View>

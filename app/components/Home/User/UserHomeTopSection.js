@@ -6,7 +6,7 @@ import React, {
   useContext,
   // useState,
 } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import {View, StyleSheet, FlatList} from 'react-native';
 import strings from '../../../Constants/String';
 import AuthContext from '../../../auth/context';
 import * as Utility from '../../../utils';
@@ -40,8 +40,6 @@ const UserHomeTopSection = ({
   //   ],
   // );
 
- 
-
   const isSectionEnable = useCallback(() => {
     const gameLength = userDetails?.games?.length ?? 0;
     const refereeLength = userDetails?.referee_data?.length ?? 0;
@@ -56,34 +54,54 @@ const UserHomeTopSection = ({
     userDetails?.scorekeeper_data,
   ]);
 
-
   Utility.getStorage('appSetting').then((setting) => {
-     
     image_url = setting.base_url_sporticon;
     console.log('APPSETTING:= top', setting.base_url_sporticon);
-    
   });
   useEffect(() => {
-    
-      isSectionEnable();
-
-   
+    isSectionEnable();
   }, [isSectionEnable]);
 
-  
   const oneLineSection = () => {
     console.log('userDetails::=>>', userDetails);
-    if (userDetails?.sport_setting?.activity_order?.length > 0) {
+    if (
+      userDetails?.sport_setting?.activity_order &&
+      userDetails?.sport_setting?.activity_order?.length > 0
+    ) {
+      if (isAdmin) {
+        return [
+          ...(userDetails?.sport_setting?.activity_order.filter(
+            (obj) => obj.is_active === true,
+          ) ?? []),
+          {sport_name: strings.addrole, item_type: EntityStatus.addNew},
+        ];
+      }
       return [
-        ...(userDetails?.sport_setting?.activity_order ?? []),
-        { sport_name: strings.addrole, item_type: EntityStatus.addNew },
+        ...(userDetails?.sport_setting?.activity_order.filter(
+          (obj) =>
+            (!('is_hide' in obj) || obj?.is_hide === false) &&
+            obj.is_active === true,
+        ) ?? []),
+        {sport_name: strings.addrole, item_type: EntityStatus.addNew},
       ];
     }
     return [
-      ...(userDetails?.registered_sports?.filter((obj) => obj.is_published  && (obj?.is_active === true || !('is_active' in obj))) ?? []),
-      ...(userDetails?.referee_data?.filter((obj) => obj.is_published && (obj?.is_active === true || !('is_active' in obj))) ?? []),
-      ...(userDetails?.scorekeeper_data?.filter((obj) => obj.is_published && (obj?.is_active === true || !('is_active' in obj))) ?? []),
-      { sport_name: strings.addrole, item_type: EntityStatus.addNew },
+      ...(userDetails?.registered_sports?.filter(
+        (obj) =>
+          obj.is_published &&
+          (obj?.is_active === true || !('is_active' in obj)),
+      ) ?? []),
+      ...(userDetails?.referee_data?.filter(
+        (obj) =>
+          obj.is_published &&
+          (obj?.is_active === true || !('is_active' in obj)),
+      ) ?? []),
+      ...(userDetails?.scorekeeper_data?.filter(
+        (obj) =>
+          obj.is_published &&
+          (obj?.is_active === true || !('is_active' in obj)),
+      ) ?? []),
+      {sport_name: strings.addrole, item_type: EntityStatus.addNew},
     ];
   };
 
@@ -102,66 +120,66 @@ const UserHomeTopSection = ({
     return null;
   }, [isAdmin, onAddRolePress]);
 
-  const renderUserRole = useCallback(({ item }) => {
+  const renderUserRole = useCallback(({item}) => {
     if (item?.item_type === EntityStatus.addNew) {
       return renderAddRole();
     }
     if (item?.type === EntityStatus.playin) {
-      return renderPlayIn({ item });
+      return renderPlayIn({item});
     }
     if (item?.type === EntityStatus.refereein) {
-      return renderRefereesIn({ item });
+      return renderRefereesIn({item});
     }
     if (item?.type === EntityStatus.scorekeeperin) {
-      return renderScorekeeperIn({ item });
+      return renderScorekeeperIn({item});
     }
   }, []);
 
-  const renderPlayIn = useCallback(({ item }) => {
-    console.log('OKOK player:=>',image_url);
-    if (item.item_type) {
-      return renderAddPlayInRole({ item });
-    }
-    return (
-      <UserInfoPlaysInItem
-        title={Utility.getSportName(item, authContext)}
-        totalGames={item.totalGames}
-        thumbURL={
-          item?.type
-            ? {
-                uri: image_url + Utility.getSportImage(item.sport, item.type, authContext),
-              }
-            : images.addRole
-        }
-        onPlayInPress={() => {
-          if (onPlayInPress) onPlayInPress(item);
-        }}
-      />
-    );
-  },[authContext, onPlayInPress]);
+  const renderPlayIn = useCallback(
+    ({item}) => {
+      console.log('OKOK player:=>', image_url);
+      if (item.item_type) {
+        return renderAddPlayInRole({item});
+      }
+      return (
+        <UserInfoPlaysInItem
+          isOpacity={isAdmin ? item?.is_hide : false}
+          title={Utility.getSportName(item, authContext)}
+          totalGames={item.totalGames}
+          thumbURL={
+            item?.type
+              ? {
+                  uri:
+                    image_url +
+                    Utility.getSportImage(item.sport, item.type, authContext),
+                }
+              : images.addRole
+          }
+          onPlayInPress={() => {
+            if (onPlayInPress) onPlayInPress(item);
+          }}
+        />
+      );
+    },
+    [authContext, onPlayInPress],
+  );
 
   const renderRefereesIn = useCallback(
-    ({ item }) => {
-      console.log('OKOK referee:=>',image_url + Utility.getSportImage(
-        item.sport,
-        'referee',
-        authContext,
-      ));
+    ({item}) => {
       if (item.item_type) {
-        return renderAddRefereeRole({ item });
+        return renderAddRefereeRole({item});
       }
 
       return (
         <UserInfoRefereesInItem
+          isOpacity={isAdmin ? item?.is_hide : false}
           title={Utility.getSportName(item, authContext)}
           thumbURL={
             item?.type
               ? {
-                  uri: image_url + Utility.getSportImage(
-                    item.sport,
-                    item.type,
-                    authContext,
-                  ),
+                  uri:
+                    image_url +
+                    Utility.getSportImage(item.sport, item.type, authContext),
                 }
               : images.addRole
           }
@@ -175,22 +193,21 @@ const UserHomeTopSection = ({
   );
 
   const renderScorekeeperIn = useCallback(
-    ({ item }) => {
+    ({item}) => {
       if (item.item_type) {
-        return renderAddScorekeeperRole({ item });
+        return renderAddScorekeeperRole({item});
       }
 
       return (
         <UserInfoScorekeeperInItem
+          isOpacity={isAdmin ? item?.is_hide : false}
           title={Utility.getSportName(item, authContext)}
           thumbURL={
             item?.type
               ? {
-                  uri: image_url + Utility.getSportImage(
-                    item.sport,
-                    item.type,
-                    authContext,
-                  ),
+                  uri:
+                    image_url +
+                    Utility.getSportImage(item.sport, item.type, authContext),
                 }
               : images.addRole
           }
@@ -204,10 +221,11 @@ const UserHomeTopSection = ({
   );
 
   const renderAddRefereeRole = useCallback(
-    ({ item }) => {
+    ({item}) => {
       if (isAdmin) {
         return (
           <UserInfoAddRole
+            isOpacity={isAdmin ? item?.is_hide : false}
             title={Utility.getSportName(item, authContext)}
             thumbURL={images.addRole}
             onPress={() => {
@@ -222,10 +240,11 @@ const UserHomeTopSection = ({
   );
 
   const renderAddScorekeeperRole = useCallback(
-    ({ item }) => {
+    ({item}) => {
       if (isAdmin) {
         return (
           <UserInfoAddRole
+            isOpacity={isAdmin ? item?.is_hide : false}
             title={Utility.getSportName(item, authContext)}
             thumbURL={images.addRole}
             onPress={() => {
@@ -242,10 +261,11 @@ const UserHomeTopSection = ({
   );
 
   const renderAddPlayInRole = useCallback(
-    ({ item }) => {
+    ({item}) => {
       if (isAdmin) {
         return (
           <UserInfoAddRole
+            isOpacity={isAdmin ? item?.is_hide : false}
             title={Utility.getSportName(item, authContext)}
             thumbURL={images.addRole}
             onPress={() => {
@@ -264,8 +284,8 @@ const UserHomeTopSection = ({
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   return (
-    <View style={{ paddingTop: 20, paddingBottom: 20 }}>
-      <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
+    <View style={{paddingTop: 20, paddingBottom: 20}}>
+      <View style={[styles.sectionStyle, {marginHorizontal: 0}]}>
         {/* <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
             data={oneLineSection}
@@ -280,23 +300,6 @@ const UserHomeTopSection = ({
           data={oneLineSection()}
           keyExtractor={keyExtractor}
           renderItem={renderUserRole}
-          // renderItem={({ item }) => (
-          //   <UserInfoAddRole
-          //     title={item.sport_name}
-          //     thumbURL={
-          //       item?.type
-          //         ? {
-          //             uri: `${image_url}${getSportImage(
-          //               item.sport_name,
-          //               item.type,
-          //             )}`,
-          //           }
-          //         : images.addRole
-          //     }
-          //     // || (item.type === 'player' && onPlayInPress(item)) || (item.type === 'referee' && onRefereesInPress(item)) || (item.type === 'scorekeeper' && onScorekeeperInPress(item))
-          //     // onPress={() => ((!item?.type && onAddRolePress) || (item.type === 'player' && onPlayInPress({ item })) || (item.type === 'referee' && onRefereesInPress({ item })) || (item.type === 'scorekeeper' && onScorekeeperInPress({ item }))) }
-          //   />
-          // )}
         />
       </View>
     </View>

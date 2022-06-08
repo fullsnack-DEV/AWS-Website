@@ -36,6 +36,36 @@ const VideoPost = memo(
       if (orientation === 'portrait') toggleView(() => setHeight(wp(124)), 300);
     }, []);
 
+    const imageRatio = data.media_height / data.media_width;
+    const defaultLandscapRatio = 0.71;
+    const defaultPortraitRatio = 1.29;
+    const defaultScreenWidth = Dimensions.get('window').width - 30;
+    const defaultLandscapHeight = 250;
+    const defaultPortraitHeight = 450;
+    // eslint-disable-next-line consistent-return
+    const getImageDimention = () => {
+      if (imageRatio < defaultLandscapRatio) {
+        return {
+          height: defaultLandscapHeight,
+          width: defaultScreenWidth,
+        };
+      }
+      if (
+        imageRatio >= defaultLandscapRatio &&
+        imageRatio <= defaultPortraitRatio
+      ) {
+        return {
+          height: imageRatio * defaultScreenWidth,
+          width: defaultScreenWidth,
+        };
+      }
+      if (imageRatio >= defaultPortraitRatio) {
+        return {
+          height: defaultPortraitHeight,
+          width: defaultScreenWidth,
+        };
+      }
+    };
     const toggleModal = useCallback(() => {
       navigation.navigate('FeedViewScreen', {
         feedItem: item,

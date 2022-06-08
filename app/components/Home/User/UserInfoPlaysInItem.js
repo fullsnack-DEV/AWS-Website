@@ -14,9 +14,10 @@ const UserInfoPlaysInItem = ({
   // totalGames,
   thumbURL,
   onPlayInPress,
+  isOpacity = false
 }) => (
   <TouchableOpacity onPress={onPlayInPress}>
-    <View style={styles.containerStyle}>
+    <View style={[styles.containerStyle,{flex:1,opacity: isOpacity ? 0.4 : 1}]}>
       <Image source={thumbURL} style={styles.imageStyle} />
       <View style={{ marginLeft: 10, marginRight: 12 }}>
         <Text style={[styles.titleStyle,{fontSize: title.length > 12 ? 12 : 14}]}>{title}</Text>

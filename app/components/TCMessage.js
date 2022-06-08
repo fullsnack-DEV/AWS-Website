@@ -5,13 +5,15 @@ import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import ProgressBar from 'react-native-progress/Bar';
+import Image from 'react-native-image-progress';
+
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from '../utils';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import {QBgetFileURL} from '../utils/QuickBlox';
 import images from '../Constants/ImagePath';
 import MessageChatAssetModal from './message/MessageChatAssetModal';
-
 
 const TCMessage = ({
   body,
@@ -50,7 +52,7 @@ const TCMessage = ({
   useEffect(() => {
     attachments.map((item) =>
       QBgetFileURL(item.id).then((fileUrl) => {
-        console.log('fileUrlfileUrl',fileUrl);
+        console.log('fileUrlfileUrl', fileUrl);
         setFileUrls((urls) => [...urls, fileUrl]);
       }),
     );
@@ -162,10 +164,17 @@ const TCMessage = ({
               <TouchableOpacity
                 key={index}
                 onPress={() => setShowAssetsModal(true)}>
-                <FastImage
+                <Image
                   source={{uri: item}}
                   key={item}
+                  indicator={ProgressBar}
                   resizeMode={'cover'}
+                  indicatorProps={{
+                    size: 80,
+                    borderWidth: 0,
+                    color: 'rgba(150, 150, 150, 1)',
+                    unfilledColor: 'rgba(200, 200, 200, 0.2)',
+                  }}
                   style={{
                     backgroundColor: 'rgba(0,0,0,0.7)',
                     marginTop: hp(1),
@@ -178,13 +187,18 @@ const TCMessage = ({
                     height: wp(50),
                     width: wp(50),
                   }}
+                  onProgress={(e) =>
+                    console.log(
+                      'sasasas---',
+                      e.nativeEvent.loaded / e.nativeEvent.total,
+                  )
+                  }
                 />
               </TouchableOpacity>
             );
           })}
         </View>
       )}
-
       <Modal
         isVisible={showAssetsModal}
         backdropColor="black"
@@ -202,6 +216,8 @@ const TCMessage = ({
     </Fragment>
   );
 };
+
+
 const styles = StyleSheet.create({
   pauseMuteStyle: {
     alignItems: 'center',

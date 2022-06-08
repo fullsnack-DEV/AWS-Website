@@ -197,6 +197,10 @@ import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 import DeactivatedSportsListScreen from '../components/Home/DeactivatedSportsListScreen';
 import ActivitySettingScreen from '../screens/account/userSettingPrivacy/sportsActivity/ActivitySettingScreen';
 import SportAccountSettingScreen from '../screens/account/SportAccountSettingScreen';
+import SportHideUnhideScreen from '../screens/home/SportHideUnhideScreen';
+import SportActivitiesScreen from '../components/Home/SportActivitiesScreen';
+import ChangeSportsOrderScreen from '../screens/account/schedule/ChangeSportsOrderScreen';
+import ChangeOtherListScreen from '../screens/account/schedule/ChangeOtherListScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2428,10 +2432,10 @@ const HomeNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="SportActivityTagScreen"
-      component={SportActivityTagScreen}
+      name="SportActivitiesScreen"
+      component={SportActivitiesScreen}
       options={{
-        title: 'Sports Activity Tags Order',
+        title: 'Sports Activities',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2443,7 +2447,70 @@ const HomeNavigator = () => (
         },
       }}
     />
-
+    <Stack.Screen
+      name="SportActivityTagScreen"
+      component={SportActivityTagScreen}
+      options={{
+        title: 'Order',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="ChangeSportsOrderScreen"
+      component={ChangeSportsOrderScreen}
+      options={{
+        title: 'Change List of Sports',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="ChangeOtherListScreen"
+      component={ChangeOtherListScreen}
+      options={{
+        title: 'Change List Of Orgernizers',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="SportHideUnhideScreen"
+      component={SportHideUnhideScreen}
+      options={{
+        title: 'Hide & Unhide',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="RefereeReservationSetting"
       component={RefereeReservationSetting}

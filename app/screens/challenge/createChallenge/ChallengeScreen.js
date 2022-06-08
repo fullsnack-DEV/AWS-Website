@@ -195,7 +195,7 @@ export default function ChallengeScreen({ navigation, route }) {
             }}>
             <Image
               source={
-                groupObj?.group_id
+                sportType !== 'single'
                   ? groupObj?.thumbnail
                     ? { uri: groupObj?.thumbnail }
                     : images.teamPlaceholder
@@ -561,13 +561,13 @@ export default function ChallengeScreen({ navigation, route }) {
             sport_type: sportType,
             start_datetime: route?.params?.startTime / 1000,
             end_datetime: route?.params?.endTime / 1000,
-            challenger: teams?.[0]?.group_id || teams?.[0]?.user_id,
-            challengee: teams?.[1]?.group_id || teams?.[1]?.user_id,
+            challenger: sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
+            challengee: sportType === 'single' ? teams?.[1]?.user_id : teams?.[1]?.group_id,
             home_team:
               settingObject?.home_away === 'Home' ? groupObj : entity?.obj,
             away_team:
               settingObject?.home_away === 'Home' ? entity?.obj : groupObj,
-            user_challenge: !groupObj?.group_id,
+            user_challenge: sportType === 'single',
           };
 
           console.log('conti. challnege obj:=>',body);

@@ -75,14 +75,14 @@ export default function CreateTeamForm2({navigation, route}) {
     if (isFocused) {
       const minAgeArray = [];
       let maxAgeArray = [];
-      for (let i = 1; i <= 70; i++) {
+      for (let i = 1; i <= 120; i++) {
         const dataSource = {
           label: `${i}`,
           value: i,
         };
         minAgeArray.push(dataSource);
       }
-      for (let i = minAge; i <= 70; i++) {
+      for (let i = minAge; i <= 120; i++) {
         const dataSource = {
           label: `${i}`,
           value: i,
@@ -120,7 +120,6 @@ export default function CreateTeamForm2({navigation, route}) {
 
   const isIconCheckedOrNot = ({item, index}) => {
     languages[index].isChecked = !item.isChecked;
-
     setLanguages([...languages]);
   };
 

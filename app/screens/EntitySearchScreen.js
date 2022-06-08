@@ -114,11 +114,14 @@ export default function EntitySearchScreen({navigation, route}) {
   const [upcomingGamePageFrom, setUpcomingGamePageFrom] = useState(0);
   const [location, setLocation] = useState('world');
   const [selectedSport, setSelectedSport] = useState('All');
+  const [selectedSportType, setSelectedSportType] = useState('All');
+
   const [minFee, setMinFee] = useState(0);
   const [maxFee, setMaxFee] = useState(0);
   const [playerFilter, setPlayerFilter] = useState({
     location: 'world',
     sport: 'All',
+    sportType: 'All',
   });
   const [refereeFilters, setrRefereeFilters] = useState({
     location: 'world',
@@ -165,9 +168,11 @@ export default function EntitySearchScreen({navigation, route}) {
   const [fromDate, setFromDate] = useState();
   const [toDate, setToDate] = useState();
   const [sportsList] = useState(route?.params?.sportsList);
+  const [sportsArray] = useState(route?.params?.sportsArray);
+  console.log('route?.params?.sportsList', route?.params?.sportsList);
+
   const [search, setSearch] = useState('');
   const searchBoxRef = useRef();
-
   useEffect(() => {
     if (route?.params?.locationText) {
       setSettingPopup(true);
@@ -248,10 +253,35 @@ export default function EntitySearchScreen({navigation, route}) {
       from: pageFrom,
       query: {
         bool: {
-          must: [{match: {entity_type: 'player'}}],
+          must: [
+            {
+              nested: {
+                path: 'registered_sports',
+                query: {
+                  bool: {
+                    must: [{term: {'registered_sports.is_active': true}}],
+                  },
+                },
+              },
+            },
+            {match: {entity_type: 'player'}},
+          ],
         },
       },
     };
+
+    // Sport filter
+    if (playerFilter.sport !== 'All') {
+      playersQuery.query.bool.must[0].nested.query.bool.must.push(
+        {term: {'registered_sports.is_active': true}},
+        {
+          term: {
+            'registered_sports.sport.keyword': `${playerFilter.sport.toLowerCase()}`,
+          },
+        },
+      );
+    }
+
     // World filter
     if (playerFilter.location !== 'world') {
       playersQuery.query.bool.must.push({
@@ -261,19 +291,7 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-    // Sport filter
-    if (playerFilter.sport !== 'All') {
-      playersQuery.query.bool.must.push({
-        multi_match: {
-          query: `${playerFilter.sport.toLowerCase()}`,
-          fields: [
-            'referee_data.sport_name',
-            'registered_sports.sport_name',
-            'scorekeeper_data.sport_name',
-          ],
-        },
-      });
-    }
+
     // Game Fee filter
     if (playerFilter.fee) {
       playersQuery.query.bool.must.push({
@@ -353,10 +371,20 @@ export default function EntitySearchScreen({navigation, route}) {
       from: refereesPageFrom,
       query: {
         bool: {
-          must: [{term: {'referee_data.is_published': true}}],
+          must: [
+            {
+              nested: {
+                path: 'referee_data',
+                query: {
+                  bool: {must: [{term: {'referee_data.is_published': true}}]},
+                },
+              },
+            },
+          ],
         },
       },
     };
+
     // Location filter
     if (refereeFilters.location !== 'world') {
       refereeQuery.query.bool.must.push({
@@ -368,7 +396,7 @@ export default function EntitySearchScreen({navigation, route}) {
     }
     // Sport Filter
     if (refereeFilters.sport !== 'All') {
-      refereeQuery.query.bool.must.push({
+      refereeQuery.query.bool.must[0].nested.query.bool.must.push({
         term: {
           'referee_data.sport_name.keyword': {
             value: `${refereeFilters.sport.toLowerCase()}`,
@@ -379,8 +407,8 @@ export default function EntitySearchScreen({navigation, route}) {
     }
     // Referee game fee filter
     if (refereeFilters.fee) {
-      refereeQuery.query.bool.must.push({
-        range: {
+      refereeQuery.query.bool.must[0].nested.query.bool.must.push({
+        term: {
           'referee_data.setting.game_fee.fee': {
             gte: Number(refereeFilters.fee.split('-')[0]),
             lte: Number(refereeFilters.fee.split('-')[1]),
@@ -801,6 +829,7 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = 'All';
               delete tempFilter.fee;
               setSelectedSport('All');
+              setSelectedSportType('All');
               setMinFee(0);
               setMaxFee(0);
             }
@@ -830,6 +859,7 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = 'All';
               delete tempFilter.fee;
               setSelectedSport('All');
+              setSelectedSportType('All');
               setMinFee(0);
               setMaxFee(0);
             }
@@ -857,6 +887,7 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = 'All';
               delete tempFilter.fee;
               setSelectedSport('All');
+              setSelectedSportType('All');
               setMinFee(0);
               setMaxFee(0);
             }
@@ -885,6 +916,7 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = 'All';
               delete tempFilter.fee;
               setSelectedSport('All');
+              setSelectedSportType('All');
               setMinFee(0);
               setMaxFee(0);
             }
@@ -914,6 +946,7 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = 'All';
               delete tempFilter.fee;
               setSelectedSport('All');
+              setSelectedSportType('All');
               setMinFee(0);
               setMaxFee(0);
             }
@@ -943,6 +976,7 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = 'All';
               delete tempFilter.fee;
               setSelectedSport('All');
+              setSelectedSportType('All');
               setMinFee(0);
               setMaxFee(0);
             }
@@ -970,6 +1004,7 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = 'All';
               delete tempFilter.fee;
               setSelectedSport('All');
+              setSelectedSportType('All');
               setMinFee(0);
               setMaxFee(0);
             }
@@ -1207,6 +1242,7 @@ export default function EntitySearchScreen({navigation, route}) {
           sport: 'All',
         });
         setSelectedSport('All');
+        setSelectedSportType('All');
         setMinFee(0);
         setMaxFee(0);
         break;
@@ -1216,6 +1252,7 @@ export default function EntitySearchScreen({navigation, route}) {
           sport: 'All',
         });
         setSelectedSport('All');
+        setSelectedSportType('All');
         setMinFee(0);
         setMaxFee(0);
         break;
@@ -1225,6 +1262,7 @@ export default function EntitySearchScreen({navigation, route}) {
           sport: 'All',
         });
         setSelectedSport('All');
+        setSelectedSportType('All');
         setMinFee(0);
         setMaxFee(0);
         break;
@@ -1234,6 +1272,7 @@ export default function EntitySearchScreen({navigation, route}) {
           sport: 'All',
         });
         setSelectedSport('All');
+        setSelectedSportType('All');
         setMinFee(0);
         setMaxFee(0);
 
@@ -1244,6 +1283,7 @@ export default function EntitySearchScreen({navigation, route}) {
           sport: 'All',
         });
         setSelectedSport('All');
+        setSelectedSportType('All');
         setMinFee(0);
         setMaxFee(0);
         break;
@@ -1253,6 +1293,7 @@ export default function EntitySearchScreen({navigation, route}) {
           sport: 'All',
         });
         setSelectedSport('All');
+        setSelectedSportType('All');
         setMinFee(0);
         setMaxFee(0);
         break;
@@ -1262,6 +1303,7 @@ export default function EntitySearchScreen({navigation, route}) {
           sport: 'All',
         });
         setSelectedSport('All');
+        setSelectedSportType('All');
         setMinFee(0);
         setMaxFee(0);
         break;
@@ -1532,12 +1574,35 @@ export default function EntitySearchScreen({navigation, route}) {
       // <View style={{flex: 1}}>{renderSingleTab}</View>
     ),
     [
+      currentTab,
       PEOPLE_SUB_TAB_ITEMS,
       GROUP_SUB_TAB_ITEMS,
-      POST_SUB_TAB_ITEMS,
       GAMES_SUB_TAB_ITEMS,
-      currentTab,
+      POST_SUB_TAB_ITEMS,
       currentSubTab,
+      onPressSubTabs,
+      playerFilter.location,
+      playerFilter.sport,
+      playerFilter.locationType,
+      playerFilter.fee,
+      refereeFilters.location,
+      refereeFilters.sport,
+      refereeFilters.locationType,
+      refereeFilters.fee,
+      scoreKeeperFilters.location,
+      scoreKeeperFilters.sport,
+      scoreKeeperFilters.locationType,
+      scoreKeeperFilters.fee,
+      teamFilters,
+      clubFilters,
+      completedGameFilters.location,
+      completedGameFilters.sport,
+      completedGameFilters.locationType,
+      completedGameFilters.fee,
+      upcomingGameFilters.location,
+      upcomingGameFilters.sport,
+      upcomingGameFilters.locationType,
+      upcomingGameFilters.fee,
     ],
   );
 
@@ -1805,6 +1870,7 @@ export default function EntitySearchScreen({navigation, route}) {
                           case 'Players': {
                             const tempFilter = {...playerFilter};
                             tempFilter.sport = selectedSport;
+                            tempFilter.sportType = selectedSportType;
                             tempFilter.location = location;
                             tempFilter.locationType = locationFilterOpetion;
                             if (minFee && maxFee) {
@@ -1821,6 +1887,8 @@ export default function EntitySearchScreen({navigation, route}) {
                           case 'Referees': {
                             const tempFilter = {...refereeFilters};
                             tempFilter.sport = selectedSport;
+                            tempFilter.sportType = selectedSportType;
+
                             tempFilter.location = location;
                             tempFilter.locationType = locationFilterOpetion;
                             if (minFee && maxFee) {
@@ -1836,6 +1904,7 @@ export default function EntitySearchScreen({navigation, route}) {
                           case 'Scorekeepers': {
                             const tempFilter = {...scoreKeeperFilters};
                             tempFilter.sport = selectedSport;
+                            tempFilter.sportType = selectedSportType;
                             tempFilter.location = location;
                             tempFilter.locationType = locationFilterOpetion;
                             if (minFee && maxFee) {
@@ -1849,8 +1918,11 @@ export default function EntitySearchScreen({navigation, route}) {
                             break;
                           }
                           case 'Teams': {
+                            console.log('teamFiltersteamFilters', teamFilters);
                             const tempFilter = {...teamFilters};
                             tempFilter.sport = selectedSport;
+                            tempFilter.sportType = selectedSportType;
+
                             tempFilter.location = location;
                             tempFilter.locationType = locationFilterOpetion;
                             if (minFee && maxFee) {
@@ -1867,6 +1939,8 @@ export default function EntitySearchScreen({navigation, route}) {
                           case 'Clubs': {
                             const tempFilter = {...clubFilters};
                             tempFilter.sport = selectedSport;
+                            tempFilter.sportType = selectedSportType;
+
                             tempFilter.location = location;
                             tempFilter.locationType = locationFilterOpetion;
                             if (minFee && maxFee) {
@@ -1882,6 +1956,8 @@ export default function EntitySearchScreen({navigation, route}) {
                           case 'Completed': {
                             const tempFilter = {...completedGameFilters};
                             tempFilter.sport = selectedSport;
+                            tempFilter.sportType = selectedSportType;
+
                             tempFilter.location = location;
                             tempFilter.locationType = locationFilterOpetion;
                             if (minFee && maxFee) {
@@ -1897,6 +1973,8 @@ export default function EntitySearchScreen({navigation, route}) {
                           case 'Upcoming': {
                             const tempFilter = {...upcomingGameFilters};
                             tempFilter.sport = selectedSport;
+                            tempFilter.sportType = selectedSportType;
+
                             tempFilter.location = location;
                             tempFilter.locationType = locationFilterOpetion;
                             if (minFee && maxFee) {
@@ -2048,6 +2126,7 @@ export default function EntitySearchScreen({navigation, route}) {
                         dataSource={sports}
                         placeholder={'Select Sport'}
                         onValueChange={(value) => {
+                          console.log('vaaaa', value);
                           setSelectedSport(value);
                           if (value === 'All') {
                             setMinFee(0);

@@ -655,7 +655,10 @@ const HomeScreen = ({navigation, route}) => {
               <View
                 style={{opacity: isAccountDeactivated ? 0.5 : 1}}
                 pointerEvents={pointEvent}>
-                <TouchableOpacity onPress={onThreeDotPressed}>
+                <TouchableOpacity
+                  onPress={() => {
+                    manageChallengeActionSheet.current.show();
+                  }}>
                   <Image
                     source={images.threeDotIcon}
                     style={{
@@ -673,7 +676,7 @@ const HomeScreen = ({navigation, route}) => {
         }
       />
     ),
-    [currentUserData],
+    [currentUserData, isAdmin, isUserHome, isTeamHome],
   );
 
   const getSettingOfBoth = (details) => {
@@ -811,9 +814,11 @@ const HomeScreen = ({navigation, route}) => {
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
         };
-        console.log('createPostAfterUpload in home');
+        console.log('createPostAfterUpload in home', data);
         createPostAfterUpload(dataParams);
       } else if (data) {
+        console.log('createPostAfterUpload in home else', data);
+
         const imageArray = data.map((dataItem) => dataItem);
         const dataParams = {
           text: postDesc && postDesc,
@@ -2721,10 +2726,6 @@ const HomeScreen = ({navigation, route}) => {
     {nativeEvent: {contentOffset: {y: mainFlatListFromTop}}},
   ]);
 
-  const onThreeDotPressed = useCallback(() => {
-    manageChallengeActionSheet.current.show();
-  }, []);
-
   const offerOpetions = () => {
     const opetionArray = [];
     let a = [];
@@ -3070,7 +3071,8 @@ const HomeScreen = ({navigation, route}) => {
       //   groupObj: currentUserData,
       // });
     } else if (challengeButtonType() === 'invite') {
-      if (mySettingObject.availibility === 'On') {
+      console.log('ok invite');
+      if (settingObject.availibility === 'On') {
         if (
           myGroupDetail.sport_type === 'double' &&
           (!('player_deactivated' in myGroupDetail) ||
@@ -3128,6 +3130,13 @@ const HomeScreen = ({navigation, route}) => {
         console.log('manage block');
         if (currentUserData?.is_pause === true) {
           Alert.alert('Your team is paused.');
+        } else if (
+          currentUserData?.player_deactivated === true &&
+          currentUserData.sport_type === 'double'
+        ) {
+          Alert.alert(
+            `${currentUserData.group_name}'s player have sport activity deactivated.`,
+          );
         } else {
           navigation.navigate('ManageChallengeScreen', {
             groupObj: currentUserData,
@@ -3595,7 +3604,7 @@ const HomeScreen = ({navigation, route}) => {
           {Utility.getSportName(item, authContext)}
         </Text>
         <View style={styles.checkbox}>
-          {sportsSelection.sport === item?.sport ? (
+          {sportsSelection?.sport === item?.sport ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -4160,7 +4169,8 @@ const HomeScreen = ({navigation, route}) => {
                 }
               }
             } else if (index === 1) {
-              navigation.navigate('SportActivityScreen');
+              // navigation.navigate('SportActivityScreen');
+              navigation.navigate('SportActivitiesScreen');
             }
           }}
         />
@@ -4202,7 +4212,7 @@ const HomeScreen = ({navigation, route}) => {
                   setMatchData([...gameList]);
                 }
                 if (
-                  refereeSetting?.refereeAvailibility &&
+                  refereeSetting?.referee_availibility &&
                   refereeSetting?.game_fee &&
                   refereeSetting?.refund_policy &&
                   refereeSetting?.available_area
@@ -4250,7 +4260,7 @@ const HomeScreen = ({navigation, route}) => {
                   setMatchData([...gameList]);
                 }
                 if (
-                  scorekeeperSetting?.scorekeeperAvailibility &&
+                  scorekeeperSetting?.scorekeeper_availibility &&
                   scorekeeperSetting?.game_fee &&
                   scorekeeperSetting?.refund_policy &&
                   scorekeeperSetting?.available_area
@@ -4366,7 +4376,7 @@ const HomeScreen = ({navigation, route}) => {
                   }
                   onBookRefereePress={() => {
                     if (
-                      refereeSettingObject?.refereeAvailibility &&
+                      refereeSettingObject?.referee_availibility &&
                       refereeSettingObject?.game_fee &&
                       refereeSettingObject?.refund_policy &&
                       refereeSettingObject?.available_area
@@ -4891,7 +4901,7 @@ const HomeScreen = ({navigation, route}) => {
                   }
                   onBookRefereePress={() => {
                     if (
-                      scorekeeperSettingObject?.scorekeeperAvailibility &&
+                      scorekeeperSettingObject?.scorekeeper_availibility &&
                       scorekeeperSettingObject?.game_fee &&
                       scorekeeperSettingObject?.refund_policy &&
                       scorekeeperSettingObject?.available_area
@@ -5773,6 +5783,7 @@ const HomeScreen = ({navigation, route}) => {
             <TouchableWithoutFeedback
               onPress={() => {
                 setSelectedChallengeOption(1);
+
                 const obj = mySettingObject;
                 if (obj?.availibility === 'On') {
                   if (
@@ -5959,7 +5970,9 @@ const HomeScreen = ({navigation, route}) => {
             <View style={styles.separatorLine} />
             <FlatList
               ItemSeparatorComponent={() => <TCThinDivider />}
-              data={authContext?.entity?.obj?.registered_sports}
+              data={authContext?.entity?.obj?.registered_sports?.filter(
+                (obj) => obj?.type,
+              )}
               keyExtractor={(item, index) => index.toString()}
               renderItem={renderSports}
             />

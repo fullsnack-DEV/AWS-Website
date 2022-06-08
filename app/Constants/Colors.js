@@ -91,9 +91,9 @@ const colors = {
   textFieldBGColor: '#00000029',
   shadowColor: '#00000029',
   smallDividerColor: '#CACACA',
-  greenGradientStart: '#45C188',
+  greenGradientStart: '#00C168',
   lightGreen: '#E8FEB4',
-  greenGradientEnd: '#B0DB4F',
+  greenGradientEnd: '#AAD840',
   orangeNotesColor: '#FF4E00',
   redColor: '#FD4E1E',
   redDelColor: '#FF4E00',
@@ -131,6 +131,7 @@ lightGrayBackground: '#F8F8F8',
   completeTextColor: '#00c168',
   messageSenderColor: '#FFD798',
   modalHandleColor: '#DADBDA',
+  textFieldBackground: '#f5f5f5',
 
 };
 export default colors;

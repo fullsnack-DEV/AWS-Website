@@ -124,7 +124,7 @@ export default function BookReferee({navigation, route}) {
                         {term: {'referee_data.is_published': true}},
                         {
                           term: {
-                            'referee_data.setting.refereeAvailibility.keyword': {
+                            'referee_data.setting.referee_availibility.keyword': {
                               value: 'On',
                             },
                           },
@@ -222,7 +222,7 @@ export default function BookReferee({navigation, route}) {
               setLoading(false);
               console.log('res3:::=>', res);
               if (
-                res?.refereeAvailibility &&
+                res?.referee_availibility &&
                 res?.game_fee &&
                 res?.refund_policy &&
                 res?.available_area

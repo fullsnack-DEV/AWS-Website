@@ -190,7 +190,7 @@ const MessageMainScreen = ({navigation}) => {
           title={fullName}
           subTitle={
             item?.lastMessage === '[attachment]'
-              ? 'Photo (or Video)'
+              ? 'Attachment'
               : item?.lastMessage
           }
           numberOfMembers={item?.occupantsIds}

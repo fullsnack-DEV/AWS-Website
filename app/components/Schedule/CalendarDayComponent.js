@@ -1,12 +1,10 @@
 import React from 'react';
-import {
- View, Text, StyleSheet, TouchableOpacity, Image,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import PropTypes from 'prop-types';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
-const weekDaysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const weekDaysNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 class CalendarDayComponent extends React.PureComponent {
   constructor(props) {
@@ -15,7 +13,7 @@ class CalendarDayComponent extends React.PureComponent {
   }
 
   getContentStyle() {
-    const { state, marking = {} } = this.props;
+    const {state, marking = {}} = this.props;
     const style = {
       content: {},
       text: {
@@ -51,7 +49,7 @@ class CalendarDayComponent extends React.PureComponent {
       } else if (marking.event) {
         style.text.color = colors.themeColor;
         style.content.backgroundColor = colors.whiteColor;
-         // style.content.borderRadius = 50;
+        // style.content.borderRadius = 50;
       }
     }
 
@@ -59,7 +57,7 @@ class CalendarDayComponent extends React.PureComponent {
   }
 
   getFooterTextStyle() {
-    const { marking = {}, state } = this.props;
+    const {marking = {}, state} = this.props;
     const style = {
       color: '#c1c2c1',
     };
@@ -71,7 +69,7 @@ class CalendarDayComponent extends React.PureComponent {
   }
 
   getInventoryCount() {
-    const { marking = {}, state } = this.props;
+    const {marking = {}, state} = this.props;
     if (typeof marking === 'object' && state !== 'disabled') {
       if (marking.inventory >= 0) {
         return marking.inventory;
@@ -80,7 +78,7 @@ class CalendarDayComponent extends React.PureComponent {
     if (state === 'disabled') {
       return '';
     }
-      return '';
+    return '';
   }
 
   onDayPress() {
@@ -93,29 +91,24 @@ class CalendarDayComponent extends React.PureComponent {
 
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          {
-            this.props.horizontal
-              ? <Text style={styles.weekName} numberOfLines={1}>
-                {
-                  weekDaysNames[this.props.date.weekDay]
-                }
+        <View >
+          {this.props.horizontal ? (
+            <View>
+              <Text style={styles.weekName} numberOfLines={1}>
+                {weekDaysNames[this.props.date.weekDay]}
               </Text>
-              : null
-          }
+            </View>
+          ) : null}
         </View>
         <TouchableOpacity
           style={[styles.content, contentStyle.content]}
-          onPress={this.onDayPress}
-        >
+          onPress={this.onDayPress}>
           <Text style={[styles.contentText, contentStyle.text]}>
             {String(this.props.children)}
           </Text>
-          {
-            (this.props.marking.highDemand && this.props.state !== 'disabled')
-              ? <Image source={highDemandImage} style={styles.smallIcon} />
-              : null
-          }
+          {this.props.marking.highDemand && this.props.state !== 'disabled' ? (
+            <Image source={highDemandImage} style={styles.smallIcon} />
+          ) : null}
         </TouchableOpacity>
         <View style={styles.footer}>
           <Text style={this.getFooterTextStyle()}>
@@ -148,8 +141,8 @@ const styles = StyleSheet.create({
     width: 32,
     textAlign: 'center',
     fontSize: 12,
-    fontWeight: 'bold',
-    color: colors.googleColor,
+    fontFamily: fonts.RBlack,
+    color: colors.lightBlackColor,
   },
   content: {
     width: 36,

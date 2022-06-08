@@ -48,6 +48,10 @@ const images = {
   tab_notification: require('../assets/images/tab_notification.png'),
   tab_account: require('../assets/images/tab_account.png'),
   nextArrow: require('../assets/images/ic_next_arrow.png'),
+  calNextArrow: require('../assets/images/cal_next.png'),
+  calPrevArrow: require('../assets/images/cal_prev.png'),
+
+
   backArrow: require('../assets/images/ic_back_arrow.png'),
   menu: require('../assets/images/menu.png'),
   threeDotIcon: require('../assets/images/three_dot_icon.png'),
@@ -409,6 +413,19 @@ const images = {
   upcomingMatch : require('../assets/images/upcomingMatch.png'),
   shortCard : require('../assets/images/shortCard.png'),
   settingSport : require('../assets/images/settingSport.png'),
+
+  addEvent : require('../assets/images/add_event.png'),
+  playerIcon : require('../assets/images/player_ic.png'),
+
+  refereeIcon : require('../assets/images/referee_ic.png'),
+
+  scorekeeperIcon : require('../assets/images/scorekeeper_ic.png'),
+  localHomeFilter: require('../assets/images/Filter.png'),
+
+
+  addSportList: require('../assets/images/add_sport_list.png'),
+  removeSportList: require('../assets/images/remove_sport_list.png'),
+  choosePic: require('../assets/images/choose_pic.png'),
 
 
 

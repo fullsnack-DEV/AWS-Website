@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     borderRadius: wp('1.5%'),
     paddingHorizontal: wp('1%'),
     paddingVertical: wp('1%'),
-    marginVertical: 20,
+    marginVertical: 10,
     width: wp('94%'),
     alignSelf: 'center',
     backgroundColor: colors.greeColor,

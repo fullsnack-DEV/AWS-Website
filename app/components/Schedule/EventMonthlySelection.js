@@ -18,83 +18,74 @@ export default function EventMonthlySelection({
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <Text style={styles.headerTextStyle}>{title}</Text>
-      <View style={{width: wp('72%')}}>
-        <RNPickerSelect
-          placeholder={{
-            label: placeholder,
-            value: '',
-          }}
-          items={dataSource}
-          onValueChange={onValueChange}
-          useNativeAndroidPickerStyle={true}
-          // eslint-disable-next-line no-sequences
-          style={
-            (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid,
-            {...styles})
-          }
-          value={value}
-          Icon={() => (
-            <Image source={images.dropDownArrow} style={styles.downArrow} />
-          )}
-        />
-      </View>
+      <RNPickerSelect
+        placeholder={{
+          label: placeholder,
+          value: '',
+        }}
+        items={dataSource}
+        onValueChange={onValueChange}
+        useNativeAndroidPickerStyle={true}
+        // eslint-disable-next-line no-sequences
+        style={
+          (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid,
+          {...styles})
+        }
+        value={value}
+        Icon={() => (
+          <Image source={images.dropDownArrow} style={styles.downArrow} />
+        )}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   containerStyle: {
-    width: wp('96%'),
+    width: wp('92%'),
     alignSelf: 'center',
     padding: wp('1.5%'),
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
+    marginBottom:15
   },
   headerTextStyle: {
     fontSize: 16,
     fontFamily: fonts.RLight,
     color: colors.lightBlackColor,
     width: wp('20'),
-    paddingLeft: 20,
+    paddingLeft: 5,
+   
   },
   inputAndroid: {
     alignSelf: 'center',
-    backgroundColor: colors.offwhite,
     borderRadius: 5,
     color: colors.lightBlackColor,
     elevation: 3,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    height: 40,
+    height: 30,
     paddingHorizontal: 15,
     paddingRight: 30,
     paddingVertical: 12,
     width: '100%',
   },
   inputIOS: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
+    alignSelf: 'center', 
     color: colors.lightBlackColor,
-    elevation: 3,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    height: 40,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: '100%',
+    height: 30,
+    paddingHorizontal: '30%',
+   
   },
   downArrow: {
     height: 15,
     resizeMode: 'contain',
-    right: 15,
     tintColor: colors.lightBlackColor,
-    top: 12,
+    top: 10,
     width: 15,
   },
 });

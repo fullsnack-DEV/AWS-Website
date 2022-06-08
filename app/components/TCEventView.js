@@ -1,4 +1,4 @@
-import React,{useContext} from 'react';
+import React, {useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -9,12 +9,13 @@ import {
 } from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
+import LinearGradient from 'react-native-linear-gradient';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import EventOfItem from './Schedule/EventOfItem';
 import EventBetweenUserItem from './Schedule/EventBetweenUserItem';
-import {getHitSlop} from '../utils';
+import {getHitSlop, getSportName} from '../utils';
 import AuthContext from '../auth/context';
 
 export default function TCEventView({
@@ -23,68 +24,25 @@ export default function TCEventView({
   onThreeDotPress,
   eventBetweenSection,
   // entity,
-  profileID,
-  
 }) {
-  const authContext  = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
 
   console.log('data::=>', data);
-  let showDot = false;
-  let startDate = '';
-  if (data && data.start_datetime) {
-    startDate = new Date(data.start_datetime * 1000);
-  }
-  let endDate = '';
-  if (data && data.end_datetime) {
-    endDate = new Date(data.end_datetime * 1000);
-  }
-  let eventColor = colors.themeColor;
-  if (data && data.color) {
-    eventColor = data.color;
-  }
-  let location = '';
-  if (data && data.location) {
-    location = data.location;
-  }
-  let venue = '';
-  if (data && data.game && data.game.venue) {
-    venue = data.game.venue.address ?? data.game.venue.description;
-  }
-  let description = 'Game With';
-  if (data && data.descriptions) {
-    description = data.descriptions;
-  }
-  let description2 = '';
-  if (data?.game) {
-    if (
-      profileID ===
-      (data?.game?.home_team?.group_id || data?.game?.home_team?.user_id)
-    ) {
-      if (data?.game?.home_team?.group_id) {
-        description2 = data?.game?.away_team?.group_name;
-      } else {
-        description2 = `${data?.game?.away_team?.first_name} ${data?.game?.away_team?.last_name}`;
-      }
-    } else if (data?.game?.away_team?.group_id) {
-      description2 = data?.game?.home_team?.group_name;
-    } else {
-      description2 = `${data?.game?.home_team?.first_name} ${data?.game?.home_team?.last_name}`;
-    }
-  } else {
-    description2 = '';
-  }
+  const isGame = !!(data?.game_id && data?.game);
 
-  // if (data && data.game && data.game.away_team) {
-  //   if (data.game.away_team.full_name) {
-  //     description2 = data.game.away_team.full_name;
-  //   } else {
-  //     description2 = data.game.away_team.group_name;
-  //   }
-  // }
-  let title = 'Game';
-  if (data && data.title) {
-    title = data.title;
-  }
+  let showDot = false;
+  const startDate = data?.start_datetime
+    ? new Date(data.start_datetime * 1000)
+    : '';
+  const endDate = data?.end_datetime ? new Date(data.end_datetime * 1000) : '';
+  const location =
+    data?.location ??
+    data?.game?.venue?.address ??
+    data?.game?.venue?.description ??
+    '';
+  const description = data?.descriptions ? data.descriptions : null;
+  const title = isGame ? getSportName(data.game, authContext) : data.title;
+
   let homeTeamName = '';
   let homeTeamImage = null;
   if (data && data.game && data.game.home_team) {
@@ -110,20 +68,21 @@ export default function TCEventView({
     }
   }
   const refereeFound = (dataObj) =>
-    (dataObj?.game?.referees || []).some((e) => authContext.entity.uid === e.referee_id);
+    (dataObj?.game?.referees || []).some(
+      (e) => authContext.entity.uid === e.referee_id,
+    );
   const scorekeeperFound = (dataObj) =>
     (dataObj?.game?.scorekeepers || []).some(
       (e) => authContext.entity.uid === e.scorekeeper_id,
     );
-
-  
 
   if (
     data?.game?.home_team?.group_id === authContext.entity.uid ||
     data?.game?.away_team?.group_id === authContext.entity.uid ||
     data?.game?.home_team?.user_id === authContext.entity.uid ||
     data?.game?.away_team?.user_id === authContext.entity.uid ||
-    (!data?.game && data?.participants?.[0]?.entity_id === authContext.entity.uid) ||
+    (!data?.game &&
+      data?.participants?.[0]?.entity_id === authContext.entity.uid) ||
     refereeFound(data) ||
     scorekeeperFound(data)
   ) {
@@ -135,25 +94,35 @@ export default function TCEventView({
   return (
     <TouchableWithoutFeedback style={styles.backgroundView} onPress={onPress}>
       <View style={styles.backgroundView} onPress={onPress}>
-        <View
-          style={[
-            styles.colorView,
-            {
-              backgroundColor:
-                eventColor[0] !== '#' ? `#${eventColor}` : eventColor,
-            },
-          ]}>
-          <Text style={styles.dateMonthText}>
-            {moment(startDate).format('MMM')}
-          </Text>
-          <Text style={styles.dateText}>{moment(startDate).format('DD')}</Text>
-        </View>
+        <LinearGradient
+          colors={
+            isGame
+              ? [colors.yellowColor, colors.darkThemeColor]
+              : [colors.greenGradientEnd, colors.greenGradientStart]
+          }
+          style={styles.colorView}>
+          {data?.allDay && data?.allDay === true ? (
+            <Text style={styles.allTypeText}>{'All'}</Text>
+          ) : (
+            <Text style={styles.dateMonthText}>
+              {moment(startDate).format('h')}
+              <Text style={styles.dateMonthSmallText}>
+                :{moment(startDate).format('mm')}
+              </Text>
+            </Text>
+          )}
+          {data?.allDay && data?.allDay === true ? (
+            <Text style={styles.dateText}>Day</Text>
+          ) : (
+            <Text style={styles.dateText}>{moment(startDate).format('a')}</Text>
+          )}
+        </LinearGradient>
         <View style={styles.eventText}>
           <View style={styles.eventTitlewithDot}>
             <Text
               style={[
                 styles.eventTitle,
-                {color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor},
+                {color: isGame ? colors.themeColor : colors.greenGradientStart},
               ]}
               numberOfLines={1}>
               {title}
@@ -166,19 +135,23 @@ export default function TCEventView({
               </TouchableOpacity>
             )}
           </View>
-          <Text style={styles.eventDescription} numberOfLines={2}>
-            {description} {description2}
-          </Text>
+          {description && (
+            <Text style={styles.eventDescription} numberOfLines={2}>
+              {description}
+            </Text>
+          )}
           <View style={styles.bottomView}>
             <Text style={styles.eventTime}>{`${moment(startDate).format(
-              'LT',
+              'h:mma',
             )} - `}</Text>
-            <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
-            {(location !== '' || venue !== '') && (
+            <Text style={styles.eventTime}>
+              {moment(endDate).format('h:mma')}
+            </Text>
+            {location !== '' && (
               <Text style={[styles.eventTime, {marginHorizontal: 5}]}> | </Text>
             )}
             <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
-              {location !== '' ? location : venue}
+              {location !== '' && location}
             </Text>
           </View>
           {eventBetweenSection && (
@@ -249,13 +222,23 @@ const styles = StyleSheet.create({
   },
   dateMonthText: {
     color: colors.whiteColor,
-    fontSize: 16,
-    fontFamily: fonts.RLight,
+    fontSize: 20,
+    fontFamily: fonts.RBold,
   },
-  dateText: {
+  dateMonthSmallText: {
+    color: colors.whiteColor,
+    fontSize: 10,
+    fontFamily: fonts.RBold,
+  },
+  allTypeText: {
     color: colors.whiteColor,
     fontSize: 20,
     fontFamily: fonts.RBold,
+  },
+  dateText: {
+    color: colors.whiteColor,
+    fontSize: 16,
+    fontFamily: fonts.RLight,
   },
   eventDescription: {
     fontSize: 14,
@@ -274,7 +257,7 @@ const styles = StyleSheet.create({
   },
   eventTitle: {
     fontSize: 16,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     width: wp('70%'),
     color: colors.googleColor,
   },

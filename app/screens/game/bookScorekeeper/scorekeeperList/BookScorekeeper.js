@@ -123,7 +123,7 @@ export default function BookScorekeeper({navigation, route}) {
                         {term: {'scorekeeper_data.is_published': true}},
                         {
                           term: {
-                            'scorekeeper_data.setting.scorekeeperAvailibility.keyword': {
+                            'scorekeeper_data.setting.scorekeeper_availibility.keyword': {
                               value: 'On',
                             },
                           },
@@ -221,7 +221,7 @@ export default function BookScorekeeper({navigation, route}) {
               setLoading(false);
               console.log('res3:::=>', res);
               if (
-                res?.scorekeeperAvailibility &&
+                res?.scorekeeper_availibility &&
                 res?.game_fee &&
                 res?.refund_policy &&
                 res?.available_area

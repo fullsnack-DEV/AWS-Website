@@ -436,6 +436,7 @@ export default function LocalHomeScreen({navigation, route}) {
                     {match: {'setting.availibility': 'On'}},
                     {term: {entity_type: 'team'}},
                     {term: {is_pause: false}},
+                    {term: {player_deactivated: false}},
                   ],
                 },
               },
@@ -484,6 +485,13 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
+
+      if (sportType === 'double') {
+        availableForchallengeQuery.query.bool.should[0].bool.must.push({
+          term: {player_deactivated: false},
+        });
+      }
+
       if (selectedSport !== 'All') {
         availableForchallengeQuery.query.bool.should[0].bool.must.push({
           term: {
@@ -640,7 +648,13 @@ export default function LocalHomeScreen({navigation, route}) {
       };
 
       if (location !== 'world') {
-        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
+        // refereeQuery.query.bool.must[0].nested.query.bool.must.push({
+        //   multi_match: {
+        //     query: `${location}`,
+        //     fields: ['city', 'country', 'state'],
+        //   },
+        // });
+        refereeQuery.query.bool.must.push({
           multi_match: {
             query: `${location}`,
             fields: ['city', 'country', 'state'],
@@ -1218,7 +1232,7 @@ export default function LocalHomeScreen({navigation, route}) {
   };
 
   return (
-    <View style={{flex:1}}>
+    <View style={{flex: 1}}>
       <ActivityLoader visible={loading} />
       <View
         pointerEvents={pointEvent}
@@ -1354,7 +1368,7 @@ export default function LocalHomeScreen({navigation, route}) {
       ) : (
         <View
           pointerEvents={pointEvent}
-          style={{flex:1,opacity: isAccountDeactivated ? 0.8 : 1}}>
+          style={{flex: 1, opacity: isAccountDeactivated ? 0.8 : 1}}>
           <ScrollView>
             <View>
               <TCTitleWithArrow

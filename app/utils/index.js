@@ -745,6 +745,7 @@ export const getFiltersOpetions = (opetions) => {
     arr.push(obj);
   });
 
+  console.log('filter arr',arr);
   return arr;
 };
 
@@ -825,6 +826,10 @@ export const getCalendar = async (
     return [];
   }
 };
+
+export const uniqueArray = (array, propertyName) =>  {
+  return array.filter((e, i) => array.findIndex(a => a[propertyName] === e[propertyName]) === i);
+}
 
 export const getSportName = (object, authContext) => {
   if (object?.sport_type && object?.sport_type !== '') {

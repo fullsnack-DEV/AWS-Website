@@ -5,9 +5,9 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
 
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
@@ -23,7 +23,7 @@ export default function TCProfileView({
 
     <View style={[styles.topViewContainer, Props]}>
       <View style={styles.profileView}>
-        <Image source={image} style={ styles.profileImage } />
+        <FastImage source={image} style={ styles.profileImage } />
       </View>
       <View style={styles.topTextContainer}>
         {type === 'medium' && name && <Text style={[styles.mediumNameText, { color }]} numberOfLines={1}>{name}</Text>}
