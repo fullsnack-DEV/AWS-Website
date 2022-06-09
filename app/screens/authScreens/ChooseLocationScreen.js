@@ -2,7 +2,13 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable react-native/split-platform-components */
 /* eslint-disable no-nested-ternary */
-import React, {useState, useEffect, useContext, useLayoutEffect} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -30,6 +36,7 @@ import {
   searchLocations,
   getLocationNameWithLatLong,
   getLatLongFromPlaceID,
+  searchNearByCity,
 } from '../../api/External'; // getLatLongFromPlaceID
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
@@ -43,35 +50,36 @@ import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getGroupIndex} from '../../api/elasticSearch';
 
-export default function ChooseLocationScreen({navigation}) {
+export default function ChooseLocationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
-  const [currentLocation, setCurrentLocation] = useState();
+  const [nearByCity, setNearByCity] = useState(
+    route?.params?.signupInfo?.nearCity,
+  );
+
+  const [currentLocation, setCurrentLocation] = useState(
+    route?.params?.signupInfo?.location,
+  );
   const [noData, setNoData] = useState(false);
-  const [searchText, setSearchText] = useState(authContext?.entity?.obj?.city);
+  // const [searchText, setSearchText] = useState(authContext?.entity?.obj?.city);
+  const [searchText, setSearchText] = useState('');
+
   const [loading, setLoading] = useState(false);
   const routes = useNavigationState((state) => state);
-
+  console.log('route?.signupInfo?', route?.params?.signupInfo);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            const routeObj = routes?.routes?.[routes?.index] ?? {};
-            const routeName =
-              routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
-            if (routeName === 'ChooseGenderScreen') {
-              navigation.pop(1);
-            } else {
-              navigation.navigate('ChooseGenderScreen');
-            }
+            navigation.pop();
           }}>
           <Image
             source={images.backArrow}
             style={{
               height: 20,
               width: 15,
-              marginLeft: 15,
+              marginLeft: 20,
               tintColor: colors.whiteColor,
             }}
           />
@@ -79,16 +87,21 @@ export default function ChooseLocationScreen({navigation}) {
       ),
     });
   }, [navigation]);
+
   useEffect(() => {
+    console.log('searchText', searchText);
+
+    // getNearestCity();
     getLocationData(searchText);
   }, [searchText]);
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      requestPermission();
-    } else {
-      getLocation();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (Platform.OS === 'android') {
+  //     requestPermission();
+  //   } else {
+  //     console.log('111');
+  //     getLocation();
+  //   }
+  // }, []);
 
   useEffect(() => {
     console.log('Settings useEffect clled:=>');
@@ -126,9 +139,14 @@ export default function ChooseLocationScreen({navigation}) {
   };
 
   const getLocation = () => {
+    Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
         console.log('Lat/long to position::=>', position);
+        console.log('222');
+        console.log('position.coords.latitude', position.coords.latitude);
+        console.log('position.coords.longitude', position.coords.longitude);
+
         // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
         getLocationNameWithLatLong(
           position.coords.latitude,
@@ -149,11 +167,14 @@ export default function ChooseLocationScreen({navigation}) {
               country = e.long_name;
             }
           });
+          console.log('333');
           setCurrentLocation({stateAbbr, city, country});
         });
+        console.log('444');
         console.log(position.coords.latitude);
       },
       (error) => {
+        console.log('555');
         // See error code charts below.
         console.log(error.code, error.message);
       },
@@ -175,6 +196,8 @@ export default function ChooseLocationScreen({navigation}) {
           }, 10);
         });
     } else {
+      console.log('Response ---9999');
+
       setNoData(true);
       setCityData([]);
     }
@@ -188,14 +211,16 @@ export default function ChooseLocationScreen({navigation}) {
       state_abbr: currentLocation.stateAbbr,
       country: currentLocation.country,
     };
-    updateProfile(userData, () => {
-      navigation.navigate('ChooseSportsScreen', {
-        city: currentLocation?.city,
-        state: currentLocation?.stateAbbr,
-        country: currentLocation?.country,
-      });
-    });
+    // updateProfile(userData, () => {
+    //   navigation.navigate('ChooseSportsScreen', {
+    //     city: currentLocation?.city,
+    //     state: currentLocation?.stateAbbr,
+    //     country: currentLocation?.country,
+    //   });
+    // });
+    navigateToChooseSportScreen(userData);
   };
+  /*
   const updateProfile = async (params, callback) => {
     setLoading(true);
     updateUserProfile(params, authContext)
@@ -214,6 +239,19 @@ export default function ChooseLocationScreen({navigation}) {
       })
       .catch(() => setLoading(false));
   };
+*/
+  const navigateToChooseSportScreen = (params) => {
+    setLoading(false);
+    console.log('genderInfo', route?.params?.signupInfo);
+    navigation.navigate('ChooseSportsScreen', {
+      locationInfo: {
+        ...route?.params?.signupInfo,
+        city: params.city,
+        state: params.state_abbr,
+        country: params.country,
+      },
+    });
+  };
 
   const getTeamsData = async (item) => {
     console.log('item location data:=>', item);
@@ -223,14 +261,17 @@ export default function ChooseLocationScreen({navigation}) {
       state_abbr: item?.terms?.[1]?.value,
       country: item?.terms?.[2]?.value,
     };
-    updateProfile(userData, () => {
-      setLoading(false);
-      navigation.navigate('ChooseSportsScreen', {
-        city: item?.terms?.[0]?.value,
-        state: item?.terms?.[1]?.value,
-        country: item?.terms?.[2]?.value,
-      });
-    });
+    // updateProfile(userData, () => {
+    //   setLoading(false);
+    //   navigation.navigate('ChooseSportsScreen', {
+    //     city: item?.terms?.[0]?.value,
+    //     state: item?.terms?.[1]?.value,
+    //     country: item?.terms?.[2]?.value,
+    //   });
+
+    // });
+
+    navigateToChooseSportScreen(userData);
   };
 
   const renderItem = ({item, index}) => (
@@ -242,7 +283,19 @@ export default function ChooseLocationScreen({navigation}) {
       <Separator />
     </TouchableWithoutFeedback>
   );
+  const renderItemNearCity = ({item, index}) => {
+    console.log('Near city1111 ==>', nearByCity);
 
+    return (
+      <TouchableWithoutFeedback
+        style={styles.listItem}
+        onPress={() => getTeamsData(item)}>
+        <Text style={styles.cityList}>{item.description}</Text>
+
+        <Separator />
+      </TouchableWithoutFeedback>
+    );
+  };
   const removeExtendedSpecialCharacters = (str) =>
     str.replace(/[^\x20-\x7E]/g, '');
   return (
@@ -256,6 +309,9 @@ export default function ChooseLocationScreen({navigation}) {
         source={images.loginBg}
       />
       <Text style={styles.LocationText}>{strings.locationText}</Text>
+      <Text style={styles.LocationDescription}>
+        {strings.locationDescription}
+      </Text>
 
       <View style={styles.sectionStyle}>
         <Image source={images.searchLocation} style={styles.searchImg} />
@@ -273,31 +329,39 @@ export default function ChooseLocationScreen({navigation}) {
           }
         />
       </View>
-      {noData && (
+      {noData && searchText?.length > 0 && (
         <Text style={styles.noDataText}>
           Please, enter at least 3 characters to see cities.
         </Text>
       )}
-      {currentLocation && (
-        <TouchableWithoutFeedback
-          style={styles.listItem}
-          onPress={() => getTeamsDataByCurrentLocation()}>
-          <View>
-            <Text style={[styles.cityList, {marginBottom: 3}]}>
-              {currentLocation.city}, {currentLocation.stateAbbr},{' '}
-              {currentLocation.country}
-            </Text>
-            <Text style={styles.curruentLocationText}>Current Location</Text>
-          </View>
-
-          <Separator />
-        </TouchableWithoutFeedback>
+      {noData && searchText?.length === 0 && nearByCity.length > 0 && (
+        <View style={{flex: 1}}>
+          <TouchableWithoutFeedback
+            style={styles.listItem}
+            onPress={() => getTeamsDataByCurrentLocation()}>
+            <View>
+              <Text style={[styles.cityList, {marginBottom: 3}]}>
+                {currentLocation.city}, {currentLocation.stateAbbr},{' '}
+                {currentLocation.country}
+              </Text>
+              <Text style={styles.curruentLocationText}>Current Location</Text>
+            </View>
+            <Separator />
+          </TouchableWithoutFeedback>
+          <FlatList
+            data={nearByCity}
+            renderItem={renderItemNearCity}
+            keyExtractor={(index) => index.toString()}
+          />
+        </View>
       )}
-      <FlatList
-        data={cityData}
-        renderItem={renderItem}
-        keyExtractor={(index) => index.toString()}
-      />
+      {cityData.length > 0 && (
+        <FlatList
+          data={cityData}
+          renderItem={renderItem}
+          keyExtractor={(index) => index.toString()}
+        />
+      )}
     </LinearGradient>
   );
 }
@@ -311,6 +375,15 @@ const styles = StyleSheet.create({
     paddingLeft: 30,
     textAlign: 'left',
   },
+  LocationDescription: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RMedium,
+    fontSize: wp('4%'),
+    marginTop: hp('1%'),
+    paddingLeft: 30,
+    paddingRight: 30,
+    textAlign: 'left',
+  },
   background: {
     height: hp('100%'),
     position: 'absolute',
@@ -320,7 +393,7 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontSize: wp('4%'),
     textAlign: 'left',
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
 
     // paddingLeft: wp('1%'),
     width: wp('70%'),

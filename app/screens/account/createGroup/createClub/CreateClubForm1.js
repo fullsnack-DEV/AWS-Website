@@ -140,9 +140,9 @@ export default function CreateClubForm1({navigation, route}) {
     const newArray = selectedSports.map((obj) => {
       delete obj.isChecked;
       delete obj.entity_type;
-      return obj
+      return obj;
     });
-    console.log('new sports:=>',newArray);
+    console.log('new sports:=>', newArray);
     const obj = {
       sports: newArray, // Object of sport
       sports_string: sportsName,
@@ -221,15 +221,14 @@ export default function CreateClubForm1({navigation, route}) {
 
       <Modal
         isVisible={visibleSportsModal}
-        backdropColor="black"
         onBackdropPress={() => setVisibleSportsModal(false)}
         onRequestClose={() => setVisibleSportsModal(false)}
-        backdropOpacity={0}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         style={{
-          marginLeft: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          marginRight: 0,
-          marginBottom: 0,
+          margin: 0,
         }}>
         <View
           style={{
@@ -255,7 +254,7 @@ export default function CreateClubForm1({navigation, route}) {
               alignItems: 'center',
             }}>
             <TouchableOpacity
-             hitSlop={getHitSlop(15)}
+              hitSlop={getHitSlop(15)}
               style={styles.closeButton}
               onPress={() => setVisibleSportsModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />

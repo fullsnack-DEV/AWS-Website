@@ -200,7 +200,39 @@ export default function WelcomeScreen({navigation}) {
         await wholeSignUpProcessComplete(response, dummyAuthContext);
       });
   };
+  const navigateToAddBirthdayScreen = async (userDetail, dummyAuth) => {
+    // const entity = {
+    //   auth: {user_id: user.uid},
+    //   uid: user.uid,
+    //   role: 'user',
+    // };
+    setloading(false);
+    const dummyAuthContext = {...dummyAuth};
+    const authEntity = {...dummyAuthContext?.entity};
+    const token = {...dummyAuthContext?.tokenData};
+    console.log('Token=====>', token);
+    console.log('authEntity=====>', authEntity);
+    console.log('userDetail=====>', userDetail);
 
+    await authContext.setTokenData(token);
+    await authContext.setEntity(authEntity);
+    // navigation.navigate('AddBirthdayScreen', {
+    //   signupInfo: {
+    //     first_name: userDetail?.first_name,
+    //     last_name: userDetail?.last_name,
+    //     email: userDetail?.email,
+    //   },
+    // });
+
+    navigation.navigate('AddNameScreen', {
+      signupInfo: {
+        first_name: userDetail?.first_name,
+        last_name: userDetail?.last_name,
+        emailAddress: userDetail?.email,
+        uploadedProfilePic: userDetail?.uploadedProfilePic,
+      },
+    });
+  };
   const signUpToTownsCup = async (userDetail, dummyAuth) => {
     const dummyAuthContext = {...dummyAuth};
     setloading(true);
@@ -294,7 +326,18 @@ export default function WelcomeScreen({navigation}) {
                             user: response.payload,
                           },
                         };
-                        QBInitialLogin(dummyAuthContext, response?.payload);
+                        // QBInitialLogin(dummyAuthContext, response?.payload);
+                        // AV
+
+                        console.log('Already register user details', user);
+                        console.log(
+                          'Already register extraData details',
+                          extraData,
+                        );
+                        setloading(false);
+                        setTimeout(() => {
+                          Alert.alert(strings.alreadyRegisteredMessage);
+                        }, 100);
                       })
                       .catch((error) => {
                         console.log('Login Error', error);
@@ -306,6 +349,8 @@ export default function WelcomeScreen({navigation}) {
                       uid: user.uid,
                       role: 'user',
                     };
+                    console.log('extraData:=>', extraData);
+
                     const flName = user?.displayName?.split(' ');
                     const userDetail = {...extraData};
                     if (flName?.length >= 2) {
@@ -324,9 +369,18 @@ export default function WelcomeScreen({navigation}) {
                       userDetail.last_name = 'Cup';
                     }
                     userDetail.email = user.email;
-
+                    if (user.photoURL.length > 0) {
+                      const uploadedProfilePic = {
+                        full_image: user.photoURL,
+                        thumbnail: user.photoURL,
+                      };
+                      userDetail.uploadedProfilePic = uploadedProfilePic;
+                    }
+                    console.log('Image==>', user.photoURL);
                     console.log('Prepared userDetail:=>', userDetail);
-                    signUpToTownsCup(userDetail, dummyAuthContext);
+
+                    // signUpToTownsCup(userDetail, dummyAuthContext);
+                    navigateToAddBirthdayScreen(userDetail, dummyAuthContext);
                   }
                 })
                 .catch((error) => {
@@ -401,6 +455,7 @@ export default function WelcomeScreen({navigation}) {
       const result = await LoginManager.logInWithPermissions([
         'public_profile',
         'email',
+        'user_birthday',
       ]);
       console.log('facebook login result', result);
       if (result.isCancelled) {
@@ -554,7 +609,7 @@ export default function WelcomeScreen({navigation}) {
       }
     } catch (e) {
       setloading(false);
-      Alert.alert('Your sign up couldn\'t be completed.');
+      Alert.alert('Your sign up could not be completed.');
     }
   };
 
@@ -709,6 +764,7 @@ export default function WelcomeScreen({navigation}) {
             style={styles.alreadyView}>
             <Text style={styles.alreadyMemberText}>
               {strings.alreadyMember}
+              <Text> </Text>
               <Text
                 style={{
                   textDecorationLine: 'underline',

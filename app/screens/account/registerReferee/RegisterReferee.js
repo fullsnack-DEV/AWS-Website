@@ -162,9 +162,9 @@ export default function RegisterReferee({navigation}) {
     const isValid = checkValidation();
     if (isValid) {
       const bodyParams = {
-        sport : sportsSelection.sport,
-        descriptions :description,
-        is_active : true,
+        sport: sportsSelection.sport,
+        descriptions: description,
+        is_active: true,
       };
       const languageData = [];
       if (selectedLanguages?.length) {
@@ -174,7 +174,7 @@ export default function RegisterReferee({navigation}) {
       }
       bodyParams.language = languageData;
       // bodyParams.certificates = certificate;
-    
+
       console.log('Body::=>', bodyParams);
 
       navigation.navigate('RegisterRefereeForm2', {
@@ -245,16 +245,18 @@ export default function RegisterReferee({navigation}) {
 
       <Modal
         isVisible={isModalVisible}
-        backdropColor="black"
         onBackdropPress={() => setModalVisible(false)}
         onRequestClose={() => setModalVisible(false)}
-        backdropOpacity={0}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         style={{
           marginLeft: 0,
           backgroundColor: 'rgba(0,0,0,0.5)',
           marginRight: 0,
           marginBottom: 0,
-          marginTop:0
+          marginTop: 0,
         }}>
         <View
           style={{
@@ -329,19 +331,14 @@ export default function RegisterReferee({navigation}) {
 
       <Modal
         isVisible={visibleSportsModal}
+        onBackdropPress={() => setVisibleSportsModal(false)}
+        onRequestClose={() => setVisibleSportsModal(false)}
         animationInTiming={300}
         animationOutTiming={800}
         backdropTransitionInTiming={300}
         backdropTransitionOutTiming={800}
-        onBackdropPress={() => setVisibleSportsModal(false)}
-        onRequestClose={() => setVisibleSportsModal(false)}
-        backdropOpacity={0}
         style={{
-          marginLeft: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          marginRight: 0,
-          marginBottom: 0,
-          marginTop:0
+          margin: 0,
         }}>
         <View
           style={{

@@ -58,7 +58,6 @@ const strings = {
   terminateAccount: 'TERMINATE ACCOUNT',
   pauseTeam: 'PAUSE TEAM',
 
-
   acceptTitle: 'ACCEPT',
   declineTitle: 'DECLINE',
   cancelRequestTitle: 'CANCEL REQUEST',
@@ -133,6 +132,8 @@ const strings = {
   leagueTeamTitle: 'UEFA Champions League',
 
   locationText: 'Choose your city.',
+  locationDescription:
+    'Home city is the city where you currently reside or you mostly play sports.',
   locationPlaceholderText: 'Search by city or postal code',
   sportText: 'Select your favourite sports.',
 
@@ -336,7 +337,7 @@ const strings = {
   createTitleValue: 'Welcome Season Party',
   titleValue: 'Games with Vancouver Whitecaps',
   about: 'About',
-  description:'DESCRIPTION',
+  description: 'DESCRIPTION',
   aboutPlaceholder: 'Describe about event.',
   createAboutValue:
     'I love playing soccer, Association football, commonly known as football or soccer, [a] is a sport played between seven teams of eleven with a spherical ball.',
@@ -696,20 +697,14 @@ const strings = {
   searchTitle: 'Search by city, state or country',
   challengeeSecureText: 'The challengee secures the match place',
   challengerSecureText: 'The challenger secures the match place',
-  recentMatchPlaceholderText:
-    'NO RECENT MATCHES',
-  upcomingMatchPlaceholderText:
-    'NO UPCOMING MATCHES',
+  recentMatchPlaceholderText: 'NO RECENT MATCHES',
+  upcomingMatchPlaceholderText: 'NO UPCOMING MATCHES',
   challengerPlaceholderText:
     'There is no challenge.\nWould you like to start your challenge?',
-  hiringPlayersPlaceholderText:
-    'NO GROUPS',
-  lookingTeamsPlaceholderText:
-    'NO PLAYERS',
-  refereesPlaceholderText:
-    'NO REFEREES',
-  scorekeepersPlaceholderText:
-    'NO SCOREKEEPERS',
+  hiringPlayersPlaceholderText: 'NO GROUPS',
+  lookingTeamsPlaceholderText: 'NO PLAYERS',
+  refereesPlaceholderText: 'NO REFEREES',
+  scorekeepersPlaceholderText: 'NO SCOREKEEPERS',
   taggedPeopleText: 'Tagged People',
   taggedMatchesText: 'Tagged matches',
 
@@ -848,11 +843,15 @@ const strings = {
   sportActivity: 'Sports Activities',
   refereeRegisteredSuccess: 'Registered as a referee.',
   scorekeeperRegisteredSuccess: 'Registered as a scorekeeper.',
-  terminationAlert: 'The email and password you entered don\'t match.',
+  terminationAlert: "The email and password you entered don't match.",
   organizerTitle: 'ORGANIZER',
   whoCanJoin: 'WHO CAN JOIN',
-  whoCanSee: 'WHO CAN SEE'
+  whoCanSee: 'WHO CAN SEE',
 
   // Signup & login text
+  next: 'Next',
+  signUp: 'Sign Up',
+  addYourName: 'Add your name.',
+  signupwithemail: 'Sign up with email',
 };
 export default strings;

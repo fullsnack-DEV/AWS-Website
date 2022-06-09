@@ -33,7 +33,7 @@ import bodybuilder from 'bodybuilder';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {func} from 'prop-types';
 import Geolocation from '@react-native-community/geolocation';
-import TCSearchBox from '../components/TCSearchBox';
+import {ColorSpace} from 'react-native-reanimated';
 import AuthContext from '../auth/context';
 // import UserListShimmer from '../components/shimmer/commonComponents/UserListShimmer';
 import {widthPercentageToDP} from '../utils';
@@ -54,6 +54,7 @@ import TCRefereeView from '../components/TCRefereeView';
 import TCTeamSearchView from '../components/TCTeamSearchView';
 import TCRecentMatchCard from '../components/TCRecentMatchCard';
 import TCTagsFilter from '../components/TCTagsFilter';
+import TCSearchBox from '../components/TCSearchBox';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 
@@ -61,7 +62,6 @@ import {getLocationNameWithLatLong} from '../api/External';
 import DateTimePickerView from '../components/Schedule/DateTimePickerModal';
 
 import TCPicker from '../components/TCPicker';
-import {getSportsList} from '../api/Games';
 
 let stopFetchMore = true;
 
@@ -1232,6 +1232,7 @@ export default function EntitySearchScreen({navigation, route}) {
     }
   };
   const onPressReset = () => {
+    console.log('dhdshjshs');
     switch (currentSubTab) {
       case 'General':
       case 'Players':
@@ -1306,6 +1307,7 @@ export default function EntitySearchScreen({navigation, route}) {
         setMaxFee(0);
         break;
       default:
+        console.log('ddddd');
         break;
     }
   };
@@ -1805,16 +1807,25 @@ export default function EntitySearchScreen({navigation, route}) {
         ListEmptyComponent={listEmptyComponent}
       />
       <Modal
+        // onBackdropPress={() => setSettingPopup(false)}
+        // backdropOpacity={1}
+        // animationType="slide"
+        // hasBackdrop
+        // style={{
+        //   flex: 1,
+        //   margin: 0,
+        //   backgroundColor: colors.blackOpacityColor,
+        // }}
+        // visible={settingPopup}
         onBackdropPress={() => setSettingPopup(false)}
-        backdropOpacity={1}
-        animationType="slide"
-        hasBackdrop
+        isVisible={settingPopup}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         style={{
-          flex: 1,
           margin: 0,
-          backgroundColor: colors.blackOpacityColor,
-        }}
-        visible={settingPopup}>
+        }}>
         <View
           style={[
             styles.bottomPopupContainer,

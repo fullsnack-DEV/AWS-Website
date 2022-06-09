@@ -1,8 +1,6 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
-import React, {
- useCallback, useState, useEffect, useContext,
- } from 'react';
+import React, {useCallback, useState, useEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -27,17 +25,17 @@ import Modal from 'react-native-modal';
 import Geolocation from '@react-native-community/geolocation';
 import AuthContext from '../../auth/context';
 
-import { getLocationNameWithLatLong } from '../../api/External';
+import {getLocationNameWithLatLong} from '../../api/External';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import { widthPercentageToDP } from '../../utils';
+import {widthPercentageToDP} from '../../utils';
 // import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 
 import strings from '../../Constants/String';
-import { getUserIndex } from '../../api/elasticSearch';
+import {getUserIndex} from '../../api/elasticSearch';
 import TCScorekeeperView from '../../components/TCScorekeeperView';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import TCPicker from '../../components/TCPicker';
@@ -45,7 +43,7 @@ import TCPicker from '../../components/TCPicker';
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
-export default function ScorekeeperListScreen({ navigation, route }) {
+export default function ScorekeeperListScreen({navigation, route}) {
   // const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
@@ -66,12 +64,10 @@ export default function ScorekeeperListScreen({ navigation, route }) {
   const [pageFrom, setPageFrom] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
-  const [selectedSport, setSelectedSport] = useState(
-    {
-      sport: route?.params?.filters.sport,
-      sport_type: route?.params?.filters.sport_type,
-    },
-  );
+  const [selectedSport, setSelectedSport] = useState({
+    sport: route?.params?.filters.sport,
+    sport_type: route?.params?.filters.sport_type,
+  });
   const [location, setLocation] = useState(route?.params?.filters.location);
 
   // console.log('Scorekeeper Filter:=>', filters);
@@ -90,10 +86,12 @@ export default function ScorekeeperListScreen({ navigation, route }) {
     }
   }, [route?.params?.locationText]);
   useEffect(() => {
-    const list = [{
-      label: 'All',
+    const list = [
+      {
+        label: 'All',
         value: 'All',
-    }];
+      },
+    ];
     authContext.sports.map((obj) => {
       const dataSource = {
         label: Utility.getSportName(obj, authContext),
@@ -112,7 +110,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
         from: pageFrom,
         query: {
           bool: {
-            must: [{ term: { 'scorekeeper_data.is_published': true } }],
+            must: [{term: {'scorekeeper_data.is_published': true}}],
           },
         },
       };
@@ -129,7 +127,6 @@ export default function ScorekeeperListScreen({ navigation, route }) {
           term: {
             'scorekeeper_data.sport.keyword': {
               value: filerScorekeeper.sport,
-
             },
           },
         });
@@ -140,7 +137,6 @@ export default function ScorekeeperListScreen({ navigation, route }) {
             'scorekeeper_data.setting.game_fee.fee': {
               gte: Number(filerScorekeeper.scorekeeperFee.split('-')[0]),
               lte: Number(filerScorekeeper.scorekeeperFee.split('-')[1]),
-             
             },
           },
         });
@@ -180,8 +176,8 @@ export default function ScorekeeperListScreen({ navigation, route }) {
   }, []);
 
   const renderRefereesScorekeeperListView = useCallback(
-    ({ item }) => (
-      <View style={[styles.separator, { flex: 1 }]}>
+    ({item}) => (
+      <View style={[styles.separator, {flex: 1}]}>
         <TCScorekeeperView
           data={item}
           showStar={true}
@@ -230,7 +226,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
     }
     setLoadMore(false);
   };
-  const handleTagPress = ({ item }) => {
+  const handleTagPress = ({item}) => {
     const tempFilter = filters;
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
@@ -255,7 +251,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
       }
     });
     console.log('Temp filter', tempFilter);
-    setFilters({ ...tempFilter });
+    setFilters({...tempFilter});
     // applyFilter();
     setTimeout(() => {
       setPageFrom(0);
@@ -300,7 +296,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
         // See error code charts below.
         console.log(error.code, error.message);
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };
 
@@ -324,7 +320,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
     return true;
   }, [maxFee, minFee]);
   const listEmptyComponent = () => (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text
         style={{
           fontFamily: fonts.RRegular,
@@ -341,16 +337,16 @@ export default function ScorekeeperListScreen({ navigation, route }) {
       location: 'world',
       sport: 'All',
       sport_type: 'All',
-    })
+    });
     setSelectedSport({
       sort: 'All',
       sport_type: 'All',
     });
-    setMinFee(0)
-    setMaxFee(0)
-   };
+    setMinFee(0);
+    setMaxFee(0);
+  };
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
@@ -358,7 +354,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
             style={styles.searchTxt}
             autoCorrect={false}
             onChangeText={(text) => {
-              const tempFilter = { ...filters };
+              const tempFilter = {...filters};
 
               if (text?.length > 0) {
                 tempFilter.searchText = text;
@@ -380,8 +376,8 @@ export default function ScorekeeperListScreen({ navigation, route }) {
         </View>
       </View>
       <TCTagsFilter
-      filter={filters}
-      authContext={authContext}
+        filter={filters}
+        authContext={authContext}
         dataSource={Utility.getFiltersOpetions(filters)}
         onTagCancelPress={handleTagPress}
       />
@@ -393,7 +389,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
         keyExtractor={keyExtractor}
         renderItem={renderRefereesScorekeeperListView}
         style={styles.listStyle}
-       // contentContainerStyle={{ paddingBottom: 1 }}
+        // contentContainerStyle={{ paddingBottom: 1 }}
         onScroll={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
@@ -403,25 +399,24 @@ export default function ScorekeeperListScreen({ navigation, route }) {
       />
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
-        backdropOpacity={1}
-        animationType="slide"
-        hasBackdrop
         style={{
-          flex: 1,
           margin: 0,
-          backgroundColor: colors.blackOpacityColor,
         }}
-        visible={settingPopup}>
+        isVisible={settingPopup}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}>
         <View
           style={[
             styles.bottomPopupContainer,
-            { height: Dimensions.get('window').height - 100 },
+            {height: Dimensions.get('window').height - 100},
           ]}>
           <KeyboardAvoidingView
-            style={{ flex: 1 }}
+            style={{flex: 1}}
             keyboardVerticalOffset={keyboardVerticalOffset}
             behavior={Platform.OS === 'ios' ? 'padding' : null}>
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
                   onPress={() => setSettingPopup(false)}
@@ -435,7 +430,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
                     if (applyValidation()) {
                       setSettingPopup(false);
                       setTimeout(() => {
-                        const tempFilter = { ...filters };
+                        const tempFilter = {...filters};
                         tempFilter.sport = selectedSport.sport;
                         tempFilter.sport_type = selectedSport.sport_type;
 
@@ -459,11 +454,11 @@ export default function ScorekeeperListScreen({ navigation, route }) {
               </View>
               <TCThinDivider width={'100%'} marginBottom={15} />
               <View>
-                <View style={{ flexDirection: 'column', margin: 15 }}>
+                <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
                     <Text style={styles.filterTitle}>Location</Text>
                   </View>
-                  <View style={{ marginTop: 10, marginLeft: 10 }}>
+                  <View style={{marginTop: 10, marginLeft: 10}}>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -503,8 +498,8 @@ export default function ScorekeeperListScreen({ navigation, route }) {
                           setLocation(
                             authContext?.entity?.obj?.city
                               .charAt(0)
-                              .toUpperCase()
-                              + authContext?.entity?.obj?.city.slice(1),
+                              .toUpperCase() +
+                              authContext?.entity?.obj?.city.slice(1),
                           );
                           // setFilters({
                           //   ...filters,
@@ -600,7 +595,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
                     <View style={{}}>
                       <Text style={styles.filterTitle}>Sport</Text>
                     </View>
-                    <View style={{ marginTop: 10 }}>
+                    <View style={{marginTop: 10}}>
                       <TCPicker
                         dataSource={sports}
                         placeholder={'Select Sport'}
@@ -609,11 +604,13 @@ export default function ScorekeeperListScreen({ navigation, route }) {
                             setSelectedSport({
                               sport: 'All',
                               sport_type: 'All',
-                            })
+                            });
                             setMinFee(0);
                             setMaxFee(0);
                           } else {
-                            setSelectedSport(Utility.getSportObjectByName(value, authContext))
+                            setSelectedSport(
+                              Utility.getSportObjectByName(value, authContext),
+                            );
                           }
                         }}
                         value={Utility.getSportName(selectedSport, authContext)}
@@ -771,7 +768,7 @@ export default function ScorekeeperListScreen({ navigation, route }) {
                   <View style={{}}>
                     <Text style={styles.filterTitle}>Scorekeeper fee</Text>
                   </View>
-                  <View style={{ marginTop: 10 }}>
+                  <View style={{marginTop: 10}}>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -801,29 +798,30 @@ export default function ScorekeeperListScreen({ navigation, route }) {
                   </View>
                 </View>
               )}
-              <View style={{ flex: 1 }} />
+              <View style={{flex: 1}} />
             </ScrollView>
           </KeyboardAvoidingView>
 
-          <TouchableOpacity style={styles.resetButton} onPress={() => {
-            Alert.alert(
-              'Are you sure want to reset filters?',
-              '',
-              [
-
-                {
-                  text: 'Cancel',
-                  onPress: () => console.log('Cancel Pressed'),
-                  style: 'cancel',
-                },
-                {
-                  text: 'OK',
-                  onPress: () => onPressReset(),
-                },
-              ],
-              { cancelable: false },
-            );
-          }}>
+          <TouchableOpacity
+            style={styles.resetButton}
+            onPress={() => {
+              Alert.alert(
+                'Are you sure want to reset filters?',
+                '',
+                [
+                  {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'OK',
+                    onPress: () => onPressReset(),
+                  },
+                ],
+                {cancelable: false},
+              );
+            }}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>
@@ -858,7 +856,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('92%'),
     borderRadius: 20,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -915,7 +913,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },
@@ -984,7 +982,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
     flexDirection: 'row',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1006,7 +1004,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     width: widthPercentageToDP('75%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -1020,7 +1018,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     width: widthPercentageToDP('45%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,

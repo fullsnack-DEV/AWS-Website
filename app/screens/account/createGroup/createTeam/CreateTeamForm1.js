@@ -184,10 +184,7 @@ export default function CreateTeamForm1({navigation, route}) {
     }
   };
 
-
-
-// we can't add duplicate team name in same city with same sport 
-
+  // we can't add duplicate team name in same city with same sport
 
   // const nextOnPress = () => {
   //   const query = {
@@ -218,7 +215,7 @@ export default function CreateTeamForm1({navigation, route}) {
   //   };
 
   //   getGroupIndex(query).then((teams) => {
-      
+
   //     if (teams.length === 0) {
   //       const obj = {
   //         sport: sportsSelection.sport,
@@ -321,13 +318,14 @@ export default function CreateTeamForm1({navigation, route}) {
       </SafeAreaView>
       <Modal
         isVisible={visibleSportsModal}
-        backdropColor="black"
         onBackdropPress={() => setVisibleSportsModal(false)}
         onRequestClose={() => setVisibleSportsModal(false)}
-        backdropOpacity={0}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
         }}>
         <View
           style={{

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState, useRef} from 'react';
+import React, {useContext, useEffect, useState, useLayoutEffect} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -6,19 +6,16 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  SafeAreaView,
+  Image,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-
-import QB from 'quickblox-react-native-sdk';
 
 import firebase from '@react-native-firebase/app';
-import ActionSheet from 'react-native-actionsheet';
 
-import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
 import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
@@ -31,33 +28,23 @@ import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context';
 import apiCall from '../../utils/apiCall';
-import {checkTownscupEmail, createUser} from '../../api/Users';
+import {checkTownscupEmail} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
-
-import {
-  QBconnectAndSubscribe,
-  QBcreateUser,
-  QBlogin,
-  QB_ACCOUNT_TYPE,
-} from '../../utils/QuickBlox';
 
 export default function SignupScreen({navigation}) {
   const authContext = useContext(AuthContext);
   const dummyAuthContext = {...authContext};
-  const [fName, setFName] = useState('Kishan');
-  const [lName, setLName] = useState('Makani');
+  const [fName] = useState('Kishan');
+  const [lName] = useState('Makani');
   const [email, setEmail] = useState('makani20@gmail.com');
   const [password, setPassword] = useState('123456');
   const [cPassword, setCPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(false);
   const [hideConfirmPassword, setHideConfirmPassword] = useState(false);
-  const [profilePic, setProfilePic] = useState(null);
-  const actionSheetWithDelete = useRef();
-  const actionSheet = useRef();
+  const [profilePic] = useState(null);
 
   // For activity indigator
   const [loading, setloading] = useState(false);
@@ -124,7 +111,41 @@ export default function SignupScreen({navigation}) {
   };
 
   useEffect(() => {}, []);
-
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.pop();
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 20,
+              tintColor: colors.whiteColor,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <Text
+          style={styles.nextButtonStyle}
+          onPress={() => {
+            if (validate()) {
+              if (authContext.networkConnected) {
+                signupUser();
+              } else {
+                authContext.showNetworkAlert();
+              }
+            }
+          }}>
+          {strings.signUp}
+        </Text>
+      ),
+    });
+  });
   const checkUserIsRegistratedOrNotWithTownscup = () =>
     new Promise((resolve) => {
       checkTownscupEmail(encodeURIComponent(email))
@@ -154,64 +175,7 @@ export default function SignupScreen({navigation}) {
         });
     });
 
-  const wholeSignUpProcessComplete = async (userData) => {
-    const entity = dummyAuthContext?.entity;
-    const tokenData = dummyAuthContext?.tokenData;
-    entity.auth.user = {...userData};
-    entity.obj = {...userData};
-    entity.uid = userData?.user_id;
-    await Utility.setStorage('loggedInEntity', {...entity});
-    await Utility.setStorage('authContextEntity', {...entity});
-    await Utility.setStorage('authContextUser', {...userData});
-    await authContext.setTokenData(tokenData);
-    await authContext.setUser({...userData});
-    await authContext.setEntity({...entity});
-    setloading(false);
-    navigation.navigate('EmailVerificationScreen', {
-      emailAddress: email,
-      password,
-      first_name: fName,
-    });
-  };
-
-  const signUpWithQB = async (response) => {
-    console.log('QB signUpWithQB : ', response);
-
-    let qbEntity = {...dummyAuthContext.entity};
-    console.log('QB qbEntity : ', qbEntity);
-
-    const setting = await Utility.getStorage('appSetting');
-    console.log('App QB Setting:=>', setting);
-
-    authContext.setQBCredential(setting);
-    QB.settings.enableAutoReconnect({enable: true});
-    QBlogin(qbEntity.uid, response)
-      .then(async (res) => {
-        qbEntity = {
-          ...qbEntity,
-          QB: {...res.user, connected: true, token: res?.session?.token},
-        };
-        QBconnectAndSubscribe(qbEntity);
-        setDummyAuthContext('entity', qbEntity);
-        await wholeSignUpProcessComplete(response);
-      })
-      .catch(async (error) => {
-        console.log('QB Login Error : ', error.message);
-        qbEntity = {...qbEntity, QB: {connected: false}};
-        setDummyAuthContext('entity', qbEntity);
-        QBcreateUser(qbEntity.uid, response, QB_ACCOUNT_TYPE.USER)
-          .then(() => {
-            QBlogin(qbEntity.uid).then((loginRes) => {
-              console.log('QB loginRes', loginRes);
-            });
-          })
-          .catch((e) => {
-            console.log('QB error', e);
-          });
-        await wholeSignUpProcessComplete(response);
-      });
-  };
-
+  /*
   const signUpToTownsCup = async (uploadedProfilePic) => {
     setloading(true);
     const data = {
@@ -240,6 +204,7 @@ export default function SignupScreen({navigation}) {
         }, 10);
       });
   };
+  */
 
   const setDummyAuthContext = (key, value) => {
     dummyAuthContext[key] = value;
@@ -265,7 +230,11 @@ export default function SignupScreen({navigation}) {
             uid: user.uid,
             role: 'user',
           };
+          console.log('Signup token=========>', token);
           setDummyAuthContext('tokenData', token);
+          await authContext.setTokenData(token);
+          await authContext.setEntity(entity);
+
           if (profilePic) {
             const apiResponse = await apiCall(uploadImageConfig);
             const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
@@ -281,24 +250,37 @@ export default function SignupScreen({navigation}) {
                 type: profilePic?.path.split('.')[1] || 'jpeg',
               }),
             ])
-              .then(async ([fullImage, thumbnail]) => {
+              .then(async () => {
                 setDummyAuthContext('entity', entity);
-                const uploadedProfilePic = {full_image: fullImage, thumbnail};
-                await signUpToTownsCup(uploadedProfilePic);
+                navigateToEmailVarificationScreen();
+                console.log('1111');
               })
               .catch(async () => {
                 setDummyAuthContext('entity', entity);
-                await signUpToTownsCup();
+                console.log('2222');
+                // await signUpToTownsCup();
+                navigateToEmailVarificationScreen();
               });
           } else {
             setDummyAuthContext('entity', entity);
-            await signUpToTownsCup();
+            console.log('33333');
+            // await signUpToTownsCup();
+            navigateToEmailVarificationScreen();
           }
         })
         .catch(() => setloading(false));
     }
   };
 
+  const navigateToEmailVarificationScreen = () => {
+    setloading(false);
+    navigation.navigate('EmailVerificationScreen', {
+      signupInfo: {
+        emailAddress: email,
+        password,
+      },
+    });
+  };
   const signUpWithFirebase = () => {
     firebase
       .auth()
@@ -309,9 +291,11 @@ export default function SignupScreen({navigation}) {
           .onAuthStateChanged((user) => {
             if (user) {
               user.sendEmailVerification();
+
               saveUserDetails(user);
             }
           });
+
         signUpOnAuthChanged();
       })
       .catch((e) => {
@@ -356,6 +340,7 @@ export default function SignupScreen({navigation}) {
   const signupUser = () => {
     setloading(true);
     checkUserIsRegistratedOrNotWithTownscup().then((userExist) => {
+      console.log('hhhhhhh', userExist);
       if (userExist) {
         setloading(false);
         setTimeout(() => {
@@ -396,91 +381,9 @@ export default function SignupScreen({navigation}) {
     setHideConfirmPassword(!hideConfirmPassword);
   };
 
-  const openImagePicker = (width = 400, height = 400) => {
-    const cropCircle = true;
-    ImagePicker.openPicker({
-      width,
-      height,
-      cropping: true,
-      cropperCircleOverlay: cropCircle,
-    }).then((pickImages) => {
-      setProfilePic(pickImages);
-    });
-  };
-
-  const deleteImage = () => {
-    setProfilePic('');
-  };
-
-  const openCamera = (width = 400, height = 400) => {
-    check(PERMISSIONS.IOS.CAMERA)
-      .then((result) => {
-        switch (result) {
-          case RESULTS.UNAVAILABLE:
-            Alert.alert(
-              'This feature is not available (on this device / in this context)',
-            );
-            break;
-          case RESULTS.DENIED:
-            request(PERMISSIONS.IOS.CAMERA).then(() => {
-              const cropCircle = true;
-              ImagePicker.openCamera({
-                width,
-                height,
-                cropping: true,
-                cropperCircleOverlay: cropCircle,
-              })
-                .then((pickImages) => {
-                  setProfilePic(pickImages);
-                })
-                .catch((e) => {
-                  Alert.alert(e);
-                });
-            });
-            break;
-          case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
-            break;
-          case RESULTS.GRANTED:
-            {
-              const cropCircle = true;
-              ImagePicker.openCamera({
-                width,
-                height,
-                cropping: true,
-                cropperCircleOverlay: cropCircle,
-              })
-                .then((pickImages) => {
-                  setProfilePic(pickImages);
-                })
-                .catch((e) => {
-                  Alert.alert(e);
-                });
-            }
-            break;
-          case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
-            break;
-          default:
-        }
-      })
-      .catch((error) => {
-        Alert.alert(error);
-      });
-  };
-  const onProfileImageClicked = () => {
-    setTimeout(() => {
-      if (profilePic) {
-        actionSheetWithDelete.current.show();
-      } else {
-        actionSheet.current.show();
-      }
-    }, 0.1);
-  };
-
   return (
     <>
-      <ActionSheet
+      {/* <ActionSheet
         ref={actionSheet}
         // title={'News Feed Post'}
         options={[strings.camera, strings.album, strings.cancelTitle]}
@@ -513,7 +416,7 @@ export default function SignupScreen({navigation}) {
             deleteImage();
           }
         }}
-      />
+      /> */}
       <LinearGradient
         colors={[colors.themeColor1, colors.themeColor3]}
         style={styles.mainContainer}>
@@ -523,9 +426,10 @@ export default function SignupScreen({navigation}) {
           style={styles.background}
           source={images.loginBg}
         />
+        <Text style={styles.checkEmailText}>{strings.signupwithemail}</Text>
         <TCKeyboardView>
-          <View style={{marginVertical: 20}}>
-            <TouchableOpacity
+          <View style={{marginVertical: 30}}>
+            {/* <TouchableOpacity
               style={styles.profile}
               onPress={() => {
                 onProfileImageClicked();
@@ -553,9 +457,87 @@ export default function SignupScreen({navigation}) {
                 source={images.certificateUpload}
                 style={styles.cameraIcon}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <TCTextField
+              placeholderTextColor={colors.darkYellowColor}
+              style={styles.textFieldStyle}
+              placeholder={strings.emailPlaceHolder}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              onChangeText={(text) => setEmail(text)}
+              value={email}
+            />
+            <View style={styles.passwordView}>
+              <TextInput
+                style={{...styles.textInput, zIndex: 100}}
+                placeholder={strings.passwordText}
+                onChangeText={(text) => setPassword(text)}
+                value={password}
+                placeholderTextColor={colors.darkYellowColor}
+                secureTextEntry={hidePassword}
+                keyboardType={'default'}
+              />
+              <View>
+                <TouchableOpacity
+                  onPress={() => hideShowPassword()}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginLeft: wp('5%'),
+                    top: 10,
+                  }}>
+                  {hidePassword ? (
+                    <Text style={styles.passwordEyes}>SHOW</Text>
+                  ) : (
+                    <Text style={styles.passwordEyes}>HIDE</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.passwordView}>
+              <TextInput
+                autoCapitalize="none"
+                style={{...styles.textInput, zIndex: 100}}
+                placeholder={strings.confirmPasswordText}
+                onChangeText={setCPassword}
+                value={cPassword}
+                placeholderTextColor={colors.darkYellowColor}
+                secureTextEntry={hideConfirmPassword}
+                keyboardType={'default'}
+              />
+              <TouchableOpacity
+                onPress={() => hideShowConfirmPassword()}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginLeft: wp('5%'),
+                }}>
+                {hideConfirmPassword ? (
+                  <Text style={styles.passwordEyes}>SHOW</Text>
+                ) : (
+                  <Text style={styles.passwordEyes}>HIDE</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+            {/* <TCButton
+              title={strings.signUpCapitalText}
+              extraStyle={{
+                marginTop: hp('2%'),
+              }}
+              onPress={() => {
+                if (validate()) {
+                  if (authContext.networkConnected) {
+                    signupUser();
+                  } else {
+                    authContext.showNetworkAlert();
+                  }
+                }
+              }}
+            /> */}
           </View>
-          <TCTextField
+          {/* <TCTextField
             placeholderTextColor={colors.darkYellowColor}
             style={styles.textFieldStyle}
             placeholder={strings.fnameText}
@@ -578,89 +560,28 @@ export default function SignupScreen({navigation}) {
             //   }
             // }}
             value={lName}
-          />
-          <TCTextField
-            placeholderTextColor={colors.darkYellowColor}
-            style={styles.textFieldStyle}
-            placeholder={strings.emailPlaceHolder}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-          />
-          <View style={styles.passwordView}>
-            <TextInput
-              style={{...styles.textInput, zIndex: 100}}
-              placeholder={strings.passwordText}
-              onChangeText={(text) => setPassword(text)}
-              value={password}
-              placeholderTextColor={colors.darkYellowColor}
-              secureTextEntry={hidePassword}
-              keyboardType={'default'}
-            />
-            <TouchableOpacity
-              onPress={() => hideShowPassword()}
-              style={{alignItems: 'center', justifyContent: 'center'}}>
-              {hidePassword ? (
-                <Text style={styles.passwordEyes}>SHOW</Text>
-              ) : (
-                <Text style={styles.passwordEyes}>HIDE</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.passwordView}>
-            <TextInput
-              autoCapitalize="none"
-              style={{...styles.textInput, zIndex: 100}}
-              placeholder={strings.confirmPasswordText}
-              onChangeText={setCPassword}
-              value={cPassword}
-              placeholderTextColor={colors.darkYellowColor}
-              secureTextEntry={hideConfirmPassword}
-              keyboardType={'default'}
-            />
-            <TouchableOpacity
-              onPress={() => hideShowConfirmPassword()}
-              style={{alignItems: 'center', justifyContent: 'center'}}>
-              {hideConfirmPassword ? (
-                <Text style={styles.passwordEyes}>SHOW</Text>
-              ) : (
-                <Text style={styles.passwordEyes}>HIDE</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-          <TCButton
-            title={strings.signUpCapitalText}
-            extraStyle={{
-              marginTop: hp('2%'),
-            }}
-            onPress={() => {
-              if (validate()) {
-                if (authContext.networkConnected) {
-                  signupUser();
-                } else {
-                  authContext.showNetworkAlert();
-                }
-              }
-            }}
-          />
-          <TouchableOpacity
-            hitSlop={getHitSlop(15)}
-            onPress={() => navigation.navigate('LoginScreen')}
-            style={styles.alreadyView}>
-            <Text style={styles.alreadyMemberText}>
-              {strings.alreadyMember}
-              <Text
-                style={{
-                  textDecorationLine: 'underline',
-                  fontFamily: fonts.RBold,
-                }}>
-                Log In
-              </Text>
-            </Text>
-          </TouchableOpacity>
+          /> */}
         </TCKeyboardView>
+        <SafeAreaView>
+          <View style={{bottom: 16}}>
+            <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              onPress={() => navigation.navigate('LoginScreen')}
+              style={styles.alreadyView}>
+              <Text style={styles.alreadyMemberText}>
+                {strings.alreadyMember}
+                <Text> </Text>
+                <Text
+                  style={{
+                    textDecorationLine: 'underline',
+                    fontFamily: fonts.RBold,
+                  }}>
+                  Log In
+                </Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
       </LinearGradient>
     </>
   );
@@ -695,19 +616,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
-    width: wp('85%'),
-  },
-  profile: {
-    alignContent: 'center',
-    alignSelf: 'center',
-    height: 100,
-    marginTop: 40,
-    marginBottom: 20,
-    width: 100,
-    borderRadius: 50,
-
-    // borderWidth: 1,
-    // borderColor: '#FED378',
+    width: wp('81.3%'),
   },
   textInput: {
     paddingVertical: 0,
@@ -715,29 +624,19 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    width: wp('75%'),
+    width: wp('65%'),
   },
   textFieldStyle: {
     marginVertical: 5,
     alignSelf: 'center',
-    width: wp('85%'),
+    width: wp('81.3%'),
     backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
   },
-  profileCameraButtonStyle: {
-    height: 22,
-    width: 22,
-    marginTop: -40,
-    marginLeft: 60,
-    alignSelf: 'center',
-  },
-  cameraIcon: {
-    height: 22,
-    width: 22,
-  },
+
   alreadyMemberText: {
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
@@ -745,7 +644,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   alreadyView: {
-    marginVertical: 25,
     alignSelf: 'center',
+  },
+  nextButtonStyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    marginRight: 15,
+    color: colors.whiteColor,
+  },
+  checkEmailText: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 25,
+    marginLeft: wp('6.6%'),
+    marginTop: wp('24.6%'),
+    textAlign: 'left',
   },
 });

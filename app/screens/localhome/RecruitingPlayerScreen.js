@@ -1,8 +1,6 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
-import React, {
- useCallback, useState, useEffect, useContext,
- } from 'react';
+import React, {useCallback, useState, useEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -27,25 +25,25 @@ import Geolocation from '@react-native-community/geolocation';
 import FastImage from 'react-native-fast-image';
 import AuthContext from '../../auth/context';
 
-import { getLocationNameWithLatLong } from '../../api/External';
+import {getLocationNameWithLatLong} from '../../api/External';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import { widthPercentageToDP } from '../../utils';
+import {widthPercentageToDP} from '../../utils';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 
 import strings from '../../Constants/String';
-import { getEntityIndex } from '../../api/elasticSearch';
+import {getEntityIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import TCPicker from '../../components/TCPicker';
 import TCRecruitingPlayers from '../../components/TCRecruitingPlayers';
-import { groupsType } from '../../utils/constant';
+import {groupsType} from '../../utils/constant';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
-export default function RecruitingPlayerScreen({ navigation, route }) {
+export default function RecruitingPlayerScreen({navigation, route}) {
   // const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
@@ -62,12 +60,10 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
   const [loadMore, setLoadMore] = useState(false);
   const [groups, setGroups] = useState(groupsType);
 
-  const [selectedSport, setSelectedSport] = useState(
-    {
-      sport: route?.params?.filters.sport,
-      sport_type: route?.params?.filters.sport_type,
-    },
-  );
+  const [selectedSport, setSelectedSport] = useState({
+    sport: route?.params?.filters.sport,
+    sport_type: route?.params?.filters.sport_type,
+  });
   const [location, setLocation] = useState(route?.params?.filters.location);
 
   console.log('Recruiting Player Filter:=>', filters);
@@ -127,7 +123,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
         from: pageFrom,
         query: {
           bool: {
-            must: [{ match: { hiringPlayers: true } }],
+            must: [{match: {hiringPlayers: true}}],
           },
         },
       };
@@ -145,7 +141,6 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
           term: {
             'sport.keyword': {
               value: filerdata.sport,
-
             },
           },
         });
@@ -153,7 +148,6 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
           term: {
             'sport_type.keyword': {
               value: filerdata.sport_type,
-
             },
           },
         });
@@ -163,9 +157,11 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
       const types = [];
       if (filerdata.groupTeam) {
         types.push('team');
-      } if (filerdata.groupClub) {
+      }
+      if (filerdata.groupClub) {
         types.push('club');
-      } if (filerdata.groupLeague) {
+      }
+      if (filerdata.groupLeague) {
         types.push('league');
       }
       if (types.length > 0) {
@@ -212,8 +208,8 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
   }, []);
 
   const renderRecruitingPlayerListView = useCallback(
-    ({ item }) => (
-      <View style={[styles.separator, { flex: 1 }]}>
+    ({item}) => (
+      <View style={[styles.separator, {flex: 1}]}>
         <TCRecruitingPlayers
           data={item}
           entityType={item.entity_type}
@@ -246,7 +242,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
     }
     setLoadMore(false);
   };
-  const handleTagPress = ({ item }) => {
+  const handleTagPress = ({item}) => {
     const tempFilter = filters;
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
@@ -276,17 +272,21 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
       }
     });
 
-    const temp = []
+    const temp = [];
     groups.forEach((x) => {
-      console.log('x.type === item.type', x.type, item.groupClub || item.groupTeam || item.groupLeague);
+      console.log(
+        'x.type === item.type',
+        x.type,
+        item.groupClub || item.groupTeam || item.groupLeague,
+      );
       if (x.type === (item.groupClub || item.groupTeam || item.groupLeague)) {
         const obj = {
           type: x.type,
           isChecked: false,
-        }
-      temp.push(obj)
+        };
+        temp.push(obj);
       } else {
-       temp.push(x)
+        temp.push(x);
       }
     });
     setGroups([...temp]);
@@ -294,7 +294,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
     console.log('Groups::=>', temp);
     // applyFilter();
     setTimeout(() => {
-      setFilters({ ...tempFilter });
+      setFilters({...tempFilter});
 
       setPageFrom(0);
       setRecruitingPlayer([]);
@@ -338,7 +338,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
         // See error code charts below.
         console.log(error.code, error.message);
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };
 
@@ -347,7 +347,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
   }, []);
 
   const listEmptyComponent = () => (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text
         style={{
           fontFamily: fonts.RRegular,
@@ -371,7 +371,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
     });
   };
   const isIconCheckedOrNot = useCallback(
-    ({ item, index }) => {
+    ({item, index}) => {
       if (item.isChecked) {
         groups[index].isChecked = false;
       } else {
@@ -384,10 +384,10 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
     },
     [groups],
   );
-  const renderGroupsTypeItem = ({ item, index }) => (
+  const renderGroupsTypeItem = ({item, index}) => (
     <TouchableOpacity
       style={styles.listItem}
-      onPress={() => isIconCheckedOrNot({ item, index })}>
+      onPress={() => isIconCheckedOrNot({item, index})}>
       <View
         style={{
           flexDirection: 'row',
@@ -416,8 +416,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-
+    <SafeAreaView style={{flex: 1}}>
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
@@ -425,7 +424,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
             style={styles.searchTxt}
             autoCorrect={false}
             onChangeText={(text) => {
-              const tempFilter = { ...filters };
+              const tempFilter = {...filters};
 
               if (text?.length > 0) {
                 tempFilter.searchText = text;
@@ -447,8 +446,8 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
         </View>
       </View>
       <TCTagsFilter
-      filter={filters}
-      authContext={authContext}
+        filter={filters}
+        authContext={authContext}
         dataSource={Utility.getFiltersOpetions(filters)}
         onTagCancelPress={handleTagPress}
       />
@@ -470,25 +469,24 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
       />
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
-        backdropOpacity={1}
-        animationType="slide"
-        hasBackdrop
         style={{
-          flex: 1,
           margin: 0,
-          backgroundColor: colors.blackOpacityColor,
         }}
-        visible={settingPopup}>
+        isVisible={settingPopup}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}>
         <View
           style={[
             styles.bottomPopupContainer,
-            { height: Dimensions.get('window').height - 100 },
+            {height: Dimensions.get('window').height - 100},
           ]}>
           <KeyboardAvoidingView
-            style={{ flex: 1 }}
+            style={{flex: 1}}
             keyboardVerticalOffset={keyboardVerticalOffset}
             behavior={Platform.OS === 'ios' ? 'padding' : null}>
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
                   onPress={() => setSettingPopup(false)}
@@ -499,62 +497,62 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
                 <Text
                   style={styles.doneText}
                   onPress={() => {
-                      setSettingPopup(false);
-                      setTimeout(() => {
-                        const tempFilter = { ...filters };
-                        tempFilter.sport = selectedSport.sport;
-                        tempFilter.sport_type = selectedSport.sport_type;
+                    setSettingPopup(false);
+                    setTimeout(() => {
+                      const tempFilter = {...filters};
+                      tempFilter.sport = selectedSport.sport;
+                      tempFilter.sport_type = selectedSport.sport_type;
 
-                        tempFilter.location = location;
+                      tempFilter.location = location;
 
-                        if (
-                          groups.filter(
-                            (obj) => obj.type === 'Teams' && obj.isChecked,
-                          ).length > 0
-                        ) {
-                          tempFilter.groupTeam = 'Teams';
-                        } else {
-                          delete tempFilter.groupTeam;
-                        }
-                        if (
-                          groups.filter(
-                            (obj) => obj.type === 'Clubs' && obj.isChecked,
-                          ).length > 0
-                        ) {
-                          tempFilter.groupClub = 'Clubs';
-                        } else {
-                          delete tempFilter.groupClub;
-                        }
-                        if (
-                          groups.filter(
-                            (obj) => obj.type === 'Leagues' && obj.isChecked,
-                          ).length > 0
-                        ) {
-                          tempFilter.groupLeague = 'Leagues';
-                        } else {
-                          delete tempFilter.groupLeague;
-                        }
-                        console.log('tempFilter', tempFilter);
+                      if (
+                        groups.filter(
+                          (obj) => obj.type === 'Teams' && obj.isChecked,
+                        ).length > 0
+                      ) {
+                        tempFilter.groupTeam = 'Teams';
+                      } else {
+                        delete tempFilter.groupTeam;
+                      }
+                      if (
+                        groups.filter(
+                          (obj) => obj.type === 'Clubs' && obj.isChecked,
+                        ).length > 0
+                      ) {
+                        tempFilter.groupClub = 'Clubs';
+                      } else {
+                        delete tempFilter.groupClub;
+                      }
+                      if (
+                        groups.filter(
+                          (obj) => obj.type === 'Leagues' && obj.isChecked,
+                        ).length > 0
+                      ) {
+                        tempFilter.groupLeague = 'Leagues';
+                      } else {
+                        delete tempFilter.groupLeague;
+                      }
+                      console.log('tempFilter', tempFilter);
 
-                        setFilters({
-                          ...tempFilter,
-                        });
-                        setPageFrom(0);
-                        setRecruitingPlayer([]);
-                        applyFilter(tempFilter);
-                      }, 100);
-                      console.log('DONE::');
+                      setFilters({
+                        ...tempFilter,
+                      });
+                      setPageFrom(0);
+                      setRecruitingPlayer([]);
+                      applyFilter(tempFilter);
+                    }, 100);
+                    console.log('DONE::');
                   }}>
                   {'Apply'}
                 </Text>
               </View>
               <TCThinDivider width={'100%'} marginBottom={15} />
               <View>
-                <View style={{ flexDirection: 'column', margin: 15 }}>
+                <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
                     <Text style={styles.filterTitle}>Location</Text>
                   </View>
-                  <View style={{ marginTop: 10, marginLeft: 10 }}>
+                  <View style={{marginTop: 10, marginLeft: 10}}>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -590,8 +588,8 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
                           setLocation(
                             authContext?.entity?.obj?.city
                               .charAt(0)
-                              .toUpperCase()
-                              + authContext?.entity?.obj?.city.slice(1),
+                              .toUpperCase() +
+                              authContext?.entity?.obj?.city.slice(1),
                           );
                           // setFilters({
                           //   ...filters,
@@ -648,7 +646,6 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                         }}>
-
                         <View style={styles.searchCityContainer}>
                           <Text style={styles.searchCityText}>
                             {route?.params?.locationText || 'Search City'}
@@ -681,7 +678,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
                     <View style={{}}>
                       <Text style={styles.filterTitle}>Sport</Text>
                     </View>
-                    <View style={{ marginTop: 10 }}>
+                    <View style={{marginTop: 10}}>
                       <TCPicker
                         dataSource={sports}
                         placeholder={'Select Sport'}
@@ -690,9 +687,11 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
                             setSelectedSport({
                               sport: 'All',
                               sport_type: 'All',
-                            })
+                            });
                           } else {
-                            setSelectedSport(Utility.getSportObjectByName(value, authContext))
+                            setSelectedSport(
+                              Utility.getSportObjectByName(value, authContext),
+                            );
                           }
                         }}
                         value={Utility.getSportName(selectedSport, authContext)}
@@ -700,12 +699,12 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
                     </View>
                   </View>
                 </View>
-                <View style={{ flexDirection: 'column', margin: 15 }}>
+                <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
                     <Text style={styles.filterTitle}>Groups</Text>
                   </View>
-                  <View style={{ marginTop: 10 }}>
-                    <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+                  <View style={{marginTop: 10}}>
+                    <View style={{flexDirection: 'row', marginBottom: 10}}>
                       <FlatList
                         data={groups}
                         keyExtractor={keyExtractor}
@@ -716,7 +715,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
                 </View>
               </View>
 
-              <View style={{ flex: 1 }} />
+              <View style={{flex: 1}} />
             </ScrollView>
           </KeyboardAvoidingView>
 
@@ -737,7 +736,7 @@ export default function RecruitingPlayerScreen({ navigation, route }) {
                     onPress: () => onPressReset(),
                   },
                 ],
-                { cancelable: false },
+                {cancelable: false},
               );
             }}>
             <Text style={styles.resetTitle}>Reset</Text>
@@ -764,7 +763,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('92%'),
     borderRadius: 20,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -821,7 +820,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },
@@ -865,7 +864,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
     flexDirection: 'row',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -887,7 +886,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     width: widthPercentageToDP('75%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,

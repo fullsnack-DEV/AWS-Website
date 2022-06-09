@@ -15,6 +15,7 @@ import EmailVerificationScreen from '../screens/authScreens/EmailVerificationScr
 import ForgotPasswordLinkSentScreen from '../screens/authScreens/ForgotPasswordLinkSentScreen';
 import AddBirthdayScreen from '../screens/authScreens/AddBirthdayScreen';
 import ChooseGenderScreen from '../screens/authScreens/ChooseGenderScreen';
+import AddNameScreen from '../screens/authScreens/AddNameScreen';
 
 import BottomTab from '../components/BottomTab';
 import colors from '../Constants/Colors';
@@ -86,6 +87,11 @@ const AuthNavigator = () => (
     <Stack.Screen
       name="TotalTeamsScreen"
       component={TotalTeamsScreen}
+      options={{title: ''}}
+    />
+    <Stack.Screen
+      name="AddNameScreen"
+      component={AddNameScreen}
       options={{title: ''}}
     />
     <Stack.Screen

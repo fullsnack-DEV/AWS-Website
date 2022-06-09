@@ -732,7 +732,9 @@ function RefereeInfoSection({
         }}
         hasBackdrop
         onBackdropPress={() => setPrivacyModal(false)}
-        backdropOpacity={0}>
+        backdropOpacity={0}
+        
+        >
         <SafeAreaView
           style={[
             styles.modalContainerViewStyle,

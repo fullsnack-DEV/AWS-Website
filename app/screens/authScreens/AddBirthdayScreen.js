@@ -1,11 +1,17 @@
 import React, {useContext, useEffect, useState, useLayoutEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  Image,
+} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {StackActions} from '@react-navigation/native';
 
 import moment from 'moment';
 
@@ -13,18 +19,15 @@ import {Tooltip} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import DatePicker from 'react-native-date-picker';
-import TCButton from '../../components/TCButton';
-import * as Utility from '../../utils/index';
 
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import {updateUserProfile} from '../../api/Users';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
-export default function AddBirthdayScreen({navigation}) {
+export default function AddBirthdayScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   console.log(
@@ -39,7 +42,7 @@ export default function AddBirthdayScreen({navigation}) {
   const [minDateValue, setMinDateValue] = useState(new Date());
   const [maxDateValue, setMaxDateValue] = useState(new Date());
 
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
   const onChange = (selectedDate) => {
     setDateValue(selectedDate);
@@ -49,14 +52,32 @@ export default function AddBirthdayScreen({navigation}) {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            // navigation.navigate('LoginScreen');
-            navigation.dispatch(StackActions.replace('WelcomeScreen'));
+            navigation.pop();
           }}>
-          <Text style={styles.quitText}>{strings.quitText}</Text>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 20,
+              tintColor: colors.whiteColor,
+            }}
+          />
         </TouchableOpacity>
       ),
+
+      headerRight: () => (
+        <Text
+          style={styles.nextButtonStyle}
+          onPress={() => {
+            const userParams = {birthday: new Date(dateValue).getTime() / 1000};
+            navigateToGenderScreen(userParams);
+          }}>
+          Next
+        </Text>
+      ),
     });
-  }, [navigation]);
+  });
   useEffect(() => {
     const mindate = new Date();
     const maxdate = new Date();
@@ -66,24 +87,18 @@ export default function AddBirthdayScreen({navigation}) {
     setMinDateValue(mindate);
     setMaxDateValue(maxdate);
   }, []);
+  const navigateToGenderScreen = (userParams) => {
+    console.log('route?.params?.signupInfo', route?.params?.signupInfo);
+    console.log('userParams', userParams);
 
-  const updateProfile = async (params, callback) => {
-    setLoading(true);
-    updateUserProfile(params, authContext)
-      .then(async (userResoponse) => {
-        const userData = userResoponse?.payload;
-        const entity = {...authContext?.entity};
-        entity.auth.user = userData;
-        entity.obj = userData;
-        await Utility.setStorage('loggedInEntity', {...entity});
-        await Utility.setStorage('authContextEntity', {...entity});
-        await Utility.setStorage('authContextUser', {...userData});
-        await authContext.setUser({...userData});
-        await authContext.setEntity({...entity});
-        setLoading(false);
-        callback();
-      })
-      .catch(() => setLoading(false));
+    const profileData = {
+      ...route?.params?.signupInfo,
+      birthday: userParams.birthday,
+    };
+    console.log('Profile data gender ', profileData);
+    navigation.navigate('ChooseGenderScreen', {
+      signupInfo: {...profileData},
+    });
   };
 
   return (
@@ -91,7 +106,7 @@ export default function AddBirthdayScreen({navigation}) {
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <View>
+      <View style={{flex: 1}}>
         <FastImage
           resizeMode={'stretch'}
           style={styles.background}
@@ -136,11 +151,15 @@ export default function AddBirthdayScreen({navigation}) {
           />
         </View>
       </View>
-      <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 50}}>
-        <Text style={styles.birthDateChangeNote}>
-          {strings.birthDateChangeNote}
-        </Text>
-        <TCButton
+      <SafeAreaView>
+        <View
+          style={{
+            bottom: 16,
+          }}>
+          <Text style={styles.birthDateChangeNote}>
+            {strings.birthDateChangeNote}
+          </Text>
+          {/* <TCButton
           title={strings.continueCapTitle}
           onPress={() => {
             const userParams = {birthday: new Date(dateValue).getTime() / 1000};
@@ -149,8 +168,9 @@ export default function AddBirthdayScreen({navigation}) {
             });
           }}
           extraStyle={{marginTop: 50}}
-        />
-      </View>
+        /> */}
+        </View>
+      </SafeAreaView>
     </LinearGradient>
   );
 }
@@ -220,14 +240,12 @@ const styles = StyleSheet.create({
     marginLeft: 35,
     marginRight: 35,
     textAlign: 'left',
-    top: 25,
   },
-  quitText: {
-    height: 25,
-    width: 60,
-    marginLeft: 20,
-    color: colors.whiteColor,
+
+  nextButtonStyle: {
     fontFamily: fonts.RBold,
-    fontSize: 15,
+    fontSize: 16,
+    marginRight: 15,
+    color: colors.whiteColor,
   },
 });
