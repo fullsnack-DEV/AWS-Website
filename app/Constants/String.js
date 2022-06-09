@@ -337,7 +337,7 @@ const strings = {
   createTitleValue: 'Welcome Season Party',
   titleValue: 'Games with Vancouver Whitecaps',
   about: 'About',
-  description:'DESCRIPTION',
+  description: 'DESCRIPTION',
   aboutPlaceholder: 'Describe about event.',
   createAboutValue:
     'I love playing soccer, Association football, commonly known as football or soccer, [a] is a sport played between seven teams of eleven with a spherical ball.',
@@ -843,10 +843,10 @@ const strings = {
   sportActivity: 'Sports Activities',
   refereeRegisteredSuccess: 'Registered as a referee.',
   scorekeeperRegisteredSuccess: 'Registered as a scorekeeper.',
-  terminationAlert: 'The email and password you entered don\'t match.',
+  terminationAlert: "The email and password you entered don't match.",
   organizerTitle: 'ORGANIZER',
   whoCanJoin: 'WHO CAN JOIN',
-  whoCanSee: 'WHO CAN SEE'
+  whoCanSee: 'WHO CAN SEE',
 
   // Signup & login text
   next: 'Next',

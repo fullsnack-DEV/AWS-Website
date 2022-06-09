@@ -5,6 +5,7 @@ import {
   Text,
   TouchableWithoutFeedback,
   TouchableHighlight,
+  Dimensions,
 } from 'react-native';
 import Video from 'react-native-video';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
@@ -30,10 +31,11 @@ const VideoPost = memo(
     const [mute, setMute] = useState(true);
     const [currentTime, setCurrentTime] = useState(0);
     const [videoLoad, setVideoLoad] = useState(false);
-    const [height, setHeight] = useState(wp(68));
+    // const [height, setHeight] = useState(wp(68));
     const [videoDuration, setVideoDuration] = useState(0);
     const setVideoHeight = useCallback((orientation) => {
-      if (orientation === 'portrait') toggleView(() => setHeight(wp(124)), 300);
+      if (orientation === 'portrait')
+        toggleView(() => getImageDimention().height, 300);
     }, []);
 
     const imageRatio = data.media_height / data.media_width;
@@ -120,13 +122,14 @@ const VideoPost = memo(
       [],
     );
     return (
-      <View style={{...styles.mainContainer, height}}>
+      <View
+        style={{...styles.mainContainer, height: getImageDimention().height}}>
         <View
           style={{
             ...styles.singleImageDisplayStyle,
             borderWidth: 1,
             borderColor: colors.lightgrayColor,
-            height,
+            height: getImageDimention().height,
           }}>
           <FastImage
             style={styles.loadimageStyle}
@@ -146,7 +149,7 @@ const VideoPost = memo(
             source={{uri: data.url}}
             style={{
               ...styles.singleImageDisplayStyle,
-              height,
+              height: getImageDimention().height,
               position: 'absolute',
             }}
             resizeMode={'cover'}
@@ -211,7 +214,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     backgroundColor: colors.whiteColor,
-    shadowColor: colors.googleColor,
+    shadowColor: colors.whiteColor,
     shadowOpacity: 0.16,
     shadowOffset: {width: 0, height: 5},
     shadowRadius: 15,

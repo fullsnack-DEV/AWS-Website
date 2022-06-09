@@ -242,12 +242,15 @@ export default function ChooseGenderScreen({navigation, route}) {
           });
           console.log('333');
           setCurrentLocation({stateAbbr, city, country});
+          setLoading(false);
         });
         console.log('444');
         console.log(position.coords.latitude);
+        setLoading(false);
       },
       (error) => {
         console.log('555');
+        setLoading(false);
         // See error code charts below.
         console.log(error.code, error.message);
       },

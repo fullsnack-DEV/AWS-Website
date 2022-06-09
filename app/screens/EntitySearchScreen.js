@@ -33,7 +33,7 @@ import bodybuilder from 'bodybuilder';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {func} from 'prop-types';
 import Geolocation from '@react-native-community/geolocation';
-import TCSearchBox from '../components/TCSearchBox';
+import {ColorSpace} from 'react-native-reanimated';
 import AuthContext from '../auth/context';
 // import UserListShimmer from '../components/shimmer/commonComponents/UserListShimmer';
 import {widthPercentageToDP} from '../utils';
@@ -54,6 +54,7 @@ import TCRefereeView from '../components/TCRefereeView';
 import TCTeamSearchView from '../components/TCTeamSearchView';
 import TCRecentMatchCard from '../components/TCRecentMatchCard';
 import TCTagsFilter from '../components/TCTagsFilter';
+import TCSearchBox from '../components/TCSearchBox';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 
@@ -61,8 +62,6 @@ import {getLocationNameWithLatLong} from '../api/External';
 import DateTimePickerView from '../components/Schedule/DateTimePickerModal';
 
 import TCPicker from '../components/TCPicker';
-import {getSportsList} from '../api/Games';
-import {ColorSpace} from 'react-native-reanimated';
 
 let stopFetchMore = true;
 
