@@ -243,6 +243,9 @@ import SportHideUnhideScreen from '../screens/home/SportHideUnhideScreen';
 import SportActivitiesScreen from '../components/Home/SportActivitiesScreen';
 import ChangeSportsOrderScreen from '../screens/account/schedule/ChangeSportsOrderScreen';
 import ChangeOtherListScreen from '../screens/account/schedule/ChangeOtherListScreen';
+import InviteToEventScreen from '../screens/account/schedule/InviteToEventScreen';
+import AcceptEventInviteScreen from '../screens/account/schedule/AcceptEventInviteScreen';
+import GoingListScreen from '../screens/account/schedule/GoingListScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -581,21 +584,97 @@ const AccountNavigator = () => (
       name="EventScreen"
       component={EventScreen}
       options={{
-        headerShown: false,
+        title: 'Event',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="GoingListScreen"
+      component={GoingListScreen}
+      options={{
+        title: 'Going',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    
+    <Stack.Screen
+      name="AcceptEventInviteScreen"
+      component={AcceptEventInviteScreen}
+      options={{
+        title: 'Respond',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="InviteToEventScreen"
+      component={InviteToEventScreen}
+      options={{
+        title: 'Invite',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="EditEventScreen"
       component={EditEventScreen}
       options={{
-        headerShown: false,
+        title: 'Edit Event',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
       name="CreateEventScreen"
       component={CreateEventScreen}
       options={{
-        headerShown: false,
+        title: 'Create an Event',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
       }}
     />
     <Stack.Screen
@@ -2457,7 +2536,7 @@ const AccountNavigator = () => (
       name="ChangeOtherListScreen"
       component={ChangeOtherListScreen}
       options={{
-        title: 'Change List Of Orgernizers',
+        title: 'Change List Of Organizers',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

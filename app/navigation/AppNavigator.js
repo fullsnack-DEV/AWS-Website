@@ -113,6 +113,8 @@ const getTabBarVisibility = (route) => {
     routeName === 'ConnectionReqSentScreen' ||
     routeName === 'EventScreen' ||
     routeName === 'EditEventScreen' ||
+    routeName === 'InviteToEventScreen' ||
+    routeName === 'GoingListScreen' ||
     // || routeName === 'CreateEventScreen'
     routeName === 'EditChallengeAvailability' ||
     routeName === 'MessageChat' ||
@@ -232,6 +234,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'TerminateAccountScreen' ||
     routeName === 'EditRosterScreen' ||
     routeName === 'CreateEventScreen' ||
+    routeName === 'AcceptEventInviteScreen' ||
     routeName === 'EditLineUpScreen' ||
     routeName === 'SearchScreen' ||
     routeName === 'MembersViewPrivacyScreen' ||

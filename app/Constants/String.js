@@ -364,8 +364,8 @@ const strings = {
   whoCanSeeShcedule: 'Who can see your schedule?',
   availableSubTitle:
     'Do you want to be available for challenges during this event?',
-  available: 'Available',
-  blocked: 'Blocked',
+  available: 'Available For Challenge',
+  blocked: 'Blocked For Challenge',
   editChallengeTitle:
     'Set the time to be available to receive a challenge request or block it.',
 
@@ -409,6 +409,8 @@ const strings = {
   inviteEmailText:
     'Please enter the e-mail account of the person that you want to invite.',
   inviteSearchText: 'Who do you want to invite to your team?',
+  inviteEventText: 'Who do you want to invite to the event?',
+
   addEmailText: '+ Add E-Mail',
   addPhone: '+ Add Phone',
   addPosition: '+ Add Position',
@@ -850,6 +852,9 @@ const strings = {
   scorekeeperRegisteredSuccess: 'Registered as a scorekeeper.',
   terminationAlert: 'The email and password you entered don\'t match.',
   organizerTitle: 'ORGANIZER',
+  eventHost: 'EVENT HOST',
+  goingTitle: 'GOING',
+
   whoCanJoin: 'WHO CAN JOIN',
   whoCanSee: 'WHO CAN SEE'
 

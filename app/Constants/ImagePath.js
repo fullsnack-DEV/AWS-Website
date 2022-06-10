@@ -427,8 +427,9 @@ const images = {
   removeSportList: require('../assets/images/remove_sport_list.png'),
   choosePic: require('../assets/images/choose_pic.png'),
 
-
-
+  availableChallenge: require('../assets/images/available_challenge.png'),
+  blockedChallenge: require('../assets/images/blocked_challenge.png'),
+  backgroudPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
 
 };
 

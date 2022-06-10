@@ -116,7 +116,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
       });
   }, [authContext]);
 
-  const renderCheckedOrgernizers = useCallback(
+  const renderCheckedOrganizers = useCallback(
     ({item, drag}) =>
       item.sport !== 'All' && (
         <View style={styles.sportsBackgroundView}>
@@ -162,7 +162,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
     [addedGroups, removedGroups],
   );
 
-  const renderUnCheckedOrgernizers = useCallback(
+  const renderUnCheckedOrganizers = useCallback(
     ({item}) =>
       item.sport !== 'All' && (
         <View style={styles.sportsBackgroundView}>
@@ -183,7 +183,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
                   setAddedGroups([...addedGroups]);
                 } else {
                   Alert.alert(
-                    'You can add up to 10 orgernizers to the filter bar.',
+                    'You can add up to 10 organizers to the filter bar.',
                   );
                 }
               }}
@@ -212,10 +212,10 @@ export default function ChangeOtherListScreen({navigation, route}) {
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
       <Text style={styles.mainTextStyle}>
-        Orgernizers displayed in filter bar
+        Organizers displayed in filter bar
       </Text>
       <Text style={styles.subTitle}>
-        Upto 10 orgernizers can be displayed in the filter bar.
+        Upto 10 organizers can be displayed in the filter bar.
       </Text>
 
       {addedGroups.length > 0 ? (
@@ -223,7 +223,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
           showsHorizontalScrollIndicator={false}
           data={addedGroups}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={renderCheckedOrgernizers}
+          renderItem={renderCheckedOrganizers}
           style={{
             flex: 1,
             width: '100%',
@@ -248,14 +248,14 @@ export default function ChangeOtherListScreen({navigation, route}) {
           <Text style={styles.noEventText}>No Organizers</Text>
         </View>
       )}
-      <Text style={styles.otherTitle}>Other Orgernizers</Text>
+      <Text style={styles.otherTitle}>Other Organizers</Text>
 
       {removedGroups.length > 0 ? (
         <FlatList
           showsHorizontalScrollIndicator={false}
           data={removedGroups}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={renderUnCheckedOrgernizers}
+          renderItem={renderUnCheckedOrganizers}
           style={{
             flex: 1,
             width: '100%',

@@ -4,9 +4,7 @@ import {StyleSheet, View, Text, TextInput} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-function NumberOfAttendees({onChangeMinText, onChangeMaxText}) {
-  const [minAttendees, setMinAttendees] = useState(0);
-  const [maxAttendees, setMaxAttendees] = useState(0);
+function NumberOfAttendees({onChangeMinText, onChangeMaxText,min, max}) {
   return (
     <View
       style={{
@@ -41,6 +39,7 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText}) {
           placeholder="0"
           style={styles.minMaxStyle}
           onChangeText={onChangeMinText}
+          value={`${min}`}
           textAlignVertical={'center'}
           placeholderTextColor={colors.userPostTimeColor}
         />
@@ -72,6 +71,8 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText}) {
           placeholder="100"
           style={styles.minMaxStyle}
           onChangeText={onChangeMaxText}
+          value={`${max}`}
+
           textAlignVertical={'center'}
           placeholderTextColor={colors.userPostTimeColor}
         />

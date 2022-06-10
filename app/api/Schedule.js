@@ -52,3 +52,25 @@ export const editEvent = async (entity_type, entity_id, data, authContext) => ma
   data,
   authContext,
 });
+
+
+export const inviteToEvent = async (event_id, params,authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}events/${event_id}/invite`,
+  data:params,
+  authContext,
+});
+
+export const attendEvent = async (event_id, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}events/${event_id}/attend`,
+  data:{},
+  authContext,
+});
+
+export const removeAttendeeFromEvent = async (event_id,user_ids, authContext) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}events/${event_id}/attend`,
+  data: user_ids,
+  authContext,
+});

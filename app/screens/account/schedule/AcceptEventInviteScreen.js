@@ -3,13 +3,11 @@ import React, {
   useState,
   useContext,
   useEffect,
-  useLayoutEffect,
 } from 'react';
 import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Image,
   Text,
   SafeAreaView,
   Alert,
@@ -34,12 +32,13 @@ import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPh
 import AuthContext from '../../../auth/context';
 import TCThinDivider from '../../../components/TCThinDivider';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {attendEvent, deleteEvent} from '../../../api/Schedule';
-import TCProfileButton from '../../../components/TCProfileButton';
+import {deleteEvent} from '../../../api/Schedule';
 import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCProfileView from '../../../components/TCProfileView';
+import TCGradientButton from '../../../components/TCGradientButton';
+import {acceptRequest, declineRequest} from '../../../api/Notificaitons';
 
-export default function EventScreen({navigation, route}) {
+export default function AcceptEventInviteScreen({navigation, route}) {
   const actionSheet = useRef();
   const editactionsheet = useRef();
   const authContext = useContext(AuthContext);
@@ -47,7 +46,8 @@ export default function EventScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [organizer, setOrganizer] = useState();
   const [going, setGoing] = useState([]);
-  const [eventData, setEventData] = useState(route?.params?.data);
+  const [eventData] = useState(route?.params?.data);
+  const [requestID] = useState(route?.params?.requestID);
   let titleValue = 'Game';
   let description = 'Game With';
   let description2 = '';
@@ -55,7 +55,6 @@ export default function EventScreen({navigation, route}) {
   let endTime = '';
   let gameDataLati = null;
   let gameDataLongi = null;
-  let blocked = false;
   if (eventData) {
     if (eventData.title) {
       titleValue = eventData.title;
@@ -69,10 +68,6 @@ export default function EventScreen({navigation, route}) {
     }
     if (eventData.end_datetime) {
       endTime = new Date(eventData.end_datetime * 1000);
-    }
-
-    if (eventData.isBlocked) {
-      blocked = eventData.isBlocked;
     }
   }
   if (route && route.params && route.params.gameData) {
@@ -88,31 +83,7 @@ export default function EventScreen({navigation, route}) {
     }
   }
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          style={{padding: 2, marginRight: 15}}
-          onPress={() => actionSheet.current.show()}>
-          <Image
-            source={images.vertical3Dot}
-            style={styles.threeDotImageStyle}
-          />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
-
   useEffect(() => {
-    // const getUserDetailQuery = {
-
-    //   query: {
-    //     bool: {
-    //       must: [{match: {user_id: eventData.created_by.uid}}],
-    //     },
-    //   },
-    // };
-
     const goingData = eventData.going ?? [];
     const getUserDetailQuery = {
       size: 1000,
@@ -167,20 +138,6 @@ export default function EventScreen({navigation, route}) {
     eventData.going,
   ]);
 
-  const attendAPICall = () => {
-    setloading(true);
-    attendEvent(eventData.cal_id, authContext)
-      .then((response) => {
-        console.log('response of attend', response);
-        setEventData(response?.payload);
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        Alert.alert(strings.townsCupTitle, e.message);
-      });
-  };
-
   const renderGoingView = ({item}) => (
     <View style={styles.goingContainer}>
       <FastImage
@@ -191,6 +148,36 @@ export default function EventScreen({navigation, route}) {
       />
     </View>
   );
+
+  const onAccept = (requestId) => {
+    setloading(true);
+    acceptRequest(requestId, authContext)
+      .then(() => {
+        navigation.pop(2);
+        setloading(false);
+      })
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
+
+  const onDecline = (requestId) => {
+    setloading(true);
+    declineRequest(requestId, authContext)
+      .then(() => {
+        navigation.pop(2);
+        setloading(false);
+      })
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
 
   return (
     <SafeAreaView style={styles.mainContainerStyle}>
@@ -208,6 +195,53 @@ export default function EventScreen({navigation, route}) {
           }
         />
 
+        <Text
+          style={{
+            fontFamily: fonts.RBold,
+            fontSize: 20,
+            color: colors.lightBlackColor,
+            textAlign: 'center',
+            marginLeft: 15,
+            marginRight: 15,
+          }}>
+          {organizer?.full_name ?? organizer?.group_name}
+          <Text
+            style={{
+              fontFamily: fonts.RMedium,
+              fontSize: 20,
+              color: colors.lightBlackColor,
+            }}>
+            {' '}
+            invited you to join the event.
+          </Text>
+        </Text>
+
+        <View style={{alignSelf: 'center', margin: 15}}>
+          <View style={styles.photoContainer}>
+            <FastImage
+              source={
+                organizer?.thumbnail
+                  ? {uri: organizer?.thumbnail}
+                  : images.profilePlaceHolder
+              }
+              resizeMode={'contain'}
+              style={styles.photoImageStyle}
+            />
+          </View>
+          <Text style={styles.nameText}>
+            {organizer?.full_name ?? organizer?.group_name}
+          </Text>
+          <Text
+            style={
+              styles.locationText
+            }>{`${organizer?.city}, ${organizer?.state_abbr}`}</Text>
+        </View>
+
+        <Text style={[styles.textValueStyle, {margin: 15}]}>
+          {description} {description2}
+        </Text>
+
+        <TCThinDivider marginBottom={15} />
         <Text style={styles.eventTitleStyle}>
           {titleValue}
           <Text style={styles.sportTitleStyle}>
@@ -215,47 +249,6 @@ export default function EventScreen({navigation, route}) {
             {eventData?.selected_sport && eventData?.selected_sport?.sport_name}
           </Text>
         </Text>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            margin: 15,
-          }}>
-          <TCProfileButton
-            title={
-              eventData?.going?.filter(
-                (entity) => entity === authContext.entity.uid,
-              ).length > 0
-                ? 'Going'
-                : 'Attend'
-            }
-            style={styles.firstButtonStyle}
-            showArrow={false}
-            imageStyle={styles.checkMarkStyle}
-            textStyle={
-              eventData?.going?.filter(
-                (entity) => entity === authContext.entity.uid,
-              ).length > 0
-                ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
-                : styles.attendTextStyle
-            }
-            onPressProfile={() => attendAPICall()}
-          />
-
-          <TCProfileButton
-            title={'Invite'}
-            style={styles.firstButtonStyle}
-            showArrow={false}
-            imageStyle={styles.checkMarkStyle}
-            textStyle={styles.inviteTextStyle}
-            onPressProfile={() =>
-              navigation.navigate('InviteToEventScreen', {
-                eventId: eventData.cal_id,
-              })
-            }
-          />
-        </View>
 
         <EventTimeItem
           from={strings.from}
@@ -266,71 +259,18 @@ export default function EventScreen({navigation, route}) {
           repeatTime={strings.repeatTime}
         />
 
-        {!blocked ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginLeft: 15,
-              marginTop: 5,
-            }}>
-            <Image
-              source={images.availableChallenge}
-              style={styles.availableImageStyle}
-            />
-            <Text style={styles.availableTextStyle}>{strings.available}</Text>
-          </View>
-        ) : (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginLeft: 15,
-              marginTop: 5,
-            }}>
-            <Image
-              source={images.blockedChallenge}
-              style={styles.availableImageStyle}
-            />
-            <Text style={styles.blockTextStyle}>{strings.blocked}</Text>
-          </View>
-        )}
-
         <Text style={[styles.textValueStyle, {marginLeft: 15}]}>
           {eventData?.location?.location_name}
         </Text>
-        <TCThinDivider marginTop={15} marginBootom={15} />
-        <EventItemRender title={strings.description}>
-          <Text style={styles.textValueStyle}>
-            {description} {description2}
-          </Text>
-        </EventItemRender>
-        <TCThinDivider marginTop={10} />
-        <View style={styles.containerStyle}>
-          <Text style={styles.headerTextStyle}>{strings.organizerTitle}</Text>
-          <TCProfileView
-            type="medium"
-            name={organizer?.group_name ?? organizer?.full_name}
-            location={`${organizer?.city}, ${organizer?.state_abbr}, ${organizer?.country}`}
-            image={
-              organizer?.thumbnail ? {uri: organizer?.thumbnail} : images.teamPH
-            }
-            alignSelf={'flex-start'}
-            marginTop={10}
-          />
-        </View>
+        <TCThinDivider marginTop={15} marginBottom={15} />
+
         <TCThinDivider marginTop={10} />
 
         <View style={styles.containerStyle}>
           <Text
-            style={styles.headerTextStyle}
-            onPress={() => {
-              navigation.navigate('GoingListScreen', {
-                showRemove: authContext.entity.uid === organizer.user_id,
-                going_ids: eventData?.going ?? [],
-                eventData,
-              });
-            }}>{`${strings.goingTitle} (${going?.length})`}</Text>
+            style={
+              styles.headerTextStyle
+            }>{`${strings.goingTitle} (${going?.length})`}</Text>
           <FlatList
             data={going}
             horizontal
@@ -369,6 +309,21 @@ export default function EventScreen({navigation, route}) {
             {eventData?.location?.venue_detail}
           </Text>
         </EventItemRender>
+        <View style={styles.sepratorViewStyle} />
+        <View style={styles.containerStyle}>
+          <Text style={styles.headerTextStyle}>{strings.eventHost}</Text>
+          <TCProfileView
+            type="medium"
+            name={organizer?.group_name ?? organizer?.full_name}
+            location={`${organizer?.city}, ${organizer?.state_abbr}, ${organizer?.country}`}
+            image={
+              organizer?.thumbnail ? {uri: organizer?.thumbnail} : images.teamPH
+            }
+            alignSelf={'flex-start'}
+            marginTop={10}
+          />
+        </View>
+
         <View style={styles.sepratorViewStyle} />
         <EventItemRender title={strings.whoCanJoin}>
           <Text style={styles.textValueStyle}>
@@ -411,6 +366,28 @@ export default function EventScreen({navigation, route}) {
         </EventItemRender>
 
         <View style={styles.sepratorViewStyle} />
+        <TCGradientButton
+          title={'JOIN'}
+          onPress={() => {
+            onAccept(requestID);
+          }}
+        />
+        <TouchableOpacity
+          style={{margin: 15}}
+          onPress={() => {
+            onDecline(requestID);
+          }}>
+          <Text
+            style={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.lightBlackColor,
+              textAlign: 'center',
+              textDecorationLine: 'underline',
+            }}>
+            DECLINE
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
       <ActionSheet
         ref={actionSheet}
@@ -478,13 +455,6 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
   },
 
-  threeDotImageStyle: {
-    height: 18,
-    width: 18,
-    tintColor: colors.blackColor,
-    resizeMode: 'contain',
-  },
-
   sepratorViewStyle: {
     borderColor: colors.sepratorColor,
     borderWidth: hp('0.4%'),
@@ -508,38 +478,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.RRegular,
   },
-  availableImageStyle: {
-    width: 15,
-    height: 15,
-  },
-  availableTextStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    marginLeft: 10,
-    color: colors.greeColor,
-  },
-  blockTextStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    marginLeft: 10,
-    color: colors.googleColor,
-  },
 
-  firstButtonStyle: {
-    margin: 0,
-    height: 28,
-    width: '48%',
-    borderRadius: 5,
-  },
-  attendTextStyle: {
-    fontFamily: fonts.RBold,
-    fontSize: 14,
-    color: colors.themeColor,
-  },
-  inviteTextStyle: {
-    fontFamily: fonts.RBold,
-    fontSize: 14,
-  },
   containerStyle: {
     width: wp('96%'),
     alignSelf: 'center',
@@ -562,4 +501,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  photoContainer: {
+    backgroundColor: colors.whiteColor,
+    height: 56,
+    width: 56,
+    borderRadius: 112,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.4,
+    shadowRadius: 2,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nameText: {
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    textAlign: 'center',
+  },
+  locationText: {
+    fontFamily: fonts.RLight,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    textAlign: 'center',
+  },
+  photoImageStyle: {height: 54, width: 54, borderRadius: 108},
 });

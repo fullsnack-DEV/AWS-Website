@@ -9,6 +9,7 @@ import React, {
   useContext,
   useRef,
   useCallback,
+  useLayoutEffect,
 } from 'react';
 import {
   View,
@@ -28,7 +29,6 @@ import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import Geolocation from '@react-native-community/geolocation';
 import ActionSheet from 'react-native-actionsheet';
 
-import RNPickerSelect from 'react-native-picker-select';
 import Modal from 'react-native-modal';
 import {useIsFocused} from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -36,7 +36,6 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
 import AuthContext from '../../../auth/context';
-import Header from '../../../components/Home/Header';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import EventMonthlySelection from '../../../components/Schedule/EventMonthlySelection';
@@ -61,12 +60,14 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import {getHitSlop, getNearDateTime, getSportName} from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
-import {getUserSettings} from '../../../api/Users';
 import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
 import uploadImages from '../../../utils/imageAction';
 
 export default function CreateEventScreen({navigation, route}) {
-  const eventPostedList = ['Schedule only', 'Schedule & posts'];
+  const eventPostedList = [
+    {value: 0, text: 'Schedule only'},
+    {value: 1, text: 'Schedule & posts'},
+  ]
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
   const isFocused = useIsFocused();
@@ -74,7 +75,10 @@ export default function CreateEventScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
-  const [eventPosted, setEventPosted] = useState(0);
+  const [eventPosted, setEventPosted] = useState({
+    value: 0,
+    text: 'Schedule only',
+  });
   const [minAttendees, setMinAttendees] = useState(0);
   const [maxAttendees, setMaxAttendees] = useState(0);
   const [eventFee, setEventFee] = useState(0);
@@ -98,13 +102,24 @@ export default function CreateEventScreen({navigation, route}) {
   const [is_Blocked, setIsBlocked] = useState(false);
   const [loading, setloading] = useState(false);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  const [visibleWhoModal, setVisibleWhoModal] = useState(false);
   const [sportsSelection, setSportsSelection] = useState();
-  const [sportsData, setSportsData] = useState([]);
-  const [groupsList, setGroupsList] = useState([]);
-  const [isAll, setIsAll] = useState(false);
 
-  const [whoCanSee, setWhoCanSee] = useState('Only me');
-  const [whoCanJoin, setWhoCanJoin] = useState('Only me');
+  const [whoOpetion, setWhoOpetion] = useState();
+  const [whoCanJoinOpetion, setWhoCanJoinOpetion] = useState({
+    text: 'Everyone',
+    value: 0,
+  });
+  const [whoCanSeeOpetion, setWhoCanSeeOpetion] = useState({
+    text: 'Everyone',
+    value: 0,
+  });
+
+  const [sportsData, setSportsData] = useState([]);
+  const [groupsSeeList, setGroupsSeeList] = useState([]);
+  const [groupsJoinList, setGroupsJoinList] = useState([]);
+
+  const [isAll, setIsAll] = useState(false);
 
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
@@ -113,6 +128,18 @@ export default function CreateEventScreen({navigation, route}) {
   const [backgroundThumbnail, setBackgroundThumbnail] = useState();
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
 
+  const whoCanDataSource = [
+    {text: 'Everyone', value: 0},
+    {text: 'Only me', value: 1},
+    {
+      text: 'Members in my groups',
+      value: 2,
+    },
+    {
+      text: 'Followers',
+      value: 3,
+    },
+  ];
   const countNumberOfWeekFromDay = () => {
     const date = new Date();
     const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -189,15 +216,38 @@ export default function CreateEventScreen({navigation, route}) {
     setUntilDateVisible(!untilDateVisible);
   };
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          style={{padding: 2, marginRight: 15}}
+          onPress={onDonePress}>
+          <Text>Done</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [
+    navigation,
+    backgroundThumbnail,
+    eventTitle,
+    eventDescription,
+    sportsSelection,
+    maxAttendees,
+    minAttendees,
+    locationDetail,
+    eventFee,
+    refundPolicy,
+  ]);
+
   useEffect(() => {
     if (isFocused) {
       getSports();
-      if (route.params && route.params.locationName) {
+      if (route?.params?.locationName) {
+        console.log('route.params.locationName', route.params.locationName);
         setSearchLocation(route.params.locationName);
-        setLocationDetail({...locationDetail, ...route.params.locationDetail});
       }
     }
-  }, [isFocused, locationDetail, route.params]);
+  }, [isFocused, route.params]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -241,36 +291,14 @@ export default function CreateEventScreen({navigation, route}) {
       .then((response) => {
         const {teams, clubs} = response.payload;
 
-        // const groups = [...teams, ...clubs].map((obj) => ({
-        //   ...obj,
-        //   isSelected: false,
-        // }));
+        const groups = [...teams, ...clubs].map((obj) => ({
+          ...obj,
+          isSelected: false,
+        }));
+        setGroupsSeeList([...groups]);
+        setGroupsJoinList([...groups]);
 
-        getUserSettings(authContext).then((setting) => {
-          setloading(false);
-          console.log('Settings:=>', setting);
-          if (setting?.payload?.user?.schedule_group) {
-            const groups = [...teams, ...clubs].map((obj) =>
-              setting?.payload?.user?.schedule_group.includes(obj.group_id)
-                ? {
-                    ...obj,
-                    isSelected: true,
-                  }
-                : {
-                    ...obj,
-                    isSelected: false,
-                  },
-            );
-            setGroupsList([...groups]);
-          } else {
-            const groups = [...teams, ...clubs].map((obj) => ({
-              ...obj,
-              isSelected: false,
-            }));
-            setGroupsList([...groups]);
-          }
-          // await Utility.setStorage('appSetting', response.payload.app);
-        });
+        setloading(false);
       })
       .catch((e) => {
         setloading(false);
@@ -293,14 +321,16 @@ export default function CreateEventScreen({navigation, route}) {
     return `${i}th`;
   };
 
+  // eslint-disable-next-line no-unused-vars
   const convertDateToUTC = (date) => {
     const dt = new Date(date);
     return new Date(dt.getTime() + dt.getTimezoneOffset() * 60000);
   };
 
+
+
   const getSports = () => {
     let sportArr = [];
-
     authContext.sports.map((item) => {
       const filterFormat = item.format.filter(
         (obj) => obj.entity_type === 'team',
@@ -345,7 +375,48 @@ export default function CreateEventScreen({navigation, route}) {
     </TouchableOpacity>
   );
 
-  const renderEventPostedOpetions = ({index, item}) => {
+  const renderWhoCan = ({item}) => {
+    return (
+      <TouchableOpacity
+        style={styles.listItem}
+        onPress={() => {
+          if (whoOpetion === 'see') {
+            setWhoCanSeeOpetion(item);
+          } else {
+            setWhoCanJoinOpetion(item);
+          }
+
+          setTimeout(() => {
+            setVisibleWhoModal(false);
+          }, 300);
+        }}>
+        <View
+          style={{
+            padding: 20,
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginRight: 15,
+          }}>
+          <Text style={styles.languageList}>{item.text}</Text>
+          <View style={styles.checkbox}>
+            {(whoOpetion === 'see' && whoCanSeeOpetion.value === item?.value) ||
+            (whoOpetion === 'join' &&
+              whoCanJoinOpetion.value === item?.value) ? (
+                <Image
+                source={images.radioCheckYellow}
+                style={styles.checkboxImg}
+              />
+            ) : (
+              <Image source={images.radioUnselect} style={styles.checkboxImg} />
+            )}
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderEventPostedOpetions = ({item}) => {
     return (
       <View
         style={{
@@ -356,23 +427,23 @@ export default function CreateEventScreen({navigation, route}) {
         }}>
         <TouchableOpacity
           onPress={() => {
-            setEventPosted(index);
+            setEventPosted(item);
           }}>
           <Image
             source={
-              eventPosted === index
+              eventPosted.value === item.value
                 ? images.checkRoundOrange
                 : images.radioUnselect
             }
             style={styles.radioButtonStyle}
           />
         </TouchableOpacity>
-        <Text style={styles.eventPostedTitle}>{item}</Text>
+        <Text style={styles.eventPostedTitle}>{item.text}</Text>
       </View>
     );
   };
 
-  const renderGroups = ({item, index}) => {
+  const renderSeeGroups = ({item, index}) => {
     return (
       <GroupEventItems
         eventImageSource={
@@ -390,8 +461,34 @@ export default function CreateEventScreen({navigation, route}) {
           item.isSelected ? images.orangeCheckBox : images.uncheckWhite
         }
         onCheckBoxPress={() => {
-          groupsList[index].isSelected = !groupsList[index].isSelected;
-          setGroupsList([...groupsList]);
+          groupsSeeList[index].isSelected = !groupsSeeList[index].isSelected;
+          setGroupsSeeList([...groupsSeeList]);
+          setIsAll(false);
+        }}
+      />
+    );
+  };
+
+  const renderJoinGroups = ({item, index}) => {
+    return (
+      <GroupEventItems
+        eventImageSource={
+          item.entity_type === 'team' ? images.teamPatch : images.clubPatch
+        }
+        eventText={item.group_name}
+        groupImageSource={
+          item.thumbnail
+            ? {uri: item.thumbnail}
+            : item.entity_type === 'team'
+            ? images.teamPlaceholder
+            : images.clubPlaceholder
+        }
+        checkBoxImage={
+          item.isSelected ? images.orangeCheckBox : images.uncheckWhite
+        }
+        onCheckBoxPress={() => {
+          groupsJoinList[index].isSelected = !groupsJoinList[index].isSelected;
+          setGroupsJoinList([...groupsJoinList]);
           setIsAll(false);
         }}
       />
@@ -410,7 +507,6 @@ export default function CreateEventScreen({navigation, route}) {
 
   const openImagePicker = (width = 400, height = 400) => {
     const cropCircle = false;
-
     ImagePicker.openPicker({
       width,
       height,
@@ -480,6 +576,10 @@ export default function CreateEventScreen({navigation, route}) {
   };
 
   const checkValidation = useCallback(() => {
+    if (!backgroundThumbnail) {
+      Alert.alert(strings.appName, 'Please choose event featured image.');
+      return false;
+    }
     if (eventTitle === '') {
       Alert.alert(strings.appName, 'Please Enter Event Title.');
       return false;
@@ -500,18 +600,35 @@ export default function CreateEventScreen({navigation, route}) {
       Alert.alert(strings.appName, 'Please Select Event End Date and Time.');
       return false;
     }
+    if (!locationDetail?.venue_name || locationDetail?.venue_name?.length < 1) {
+      Alert.alert(strings.appName, 'Please enter venue name.');
+      return false;
+    }
     if (
-      Number(minAttendees) > Number(maxAttendees) ||
-      (Number(minAttendees) === 0 && Number(maxAttendees) === 0)
+      !locationDetail?.venue_detail ||
+      locationDetail?.venue_detail?.length < 1
     ) {
+      Alert.alert(strings.appName, 'Please enter venue description.');
+      return false;
+    }
+
+    if (Number(maxAttendees) === 0) {
+      Alert.alert(
+        strings.appName,
+        'Please enter valid maximum attendees number(0 not allowed).',
+      );
+      return false;
+    }
+    if (Number(minAttendees) > Number(maxAttendees)) {
       Alert.alert(strings.appName, 'Please enter valid attendees number.');
       return false;
     }
-    if (Number(eventFee) < 0) {
+
+    if (Number(eventFee) < 1) {
       Alert.alert(strings.appName, 'Please enter valid event fee amount.');
       return false;
     }
-    if (refundPolicy.length < 0) {
+    if (refundPolicy.length < 1) {
       Alert.alert(
         strings.appName,
         'Please enter valid refund policy description.',
@@ -521,11 +638,14 @@ export default function CreateEventScreen({navigation, route}) {
 
     return true;
   }, [
+    backgroundThumbnail,
     eventDescription,
     eventEndDateTime,
     eventFee,
     eventStartDateTime,
     eventTitle,
+    locationDetail?.venue_detail,
+    locationDetail?.venue_name,
     maxAttendees,
     minAttendees,
     refundPolicy.length,
@@ -535,11 +655,6 @@ export default function CreateEventScreen({navigation, route}) {
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;
     const entityRole = entity.role === 'user' ? 'users' : 'groups';
-    if (searchLocation) {
-      data[0].location = searchLocation;
-      data[0].latitude = locationDetail.lat;
-      data[0].longitude = locationDetail.lng;
-    }
 
     let rule = '';
     if (
@@ -570,14 +685,12 @@ export default function CreateEventScreen({navigation, route}) {
     }
 
     console.log('DADADADAD', data);
-    setloading(true);
+
     createEvent(entityRole, uid, data, authContext)
       .then((response) => {
         console.log('Response :-', response);
-        setTimeout(() => {
-          setloading(false);
-          navigation.goBack();
-        }, 5000);
+        setloading(false);
+        navigation.goBack();
       })
       .catch((e) => {
         setloading(false);
@@ -588,6 +701,7 @@ export default function CreateEventScreen({navigation, route}) {
 
   const onDonePress = () => {
     if (checkValidation()) {
+      setloading(true);
       const entity = authContext.entity;
       const entityRole = entity.role === 'user' ? 'users' : 'groups';
       const data = [
@@ -608,16 +722,24 @@ export default function CreateEventScreen({navigation, route}) {
           is_recurring: selectWeekMonth !== '',
           blocked: is_Blocked,
           selected_sport: sportsSelection,
-          who_can_see: whoCanSee,
-          who_can_join: whoCanJoin,
-          event_posted: eventPosted,
-          event_fee: Number(eventFee),
-          refund_policy: refundPolicy,
-          organizer: authContext.entity.obj,
-          attendees: {
-            min: Number(minAttendees),
-            max: Number(maxAttendees),
+          who_can_see: {
+            ...whoCanSeeOpetion,
           },
+          who_can_join: {
+            ...whoCanJoinOpetion,
+          },
+          event_posted_at: eventPosted,
+          event_fee: {
+            value: Number(eventFee),
+            currency_type: 'CAD',
+          },
+          refund_policy: refundPolicy,
+          min_attendees: Number(minAttendees),
+          max_attendees: Number(maxAttendees),
+          entity_type:
+            authContext.entity.role === 'user'
+              ? 'player'
+              : authContext.entity.role,
           participants: [
             {
               entity_id:
@@ -626,8 +748,38 @@ export default function CreateEventScreen({navigation, route}) {
               entity_type: entityRole,
             },
           ],
+
+          location: {
+            location_name:  searchLocation,
+            latitude: locationDetail.lat,
+            longitude: locationDetail.lng,
+            venue_name: locationDetail.venue_name,
+            venue_detail: locationDetail.venue_detail,
+          },
         },
       ];
+
+      if (whoCanSeeOpetion.value === 2) {
+        const checkedGroup = groupsSeeList.filter((obj) => obj.isSelected);
+        const resultOfIds = checkedGroup.map((obj) => obj.group_id);
+        if (authContext.entity.role === 'user') {
+          data[0].who_can_see.group_ids = resultOfIds;
+        } else {
+          data[0].who_can_see.group_ids = [authContext.entity.uid];
+        }
+      }
+
+      if (whoCanJoinOpetion.value === 2) {
+        const checkedGroup = groupsJoinList.filter((obj) => obj.isSelected);
+        const resultOfIds = checkedGroup.map((obj) => obj.group_id);
+        if (authContext.entity.role === 'user') {
+          data[0].who_can_join.group_ids = resultOfIds;
+        } else {
+          data[0].who_can_join.group_ids = [authContext.entity.uid];
+        }
+      }
+
+      console.log('create event',data);
 
       if (backgroundImageChanged) {
         const imageArray = [];
@@ -667,29 +819,14 @@ export default function CreateEventScreen({navigation, route}) {
   return (
     <>
       <ActivityLoader visible={loading} />
-      <Header
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image source={images.backArrow} style={styles.backImageStyle} />
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text style={styles.eventTextStyle}>Create an Event</Text>
-        }
-        rightComponent={
-          <TouchableOpacity style={{padding: 2}} onPress={onDonePress}>
-            <Text>Done</Text>
-          </TouchableOpacity>
-        }
-      />
 
       <View style={styles.sperateLine} />
       <TCKeyboardView>
-        <ScrollView bounces={false}>
+        <ScrollView bounces={false} nestedScrollEnabled={true}>
           <SafeAreaView>
             <EventBackgroundPhoto
               isEdit={!!backgroundThumbnail}
-              isPreview = {false}
+              isPreview={false}
               imageURL={
                 backgroundThumbnail
                   ? {uri: backgroundThumbnail}
@@ -916,65 +1053,58 @@ export default function CreateEventScreen({navigation, route}) {
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>
-              <RNPickerSelect
-                items={[
-                  {label: 'Only me', value: 'Only me'},
-                  {label: 'Everyone', value: 'Everyone'},
-                  {
-                    label: 'Members in my groups',
-                    value: 'Members in my groups',
-                  },
-                  {
-                    label: 'Followers',
-                    value: 'Followers',
-                  },
-                ]}
-                onValueChange={(value) => {
-                  setWhoCanJoin(value);
-                }}
-                useNativeAndroidPickerStyle={false}
-                style={{
-                  iconContainer: {
-                    top: 0,
-                    right: 0,
-                  },
-                  inputIOS: {
-                    height: 40,
-                    fontSize: wp('3.5%'),
-                    paddingVertical: 12,
-                    paddingHorizontal: 15,
-                    width: wp('92%'),
-                    color: 'black',
-                    paddingRight: 30,
-                    backgroundColor: colors.textFieldBackground,
-                    borderRadius: 5,
-                    textAlign: 'center',
-                  },
-                  inputAndroid: {
-                    height: 40,
-                    fontSize: wp('4%'),
-                    paddingVertical: 12,
-                    paddingHorizontal: 15,
-                    width: wp('45%'),
-                    color: 'black',
 
-                    backgroundColor: colors.offwhite,
-                    borderRadius: 5,
-                    borderWidth: 1,
-                    borderColor: '#fff',
-
-                    elevation: 3,
-                  },
-                }}
-                value={whoCanJoin}
-                Icon={() => (
+              <TouchableOpacity
+                onPress={() => {
+                  setWhoOpetion('join');
+                  setVisibleWhoModal(true);
+                }}>
+                <View style={styles.dropContainer}>
+                  <Text style={styles.textInputDropStyle}>
+                    {whoCanJoinOpetion.text}
+                  </Text>
                   <Image
                     source={images.dropDownArrow}
                     style={styles.downArrowWhoCan}
                   />
-                )}
-              />
+                </View>
+              </TouchableOpacity>
             </View>
+            {whoCanJoinOpetion.value === 2 &&
+              authContext.entity.role === 'user' && (
+                <View>
+                  <View style={styles.allStyle}>
+                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsAll(!isAll);
+                        const groups = groupsJoinList.map((obj) => ({
+                          ...obj,
+                          isSelected: !isAll,
+                        }));
+                        setGroupsJoinList([...groups]);
+                      }}>
+                      <Image
+                        source={
+                          isAll ? images.orangeCheckBox : images.uncheckWhite
+                        }
+                        style={styles.imageStyle}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <FlatList
+                    scrollEnabled={false}
+                    data={[...groupsJoinList]}
+                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => (
+                      <View style={{height: wp('4%')}} />
+                    )}
+                    renderItem={renderJoinGroups}
+                    keyExtractor={(item, index) => index.toString()}
+                    style={styles.listStyle}
+                  />
+                </View>
+              )}
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>
                 {strings.numberOfAttend}
@@ -987,6 +1117,8 @@ export default function CreateEventScreen({navigation, route}) {
               <NumberOfAttendees
                 onChangeMinText={setMinAttendees}
                 onChangeMaxText={setMaxAttendees}
+                min={minAttendees}
+                max={maxAttendees}
               />
             </View>
 
@@ -1038,95 +1170,57 @@ export default function CreateEventScreen({navigation, route}) {
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
-              <RNPickerSelect
-                items={[
-                  {label: 'Only me', value: 'Only me'},
-                  {label: 'Everyone', value: 'Everyone'},
-                  {
-                    label: 'Members in my groups',
-                    value: 'Members in my groups',
-                  },
-                  {
-                    label: 'Followers',
-                    value: 'Followers',
-                  },
-                ]}
-                onValueChange={(value) => {
-                  setWhoCanSee(value);
-                }}
-                useNativeAndroidPickerStyle={false}
-                style={{
-                  iconContainer: {
-                    top: 0,
-                    right: 0,
-                  },
-                  inputIOS: {
-                    height: 40,
-                    fontSize: wp('3.5%'),
-                    paddingVertical: 12,
-                    paddingHorizontal: 15,
-                    width: wp('92%'),
-                    color: 'black',
-                    paddingRight: 30,
-                    backgroundColor: colors.textFieldBackground,
-                    borderRadius: 5,
-                    textAlign: 'center',
-                  },
-                  inputAndroid: {
-                    height: 40,
-                    fontSize: wp('4%'),
-                    paddingVertical: 12,
-                    paddingHorizontal: 15,
-                    width: wp('45%'),
-                    color: 'black',
-
-                    backgroundColor: colors.offwhite,
-                    borderRadius: 5,
-                    borderWidth: 1,
-                    borderColor: '#fff',
-
-                    elevation: 3,
-                  },
-                }}
-                value={whoCanSee}
-                Icon={() => (
+              <TouchableOpacity
+                onPress={() => {
+                  setWhoOpetion('see');
+                  setVisibleWhoModal(true);
+                }}>
+                <View style={styles.dropContainer}>
+                  <Text style={styles.textInputDropStyle}>
+                    {whoCanSeeOpetion.text}
+                  </Text>
                   <Image
                     source={images.dropDownArrow}
                     style={styles.downArrowWhoCan}
                   />
-                )}
-              />
+                </View>
+              </TouchableOpacity>
             </View>
-            <View>
-              <View style={styles.allStyle}>
-                <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setIsAll(!isAll);
-                    const groups = groupsList.map((obj) => ({
-                      ...obj,
-                      isSelected: !isAll,
-                    }));
-                    setGroupsList([...groups]);
-                  }}>
-                  <Image
-                    source={isAll ? images.orangeCheckBox : images.uncheckWhite}
-                    style={styles.imageStyle}
+            {whoCanSeeOpetion.value === 2 &&
+              authContext.entity.role === 'user' && (
+                <View>
+                  <View style={styles.allStyle}>
+                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsAll(!isAll);
+                        const groups = groupsSeeList.map((obj) => ({
+                          ...obj,
+                          isSelected: !isAll,
+                        }));
+                        setGroupsSeeList([...groups]);
+                      }}>
+                      <Image
+                        source={
+                          isAll ? images.orangeCheckBox : images.uncheckWhite
+                        }
+                        style={styles.imageStyle}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <FlatList
+                    scrollEnabled={false}
+                    data={[...groupsSeeList]}
+                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => (
+                      <View style={{height: wp('4%')}} />
+                    )}
+                    renderItem={renderSeeGroups}
+                    keyExtractor={(item, index) => index.toString()}
+                    style={styles.listStyle}
                   />
-                </TouchableOpacity>
-              </View>
-              <FlatList
-                scrollEnabled={false}
-                data={[...groupsList]}
-                showsVerticalScrollIndicator={false}
-                ItemSeparatorComponent={() => (
-                  <View style={{height: wp('4%')}} />
-                )}
-                renderItem={renderGroups}
-                keyExtractor={(item, index) => index.toString()}
-                style={styles.listStyle}
-              />
-            </View>
+                </View>
+              )}
 
             <DateTimePickerView
               // date={eventStartDateTime}
@@ -1236,6 +1330,77 @@ export default function CreateEventScreen({navigation, route}) {
           />
         </View>
       </Modal>
+
+      <Modal
+        isVisible={visibleWhoModal}
+        backdropColor="black"
+        onBackdropPress={() => setVisibleWhoModal(false)}
+        onRequestClose={() => setVisibleWhoModal(false)}
+        backdropOpacity={0}
+        style={{
+          margin: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.3,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => setVisibleSportsModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              Sports
+            </Text>
+
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.themeColor,
+              }}></Text>
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
+            showsVerticalScrollIndicator={false}
+            data={whoCanDataSource}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderWhoCan}
+          />
+        </View>
+      </Modal>
+
       <ActionSheet
         ref={actionSheet}
         // title={'News Feed Post'}
@@ -1279,17 +1444,7 @@ const styles = StyleSheet.create({
     borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
   },
-  backImageStyle: {
-    height: 20,
-    width: 16,
-    tintColor: colors.blackColor,
-    resizeMode: 'contain',
-  },
-  eventTextStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    alignSelf: 'center',
-  },
+
   toggleViewStyle: {
     flexDirection: 'row',
     marginHorizontal: 2,
@@ -1330,6 +1485,28 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     marginBottom: 15,
   },
+  textInputDropStyle: {
+    flex: 1,
+    alignSelf: 'center',
+    textAlign: 'center',
+    color: colors.lightBlackColor,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+  },
+  dropContainer: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    borderRadius: 5,
+    width: wp('94%'),
+    height: 40,
+    alignSelf: 'center',
+    backgroundColor: colors.textFieldBackground,
+    marginTop: 10,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
   detailsInputStyle: {
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
@@ -1346,6 +1523,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     padding: wp('1.5%'),
   },
+
   headerTextStyle: {
     fontSize: 16,
     fontFamily: fonts.RBold,
@@ -1384,7 +1562,6 @@ const styles = StyleSheet.create({
     height: 15,
     resizeMode: 'contain',
     tintColor: colors.lightBlackColor,
-    top: 12,
     width: 15,
     right: 15,
   },
