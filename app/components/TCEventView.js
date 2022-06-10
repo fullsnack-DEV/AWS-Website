@@ -36,7 +36,7 @@ export default function TCEventView({
     : '';
   const endDate = data?.end_datetime ? new Date(data.end_datetime * 1000) : '';
   const location =
-    data?.location ??
+    data?.location?.location_name ??
     data?.game?.venue?.address ??
     data?.game?.venue?.description ??
     '';

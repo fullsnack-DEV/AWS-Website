@@ -7,6 +7,7 @@ import TCEventView from '../../../components/TCEventView';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
+import TCEventCard from '../../../components/Schedule/TCEventCard';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 // const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July','Aug','Sep','Oct','Nov','Dec'];
@@ -36,66 +37,57 @@ export default function EventScheduleScreen({
     console.log('events', events);
     console.log('filter Setting', filterOpetions);
     console.log('selectedFILTER', selectedFilter);
-    if (
-      authContext.entity.role === 'player' ||
-      authContext.entity.role === 'user'
-    ) {
-      if (filterOpetions.time === 0) {
-        events = events.filter(
-          (x) =>
-            x.start_datetime >
-            Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
-        );
-      } else {
-        events = events.filter(
-          (x) =>
-            x.start_datetime <
-            Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
-        );
-      }
 
-      if (filterOpetions.sort === 0) {
+    if (filterOpetions.time === 0) {
+      events = events.filter(
+        (x) =>
+          x.start_datetime >
+          Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+      );
+    } else {
+      events = events.filter(
+        (x) =>
+          x.start_datetime <
+          Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+      );
+    }
+
+    if (['player', 'user', 'club'].includes(authContext.entity.role)) {
+      if (
+        filterOpetions.sort === 2 &&
+        ['player', 'user'].includes(authContext.entity.role)
+      ) {
         if (selectedFilter.title.sport !== 'All') {
           if (selectedFilter.title === 'Matches') {
             events = events.filter(
               (obj) =>
                 obj?.game &&
                 (obj?.game?.home_team?.user_id === authContext.entity.uid ||
-                obj?.game?.away_team?.user_id === authContext.entity.uid),
+                  obj?.game?.away_team?.user_id === authContext.entity.uid),
             );
           }
           if (selectedFilter.title === 'Refeering') {
             events = events.filter(
-              (obj) =>
-              obj?.game &&
-                obj?.referee_id === authContext.entity.uid
+              (obj) => obj?.game && obj?.referee_id === authContext.entity.uid,
             );
           }
           if (selectedFilter.title === 'Scorekeepering') {
             events = events.filter(
               (obj) =>
-              obj?.game &&
-              obj?.scorekeeper_id === authContext.entity.uid
+                obj?.game && obj?.scorekeeper_id === authContext.entity.uid,
             );
           }
           if (selectedFilter.title === 'Others') {
-            events = events.filter(
-              (obj) =>
-                obj.created_by.uid !== authContext.entity.uid &&
-                obj?.game?.home_team?.user_id !== authContext.entity.uid &&
-                obj?.game?.away_team?.user_id !== authContext.entity.uid,
-            );
+            events = events.filter((obj) => !obj.game);
           }
         }
       } else if (filterOpetions.sort === 1) {
         if (selectedFilter.title.sport !== 'All') {
           events = events.filter(
-            (obj) =>
-              obj?.game &&
-              obj.game.sport === selectedFilter.title.sport
+            (obj) => obj?.game && obj.game.sport === selectedFilter.title.sport,
           );
         }
-      } else if (filterOpetions.sort === 2) {
+      } else if (filterOpetions.sort === 0) {
         if (selectedFilter.title.group_name !== 'All') {
           if (selectedFilter.title.group_name === 'Me') {
             events = events.filter(
@@ -127,6 +119,7 @@ export default function EventScheduleScreen({
         }
       }
     }
+
     if (events.length > 0) {
       const result = _(events)
         .groupBy((v) =>
@@ -168,8 +161,26 @@ export default function EventScheduleScreen({
           renderItem={({item}) => {
             console.log('render event item:=>', item);
             if (item.cal_type === 'event') {
+              if (item?.game_id && item?.game) {
+                return (
+                  <TCEventView
+                    onPress={() => onItemPress(item)}
+                    data={item}
+                    profileID={profileID}
+                    screenUserId={screenUserId}
+                    onThreeDotPress={() => onThreeDotPress(item)}
+                    eventBetweenSection={item.game}
+                    eventOfSection={
+                      item.game &&
+                      item.game.referees &&
+                      item.game.referees.length > 0
+                    }
+                    entity={entity}
+                  />
+                );
+              }
               return (
-                <TCEventView
+                <TCEventCard
                   onPress={() => onItemPress(item)}
                   data={item}
                   profileID={profileID}

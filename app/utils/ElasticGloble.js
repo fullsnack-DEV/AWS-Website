@@ -21,6 +21,7 @@ const makeElasticAPIRequest = async ({ method, url, data }) => NetInfo.fetch().t
 const globalElasticApiCall = async ({
  method, url, data,
  }) => {
+   console.log('dadadada',data);
   const elasticCredential = await Utility.getStorage('appSetting');
   console.log('elasticCredential', elasticCredential);
 

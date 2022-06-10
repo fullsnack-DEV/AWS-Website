@@ -15,7 +15,7 @@ export default function BlockSlotView({
 }) {
   const getTimeFormat = (dateValue) =>
     moment(new Date(dateValue * 1000)).format('h:mma');
-  console.log('asasasasa', item.blocked);
+  console.log('isBlocked:=>', item.blocked);
 
   return (
     <>

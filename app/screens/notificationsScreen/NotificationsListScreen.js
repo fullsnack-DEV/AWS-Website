@@ -63,6 +63,7 @@ import PRNotificationTeamInvite from '../../components/notificationComponent/PRN
 import PRNotificationDetailItem from '../../components/notificationComponent/PRNotificationDetailItem';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
+import { getEventById } from '../../api/Schedule';
 
 function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
@@ -583,6 +584,7 @@ function NotificationsListScreen({navigation}) {
 
   const onRespond = (groupObj) => {
     console.log('groupObj11:=>', groupObj);
+
     const groupId = JSON.parse(groupObj?.activities?.[0]?.object).groupData
       ?.group_id;
     console.log(
@@ -595,7 +597,29 @@ function NotificationsListScreen({navigation}) {
         groupObj.activities[0].verb.includes(NotificationType.inviteToJoinClub)
       ) {
         navigation.navigate('RespondForInviteScreen', {groupObj});
-      } else if (
+      }if (
+        groupObj.activities[0].verb.includes(NotificationType.inviteToEvent)
+      ) {
+        setloading(true)
+        getEventById(
+          authContext.entity.role === 'user' ? 'users' : 'groups',
+          authContext.entity.uid || authContext.entity.auth.user_id,
+          JSON.parse(groupObj?.activities?.[0]?.object).eventId,
+          authContext,
+        )
+          .then((response) => {
+          setloading(false)
+            navigation.navigate('AcceptEventInviteScreen', {
+              data: response.payload,
+              requestID: groupObj?.activities?.[0].id
+            });
+          })
+          .catch((e) => {
+            setloading(false)
+            console.log('Error :-', e);
+          });
+      }
+       else if (
         groupObj.activities[0].verb.includes(
           NotificationType.sendBasicInfoToMember,
         )
@@ -635,6 +659,7 @@ function NotificationsListScreen({navigation}) {
     verb.includes(NotificationType.inviteToConnectProfile) ||
     verb.includes(NotificationType.invitePlayerToJoingame) ||
     verb.includes(NotificationType.inviteToDoubleTeam) ||
+    verb.includes(NotificationType.inviteToEvent) ||
     verb.includes(NotificationType.sendBasicInfoToMember);
   const openHomePage = (item) => {
     if (activeScreen) {
@@ -754,6 +779,7 @@ function NotificationsListScreen({navigation}) {
       console.log('Ok ok12');
       if (
         item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
+        item.activities[0].verb.includes(NotificationType.inviteToEvent) ||
         item.activities[0].verb.includes(NotificationType.inviteToJoinClub)
       ) {
         return (

@@ -17,7 +17,7 @@ import {
   LayoutAnimation,
 } from 'react-native';
 import _ from 'lodash';
-
+import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
   heightPercentageToDP as hp,
@@ -745,7 +745,7 @@ export const getFiltersOpetions = (opetions) => {
     arr.push(obj);
   });
 
-  console.log('filter arr',arr);
+  console.log('filter arr', arr);
   return arr;
 };
 
@@ -827,9 +827,18 @@ export const getCalendar = async (
   }
 };
 
-export const uniqueArray = (array, propertyName) =>  {
-  return array.filter((e, i) => array.findIndex(a => a[propertyName] === e[propertyName]) === i);
-}
+export const uniqueArray = (array, propertyName) => {
+  return array.filter(
+    (e, i) => array.findIndex((a) => a[propertyName] === e[propertyName]) === i,
+  );
+};
+
+export const getNearDateTime = (date) => {
+  const start = moment(date);
+  const nearTime = 5 - (start.minute() % 5);
+  const dateTime = moment(start).add(nearTime, 'm').toDate();
+  return dateTime;
+};
 
 export const getSportName = (object, authContext) => {
   if (object?.sport_type && object?.sport_type !== '') {
@@ -901,15 +910,20 @@ export const getSportImage = (sportName, type, authContext) => {
   }
 };
 
-export const getGamesList = async (games) => {
+export const getGamesList = async (eventsList) => {
+  console.log('eventsListeventsList',eventsList);
   const promiseArr = [];
   let userIDs = [];
   let groupIDs = [];
 
-  games.map((game) => {
+  eventsList.map((game) => {
     if (game.user_challenge) {
       userIDs.push(game.home_team);
       userIDs.push(game.away_team);
+    } else if (game.owner_id && game.owner_type === 'users') {
+      userIDs.push(game.owner_id);
+    } else if (game.owner_id && game.owner_type === 'groups') {
+      groupIDs.push(game.owner_id);
     } else {
       groupIDs.push(game.home_team);
       groupIDs.push(game.away_team);
@@ -918,6 +932,8 @@ export const getGamesList = async (games) => {
 
   userIDs = [...new Set(userIDs)];
   groupIDs = [...new Set(groupIDs)];
+
+  console.log('dfdasfadsfdsfas',userIDs,groupIDs);
 
   if (userIDs.length > 0) {
     const userQuery = {
@@ -953,40 +969,73 @@ export const getGamesList = async (games) => {
       }
 
       if (userData) {
-        const userGames = (games || []).filter((game) => game.user_challenge);
+        const userGames = (eventsList || []).filter(
+          (game) =>
+            game.user_challenge ||
+            (game.owner_id && game.owner_type === 'users'),
+        );
         for (const game of userGames) {
           let userObj = userData.find(
-            (user) => user.user_id === game.home_team,
+            (user) =>
+              user.user_id === game.home_team || user.user_id === game.owner_id,
           );
           if (userObj) {
-            game.home_team = userObj;
+            if (game.home_team) {
+              game.home_team = userObj;
+            } else {
+              game.owner_obj = userObj;
+            }
           }
 
-          userObj = userData.find((user) => user.user_id === game.away_team);
+          userObj = userData.find(
+            (user) =>
+              user.user_id === game.away_team || user.user_id === game.owner_id,
+          );
           if (userObj) {
-            game.away_team = userObj;
+            if (game.away_team) {
+              game.away_team = userObj;
+            } else {
+              game.owner_obj = userObj;
+            }
           }
         }
       }
       if (groupData) {
-        const groupGames = (games || []).filter((game) => !game.user_challenge);
+        const groupGames = (eventsList || []).filter(
+          (game) =>
+            !game.user_challenge ||
+            (game.owner_id && game.owner_type === 'groups'),
+        );
         for (const game of groupGames) {
           let groupObj = groupData.find(
-            (group) => group.group_id === game.home_team,
+            (group) =>
+              group.group_id === game.home_team ||
+              group.group_id === game.owner_id,
           );
           if (groupObj) {
-            game.home_team = groupObj;
+            if (game.home_team) {
+              game.home_team = groupObj;
+            } else {
+              game.owner_obj = groupObj;
+            }
           }
 
           groupObj = groupData.find(
-            (group) => group.group_id === game.away_team,
+            (group) =>
+              group.group_id === game.away_team ||
+              group.group_id === game.owner_id,
           );
           if (groupObj) {
-            game.away_team = groupObj;
+            if (game.away_team) {
+              game.away_team = groupObj;
+            } else {
+              game.owner_obj = groupObj;
+            }
           }
         }
       }
-      return games;
+      console.log('custom eventsListeventsList',eventsList);
+      return eventsList;
     });
   }
 };

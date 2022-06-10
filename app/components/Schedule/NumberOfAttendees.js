@@ -1,15 +1,10 @@
 /* eslint-disable no-unused-vars */
-import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, View, Text, TextInput} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-function NumberOfAttendees({imageURL, isEdit = false}) {
+function NumberOfAttendees({onChangeMinText, onChangeMaxText,min, max}) {
   return (
     <View
       style={{
@@ -22,13 +17,13 @@ function NumberOfAttendees({imageURL, isEdit = false}) {
       }}>
       <View
         style={{
-            height: 40,
-            backgroundColor: colors.textFieldBackground,
-            borderRadius: 5,
-  
-            flexDirection: 'row',
-            alignItems: 'center',
-            flex: 0.42,
+          height: 40,
+          backgroundColor: colors.textFieldBackground,
+          borderRadius: 5,
+
+          flexDirection: 'row',
+          alignItems: 'center',
+          flex: 0.42,
         }}>
         <Text
           style={{
@@ -41,9 +36,10 @@ function NumberOfAttendees({imageURL, isEdit = false}) {
           Min
         </Text>
         <TextInput
+          placeholder="0"
           style={styles.minMaxStyle}
-          onChangeText={() => {}}
-          value={'0'}
+          onChangeText={onChangeMinText}
+          value={`${min}`}
           textAlignVertical={'center'}
           placeholderTextColor={colors.userPostTimeColor}
         />
@@ -72,9 +68,11 @@ function NumberOfAttendees({imageURL, isEdit = false}) {
           Max
         </Text>
         <TextInput
+          placeholder="100"
           style={styles.minMaxStyle}
-          // onChangeText={onChangeText}
-          value={'100'}
+          onChangeText={onChangeMaxText}
+          value={`${max}`}
+
           textAlignVertical={'center'}
           placeholderTextColor={colors.userPostTimeColor}
         />

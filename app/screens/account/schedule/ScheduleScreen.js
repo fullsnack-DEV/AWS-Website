@@ -20,8 +20,7 @@ import {
   Alert,
   TouchableOpacity,
   SafeAreaView,
-  ScrollView,
-  Animated,
+
   Dimensions,
 } from 'react-native';
 
@@ -37,11 +36,12 @@ import ActionSheet from 'react-native-actionsheet';
 import {useIsFocused} from '@react-navigation/native';
 import moment from 'moment';
 import FastImage from 'react-native-fast-image';
+import CalendarStrip from 'react-native-calendar-strip';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import EventScheduleScreen from './EventScheduleScreen';
 import fonts from '../../../Constants/Fonts';
-import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
+
 import AuthContext from '../../../auth/context';
 import * as RefereeUtils from '../../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../../scorekeeper/ScorekeeperUtility';
@@ -66,14 +66,15 @@ import {getUserSettings, userActivate} from '../../../api/Users';
 import {getGroups, groupUnpaused} from '../../../api/Groups';
 import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import TCThinDivider from '../../../components/TCThinDivider';
-
-let selectedCalendarDate = moment(new Date());
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
   const refContainer = useRef();
-  const sortFilterData = ['Reservation Type', 'Sport', 'Event Organizer'];
-  const timeFilterData = ['Upcoming', 'Past'];
+  const sortFilterData = ['Organizer', 'Sport', 'Reservation Type'];
+  const sortFilterDataClub = ['Organizer', 'Sport'];
+
+  const timeFilterData = ['Future', 'Past'];
   const reservationOpetions = [
     'All',
     'Matches',
@@ -81,6 +82,7 @@ export default function ScheduleScreen({navigation, route}) {
     'Scorekeepering',
     'Others',
   ];
+
   const [sports, setSports] = useState([]);
   const [orgenizerOpetions, setOrgenizerOpetions] = useState([]);
 
@@ -118,16 +120,15 @@ export default function ScheduleScreen({navigation, route}) {
 
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [eventData, setEventData] = useState([]);
-  const [timeTable, setTimeTable] = useState([]);
   const [selectedEventItem, setSelectedEventItem] = useState(null);
   const [loading, setloading] = useState(false);
   const [isRefereeModal, setIsRefereeModal] = useState(false);
   const [isScorekeeperModal, setIsScorekeeperModal] = useState(false);
   const [refereeReservData, setRefereeReserveData] = useState([]);
   const [scorekeeperReservData, setScorekeeperReserveData] = useState([]);
-  const [showTimeTable, setShowTimeTable] = useState(false);
-  const [isMenu, setIsMenu] = useState(false);
-  const [listView, setListView] = useState(true);
+
+  const [indigator, setIndigator] = useState(false);
+
   const [selectedOpetions, setSelectedOpetions] = useState({
     opetion: 0,
     title: 'All',
@@ -140,17 +141,15 @@ export default function ScheduleScreen({navigation, route}) {
   const [sortFilterOpetion, setSortFilterOpetion] = useState(0);
   const [timeFilterOpetion, setTimeFilterOpetion] = useState(0);
   const [filterPopup, setFilterPopup] = useState(false);
-  const [selectedCalendarDateString] = useState(
-    selectedCalendarDate.format('YYYY-MM-DD'),
-  );
-  const [markingDays, setMarkingDays] = useState({});
+
   const [currentTab, setCurrentTab] = useState();
-  const [groupList, setGroupList] = useState([]);
   const [notifAPI, setNotifAPI] = useState();
 
-  const [animatedOpacityValue] = useState(new Animated.Value(0));
   const [slots, setSlots] = useState();
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [allSlots, setAllSlots] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(
+    moment(new Date()).format('YYYY-MM-DD'),
+  );
 
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [pointEvent, setPointEvent] = useState('auto');
@@ -186,14 +185,14 @@ export default function ScheduleScreen({navigation, route}) {
   useEffect(() => {
     getBlockedSlots();
     if (route?.params?.isBackVisible) {
-      getEventsList(authContext.entity.obj);
+      getEventsList();
     }
   }, [isFocused]);
 
-  const getSimpleDateFormat = (dateValue) => {
-    moment.locale('en');
-    return moment(new Date(dateValue)).format('yy/MM/DD');
-  };
+  // const getSimpleDateFormat = (dateValue) => {
+  //   moment.locale('en');
+  //   return moment(new Date(dateValue)).format('yy/MM/DD');
+  // };
 
   const getEventOccuranceFromRule = (event) => {
     console.log('OFFSET:=>', Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -237,98 +236,6 @@ export default function ScheduleScreen({navigation, route}) {
     return occr;
   };
 
-  // useEffect(() => {
-  //   setloading(true)
-  //   if (isFocused) {
-  //     Utility.getStorage('schedule_sport_filter')
-  //       .then((setting) => {
-  //         setloading(false)
-  //         console.log('Setting::1::=>', setting);
-  //         if (setting === null) {
-  //           const playerSport =
-  //             authContext?.entity?.auth?.user?.registered_sports || [];
-  //           const followedSport = authContext?.entity?.obj?.sports;
-  //           const res = ([...playerSport, ...followedSport] || []).map(
-  //             (obj) => ({
-  //               sport: obj.sport,
-  //               sport_type: obj.sport_type,
-  //             }),
-  //           );
-  //           const result = res.reduce((unique, o) => {
-  //             if (
-  //               !unique.some(
-  //                 (obj) =>
-  //                   obj.sport === o.sport && obj.sport_type === o.sport_type,
-  //               )
-  //             ) {
-  //               unique.push(o);
-  //             }
-  //             return unique;
-  //           }, []);
-  //           console.log(
-  //             'resultresult----',
-  //             result.filter((obj) => obj.sport && obj.sport_type),
-  //           );
-  //           setSports([...result.filter((obj) => obj.sport && obj.sport_type)]);
-  //         } else {
-  //           const arr = [];
-  //           for (const sport of sports) {
-  //             const isFound = setting.filter(
-  //               (obj) => obj.sport === sport.sport,
-  //             );
-  //             if (isFound.length > 0) {
-  //               arr.push(sport);
-  //             }
-  //           }
-
-  //           const allSport = [
-  //             ...arr,
-  //             ...setting,
-  //             ...authContext?.entity?.auth?.user?.registered_sports,
-  //           ];
-  //           const uniqSports = {};
-  //           const uniqueSports = allSport.filter(
-  //             (obj) => !uniqSports[obj.sport] && (uniqSports[obj.sport] = true),
-  //           );
-  //           console.log('unique ==>', uniqueSports);
-  //           setSports([...uniqueSports]);
-  //         }
-  //       })
-  //       // eslint-disable-next-line no-unused-vars
-  //       .catch((e) => {
-  //         setloading(false)
-  //         const playerSport =
-  //           authContext?.entity?.auth?.user?.registered_sports || [];
-  //         const followedSport = authContext?.entity?.obj?.sports;
-  //         const res = ([...playerSport, ...followedSport] || []).map((obj) => ({
-  //           sport: obj.sport,
-  //           sport_type: obj.sport_type,
-  //           sport_name: obj.sport_name,
-  //           player_image: obj.player_image,
-  //         }));
-  //         const result = res.reduce((unique, o) => {
-  //           if (
-  //             !unique.some(
-  //               (obj) =>
-  //                 obj.sport === o.sport &&
-  //                 obj.sport_type === o.sport_type &&
-  //                 obj.sport_name === o.sport_name &&
-  //                 obj.player_image === o.player_image,
-  //             )
-  //           ) {
-  //             unique.push(o);
-  //           }
-  //           // if (!unique.some((obj) => obj.sport === o.sport)) {
-  //           //   unique.push(o);
-  //           // }
-  //           return unique;
-  //         }, []);
-
-  //         setSports(result);
-  //       });
-  //   }
-  // }, [authContext, isFocused]);
-
   useEffect(() => {
     setloading(true);
     getUserSettings(authContext)
@@ -345,34 +252,34 @@ export default function ScheduleScreen({navigation, route}) {
               ...setting?.payload?.user?.schedule_group_filter,
               {group_name: 'Other', group_id: 2},
             ]);
-          }else{
+          } else {
             getGroups(authContext)
-            .then((response) => {
-              const {teams, clubs} = response.payload ?? [];
-              console.log('fdsfdsfsdfas', response);
+              .then((response) => {
+                const {teams, clubs} = response.payload ?? [];
+                console.log('fdsfdsfsdfas', response);
 
-              if (response.payload.length > 0) {
-                setOrgenizerOpetions([
-                  {group_name: 'All', group_id: 0},
-                  {group_name: 'Me', group_id: 1},
-                  ...teams,
-                  ...clubs,
-                  {group_name: 'Other', group_id: 2},
-                ]);
-              } else {
-                setOrgenizerOpetions([
-                  {group_name: 'All', group_id: 0},
-                  {group_name: 'Me', group_id: 1},
-                  {group_name: 'Other', group_id: 2},
-                ]);
-              }
+                if (response.payload.length > 0) {
+                  setOrgenizerOpetions([
+                    {group_name: 'All', group_id: 0},
+                    {group_name: 'Me', group_id: 1},
+                    ...teams,
+                    ...clubs,
+                    {group_name: 'Other', group_id: 2},
+                  ]);
+                } else {
+                  setOrgenizerOpetions([
+                    {group_name: 'All', group_id: 0},
+                    {group_name: 'Me', group_id: 1},
+                    {group_name: 'Other', group_id: 2},
+                  ]);
+                }
 
-              setloading(false);
-            })
-            .catch((e) => {
-              setloading(false);
-              Alert.alert('sasasasa', e.message);
-            });
+                setloading(false);
+              })
+              .catch((e) => {
+                setloading(false);
+                Alert.alert(strings.townsCupTitle, e.message);
+              });
           }
           if (
             setting?.payload?.user?.schedule_sport_filter &&
@@ -383,7 +290,7 @@ export default function ScheduleScreen({navigation, route}) {
               ...setting?.payload?.user?.schedule_sport_filter,
               {sport: 'Other'},
             ]);
-          }else{
+          } else {
             const sportsList = [
               ...(authContext?.entity?.obj?.registered_sports?.filter(
                 (obj) => obj.is_active,
@@ -395,17 +302,17 @@ export default function ScheduleScreen({navigation, route}) {
                 (obj) => obj.is_active,
               ) || []),
             ];
-  
+
             const res = sportsList.map((obj) => {
               return {
                 sport: obj.sport,
               };
             });
             const data = Utility.uniqueArray(res, 'sport');
-  
+
             setSports([{sport: 'All'}, ...data, {sport: 'Other'}]);
           }
-        } 
+        }
         setloading(false);
       })
       .catch((e) => {
@@ -431,64 +338,65 @@ export default function ScheduleScreen({navigation, route}) {
         console.log('Events List get Calender:=>', response);
         const bookSlots = [];
         response.forEach((item) => {
+          console.log('Block slots List:=>', item);
+
           if (item?.rrule) {
             const rEvents = getEventOccuranceFromRule(item);
-            console.log('Recurring Events List:=>', rEvents);
             bookSlots.push(...rEvents);
           } else {
             bookSlots.push(item);
           }
         });
-        console.log('Book slot', bookSlots);
+        console.log('Book slot1111111', bookSlots);
         // const bookSlots = response.payload;
-        setSlots(bookSlots);
+        onDayPress(new Date());
+        setAllSlots(bookSlots);
 
-        const markedDates = {};
+        // const markedDates = {};
+        // const group = bookSlots.reduce((groups, data) => {
+        //   const title = moment(new Date(data.start_datetime * 1000)).format(
+        //     'yyyy-MM-DD',
+        //   );
+        //   if (!groups[title]) {
+        //     groups[title] = [];
+        //   }
+        //   groups[title].push(data);
+        //   return groups;
+        // }, {});
 
-        const group = bookSlots.reduce((groups, data) => {
-          const title = moment(new Date(data.start_datetime * 1000)).format(
-            'yyyy-MM-DD',
-          );
-          if (!groups[title]) {
-            groups[title] = [];
-          }
-          groups[title].push(data);
-          return groups;
-        }, {});
-
-        console.log('Groups:=>', group);
-        // eslint-disable-next-line array-callback-return
-        bookSlots?.map((e) => {
-          console.log('start date list :=>', e);
-          const original_date = moment(
-            new Date(e.start_datetime * 1000),
-          ).format('yyyy-MM-DD');
-          console.log('original_date', original_date);
-          if (e.allDay === true) {
-            markedDates[original_date] = {
-              disabled: true,
-              startingDay: true,
-              endingDay: true,
-              disableTouchEvent: true,
-              customStyles: {
-                container: {
-                  backgroundColor: colors.lightgrayColor,
-                },
-                text: {
-                  color: colors.grayColor,
-                },
-              },
-            };
-          } else {
-            markedDates[original_date] = {
-              marked: true,
-              dotColor: colors.themeColor,
-              activeOpacity: 1,
-            };
-          }
-        });
-        setMarkingDays(markedDates);
-        console.log('Marked dates::', markedDates);
+        // console.log('Groups:=>', group);
+        // // eslint-disable-next-line array-callback-return
+        // bookSlots?.map((e) => {
+        //   console.log('start date list :=>', e);
+        //   const original_date = moment(
+        //     new Date(e.start_datetime * 1000),
+        //   ).format('yyyy-MM-DD');
+        //   console.log('original_date', original_date);
+        //   if (e.allDay === true) {
+        //     markedDates[original_date] = {
+        //       disabled: true,
+        //       startingDay: true,
+        //       endingDay: true,
+        //       disableTouchEvent: true,
+        //       customStyles: {
+        //         container: {
+        //           backgroundColor: colors.lightgrayColor,
+        //         },
+        //         text: {
+        //           color: colors.grayColor,
+        //         },
+        //       },
+        //     };
+        //   } else {
+        //     markedDates[original_date] = {
+        //       marked: true,
+        //       dotColor: colors.themeColor,
+        //       activeOpacity: 1,
+        //     };
+        //   }
+        // });
+        // setMarkingDays(markedDates);
+        // console.log('Marked dates::', markedDates);
       })
       .catch((e) => {
         setTimeout(() => {
@@ -500,7 +408,7 @@ export default function ScheduleScreen({navigation, route}) {
   const configureEvents = useCallback(
     (eventsData, games) => {
       console.log('gamesgames::::::->', games);
-      console.log('gaeventsDatamesgames', games);
+      console.log('gaeventsDatamesgames', eventsData);
       const eventTimeTableData = eventsData.map((item) => {
         if (item?.game_id) {
           const gameObj =
@@ -524,8 +432,6 @@ export default function ScheduleScreen({navigation, route}) {
         ),
       );
 
-      setTimeTable(eventTimeTableData);
-
       (eventTimeTableData || []).filter((event_item) => {
         const startDate = new Date(event_item.start_datetime * 1000);
         const eventDate = moment(startDate).format('YYYY-MM-DD');
@@ -541,7 +447,6 @@ export default function ScheduleScreen({navigation, route}) {
       const onlyEvents = (eventsData || []).filter(
         (obj) => obj.cal_type === 'event',
       );
-      console.log('onlyEvents', onlyEvents);
       onlyEvents.map((event_item) => {
         const startDate = new Date(event_item.start_datetime * 1000);
         const eventDate = moment(startDate).format('YYYY-MM-DD');
@@ -550,108 +455,90 @@ export default function ScheduleScreen({navigation, route}) {
           selected: false,
         };
       });
-      setMarkingDays(tempMarkDate);
     },
     [eventData, selectedDate],
   );
 
-  const getEventsList = useCallback(
-    (selectedObj) => {
-      setloading(true);
-      console.log('selectedObj:=>', selectedObj);
+  const getEventsList = useCallback(() => {
+    setloading(true);
 
-      let eventTimeTableData = [];
-      Utility.getCalendar(
-        authContext?.entity?.uid,
-        Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
-      )
-        // blockedSlots(entityRole, uid, authContext)
-        .then((response) => {
-          console.log('calender list:=>', response);
-          response = (response || []).filter((obj) => {
-            if (obj.cal_type === 'blocked') {
-              return obj;
-            }
-            if (obj.cal_type === 'event') {
-              if (obj?.expiry_datetime) {
-                if (
-                  obj?.expiry_datetime >=
-                  parseFloat(new Date().getTime() / 1000).toFixed(0)
-                ) {
-                  return obj;
-                }
-              } else {
+    let eventTimeTableData = [];
+    Utility.getCalendar(
+      authContext?.entity?.uid,
+      Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+    )
+      // blockedSlots(entityRole, uid, authContext)
+      .then((response) => {
+        response = (response || []).filter((obj) => {
+          if (obj.cal_type === 'blocked') {
+            return obj;
+          }
+          if (obj.cal_type === 'event') {
+            if (obj?.expiry_datetime) {
+              if (
+                obj?.expiry_datetime >=
+                parseFloat(new Date().getTime() / 1000).toFixed(0)
+              ) {
                 return obj;
               }
-            }
-          });
-
-          const bookSlots = [];
-          response.forEach((item) => {
-            if (item?.rrule) {
-              const rEvents = getEventOccuranceFromRule(item);
-              console.log('Recurring Events List:=>', rEvents);
-              bookSlots.push(...rEvents);
             } else {
-              bookSlots.push(item);
+              return obj;
             }
-          });
-
-          console.log('filter list:=>', response);
-
-          eventTimeTableData = bookSlots;
-          let gameIDs = [...new Set(response.map((item) => item.game_id))];
-
-          gameIDs = (gameIDs || []).filter((item) => item !== undefined);
-          console.log('gameIds  list:=>', gameIDs);
-
-          if (gameIDs.length > 0) {
-            const gameList = {
-              query: {
-                terms: {
-                  _id: gameIDs,
-                },
-              },
-            };
-
-            getGameIndex(gameList).then((games) => {
-              console.log('game index', games);
-
-              const listObj = response.map((obj) => {
-                if (obj.game_id === obj.challenge_id) {
-                  return obj.game;
-                }
-              });
-
-              const pendingChallenge = listObj.filter((obj) => {
-                return obj !== undefined;
-              });
-              console.log('listObj', pendingChallenge);
-
-              Utility.getGamesList([...games, ...pendingChallenge]).then(
-                (gamedata) => {
-                  console.log('gamedata', gamedata);
-                  configureEvents(eventTimeTableData, gamedata);
-                },
-              );
-            });
           }
-          console.log('eventTimeTableData::=>', eventTimeTableData);
-          configureEvents(eventTimeTableData);
-          setloading(false);
-        })
-        .catch((e) => {
-          setloading(false);
-          console.log('Error::=>', e);
-          Alert.alert(strings.alertmessagetitle, e.message);
         });
-    },
-    [authContext?.entity?.uid, configureEvents],
-  );
 
-  // useEffect(() => {
-  //     getEventsList(selectedEntity)
-  // }, [getEventsList]);
+        const bookSlots = [];
+        response.forEach((item) => {
+          if (item?.rrule) {
+            const rEvents = getEventOccuranceFromRule(item);
+            bookSlots.push(...rEvents);
+          } else {
+            bookSlots.push(item);
+          }
+        });
+
+        eventTimeTableData = bookSlots;
+        let gameIDs = [...new Set(response.map((item) => item.game_id))];
+
+        gameIDs = (gameIDs || []).filter((item) => item !== undefined);
+
+        if (gameIDs.length > 0) {
+          const gameList = {
+            query: {
+              terms: {
+                _id: gameIDs,
+              },
+            },
+          };
+          getGameIndex(gameList).then((games) => {
+            const listObj = response.map((obj) => {
+              if (obj.game_id === obj.challenge_id) {
+                return obj.game;
+              }
+            });
+
+            const pendingChallenge = listObj.filter((obj) => {
+              return obj !== undefined;
+            });
+
+            Utility.getGamesList([
+              ...games,
+              ...pendingChallenge,
+              ...response.filter((obj) => obj.owner_id),
+            ]).then((gamedata) => {
+              configureEvents(eventTimeTableData, gamedata);
+            });
+          });
+        }
+        configureEvents(eventTimeTableData);
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        console.log('Error::=>', e);
+        Alert.alert(strings.alertmessagetitle, e.message);
+      });
+  }, [authContext?.entity?.uid, configureEvents]);
 
   useEffect(() => {
     if (selectedEventItem) {
@@ -772,6 +659,9 @@ export default function ScheduleScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
+      if (notifAPI === 1) {
+        getEventsList();
+      }
       if (notifAPI !== 1) {
         getUnreadCount(authContext).then((response) => {
           if (response?.status === true) {
@@ -785,15 +675,12 @@ export default function ScheduleScreen({navigation, route}) {
             const tabIndex = groups.findIndex(
               (item) => item?.group_id === entityId,
             );
-            setGroupList(groups);
+
             setNotifAPI(1);
             setCurrentTab(tabIndex !== -1 ? tabIndex : 0);
-            getEventsList(groups[tabIndex]);
+            getEventsList();
           }
         });
-      }
-      if (notifAPI === 1) {
-        getEventsList(groupList[currentTab]);
       }
     }
   }, [currentTab, isFocused]);
@@ -806,70 +693,45 @@ export default function ScheduleScreen({navigation, route}) {
     plusActionSheet.current.show();
   }, []);
 
-  const onPressListView = useCallback((value, buttonIndex) => {
-    console.log('List view Pressed:=>', value, buttonIndex);
-    if (buttonIndex === 2) {
-      setListView(value);
-    } else if (buttonIndex === 1) {
-      setShowTimeTable(value);
-      // setMonthView(true)
-    } else if (buttonIndex === 0) {
-      setIsMenu(value);
-      console.log('menu:=>', buttonIndex);
-    }
-  }, []);
+  // const getSelectedDayEvents = useCallback(
+  //   (date) => {
+  //     const markedDates = {...markingDays};
+  //     console.log('MARKED::', Object.keys(markedDates));
 
-  const onPressGridView = useCallback((value, buttonIndex) => {
-    console.log('Grid view Pressed:=>', value, buttonIndex);
-    if (buttonIndex === 2) {
-      setListView(value);
-    } else if (buttonIndex === 1) {
-      setShowTimeTable(value);
-      // setMonthView(false)
-    } else if (buttonIndex === 0) {
-      setIsMenu(value);
-      console.log('menu:=>', buttonIndex);
-    }
-  }, []);
-
-  const getSelectedDayEvents = useCallback(
-    (date) => {
-      const markedDates = {...markingDays};
-      console.log('MARKED::', Object.keys(markedDates));
-
-      Object.keys(markedDates).forEach((e) => {
-        if (markedDates[e].selected) {
-          markedDates[e].selected = false;
-        }
-        if (markedDates[e].selected) {
-          if (!markedDates[e].event) {
-            markedDates[e].selected = false;
-            delete markedDates[e];
-          }
-        }
-      });
-      if (markedDates[date]) {
-        markedDates[date].selected = true;
-      } else {
-        markedDates[date] = {selected: true};
-      }
-      setMarkingDays(markedDates);
-
-      console.log('MARKED DATES::', JSON.stringify(markedDates));
-    },
-    [markingDays],
-  );
+  //     Object.keys(markedDates).forEach((e) => {
+  //       if (markedDates[e].selected) {
+  //         markedDates[e].selected = false;
+  //       }
+  //       if (markedDates[e].selected) {
+  //         if (!markedDates[e].event) {
+  //           markedDates[e].selected = false;
+  //           delete markedDates[e];
+  //         }
+  //       }
+  //     });
+  //     if (markedDates[date]) {
+  //       markedDates[date].selected = true;
+  //     } else {
+  //       markedDates[date] = {selected: true};
+  //     }
+  //     setMarkingDays(markedDates);
+  //   },
+  //   [markingDays],
+  // );
 
   const createCalenderTimeSlots = (startTime, hours, blockedSlots) => {
-    console.log('dsdsad', blockedSlots);
+    console.log('startTime::->', new Date(startTime * 1000));
+    console.log('hours::->', hours);
+    console.log('blockedSlots::->', blockedSlots);
+
     const tSlots = [];
     let startSlotTime = startTime;
     const lastSlotTime = startTime + hours * 60 * 60;
     for (const blockedSlot of blockedSlots) {
-      if (lastSlotTime > blockedSlot.start_datetime) {
+      if (lastSlotTime > blockedSlot?.start_datetime) {
         tSlots.push({
           start_datetime: startSlotTime,
-          end_datetime: blockedSlot.start_datetime,
+          end_datetime: blockedSlot?.start_datetime,
           blocked: false,
         });
 
@@ -892,53 +754,70 @@ export default function ScheduleScreen({navigation, route}) {
     return tSlots;
   };
 
-  const onDayPress = (dateObj) => {
-    console.log('dateObjdateObj', dateObj);
-    selectedCalendarDate = moment(dateObj.dateString);
-    getSelectedDayEvents(dateObj.dateString);
-    setSelectedDate(moment(dateObj.dateString).format('YYYY-MM-DD'));
-    console.log('timeTableeee', timeTable);
-    let temp = [];
-    temp = timeTable.filter(
-      (e) =>
-        getSimpleDateFormat(
-          new Date(e?.start_datetime * 1000) ===
-            getSimpleDateFormat(new Date(dateObj.dateString)),
-        ) && e.blocked,
-    );
+  const onDayPress = useCallback(
+    (dateObj) => {
+      console.log(
+        'date object pressed',
+        moment(new Date(dateObj)).format('YYYY-MM-DD'),
+      );
+      const start = new Date(dateObj);
+      start.setHours(0, 0, 0, 0);
 
-    const start = new Date(dateObj.timestamp);
-    start.setHours(0, 0, 0, 0);
-    const timeSlots = createCalenderTimeSlots(
-      Number(parseFloat(new Date(start).getTime() / 1000).toFixed(0)),
-      24,
-      temp,
-    );
-    setSlots(timeSlots);
-  };
+      setSelectedDate(start);
 
-  const onReachedCalenderTop = ({nativeEvent: e}) => {
-    const offset = e?.contentOffset?.y;
-    console.log('Offset calender:=>', offset);
+      const temp = [];
+      for (const blockedSlot of allSlots) {
+        const eventDate = new Date(blockedSlot.start_datetime * 1000);
+        eventDate.setHours(0, 0, 0, 0);
+        console.log('eventDate.getTime()', eventDate.getTime());
+        console.log('start.getTime()', start.getTime());
+        if (
+          eventDate.getTime() === start.getTime() &&
+          blockedSlot.blocked === true
+        ) {
+          console.log('date match');
+          temp.push(blockedSlot);
+        } else {
+          console.log('date not match');
+        }
+      }
 
-    if (offset >= 20) {
-      Animated.timing(animatedOpacityValue, {
-        toValue: 1,
-        useNativeDriver: true,
-      }).start(() => setListView(true));
-    }
-    if (offset <= -50) {
-      // Platform.OS === 'ios' ? -80 : 1
-      Animated.timing(animatedOpacityValue, {
-        toValue: 0,
-        useNativeDriver: true,
-      }).start(() => setListView(false));
-    }
-  };
+      console.log('temptemp', temp);
+      console.log('startstart', start);
 
-  const onScrollCalender = (event) => {
-    onReachedCalenderTop(event);
-  };
+      const timeSlots = createCalenderTimeSlots(
+        Number(parseFloat(new Date(start).getTime() / 1000).toFixed(0)),
+        24,
+        temp,
+      );
+      console.log('timeSlotstimeSlots', timeSlots);
+      setSlots(timeSlots);
+    },
+    [allSlots],
+  );
+
+  // const onReachedCalenderTop = ({nativeEvent: e}) => {
+  //   const offset = e?.contentOffset?.y;
+  //   console.log('Offset calender:=>', offset);
+
+  //   if (offset >= 20) {
+  //     Animated.timing(animatedOpacityValue, {
+  //       toValue: 1,
+  //       useNativeDriver: true,
+  //     }).start(() => setListView(true));
+  //   }
+  //   if (offset <= -50) {
+  //     // Platform.OS === 'ios' ? -80 : 1
+  //     Animated.timing(animatedOpacityValue, {
+  //       toValue: 0,
+  //       useNativeDriver: true,
+  //     }).start(() => setListView(false));
+  //   }
+  // };
+
+  // const onScrollCalender = (event) => {
+  //   onReachedCalenderTop(event);
+  // };
 
   const unPauseGroup = () => {
     setloading(true);
@@ -1004,10 +883,11 @@ export default function ScheduleScreen({navigation, route}) {
 
   const makeOpetionsSelected = useCallback(
     (item) => {
-      console.log('sortFilterOpetion', sortFilterOpetion);
-      console.log('selectedOpetions', selectedOpetions);
-      if (sortFilterOpetion === 0 || sortFilterOpetion === 2) {
-        if (selectedOpetions.title === item) {
+      if (sortFilterOpetion === 0) {
+        if (
+          selectedOpetions.title.group_name === item.group_name ||
+          selectedOpetions.title === item.group_name
+        ) {
           return styles.sportSelectedName;
         }
         return styles.sportName;
@@ -1020,14 +900,18 @@ export default function ScheduleScreen({navigation, route}) {
         }
         return styles.sportName;
       }
+      if (sortFilterOpetion === 2) {
+        if (selectedOpetions.title === item) {
+          return styles.sportSelectedName;
+        }
+        return styles.sportName;
+      }
     },
     [selectedOpetions.title, sortFilterOpetion],
   );
 
   const opetionsListView = useCallback(
     ({item, index}) => {
-      console.log('iiitititiiit', item);
-      console.log('selectedOpetions.title', selectedOpetions.title);
       return (
         <Text
           style={makeOpetionsSelected(item)}
@@ -1051,12 +935,7 @@ export default function ScheduleScreen({navigation, route}) {
         </Text>
       );
     },
-    [
-      authContext,
-      makeOpetionsSelected,
-      selectedOpetions.title,
-      sortFilterOpetion,
-    ],
+    [authContext, makeOpetionsSelected, sortFilterOpetion],
   );
 
   const sportOpetionsListView = useCallback(
@@ -1122,30 +1001,34 @@ export default function ScheduleScreen({navigation, route}) {
         }}>
         <View>
           <Text style={styles.filterTitle}>{item}</Text>
-          {index === 1 && sortFilterOpetion === index && (
-            <Text
-              style={styles.changeOrderStyle}
-              onPress={() => {
-                setFilterPopup(false);
-                navigation.navigate('ChangeSportsOrderScreen', {
-                  onBackClick: fromGoBack,
-                });
-              }}>
-              Change order of sports
-            </Text>
-          )}
-          {index === 2 && sortFilterOpetion === index && (
-            <Text
-              style={styles.changeOrderStyle}
-              onPress={() => {
-                setFilterPopup(false);
-                navigation.navigate('ChangeOtherListScreen', {
-                  onBackClick: fromGoBack,
-                });
-              }}>
-              Change list of Orgernizers
-            </Text>
-          )}
+          {index === 1 &&
+            sortFilterOpetion === index &&
+            ['user', 'player'].includes(authContext.entity.role) && (
+              <Text
+                style={styles.changeOrderStyle}
+                onPress={() => {
+                  setFilterPopup(false);
+                  navigation.navigate('ChangeSportsOrderScreen', {
+                    onBackClick: fromGoBack,
+                  });
+                }}>
+                Change order of sports
+              </Text>
+            )}
+          {index === 0 &&
+            sortFilterOpetion === index &&
+            ['user', 'player'].includes(authContext.entity.role) && (
+              <Text
+                style={styles.changeOrderStyle}
+                onPress={() => {
+                  setFilterPopup(false);
+                  navigation.navigate('ChangeOtherListScreen', {
+                    onBackClick: fromGoBack,
+                  });
+                }}>
+                Change list of Organizers
+              </Text>
+            )}
         </View>
         <TouchableOpacity
           onPress={() => {
@@ -1198,6 +1081,7 @@ export default function ScheduleScreen({navigation, route}) {
 
   return (
     <View style={{flex: 1}}>
+      <ActivityLoader visible={indigator} />
       <View
         style={{opacity: isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={pointEvent}>
@@ -1349,26 +1233,28 @@ export default function ScheduleScreen({navigation, route}) {
             </TouchableOpacity>
           </View>
           <View style={styles.separateLine} />
-          {!loading && scheduleIndexCounter === 0 && (
-            <View style={styles.sportsListView}>
-              <FlatList
-                ref={refContainer}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                data={
-                  (filterSetting.sort === 0 && reservationOpetions) ||
-                  (filterSetting.sort === 1 && sports) ||
-                  (filterSetting.sort === 2 && orgenizerOpetions)
-                }
-                keyExtractor={keyExtractor}
-                renderItem={
-                  (filterSetting.sort === 0 && opetionsListView) ||
-                  (filterSetting.sort === 1 && sportOpetionsListView) ||
-                  (filterSetting.sort === 2 && orgenizerListView)
-                }
-              />
-            </View>
-          )}
+          {!loading &&
+            scheduleIndexCounter === 0 &&
+            ['user', 'player', 'club'].includes(authContext.entity.role) && (
+              <View style={styles.sportsListView}>
+                <FlatList
+                  ref={refContainer}
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  data={
+                    (filterSetting.sort === 0 && orgenizerOpetions) ||
+                    (filterSetting.sort === 1 && sports) ||
+                    (filterSetting.sort === 2 && reservationOpetions)
+                  }
+                  keyExtractor={keyExtractor}
+                  renderItem={
+                    (filterSetting.sort === 0 && orgenizerListView) ||
+                    (filterSetting.sort === 1 && sportOpetionsListView) ||
+                    (filterSetting.sort === 2 && opetionsListView)
+                  }
+                />
+              </View>
+            )}
           {!loading && scheduleIndexCounter === 0 && (
             <EventScheduleScreen
               filterOpetions={filterSetting}
@@ -1381,12 +1267,15 @@ export default function ScheduleScreen({navigation, route}) {
               }}
               onItemPress={async (item) => {
                 console.log('Clicked ITEM:=>', item);
+                setIndigator(true);
                 const entity = authContext.entity;
                 if (item?.game_id) {
                   if (item?.game?.sport) {
                     const gameHome = getGameHomeScreen(
                       item.game.sport.replace(' ', '_'),
                     );
+                    setIndigator(false);
+
                     navigation.navigate(gameHome, {
                       gameId: item?.game_id,
                     });
@@ -1399,12 +1288,14 @@ export default function ScheduleScreen({navigation, route}) {
                     authContext,
                   )
                     .then((response) => {
+                      setIndigator(false);
                       navigation.navigate('EventScreen', {
                         data: response.payload,
                         gameData: item,
                       });
                     })
                     .catch((e) => {
+                      setIndigator(false);
                       console.log('Error :-', e);
                     });
                 }
@@ -1413,25 +1304,64 @@ export default function ScheduleScreen({navigation, route}) {
             />
           )}
           {!loading && scheduleIndexCounter === 1 && (
-            <ScrollView
-              style={{
-                flex: 1,
-                marginTop: 15,
-              }}
-              onScroll={onScrollCalender}
-              nestedScrollEnabled
-              stickyHeaderIndices={[0]}>
-              <EventAgendaSection
-                showTimeTable={showTimeTable}
-                isMenu={isMenu}
-                horizontal={listView}
-                onPressListView={onPressListView}
-                onPressGridView={onPressGridView}
-                onDayPress={onDayPress}
-                selectedCalendarDate={selectedCalendarDateString}
-                calendarMarkedDates={markingDays}
-              />
-
+            <View>
+              <View
+                style={{
+                  shadowColor: colors.googleColor,
+                  shadowOffset: {width: 0, height: 3},
+                  shadowOpacity: 0.2,
+                  shadowRadius: 3,
+                  marginBottom:10
+                }}>
+                <CalendarStrip
+                  selectedDate={selectedDate}
+                  scrollable={true}
+                  // calendarAnimation={{type: 'sequence', duration: 30}}
+                  daySelectionAnimation={{
+                    type: 'border',
+                    duration: 200,
+                    borderWidth: 1,
+                    borderHighlightColor: 'white',
+                  }}
+                  style={{
+                    height: 120,
+                    paddingTop: 20,
+                    paddingBottom: 10,
+                  }}
+                  calendarHeaderStyle={{
+                    color: colors.lightBlackColor,
+                    fontSize: 15,
+                    fontFamily: fonts.RMedium,
+                  }}
+                  calendarColor={colors.offwhite}
+                  dateNumberStyle={{
+                    color: colors.lightBlackColor,
+                    fontSize: 18,
+                    fontFamily: fonts.RLight,
+                    fontWeight: '400',
+                  }}
+                  dateNameStyle={{color: colors.lightBlackColor}}
+                  onDateSelected={onDayPress}
+                  highlightDateNumberStyle={{color: colors.whiteColor}}
+                  highlightDateNameStyle={{color: colors.whiteColor}}
+                  disabledDateNameStyle={{color: colors.userPostTimeColor}}
+                  disabledDateNumberStyle={{
+                    color: colors.userPostTimeColor,
+                    fontSize: 18,
+                    fontFamily: fonts.RLight,
+                    fontWeight: '400',
+                  }}
+                  disabledDateOpacity={1}
+                  // datesBlacklist={[moment().add(1, 'days')]}
+                  iconLeft={images.calPrevArrow}
+                  iconRight={images.calNextArrow}
+                  iconContainer={{flex: 0.1}}
+                  iconStyle={{height: 15, width: 15}}
+                  highlightDateContainerStyle={{
+                    backgroundColor: colors.themeColor,
+                  }}
+                />
+              </View>
               {/* Availibility bottom view */}
 
               <View>
@@ -1441,6 +1371,7 @@ export default function ScheduleScreen({navigation, route}) {
                     fontSize: 16,
                     fontFamily: fonts.RRegular,
                     color: colors.lightBlackColor,
+                    marginBottom: 10,
                   }}>
                   Available time For challenge
                 </Text>
@@ -1457,7 +1388,7 @@ export default function ScheduleScreen({navigation, route}) {
                   keyExtractor={(item, index) => index.toString()}
                 />
               </View>
-            </ScrollView>
+            </View>
           )}
         </View>
         <ActionSheet
@@ -1647,15 +1578,24 @@ export default function ScheduleScreen({navigation, route}) {
                 Apply
               </Text>
             </View>
-            <TCThinDivider width={'100%'} marginBottom={15} />
-            <View>
-              <Text style={styles.titleText}>Sort By</Text>
-              <FlatList
-                data={sortFilterData}
-                renderItem={renderSortFilterOpetions}
-                style={{marginTop: 15}}
-              />
-            </View>
+
+            {['user', 'player', 'club'].includes(authContext.entity.role) && (
+              <>
+                <TCThinDivider width={'100%'} marginBottom={15} />
+                <View>
+                  <Text style={styles.titleText}>Sort By</Text>
+                  <FlatList
+                    data={
+                      ['club'].includes(authContext.entity.role)
+                        ? sortFilterDataClub
+                        : sortFilterData
+                    }
+                    renderItem={renderSortFilterOpetions}
+                    style={{marginTop: 15}}
+                  />
+                </View>
+              </>
+            )}
             <TCThinDivider width={'90%'} marginBottom={15} />
             <View>
               <Text style={styles.titleText}>Time</Text>

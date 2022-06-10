@@ -68,6 +68,9 @@ import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInviteScreen';
 import MessageNavigator from './MessageNavigator';
+import EventScreen from '../screens/account/schedule/EventScreen';
+import AcceptEventInviteScreen from '../screens/account/schedule/AcceptEventInviteScreen';
+import GoingListScreen from '../screens/account/schedule/GoingListScreen';
 
 const Stack = createStackNavigator();
 
@@ -857,6 +860,54 @@ function NotificationNavigator() {
            headerShown: false,
          }}
         />
+      <Stack.Screen
+      name="EventScreen"
+      component={EventScreen}
+      options={{
+        title: 'Event',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+      <Stack.Screen
+      name="GoingListScreen"
+      component={GoingListScreen}
+      options={{
+        title: 'Going',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+      <Stack.Screen
+      name="AcceptEventInviteScreen"
+      component={AcceptEventInviteScreen}
+      options={{
+        title: 'Respond',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     </Stack.Navigator>
   );
 }
