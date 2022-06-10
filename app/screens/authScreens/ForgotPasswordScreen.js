@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
+import React, {useState, useLayoutEffect} from 'react';
 import {
-  View,
   Text,
   Alert,
   StyleSheet,
   Keyboard,
   TouchableWithoutFeedback,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
 
 import {
@@ -16,7 +17,6 @@ import {
 import firebase from '@react-native-firebase/app';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
-import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import strings from '../../Constants/String';
 import images from '../../Constants/ImagePath';
@@ -27,6 +27,37 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 export default function ForgotPasswordScreen({navigation}) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Text
+          style={styles.nextButtonStyle}
+          onPress={() => {
+            if (checkValidation()) {
+              forgotPassword(email);
+            }
+          }}>
+          Next
+        </Text>
+      ),
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.pop();
+          }}>
+          <Image
+            source={images.backArrow}
+            style={{
+              height: 20,
+              width: 15,
+              marginLeft: 20,
+              tintColor: colors.whiteColor,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  });
   // Basic input validation
   const checkValidation = () => {
     if (email === '') {
@@ -102,7 +133,7 @@ export default function ForgotPasswordScreen({navigation}) {
 
         {/* <View style={{flex: 1}} /> */}
 
-        <View style={{marginBottom: 20}}>
+        {/* <View style={{marginBottom: 20}}>
           <TCButton
             title={strings.nextTitle}
             onPress={() => {
@@ -112,18 +143,7 @@ export default function ForgotPasswordScreen({navigation}) {
             }}
             extraStyle={{marginBottom: 10}}
           />
-          {/* <TCButton
-            title={strings.cancelTitle}
-            onPress={() => navigation.goBack()}
-            textColor={{color: colors.whiteColor}}
-            extraStyle={{
-              borderColor: colors.whiteColor,
-              borderWidth: 1,
-
-              backgroundColor: 'transparent',
-            }}
-          /> */}
-        </View>
+        </View> */}
       </LinearGradient>
     </TouchableWithoutFeedback>
   );
@@ -169,5 +189,11 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.4,
     shadowRadius: 4,
+  },
+  nextButtonStyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    marginRight: 15,
+    color: colors.whiteColor,
   },
 });

@@ -15,16 +15,14 @@ module.exports = {
   ],
   plugins: ['react', 'react-native', 'react-hooks'],
   parserOptions: {
-    
     requireConfigFile: false,
     ecmaFeatures: {
       jsx: true,
     },
-  
   },
   rules: {
     // 'react-hooks/rules-of-hooks':'off',
-    'no-unsafe-optional-chaining' : 'off',
+    'no-unsafe-optional-chaining': 'off',
     'no-console': 'off',
     'template-curly-spacing': 'off',
     indent: 'off',
@@ -53,7 +51,7 @@ module.exports = {
       2,
       {checkAttributes: true, indentLogicalExpressions: true},
     ],
-    
+
     'no-plusplus': ['error', {allowForLoopAfterthoughts: true}],
     'one-var-declaration-per-line': [0],
     'one-var': [0],

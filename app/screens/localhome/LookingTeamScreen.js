@@ -1,8 +1,6 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
-import React, {
- useCallback, useState, useEffect, useContext,
- } from 'react';
+import React, {useCallback, useState, useEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -27,17 +25,17 @@ import Modal from 'react-native-modal';
 import Geolocation from '@react-native-community/geolocation';
 import AuthContext from '../../auth/context';
 
-import { getLocationNameWithLatLong } from '../../api/External';
+import {getLocationNameWithLatLong} from '../../api/External';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import { widthPercentageToDP } from '../../utils';
+import {widthPercentageToDP} from '../../utils';
 // import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 
 import strings from '../../Constants/String';
-import { getUserIndex } from '../../api/elasticSearch';
+import {getUserIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import TCPicker from '../../components/TCPicker';
 import TCLookingForEntityView from '../../components/TCLookingForEntityView';
@@ -45,7 +43,7 @@ import TCLookingForEntityView from '../../components/TCLookingForEntityView';
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
-export default function LookingTeamScreen({ navigation, route }) {
+export default function LookingTeamScreen({navigation, route}) {
   // const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
@@ -184,8 +182,8 @@ export default function LookingTeamScreen({ navigation, route }) {
   }, []);
 
   const renderLookingEntityListView = useCallback(
-    ({ item }) => (
-      <View style={[styles.separator, { flex: 1 }]}>
+    ({item}) => (
+      <View style={[styles.separator, {flex: 1}]}>
         <TCLookingForEntityView
           data={item}
           showStar={false}
@@ -234,7 +232,7 @@ export default function LookingTeamScreen({ navigation, route }) {
     }
     setLoadMore(false);
   };
-  const handleTagPress = ({ item }) => {
+  const handleTagPress = ({item}) => {
     const tempFilter = filters;
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
@@ -251,7 +249,7 @@ export default function LookingTeamScreen({ navigation, route }) {
       }
     });
     console.log('Temp filter', tempFilter);
-    setFilters({ ...tempFilter });
+    setFilters({...tempFilter});
     // applyFilter();
     setTimeout(() => {
       setPageFrom(0);
@@ -296,7 +294,7 @@ export default function LookingTeamScreen({ navigation, route }) {
         // See error code charts below.
         console.log(error.code, error.message);
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };
 
@@ -305,7 +303,7 @@ export default function LookingTeamScreen({ navigation, route }) {
   }, []);
 
   const listEmptyComponent = () => (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text
         style={{
           fontFamily: fonts.RRegular,
@@ -326,7 +324,7 @@ export default function LookingTeamScreen({ navigation, route }) {
     setSelectedSport('All');
   };
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
           <TextInput
@@ -334,7 +332,7 @@ export default function LookingTeamScreen({ navigation, route }) {
             style={styles.searchTxt}
             autoCorrect={false}
             onChangeText={(text) => {
-              const tempFilter = { ...filters };
+              const tempFilter = {...filters};
 
               if (text?.length > 0) {
                 tempFilter.searchText = text;
@@ -356,8 +354,8 @@ export default function LookingTeamScreen({ navigation, route }) {
         </View>
       </View>
       <TCTagsFilter
-      filter={filters}
-      authContext={authContext}
+        filter={filters}
+        authContext={authContext}
         dataSource={Utility.getFiltersOpetions(filters)}
         onTagCancelPress={handleTagPress}
       />
@@ -379,25 +377,24 @@ export default function LookingTeamScreen({ navigation, route }) {
       />
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
-        backdropOpacity={1}
-        animationType="slide"
-        hasBackdrop
         style={{
-          flex: 1,
           margin: 0,
-          backgroundColor: colors.blackOpacityColor,
         }}
-        visible={settingPopup}>
+        isVisible={settingPopup}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}>
         <View
           style={[
             styles.bottomPopupContainer,
-            { height: Dimensions.get('window').height - 100 },
+            {height: Dimensions.get('window').height - 100},
           ]}>
           <KeyboardAvoidingView
-            style={{ flex: 1 }}
+            style={{flex: 1}}
             keyboardVerticalOffset={keyboardVerticalOffset}
             behavior={Platform.OS === 'ios' ? 'padding' : null}>
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
                   onPress={() => setSettingPopup(false)}
@@ -410,7 +407,7 @@ export default function LookingTeamScreen({ navigation, route }) {
                   onPress={() => {
                     setSettingPopup(false);
                     setTimeout(() => {
-                      const tempFilter = { ...filters };
+                      const tempFilter = {...filters};
                       tempFilter.sport = selectedSport;
                       tempFilter.location = location;
 
@@ -428,11 +425,11 @@ export default function LookingTeamScreen({ navigation, route }) {
               </View>
               <TCThinDivider width={'100%'} marginBottom={15} />
               <View>
-                <View style={{ flexDirection: 'column', margin: 15 }}>
+                <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
                     <Text style={styles.filterTitle}>Location</Text>
                   </View>
-                  <View style={{ marginTop: 10, marginLeft: 10 }}>
+                  <View style={{marginTop: 10, marginLeft: 10}}>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -472,8 +469,8 @@ export default function LookingTeamScreen({ navigation, route }) {
                           setLocation(
                             authContext?.entity?.obj?.city
                               .charAt(0)
-                              .toUpperCase()
-                              + authContext?.entity?.obj?.city.slice(1),
+                              .toUpperCase() +
+                              authContext?.entity?.obj?.city.slice(1),
                           );
                           // setFilters({
                           //   ...filters,
@@ -562,7 +559,7 @@ export default function LookingTeamScreen({ navigation, route }) {
                     <View style={{}}>
                       <Text style={styles.filterTitle}>Sport</Text>
                     </View>
-                    <View style={{ marginTop: 10 }}>
+                    <View style={{marginTop: 10}}>
                       <TCPicker
                         dataSource={sports}
                         placeholder={'Select Sport'}
@@ -719,7 +716,7 @@ export default function LookingTeamScreen({ navigation, route }) {
            </View> */}
               {/* Rate View */}
 
-              <View style={{ flex: 1 }} />
+              <View style={{flex: 1}} />
             </ScrollView>
           </KeyboardAvoidingView>
 
@@ -740,7 +737,7 @@ export default function LookingTeamScreen({ navigation, route }) {
                     onPress: () => onPressReset(),
                   },
                 ],
-                { cancelable: false },
+                {cancelable: false},
               );
             }}>
             <Text style={styles.resetTitle}>Reset</Text>
@@ -776,7 +773,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('92%'),
     borderRadius: 20,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -833,7 +830,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },
@@ -902,7 +899,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
     flexDirection: 'row',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -924,7 +921,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     width: widthPercentageToDP('75%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,

@@ -7,77 +7,92 @@ import {
   TouchableWithoutFeedback,
   StyleSheet,
   TouchableOpacity,
+  Alert,
+  SafeAreaView,
 } from 'react-native';
-import {useNavigationState} from '@react-navigation/native';
-
+import QB from 'quickblox-react-native-sdk';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
-import {updateUserProfile} from '../../api/Users';
+import {createUser} from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
-import TCButton from '../../components/TCButton';
 import Separator from '../../components/Separator';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils/index';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import strings from '../../Constants/String';
+import TCProfileImage from '../../components/TCProfileImage';
+
+import {
+  QBconnectAndSubscribe,
+  QBcreateUser,
+  QBlogin,
+  QB_ACCOUNT_TYPE,
+} from '../../utils/QuickBlox';
 
 export default function FollowTeams({route, navigation}) {
   const [teams, setTeams] = useState(['1']);
 
-  const [followed, setFollowed] = useState(['1']);
+  const [followed, setFollowed] = useState([]);
   const [loading, setloading] = useState(false);
 
   const authContext = useContext(AuthContext);
+  const [signUpData] = useState(route?.params?.sportInfo);
 
   const followedTeam = [];
-  const routes = useNavigationState((state) => state);
+  const dummyAuthContext = {...authContext};
 
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerLeft: () => (
+  //       <TouchableOpacity
+  //         onPress={() => {
+  //           navigation.pop();
+  //         }}>
+  //         <Image
+  //           source={images.backArrow}
+  //           style={{
+  //             height: 20,
+  //             width: 15,
+  //             marginLeft: 15,
+  //             tintColor: colors.whiteColor,
+  //           }}
+  //         />
+  //       </TouchableOpacity>
+  //     ),
+  //   });
+  // }, [navigation]);
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerRight: () => (
+        <Text style={styles.nextButtonStyle} onPress={signUpLastStep}>
+          {strings.next}
+        </Text>
+      ),
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            const routeObj = routes?.routes?.[routes?.index] ?? {};
-            const routeName =
-              routeObj?.state?.routes?.[routeObj?.state?.index]?.name;
-            if (routeName === 'ChooseSportsScreen') {
-              // navigation.pop(1);
-              navigation.navigate('ChooseSportsScreen', {
-                city: route.params.city,
-                state: route.params.state,
-                country: route.params.country,
-                teamData: route.params.teamData,
-              });
-            } else {
-              // navigation.navigate('ChooseSportsScreen');
-              navigation.navigate('ChooseSportsScreen', {
-                city: route.params.city,
-                state: route.params.state,
-                country: route.params.country,
-                teamData: route.params.teamData,
-              });
-            }
+            navigation.pop();
           }}>
           <Image
             source={images.backArrow}
             style={{
               height: 20,
               width: 15,
-              marginLeft: 15,
+              marginLeft: 20,
               tintColor: colors.whiteColor,
             }}
           />
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
-
+  });
   /*
   const isClubSport = ({sportName}) => {
     const data = filterData.filter((obj) => obj.sport === sportName);
@@ -126,7 +141,7 @@ export default function FollowTeams({route, navigation}) {
   useEffect(() => {
     const setFollowData = () => {
       const arr = [];
-      for (const tempData of route.params.teamData) {
+      for (const tempData of signUpData.teamData) {
         tempData.follow = false;
 
         arr.push(tempData);
@@ -138,40 +153,20 @@ export default function FollowTeams({route, navigation}) {
     setFollowData();
   }, []);
 
-  const updateProfile = async (params, callback = () => {}) => {
-    setloading(true);
-    updateUserProfile(params, authContext)
-      .then(async (userResoponse) => {
-        const userData = userResoponse?.payload;
-        const entity = {...authContext?.entity};
-        entity.isLoggedIn = true;
-        entity.auth.user = userData;
-        entity.obj = userData;
-        await Utility.setStorage('loggedInEntity', {...entity});
-        await Utility.setStorage('authContextEntity', {...entity});
-        await Utility.setStorage('authContextUser', {...userData});
-        await authContext.setUser({...userData});
-        await authContext.setEntity({...entity});
-        setloading(false);
-        callback();
-      })
-      .catch(() => setloading(false));
-  };
-
   const followUnfollowClicked = ({item, index}) => {
     console.log('SELECTED:::', index);
-
     teams[index].follow = !item.follow;
-
     setTeams([...teams]);
-
     for (const temp of teams) {
       if (temp.follow) {
-        followedTeam.push(temp.group_id);
+        const obj = {
+          group_id: temp.group_id,
+          entity_type: temp.entity_type,
+        };
+        followedTeam.push(obj);
       }
     }
     setFollowed(followedTeam);
-
     console.log('Followed Team:::', followedTeam);
   };
 
@@ -180,19 +175,25 @@ export default function FollowTeams({route, navigation}) {
       <View style={styles.listItem}>
         <View style={styles.listItemContainer}>
           <View style={{flex: 0.2}}>
-            {teams[index].thumbnail ? (
+            {/* {teams[index].thumbnail ? (
               <Image
                 style={styles.teamImg}
                 source={{uri: teams[index].thumbnail}}
               />
             ) : (
               <Image style={styles.teamImg} source={images.team_ph} />
-            )}
+            )} */}
+            <TCProfileImage
+              entityType={teams[index].entity_type}
+              source={{uri: teams[index].thumbnail}}
+              containerStyle={styles.imageContainer}
+              intialChar={teams[index].group_name?.charAt(0)?.toUpperCase()}
+            />
           </View>
           <View
             style={{
-              flex: 0.5,
-              paddingHorizontal: 10,
+              flex: 0.8,
+              paddingHorizontal: 0,
             }}>
             <Text style={styles.teamNameText}>
               {teams[index].group_name ?? teams[index].full_name}
@@ -226,8 +227,108 @@ export default function FollowTeams({route, navigation}) {
 
   const signUpLastStep = () => {
     // updateProfile({club_ids: followed});
-    updateProfile({group_id: followed});
+    // updateProfile({group_ids: followed});
+    signUpToTownsCup();
   };
+  const setDummyAuthContext = (key, value) => {
+    dummyAuthContext[key] = value;
+  };
+  // Signup to Towncup
+  const signUpToTownsCup = async () => {
+    console.log('Signup data ==>', signUpData);
+    console.log('Signup data1111 ==>', route?.params?.sportInfo);
+    setloading(true);
+    const data = {
+      first_name: signUpData.first_name,
+      last_name: signUpData.last_name,
+      email: signUpData.emailAddress,
+      birthday: signUpData.birthday,
+      gender: signUpData.gender,
+      city: signUpData.city,
+      country: signUpData.country,
+      state: signUpData.state,
+      sports: signUpData.sports,
+    };
+    if (signUpData?.profilePicData?.thumbnail) {
+      console.log('llllllll');
+      data.thumbnail = signUpData.profilePicData.thumbnail;
+      data.full_image = signUpData.profilePicData.full_image;
+    }
+    if (followed && followed.length > 0) {
+      data.group_ids = followed;
+    }
+    console.log('Data before cretae a user ===>', data);
+    await createUser(data, authContext)
+      .then((createdUser) => {
+        console.log('QB CreatedUser:', createdUser);
+        const authEntity = {...dummyAuthContext.entity};
+        authEntity.obj = createdUser?.payload;
+        authEntity.auth.user = createdUser?.payload;
+        authEntity.role = 'user';
+        setDummyAuthContext('entity', authEntity);
+        setDummyAuthContext('user', createdUser?.payload);
+        signUpWithQB(createdUser?.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+  const signUpWithQB = async (response) => {
+    console.log('QB signUpWithQB : ', response);
+
+    let qbEntity = {...dummyAuthContext.entity};
+    console.log('QB qbEntity : ', qbEntity);
+
+    const setting = await Utility.getStorage('appSetting');
+    console.log('App QB Setting:=>', setting);
+
+    authContext.setQBCredential(setting);
+    QB.settings.enableAutoReconnect({enable: true});
+    QBlogin(qbEntity.uid, response)
+      .then(async (res) => {
+        qbEntity = {
+          ...qbEntity,
+          QB: {...res.user, connected: true, token: res?.session?.token},
+        };
+        QBconnectAndSubscribe(qbEntity);
+        setDummyAuthContext('entity', qbEntity);
+        await wholeSignUpProcessComplete(response);
+      })
+      .catch(async (error) => {
+        console.log('QB Login Error : ', error.message);
+        qbEntity = {...qbEntity, QB: {connected: false}};
+        setDummyAuthContext('entity', qbEntity);
+        QBcreateUser(qbEntity.uid, response, QB_ACCOUNT_TYPE.USER)
+          .then(() => {
+            QBlogin(qbEntity.uid).then((loginRes) => {
+              console.log('QB loginRes', loginRes);
+            });
+          })
+          .catch((e) => {
+            console.log('QB error', e);
+          });
+        await wholeSignUpProcessComplete(response);
+      });
+  };
+  const wholeSignUpProcessComplete = async (userData) => {
+    const entity = dummyAuthContext?.entity;
+    const tokenData = dummyAuthContext?.tokenData;
+    entity.auth.user = {...userData};
+    entity.obj = {...userData};
+    entity.uid = userData?.user_id;
+    entity.isLoggedIn = true;
+    await Utility.setStorage('loggedInEntity', {...entity});
+    await Utility.setStorage('authContextEntity', {...entity});
+    await Utility.setStorage('authContextUser', {...userData});
+    await authContext.setTokenData(tokenData);
+    await authContext.setUser({...userData});
+    await authContext.setEntity({...entity});
+    setloading(false);
+  };
+
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
@@ -238,19 +339,20 @@ export default function FollowTeams({route, navigation}) {
         style={styles.background}
         source={images.loginBg}
       />
-
-      <Text style={styles.sportText}>{strings.followSportTeam}</Text>
-      <FlatList
-        style={{padding: 15}}
-        data={teams}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderItem}
-      />
-      <TCButton
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.sportText}>{strings.followSportTeam}</Text>
+        <FlatList
+          style={{padding: 27, bottom: 35}}
+          data={teams}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderItem}
+        />
+        {/* <TCButton
         title={'CONTINUE'}
         extraStyle={{marginBottom: hp('6.5%'), marginTop: hp('2%')}}
         onPress={signUpLastStep}
-      />
+      /> */}
+      </SafeAreaView>
     </LinearGradient>
   );
 }
@@ -324,18 +426,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     textAlign: 'left',
   },
-  teamImg: {
-    alignSelf: 'center',
-    borderRadius: 6,
-    height: 45,
-    resizeMode: 'stretch',
-    width: 45,
-  },
   teamNameText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBlack,
     fontSize: wp('4%'),
     textAlign: 'left',
     textAlignVertical: 'center',
+  },
+  nextButtonStyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    marginRight: 15,
+    color: colors.whiteColor,
+  },
+  container: {
+    flex: 1,
+  },
+  imageContainer: {
+    // margin: 15,
+    backgroundColor: colors.whiteColor,
   },
 });

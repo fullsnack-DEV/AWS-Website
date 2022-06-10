@@ -1,8 +1,6 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
-import React, {
- useCallback, useState, useEffect, useContext,
- } from 'react';
+import React, {useCallback, useState, useEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -26,11 +24,11 @@ import moment from 'moment';
 import Geolocation from '@react-native-community/geolocation';
 import AuthContext from '../../auth/context';
 
-import { getLocationNameWithLatLong } from '../../api/External';
+import {getLocationNameWithLatLong} from '../../api/External';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import { widthPercentageToDP } from '../../utils';
+import {widthPercentageToDP} from '../../utils';
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
@@ -44,12 +42,12 @@ import {
 import TCTagsFilter from '../../components/TCTagsFilter';
 import TCPicker from '../../components/TCPicker';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
-import { getGameHomeScreen } from '../../utils/gameUtils';
+import {getGameHomeScreen} from '../../utils/gameUtils';
 
 let stopFetchMore = true;
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 
-export default function RecentMatchScreen({ navigation, route }) {
+export default function RecentMatchScreen({navigation, route}) {
   // const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
@@ -81,12 +79,10 @@ export default function RecentMatchScreen({ navigation, route }) {
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
   const [searchData, setSearchData] = useState();
-  const [selectedSport, setSelectedSport] = useState(
-    {
-      sport: route?.params?.filters.sport,
-      sport_type: route?.params?.filters.sport_type,
-    },
-  );
+  const [selectedSport, setSelectedSport] = useState({
+    sport: route?.params?.filters.sport,
+    sport_type: route?.params?.filters.sport_type,
+  });
   const [location, setLocation] = useState(route?.params?.filters.location);
 
   console.log('Recent Match Filter:=>', filters);
@@ -105,10 +101,12 @@ export default function RecentMatchScreen({ navigation, route }) {
     }
   }, [route?.params?.locationText]);
   useEffect(() => {
-    const list = [{
-      label: 'All',
-      value: 'All',
-    }];
+    const list = [
+      {
+        label: 'All',
+        value: 'All',
+      },
+    ];
     let sportArr = [];
 
     authContext.sports.map((item) => {
@@ -135,10 +133,10 @@ export default function RecentMatchScreen({ navigation, route }) {
         from: pageFrom,
         query: {
           bool: {
-            must: [{ match: { status: 'accepted' } }],
+            must: [{match: {status: 'accepted'}}],
           },
         },
-        sort: [{ actual_enddatetime: 'desc' }],
+        sort: [{actual_enddatetime: 'desc'}],
       };
 
       if (filerGames.location !== 'world') {
@@ -154,7 +152,6 @@ export default function RecentMatchScreen({ navigation, route }) {
           term: {
             'sport.keyword': {
               value: filerGames.sport,
-
             },
           },
         });
@@ -162,7 +159,6 @@ export default function RecentMatchScreen({ navigation, route }) {
           term: {
             'sport_type.keyword': {
               value: filerGames.sport_type,
-
             },
           },
         });
@@ -270,10 +266,10 @@ export default function RecentMatchScreen({ navigation, route }) {
     getRecentGames(filters);
   }, []);
 
-  const renderRecentMatchItems = useCallback(({ item }) => {
+  const renderRecentMatchItems = useCallback(({item}) => {
     console.log('Recent Item:=>', item);
     return (
-      <View style={{ marginBottom: 15 }}>
+      <View style={{marginBottom: 15}}>
         <TCRecentMatchCard
           data={item}
           cardWidth={'92%'}
@@ -320,7 +316,7 @@ export default function RecentMatchScreen({ navigation, route }) {
     }
     setLoadMore(false);
   };
-  const handleTagPress = ({ item }) => {
+  const handleTagPress = ({item}) => {
     const tempFilter = filters;
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
@@ -348,7 +344,7 @@ export default function RecentMatchScreen({ navigation, route }) {
       }
     });
     console.log('Temp filter', tempFilter);
-    setFilters({ ...tempFilter });
+    setFilters({...tempFilter});
     // applyFilter();
     setTimeout(() => {
       setPageFrom(0);
@@ -393,7 +389,7 @@ export default function RecentMatchScreen({ navigation, route }) {
         // See error code charts below.
         console.log(error.code, error.message);
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };
 
@@ -402,7 +398,7 @@ export default function RecentMatchScreen({ navigation, route }) {
   }, []);
 
   const listEmptyComponent = () => (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text
         style={{
           fontFamily: fonts.RRegular,
@@ -415,8 +411,9 @@ export default function RecentMatchScreen({ navigation, route }) {
   );
   const searchFilterFunction = (text) => {
     const result = recentMatch.filter(
-      (x) => x.full_name.toLowerCase().includes(text.toLowerCase())
-        || x.city.toLowerCase().includes(text.toLowerCase()),
+      (x) =>
+        x.full_name.toLowerCase().includes(text.toLowerCase()) ||
+        x.city.toLowerCase().includes(text.toLowerCase()),
     );
     if (text.length > 0) {
       setRecentMatch(result);
@@ -429,21 +426,24 @@ export default function RecentMatchScreen({ navigation, route }) {
     const groupQuery = {
       size: 100,
       query: {
-        query_string: { default_field: 'group_name', query: `*${text}*` },
+        query_string: {default_field: 'group_name', query: `*${text}*`},
       },
     };
 
     const userQuery = {
       size: 100,
       query: {
-        query_string: { default_field: 'full_name', query: `*${text}*` },
+        query_string: {default_field: 'full_name', query: `*${text}*`},
       },
     };
 
     console.log('Group query:=>', JSON.stringify(groupQuery));
     console.log('User query:=>', JSON.stringify(userQuery));
 
-    if (selectedSport.sport === 'tennis' && selectedSport.sport_type === 'single') {
+    if (
+      selectedSport.sport === 'tennis' &&
+      selectedSport.sport_type === 'single'
+    ) {
       getUserIndex(userQuery).then((res) => {
         console.log('res entity list:=>', res);
         setEntityData([...res]);
@@ -455,7 +455,7 @@ export default function RecentMatchScreen({ navigation, route }) {
       });
     }
   };
-  const renderEntity = ({ item }) => {
+  const renderEntity = ({item}) => {
     console.log('ITEM:=>', item);
     return (
       <TouchableOpacity
@@ -464,11 +464,10 @@ export default function RecentMatchScreen({ navigation, route }) {
           setIsSelected(true);
           setSelectedEntity(item);
         }}
-        style={{ flexDirection: 'row', alignItems: 'center', margin: 5 }}
-        >
+        style={{flexDirection: 'row', alignItems: 'center', margin: 5}}>
         <Image
           source={
-            item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder
+            item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
           }
           style={{
             height: 25,
@@ -493,15 +492,15 @@ export default function RecentMatchScreen({ navigation, route }) {
       location: 'world',
       sport: 'All',
       sport_type: 'All',
-    })
+    });
     setLocation('world');
     setSelectedSport({
       sort: 'All',
       sport_type: 'All',
     });
-    setFromDate()
-    setToDate()
-   };
+    setFromDate();
+    setToDate();
+  };
   return (
     <View>
       <View style={styles.searchView}>
@@ -520,8 +519,8 @@ export default function RecentMatchScreen({ navigation, route }) {
         </View>
       </View>
       <TCTagsFilter
-      filter={filters}
-      authContext={authContext}
+        filter={filters}
+        authContext={authContext}
         dataSource={Utility.getFiltersOpetions(filters)}
         onTagCancelPress={handleTagPress}
       />
@@ -532,7 +531,7 @@ export default function RecentMatchScreen({ navigation, route }) {
         keyExtractor={keyExtractor}
         renderItem={renderRecentMatchItems}
         style={styles.listStyle}
-        contentContainerStyle={{ paddingBottom: 1 }}
+        contentContainerStyle={{paddingBottom: 1}}
         onEndReached={onScrollHandler}
         onEndReachedThreshold={0.01}
         onScrollBeginDrag={() => {
@@ -542,25 +541,24 @@ export default function RecentMatchScreen({ navigation, route }) {
       />
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
-        backdropOpacity={1}
-        animationType="slide"
-        hasBackdrop
         style={{
-          flex: 1,
           margin: 0,
-          backgroundColor: colors.blackOpacityColor,
         }}
-        visible={settingPopup}>
+        isVisible={settingPopup}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}>
         <View
           style={[
             styles.bottomPopupContainer,
-            { height: Dimensions.get('window').height - 100 },
+            {height: Dimensions.get('window').height - 100},
           ]}>
           <KeyboardAvoidingView
-            style={{ flex: 1 }}
+            style={{flex: 1}}
             keyboardVerticalOffset={keyboardVerticalOffset}
             behavior={Platform.OS === 'ios' ? 'padding' : null}>
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
                   onPress={() => setSettingPopup(false)}
@@ -573,7 +571,7 @@ export default function RecentMatchScreen({ navigation, route }) {
                   onPress={() => {
                     setSettingPopup(false);
                     setTimeout(() => {
-                      const tempFilter = { ...filters };
+                      const tempFilter = {...filters};
                       tempFilter.sport = selectedSport.sport;
                       tempFilter.sport_type = selectedSport.sport_type;
 
@@ -594,9 +592,11 @@ export default function RecentMatchScreen({ navigation, route }) {
                         delete tempFilter.toDate;
                       }
                       if (selectedEntity && isSelected) {
-                        tempFilter.entityName = selectedEntity?.group_name
-                          ?? selectedEntity?.full_name;
-                        tempFilter.entityID = selectedEntity?.group_id ?? selectedEntity?.full_id;
+                        tempFilter.entityName =
+                          selectedEntity?.group_name ??
+                          selectedEntity?.full_name;
+                        tempFilter.entityID =
+                          selectedEntity?.group_id ?? selectedEntity?.full_id;
                       } else {
                         delete tempFilter.entityName;
                         delete tempFilter.entityID;
@@ -616,11 +616,11 @@ export default function RecentMatchScreen({ navigation, route }) {
               </View>
               <TCThinDivider width={'100%'} marginBottom={15} />
               <View>
-                <View style={{ flexDirection: 'column', margin: 15 }}>
+                <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
                     <Text style={styles.filterTitle}>Location</Text>
                   </View>
-                  <View style={{ marginTop: 10, marginLeft: 10 }}>
+                  <View style={{marginTop: 10, marginLeft: 10}}>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -660,8 +660,8 @@ export default function RecentMatchScreen({ navigation, route }) {
                           setLocation(
                             authContext?.entity?.obj?.city
                               .charAt(0)
-                              .toUpperCase()
-                              + authContext?.entity?.obj?.city.slice(1),
+                              .toUpperCase() +
+                              authContext?.entity?.obj?.city.slice(1),
                           );
                           // setFilters({
                           //   ...filters,
@@ -758,7 +758,7 @@ export default function RecentMatchScreen({ navigation, route }) {
                     <View style={{}}>
                       <Text style={styles.filterTitle}>Sport</Text>
                     </View>
-                    <View style={{ marginTop: 10 }}>
+                    <View style={{marginTop: 10}}>
                       <TCPicker
                         dataSource={sports}
                         placeholder={'Select Sport'}
@@ -767,11 +767,13 @@ export default function RecentMatchScreen({ navigation, route }) {
                             setSelectedSport({
                               sport: 'All',
                               sport_type: 'All',
-                            })
+                            });
                             setSelectedEntity();
                             setEntityData([]);
                           } else {
-                            setSelectedSport(Utility.getSportObjectByName(value, authContext))
+                            setSelectedSport(
+                              Utility.getSportObjectByName(value, authContext),
+                            );
                             setSelectedEntity();
                             setEntityData([]);
                           }
@@ -781,12 +783,12 @@ export default function RecentMatchScreen({ navigation, route }) {
                     </View>
                   </View>
                 </View>
-                <View style={{ flexDirection: 'column', margin: 15 }}>
+                <View style={{flexDirection: 'column', margin: 15}}>
                   <View>
                     <Text style={styles.filterTitle}>Time</Text>
                   </View>
-                  <View style={{ marginTop: 10 }}>
-                    <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+                  <View style={{marginTop: 10}}>
+                    <View style={{flexDirection: 'row', marginBottom: 10}}>
                       <View style={styles.fieldView}>
                         <View
                           style={{
@@ -802,7 +804,7 @@ export default function RecentMatchScreen({ navigation, route }) {
                             setDatePickerFor('from');
                             setShowFrom(!showFrom);
                           }}
-                          style={{ marginRight: 15, flexDirection: 'row' }}>
+                          style={{marginRight: 15, flexDirection: 'row'}}>
                           <Text style={styles.fieldValue} numberOfLines={1}>
                             {fromDate
                               ? `${moment(fromDate).format(
@@ -818,13 +820,13 @@ export default function RecentMatchScreen({ navigation, route }) {
                             }}>
                             <Image
                               source={images.menuClose}
-                              style={{ height: 10, width: 10, marginRight: 15 }}
+                              style={{height: 10, width: 10, marginRight: 15}}
                             />
                           </TouchableOpacity>
                         )}
                       </View>
                     </View>
-                    <View style={{ flexDirection: 'row' }}>
+                    <View style={{flexDirection: 'row'}}>
                       <View style={styles.fieldView}>
                         <View
                           style={{
@@ -840,7 +842,7 @@ export default function RecentMatchScreen({ navigation, route }) {
                             setDatePickerFor('to');
                             setShowTo(!showTo);
                           }}
-                          style={{ marginRight: 15, flexDirection: 'row' }}>
+                          style={{marginRight: 15, flexDirection: 'row'}}>
                           <Text style={styles.fieldValue} numberOfLines={1}>
                             {toDate
                               ? `${moment(toDate).format(
@@ -856,7 +858,7 @@ export default function RecentMatchScreen({ navigation, route }) {
                             }}>
                             <Image
                               source={images.menuClose}
-                              style={{ height: 10, width: 10, marginRight: 15 }}
+                              style={{height: 10, width: 10, marginRight: 15}}
                             />
                           </TouchableOpacity>
                         )}
@@ -955,7 +957,7 @@ export default function RecentMatchScreen({ navigation, route }) {
                   <View style={{}}>
                     <Text style={styles.filterTitle}>Team Or Player</Text>
                   </View>
-                  <View style={{ marginTop: 10 }}>
+                  <View style={{marginTop: 10}}>
                     <View
                       style={{
                         flexDirection: 'column',
@@ -969,8 +971,8 @@ export default function RecentMatchScreen({ navigation, route }) {
                         }}
                         value={
                           isSelected
-                            ? selectedEntity?.group_name
-                              ?? selectedEntity?.full_name
+                            ? selectedEntity?.group_name ??
+                              selectedEntity?.full_name
                             : searchName
                         }
                         style={styles.teamNameTextView}
@@ -983,11 +985,11 @@ export default function RecentMatchScreen({ navigation, route }) {
                         <View
                           style={{
                             marginTop: 15,
-                              height: 200,
+                            height: 200,
                             backgroundColor: colors.whiteColor,
                             borderRadius: 5,
                             shadowColor: colors.googleColor,
-                            shadowOffset: { width: 0, height: 1 },
+                            shadowOffset: {width: 0, height: 1},
                             shadowOpacity: 0.3,
                             shadowRadius: 5,
                             elevation: 3,
@@ -997,7 +999,6 @@ export default function RecentMatchScreen({ navigation, route }) {
                             renderItem={renderEntity}
                             keyExtractor={keyExtractor}
                             // ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
-
                           />
                         </View>
                       )}
@@ -1006,29 +1007,30 @@ export default function RecentMatchScreen({ navigation, route }) {
                 </View>
               )}
 
-              <View style={{ flex: 1 }} />
+              <View style={{flex: 1}} />
             </ScrollView>
           </KeyboardAvoidingView>
 
-          <TouchableOpacity style={styles.resetButton} onPress={() => {
-             Alert.alert(
-              'Are you sure want to reset filters?',
-              '',
-              [
-
-                {
-                  text: 'Cancel',
-                  onPress: () => console.log('Cancel Pressed'),
-                  style: 'cancel',
-                },
-                {
-                  text: 'OK',
-                  onPress: () => onPressReset(),
-                },
-              ],
-              { cancelable: false },
-            );
-          }}>
+          <TouchableOpacity
+            style={styles.resetButton}
+            onPress={() => {
+              Alert.alert(
+                'Are you sure want to reset filters?',
+                '',
+                [
+                  {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'OK',
+                    onPress: () => onPressReset(),
+                  },
+                ],
+                {cancelable: false},
+              );
+            }}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>
@@ -1069,7 +1071,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('92%'),
     borderRadius: 20,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -1126,7 +1128,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },
@@ -1168,7 +1170,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.3,
     shadowRadius: 1,
     elevation: 1,
@@ -1196,7 +1198,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
     flexDirection: 'row',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1218,7 +1220,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     width: widthPercentageToDP('75%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -1243,7 +1245,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     width: widthPercentageToDP('92%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,

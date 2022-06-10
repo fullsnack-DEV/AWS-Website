@@ -164,7 +164,7 @@ export default function BookScorekeeper({navigation, route}) {
           },
         });
       }
-     
+
       console.log('ScorekeeperQuery:=>', JSON.stringify(scorekeeperQuery));
 
       // Scorekeeper query
@@ -463,15 +463,14 @@ export default function BookScorekeeper({navigation, route}) {
       />
       <Modal
         onBackdropPress={() => setSettingPopup(false)}
-        backdropOpacity={1}
-        animationType="slide"
-        hasBackdrop
         style={{
-          flex: 1,
           margin: 0,
-          backgroundColor: colors.blackOpacityColor,
         }}
-        visible={settingPopup}>
+        isVisible={settingPopup}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}>
         <View
           style={[
             styles.bottomPopupContainer,

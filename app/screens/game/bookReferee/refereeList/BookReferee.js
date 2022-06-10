@@ -77,6 +77,7 @@ export default function BookReferee({navigation, route}) {
   console.log('Referee location Filter:=>', route?.params?.filters.location);
 
   useLayoutEffect(() => {
+    console.log('ENTER BOOK REFEREE');
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => onPressNext()}>
@@ -463,16 +464,25 @@ export default function BookReferee({navigation, route}) {
         ListEmptyComponent={listEmptyComponent}
       />
       <Modal
+        // onBackdropPress={() => setSettingPopup(false)}
+        // backdropOpacity={1}
+        // animationType="slide"
+        // hasBackdrop
+        // style={{
+        //   flex: 1,
+        //   margin: 0,
+        //   backgroundColor: colors.blackOpacityColor,
+        // }}
+        // visible={settingPopup}
         onBackdropPress={() => setSettingPopup(false)}
-        backdropOpacity={1}
-        animationType="slide"
-        hasBackdrop
+        isVisible={settingPopup}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         style={{
-          flex: 1,
           margin: 0,
-          backgroundColor: colors.blackOpacityColor,
-        }}
-        visible={settingPopup}>
+        }}>
         <View
           style={[
             styles.bottomPopupContainer,

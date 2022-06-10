@@ -145,7 +145,6 @@ export default function RegisterPlayerForm2({navigation, route}) {
     console.log('body params', bodyParams);
     console.log('body registerdPlayerData', registerdPlayerData);
 
-    
     patchPlayer(body, authContext)
       .then(async (response) => {
         if (response.status === true) {
@@ -226,15 +225,14 @@ export default function RegisterPlayerForm2({navigation, route}) {
       </KeyboardAwareScrollView>
       <Modal
         isVisible={isModalVisible}
-        backdropColor="black"
         onBackdropPress={() => setModalVisible(false)}
         onRequestClose={() => setModalVisible(false)}
-        backdropOpacity={0}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         style={{
-          marginLeft: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          marginRight: 0,
-          marginBottom: 0,
+          margin: 0,
         }}>
         <View
           style={{

@@ -584,8 +584,13 @@ function NotificationsListScreen({navigation}) {
 
   const onRespond = (groupObj) => {
     console.log('groupObj11:=>', groupObj);
-    const groupId = JSON.parse(groupObj?.activities?.[0]?.object).groupData?.group_id;
-    console.log('groupObject12121:=>', JSON.parse(groupObj?.activities?.[0]?.object));
+
+    const groupId = JSON.parse(groupObj?.activities?.[0]?.object).groupData
+      ?.group_id;
+    console.log(
+      'groupObject:=>',
+      JSON.parse(groupObj?.activities?.[0]?.object),
+    );
 
     if (activeScreen) {
       if (
@@ -890,8 +895,6 @@ function NotificationsListScreen({navigation}) {
     return null;
   };
 
-  
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -1011,7 +1014,6 @@ function NotificationsListScreen({navigation}) {
     return <View style={styles.listItemSeparatorStyle} />;
   };
 
-
   const checkActiveScreen = async (entity) => {
     const loggedInEntity = authContext.entity;
     const currentID =
@@ -1033,7 +1035,6 @@ function NotificationsListScreen({navigation}) {
       <View
         style={[styles.rowViewStyle, {opacity: 1.0}]}
         needsOffscreenAlphaCompositing>
-   
         <ActivityLoader visible={loading} />
         {/* eslint-disable-next-line no-nested-ternary */}
         {firstTimeLoading ? (
@@ -1074,14 +1075,15 @@ function NotificationsListScreen({navigation}) {
 
         {/* Rules notes modal */}
         <Modal
-          isVisible={isRulesModalVisible} // isRulesModalVisible
-          backdropColor="black"
+          isVisible={isRulesModalVisible}
           onBackdropPress={() => setIsRulesModalVisible(false)}
           onRequestClose={() => setIsRulesModalVisible(false)}
-          backdropOpacity={0}
+          animationInTiming={300}
+          animationOutTiming={800}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
           }}>
           <View
             style={{

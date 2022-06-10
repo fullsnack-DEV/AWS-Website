@@ -523,15 +523,14 @@ export default function CreateTeamForm2({navigation, route}) {
       />
       <Modal
         isVisible={isModalVisible}
-        backdropColor="black"
         onBackdropPress={() => setModalVisible(false)}
         onRequestClose={() => setModalVisible(false)}
-        backdropOpacity={0}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         style={{
-          marginLeft: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          marginRight: 0,
-          marginBottom: 0,
+          margin: 0,
         }}>
         <View
           style={{
@@ -606,13 +605,14 @@ export default function CreateTeamForm2({navigation, route}) {
 
       <Modal
         isVisible={visibleGendersModal}
-        backdropColor="black"
         onBackdropPress={() => setVisibleGendersModal(false)}
         onRequestClose={() => setVisibleGendersModal(false)}
-        backdropOpacity={0}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
         }}>
         <View
           style={{
@@ -674,13 +674,14 @@ export default function CreateTeamForm2({navigation, route}) {
       </Modal>
       <Modal
         isVisible={visibleFollowersModal}
-        backdropColor="black"
         onBackdropPress={() => setVisibleFollowersModal(false)}
         onRequestClose={() => setVisibleFollowersModal(false)}
-        backdropOpacity={0}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
         }}>
         <View
           style={{

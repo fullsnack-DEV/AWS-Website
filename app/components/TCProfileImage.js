@@ -1,7 +1,5 @@
 import React from 'react';
-import {
- View, Image, StyleSheet, Text,
- } from 'react-native';
+import {View, Image, StyleSheet, Text} from 'react-native';
 
 import TCImage from './TCImage';
 import fonts from '../Constants/Fonts';

@@ -241,17 +241,15 @@ export default function RegisterScorekeeper({navigation}) {
 
       <Modal
         isVisible={isModalVisible}
-        backdropColor="black"
         onBackdropPress={() => setModalVisible(false)}
         onRequestClose={() => setModalVisible(false)}
-        backdropOpacity={0}
         style={{
-          marginLeft: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          marginRight: 0,
-          marginBottom: 0,
-          marginTop:0
-        }}>
+          margin: 0,
+        }}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}>
         <View
           style={{
             width: '100%',
@@ -325,16 +323,14 @@ export default function RegisterScorekeeper({navigation}) {
 
       <Modal
         isVisible={visibleSportsModal}
-        backdropColor="black"
         onBackdropPress={() => setVisibleSportsModal(false)}
         onRequestClose={() => setVisibleSportsModal(false)}
-        backdropOpacity={0}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
         style={{
-          marginLeft: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          marginRight: 0,
-          marginBottom: 0,
-          marginTop:0
+          margin: 0,
         }}>
         <View
           style={{
