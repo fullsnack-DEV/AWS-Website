@@ -308,6 +308,8 @@ const images = {
   arrowDown: require('../assets/images/arrow_down.png'),
   moveIcon: require('../assets/images/ic_move.png'),
   checkRoundOrange: require('../assets/images/check_round_orange.png'),
+  radioRoundOrange: require('../assets/images/check_radio_orange.png'),
+
   addStatus: require('../assets/images/add_status.png'),
   addMessageChat: require('../assets/images/addMessageChat.png'),
   greenQBGroup: require('../assets/images/greenQBGroup.png'),
@@ -430,6 +432,7 @@ const images = {
   availableChallenge: require('../assets/images/available_challenge.png'),
   blockedChallenge: require('../assets/images/blocked_challenge.png'),
   backgroudPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
+  backgroundPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
 
 };
 

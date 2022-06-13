@@ -20,7 +20,6 @@ import {
   Alert,
   TouchableOpacity,
   SafeAreaView,
-
   Dimensions,
 } from 'react-native';
 
@@ -1041,7 +1040,7 @@ export default function ScheduleScreen({navigation, route}) {
           <Image
             source={
               sortFilterOpetion === index
-                ? images.checkRoundOrange
+                ? images.radioRoundOrange
                 : images.radioUnselect
             }
             style={styles.radioButtonStyle}
@@ -1069,7 +1068,7 @@ export default function ScheduleScreen({navigation, route}) {
           <Image
             source={
               timeFilterOpetion === index
-                ? images.checkRoundOrange
+                ? images.radioRoundOrange
                 : images.radioUnselect
             }
             style={styles.radioButtonStyle}
@@ -1078,6 +1077,36 @@ export default function ScheduleScreen({navigation, route}) {
       </View>
     );
   };
+
+  const datesBlacklistFunc = (startDate, endDate) => {
+    const date = new Date(startDate);
+    console.log('cacacaca');
+    const dates = [];
+
+    while (date <= endDate) {
+      dates.push(new Date(date));
+      date.setDate(date.getDate() + 1);
+    }
+
+    return dates;
+  };
+
+  const customDatesStyles = [];
+  const startDate = moment();
+  for (let i=0; i<1; i++) {
+    customDatesStyles.push({
+        startDate: startDate.clone().add(2, 'days'),
+        dateNumberStyle: {
+          color: colors.userPostTimeColor,
+          fontSize: 18,
+          fontFamily: fonts.RRegular,
+          fontWeight: '400',
+        },
+        dateContainerStyle: {  backgroundColor: colors.offGrayColor,
+          borderRadius: 8,
+          width: 40,},
+      });
+  }
 
   return (
     <View style={{flex: 1}}>
@@ -1311,11 +1340,12 @@ export default function ScheduleScreen({navigation, route}) {
                   shadowOffset: {width: 0, height: 3},
                   shadowOpacity: 0.2,
                   shadowRadius: 3,
-                  marginBottom:10
+                  marginBottom: 10,
                 }}>
                 <CalendarStrip
                   selectedDate={selectedDate}
                   scrollable={true}
+                  customDatesStyles={customDatesStyles}
                   // calendarAnimation={{type: 'sequence', duration: 30}}
                   daySelectionAnimation={{
                     type: 'border',
@@ -1323,10 +1353,14 @@ export default function ScheduleScreen({navigation, route}) {
                     borderWidth: 1,
                     borderHighlightColor: 'white',
                   }}
+                  dayContainerStyle={{
+                    justifyContent: 'space-between',
+                    paddingTop: 3,
+                    paddingBottom: 3,
+                  }}
                   style={{
                     height: 120,
-                    paddingTop: 20,
-                    paddingBottom: 10,
+                    paddingTop: 15,
                   }}
                   calendarHeaderStyle={{
                     color: colors.lightBlackColor,
@@ -1337,14 +1371,43 @@ export default function ScheduleScreen({navigation, route}) {
                   dateNumberStyle={{
                     color: colors.lightBlackColor,
                     fontSize: 18,
-                    fontFamily: fonts.RLight,
+                    fontFamily: fonts.RRegular,
                     fontWeight: '400',
                   }}
-                  dateNameStyle={{color: colors.lightBlackColor}}
+                  dateNameStyle={{
+                    color: colors.lightBlackColor,
+                    fontSize: 12,
+                    fontFamily: fonts.RMedium,
+                    fontWeight: '400',
+                  }}
                   onDateSelected={onDayPress}
-                  highlightDateNumberStyle={{color: colors.whiteColor}}
-                  highlightDateNameStyle={{color: colors.whiteColor}}
-                  disabledDateNameStyle={{color: colors.userPostTimeColor}}
+                  highlightDateNumberStyle={{
+                    color: colors.whiteColor,
+                    fontSize: 18,
+                    fontFamily: fonts.RBlack,
+                    fontWeight: '800',
+                  }}
+                  highlightDateNameStyle={{
+                    color: colors.whiteColor,
+                    fontSize: 12,
+                    fontFamily: fonts.RMedium,
+                    fontWeight: '400',
+                  }}
+                  highlightDateContainerStyle={{
+                    backgroundColor: colors.themeColor,
+                    borderRadius: 8,
+                    width: 40,
+                  }}
+                  datesBlacklist={datesBlacklistFunc(
+                    new Date().setFullYear(new Date().getFullYear() - 25),
+                    new Date().setDate(new Date().getDate() - 1),
+                  )}
+                  disabledDateNameStyle={{
+                    
+                    fontSize: 12,
+                    fontFamily: fonts.RMedium,
+                    fontWeight: '400',
+                  }}
                   disabledDateNumberStyle={{
                     color: colors.userPostTimeColor,
                     fontSize: 18,
@@ -1352,14 +1415,10 @@ export default function ScheduleScreen({navigation, route}) {
                     fontWeight: '400',
                   }}
                   disabledDateOpacity={1}
-                  // datesBlacklist={[moment().add(1, 'days')]}
                   iconLeft={images.calPrevArrow}
                   iconRight={images.calNextArrow}
                   iconContainer={{flex: 0.1}}
                   iconStyle={{height: 15, width: 15}}
-                  highlightDateContainerStyle={{
-                    backgroundColor: colors.themeColor,
-                  }}
                 />
               </View>
               {/* Availibility bottom view */}

@@ -300,9 +300,9 @@ export default function CreateEventScreen({navigation, route}) {
 
         setloading(false);
       })
-      .catch((e) => {
+      .catch(() => {
         setloading(false);
-        Alert.alert('', e.messages);
+       
       });
   }, [authContext]);
 
@@ -576,10 +576,10 @@ export default function CreateEventScreen({navigation, route}) {
   };
 
   const checkValidation = useCallback(() => {
-    if (!backgroundThumbnail) {
-      Alert.alert(strings.appName, 'Please choose event featured image.');
-      return false;
-    }
+    // if (!backgroundThumbnail) {
+    //   Alert.alert(strings.appName, 'Please choose event featured image.');
+    //   return false;
+    // }
     if (eventTitle === '') {
       Alert.alert(strings.appName, 'Please Enter Event Title.');
       return false;
@@ -1142,6 +1142,17 @@ export default function CreateEventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>
                 {strings.refundPolicyTitle}
               </Text>
+              <Text style={{fontSize:14,fontFamily:fonts.RBold,marginTop:15}}>
+                {'Primary Refund Policy'}
+              </Text>
+              <Text style={[styles.subTitleText, {marginTop: 10}]}>
+                Attendees must be refunded if the event is canceled or
+                rescheduled. 
+                <Text style={{fontSize:12, fontFamily:fonts.RRegular,textDecorationLine:'underline'}}>{'\n'}Read payment policy for more information.</Text>
+              </Text>
+              <Text style={{fontSize:14,fontFamily:fonts.RBold,marginTop:15}}>
+                {'Additional Refund Policy'}
+              </Text>
               <TextInput
                 placeholder={'Refund Policy'}
                 style={styles.detailsInputStyle}
@@ -1151,10 +1162,7 @@ export default function CreateEventScreen({navigation, route}) {
                 textAlignVertical={'center'}
                 placeholderTextColor={colors.userPostTimeColor}
               />
-              <Text style={[styles.subTitleText, {marginTop: 0}]}>
-                Attendees must be refunded if the event is canceled or
-                rescheduled. Read payment policy for more information.
-              </Text>
+              
             </View>
 
             <View style={styles.containerStyle}>
