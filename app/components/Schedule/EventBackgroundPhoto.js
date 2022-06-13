@@ -11,11 +11,11 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-function EventBackgroundPhoto({imageURL, isEdit = false, onPress,isPreview= false}) {
+function EventBackgroundPhoto({imageURL, isEdit = false, onPress,isPreview= false,isImage=true}) {
   return (
     <ImageBackground
       source={imageURL}
-      style={styles.bgStyle}>
+      style={[styles.bgStyle,{height: isImage ? 200 : 150}]}>
       {!isPreview && <View>
         {!isEdit && (
           <View style={{marginBottom: 15}}>

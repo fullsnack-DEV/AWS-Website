@@ -14,6 +14,7 @@ import {
   SafeAreaView,
   Alert,
   FlatList,
+  Dimensions,
 } from 'react-native';
 import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -56,6 +57,7 @@ export default function EventScreen({navigation, route}) {
   let gameDataLati = null;
   let gameDataLongi = null;
   let blocked = false;
+  const isOrganizer = eventData.owner_id === authContext.entity.uid;
   if (eventData) {
     if (eventData.title) {
       titleValue = eventData.title;
@@ -201,10 +203,11 @@ export default function EventScreen({navigation, route}) {
         <EventBackgroundPhoto
           isEdit={!!route?.params?.data?.background_thumbnail}
           isPreview={true}
+          isImage={!!route?.params?.data?.background_thumbnail}
           imageURL={
             route?.params?.data?.background_thumbnail
               ? {uri: route?.params?.data?.background_thumbnail}
-              : images.backgroundGrayPlceholder
+              : images.backgroudPlaceholder
           }
         />
 
@@ -216,46 +219,7 @@ export default function EventScreen({navigation, route}) {
           </Text>
         </Text>
 
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            margin: 15,
-          }}>
-          <TCProfileButton
-            title={
-              eventData?.going?.filter(
-                (entity) => entity === authContext.entity.uid,
-              ).length > 0
-                ? 'Going'
-                : 'Attend'
-            }
-            style={styles.firstButtonStyle}
-            showArrow={false}
-            imageStyle={styles.checkMarkStyle}
-            textStyle={
-              eventData?.going?.filter(
-                (entity) => entity === authContext.entity.uid,
-              ).length > 0
-                ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
-                : styles.attendTextStyle
-            }
-            onPressProfile={() => attendAPICall()}
-          />
-
-          <TCProfileButton
-            title={'Invite'}
-            style={styles.firstButtonStyle}
-            showArrow={false}
-            imageStyle={styles.checkMarkStyle}
-            textStyle={styles.inviteTextStyle}
-            onPressProfile={() =>
-              navigation.navigate('InviteToEventScreen', {
-                eventId: eventData.cal_id,
-              })
-            }
-          />
-        </View>
+        
 
         <EventTimeItem
           from={strings.from}
@@ -393,6 +357,17 @@ export default function EventScreen({navigation, route}) {
 
         <View style={styles.sepratorViewStyle} />
         <EventItemRender title={strings.refundPolicyTitle}>
+          <Text style={{fontSize:14,fontFamily:fonts.RBold,marginTop:15}}>
+            {'Primary Refund Policy'}
+          </Text>
+          <Text style={[styles.subTitleText, {marginTop: 10}]}>
+            Attendees must be refunded if the event is canceled or
+            rescheduled. 
+            <Text style={{fontSize:12, fontFamily:fonts.RRegular,textDecorationLine:'underline'}}>{'\n'}Read payment policy for more information.</Text>
+          </Text>
+          <Text style={{fontSize:14,fontFamily:fonts.RBold,marginTop:15}}>
+            {'Additional Refund Policy'}
+          </Text>
           <Text style={styles.textValueStyle}>{eventData?.refund_policy}</Text>
         </EventItemRender>
 
@@ -410,8 +385,66 @@ export default function EventScreen({navigation, route}) {
           </Text>
         </EventItemRender>
 
-        <View style={styles.sepratorViewStyle} />
+        <View  marginBottom={70}/>
       </ScrollView>
+
+     
+       
+      <View
+          style={{
+            flex:1,
+            backgroundColor:colors.whiteColor,
+            zIndex:1000,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+           padding:15,
+            position: 'absolute',
+            top: Dimensions.get('window').height-190,
+           width:'100%',
+           height:'80%',
+           shadowColor: colors.blackColor,
+           shadowOffset: {width: 0, height: 5},
+           shadowOpacity: 1.0,
+           shadowRadius: 4,
+           elevation: 2,
+          }}>
+      
+        <TCProfileButton
+            title={
+              eventData?.going?.filter(
+                (entity) => entity === authContext.entity.uid,
+              ).length > 0
+                ? 'Going'
+                : 'Join'
+            }
+            style={[styles.firstButtonStyle,{width: isOrganizer ? '48%' : '100%'}]}
+            showArrow={false}
+            imageStyle={styles.checkMarkStyle}
+            textStyle={
+              eventData?.going?.filter(
+                (entity) => entity === authContext.entity.uid,
+              ).length > 0
+                ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
+                : styles.attendTextStyle
+            }
+            onPressProfile={() => attendAPICall()}
+          />
+
+        {isOrganizer && <TCProfileButton
+            title={'Invite'}
+            style={styles.firstButtonStyle}
+            showArrow={false}
+            imageStyle={styles.checkMarkStyle}
+            textStyle={styles.inviteTextStyle}
+            onPressProfile={() =>
+              navigation.navigate('InviteToEventScreen', {
+                eventId: eventData.cal_id,
+              })
+            }
+          />}
+      </View>
+     
+
       <ActionSheet
         ref={actionSheet}
         options={['Edit', 'Delete', 'Cancel']}

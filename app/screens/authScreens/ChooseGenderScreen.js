@@ -291,13 +291,11 @@ export default function ChooseGenderScreen({navigation, route}) {
       (position) => {
         console.log('Lat/long to position::=>', position);
         console.log('222');
-        console.log('position.coords.latitude', position.coords.latitude);
-        console.log('position.coords.longitude', position.coords.longitude);
+     
         setlatLong(position);
-        // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
         getLocationNameWithLatLong(
-          position.coords.latitude,
-          position.coords.longitude,
+          position?.coords?.latitude,
+          position?.coords?.longitude,
           authContext,
         ).then((res) => {
           console.log(
@@ -321,7 +319,6 @@ export default function ChooseGenderScreen({navigation, route}) {
           setEnableNext(true);
         });
         console.log('444');
-        console.log(position.coords.latitude);
         setLoading(false);
       },
       (error) => {

@@ -96,21 +96,15 @@ export default function LocalHomeScreen({navigation, route}) {
 
   const [locationPopup, setLocationPopup] = useState(false);
   const [selectedLocationOption, setSelectedLocationOption] = useState();
-
   const [location, setLocation] = useState(
     authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
       authContext?.entity?.obj?.city.slice(1),
   );
-
   const [selectedSport, setSelectedSport] = useState('All');
   const [sportType, setSportType] = useState('');
-
   const [settingPopup, setSettingPopup] = useState(false);
-
   const [shortsList, setShortsList] = useState([]);
-
   const [recentMatch, setRecentMatch] = useState([]);
-
   const [upcomingMatch, setUpcomingMatch] = useState([]);
   const [challengeeMatch, setChallengeeMatch] = useState([]);
   const [hiringPlayers, setHiringPlayers] = useState([]);
