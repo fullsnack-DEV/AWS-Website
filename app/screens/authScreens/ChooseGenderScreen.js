@@ -1,4 +1,10 @@
-import React, {useContext, useState, useLayoutEffect, useEffect} from 'react';
+import React, {
+  useContext,
+  useState,
+  useLayoutEffect,
+  useEffect,
+  useCallback,
+} from 'react';
 import {
   View,
   Text,
@@ -20,6 +26,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {Tooltip} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
+import {PERMISSIONS, check, RESULTS, request} from 'react-native-permissions';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
@@ -31,7 +38,8 @@ import {getLocationNameWithLatLong, searchNearByCity} from '../../api/External';
 export default function ChooseGenderScreen({navigation, route}) {
   const [currentLocation, setCurrentLocation] = useState();
   const [latLong, setlatLong] = useState();
-  const [nearByCity, setNearByCity] = useState([]);
+  const [nearCity, setNearCity] = useState([]);
+  const [enableNext, setEnableNext] = useState(false);
 
   const authContext = useContext(AuthContext);
   console.log('authContextauthContext', authContext);
@@ -43,147 +51,174 @@ export default function ChooseGenderScreen({navigation, route}) {
       : 0,
   );
   const [loading, setLoading] = useState(false);
-
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerLeft: () => (
-  //       <TouchableOpacity
-  //         onPress={() => {
-
-  //           navigation.pop();
-  //         }}>
-  //         <Image
-  //           source={images.backArrow}
-  //           style={{
-  //             height: 20,
-  //             width: 15,
-  //             marginLeft: 15,
-  //             tintColor: colors.whiteColor,
-  //           }}
-  //         />
-  //       </TouchableOpacity>
-  //     ),
-  //   });
-  // }, [navigation, selected]);
-  const fetchNearestCity = async () => {
-    console.log('Latlong', latLong?.coords);
-    searchNearByCity(
-      latLong?.coords?.latitude,
-      latLong?.coords?.longitude,
-      2000000,
-      authContext,
-    )
-      .then((response) => {
-        const places = []; // This Array WIll contain locations received from google
-        const dataArray = [];
-        console.log('Places=====>', response.results);
-        for (const googlePlace of response.results) {
-          const place = {};
-          const lat = googlePlace.geometry.location.lat;
-          const lng = googlePlace.geometry.location.lng;
-          const coordinate = {
-            latitude: lat,
-            longitude: lng,
-          };
-          getLocationNameWithLatLong(
-            coordinate.latitude,
-            coordinate.longitude,
-            authContext,
-          ).then((res) => {
-            console.log('res====>', res);
-            console.log(
-              'Lat/long to address::=>',
-              res.results[0].address_components,
-            );
-            let stateAbbr, city, country;
-            // eslint-disable-next-line array-callback-return
-            res.results[0].address_components.map((e) => {
-              if (e.types.includes('administrative_area_level_1')) {
-                stateAbbr = e.short_name;
-              } else if (e.types.includes('locality')) {
-                city = e.short_name;
-              } else if (e.types.includes('country')) {
-                country = e.long_name;
-              }
-            });
-            // setCurrentLocation({stateAbbr, city, country});
-            const desc = `${city},${stateAbbr},${country}`;
-            const data = {description: desc};
-            dataArray.push(data);
-
-            console.log('desc===', desc);
-            console.log('stateAbbr=====>', stateAbbr);
-            console.log('city====>', city);
-            console.log('country====>', country);
-            console.log('desc=====>', desc);
-            console.log('data=====>', data);
-          });
-          place.placeTypes = googlePlace.types;
-          place.coordinate = coordinate;
-          place.placeId = googlePlace.place_id;
-          place.placeName = googlePlace.name;
-          places.push(place);
-          console.log('places--->', places);
-
-          // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
-        }
-        console.log('dataArray--->', dataArray);
-        setNearByCity(dataArray);
-
-        setTimeout(() => {
-          setLoading(false);
-        }, 10);
-      })
-      .catch((e) => {
-        console.log('cathh ---error', e);
-        setTimeout(() => {
-          setLoading(false);
-        }, 10);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-  const navigateToChooseLocationScreen = (genderParam) => {
-    setTimeout(() => {
+  const navigateToChooseLocationScreen = useCallback(
+    (genderParam) => {
       setLoading(false);
-    }, 10);
-    console.log('basicInfo=====>', route?.params?.signupInfo);
-    console.log('currentLocation=====>', currentLocation);
-    console.log('nearByCity=====>', nearByCity);
-    const uniqueNames = Array.from(new Set(nearByCity.map(JSON.stringify))).map(
-      JSON.parse,
-    );
-    console.log('data===>', uniqueNames);
-    navigation.navigate('ChooseLocationScreen', {
-      signupInfo: {
-        ...route?.params?.signupInfo,
-        gender: genderParam,
-        location: currentLocation,
-        locationPosition: latLong,
-        nearCity: [...uniqueNames],
-      },
-    });
-  };
+      console.log('basicInfo=====>', route?.params?.signupInfo);
+      const uniqueObjArray = [
+        ...new Map(nearCity.map((item) => [item.description, item])).values(),
+      ];
+      console.log('uniqueObjArray===>', uniqueObjArray);
+      setTimeout(() => {
+        navigation.navigate('ChooseLocationScreen', {
+          signupInfo: {
+            ...route?.params?.signupInfo,
+            gender: genderParam,
+            location: currentLocation,
+            locationPosition: latLong,
+            nearCity: [...uniqueObjArray],
+          },
+        });
+      }, 100);
+    },
+    [currentLocation, latLong, navigation, nearCity, route?.params?.signupInfo],
+  );
+  const fetchNearestCity = useCallback(
+    (gender) => {
+      console.log('Latlong', latLong.coords);
+      searchNearByCity(
+        latLong.coords.latitude,
+        latLong.coords.longitude,
+        2000000,
+        authContext,
+      )
+        .then((response) => {
+          const places = []; // This Array WIll contain locations received from google
+          const cities = [];
+          console.log('Places=====>', response.results);
+          for (const googlePlace of response.results) {
+            const place = {};
+            const lat = googlePlace.geometry.location.lat;
+            const lng = googlePlace.geometry.location.lng;
+            const coordinate = {
+              latitude: lat,
+              longitude: lng,
+            };
+            getLocationNameWithLatLong(
+              coordinate.latitude,
+              coordinate.longitude,
+              authContext,
+            ).then((res) => {
+              console.log('res====>', res);
+              console.log(
+                'Lat/long to address::=>',
+                res.results[0].address_components,
+              );
+              let stateAbbr, city, country;
+              // eslint-disable-next-line array-callback-return
+              res.results[0].address_components.map((e) => {
+                if (e.types.includes('administrative_area_level_1')) {
+                  stateAbbr = e.short_name;
+                } else if (e.types.includes('locality')) {
+                  city = e.short_name;
+                } else if (e.types.includes('country')) {
+                  country = e.long_name;
+                }
+              });
+              // setCurrentLocation({stateAbbr, city, country});
+              const data = {};
+              const desc = `${city},${stateAbbr},${country}`.toString();
+              data.description = desc;
+              cities.push(data);
+            });
+            place.placeTypes = googlePlace.types;
+            place.coordinate = coordinate;
+            place.placeId = googlePlace.place_id;
+            place.placeName = googlePlace.name;
+            places.push(place);
+            console.log('places--->', places);
+
+            // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
+          }
+          setNearCity(cities);
+          setLoading(false);
+
+          console.log('nearCity--->', nearCity);
+          // navigation.navigate('ChooseLocationScreen', {
+          //   signupInfo: {
+          //     ...route?.params?.signupInfo,
+          //     gender,
+          //     location: currentLocation,
+          //     locationPosition: latLong,
+          //     nearCity,
+          //   },
+          // });
+          navigateToChooseLocationScreen(gender);
+        })
+        .catch((e) => {
+          console.log('cathh ---error', e);
+          navigateToChooseLocationScreen(gender);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    },
+    [authContext, navigateToChooseLocationScreen, nearCity],
+  );
 
   useLayoutEffect(() => {
+    console.log('000000', nearCity);
     navigation.setOptions({
-      headerRight: () => (
-        <Text
-          style={styles.nextButtonStyle}
-          onPress={async () => {
-            let gender = {};
-            if (selected === 0) gender = 'male';
-            else if (selected === 1) gender = 'female';
-            else if (selected === 2) gender = 'other';
+      headerRight: () =>
+        enableNext ? (
+          <Text
+            style={styles.nextButtonStyle}
+            onPress={async () => {
+              let gender = {};
+              if (selected === 0) gender = 'male';
+              else if (selected === 1) gender = 'female';
+              else if (selected === 2) gender = 'other';
 
-            setLoading(true);
-            await fetchNearestCity();
-            navigateToChooseLocationScreen(gender);
-          }}>
-          Next
-        </Text>
-      ),
+              check(
+                PERMISSIONS.IOS.LOCATION_ALWAYS,
+                PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+              )
+                .then((result) => {
+                  switch (result) {
+                    case RESULTS.UNAVAILABLE:
+                      console.log(
+                        'This feature is not available (on this device / in this context)',
+                      );
+                      navigateToChooseLocationScreen(gender);
+                      break;
+                    case RESULTS.DENIED:
+                      console.log(
+                        'The permission has not been requested / is denied but requestable',
+                      );
+                      navigateToChooseLocationScreen(gender);
+                      break;
+                    case RESULTS.LIMITED:
+                      console.log(
+                        'The permission is limited: some actions are possible',
+                      );
+                      navigateToChooseLocationScreen(gender);
+                      break;
+                    case RESULTS.GRANTED:
+                      console.log('The permission is granted');
+                      setLoading(true);
+                      fetchNearestCity(gender);
+
+                      break;
+                    case RESULTS.BLOCKED:
+                      console.log(
+                        'The permission is denied and not requestable anymore',
+                      );
+                      navigateToChooseLocationScreen(gender);
+                      break;
+                    default:
+                      navigateToChooseLocationScreen(gender);
+                  }
+                })
+                .catch((error) => {
+                  console.log('error', error);
+                  // …
+                });
+            }}>
+            Next
+          </Text>
+        ) : (
+          <View></View>
+        ),
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
@@ -201,16 +236,56 @@ export default function ChooseGenderScreen({navigation, route}) {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, nearByCity, selected]);
+  }, [
+    navigation,
+    nearCity,
+    selected,
+    enableNext,
+    navigateToChooseLocationScreen,
+    fetchNearestCity,
+  ]);
   useEffect(() => {
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
       console.log('111');
-      getLocation();
+      request(
+        PERMISSIONS.IOS.LOCATION_ALWAYS,
+        PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+      ).then((result) => {
+        switch (result) {
+          case RESULTS.UNAVAILABLE:
+            console.log(
+              'This feature is not available (on this device / in this context)',
+            );
+            setEnableNext(true);
+            break;
+          case RESULTS.DENIED:
+            console.log(
+              'The permission has not been requested / is denied but requestable',
+            );
+            setEnableNext(true);
+            break;
+          case RESULTS.LIMITED:
+            console.log('The permission is limited: some actions are possible');
+            setEnableNext(true);
+            break;
+          case RESULTS.GRANTED:
+            console.log('The permission is granted');
+            setLoading(true);
+            getLocation();
+            break;
+          case RESULTS.BLOCKED:
+            console.log('The permission is denied and not requestable anymore');
+            setEnableNext(true);
+            break;
+          default:
+        }
+      });
     }
   }, []);
-  const getLocation = () => {
+
+  const getLocation = async () => {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       (position) => {
@@ -241,6 +316,7 @@ export default function ChooseGenderScreen({navigation, route}) {
           console.log('333');
           setCurrentLocation({stateAbbr, city, country});
           setLoading(false);
+          setEnableNext(true);
         });
         console.log('444');
         setLoading(false);
@@ -248,6 +324,7 @@ export default function ChooseGenderScreen({navigation, route}) {
       (error) => {
         console.log('555');
         setLoading(false);
+        setEnableNext(true);
         // See error code charts below.
         console.log(error.code, error.message);
       },
