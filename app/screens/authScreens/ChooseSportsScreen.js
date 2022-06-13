@@ -284,8 +284,7 @@ export default function ChooseSportsScreen({navigation, route}) {
     console.log('query --->', JSON.stringify(queryParams));
     getGroupIndex(queryParams)
       .then((response) => {
-        // setloading(false);
-        setTimeout(() => setloading(false), 1000);
+        setloading(false);
         console.log('groupIndex:=>', response);
         // updateProfile({sports: selected}, () => {
         //   if (response) {
@@ -443,9 +442,8 @@ export default function ChooseSportsScreen({navigation, route}) {
     await authContext.setTokenData(tokenData);
     await authContext.setUser({...userData});
     await authContext.setEntity({...entity});
-    setTimeout(() => {
-      setloading(false);
-    }, 10);
+
+    setloading(false);
   };
   return (
     <LinearGradient
