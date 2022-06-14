@@ -19,6 +19,7 @@ import {
 import QB from 'quickblox-react-native-sdk';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
+import Config from 'react-native-config';
 import {createUser} from '../../api/Users';
 import {getSportsList} from '../../api/Games';
 import images from '../../Constants/ImagePath';
@@ -30,6 +31,9 @@ import * as Utility from '../../utils/index';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import {getGroupIndex} from '../../api/elasticSearch';
+import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
+import apiCall from '../../utils/apiCall';
+
 import {
   QBconnectAndSubscribe,
   QBcreateUser,
@@ -165,10 +169,8 @@ export default function ChooseSportsScreen({navigation, route}) {
 
   const navigateToFollowScreen = (response) => {
     console.log('route?.params?.locationInfo', route?.params?.locationInfo);
-
     console.log('selected sport', selected);
     console.log('Response', response);
-
     if (response.length > 0) {
       navigation.navigate('FollowTeams', {
         sportInfo: {
@@ -348,14 +350,58 @@ export default function ChooseSportsScreen({navigation, route}) {
   };
   const finalStepSignUp = async () => {
     setloading(true);
-    signUpToTownsCup();
+    const tokenData = authContext?.tokenData;
+    const authToken = tokenData.token;
+    const userData = {};
+    const uploadImageConfig = {
+      method: 'get',
+      url: `${Config.BASE_URL}/pre-signed-url?count=2`,
+      headers: {Authorization: `Bearer ${authToken}`},
+    };
+    console.log('authToken', authToken);
+    console.log('uploadImageConfig', uploadImageConfig);
+    console.log('profilePic', route?.params);
+
+    if (route?.params?.locationInfo?.profilePic) {
+      const apiResponse = await apiCall(uploadImageConfig);
+      const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
+      Promise.all([
+        uploadImageOnPreSignedUrls({
+          url: preSignedUrls?.[0],
+          uri: route?.params?.locationInfo?.profilePic.path,
+          type:
+            route?.params?.locationInfo?.profilePic.path.split('.')[1] ||
+            'jpeg',
+        }),
+        uploadImageOnPreSignedUrls({
+          url: preSignedUrls?.[1],
+          uri: route?.params?.locationInfo?.profilePic?.path,
+          type:
+            route?.params?.locationInfo?.profilePic?.path.split('.')[1] ||
+            'jpeg',
+        }),
+      ])
+        .then(async ([fullImage, thumbnail]) => {
+          const uploadedProfilePic = {full_image: fullImage, thumbnail};
+          userData.uploadedProfilePic = uploadedProfilePic;
+
+          console.log('Uploaded pic', uploadedProfilePic);
+          setloading(false);
+          signUpToTownsCup(userData);
+        })
+        .catch(async () => {
+          signUpToTownsCup(userData);
+        });
+    } else {
+      signUpToTownsCup(userData);
+    }
   };
   // Signup to Towncup
-  const signUpToTownsCup = async () => {
+  const signUpToTownsCup = async (param) => {
     console.log('Signup data1111 ==>', route?.params?.sportInfo);
     console.log('selectedSports', selectedSports);
     console.log('selected', selected);
-
+    console.log('userData', param);
     const data = {
       first_name: route?.params?.locationInfo?.first_name,
       last_name: route?.params?.locationInfo?.last_name,
@@ -367,12 +413,14 @@ export default function ChooseSportsScreen({navigation, route}) {
       state: route?.params?.locationInfo?.state,
       sports: selected,
     };
-    if (route?.params?.sportInfo?.profilePicData?.thumbnail) {
+    if (route?.params?.locationInfo?.profilePicData?.thumbnail) {
       console.log('llllllll');
       data.thumbnail = route?.params?.sportInfo?.profilePicData.thumbnail;
       data.full_image = route?.params?.sportInfo?.profilePicData.full_image;
+    } else if (param?.uploadedProfilePic) {
+      data.thumbnail = param.uploadedProfilePic.thumbnail;
+      data.full_image = param.uploadedProfilePic.full_image;
     }
-
     console.log('Data before cretae a user on choose sport screen ===>', data);
     await createUser(data, authContext)
       .then((createdUser) => {

@@ -326,21 +326,22 @@ export default function WelcomeScreen({navigation}) {
                             user: response.payload,
                           },
                         };
-                        // QBInitialLogin(dummyAuthContext, response?.payload);
-                        // AV
-
+                        QBInitialLogin(dummyAuthContext, response?.payload);
                         console.log('Already register user details', user);
                         console.log(
                           'Already register extraData details',
                           extraData,
                         );
-                        setloading(false);
-                        setTimeout(() => {
-                          Alert.alert(strings.alreadyRegisteredMessage);
-                        }, 100);
+                        // setloading(false);
+                        // setTimeout(() => {
+                        //   Alert.alert(strings.alreadyRegisteredMessage);
+                        // }, 100);
                       })
                       .catch((error) => {
                         console.log('Login Error', error);
+                        setTimeout(() => {
+                          Alert.alert(error);
+                        }, 10);
                         setloading(false);
                       });
                   } else {
@@ -385,9 +386,18 @@ export default function WelcomeScreen({navigation}) {
                 })
                 .catch((error) => {
                   console.log('Check TC Email Error', error);
+                  setTimeout(() => {
+                    Alert.alert(error);
+                  });
+                  setloading(false);
                 });
             })
-            .catch(() => setloading(false));
+            .catch((error) => {
+              setloading(false);
+              setTimeout(() => {
+                Alert.alert(error);
+              });
+            });
         }
       },
     );
