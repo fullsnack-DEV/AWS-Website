@@ -18,24 +18,34 @@ function ChallengeAvailabilityItem({
   const [toggle, setToggle] = useState(data.allDay);
   const [is_Blocked, setIsBlocked] = useState(data.isBlock);
   const [eventStartDateTime, setEventStartdateTime] = useState(new Date());
-  const [eventEndDateTime, setEventEnddateTime] = useState(new Date());
+  const [eventEndDateTime, setEventEnddateTime] = useState(
+    new Date().setMinutes(new Date().getMinutes() + 5),
+  );
 
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
 
   const handleStartDatePress = (date) => {
     console.log('Start date:=>', date);
-    const startDate = moment(date).format('YYYY-MM-DD hh:mm:ss');
-    const obj = {...data};
-    obj.startDateTime = startDate;
+    let dateValue = new Date();
+    dateValue = `${moment(date).format('ddd MMM DD YYYY')} 00:00:00 AM`;
+    setEventStartdateTime(
+      toggle
+        ? dateValue
+        : new Date(date),
+    );
+    
+    const d1 = new Date(date);
+    const d2 = d1;
+    d2.setMinutes(d1.getMinutes() + 5);
+
+    const obj = {...data, startDateTime: new Date(date),endDateTime: toggle ? new Date(date).setHours(23, 59, 59, 0) : d2};
     changeAvailablilityItem(obj);
-    setEventStartdateTime(date);
-    if (new Date(date).getTime() > new Date(eventEndDateTime).getTime()) {
-      const d1 = new Date(date);
-      const d2 = d1;
-      d2.setMinutes(d1.getMinutes() + 5);
-      setEventEnddateTime(d2);
-    }
+    setEventEnddateTime(
+      toggle
+        ? new Date(date).setHours(23, 59, 59, 0)
+        : d2,
+    );
     setStartDateVisible(!startDateVisible);
   };
   const handleCancelPress = () => {
@@ -45,19 +55,20 @@ function ChallengeAvailabilityItem({
 
   const handleEndDatePress = (date) => {
     console.log('End date:=>', date);
-
-    const endDate = moment(date).format('YYYY-MM-DD hh:mm:ss');
-    const obj = {...data};
-    obj.endDateTime = endDate;
-    changeAvailablilityItem(obj);
-    setEventEnddateTime(date);
-    if (new Date(date).getTime() < new Date(eventStartDateTime).getTime()) {
-      const d1 = new Date(date);
-      const d2 = new Date(d1);
-      d2.setMinutes(d1.getMinutes() + 5);
-      setEventStartdateTime(d2);
+    let dateValue = new Date();
+    if (toggle) {
+      dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`;
+      console.log('Date Value :-', dateValue);
+      setEventEnddateTime(new Date(dateValue));
+    } else {
+      setEventEnddateTime(new Date(date));
     }
+    const obj = {...data, endDateTime: new Date(date)};
+    changeAvailablilityItem(obj);
+   
     setEndDateVisible(!endDateVisible);
+
+
   };
 
   return (
@@ -158,7 +169,9 @@ function ChallengeAvailabilityItem({
         onDone={handleEndDatePress}
         onCancel={handleCancelPress}
         onHide={handleCancelPress}
-        minimumDate={new Date(eventStartDateTime.getTime() + 5 * 60000)}
+        minimumDate={new Date(eventStartDateTime).setMinutes(
+          new Date(eventStartDateTime).getMinutes() + 5,
+        )}
         mode={toggle ? 'date' : 'datetime'}
       />
     </View>

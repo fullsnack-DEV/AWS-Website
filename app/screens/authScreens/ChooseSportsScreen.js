@@ -305,11 +305,9 @@ export default function ChooseSportsScreen({navigation, route}) {
         navigateToFollowScreen(response);
       })
       .catch((e) => {
-        setloading(false);
+        finalStepSignUp()
         console.log(e);
-        setTimeout(() => {
-          Alert.alert(`${strings.alertmessagetitle} - 1`, e.message);
-        }, 10);
+       
       });
   };
 
@@ -410,7 +408,7 @@ export default function ChooseSportsScreen({navigation, route}) {
       gender: route?.params?.locationInfo?.gender,
       city: route?.params?.locationInfo?.city,
       country: route?.params?.locationInfo?.country,
-      state: route?.params?.locationInfo?.state,
+      state_abbr: route?.params?.locationInfo?.state_abbr,
       sports: selected,
     };
     if (route?.params?.locationInfo?.profilePicData?.thumbnail) {

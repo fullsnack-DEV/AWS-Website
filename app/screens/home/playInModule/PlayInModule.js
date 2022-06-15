@@ -261,7 +261,7 @@ const PlayInModule = ({
       authContext?.entity?.uid !== currentUserData?.user_id &&
       (authContext?.entity?.role === 'user' ||
         authContext?.entity?.role === 'player') &&
-      mySport.length > 0
+      mySport?.length > 0
     ) {
       return (
         playInObject?.sport_type !== 'double' &&
@@ -314,7 +314,6 @@ const PlayInModule = ({
     if (filteredSport.length > 0) {
       oppSetting = filteredSport[0].setting ?? {};
     }
-    console.log('oooooppppppp', oppSetting);
 
     mySetting =
       (authContext?.entity?.obj?.registered_sports ?? []).filter(

@@ -66,7 +66,6 @@ export default function BlockSlotView({
         <View
           style={{
             marginTop: 8,
-
             marginBottom: 8,
             backgroundColor: colors.whiteColor,
             height: 35,

@@ -48,6 +48,13 @@ export default function EditChallengeAvailability({ navigation }) {
     setChallengeAvailable(filteredData);
   };
 
+
+  // eslint-disable-next-line no-unused-vars
+  const convertDateToUTC = (date) => {
+    const dt = new Date(date);
+    return new Date(dt.getTime() + dt.getTimezoneOffset() * 60000);
+  };
+
   return (
     <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <ActivityLoader visible={loading} />
@@ -70,11 +77,23 @@ export default function EditChallengeAvailability({ navigation }) {
             const filterData = [];
             let obj = {};
             challengeAvailable.map((challenge_item) => {
+              console.log('new Date(challenge_item.startDateTime)',new Date(challenge_item.startDateTime));
+
               obj = {
                 blocked: challenge_item.isBlock,
                 allDay: challenge_item.allDay,
                 start_datetime: new Date(challenge_item.startDateTime).getTime() / 1000,
                 end_datetime: new Date(challenge_item.endDateTime).getTime() / 1000,
+                // start_datetime: Number(
+                //   parseFloat(
+                //     new Date(convertDateToUTC(new Date(challenge_item.startDateTime))).getTime() / 1000,
+                //   ).toFixed(0),
+                // ),
+                // end_datetime: Number(
+                //   parseFloat(
+                //     new Date(convertDateToUTC( new Date(challenge_item.endDateTime))).getTime() / 1000,
+                //   ).toFixed(0),
+                // ),
               };
               filterData.push(obj);
               return null;

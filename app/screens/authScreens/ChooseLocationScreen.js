@@ -247,7 +247,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       locationInfo: {
         ...route?.params?.signupInfo,
         city: params.city,
-        state: params.state_abbr,
+        state_abbr: params.state_abbr,
         country: params.country,
       },
     });

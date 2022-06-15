@@ -56,7 +56,6 @@ import RefereeReservationItem from '../../../components/Schedule/RefereeReservat
 import {getGameHomeScreen} from '../../../utils/gameUtils';
 import ScorekeeperReservationItem from '../../../components/Schedule/ScorekeeperReservationItem';
 import {getHitSlop, getSportName} from '../../../utils';
-import {getUnreadCount} from '../../../api/Notificaitons';
 import * as Utility from '../../../utils/index';
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import {getGameIndex} from '../../../api/elasticSearch';
@@ -141,9 +140,6 @@ export default function ScheduleScreen({navigation, route}) {
   const [timeFilterOpetion, setTimeFilterOpetion] = useState(0);
   const [filterPopup, setFilterPopup] = useState(false);
 
-  const [currentTab, setCurrentTab] = useState();
-  const [notifAPI, setNotifAPI] = useState();
-
   const [slots, setSlots] = useState();
   const [allSlots, setAllSlots] = useState([]);
   const [selectedDate, setSelectedDate] = useState(
@@ -180,13 +176,6 @@ export default function ScheduleScreen({navigation, route}) {
       setFilterPopup(true);
     }
   };
-
-  useEffect(() => {
-    getBlockedSlots();
-    if (route?.params?.isBackVisible) {
-      getEventsList();
-    }
-  }, [isFocused]);
 
   // const getSimpleDateFormat = (dateValue) => {
   //   moment.locale('en');
@@ -320,224 +309,31 @@ export default function ScheduleScreen({navigation, route}) {
       });
   }, [authContext, isFocused]);
 
-  const getBlockedSlots = () => {
-    console.log('Other team Object:', authContext?.entity?.obj);
-    // blockedSlots(
-    //   authContext?.entity?.obj?.entity_type === 'player' ? 'users' : 'groups',
-    //   authContext?.entity?.obj?.group_id || authContext?.entity?.obj?.user_id,
-    //   authContext,
-    // )
+  const configureEvents = useCallback((eventsData, games) => {
+    console.log('gamesgames::::::->', games);
+    console.log('gaeventsDatamesgames', eventsData);
+    const eventTimeTableData = eventsData.map((item) => {
+      if (item?.game_id) {
+        const gameObj =
+          (games || []).filter((game) => game.game_id === item.game_id) ?? [];
 
-    Utility.getCalendar(
-      authContext?.entity?.uid,
-      Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
-    )
-      .then((response) => {
-        setloading(false);
-        console.log('Events List get Calender:=>', response);
-        const bookSlots = [];
-        response.forEach((item) => {
-          console.log('Block slots List:=>', item);
-
-          if (item?.rrule) {
-            const rEvents = getEventOccuranceFromRule(item);
-            bookSlots.push(...rEvents);
-          } else {
-            bookSlots.push(item);
-          }
-        });
-        console.log('Book slot1111111', bookSlots);
-        // const bookSlots = response.payload;
-        onDayPress(new Date());
-        setAllSlots(bookSlots);
-
-        // const markedDates = {};
-        // const group = bookSlots.reduce((groups, data) => {
-        //   const title = moment(new Date(data.start_datetime * 1000)).format(
-        //     'yyyy-MM-DD',
-        //   );
-        //   if (!groups[title]) {
-        //     groups[title] = [];
-        //   }
-        //   groups[title].push(data);
-        //   return groups;
-        // }, {});
-
-        // console.log('Groups:=>', group);
-        // // eslint-disable-next-line array-callback-return
-        // bookSlots?.map((e) => {
-        //   console.log('start date list :=>', e);
-        //   const original_date = moment(
-        //     new Date(e.start_datetime * 1000),
-        //   ).format('yyyy-MM-DD');
-        //   console.log('original_date', original_date);
-        //   if (e.allDay === true) {
-        //     markedDates[original_date] = {
-        //       disabled: true,
-        //       startingDay: true,
-        //       endingDay: true,
-        //       disableTouchEvent: true,
-        //       customStyles: {
-        //         container: {
-        //           backgroundColor: colors.lightgrayColor,
-        //         },
-        //         text: {
-        //           color: colors.grayColor,
-        //         },
-        //       },
-        //     };
-        //   } else {
-        //     markedDates[original_date] = {
-        //       marked: true,
-        //       dotColor: colors.themeColor,
-        //       activeOpacity: 1,
-        //     };
-        //   }
-        // });
-        // setMarkingDays(markedDates);
-        // console.log('Marked dates::', markedDates);
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
-  const configureEvents = useCallback(
-    (eventsData, games) => {
-      console.log('gamesgames::::::->', games);
-      console.log('gaeventsDatamesgames', eventsData);
-      const eventTimeTableData = eventsData.map((item) => {
-        if (item?.game_id) {
-          const gameObj =
-            (games || []).filter((game) => game.game_id === item.game_id) ?? [];
-
-          if (gameObj.length > 0) {
-            item.game = gameObj[0];
-          }
-        } else {
-          return item;
+        if (gameObj.length > 0) {
+          item.game = gameObj[0];
         }
-
+      } else {
         return item;
-      });
+      }
 
-      setEventData(
-        (eventTimeTableData || []).sort(
-          (a, b) =>
-            new Date(a.start_datetime * 1000) -
-            new Date(b.start_datetime * 1000),
-        ),
-      );
+      return item;
+    });
 
-      (eventTimeTableData || []).filter((event_item) => {
-        const startDate = new Date(event_item.start_datetime * 1000);
-        const eventDate = moment(startDate).format('YYYY-MM-DD');
-
-        if (eventDate === selectedDate) {
-          eventData.push(event_item);
-        }
-        return null;
-      });
-
-      const tempMarkDate = {};
-
-      const onlyEvents = (eventsData || []).filter(
-        (obj) => obj.cal_type === 'event',
-      );
-      onlyEvents.map((event_item) => {
-        const startDate = new Date(event_item.start_datetime * 1000);
-        const eventDate = moment(startDate).format('YYYY-MM-DD');
-        tempMarkDate[eventDate] = {
-          event: true,
-          selected: false,
-        };
-      });
-    },
-    [eventData, selectedDate],
-  );
-
-  const getEventsList = useCallback(() => {
-    setloading(true);
-
-    let eventTimeTableData = [];
-    Utility.getCalendar(
-      authContext?.entity?.uid,
-      Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
-    )
-      // blockedSlots(entityRole, uid, authContext)
-      .then((response) => {
-        response = (response || []).filter((obj) => {
-          if (obj.cal_type === 'blocked') {
-            return obj;
-          }
-          if (obj.cal_type === 'event') {
-            if (obj?.expiry_datetime) {
-              if (
-                obj?.expiry_datetime >=
-                parseFloat(new Date().getTime() / 1000).toFixed(0)
-              ) {
-                return obj;
-              }
-            } else {
-              return obj;
-            }
-          }
-        });
-
-        const bookSlots = [];
-        response.forEach((item) => {
-          if (item?.rrule) {
-            const rEvents = getEventOccuranceFromRule(item);
-            bookSlots.push(...rEvents);
-          } else {
-            bookSlots.push(item);
-          }
-        });
-
-        eventTimeTableData = bookSlots;
-        let gameIDs = [...new Set(response.map((item) => item.game_id))];
-
-        gameIDs = (gameIDs || []).filter((item) => item !== undefined);
-
-        if (gameIDs.length > 0) {
-          const gameList = {
-            query: {
-              terms: {
-                _id: gameIDs,
-              },
-            },
-          };
-          getGameIndex(gameList).then((games) => {
-            const listObj = response.map((obj) => {
-              if (obj.game_id === obj.challenge_id) {
-                return obj.game;
-              }
-            });
-
-            const pendingChallenge = listObj.filter((obj) => {
-              return obj !== undefined;
-            });
-
-            Utility.getGamesList([
-              ...games,
-              ...pendingChallenge,
-              ...response.filter((obj) => obj.owner_id),
-            ]).then((gamedata) => {
-              configureEvents(eventTimeTableData, gamedata);
-            });
-          });
-        }
-        configureEvents(eventTimeTableData);
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        console.log('Error::=>', e);
-        Alert.alert(strings.alertmessagetitle, e.message);
-      });
-  }, [authContext?.entity?.uid, configureEvents]);
+    setEventData(
+      (eventTimeTableData || []).sort(
+        (a, b) =>
+          new Date(a.start_datetime * 1000) - new Date(b.start_datetime * 1000),
+      ),
+    );
+  }, []);
 
   useEffect(() => {
     if (selectedEventItem) {
@@ -658,31 +454,10 @@ export default function ScheduleScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      if (notifAPI === 1) {
-        getEventsList();
-      }
-      if (notifAPI !== 1) {
-        getUnreadCount(authContext).then((response) => {
-          if (response?.status === true) {
-            const {teams} = response.payload;
-            const {clubs} = response.payload;
-            const groups = [authContext.entity.auth.user, ...clubs, ...teams];
-            const entityId =
-              authContext?.entity?.role === 'user'
-                ? authContext?.entity?.obj?.user_id
-                : authContext?.entity?.obj?.group_id;
-            const tabIndex = groups.findIndex(
-              (item) => item?.group_id === entityId,
-            );
-
-            setNotifAPI(1);
-            setCurrentTab(tabIndex !== -1 ? tabIndex : 0);
-            getEventsList();
-          }
-        });
-      }
+      console.log('dfsdfsdfsadfsadfsafsdf called');
+      getEventsAndSlotsList();
     }
-  }, [currentTab, isFocused]);
+  }, [isFocused]);
 
   const onThreeDotPress = useCallback(() => {
     actionSheet.current.show();
@@ -692,31 +467,53 @@ export default function ScheduleScreen({navigation, route}) {
     plusActionSheet.current.show();
   }, []);
 
-  // const getSelectedDayEvents = useCallback(
-  //   (date) => {
-  //     const markedDates = {...markingDays};
-  //     console.log('MARKED::', Object.keys(markedDates));
+ 
 
-  //     Object.keys(markedDates).forEach((e) => {
-  //       if (markedDates[e].selected) {
-  //         markedDates[e].selected = false;
-  //       }
-  //       if (markedDates[e].selected) {
-  //         if (!markedDates[e].event) {
-  //           markedDates[e].selected = false;
-  //           delete markedDates[e];
-  //         }
-  //       }
-  //     });
-  //     if (markedDates[date]) {
-  //       markedDates[date].selected = true;
-  //     } else {
-  //       markedDates[date] = {selected: true};
-  //     }
-  //     setMarkingDays(markedDates);
-  //   },
-  //   [markingDays],
-  // );
+  const onDayPress = useCallback(
+    (dateObj) => {
+      console.log(
+        'date object pressed',
+        moment(new Date(dateObj)).format('YYYY-MM-DD'),
+      );
+      const start = new Date(dateObj);
+      start.setHours(0, 0, 0, 0);
+
+      setSelectedDate(start);
+
+      const temp = [];
+      for (const blockedSlot of allSlots) {
+        const eventDate = new Date(blockedSlot.start_datetime * 1000);
+        eventDate.setHours(0, 0, 0, 0);
+        console.log('eventDate.getTime()', eventDate.getTime());
+        console.log('start.getTime()', start.getTime());
+        if (
+          eventDate.getTime() === start.getTime() &&
+          blockedSlot.blocked === true
+        ) {
+          console.log('date match');
+          temp.push(blockedSlot);
+        } else {
+          console.log('date not match');
+        }
+      }
+
+     
+      let timeSlots = [];
+      if (temp?.[0]?.allDay === true && temp?.[0]?.blocked === true) {
+        setSlots(temp);
+      } else {
+        timeSlots = createCalenderTimeSlots(
+          Number(parseFloat(new Date(start).getTime() / 1000).toFixed(0)),
+          24,
+          temp,
+        );
+        setSlots(timeSlots);
+      }
+
+      console.log('timeSlotstimeSlots', timeSlots);
+    },
+    [allSlots],
+  );
 
   const createCalenderTimeSlots = (startTime, hours, blockedSlots) => {
     console.log('startTime::->', new Date(startTime * 1000));
@@ -753,70 +550,86 @@ export default function ScheduleScreen({navigation, route}) {
     return tSlots;
   };
 
-  const onDayPress = useCallback(
-    (dateObj) => {
-      console.log(
-        'date object pressed',
-        moment(new Date(dateObj)).format('YYYY-MM-DD'),
-      );
-      const start = new Date(dateObj);
-      start.setHours(0, 0, 0, 0);
+  const getEventsAndSlotsList = useCallback(() => {
+    setloading(true);
 
-      setSelectedDate(start);
+    const eventTimeTableData = [];
+    Utility.getCalendar(
+      authContext?.entity?.uid,
+      Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+    )
+      // blockedSlots(entityRole, uid, authContext)
+      .then((response) => {
+        response = (response || []).filter((obj) => {
+          if (obj.cal_type === 'blocked') {
+            return obj;
+          }
+          if (obj.cal_type === 'event') {
+            if (obj?.expiry_datetime) {
+              if (
+                obj?.expiry_datetime >=
+                parseFloat(new Date().getTime() / 1000).toFixed(0)
+              ) {
+                return obj;
+              }
+            } else {
+              return obj;
+            }
+          }
+        });
 
-      const temp = [];
-      for (const blockedSlot of allSlots) {
-        const eventDate = new Date(blockedSlot.start_datetime * 1000);
-        eventDate.setHours(0, 0, 0, 0);
-        console.log('eventDate.getTime()', eventDate.getTime());
-        console.log('start.getTime()', start.getTime());
-        if (
-          eventDate.getTime() === start.getTime() &&
-          blockedSlot.blocked === true
-        ) {
-          console.log('date match');
-          temp.push(blockedSlot);
-        } else {
-          console.log('date not match');
+        response.forEach((item) => {
+          if (item?.rrule) {
+            const rEvents = getEventOccuranceFromRule(item);
+            eventTimeTableData.push(...rEvents);
+          } else {
+            eventTimeTableData.push(item);
+          }
+        });
+
+        onDayPress(new Date());
+        setAllSlots(eventTimeTableData);
+        let gameIDs = [...new Set(response.map((item) => item.game_id))];
+
+        gameIDs = (gameIDs || []).filter((item) => item !== undefined);
+
+        if (gameIDs.length > 0) {
+          const gameList = {
+            query: {
+              terms: {
+                _id: gameIDs,
+              },
+            },
+          };
+          getGameIndex(gameList).then((games) => {
+            const listObj = response.map((obj) => {
+              if (obj.game_id === obj.challenge_id) {
+                return obj.game;
+              }
+            });
+
+            const pendingChallenge = listObj.filter((obj) => {
+              return obj !== undefined;
+            });
+
+            Utility.getGamesList([
+              ...games,
+              ...pendingChallenge,
+              ...response.filter((obj) => obj.owner_id),
+            ]).then((gamedata) => {
+              setloading(false);
+              configureEvents(eventTimeTableData, gamedata);
+            });
+          });
         }
-      }
-
-      console.log('temptemp', temp);
-      console.log('startstart', start);
-
-      const timeSlots = createCalenderTimeSlots(
-        Number(parseFloat(new Date(start).getTime() / 1000).toFixed(0)),
-        24,
-        temp,
-      );
-      console.log('timeSlotstimeSlots', timeSlots);
-      setSlots(timeSlots);
-    },
-    [allSlots],
-  );
-
-  // const onReachedCalenderTop = ({nativeEvent: e}) => {
-  //   const offset = e?.contentOffset?.y;
-  //   console.log('Offset calender:=>', offset);
-
-  //   if (offset >= 20) {
-  //     Animated.timing(animatedOpacityValue, {
-  //       toValue: 1,
-  //       useNativeDriver: true,
-  //     }).start(() => setListView(true));
-  //   }
-  //   if (offset <= -50) {
-  //     // Platform.OS === 'ios' ? -80 : 1
-  //     Animated.timing(animatedOpacityValue, {
-  //       toValue: 0,
-  //       useNativeDriver: true,
-  //     }).start(() => setListView(false));
-  //   }
-  // };
-
-  // const onScrollCalender = (event) => {
-  //   onReachedCalenderTop(event);
-  // };
+        configureEvents(eventTimeTableData);
+      })
+      .catch((e) => {
+        setloading(false);
+        console.log('Error::=>', e);
+        Alert.alert(strings.alertmessagetitle, e.message);
+      });
+  }, [authContext?.entity?.uid, configureEvents, onDayPress]);
 
   const unPauseGroup = () => {
     setloading(true);
@@ -1079,33 +892,38 @@ export default function ScheduleScreen({navigation, route}) {
   };
 
   const datesBlacklistFunc = (startDate, endDate) => {
-    const date = new Date(startDate);
+    const start = new Date(startDate);
+    const end = new Date(endDate);
     console.log('cacacaca');
     const dates = [];
 
-    while (date <= endDate) {
-      dates.push(new Date(date));
-      date.setDate(date.getDate() + 1);
+    while (start <= end) {
+      dates.push(new Date(start));
+      start.setDate(start.getDate() + 1);
     }
 
     return dates;
   };
 
   const customDatesStyles = [];
-  const startDate = moment();
-  for (let i=0; i<1; i++) {
-    customDatesStyles.push({
-        startDate: startDate.clone().add(2, 'days'),
+
+  for (const all of allSlots) {
+    if (all?.allDay === true && all?.blocked === true) {
+      customDatesStyles.push({
+        startDate: moment(new Date(all.start_datetime * 1000)),
         dateNumberStyle: {
           color: colors.userPostTimeColor,
           fontSize: 18,
           fontFamily: fonts.RRegular,
           fontWeight: '400',
         },
-        dateContainerStyle: {  backgroundColor: colors.offGrayColor,
+        dateContainerStyle: {
+          backgroundColor: colors.offGrayColor,
           borderRadius: 8,
-          width: 40,},
+          width: 40,
+        },
       });
+    }
   }
 
   return (
@@ -1403,7 +1221,6 @@ export default function ScheduleScreen({navigation, route}) {
                     new Date().setDate(new Date().getDate() - 1),
                   )}
                   disabledDateNameStyle={{
-                    
                     fontSize: 12,
                     fontFamily: fonts.RMedium,
                     fontWeight: '400',
@@ -1436,14 +1253,17 @@ export default function ScheduleScreen({navigation, route}) {
                 </Text>
                 <FlatList
                   data={slots}
-                  renderItem={({item}) => (
-                    <BlockSlotView
-                      item={item}
-                      startDate={item.start_datetime}
-                      endDate={item.end_datetime}
-                      allDay={item.allDay}
-                    />
-                  )}
+                  renderItem={({item}) => {
+                    console.log('IIIIUIIUIUIUI', item);
+                    return (
+                      <BlockSlotView
+                        item={item}
+                        startDate={item.start_datetime}
+                        endDate={item.end_datetime}
+                        allDay={item.allDay === true}
+                      />
+                    );
+                  }}
                   keyExtractor={(item, index) => index.toString()}
                 />
               </View>

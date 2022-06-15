@@ -43,7 +43,7 @@ import {getAppSettingsWithoutAuth} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
 
 export default function LoginScreen({navigation}) {
-  const [email, setEmail] = useState('patidar.arvind1+1426@gmail.com');
+  const [email, setEmail] = useState('makani20@gmail.com');
   const [password, setPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);
@@ -75,9 +75,9 @@ export default function LoginScreen({navigation}) {
     if (/^[\w-.+]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailText)) {
       return true;
     }
-
     return false;
   };
+
   const getRedirectionScreenName = useCallback(
     (townscupUser) =>
       new Promise((resolve, reject) => {
@@ -106,7 +106,6 @@ export default function LoginScreen({navigation}) {
 
       console.log('entity Data:', entity);
       console.log('User Data/townscupUser:', townscupUser);
-
       entity.auth.user = {...userData};
       entity.obj = {...userData};
       await authContext.setTokenData(dummyAuthContext?.tokenData);

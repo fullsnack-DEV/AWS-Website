@@ -65,9 +65,19 @@ export default function PersonalInformationScreen({navigation, route}) {
   const [streetAddress, setStreetAddress] = useState(
     authContext?.entity?.obj?.street_address,
   );
-  const [city, setCity] = useState(authContext?.entity?.obj?.city);
-  const [state, setState] = useState(authContext?.entity?.obj?.state_abbr);
-  const [country, setCountry] = useState(authContext?.entity?.obj?.country);
+  const [city, setCity] = useState(
+    route?.params?.city ? route?.params?.city : authContext?.entity?.obj?.city,
+  );
+  const [state, setState] = useState(
+    route?.params?.state
+      ? route?.params?.state
+      : authContext?.entity?.obj?.state_abbr,
+  );
+  const [country, setCountry] = useState(
+    route?.params?.country
+      ? route?.params?.country
+      : authContext?.entity?.obj?.country,
+  );
   const [postalCode, setPostalCode] = useState(
     authContext?.entity?.obj?.postal_code,
   );
@@ -116,6 +126,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   }, [userInfo?.language]);
 
   useEffect(() => {
+    console.log('route?.params?.city', route?.params?.city);
     if (isFocused) {
       if (
         route?.params?.city &&
@@ -127,7 +138,12 @@ export default function PersonalInformationScreen({navigation, route}) {
         setCountry(route?.params?.country);
       }
     }
-  }, [isFocused]);
+  }, [
+    isFocused,
+    route?.params?.city,
+    route?.params?.country,
+    route?.params?.state,
+  ]);
 
   useEffect(() => {
     const arr = [];
@@ -217,6 +233,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const onSavePress = () => {
+    setloading(true)
     console.log('checkValidation()', checkValidation());
 
     if (checkValidation()) {
@@ -224,13 +241,12 @@ export default function PersonalInformationScreen({navigation, route}) {
       bodyParams.first_name = userInfo.first_name;
       bodyParams.last_name = userInfo.last_name;
       bodyParams.full_name = `${userInfo.first_name} ${userInfo.last_name}`;
-      if (city && state && country && streetAddress && postalCode) {
-        bodyParams.city = city;
-        bodyParams.state_abbr = state;
-        bodyParams.country = country;
-        bodyParams.street_address = streetAddress;
-        bodyParams.postal_code = postalCode;
-      }
+
+      bodyParams.city = city;
+      bodyParams.state_abbr = state;
+      bodyParams.country = country;
+      bodyParams.street_address = streetAddress;
+      bodyParams.postal_code = postalCode;
 
       bodyParams.description = userInfo.description;
       bodyParams.height = userInfo.height;
@@ -281,6 +297,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const updateUser = (params) => {
+    setloading(true)
     console.log('bodyPARAMS:: ', params);
     updateUserProfile(params, authContext)
       .then((response) => {
@@ -778,7 +795,6 @@ export default function PersonalInformationScreen({navigation, route}) {
           <TouchableOpacity
             onPress={() => {
               // eslint-disable-next-line no-unused-expressions
-
               navigation.navigate('SearchLocationScreen', {
                 comeFrom: 'PersonalInformationScreen',
               });
@@ -786,10 +802,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             <TextInput
               placeholder={strings.searchCityPlaceholder}
               style={{...styles.matchFeeTxt}}
-              value={
-                userInfo?.city &&
-                `${userInfo?.city?.trim()}, ${userInfo.state_abbr?.trim()}, ${userInfo.country?.trim()}`
-              }
+              value={`${city}, ${state}, ${country}`}
               editable={false}
               pointerEvents="none"
             />
@@ -896,7 +909,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             placeholder={strings.searchCityPlaceholder}
             placeholderTextColor={colors.userPostTimeColor}
             style={[styles.matchFeeTxt, {marginBottom: 5}]}
-            value={city && `${city}, ${state}, ${country}`}
+            value={`${city}, ${state}, ${country}`}
             editable={false}
             pointerEvents="none"></TextInput>
         </TouchableOpacity>
@@ -969,7 +982,6 @@ export default function PersonalInformationScreen({navigation, route}) {
                 position: 'absolute',
                 bottom: 0,
                 left: 0,
-
                 shadowColor: '#000',
                 shadowOffset: {width: 0, height: 1},
                 shadowOpacity: 0.5,
