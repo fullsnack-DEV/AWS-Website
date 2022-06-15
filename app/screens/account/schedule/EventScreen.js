@@ -154,7 +154,8 @@ export default function EventScreen({navigation, route}) {
             (obj) => obj.user_id === eventData.created_by.uid,
           )?.[0];
           setOrganizer(org);
-          setGoing(res);
+
+          setGoing(res.slice(1));
           console.log('dsfdsfasd', res);
         })
         .catch((e) => {
@@ -218,8 +219,6 @@ export default function EventScreen({navigation, route}) {
             {eventData?.selected_sport && eventData?.selected_sport?.sport_name}
           </Text>
         </Text>
-
-        
 
         <EventTimeItem
           from={strings.from}
@@ -285,29 +284,31 @@ export default function EventScreen({navigation, route}) {
         </View>
         <TCThinDivider marginTop={10} />
 
-        <View style={styles.containerStyle}>
-          <Text
-            style={styles.headerTextStyle}
-            onPress={() => {
-              navigation.navigate('GoingListScreen', {
-                showRemove: authContext.entity.uid === organizer.user_id,
-                going_ids: eventData?.going ?? [],
-                eventData,
-              });
-            }}>{`${strings.goingTitle} (${going?.length})`}</Text>
-          <FlatList
-            data={going}
-            horizontal
-            ItemSeparatorComponent={() => (
-              <View style={{width: 10, height: 35}} />
-            )}
-            renderItem={renderGoingView}
-            keyExtractor={(item, index) => index.toString()}
-            style={{padding: 3}}
-          />
-        </View>
+        {going?.length > 0 && (
+          <View style={styles.containerStyle}>
+            <Text
+              style={styles.headerTextStyle}
+              onPress={() => {
+                navigation.navigate('GoingListScreen', {
+                  showRemove: authContext.entity.uid === organizer.user_id,
+                  going_ids: eventData?.going ?? [],
+                  eventData,
+                });
+              }}>{`${strings.goingTitle} (${going?.length })`}</Text>
+            <FlatList
+              data={going}
+              horizontal
+              ItemSeparatorComponent={() => (
+                <View style={{width: 10, height: 35}} />
+              )}
+              renderItem={renderGoingView}
+              keyExtractor={(item, index) => index.toString()}
+              style={{padding: 3}}
+            />
+            <TCThinDivider marginTop={10} />
+          </View>
+        )}
 
-        <TCThinDivider marginTop={10} />
         <EventItemRender title={strings.place}>
           <Text style={[styles.textValueStyle, {fontFamily: fonts.RBold}]}>
             {eventData?.location?.venue_name}
@@ -357,15 +358,21 @@ export default function EventScreen({navigation, route}) {
 
         <View style={styles.sepratorViewStyle} />
         <EventItemRender title={strings.refundPolicyTitle}>
-          <Text style={{fontSize:14,fontFamily:fonts.RBold,marginTop:15}}>
+          <Text style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
             {'Primary Refund Policy'}
           </Text>
           <Text style={[styles.subTitleText, {marginTop: 10}]}>
-            Attendees must be refunded if the event is canceled or
-            rescheduled. 
-            <Text style={{fontSize:12, fontFamily:fonts.RRegular,textDecorationLine:'underline'}}>{'\n'}Read payment policy for more information.</Text>
+            Attendees must be refunded if the event is canceled or rescheduled.
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: fonts.RRegular,
+                textDecorationLine: 'underline',
+              }}>
+              {'\n'}Read payment policy for more information.
+            </Text>
           </Text>
-          <Text style={{fontSize:14,fontFamily:fonts.RBold,marginTop:15}}>
+          <Text style={{fontSize: 14, fontFamily: fonts.RBold, marginTop: 15}}>
             {'Additional Refund Policy'}
           </Text>
           <Text style={styles.textValueStyle}>{eventData?.refund_policy}</Text>
@@ -385,52 +392,53 @@ export default function EventScreen({navigation, route}) {
           </Text>
         </EventItemRender>
 
-        <View  marginBottom={70}/>
+        <View marginBottom={70} />
       </ScrollView>
 
-     
-       
       <View
-          style={{
-            flex:1,
-            backgroundColor:colors.whiteColor,
-            zIndex:1000,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-           padding:15,
-            position: 'absolute',
-            top: Dimensions.get('window').height-190,
-           width:'100%',
-           height:'80%',
-           shadowColor: colors.blackColor,
-           shadowOffset: {width: 0, height: 5},
-           shadowOpacity: 1.0,
-           shadowRadius: 4,
-           elevation: 2,
-          }}>
-      
+        style={{
+          flex: 1,
+          backgroundColor: colors.whiteColor,
+          zIndex: 1000,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          padding: 15,
+          position: 'absolute',
+          top: Dimensions.get('window').height - 190,
+          width: '100%',
+          height: '80%',
+          shadowColor: colors.blackColor,
+          shadowOffset: {width: 0, height: 5},
+          shadowOpacity: 1.0,
+          shadowRadius: 4,
+          elevation: 2,
+        }}>
         <TCProfileButton
-            title={
-              eventData?.going?.filter(
-                (entity) => entity === authContext.entity.uid,
-              ).length > 0
-                ? 'Going'
-                : 'Join'
-            }
-            style={[styles.firstButtonStyle,{width: isOrganizer ? '48%' : '100%'}]}
-            showArrow={false}
-            imageStyle={styles.checkMarkStyle}
-            textStyle={
-              eventData?.going?.filter(
-                (entity) => entity === authContext.entity.uid,
-              ).length > 0
-                ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
-                : styles.attendTextStyle
-            }
-            onPressProfile={() => attendAPICall()}
-          />
+          title={
+            eventData?.going?.filter(
+              (entity) => entity === authContext.entity.uid,
+            ).length > 0
+              ? 'Going'
+              : 'Join'
+          }
+          style={[
+            styles.firstButtonStyle,
+            {width: isOrganizer ? '48%' : '100%'},
+          ]}
+          showArrow={false}
+          imageStyle={styles.checkMarkStyle}
+          textStyle={
+            eventData?.going?.filter(
+              (entity) => entity === authContext.entity.uid,
+            ).length > 0
+              ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
+              : styles.attendTextStyle
+          }
+          onPressProfile={() => attendAPICall()}
+        />
 
-        {isOrganizer && <TCProfileButton
+        {isOrganizer && (
+          <TCProfileButton
             title={'Invite'}
             style={styles.firstButtonStyle}
             showArrow={false}
@@ -441,9 +449,9 @@ export default function EventScreen({navigation, route}) {
                 eventId: eventData.cal_id,
               })
             }
-          />}
+          />
+        )}
       </View>
-     
 
       <ActionSheet
         ref={actionSheet}

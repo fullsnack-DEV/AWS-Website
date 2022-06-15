@@ -16,6 +16,7 @@ export default function TCEventCard({
   // entity,
 }) {
  
+  console.log('datdtadtadtatd',data);
   const convertUTCDateToLocalDate = (date) => {
     const newDate = new Date(
       date.getTime() - date.getTimezoneOffset() * 60 * 1000,

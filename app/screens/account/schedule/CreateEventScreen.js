@@ -177,17 +177,17 @@ export default function CreateEventScreen({navigation, route}) {
     setEventStartdateTime(
       toggle
         ? new Date(date).setHours(0, 0, 0, 0)
-        : new Date(new Date(date).getTime()),
+        : new Date(date),
     );
     setEventEnddateTime(
       toggle
         ? new Date(date).setHours(23, 59, 59, 0)
-        : moment(date).add(5, 'm').toDate(),
+        : new Date(moment(date).add(5, 'm').toDate()),
     );
     setEventUntildateTime(
       toggle
         ? new Date(date).setHours(23, 59, 59, 0)
-        : moment(date).add(5, 'm').toDate(),
+        : new Date(moment(date).add(5, 'm').toDate()),
     );
     setStartDateVisible(!startDateVisible);
   };
@@ -202,11 +202,11 @@ export default function CreateEventScreen({navigation, route}) {
     if (toggle) {
       dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`;
       console.log('Date Value :-', dateValue);
-      setEventEnddateTime(dateValue);
-      setEventUntildateTime(moment(dateValue).add(5, 'm').toDate());
+      setEventEnddateTime(new Date(dateValue));
+      setEventUntildateTime(new Date(moment(dateValue).add(5, 'm').toDate()));
     } else {
-      setEventEnddateTime(date);
-      setEventUntildateTime(moment(date).add(5, 'm').toDate());
+      setEventEnddateTime(new Date(date));
+      setEventUntildateTime(new Date(moment(date).add(5, 'm').toDate()));
     }
     setEndDateVisible(!endDateVisible);
   };
@@ -237,6 +237,7 @@ export default function CreateEventScreen({navigation, route}) {
     locationDetail,
     eventFee,
     refundPolicy,
+    eventPosted
   ]);
 
   useEffect(() => {
@@ -690,7 +691,7 @@ export default function CreateEventScreen({navigation, route}) {
       .then((response) => {
         console.log('Response :-', response);
         setloading(false);
-        navigation.goBack();
+        navigation.navigate('ScheduleScreen');
       })
       .catch((e) => {
         setloading(false);
@@ -701,7 +702,7 @@ export default function CreateEventScreen({navigation, route}) {
 
   const onDonePress = () => {
     if (checkValidation()) {
-      setloading(true);
+       setloading(true);
       const entity = authContext.entity;
       const entityRole = entity.role === 'user' ? 'users' : 'groups';
       const data = [
@@ -781,6 +782,7 @@ export default function CreateEventScreen({navigation, route}) {
 
       console.log('create event',data);
 
+      
       if (backgroundImageChanged) {
         const imageArray = [];
         imageArray.push({path: backgroundThumbnail});
