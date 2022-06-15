@@ -1,4 +1,4 @@
-import React, {useState, useRef, useLayoutEffect, useContext} from 'react';
+import React, {useState, useRef, useLayoutEffect} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -12,7 +12,6 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-import Config from 'react-native-config';
 
 import ActionSheet from 'react-native-actionsheet';
 
@@ -27,10 +26,7 @@ import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCTextField from '../../components/TCTextField';
-import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
-import apiCall from '../../utils/apiCall';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import AuthContext from '../../auth/context';
 
 export default function SignupScreen({navigation, route}) {
   const [fName, setFName] = useState(
@@ -39,8 +35,7 @@ export default function SignupScreen({navigation, route}) {
   const [lName, setLName] = useState(
     route?.params?.signupInfo?.last_name ?? '',
   );
-  const [loading, setLoading] = useState(false);
-  const authContext = useContext(AuthContext);
+  const [loading] = useState(false);
 
   const [providerPic, setProviderPic] = useState(
     route?.params?.signupInfo?.uploadedProfilePic?.thumbnail,
@@ -83,7 +78,22 @@ export default function SignupScreen({navigation, route}) {
       ),
     });
   });
-
+  // For activity indigator
+  const uploadProfilePicAndGeneratePreSignedUrls = async () => {
+    const userData = {};
+    if (profilePic) {
+      userData.profilePic = profilePic;
+    } else if (providerPic) {
+      const uploadedProfilePic = {
+        full_image: providerPic,
+        thumbnail: providerPic,
+      };
+      userData.uploadedProfilePic = uploadedProfilePic;
+    }
+    console.log('profilePic==>', userData);
+    navigateToAddBirthdayScreen(userData);
+  };
+  /*
   // For activity indigator
   const uploadProfilePicAndGeneratePreSignedUrls = async () => {
     console.log('0000000');
@@ -142,6 +152,7 @@ export default function SignupScreen({navigation, route}) {
       navigateToAddBirthdayScreen(userData);
     }
   };
+  */
   const navigateToAddBirthdayScreen = (userData) => {
     const profileData = {
       ...route?.params?.signupInfo,

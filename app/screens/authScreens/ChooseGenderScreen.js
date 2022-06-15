@@ -291,7 +291,7 @@ export default function ChooseGenderScreen({navigation, route}) {
       (position) => {
         console.log('Lat/long to position::=>', position);
         console.log('222');
-     
+
         setlatLong(position);
         getLocationNameWithLatLong(
           position?.coords?.latitude,

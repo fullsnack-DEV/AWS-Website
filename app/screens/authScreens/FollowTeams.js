@@ -18,6 +18,7 @@ import {
 
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
+import Config from 'react-native-config';
 import {createUser} from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
@@ -28,7 +29,8 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import strings from '../../Constants/String';
 import TCProfileImage from '../../components/TCProfileImage';
-
+import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
+import apiCall from '../../utils/apiCall';
 import {
   QBconnectAndSubscribe,
   QBcreateUser,
@@ -225,18 +227,52 @@ export default function FollowTeams({route, navigation}) {
     </View>
   );
 
-  const signUpLastStep = () => {
-    // updateProfile({club_ids: followed});
-    // updateProfile({group_ids: followed});
-    signUpToTownsCup();
+  const signUpLastStep = async () => {
+    setloading(true);
+    const tokenData = authContext?.tokenData;
+    const authToken = tokenData.token;
+    const userData = {};
+    const uploadImageConfig = {
+      method: 'get',
+      url: `${Config.BASE_URL}/pre-signed-url?count=2`,
+      headers: {Authorization: `Bearer ${authToken}`},
+    };
+    console.log('Profile pic', signUpData?.profilePic);
+
+    if (signUpData?.profilePic) {
+      const apiResponse = await apiCall(uploadImageConfig);
+      const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
+      Promise.all([
+        uploadImageOnPreSignedUrls({
+          url: preSignedUrls?.[0],
+          uri: signUpData?.profilePic.path,
+          type: signUpData?.profilePic.path.split('.')[1] || 'jpeg',
+        }),
+        uploadImageOnPreSignedUrls({
+          url: preSignedUrls?.[1],
+          uri: signUpData?.profilePic?.path,
+          type: signUpData?.profilePic?.path.split('.')[1] || 'jpeg',
+        }),
+      ])
+        .then(async ([fullImage, thumbnail]) => {
+          const uploadedProfilePic = {full_image: fullImage, thumbnail};
+          userData.uploadedProfilePic = uploadedProfilePic;
+          signUpToTownsCup(userData);
+        })
+        .catch(async () => {
+          signUpToTownsCup(userData);
+        });
+    } else {
+      signUpToTownsCup(userData);
+    }
   };
   const setDummyAuthContext = (key, value) => {
     dummyAuthContext[key] = value;
   };
   // Signup to Towncup
-  const signUpToTownsCup = async () => {
+  const signUpToTownsCup = async (param) => {
     console.log('Signup data ==>', signUpData);
-    console.log('Signup data1111 ==>', route?.params?.sportInfo);
+    console.log('param data ==>', param);
     setloading(true);
     const data = {
       first_name: signUpData.first_name,
@@ -251,8 +287,11 @@ export default function FollowTeams({route, navigation}) {
     };
     if (signUpData?.profilePicData?.thumbnail) {
       console.log('llllllll');
-      data.thumbnail = signUpData.profilePicData.thumbnail;
-      data.full_image = signUpData.profilePicData.full_image;
+      data.thumbnail = signUpData.profilePicData?.thumbnail;
+      data.full_image = signUpData.profilePicData?.full_image;
+    } else if (param?.uploadedProfilePic) {
+      data.thumbnail = param.uploadedProfilePic?.thumbnail;
+      data.full_image = param.uploadedProfilePic?.full_image;
     }
     if (followed && followed.length > 0) {
       data.group_ids = followed;
