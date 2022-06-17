@@ -248,17 +248,9 @@ const MessageMainScreen = ({navigation}) => {
     () => (
       <Header
         showBackgroundColor={true}
-        mainContainerStyle={{paddingBottom: 0}}
         leftComponent={
-          <View>
-            <FastImage
-              source={images.tc_message_top_icon}
-              resizeMode={'contain'}
-              style={styles.backImageStyle}
-            />
-          </View>
+          <Text style={styles.eventTextStyle}>Chat</Text>
         }
-        centerComponent={<Text style={styles.eventTextStyle}>Chats</Text>}
         rightComponent={
           authContext?.entity?.QB && (
             <View style={{flexDirection: 'row'}}>
@@ -444,19 +436,19 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
-  backImageStyle: {
-    height: 35,
-    width: 35,
-  },
+  // backImageStyle: {
+  //   height: 35,
+  //   width: 35,
+  // },
   rightImageStyle: {
     height: 25,
     width: 25,
     resizeMode: 'contain',
   },
   eventTextStyle: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: fonts.RBold,
-    alignSelf: 'center',
+    width: 60
   },
   separateLine: {
     borderColor: colors.writePostSepratorColor,

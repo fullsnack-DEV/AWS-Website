@@ -101,7 +101,7 @@ export default function LocalHomeScreen({navigation, route}) {
       authContext?.entity?.obj?.city.slice(1),
   );
   const [selectedSport, setSelectedSport] = useState('All');
-  const [sportType, setSportType] = useState('');
+  const [sportType, setSportType] = useState('All');
   const [settingPopup, setSettingPopup] = useState(false);
   const [shortsList, setShortsList] = useState([]);
   const [recentMatch, setRecentMatch] = useState([]);
@@ -1284,6 +1284,7 @@ export default function LocalHomeScreen({navigation, route}) {
               ...[
                 {
                   sport: 'All',
+                  sport_type: 'All',
                 },
               ],
               ...sports.slice(0, 12),

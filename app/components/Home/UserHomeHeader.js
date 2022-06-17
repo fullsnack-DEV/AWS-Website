@@ -1,5 +1,5 @@
 import React, {
- memo, useEffect, useState, useContext,
+ memo, useEffect, useState, useContext,useRef
 } from 'react';
 import {
   StyleSheet,
@@ -10,6 +10,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import ActionSheet from 'react-native-actionsheet';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -26,6 +27,8 @@ const UserHomeHeader = ({
   isAdmin,
   loggedInEntity,
 }) => {
+  const actionSheet = useRef();
+
   const authContext = useContext(AuthContext);
 console.log('Home currentUserData', currentUserData);
   const [entityData, setEntityData] = useState(null);
@@ -104,12 +107,13 @@ console.log('Home currentUserData', currentUserData);
                   {!isAdmin && authContext?.entity?.role === 'user' && currentUserData && currentUserData.is_following && (
                     <TCProfileButton
                     title={strings.following}
+                    showArrow={false}
                     style={styles.firstButtonStyle}
                     rightImage={images.check}
                     imageStyle={styles.checkMarkStyle}
                     textStyle={styles.buttonTextStyle}
                     onPressProfile={() => {
-                      onAction('unfollow');
+                     actionSheet.current.show();
                     }}
                   />
                 )}
@@ -117,8 +121,10 @@ console.log('Home currentUserData', currentUserData);
                   {!isAdmin && authContext?.entity?.role === 'user' && currentUserData && !currentUserData.is_following && (
                     <TCGradientButton
                     outerContainerStyle={styles.firstButtonOuterStyle}
+                    startGradientColor={colors.whiteColor}
+                    endGradientColor={colors.whiteColor}
                     style={styles.firstButtonStyle}
-                    textStyle={styles.buttonTextStyle}
+                    textStyle={[styles.buttonTextStyle,{color:colors.themeColor}]}
                     title={strings.follow}
                     onPress={() => {
                       onAction('follow');
@@ -143,9 +149,9 @@ console.log('Home currentUserData', currentUserData);
                             <TCGradientButton
                             outerContainerStyle={styles.firstButtonOuterStyle}
                             style={styles.firstButtonStyle}
-                            textStyle={styles.buttonTextStyle}
-                            startGradientColor={colors.greenGradientStart}
-                            endGradientColor={colors.greenGradientEnd}
+                            textStyle={[styles.buttonTextStyle,{color:colors.themeColor}]}
+                            startGradientColor={colors.whiteColor}
+                            endGradientColor={colors.whiteColor}
                             title={strings.invite}
                             onPress={() => {
                               onAction('invite');
@@ -231,6 +237,16 @@ console.log('Home currentUserData', currentUserData);
         </View>
       </View>
       <TCThinDivider width={'100%'} />
+      <ActionSheet
+          ref={actionSheet}
+          options={['Unfollow', 'Cancel']}
+          cancelButtonIndex={1}
+          onPress={(index) => {
+            if (index === 0) {
+              onAction('unfollow');
+            }
+          }}
+        />
     </SafeAreaView>
   );
 };

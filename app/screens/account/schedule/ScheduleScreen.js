@@ -934,36 +934,10 @@ export default function ScheduleScreen({navigation, route}) {
         pointerEvents={pointEvent}>
         <Header
           leftComponent={
-            <TouchableOpacity
-              onPress={() => {
-                if (route?.params?.isBackVisible) {
-                  navigation.navigate('HomeScreen', {
-                    uid: route?.params?.uid,
-                    role: route?.params?.role,
-                    backButtonVisible: true,
-                    menuBtnVisible: false,
-                  });
-                }
-              }}>
-              <FastImage
-                source={
-                  route?.params?.isBackVisible
-                    ? images.backArrow
-                    : images.tc_message_top_icon
-                }
-                resizeMode={'contain'}
-                style={
-                  route?.params?.isBackVisible
-                    ? styles.backStyle
-                    : styles.backImageStyle
-                }
-              />
-            </TouchableOpacity>
-          }
-          showBackgroundColor={true}
-          centerComponent={
             <Text style={styles.eventTitleTextStyle}>Schedule</Text>
           }
+          showBackgroundColor={true}
+          
           rightComponent={
             <View
               style={{
@@ -1697,19 +1671,12 @@ const styles = StyleSheet.create({
     tintColor: colors.lightBlackColor,
   },
   eventTitleTextStyle: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
-    alignSelf: 'center',
+    width:100
   },
-  backImageStyle: {
-    height: 35,
-    width: 35,
-  },
-  backStyle: {
-    height: 20,
-    width: 35,
-  },
+ 
   separateLine: {
     borderColor: colors.veryLightGray,
     borderWidth: 0.5,
