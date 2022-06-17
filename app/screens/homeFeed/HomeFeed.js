@@ -51,7 +51,20 @@ const HomeFeed = ({
   const [footerLoading, setFooterLoading] = useState(false);
 
   useEffect(() => {
-    getTimeline(userID, '', authContext)
+    let entityType = 'users';
+    if (
+      currentUserData.entity_type === 'user' ||
+      currentUserData.entity_type === 'player'
+    ) {
+      entityType = 'users';
+    } else if (
+      currentUserData.entity_type === 'team' ||
+      currentUserData.entity_type === 'club'
+    ) {
+      entityType = 'groups';
+    }
+
+    getTimeline(entityType, userID, '', authContext)
       .then((res) => {
         setFeedCalled(true);
         setTotalUserPostCount(res?.payload?.total_count);
@@ -268,7 +281,7 @@ const HomeFeed = ({
 
         createPostAfterUpload(dataParams);
       } else if (data) {
-        console.log('asasasasas else',data);
+        console.log('asasasasas else', data);
         const imageArray = data.map((dataItem) => dataItem);
         dataParams = {
           ...dataParams,

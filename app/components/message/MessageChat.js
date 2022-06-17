@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-useless-concat */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
@@ -428,7 +429,6 @@ const MessageChat = ({route, navigation}) => {
                       <FastImage
                         source={finalImage}
                         style={{height: 27, width: 27, borderRadius: 54}}
-                        
                       />
                     </View>
                     <Text
@@ -840,7 +840,9 @@ const MessageChat = ({route, navigation}) => {
       const fullImage = customData?.full_image ?? '';
       const finalImage = fullImage
         ? {uri: fullImage}
-        : images.profilePlaceHolder;
+        : ['user', 'player'].includes(customData?.entity_type)
+        ? images.profilePlaceHolder
+        : images.teamGreenPH;
       return (
         <TouchableOpacity
           style={styles.rowContainer}
@@ -852,6 +854,7 @@ const MessageChat = ({route, navigation}) => {
             textStyle={styles.rowText}
             name={customData?.full_name}
             groupType={customData?.entity_type}
+            isShowBadge={false}
           />
         </TouchableOpacity>
       );
@@ -939,6 +942,7 @@ const MessageChat = ({route, navigation}) => {
           overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
           HeaderComponent={ModalHeader}
           modalStyle={{
+           
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
@@ -948,96 +952,85 @@ const MessageChat = ({route, navigation}) => {
             elevation: 10,
           }}
           ref={commentModalRef}>
-          {/* <MessageInviteeDrawerScreen
-            navigation={navigation}
-            participants={occupantsData ?? []}
-            dialog={{...dialogData, ...route?.params?.dialog}}
-            commentModalRef={commentModalRef}
-          /> */}
-
           <View style={styles.viewContainer}>
-            <View style={{flex: 1, marginLeft: 15}}>
-              <Text style={styles.titleLabel}>
-                {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT &&
-                  'CHATROOM NAME'}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  commentModalRef.current.close();
-                  if (dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT)
-                    navigation.navigate('MessageEditGroupScreen', {
-                      dialog: dialogMenu,
-                      onPressDone,
-                    });
+            <Text style={[styles.titleLabel,{marginBottom:15,marginTop:25}]}>
+              {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT &&
+                'CHATROOM NAME'}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                commentModalRef.current.close();
+                if (dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT)
+                  navigation.navigate('MessageEditGroupScreen', {
+                    dialog: dialogMenu,
+                    onPressDone,
+                  });
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
-                  <Text style={[styles.title, {marginLeft: wp(3)}]}>
-                    {fullName}
-                  </Text>
-                  {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
-                    <FastImage
-                      resizeMode={'contain'}
-                      source={images.arrowDown}
-                      style={{
-                        ...styles.downArrow,
-                        transform: [{rotateZ: '270deg'}],
-                      }}
-                    />
-                  )}
-                </View>
-              </TouchableOpacity>
-              <View style={styles.separator} />
-              <Text style={styles.titleLabel}>PARTICIPANTS</Text>
-              {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
-                <TouchableOpacity
-                  style={styles.rowContainer}
-                  onPress={() => {
-                    console.log('inviteButton');
-                    commentModalRef.current.close();
-
-                    navigation.navigate('MessageEditInviteeScreen', {
-                      dialog: dialogMenu,
-                      isAdmin: dialogMenu?.userId === myUserId,
-                      selectedInvitees: occupantsData,
-                      participants: occupantsData,
-                      onPressDone,
-                    });
-                  }}>
-                  <Image
-                    style={styles.inviteImage}
-                    source={images.plus_round_orange}
+                <Text style={styles.title}>
+                  {fullName}
+                </Text>
+                {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
+                  <FastImage
+                    resizeMode={'contain'}
+                    source={images.arrowDown}
+                    style={{
+                      ...styles.downArrow,
+                      transform: [{rotateZ: '270deg'}],
+                    }}
                   />
-                  <Text style={[styles.rowText, {color: colors.orangeColor}]}>
-                    Invite
-                  </Text>
-                </TouchableOpacity>
-              )}
-              <FlatList
-                extraData={occupantsData}
-                data={occupantsData}
-                renderItem={renderRow}
-                keyExtractor={(item, index) => index.toString()}
-                showsVerticalScrollIndicator={false}
-              />
-            </View>
+                )}
+              </View>
+            </TouchableOpacity>
+            <View style={styles.separator} />
+            <Text style={styles.titleLabel}>PARTICIPANTS</Text>
+            {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
+              <TouchableOpacity
+                style={styles.rowContainer}
+                onPress={() => {
+                  console.log('inviteButton');
+                  commentModalRef.current.close();
+
+                  navigation.navigate('MessageEditInviteeScreen', {
+                    dialog: dialogMenu,
+                    isAdmin: dialogMenu?.userId === myUserId,
+                    selectedInvitees: occupantsData,
+                    participants: occupantsData,
+                    onPressDone,
+                  });
+                }}>
+                <Image
+                  style={styles.inviteImage}
+                  source={images.plus_round_orange}
+                />
+                <Text style={[styles.rowText, {color: colors.orangeColor}]}>
+                  Invite
+                </Text>
+              </TouchableOpacity>
+            )}
+            <FlatList
+              extraData={occupantsData}
+              data={occupantsData}
+              renderItem={renderRow}
+              keyExtractor={(item, index) => index.toString()}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+          <View>
             <TouchableOpacity style={styles.bottomView} onPress={leaveRoom}>
-              <Image
-                style={styles.inviteImage}
-                source={images.leave_chat_room}
-              />
+              <Image style={styles.inviteImage} source={images.leave_chat_room} />
               <Text style={styles.grayText}>
-                {occupantsData.length > 2
-                  ? 'LEAVE CHATROOM'
-                  : 'DELETE CHATROOM'}
+                {occupantsData.length > 2 ? 'LEAVE CHATROOM' : 'DELETE CHATROOM'}
               </Text>
             </TouchableOpacity>
           </View>
         </Modalize>
+        
       </Portal>
     </SafeAreaView>
   );
@@ -1172,7 +1165,9 @@ const styles = StyleSheet.create({
 
   viewContainer: {
     flex: 1,
-    marginRight: wp(1),
+    marginLeft: 15,
+    marginRight: 15,
+   
   },
   titleLabel: {
     fontSize: 14,
@@ -1188,7 +1183,6 @@ const styles = StyleSheet.create({
   },
   title: {
     width: '80%',
-    marginTop: hp(1),
     fontSize: 20,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
@@ -1197,6 +1191,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: hp(1.5),
+    paddingLeft:10
   },
   rowText: {
     width: '75%',
@@ -1221,12 +1216,14 @@ const styles = StyleSheet.create({
     // backgroundColor: colors.grayBackgroundColor,
     flexDirection: 'row',
     alignItems: 'center',
+   
+    
   },
   separator: {
     backgroundColor: colors.thinDividerColor,
     height: 1,
     marginTop: hp(2),
-    marginBottom: 35,
+    marginBottom: 20,
   },
 
   sectionStyle: {

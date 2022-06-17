@@ -913,12 +913,15 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const clubInviteUser = async () => {
+    setloading(true)
     const params = {
       entity_type: authContext.entity.role,
       uid: authContext.entity.uid,
     };
     inviteUser(params, userID, authContext)
       .then(() => {
+        setloading(false)
+
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
@@ -927,6 +930,8 @@ const HomeScreen = ({navigation, route}) => {
         }, 10);
       })
       .catch((error) => {
+        setloading(false)
+
         console.log('clubInviteUser error with userID', error, userID);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);

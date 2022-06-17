@@ -155,7 +155,7 @@ export default function EventScreen({navigation, route}) {
           )?.[0];
           setOrganizer(org);
 
-          setGoing(res.slice(1));
+          setGoing(res);
           console.log('dsfdsfasd', res);
         })
         .catch((e) => {
@@ -284,7 +284,7 @@ export default function EventScreen({navigation, route}) {
         </View>
         <TCThinDivider marginTop={10} />
 
-        {going?.length > 0 && (
+        {eventData?.going?.length > 0 && (
           <View style={styles.containerStyle}>
             <Text
               style={styles.headerTextStyle}
@@ -294,7 +294,7 @@ export default function EventScreen({navigation, route}) {
                   going_ids: eventData?.going ?? [],
                   eventData,
                 });
-              }}>{`${strings.goingTitle} (${going?.length })`}</Text>
+              }}>{`${strings.goingTitle} (${eventData?.going?.length})`}</Text>
             <FlatList
               data={going}
               horizontal
@@ -434,7 +434,17 @@ export default function EventScreen({navigation, route}) {
               ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
               : styles.attendTextStyle
           }
-          onPressProfile={() => attendAPICall()}
+          onPressProfile={() => {
+            if (
+              eventData?.going?.filter(
+                (entity) => entity === authContext.entity.uid,
+              ).length > 0
+            ) {
+              console.log('its going');
+            } else {
+              attendAPICall();
+            }
+          }}
         />
 
         {isOrganizer && (

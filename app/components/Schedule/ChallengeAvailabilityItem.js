@@ -29,23 +29,19 @@ function ChallengeAvailabilityItem({
     console.log('Start date:=>', date);
     let dateValue = new Date();
     dateValue = `${moment(date).format('ddd MMM DD YYYY')} 00:00:00 AM`;
-    setEventStartdateTime(
-      toggle
-        ? dateValue
-        : new Date(date),
-    );
-    
+    setEventStartdateTime(toggle ? dateValue : new Date(date));
+
     const d1 = new Date(date);
     const d2 = d1;
     d2.setMinutes(d1.getMinutes() + 5);
 
-    const obj = {...data, startDateTime: new Date(date),endDateTime: toggle ? new Date(date).setHours(23, 59, 59, 0) : d2};
+    const obj = {
+      ...data,
+      startDateTime: new Date(date),
+      endDateTime: toggle ? new Date(date).setHours(23, 59, 59, 0) : d2,
+    };
     changeAvailablilityItem(obj);
-    setEventEnddateTime(
-      toggle
-        ? new Date(date).setHours(23, 59, 59, 0)
-        : d2,
-    );
+    setEventEnddateTime(toggle ? new Date(date).setHours(23, 59, 59, 0) : d2);
     setStartDateVisible(!startDateVisible);
   };
   const handleCancelPress = () => {
@@ -65,38 +61,17 @@ function ChallengeAvailabilityItem({
     }
     const obj = {...data, endDateTime: new Date(date)};
     changeAvailablilityItem(obj);
-   
+
     setEndDateVisible(!endDateVisible);
-
-
   };
 
   return (
     <View style={{marginTop: 10}}>
-      <View style={styles.containerStyle}>
-        <BlockAvailableTabView
-          blocked={is_Blocked}
-          firstTabTitle={strings.block}
-          secondTabTitle={strings.setAvailable}
-          onFirstTabPress={() => {
-            const obj = {...data};
-            obj.isBlock = true;
-            changeAvailablilityItem(obj);
-            setIsBlocked(true);
-          }}
-          onSecondTabPress={() => {
-            const obj = {...data};
-            obj.isBlock = false;
-            changeAvailablilityItem(obj);
-            setIsBlocked(false);
-          }}
-          style={styles.blockStyle}
-          activeEventPricacy={styles.activeEventPricacy}
-          inactiveEventPricacy={styles.inactiveEventPricacy}
-          activeEventPrivacyText={styles.activeEventPrivacyText}
-          inactiveEventPrivacyText={styles.activeEventPrivacyText}
-        />
-        <View style={styles.toggleViewStyle}>
+      <View style={styles.toggleViewStyle}>
+        <Text style={styles.deleteTextStyle} onPress={onDeletePress}>
+          Delete
+        </Text>
+        <View style={{flexDirection: 'row'}}>
           <Text style={styles.allDayText}>{strings.allDay}</Text>
           <TouchableOpacity
             style={styles.checkbox}
@@ -147,11 +122,30 @@ function ChallengeAvailabilityItem({
         containerStyle={{marginBottom: 8}}
         onDatePress={() => setEndDateVisible(!endDateVisible)}
       />
-      <View>
-        <Text style={styles.deleteTextStyle} onPress={onDeletePress}>
-          Delete
-        </Text>
-      </View>
+
+      <BlockAvailableTabView
+        blocked={is_Blocked}
+        firstTabTitle={strings.block}
+        secondTabTitle={strings.setAvailable}
+        onFirstTabPress={() => {
+          const obj = {...data};
+          obj.isBlock = true;
+          changeAvailablilityItem(obj);
+          setIsBlocked(true);
+        }}
+        onSecondTabPress={() => {
+          const obj = {...data};
+          obj.isBlock = false;
+          changeAvailablilityItem(obj);
+          setIsBlocked(false);
+        }}
+        style={styles.blockStyle}
+        activeEventPricacy={styles.activeEventPricacy}
+        inactiveEventPricacy={styles.inactiveEventPricacy}
+        activeEventPrivacyText={styles.activeEventPrivacyText}
+        inactiveEventPrivacyText={styles.activeEventPrivacyText}
+      />
+
       <DateTimePickerView
         title={toggle ? 'Choose a date' : 'Choose a date & time'}
         // date={new Date(eventStartDateTime)}
@@ -179,18 +173,13 @@ function ChallengeAvailabilityItem({
 }
 
 const styles = StyleSheet.create({
-  containerStyle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 10,
-  },
   blockStyle: {
-    width: wp('50%'),
+    width: wp('92%'),
     marginVertical: 0,
     borderRadius: 8,
   },
   activeEventPricacy: {
-    paddingVertical: 2,
+    paddingVertical: 8,
     borderRadius: 6,
   },
   inactiveEventPricacy: {
@@ -208,8 +197,8 @@ const styles = StyleSheet.create({
   },
   toggleViewStyle: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    padding: 3,
+    justifyContent: 'space-between',
+    marginBottom: 15,
     alignItems: 'center',
   },
   allDayText: {
