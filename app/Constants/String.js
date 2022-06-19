@@ -858,5 +858,8 @@ const strings = {
   signUp: 'Sign Up',
   addYourName: 'Add your name.',
   signupwithemail: 'Sign up with email',
+  // Profile
+  pleaseaddfirstname: 'Please add first name.',
+  pleaseaddlastname: 'Please add last name.',
 };
 export default strings;

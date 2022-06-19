@@ -330,7 +330,7 @@ export default function PersonalInformationScreen({navigation, route}) {
   const getTeamsDataByCurrentLocation = async () => {
     console.log('Curruent location data:=>', currentLocation);
     setCity(currentLocation.city);
-    setState(currentLocation.stateAbbr);
+    setState(currentLocation.state);
     setCountry(currentLocation.country);
     setLocationPopup(false);
   };
@@ -355,11 +355,11 @@ export default function PersonalInformationScreen({navigation, route}) {
       }
     }
     if (userInfo.first_name === '') {
-      Alert.alert(strings.appName, 'First name cannot be blank');
+      Alert.alert(strings.appName, strings.pleaseaddfirstname);
       return false;
     }
     if (userInfo.last_name === '') {
-      Alert.alert(strings.appName, 'Last name cannot be blank');
+      Alert.alert(strings.appName, strings.pleaseaddlastname);
       return false;
     }
     if (userInfo.city && userInfo.state_abbr && userInfo.country === '') {
@@ -407,10 +407,10 @@ export default function PersonalInformationScreen({navigation, route}) {
   };
 
   const onSavePress = () => {
-    setloading(true);
-    console.log('checkValidation()', checkValidation());
+    // console.log('checkValidation()', checkValidation());
 
     if (checkValidation()) {
+      setloading(true);
       const bodyParams = {...userInfo};
       bodyParams.first_name = userInfo.first_name;
       bodyParams.last_name = userInfo.last_name;
@@ -987,7 +987,7 @@ export default function PersonalInformationScreen({navigation, route}) {
         </View>
 
         <View>
-          <TCLabel title={strings.slogan} />
+          <TCLabel title={strings.slogan} style={{bottom: 5}} />
           <TCTextField
             placeholder={'Slogan'}
             onChangeText={(text) =>
@@ -1234,21 +1234,20 @@ export default function PersonalInformationScreen({navigation, route}) {
               <TouchableWithoutFeedback
                 style={styles.listItem}
                 onPress={() => getTeamsDataByCurrentLocation()}>
-                <>
-                  <View>
-                    <Text style={[styles.cityList, {marginBottom: 3}]}>
-                      {currentLocation?.city}, {currentLocation?.state},{' '}
-                      {currentLocation?.country}
-                    </Text>
-                    <Text style={styles.curruentLocationText}>
-                      Current Location
-                    </Text>
-                  </View>
+                <View>
+                  <Text style={[styles.cityList, {marginBottom: 3}]}>
+                    {currentLocation?.city}, {currentLocation?.state},{' '}
+                    {currentLocation?.country}
+                  </Text>
+                  <Text style={styles.curruentLocationText}>
+                    Current Location
+                  </Text>
+
                   <TCThinDivider
                     width={'100%'}
                     backgroundColor={colors.grayBackgroundColor}
                   />
-                </>
+                </View>
               </TouchableWithoutFeedback>
             </View>
           )}

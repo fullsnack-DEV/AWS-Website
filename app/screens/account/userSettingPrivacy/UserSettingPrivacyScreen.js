@@ -68,20 +68,24 @@ export default function UserSettingPrivacyScreen({navigation}) {
       .then(async (providerData) => {
         if (providerData.includes('password')) {
           setUserSetting([
-            {key: 'Profile', id: 1},
-            {key: 'Sports Activities', id: 2},
-            {key: 'Currency', id: 3},
-            {key: 'Change Password', id: 4},
-            {key: 'Deactivate Account', id: 5},
-            {key: 'Terminate Account', id: 6},
-
+            {key: 'Account Info', id: 1},
+            {key: 'Profile', id: 2},
+            {key: 'Basic Info', id: 3},
+            {key: 'Sports Activities', id: 4},
+            {key: 'Time Zone', id: 5},
+            {key: 'Currency', id: 6},
+            {key: 'Change Password', id: 7},
+            {key: 'Deactivate Account', id: 8},
+            {key: 'Terminate Account', id: 9},
             // {key: 'Privacy Setting',id:3}
           ]);
         } else {
           setUserSetting([
-            {key: 'Profile', id: 1},
-            {key: 'Sports Activities', id: 3},
-            {key: 'Currency', id: 3},
+            {key: 'Account Info', id: 1},
+            {key: 'Profile', id: 2},
+            {key: 'Basic Info', id: 3},
+            {key: 'Sports Activities', id: 4},
+            {key: 'Currency', id: 5},
             // {key: 'Privacy Setting',id:3}
           ]);
         }
