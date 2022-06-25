@@ -232,7 +232,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
   };
 
   const checkValidation = () => {
-    if (selectedSports.length <= 0) {
+    if (!('sport' in groupData) && groupData.sport === '') {
       Alert.alert(strings.alertmessagetitle, strings.sportcannotbeblank);
       return false;
     }
@@ -314,7 +314,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
           <FastImage
             source={
               languages[index].isChecked
-                ? images.checkWhiteLanguage
+                ? images.orangeCheckBox
                 : images.uncheckWhite
             }
             style={styles.checkboxImg}
@@ -363,10 +363,10 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
         <View>
           <View style={{flexDirection: 'row'}}>
             <TCLabel
-              title={strings.SportsTextFieldTitle}
+              title={'Sport'}
               style={styles.titleStyle}
             />
-            <Text style={styles.validationSign}>*</Text>
+           
           </View>
           {groupData.entity_type === 'club' && (
             <TouchableOpacity style={styles.languageView} onPress={toggleModal}>
@@ -576,8 +576,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
         isVisible={isModalVisible}
         backdropColor="black"
         backdropOpacity={0.1}
-        style={{marginLeft: 0, marginRight: 0, marginBottom: 0}}>
-        <View style={styles.languageView}>
+        style={{margin: 0}}>
+        <View style={styles.modalViewContainer}>
           <ImageButton
             source={images.cancelImage}
             style={styles.cancelButtonStyle}
@@ -617,21 +617,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
         backdropTransitionInTiming={300}
         backdropTransitionOutTiming={800}>
         <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
+          style={styles.modalViewContainer}>
           <View
             style={{
               flexDirection: 'row',
@@ -701,12 +687,6 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     marginTop: 25,
-  },
-  validationSign: {
-    fontSize: 20,
-    marginLeft: 2,
-    marginTop: 21,
-    color: colors.redColor,
   },
   inputIOS: {
     height: 40,
@@ -803,7 +783,6 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
-
     width: wp('92%'),
   },
   cancelButtonStyle: {
@@ -842,4 +821,19 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     resizeMode: 'contain',
   },
+  modalViewContainer:{
+    width: '100%',
+    height: Dimensions.get('window').height / 1.3,
+    backgroundColor: 'white',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 15,
+ }
 });

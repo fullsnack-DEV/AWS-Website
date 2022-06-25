@@ -87,6 +87,7 @@ import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInv
 import JoinedTeamsScreen from '../screens/account/JoinedTeamsScreen';
 import EntityStatScreen from '../screens/home/EntityStatScreen';
 import MessageChat from '../components/message/MessageChat';
+import GameTennisDuration from '../screens/challenge/manageChallenge/settings/GameTennisDuration';
 
 const Stack = createStackNavigator();
 
@@ -1235,6 +1236,22 @@ const NewsFeedNavigator = () => (
       component={GameDuration}
       options={{
         title: 'Game Duration',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="GameTennisDuration"
+      component={GameTennisDuration}
+      options={{
+        title: 'Sets, points & Duration',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

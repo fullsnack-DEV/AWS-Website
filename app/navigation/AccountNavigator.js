@@ -246,6 +246,7 @@ import ChangeOtherListScreen from '../screens/account/schedule/ChangeOtherListSc
 import InviteToEventScreen from '../screens/account/schedule/InviteToEventScreen';
 import AcceptEventInviteScreen from '../screens/account/schedule/AcceptEventInviteScreen';
 import GoingListScreen from '../screens/account/schedule/GoingListScreen';
+import GameTennisDuration from '../screens/challenge/manageChallenge/settings/GameTennisDuration';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2750,6 +2751,22 @@ const AccountNavigator = () => (
       component={GameDuration}
       options={{
         title: 'Game Duration',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="GameTennisDuration"
+      component={GameTennisDuration}
+      options={{
+        title: 'Sets, points & Duration',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

@@ -34,6 +34,7 @@ import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import {getNumberSuffix} from '../../../utils/gameUtils';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import TCFormProgress from '../../../components/TCFormProgress';
+import TCGameDetailRules from '../../../components/TCGameDetailRules';
 
 let entity = {};
 export default function InviteChallengeScreen({navigation, route}) {
@@ -43,6 +44,9 @@ export default function InviteChallengeScreen({navigation, route}) {
   const [totalZero, setTotalZero] = useState(false);
   const [feeObj, setFeeObj] = useState();
   const [venue, setVenue] = useState();
+  
+  const [isMore,setIsMore] = useState(false);
+
 
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
@@ -139,6 +143,9 @@ console.log('groupObjgroupObj :::',groupObj);
       if (route?.params?.gameDuration) {
         settings.game_duration = route?.params?.gameDuration;
       }
+      if (route?.params?.tennisMatchDuration) {
+        settings.score_rules = route?.params?.tennisMatchDuration;
+      }
       if (route?.params?.gameGeneralRules !== undefined) {
        
         settings.general_rules = route?.params?.gameGeneralRules;
@@ -152,13 +159,14 @@ console.log('groupObjgroupObj :::',groupObj);
           route?.params?.scorekeeperSetting;
       }
 
-      setSettingObject(settings);
+      setSettingObject({...settings});
     }
   }, [
     authContext.entity,
     groupObj,
     isFocused,
     route?.params?.gameDuration,
+    route?.params?.tennisMatchDuration,
     route?.params?.gameFee,
     route?.params?.gameGeneralRules,
     route?.params?.gameSpecialRules,
@@ -557,7 +565,31 @@ console.log('teams ===>',teams);
         <TCThickDivider marginTop={20} />
       </View>
       <View>
-        <TCChallengeTitle
+        {sportName?.toLowerCase() === 'tennis' ? <View>
+          <TCChallengeTitle
+                  title={'Sets, Games & Duration'}
+                  isEdit={true}
+                  
+                  
+                  onEditPress={() => {
+                    navigation.navigate('GameTennisDuration', {
+                      settingObj: settingObject,
+                      comeFrom: 'InviteChallengeScreen',
+                      sportName,
+                    });
+                  }}
+                />
+          <TCGameDetailRules
+                  gameRules={settingObject?.score_rules}
+                  isShowTitle={false}
+                  isMore={isMore}
+                  onPressMoreLess={() => {
+                    setIsMore(!isMore);
+                  }}
+                />
+          <TCThickDivider marginTop={20} />
+        </View> : <View>
+          <TCChallengeTitle
           title={'Game Duration'}
           isEdit={true}
           onEditPress={() => {
@@ -569,7 +601,7 @@ console.log('teams ===>',teams);
             });
           }}
         />
-        <TCChallengeTitle
+          <TCChallengeTitle
           containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
           title={'1st period'}
           titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
@@ -583,25 +615,26 @@ console.log('teams ===>',teams);
           staticValueText={'min.'}
         />
 
-        <FlatList
+          <FlatList
           data={settingObject?.game_duration?.period}
           renderItem={renderPeriod}
           keyExtractor={(item, index) => index.toString()}
           style={{marginBottom: 15}}
         />
-        {settingObject?.game_duration?.period?.length > 0 && (
-          <Text style={styles.normalTextStyle}>
-            {strings.gameDurationTitle2}
-          </Text>
+          {settingObject?.game_duration?.period?.length > 0 && (
+            <Text style={styles.normalTextStyle}>
+              {strings.gameDurationTitle2}
+            </Text>
         )}
 
-        <FlatList
+          <FlatList
           data={settingObject?.game_duration?.overtime}
           renderItem={renderOverTime}
           keyExtractor={(item, index) => index.toString()}
           style={{marginBottom: 15}}
         />
-        <TCThickDivider marginTop={20} />
+          <TCThickDivider marginTop={20} />
+        </View>}
 
         <View>
           <TCChallengeTitle

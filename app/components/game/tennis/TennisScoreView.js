@@ -26,7 +26,6 @@ export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) 
       if (Object.keys(scoreDataSource?.scoreboard).length > 0) {
         const reversSets = scoreDataSource?.scoreboard?.sets?.reverse();
 
-        // scoreDataSource?.score_rules?.total_sets
         for (let i = 0; i < 3; i++) {
           if (reversSets[i]) {
             setsData.push(reversSets[i]);

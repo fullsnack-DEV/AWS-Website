@@ -253,7 +253,7 @@ const HomeFeed = ({
   );
 
   const onPressDone = useCallback(
-    (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
+    (data, postDesc, tagsOfEntity, format_tagged_data, whoCanSee) => {
       let dataParams = {};
       const entityID = currentUserData?.group_id ?? currentUserData?.user_id;
       if (entityID !== authContext.entity.uid) {
@@ -277,6 +277,7 @@ const HomeFeed = ({
           text: postDesc,
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
+          who_can_see: {...whoCanSee},
         };
 
         createPostAfterUpload(dataParams);
@@ -289,6 +290,7 @@ const HomeFeed = ({
           attachments: [],
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
+          who_can_see: {...whoCanSee},
         };
         imageUploadContext.uploadData(
           authContext,
@@ -298,7 +300,7 @@ const HomeFeed = ({
         );
       }
     },
-    [authContext, createPostAfterUpload, imageUploadContext],
+    [authContext, createPostAfterUpload, currentUserData?.entity_type, currentUserData?.group_id, currentUserData?.user_id, imageUploadContext],
   );
 
   const onEndReached = () => {

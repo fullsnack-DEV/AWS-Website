@@ -49,10 +49,11 @@ import TCTabView from '../../../components/TCTabView';
 import CurruentReservationView from './CurrentReservationView';
 import RefereeAgreementView from '../../../components/challenge/RefereeAgreementView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
+import TCGameDetailRules from '../../../components/TCGameDetailRules';
 
 let entity = {};
 export default function EditChallenge({navigation, route}) {
-  const [sportName] =  useState(route?.params?.sportName);
+  const [sportName] = useState(route?.params?.sportName);
   const [groupObj] = useState(route?.params?.groupObj);
 
   console.log('settingObjsettingObj:=>', route?.params?.settingObj);
@@ -72,6 +73,8 @@ export default function EditChallenge({navigation, route}) {
 
   const [moreButtonReferee, setMoreButtonReferee] = useState();
   const [moreButtonScorekeeper, setMoreButtonScorekeeper] = useState();
+
+  const [isMore, setIsMore] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
@@ -178,6 +181,9 @@ export default function EditChallenge({navigation, route}) {
       if (route?.params?.gameDuration) {
         settings.game_duration = route?.params?.gameDuration;
       }
+      if (route?.params?.tennisMatchDuration) {
+        settings.score_rules = route?.params?.tennisMatchDuration;
+      }
       if (route?.params?.gameGeneralRules) {
         settings.general_rules = route?.params?.gameGeneralRules;
         settings.special_rules = route?.params?.gameSpecialRules;
@@ -205,6 +211,7 @@ export default function EditChallenge({navigation, route}) {
     groupObj,
     isFocused,
     route?.params?.gameDuration,
+    route?.params?.tennisMatchDuration,
     route?.params?.gameFee,
     route?.params?.gameGeneralRules,
     route?.params?.gameSpecialRules,
@@ -328,7 +335,8 @@ export default function EditChallenge({navigation, route}) {
     feeBody.source = challengeObj?.source;
     feeBody.challenge_id = challengeObj?.challenge_id;
     feeBody.payment_method_type = 'card';
-    feeBody.currency_type = challengeObj?.game_fee?.currency_type?.toLowerCase();
+    feeBody.currency_type =
+      challengeObj?.game_fee?.currency_type?.toLowerCase();
     feeBody.total_game_fee = Number(
       parseFloat(challengeObj?.game_fee?.fee).toFixed(2),
     );
@@ -385,25 +393,23 @@ export default function EditChallenge({navigation, route}) {
       body.end_datetime = route?.params?.endTime / 1000;
     }
 
-    const res_secure_referee = challengeObj?.responsible_for_referee?.who_secure?.map(
-      (obj) => ({
+    const res_secure_referee =
+      challengeObj?.responsible_for_referee?.who_secure?.map((obj) => ({
         ...obj,
         responsible_team_id:
           obj.responsible_to_secure_referee === 'challengee'
             ? body.challengee
             : body.challenger,
-      }),
-    );
+      }));
 
-    const res_secure_scorekeeper = challengeObj?.responsible_for_scorekeeper?.who_secure?.map(
-      (obj) => ({
+    const res_secure_scorekeeper =
+      challengeObj?.responsible_for_scorekeeper?.who_secure?.map((obj) => ({
         ...obj,
         responsible_team_id:
           obj.responsible_to_secure_scorekeeper === 'challengee'
             ? body.challengee
             : body.challenger,
-      }),
-    );
+      }));
 
     body.manual_fee = true;
 
@@ -612,58 +618,93 @@ export default function EditChallenge({navigation, route}) {
               </View>
               <TCThickDivider marginTop={20} />
             </View>
+            {challengeObj?.sport?.toLowerCase() === 'tennis' ? (
+              <View>
+                <TCChallengeTitle
+                  title={'Sets, Games & Duration'}
+                  isEdit={true}
+                  isNew={
+                    !_.isEqual(
+                      challengeObj?.score_rules,
+                      oldVersion?.score_rules,
+                  )
+                  }
+                  onEditPress={() => {
+                    navigation.navigate('GameTennisDuration', {
+                      settingObj: challengeObj,
+                      comeFrom: 'EditChallenge',
+                      sportName,
+                    });
+                  }}
+                />
+                <TCGameDetailRules
+                  gameRules={challengeObj?.score_rules}
+                  isShowTitle={false}
+                  isMore={isMore}
+                  onPressMoreLess={() => {
+                    setIsMore(!isMore);
+                  }}
+                />
+                <TCThickDivider marginTop={20} />
+              </View>
+            ) : (
+              <View>
+                <TCChallengeTitle
+                  title={'Game Duration'}
+                  isEdit={true}
+                  isNew={
+                    !_.isEqual(
+                      challengeObj?.game_duration,
+                      oldVersion?.game_duration,
+                  )
+                  }
+                  onEditPress={() => {
+                    navigation.navigate('GameDuration', {
+                      settingObj: challengeObj,
+                      comeFrom: 'EditChallenge',
+                      sportName,
+                    });
+                  }}
+                />
+                <TCChallengeTitle
+                  containerStyle={{
+                    marginLeft: 25,
+                    marginTop: 15,
+                    marginBottom: 5,
+                  }}
+                  title={'1st period'}
+                  titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
+                  value={challengeObj?.game_duration?.first_period}
+                  valueStyle={{
+                    fontFamily: fonts.RBold,
+                    fontSize: 16,
+                    color: colors.greenColorCard,
+                    marginRight: 2,
+                  }}
+                  staticValueText={'min.'}
+                />
 
-            <TCChallengeTitle
-              title={'Game Duration'}
-              isEdit={true}
-              isNew={
-                !_.isEqual(
-                  challengeObj?.game_duration,
-                  oldVersion?.game_duration,
-              )
-              }
-              onEditPress={() => {
-                navigation.navigate('GameDuration', {
-                  settingObj: challengeObj,
-                  comeFrom: 'EditChallenge',
-                  sportName,
-                });
-              }}
-            />
-            <TCChallengeTitle
-              containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
-              title={'1st period'}
-              titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
-              value={challengeObj?.game_duration?.first_period}
-              valueStyle={{
-                fontFamily: fonts.RBold,
-                fontSize: 16,
-                color: colors.greenColorCard,
-                marginRight: 2,
-              }}
-              staticValueText={'min.'}
-            />
+                <FlatList
+                  data={challengeObj?.game_duration?.period}
+                  renderItem={renderPeriod}
+                  keyExtractor={(item, index) => index.toString()}
+                  style={{marginBottom: 15}}
+                />
+                {challengeObj?.game_duration?.period?.length > 0 && (
+                  <Text style={styles.normalTextStyle}>
+                    {strings.gameDurationTitle2}
+                  </Text>
+                )}
 
-            <FlatList
-              data={challengeObj?.game_duration?.period}
-              renderItem={renderPeriod}
-              keyExtractor={(item, index) => index.toString()}
-              style={{marginBottom: 15}}
-            />
-            {challengeObj?.game_duration?.period?.length > 0 && (
-              <Text style={styles.normalTextStyle}>
-                {strings.gameDurationTitle2}
-              </Text>
+                <FlatList
+                  data={challengeObj?.game_duration?.overtime}
+                  renderItem={renderOverTime}
+                  keyExtractor={(item, index) => index.toString()}
+                  style={{marginBottom: 15}}
+                />
+                <TCThickDivider marginTop={20} />
+              </View>
             )}
-
-            <FlatList
-              data={challengeObj?.game_duration?.overtime}
-              renderItem={renderOverTime}
-              keyExtractor={(item, index) => index.toString()}
-              style={{marginBottom: 15}}
-            />
-            <TCThickDivider marginTop={20} />
-
             <View>
               <TCChallengeTitle
                 title={'Date & Time'}
@@ -726,7 +767,7 @@ export default function EditChallenge({navigation, route}) {
                     comeFrom: 'EditChallenge',
                     groupObj: route?.params?.groupObj,
                     sportName: route?.params?.challengeObj?.sport,
-                    challengeObj : route?.params?.challengeObj,
+                    challengeObj: route?.params?.challengeObj,
                     lastConfirmVersion: route?.params?.challengeObj,
                     settingObj: route?.params?.settingObj,
                   });
