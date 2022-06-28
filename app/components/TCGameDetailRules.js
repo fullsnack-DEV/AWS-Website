@@ -37,7 +37,7 @@ const TCGameDetailRules = ({gameRules,isMore = true,onPressMoreLess,isShowTitle 
         }}>
         <Text style={styles.mainRulesTitle}>Number Of Games to Win a Set</Text>
         <Text style={styles.subRulesTitle}>
-          {gameRules?.game_count_to_win_set}{' '}
+          {gameRules?.total_available_games_in_set}{' '}
           <Text style={styles.lightSubTitle}>Games</Text>
         </Text>
       </View>

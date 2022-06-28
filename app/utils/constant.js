@@ -106,17 +106,7 @@ export const gameData = {
     following_count: 4,
   },
   pause_datetime: 0,
-  score_rules: {
-    apply_tiebreaker_in_game: true,
-    apply_duece_in_set: true,
-    winning_point_in_tiebreaker: 7,
-    total_sets: 3,
-    winning_point_in_game: 4,
-    game_count_to_win_set: 6,
-    tiebreaker_apply_at: 6,
-    apply_duece_in_game: true,
-    apply_duece_in_tiebreaker: true,
-  },
+ 
   gameId: 'da7f9ff0-c5e5-40bc-a0b2-137eb1c97317',
   game_id: 'da7f9ff0-c5e5-40bc-a0b2-137eb1c97317',
   start_datetime: 1630414600,

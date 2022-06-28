@@ -38,7 +38,7 @@ const MATCH_DURATION = 99;
 
 const numberOfSet = [];
 const numberOfGame = [];
-const playTie = [];
+let playTie = [];
 const winPoint = [];
 const matchDuration = [];
 
@@ -69,7 +69,8 @@ export default function GameTennisDuration({navigation, route}) {
       ? route?.params?.settingObj.score_rules
       : {
           total_sets: 3,
-          game_count_to_win_set: 6,
+          total_available_games_in_set: 5,
+          game_count_to_win_set: 3,
           win_set_by_two_games: true,
           apply_tiebreaker_in_game: false,
           tiebreaker_apply_at: 6,
@@ -77,18 +78,25 @@ export default function GameTennisDuration({navigation, route}) {
           win_two_points_in_tiebreaker: true,
           match_duration: '2h 00m',
           winning_point_in_game: 4,
+          win_game_by_two_points: true,
           details: '',
         },
   );
 
   useEffect(() => {
     for (let i = 1; i <= NUMBER_OF_SET; i++) {
-      numberOfSet.push(i);
+      if (i % 2 !== 0) {
+        numberOfSet.push(i);
+      }
     }
     for (let i = 1; i <= NUMBER_OF_GAME; i++) {
-      numberOfGame.push(i);
+      if (i % 2 !== 0) {
+        numberOfGame.push(i);
+      }
     }
-    for (let i = 1; i <= PLAY_TIE; i++) {
+    playTie = [];
+    for (let i = (matchSetting.total_available_games_in_set + 1)/2 ; i <= PLAY_TIE; i++) {
+      // PLAY_TIE
       playTie.push(i);
     }
     for (let i = 1; i <= WIN_POINT; i++) {
@@ -103,7 +111,7 @@ export default function GameTennisDuration({navigation, route}) {
         matchDuration.push(`${i}h 30m`);
       }
     }
-  }, []);
+  }, [matchSetting.total_available_games_in_set]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -138,9 +146,9 @@ export default function GameTennisDuration({navigation, route}) {
       score_rules: {
         ...matchSetting,
         winning_point_in_game: 4,
-        apply_duece_in_game: true,
-        apply_duece_in_set: true,
-        apply_duece_in_tiebreaker: true,
+        win_game_by_two_points: true,
+        // apply_duece_in_set: true,
+        // apply_duece_in_tiebreaker: true,
       },
     };
 
@@ -210,9 +218,10 @@ export default function GameTennisDuration({navigation, route}) {
       score_rules: {
         ...matchSetting,
         winning_point_in_game: 4,
-        apply_duece_in_game: true,
-        apply_duece_in_set: true,
-        apply_duece_in_tiebreaker: true,
+        win_game_by_two_points: true,
+
+        // apply_duece_in_set: true,
+        // apply_duece_in_tiebreaker: true,
       },
     };
     console.log('body params:=>', bodyParams);
@@ -266,7 +275,9 @@ export default function GameTennisDuration({navigation, route}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item}</Text>
+        <Text style={styles.languageList}>
+          Best of {item} {item === 1 ? 'set' : 'sets'}
+        </Text>
         <View>
           {matchSetting.total_sets === item ? (
             <Image
@@ -287,7 +298,8 @@ export default function GameTennisDuration({navigation, route}) {
       onPress={() => {
         setMatchSetting({
           ...matchSetting,
-          game_count_to_win_set: item,
+          total_available_games_in_set: item,
+          game_count_to_win_set: (item+1)/2
         });
         setVisibleWinSetModal(false);
       }}>
@@ -298,9 +310,11 @@ export default function GameTennisDuration({navigation, route}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item}</Text>
+        <Text style={styles.languageList}>
+          Best of {item} {item === 1 ? 'game' : 'games'}
+        </Text>
         <View>
-          {matchSetting.game_count_to_win_set === item ? (
+          {matchSetting.total_available_games_in_set === item ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -427,12 +441,16 @@ export default function GameTennisDuration({navigation, route}) {
               textAlign: 'left',
               fontFamily: fonts.RBold,
             }}>
-            {'NUMBER OF SETS TO WIN A MATCH'}
+            {'NUMBER OF SETS'}
+            <Text style={{color: colors.darkThemeColor}}> *</Text>
           </Text>
           <TouchableOpacity
             style={styles.setContainer}
             onPress={() => setVisibleWinMatchModal(true)}>
-            <Text style={styles.itemView}>{matchSetting?.total_sets}</Text>
+            <Text style={styles.itemView}>
+              Best of {matchSetting?.total_sets}{' '}
+              {matchSetting?.total_sets === 1 ? 'set' : 'sets'}
+            </Text>
             <Image
               source={images.dropDownArrow}
               style={styles.downArrowImage}
@@ -448,14 +466,18 @@ export default function GameTennisDuration({navigation, route}) {
               textAlign: 'left',
               fontFamily: fonts.RBold,
             }}>
-            {'NUMBER OF GAMES TO WIN A SET'}
+            {'NUMBER OF GAMES IN A SET'}
+            <Text style={{color: colors.darkThemeColor}}> *</Text>
           </Text>
 
           <TouchableOpacity
             style={styles.setContainer}
             onPress={() => setVisibleWinSetModal(true)}>
             <Text style={styles.itemView}>
-              {matchSetting.game_count_to_win_set}
+              Best of {matchSetting.total_available_games_in_set}{' '}
+              {matchSetting.total_available_games_in_set === 1
+                ? 'game'
+                : 'games'}
             </Text>
             <Image
               source={images.dropDownArrow}
@@ -474,6 +496,10 @@ export default function GameTennisDuration({navigation, route}) {
                 setMatchSetting({
                   ...matchSetting,
                   win_set_by_two_games: !matchSetting.win_set_by_two_games,
+                  apply_tiebreaker_in_game:
+                    !matchSetting.apply_tiebreaker_in_game,
+                  win_two_points_in_tiebreaker:
+                    !matchSetting.win_two_points_in_tiebreaker,
                 });
               }}>
               <Image
@@ -486,38 +512,45 @@ export default function GameTennisDuration({navigation, route}) {
               />
 
               <Text style={styles.minText}>
-                {'A player must win a set by two games'}
+                A{' '}
+                <Text
+                  style={[styles.minText, {textDecorationLine: 'underline'}]}>
+                  {authContext.entity.role === 'team' ? 'team' : 'player'}
+                </Text>{' '}
+                must win a set by two games
               </Text>
             </TouchableOpacity>
           </View>
 
-          <View
-            style={{
-              justifyContent: 'center',
-              marginBottom: 5,
-              marginTop: 10,
-            }}>
-            <TouchableOpacity
-              style={styles.checkBoxContainer}
-              onPress={() => {
-                setMatchSetting({
-                  ...matchSetting,
-                  apply_tiebreaker_in_game:
-                    !matchSetting.apply_tiebreaker_in_game,
-                });
+          {matchSetting.win_set_by_two_games && (
+            <View
+              style={{
+                justifyContent: 'center',
+                marginBottom: 5,
+                marginTop: 10,
               }}>
-              <Image
-                source={
-                  matchSetting.apply_tiebreaker_in_game
-                    ? images.orangeCheckBox
-                    : images.uncheckBox
-                }
-                style={styles.checkboxImg}
-              />
+              <TouchableOpacity
+                style={styles.checkBoxContainer}
+                onPress={() => {
+                  setMatchSetting({
+                    ...matchSetting,
+                    apply_tiebreaker_in_game:
+                      !matchSetting.apply_tiebreaker_in_game,
+                  });
+                }}>
+                <Image
+                  source={
+                    matchSetting.apply_tiebreaker_in_game
+                      ? images.orangeCheckBox
+                      : images.uncheckBox
+                  }
+                  style={styles.checkboxImg}
+                />
 
-              <Text style={styles.minText}>{'Apply tie-breaker'}</Text>
-            </TouchableOpacity>
-          </View>
+                <Text style={styles.minText}>{'Apply tie-breaker'}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           {matchSetting.apply_tiebreaker_in_game && (
             <View>
@@ -624,6 +657,7 @@ export default function GameTennisDuration({navigation, route}) {
                 fontFamily: fonts.RBold,
               }}>
               {'MAXIMUM MATCH DURATION'}
+              <Text style={{color: colors.darkThemeColor}}> *</Text>
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -943,19 +977,19 @@ const styles = StyleSheet.create({
   setContainer: {
     alignSelf: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     color: colors.lightBlackColor,
-    elevation: 3,
     flexDirection: 'row',
 
     height: 40,
     width: '92%',
     paddingHorizontal: 15,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
+    // shadowColor: colors.googleColor,
+    // shadowOffset: {width: 0, height: 1},
+    // shadowOpacity: 0.5,
+    // shadowRadius: 1,
+    // elevation: 3,
   },
 
   itemView: {

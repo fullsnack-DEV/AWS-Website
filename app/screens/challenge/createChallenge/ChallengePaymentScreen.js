@@ -224,6 +224,8 @@ export default function ChallengePaymentScreen({route, navigation}) {
     }
     console.log('Challenge Object111:=>', body);
     
+
+    
     setloading(true);
     createChallenge(body, authContext)
       .then((response) => {
@@ -562,6 +564,8 @@ export default function ChallengePaymentScreen({route, navigation}) {
             challengeObj.min_scorekeeper = challengeData.min_scorekeeper;
             console.log('Payment obj:=>', challengeObj);
 
+
+            
             challengeOperation(
               entity.uid,
               challengeData?.challenge_id,
