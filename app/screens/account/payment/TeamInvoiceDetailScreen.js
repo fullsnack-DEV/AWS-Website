@@ -387,14 +387,14 @@ export default function TeamInvoiceDetailScreen({navigation, route}) {
                   fontSize: 12,
                   marginLeft: 15,
                 }}>
-                {`$${invoiceDetail?.amount_paid} CAD`}
+                {`$${invoiceDetail?.amount_paid} `}{strings.defaultCurrency}
               </Text>
             </LinearGradient>
           </LinearGradient>
 
           <InvoiceAmount
             status={`${invoiceDetail?.invoice_status}`}
-            currencyType={'CAD'}
+            currencyType={strings.defaultCurrency}
             totalAmount={invoiceDetail?.amount_due ?? '00.00'}
             paidAmount={invoiceDetail?.amount_paid ?? '00.00'}
             openAmount={invoiceDetail?.amount_remaining ?? '00.00'}

@@ -72,7 +72,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
   const challengeSettingMenu = [
     { key: 'Availability', id: 1 },
     { key: 'Game Type', id: 2 },
-    { key: 'Game Fee', id: 3 },
+    { key: 'Match Fee', id: 3 },
     { key: 'Refund Policy', id: 4 },
     { key: 'Home & Away', id: 5 },
     { key: (sportName === 'tennis' && sportType === 'single') ?  'Sets, Points & Duration' : 'Game Duration', id: 6 },
@@ -113,7 +113,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
           sportType,
         });
       }
-    } else if (opetions === 'Game Fee') {
+    } else if (opetions === 'Match Fee') {
       if (settingObject) {
         navigation.navigate('GameFee', {
           settingObj: settingObject,
@@ -263,7 +263,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
         return settingObject?.game_type;
       }
     }
-    if (item.key === 'Game Fee') {
+    if (item.key === 'Match Fee') {
       if (settingObject?.game_fee) {
         return `$${settingObject?.game_fee?.fee} ${settingObject?.game_fee?.currency_type}`;
       }

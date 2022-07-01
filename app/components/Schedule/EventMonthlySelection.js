@@ -21,7 +21,7 @@ export default function EventMonthlySelection({
       <RNPickerSelect
         placeholder={{
           label: placeholder,
-          value: '',
+          value: 'Never',
         }}
         items={dataSource}
         onValueChange={onValueChange}

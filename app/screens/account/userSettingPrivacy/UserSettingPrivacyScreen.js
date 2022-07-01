@@ -70,10 +70,10 @@ export default function UserSettingPrivacyScreen({navigation}) {
           setUserSetting([
             {key: 'Profile', id: 1},
             {key: 'Sports Activities', id: 2},
-            {key: 'Currency', id: 3},
-            {key: 'Change Password', id: 4},
-            {key: 'Deactivate Account', id: 5},
-            {key: 'Terminate Account', id: 6},
+           // {key: 'Currency', id: 3},
+            {key: 'Change Password', id: 3},
+            {key: 'Deactivate Account', id: 4},
+            {key: 'Terminate Account', id: 5},
 
             // {key: 'Privacy Setting',id:3}
           ]);
@@ -81,7 +81,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
           setUserSetting([
             {key: 'Profile', id: 1},
             {key: 'Sports Activities', id: 3},
-            {key: 'Currency', id: 3},
+            // {key: 'Currency', id: 3},
             // {key: 'Privacy Setting',id:3}
           ]);
         }
@@ -121,9 +121,11 @@ export default function UserSettingPrivacyScreen({navigation}) {
       navigation.navigate('SportActivityScreen');
     } else if (opetions === 'Change Password') {
       navigation.navigate('ChangePasswordScreen');
-    } else if (opetions === 'Currency') {
-      navigation.navigate('CurrencySettingScreen');
-    } else if (opetions === 'Privacy Setting') {
+    } 
+    // else if (opetions === 'Currency') {
+    //   navigation.navigate('CurrencySettingScreen');
+    // }
+     else if (opetions === 'Privacy Setting') {
       // groupOpetionActionSheet.show();
     } else if (opetions === 'Deactivate Account') {
       navigation.navigate('DeactivateAccountScreen');

@@ -66,7 +66,7 @@ export default function EditFeeScreen({ navigation, route }) {
               updatedFee: true,
             });
           } else {
-            Alert.alert('Please enter valid game fee.');
+            Alert.alert('Please enter valid match fee.');
           }
         }}
       />

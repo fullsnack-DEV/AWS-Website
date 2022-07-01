@@ -14,12 +14,13 @@ function EditEventItem({
   onEditPress,
   subTitle,
   editButtonVisible = true,
+  
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <View style={styles.titleAndEditViewStyle}>
         <Text style={styles.headerTextStyle}>{title}
-          {subTitle && <Text style={styles.subHeaderText}>{subTitle}</Text>}</Text>
+          {subTitle && <Text style={styles.subHeaderText} >{subTitle}</Text>}</Text>
         {editButtonVisible && (
           <TouchableOpacity onPress={onEditPress} hitSlop={getHitSlop(15)}>
             <Image

@@ -204,7 +204,7 @@ import React, {
      body.reservation_id = bodyParams.reservation_id;
      body.start_datetime = bodyParams?.start_datetime;
      body.end_datetime = bodyParams?.end_datetime;
-     body.currency_type = bodyParams?.currency_type || 'CAD';
+     body.currency_type = bodyParams?.currency_type || strings.defaultCurrency;
      body.payment_method_type = 'card';
      body.sport = bodyParams?.sport;
      body.manual_fee = bodyParams?.manual_fee;
@@ -880,7 +880,7 @@ import React, {
                title={'Refund Policy'}
                value={bodyParams?.refund_policy}
                tooltipText={
-               '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+               '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
                }
                tooltipHeight={Utility.heightPercentageToDP('18%')}
                tooltipWidth={Utility.widthPercentageToDP('50%')}
@@ -961,7 +961,7 @@ import React, {
                  <Text style={styles.differenceTextTitle}>Difference</Text>
                  <Text style={styles.diffenceAmount}>{`$${parseFloat(
                    bodyParams?.total_game_fee - oldVersion?.total_game_fee,
-                 ).toFixed(2)} ${bodyParams.currency_type || 'CAD'}`}</Text>
+                 ).toFixed(2)} ${bodyParams.currency_type || strings.defaultCurrency}`}</Text>
                  {/* <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text> */}
                </View>
              </View>

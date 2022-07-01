@@ -20,7 +20,6 @@ let awayTeamMatchPoint = 0;
 export default function TennisScoreView({scoreDataSource, marginTop = '10%'}) {
   const refContainer = useRef();
 
-
   const calculateMatchScore = useCallback(() => {
     homeTeamMatchPoint = 0;
     awayTeamMatchPoint = 0;
@@ -78,7 +77,6 @@ export default function TennisScoreView({scoreDataSource, marginTop = '10%'}) {
     scoreDataSource?.scoreboard?.game_inprogress?.winner,
   ]);
 
-
   useEffect(() => {
     setsData = [];
     console.log('scoreDataSource', scoreDataSource);
@@ -114,8 +112,6 @@ export default function TennisScoreView({scoreDataSource, marginTop = '10%'}) {
       }
     }
   }, [calculateGameScore, calculateMatchScore, scoreDataSource]);
-
-  
 
   const renderScores = ({item, index}) => {
     console.log('Render score item:=>', item);

@@ -48,7 +48,7 @@ export default function RefereeAgreementView({
   );
   const radio1 = (
     <>
-      the confirmed game will be canceled and the game fee and service fee will
+      the confirmed game will be canceled and the match fee and service fee will
       be refunded.
     </>
   );

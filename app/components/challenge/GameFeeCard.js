@@ -12,7 +12,7 @@ export default function GameFeeCard({ feeObject, currency, isChallenger }) {
       <View style={styles.feeContainer}>
         <View>
           <Text style={[styles.normalTextStyle, { marginLeft: 0 }]}>
-            Game Fee
+            Match Fee
           </Text>
         </View>
         <View>

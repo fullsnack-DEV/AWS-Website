@@ -320,7 +320,7 @@ export default function MembersDetailScreen({navigation, route}) {
         <TopFilterBar />
 
         <InvoiceAmount
-          currencyType={'CAD'}
+          currencyType={strings.defaultCurrency}
           totalAmount={memberData?.invoice_total ?? '00.00'}
           paidAmount={memberData?.invoice_paid_total ?? '00.00'}
           openAmount={memberData?.invoice_open_total ?? '00.00'}

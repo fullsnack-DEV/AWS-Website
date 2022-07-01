@@ -419,7 +419,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
       return false;
     }
     if (Number(minFee) > Number(maxFee)) {
-      Alert.alert('Please enter correct game fee.');
+      Alert.alert('Please enter correct match fee.');
       return false;
     }
     return true;
@@ -868,7 +868,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
                     justifyContent: 'space-between',
                   }}>
                   <View style={{}}>
-                    <Text style={styles.filterTitle}>Game fee</Text>
+                    <Text style={styles.filterTitle}>Match fee</Text>
                   </View>
                   <View style={{marginTop: 10}}>
                     <View

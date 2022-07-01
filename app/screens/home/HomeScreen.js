@@ -913,14 +913,14 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const clubInviteUser = async () => {
-    setloading(true)
+    setloading(true);
     const params = {
       entity_type: authContext.entity.role,
       uid: authContext.entity.uid,
     };
     inviteUser(params, userID, authContext)
       .then(() => {
-        setloading(false)
+        setloading(false);
 
         setTimeout(() => {
           Alert.alert(
@@ -930,7 +930,7 @@ const HomeScreen = ({navigation, route}) => {
         }, 10);
       })
       .catch((error) => {
-        setloading(false)
+        setloading(false);
 
         console.log('clubInviteUser error with userID', error, userID);
         setTimeout(() => {
@@ -1829,6 +1829,7 @@ const HomeScreen = ({navigation, route}) => {
                 Alert.alert(strings.alertmessagetitle, error.message);
               });
           }}
+          navigation={navigation}
         />
       )}
 
@@ -3186,7 +3187,7 @@ const HomeScreen = ({navigation, route}) => {
                           {strings.challenge}
                           {settingObject?.game_fee?.fee && (
                             <Text>{` $${settingObject?.game_fee?.fee} ${
-                            currentUserData?.currency_type ?? 'CAD'
+                            currentUserData?.currency_type ?? strings.defaultCurrency
                           }${' / match'}`}</Text>
                         )}
                         </Text>

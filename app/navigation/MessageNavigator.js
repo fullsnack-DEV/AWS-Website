@@ -183,6 +183,7 @@ const MessageNavigator = () => (
         },
       }}
     />
+   
   </Stack.Navigator>
 );
 

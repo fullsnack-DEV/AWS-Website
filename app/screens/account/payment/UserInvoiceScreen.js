@@ -104,7 +104,7 @@ export default function UserInvoiceScreen({ navigation }) {
       <TopFilterBar />
 
       <InvoiceAmount
-        currencyType={'CAD'}
+        currencyType={strings.defaultCurrency}
         totalAmount={totalAmount ?? '00.00'}
         paidAmount={paidAmount ?? '00.00'}
         openAmount={openAmount ?? '00.00'}

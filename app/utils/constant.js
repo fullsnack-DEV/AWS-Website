@@ -74,7 +74,7 @@ export const gameData = {
       {
         sport_name: 'Tennis',
         Tennis: 'single-multiplayer',
-        currency_type: 'CAD',
+        currency_type: 'USD',
         fee: '20',
         language: ['English(Canada)', 'English(Singapore)'],
         cancellation_policy: 'strict',
@@ -277,7 +277,7 @@ export const gameData = {
       },
       {
         sport_name: 'Tennis',
-        currency_type: 'CAD',
+        currency_type: 'USD',
         user_challenge: false,
         fee: '15',
         language: ['English(Canada)'],
@@ -288,7 +288,7 @@ export const gameData = {
       },
       {
         sport_name: 'Tennis Double',
-        currency_type: 'CAD',
+        currency_type: 'USD',
         fee: '10',
         language: ['English(Canada)', 'English(Singapore)'],
         cancellation_policy: 'strict',
@@ -297,7 +297,7 @@ export const gameData = {
       },
       {
         sport_name: 'Tennis Double',
-        currency_type: 'CAD',
+        currency_type: 'USD',
         fee: '',
         language: [],
         cancellation_policy: 'strict',
@@ -486,7 +486,7 @@ export const gameData = {
                   transfer_data: {destination: 'acct_1I7YPZPJ2sxoFK8x'},
                   shipping: null,
                   review: null,
-                  currency: 'cad',
+                  currency: 'usd',
                   id: 'pi_1IBtvEAgsVW5UJBhvbuugmlS',
                   client_secret:
                     'pi_1IBtvEAgsVW5UJBhvbuugmlS_secret_xWLuPSJLphSETACG7k9Ul9a9x',
@@ -551,7 +551,7 @@ export const gameData = {
                         review: null,
                         captured: false,
                         calculated_statement_descriptor: 'VINEET PATIDAR',
-                        currency: 'cad',
+                        currency: 'usd',
                         refunded: false,
                         id: 'ch_1IBtvEAgsVW5UJBhhqHteeMr',
                         outcome: {
@@ -727,7 +727,7 @@ export const gameData = {
                 transfer_data: {destination: 'acct_1I7YPZPJ2sxoFK8x'},
                 shipping: null,
                 review: null,
-                currency: 'cad',
+                currency: 'usd',
                 id: 'pi_1IBtvEAgsVW5UJBhvbuugmlS',
                 client_secret:
                   'pi_1IBtvEAgsVW5UJBhvbuugmlS_secret_xWLuPSJLphSETACG7k9Ul9a9x',
@@ -792,7 +792,7 @@ export const gameData = {
                       review: null,
                       captured: false,
                       calculated_statement_descriptor: 'VINEET PATIDAR',
-                      currency: 'cad',
+                      currency: 'usd',
                       refunded: false,
                       id: 'ch_1IBtvEAgsVW5UJBhhqHteeMr',
                       outcome: {
@@ -990,7 +990,7 @@ export const gameData = {
         manual_fee: true,
         chief_referee: true,
         service_fee2_charges: 1.22,
-        currency_type: 'CAD',
+        currency_type: 'USD',
         total_payout: 20.78,
         end_datetime: 1630436400,
         service_fee1_charges: 2.42,
@@ -1079,7 +1079,7 @@ export const gameData = {
             },
             {
               sport_name: 'Baseball',
-              currency_type: 'CAD',
+              currency_type: 'USD',
               fee: '10',
               language: ['English', 'English(Canada)', 'English(Singapore)'],
               cancellation_policy: 'strict',
@@ -1088,7 +1088,7 @@ export const gameData = {
             },
             {
               sport_name: 'Carom',
-              currency_type: 'CAD',
+              currency_type: 'USD',
               fee: '20',
               language: ['English', 'English(Canada)'],
               cancellation_policy: 'strict',

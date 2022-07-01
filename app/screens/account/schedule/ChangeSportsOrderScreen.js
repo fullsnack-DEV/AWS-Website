@@ -148,6 +148,7 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
           Alert.alert('', e.messages);
         });
     } else {
+      setloading(false);
       Alert.alert('Please select any of the group.');
     }
   };

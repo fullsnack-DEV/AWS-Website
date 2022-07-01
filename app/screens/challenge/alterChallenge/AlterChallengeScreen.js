@@ -1371,7 +1371,7 @@ const bottomButtonView = () => {
             <TCThickDivider />
 
             <TCChallengeTitle
-          title={'Game Fee'}
+          title={'Match Fee'}
           value={bodyParams?.game_fee?.fee}
           staticValueText={`${bodyParams?.game_fee?.currency_type} /Game`}
           valueStyle={{
@@ -1593,7 +1593,7 @@ const bottomButtonView = () => {
         title={'Refund Policy'}
         value={bodyParams?.refund_policy}
         tooltipText={
-        '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+        '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
         }
         tooltipHeight={hp('18%')}
         tooltipWidth={wp('50%')}
