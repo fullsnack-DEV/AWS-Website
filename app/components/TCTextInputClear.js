@@ -84,13 +84,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     color: colors.lightBlackColor,
     paddingRight: 15,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
+    // shadowColor: colors.googleColor,
+    // shadowOffset: { width: 0, height: 1 },
+    // shadowOpacity: 0.5,
+    // shadowRadius: 1,
+    // elevation: 3,
     marginLeft: 25,
     marginRight: 25,
 
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     alignSelf: 'center',
     color: colors.lightBlackColor,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground, // offwhite
     marginVertical: 15,
   },
   detailsSingleText: {

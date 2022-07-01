@@ -538,9 +538,7 @@ export default function TennisRecording({navigation, route}) {
         }
         calculateMatchScore(response.payload);
         calculateGameScore(response.payload);
-
         defineServingTeamID(response.payload);
-
         configurePeriodOpetions(response.payload);
         setloading(false);
       })

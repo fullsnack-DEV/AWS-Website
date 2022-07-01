@@ -34,6 +34,7 @@ import TCChallengeTitle from '../../../components/TCChallengeTitle';
 import {getNumberSuffix} from '../../../utils/gameUtils';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import TCFormProgress from '../../../components/TCFormProgress';
+import TCGameDetailRules from '../../../components/TCGameDetailRules';
 
 let entity = {};
 export default function InviteChallengeScreen({navigation, route}) {
@@ -44,12 +45,14 @@ export default function InviteChallengeScreen({navigation, route}) {
   const [feeObj, setFeeObj] = useState();
   const [venue, setVenue] = useState();
 
+  const [isMore, setIsMore] = useState(false);
+
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
   const [setting] = useState(route?.params?.setting);
   const [groupObj] = useState(route?.params?.groupObj);
 
-console.log('sportTypesportTypesportType---->',sportType);
+  console.log('sportTypesportTypesportType---->', sportType);
 
   // const [startDate, setStartDate] = useState(
   //   new Date().setHours(new Date().getHours() + 10),
@@ -73,7 +76,8 @@ console.log('sportTypesportTypesportType---->',sportType);
   const getFeeDetail = useCallback(() => {
     const feeBody = {};
     feeBody.payment_method_type = 'card';
-    feeBody.currency_type = settingObject?.game_fee?.currency_type?.toLowerCase();
+    feeBody.currency_type =
+      settingObject?.game_fee?.currency_type?.toLowerCase();
     feeBody.total_game_fee = Number(settingObject?.game_fee?.fee?.toString());
     // setloading(true);
 
@@ -104,8 +108,8 @@ console.log('sportTypesportTypesportType---->',sportType);
   useEffect(() => {
     entity = authContext.entity;
     if (groupObj) {
-      console.log('entity.objentity.obj::',entity.obj);
-console.log('groupObjgroupObj :::',groupObj);
+      console.log('entity.objentity.obj::', entity.obj);
+      console.log('groupObjgroupObj :::', groupObj);
 
       setteams([{...entity.obj}, {...groupObj}]);
     }
@@ -139,8 +143,10 @@ console.log('groupObjgroupObj :::',groupObj);
       if (route?.params?.gameDuration) {
         settings.game_duration = route?.params?.gameDuration;
       }
+      if (route?.params?.tennisMatchDuration) {
+        settings.score_rules = route?.params?.tennisMatchDuration;
+      }
       if (route?.params?.gameGeneralRules !== undefined) {
-       
         settings.general_rules = route?.params?.gameGeneralRules;
         settings.special_rules = route?.params?.gameSpecialRules;
       }
@@ -152,13 +158,14 @@ console.log('groupObjgroupObj :::',groupObj);
           route?.params?.scorekeeperSetting;
       }
 
-      setSettingObject(settings);
+      setSettingObject({...settings});
     }
   }, [
     authContext.entity,
     groupObj,
     isFocused,
     route?.params?.gameDuration,
+    route?.params?.tennisMatchDuration,
     route?.params?.gameFee,
     route?.params?.gameGeneralRules,
     route?.params?.gameSpecialRules,
@@ -260,7 +267,8 @@ console.log('groupObjgroupObj :::',groupObj);
     ) {
       res_secure_referee.push({
         ...settingObject?.responsible_for_referee?.who_secure[i],
-        responsible_team_id: sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
+        responsible_team_id:
+          sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
       });
     }
     for (
@@ -270,7 +278,8 @@ console.log('groupObjgroupObj :::',groupObj);
     ) {
       res_secure_scorekeeper.push({
         ...settingObject?.responsible_for_scorekeeper?.who_secure[i],
-        responsible_team_id: sportType === 'single' ? teams?.[0]?.user_id :  teams?.[0]?.group_id
+        responsible_team_id:
+          sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
       });
     }
 
@@ -282,15 +291,21 @@ console.log('groupObjgroupObj :::',groupObj);
       venue,
       start_datetime: route?.params?.startTime / 1000,
       end_datetime: route?.params?.endTime / 1000,
-      challenger: sportType === 'single' ? teams?.[1]?.user_id :  teams?.[1]?.group_id,
-      challengee: sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
+      challenger:
+        sportType === 'single' ? teams?.[1]?.user_id : teams?.[1]?.group_id,
+      challengee:
+        sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
       home_team:
         settingObject?.home_away === 'Home'
           ? entity?.uid
-          : sportType === 'single' ? groupObj?.user_id : groupObj?.group_id,
+          : sportType === 'single'
+          ? groupObj?.user_id
+          : groupObj?.group_id,
       away_team:
         settingObject?.home_away === 'Home'
-          ? sportType === 'single' ? groupObj?.user_id : groupObj?.group_id
+          ? sportType === 'single'
+            ? groupObj?.user_id
+            : groupObj?.group_id
           : entity?.uid,
       user_challenge: sportType === 'single',
     };
@@ -314,7 +329,7 @@ console.log('groupObjgroupObj :::',groupObj);
     });
   };
 
-console.log('teams ===>',teams);
+  console.log('teams ===>', teams);
 
   return (
     <TCKeyboardView>
@@ -399,7 +414,7 @@ console.log('teams ===>',teams);
               <Text style={styles.teamNameText}>
                 {sportType === 'single'
                   ? `${teams?.[0]?.first_name} ${teams?.[0]?.last_name}`
-                  : `${teams?.[0]?.group_name}` }
+                  : `${teams?.[0]?.group_name}`}
               </Text>
             </View>
           </View>
@@ -557,51 +572,78 @@ console.log('teams ===>',teams);
         <TCThickDivider marginTop={20} />
       </View>
       <View>
-        <TCChallengeTitle
-          title={'Game Duration'}
-          isEdit={true}
-          onEditPress={() => {
-            navigation.navigate('GameDuration', {
-              settingObj: settingObject,
-              comeFrom: 'InviteChallengeScreen',
-              sportName,
-              sportType,
-            });
-          }}
-        />
-        <TCChallengeTitle
-          containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
-          title={'1st period'}
-          titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
-          value={settingObject?.game_duration?.first_period}
-          valueStyle={{
-            fontFamily: fonts.RBold,
-            fontSize: 16,
-            color: colors.greenColorCard,
-            marginRight: 2,
-          }}
-          staticValueText={'min.'}
-        />
+        {sportName?.toLowerCase() === 'tennis' ? (
+          <View>
+            <TCChallengeTitle
+              title={'Sets, Games & Duration'}
+              isEdit={true}
+              onEditPress={() => {
+                navigation.navigate('GameTennisDuration', {
+                  settingObj: settingObject,
+                  comeFrom: 'InviteChallengeScreen',
+                  sportName,
+                });
+              }}
+            />
+            <TCGameDetailRules
+              gameRules={settingObject?.score_rules}
+              isShowTitle={false}
+              isMore={isMore}
+              onPressMoreLess={() => {
+                setIsMore(!isMore);
+              }}
+            />
+            <TCThickDivider marginTop={20} />
+          </View>
+        ) : (
+          <View>
+            <TCChallengeTitle
+              title={'Game Duration'}
+              isEdit={true}
+              onEditPress={() => {
+                navigation.navigate('GameDuration', {
+                  settingObj: settingObject,
+                  comeFrom: 'InviteChallengeScreen',
+                  sportName,
+                  sportType,
+                });
+              }}
+            />
+            <TCChallengeTitle
+              containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
+              title={'1st period'}
+              titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
+              value={settingObject?.game_duration?.first_period}
+              valueStyle={{
+                fontFamily: fonts.RBold,
+                fontSize: 16,
+                color: colors.greenColorCard,
+                marginRight: 2,
+              }}
+              staticValueText={'min.'}
+            />
 
-        <FlatList
-          data={settingObject?.game_duration?.period}
-          renderItem={renderPeriod}
-          keyExtractor={(item, index) => index.toString()}
-          style={{marginBottom: 15}}
-        />
-        {settingObject?.game_duration?.period?.length > 0 && (
-          <Text style={styles.normalTextStyle}>
-            {strings.gameDurationTitle2}
-          </Text>
+            <FlatList
+              data={settingObject?.game_duration?.period}
+              renderItem={renderPeriod}
+              keyExtractor={(item, index) => index.toString()}
+              style={{marginBottom: 15}}
+            />
+            {settingObject?.game_duration?.period?.length > 0 && (
+              <Text style={styles.normalTextStyle}>
+                {strings.gameDurationTitle2}
+              </Text>
+            )}
+
+            <FlatList
+              data={settingObject?.game_duration?.overtime}
+              renderItem={renderOverTime}
+              keyExtractor={(item, index) => index.toString()}
+              style={{marginBottom: 15}}
+            />
+            <TCThickDivider marginTop={20} />
+          </View>
         )}
-
-        <FlatList
-          data={settingObject?.game_duration?.overtime}
-          renderItem={renderOverTime}
-          keyExtractor={(item, index) => index.toString()}
-          style={{marginBottom: 15}}
-        />
-        <TCThickDivider marginTop={20} />
 
         <View>
           <TCChallengeTitle

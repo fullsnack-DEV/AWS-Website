@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState, useContext } from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -13,16 +13,14 @@ import {
 } from 'react-native';
 import moment from 'moment';
 
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import TCFormProgress from '../../../components/TCFormProgress';
-import {
-  getFeesEstimation,
-} from '../../../api/Challenge';
-import { getNumberSuffix } from '../../../utils/gameUtils';
+import {getFeesEstimation} from '../../../api/Challenge';
+import {getNumberSuffix} from '../../../utils/gameUtils';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
@@ -39,11 +37,11 @@ import SecureRefereeView from '../../../components/SecureRefereeView';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import TCArrowView from '../../../components/TCArrowView';
+import TCGameDetailRules from '../../../components/TCGameDetailRules';
 
 let entity = {};
 const bodyParams = {};
-export default function ChallengeScreen({ navigation, route }) {
-
+export default function ChallengeScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
@@ -53,17 +51,18 @@ export default function ChallengeScreen({ navigation, route }) {
   const [totalZero, setTotalZero] = useState(false);
   const [feeObj, setFeeObj] = useState();
 
-
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
   const [settingObject] = useState(route?.params?.setting);
+  const [isMore,setIsMore] = useState(false);
   const [groupObj] = useState(route?.params?.groupObj);
 
+  console.log('setting object::=>', settingObject);
 
   useEffect(() => {
     entity = authContext.entity;
     if (groupObj) {
-      setteams([{ ...entity.obj }, { ...groupObj }]);
+      setteams([{...entity.obj}, {...groupObj}]);
     }
     if (settingObject?.game_fee?.fee || settingObject?.game_fee?.fee >= 0) {
       getFeeDetail();
@@ -82,9 +81,10 @@ export default function ChallengeScreen({ navigation, route }) {
   const getFeeDetail = () => {
     const feeBody = {};
     feeBody.payment_method_type = 'card';
-    feeBody.currency_type = settingObject?.game_fee?.currency_type?.toLowerCase();
+    feeBody.currency_type =
+      settingObject?.game_fee?.currency_type?.toLowerCase();
     feeBody.total_game_fee = Number(settingObject?.game_fee?.fee?.toString());
-   // setloading(true);
+    // setloading(true);
     getFeesEstimation(feeBody, authContext)
       .then((response) => {
         console.log('Body estimate fee:=>', response.payload);
@@ -105,12 +105,12 @@ export default function ChallengeScreen({ navigation, route }) {
       });
   };
 
-  const renderPeriod = ({ item, index }) => (
+  const renderPeriod = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -121,9 +121,9 @@ export default function ChallengeScreen({ navigation, route }) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 2)} Period`}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.period}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -136,12 +136,12 @@ export default function ChallengeScreen({ navigation, route }) {
     </>
   );
 
-  const renderOverTime = ({ item, index }) => (
+  const renderOverTime = ({item, index}) => (
     <>
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={'Interval'}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.interval}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -152,9 +152,9 @@ export default function ChallengeScreen({ navigation, route }) {
         staticValueText={'min.'}
       />
       <TCChallengeTitle
-        containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{marginLeft: 25, marginTop: 5, marginBottom: 5}}
         title={`${getNumberSuffix(index + 1)} Over time`}
-        titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+        titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
         value={item.overTime}
         valueStyle={{
           fontFamily: fonts.RBold,
@@ -188,7 +188,7 @@ export default function ChallengeScreen({ navigation, route }) {
       <TCFormProgress totalSteps={4} curruentStep={1} />
       <ActivityLoader visible={loading} />
       <View>
-        <View style={[styles.teamContainer, { marginTop: 15 }]}>
+        <View style={[styles.teamContainer, {marginTop: 15}]}>
           <View
             style={{
               flexDirection: 'row',
@@ -197,10 +197,10 @@ export default function ChallengeScreen({ navigation, route }) {
               source={
                 sportType !== 'single'
                   ? groupObj?.thumbnail
-                    ? { uri: groupObj?.thumbnail }
+                    ? {uri: groupObj?.thumbnail}
                     : images.teamPlaceholder
                   : groupObj?.thumbnail
-                  ? { uri: groupObj?.thumbnail }
+                  ? {uri: groupObj?.thumbnail}
                   : images.profilePlaceHolder
               }
               style={styles.imageView}
@@ -274,7 +274,7 @@ export default function ChallengeScreen({ navigation, route }) {
                 <Text style={styles.dateTimeText}> </Text>
                 <Text style={styles.timeZoneText}>
                   Time zone{' '}
-                  <Text style={{ fontFamily: fonts.RRegular }}>Vancouver</Text>
+                  <Text style={{fontFamily: fonts.RRegular}}>Vancouver</Text>
                 </Text>
               </View>
             </View>
@@ -327,12 +327,12 @@ export default function ChallengeScreen({ navigation, route }) {
               source={
                 settingObject?.home_away === 'Home'
                   ? groupObj?.thumbnail
-                    ? { uri: groupObj?.thumbnail }
+                    ? {uri: groupObj?.thumbnail}
                     : groupObj?.full_name
                     ? images.profilePlaceHolder
                     : images.teamPlaceholder
                   : authContext?.entity?.obj?.thumbnail
-                  ? { uri: authContext?.entity?.obj?.thumbnail }
+                  ? {uri: authContext?.entity?.obj?.thumbnail}
                   : authContext?.entity?.obj?.full_name
                   ? images.profilePlaceHolder
                   : images.teamPlaceholder
@@ -344,8 +344,8 @@ export default function ChallengeScreen({ navigation, route }) {
               <Text style={styles.teamNameLable}>
                 {settingObject?.home_away === 'Home'
                   ? groupObj?.full_name ?? groupObj?.group_name
-                  : authContext?.entity?.obj?.full_name
-                    ?? authContext?.entity?.obj?.group_name}
+                  : authContext?.entity?.obj?.full_name ??
+                    authContext?.entity?.obj?.group_name}
               </Text>
               <Text style={styles.locationLable}>
                 {settingObject?.home_away === 'Home'
@@ -363,12 +363,12 @@ export default function ChallengeScreen({ navigation, route }) {
               source={
                 settingObject?.home_away === 'Home'
                   ? authContext?.entity?.obj?.thumbnail
-                    ? { uri: authContext?.entity?.obj?.thumbnail }
+                    ? {uri: authContext?.entity?.obj?.thumbnail}
                     : authContext?.entity?.obj?.full_name
                     ? images.profilePlaceHolder
                     : images.teamPlaceholder
                   : groupObj?.thumbnail
-                  ? { uri: groupObj?.thumbnail }
+                  ? {uri: groupObj?.thumbnail}
                   : groupObj?.full_name
                   ? images.profilePlaceHolder
                   : images.teamPlaceholder
@@ -379,8 +379,8 @@ export default function ChallengeScreen({ navigation, route }) {
             <View style={styles.teamTextContainer}>
               <Text style={styles.teamNameLable}>
                 {settingObject?.home_away === 'Home'
-                  ? authContext?.entity?.obj?.full_name
-                    ?? authContext?.entity?.obj?.group_name
+                  ? authContext?.entity?.obj?.full_name ??
+                    authContext?.entity?.obj?.group_name
                   : groupObj?.full_name ?? groupObj?.group_name}
               </Text>
               <Text style={styles.locationLable}>
@@ -394,40 +394,55 @@ export default function ChallengeScreen({ navigation, route }) {
         <TCThickDivider marginTop={20} />
       </View>
       <View>
-        <TCChallengeTitle title={'Game Duration'} />
-        <TCChallengeTitle
-          containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
-          title={'1st period'}
-          titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
-          value={settingObject?.game_duration?.first_period}
-          valueStyle={{
-            fontFamily: fonts.RBold,
-            fontSize: 16,
-            color: colors.greenColorCard,
-            marginRight: 2,
-          }}
-          staticValueText={'min.'}
-        />
+        {sportName.toLowerCase() === 'tennis' ? (
+          <View>
+            <TCGameDetailRules
+              gameRules={settingObject?.score_rules}
+              isMore = {isMore}
+              onPressMoreLess={()=>{
+                setIsMore(!isMore)
+              }}
+            />
+            <TCThickDivider marginTop={20} />
+          </View>
+        ) : (
+          <View>
+            <TCChallengeTitle title={'Game Duration'} />
+            <TCChallengeTitle
+              containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
+              title={'1st period'}
+              titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
+              value={settingObject?.game_duration?.first_period}
+              valueStyle={{
+                fontFamily: fonts.RBold,
+                fontSize: 16,
+                color: colors.greenColorCard,
+                marginRight: 2,
+              }}
+              staticValueText={'min.'}
+            />
 
-        <FlatList
-          data={settingObject?.game_duration?.period}
-          renderItem={renderPeriod}
-          keyExtractor={(item, index) => index.toString()}
-          style={{ marginBottom: 15 }}
-        />
-        {settingObject?.game_duration?.period?.length > 0 && (
-          <Text style={styles.normalTextStyle}>
-            {strings.gameDurationTitle2}
-          </Text>
+            <FlatList
+              data={settingObject?.game_duration?.period}
+              renderItem={renderPeriod}
+              keyExtractor={(item, index) => index.toString()}
+              style={{marginBottom: 15}}
+            />
+            {settingObject?.game_duration?.period?.length > 0 && (
+              <Text style={styles.normalTextStyle}>
+                {strings.gameDurationTitle2}
+              </Text>
+            )}
+
+            <FlatList
+              data={settingObject?.game_duration?.overtime}
+              renderItem={renderOverTime}
+              keyExtractor={(item, index) => index.toString()}
+              style={{marginBottom: 15}}
+            />
+            <TCThickDivider marginTop={20} />
+          </View>
         )}
-
-        <FlatList
-          data={settingObject?.game_duration?.overtime}
-          renderItem={renderOverTime}
-          keyExtractor={(item, index) => index.toString()}
-          style={{ marginBottom: 15 }}
-        />
-        <TCThickDivider marginTop={20} />
 
         <View>
           <TCChallengeTitle
@@ -477,7 +492,7 @@ export default function ChallengeScreen({ navigation, route }) {
         <TCChallengeTitle title={'Game Rules'} />
         <Text style={styles.rulesTitle}>General Rules</Text>
         <Text style={styles.rulesDetail}>{settingObject?.general_rules}</Text>
-        <View style={{ marginBottom: 10 }} />
+        <View style={{marginBottom: 10}} />
         <Text style={styles.rulesTitle}>Special Rules</Text>
         <Text style={styles.rulesDetail}>{settingObject?.special_rules}</Text>
         <TCThickDivider marginTop={20} />
@@ -525,7 +540,7 @@ export default function ChallengeScreen({ navigation, route }) {
 
         {!totalZero && (
           <View>
-            <TCLabel title={'Payment'} style={{ marginBottom: 15 }} />
+            <TCLabel title={'Payment'} style={{marginBottom: 15}} />
             <GameFeeCard
               feeObject={feeObj}
               currency={settingObject?.game_fee?.currency_type}
@@ -534,55 +549,62 @@ export default function ChallengeScreen({ navigation, route }) {
             <TCThickDivider marginTop={20} />
           </View>
         )}
-
       </View>
 
       <TCGradientButton
         isDisabled={
-          !route?.params?.startTime
-          || !route?.params?.endTime
+          !route?.params?.startTime ||
+          !route?.params?.endTime ||
           // || settingObject?.venue?.length !== 1
-          || !venue
+          !venue
         }
         title={strings.nextTitle}
         onPress={() => {
-           if (new Date(route?.params?.startTime).getTime() < new Date().getTime()) {
+          if (
+            new Date(route?.params?.startTime).getTime() < new Date().getTime()
+          ) {
             Alert.alert(
               strings.alertmessagetitle,
               'Please choose future time for challenge.',
             );
-        } else {
-          entity = authContext.entity;
-          const body = {
-            ...settingObject,
-            ...feeObj,
-            venue,
-            sport:sportName,
-            sport_type: sportType,
-            start_datetime: route?.params?.startTime / 1000,
-            end_datetime: route?.params?.endTime / 1000,
-            challenger: sportType === 'single' ? teams?.[0]?.user_id : teams?.[0]?.group_id,
-            challengee: sportType === 'single' ? teams?.[1]?.user_id : teams?.[1]?.group_id,
-            home_team:
-              settingObject?.home_away === 'Home' ? groupObj : entity?.obj,
-            away_team:
-              settingObject?.home_away === 'Home' ? entity?.obj : groupObj,
-            user_challenge: sportType === 'single',
-          };
+          } else {
+            entity = authContext.entity;
+            const body = {
+              ...settingObject,
+              ...feeObj,
+              venue,
+              sport: sportName,
+              sport_type: sportType,
+              start_datetime: route?.params?.startTime / 1000,
+              end_datetime: route?.params?.endTime / 1000,
+              challenger:
+                sportType === 'single'
+                  ? teams?.[0]?.user_id
+                  : teams?.[0]?.group_id,
+              challengee:
+                sportType === 'single'
+                  ? teams?.[1]?.user_id
+                  : teams?.[1]?.group_id,
+              home_team:
+                settingObject?.home_away === 'Home' ? groupObj : entity?.obj,
+              away_team:
+                settingObject?.home_away === 'Home' ? entity?.obj : groupObj,
+              user_challenge: sportType === 'single',
+            };
 
-          console.log('conti. challnege obj:=>',body);
-          navigation.push('RefereeAgreementScreen', {
-            challengeObj: body,
-            groupObj,
-            type: 'challenge',
-          });
+            console.log('conti. challnege obj:=>', body);
+            navigation.push('RefereeAgreementScreen', {
+              challengeObj: body,
+              groupObj,
+              type: 'challenge',
+            });
 
-          // navigation.push('ChallengePaymentScreen', {
-          //   challengeObj: body,
-          //   groupObj,
-          //   type: 'challenge',
-          // });
-        }
+            // navigation.push('ChallengePaymentScreen', {
+            //   challengeObj: body,
+            //   groupObj,
+            //   type: 'challenge',
+            // });
+          }
 
           // navigation.push('ChallengePreviewScreen');
           // sendChallenge()
@@ -626,7 +648,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 20,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.4,
     shadowRadius: 1,
   },
@@ -694,7 +716,7 @@ const styles = StyleSheet.create({
   },
   shadowView: {
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,

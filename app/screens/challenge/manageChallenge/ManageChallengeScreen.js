@@ -75,7 +75,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
     { key: 'Game Fee', id: 3 },
     { key: 'Refund Policy', id: 4 },
     { key: 'Home & Away', id: 5 },
-    { key: 'Game Duration', id: 6 },
+    { key: (sportName === 'tennis' && sportType === 'single') ?  'Sets, Points & Duration' : 'Game Duration', id: 6 },
     { key: 'Venue', id: 7 },
     { key: 'Game Rules', id: 8 },
     { key: 'Referees', id: 9 },
@@ -174,7 +174,22 @@ export default function ManageChallengeScreen({ navigation, route }) {
           sportType,
         });
       }
-    } else if (opetions === 'Venue') {
+    } else if (opetions === 'Sets, Points & Duration') {
+      if (settingObject) {
+        navigation.navigate('GameTennisDuration', {
+          settingObj: settingObject,
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+          sportType,
+        });
+      } else {
+        navigation.navigate('GameTennisDuration', {
+          comeFrom: 'ManageChallengeScreen',
+          sportName,
+          sportType,
+        });
+      }
+    }else if (opetions === 'Venue') {
       if (settingObject) {
         navigation.navigate('Venue', {
           settingObj: settingObject,
@@ -266,6 +281,11 @@ export default function ManageChallengeScreen({ navigation, route }) {
     if (item.key === 'Game Duration') {
       if (settingObject?.game_duration) {
         return `${settingObject?.game_duration?.totalHours}h ${settingObject?.game_duration?.totalMinutes}m`;
+      }
+    }
+    if (item.key === 'Sets, Points & Duration') {
+      if (settingObject?.score_rules) {
+        return `${settingObject?.score_rules?.match_duration}`;
       }
     }
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import React, {useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
 import moment from 'moment';
@@ -9,12 +10,16 @@ import strings from '../../Constants/String';
 import BlockAvailableTabView from './BlockAvailableTabView';
 import DateTimePickerView from './DateTimePickerModal';
 import EventTimeSelectItem from './EventTimeSelectItem';
+import EventMonthlySelection from './EventMonthlySelection';
 
 function ChallengeAvailabilityItem({
   data,
   onDeletePress,
   changeAvailablilityItem,
 }) {
+  const [selectWeekMonth, setSelectWeekMonth] = useState('');
+  const [untilDateVisible, setUntilDateVisible] = useState(false);
+
   const [toggle, setToggle] = useState(data.allDay);
   const [is_Blocked, setIsBlocked] = useState(data.isBlock);
   const [eventStartDateTime, setEventStartdateTime] = useState(new Date());
@@ -22,26 +27,27 @@ function ChallengeAvailabilityItem({
     new Date().setMinutes(new Date().getMinutes() + 5),
   );
 
+  const [eventUntilDateTime, setEventUntildateTime] =
+    useState(eventEndDateTime);
+
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
 
   const handleStartDatePress = (date) => {
-    console.log('Start date:=>', date);
-    let dateValue = new Date();
-    dateValue = `${moment(date).format('ddd MMM DD YYYY')} 00:00:00 AM`;
-    setEventStartdateTime(toggle ? dateValue : new Date(date));
-
-    const d1 = new Date(date);
-    const d2 = d1;
-    d2.setMinutes(d1.getMinutes() + 5);
-
-    const obj = {
-      ...data,
-      startDateTime: new Date(date),
-      endDateTime: toggle ? new Date(date).setHours(23, 59, 59, 0) : d2,
-    };
-    changeAvailablilityItem(obj);
-    setEventEnddateTime(toggle ? new Date(date).setHours(23, 59, 59, 0) : d2);
+    console.log('Date::=>', new Date(new Date(date).getTime()));
+    setEventStartdateTime(
+      toggle ? new Date(date).setHours(0, 0, 0, 0) : new Date(date),
+    );
+    setEventEnddateTime(
+      toggle
+        ? new Date(date).setHours(23, 59, 59, 0)
+        : new Date(moment(date).add(5, 'm').toDate()),
+    );
+    setEventUntildateTime(
+      toggle
+        ? new Date(date).setHours(23, 59, 59, 0)
+        : new Date(moment(date).add(5, 'm').toDate()),
+    );
     setStartDateVisible(!startDateVisible);
   };
   const handleCancelPress = () => {
@@ -63,6 +69,41 @@ function ChallengeAvailabilityItem({
     changeAvailablilityItem(obj);
 
     setEndDateVisible(!endDateVisible);
+  };
+
+  const ordinal_suffix_of = (i) => {
+    const j = i % 10,
+      k = i % 100;
+    if (j === 1 && k !== 11) {
+      return `${i}st`;
+    }
+    if (j === 2 && k !== 12) {
+      return `${i}nd`;
+    }
+    if (j === 3 && k !== 13) {
+      return `${i}rd`;
+    }
+    return `${i}th`;
+  };
+
+  const countNumberOfWeekFromDay = () => {
+    const date = new Date();
+    const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    const endDate = date;
+    const givenDay = new Date().getDay();
+    let numberOfDates = 0;
+    while (startDate < endDate) {
+      if (startDate.getDay() === givenDay) {
+        numberOfDates++;
+      }
+      startDate.setDate(startDate.getDate() + 1);
+    }
+    return ordinal_suffix_of(numberOfDates);
+  };
+
+  const getTodayDay = () => {
+    const dt = moment(new Date(), 'YYYY-MM-DD HH:mm:ss');
+    return dt.format('dddd');
   };
 
   return (
@@ -122,6 +163,47 @@ function ChallengeAvailabilityItem({
         containerStyle={{marginBottom: 8}}
         onDatePress={() => setEndDateVisible(!endDateVisible)}
       />
+
+      <EventMonthlySelection
+        title={strings.repeat}
+        dataSource={[
+          {label: 'Daily', value: 'Daily'},
+          {label: 'Weekly', value: 'Weekly'},
+          {
+            label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+            value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+          },
+          {
+            label: `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`,
+            value: `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`,
+          },
+          {label: 'Yearly', value: 'Yearly'},
+        ]}
+        placeholder={'Does not repeat'}
+        value={selectWeekMonth}
+        onValueChange={(value) => {
+          console.log('LLLLLLLL',value);
+          setSelectWeekMonth(value);
+        }}
+      />
+      {selectWeekMonth !== '' && (
+        <EventTimeSelectItem
+          title={strings.until}
+          toggle={!toggle}
+          date={
+            eventUntilDateTime
+              ? moment(eventUntilDateTime).format('ll')
+              : moment(new Date()).format('ll')
+          }
+          time={
+            eventUntilDateTime
+              ? moment(eventUntilDateTime).format('h:mm a')
+              : moment(new Date()).format('h:mm a')
+          }
+          containerStyle={{marginBottom: 12}}
+          onDatePress={() => setUntilDateVisible(!untilDateVisible)}
+        />
+      )}
 
       <BlockAvailableTabView
         blocked={is_Blocked}

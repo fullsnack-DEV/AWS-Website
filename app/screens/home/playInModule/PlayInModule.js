@@ -334,7 +334,7 @@ const PlayInModule = ({
       console.log('both123:=>');
       setChallengeType('both');
     } else if (
-      oppSetting?.game_duration &&
+      (oppSetting?.game_duration || oppSetting?.score_rules) &&
       oppSetting?.availibility &&
       oppSetting?.availibility === 'On' &&
       (mySetting?.availibility === undefined ||
@@ -356,7 +356,7 @@ const PlayInModule = ({
       mySetting !== undefined &&
       (oppSetting?.availibility === undefined ||
         oppSetting?.availibility === 'Off') &&
-      mySetting?.game_duration &&
+        (mySetting?.game_duration || mySetting?.score_rules) &&
       (mySetting?.availibility !== undefined ||
         mySetting?.availibility === 'On') &&
       mySetting?.special_rules !== undefined &&
@@ -525,7 +525,7 @@ const PlayInModule = ({
 
                 if (obj?.availibility === 'On') {
                   if (
-                    obj?.game_duration &&
+                    (obj?.game_duration || obj?.score_rules) &&
                     obj?.availibility &&
                     obj?.special_rules !== undefined &&
                     obj?.general_rules !== undefined &&
@@ -578,7 +578,7 @@ const PlayInModule = ({
                 console.log('challenge setting:::::=>', obj);
                 if (obj?.availibility === 'On') {
                   if (
-                    obj?.game_duration &&
+                    (obj?.game_duration || obj?.score_rules) &&
                     obj?.availibility &&
                     obj?.special_rules !== undefined &&
                     obj?.general_rules !== undefined &&

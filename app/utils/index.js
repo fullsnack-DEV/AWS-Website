@@ -1090,3 +1090,15 @@ export const validatedName = (name) => {
   }
   return false;
 };
+
+
+// Input format 2h 30m
+export const getHoursMinutesFromString = (timeString) =>{
+
+  const arr = timeString.split(' ')
+  return {
+    hour: arr[0].slice(0, -1),
+    minute:  arr[1].slice(0, -1)
+  }
+
+}

@@ -24,11 +24,12 @@ export default function ScorekeeperInviteAgreementScreen({ navigation, route }) 
 
 const sendChallengeInvitation = () => {
     console.log('Challenge Object:=>', challengeObj);
+    
 
     setloading(true);
     createChallenge(challengeObj, authContext)
       .then((response) => {
-        console.log(' challenge response:=>', response.payload);
+        console.log(' challenge response1212121212:=>', response.payload);
         navigation.navigate('InviteToChallengeSentScreen', {
           groupObj,
         });

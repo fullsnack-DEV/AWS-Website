@@ -695,6 +695,7 @@ const strings = {
   hiringPlayerTitle: 'Recruiting Members',
   lookingForTeamTitle: 'Looking For Team/Club',
   refereesTitle: 'Referees',
+  chooseSetting: 'Choose Setting',
   scorekeeperTitle: 'Scorekeepers',
   searchTitle: 'Search by city, state or country',
   challengeeSecureText: 'The challengee secures the match place',

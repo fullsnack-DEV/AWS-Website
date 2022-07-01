@@ -128,7 +128,15 @@ export default function CreateEventScreen({navigation, route}) {
   const [backgroundThumbnail, setBackgroundThumbnail] = useState();
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
 
-  const whoCanDataSource = [
+  const whoCanDataSourceUser = [
+    {text: 'Everyone', value: 0},
+    {text: 'Only me', value: 1},
+    {
+      text: 'Followers',
+      value: 3,
+    },
+  ];
+  const whoCanDataSourceGroup = [
     {text: 'Everyone', value: 0},
     {text: 'Only me', value: 1},
     {
@@ -1172,6 +1180,7 @@ export default function CreateEventScreen({navigation, route}) {
                 {strings.whereEventPosted}
               </Text>
               <FlatList
+                scrollEnabled={false}
                 data={eventPostedList}
                 renderItem={renderEventPostedOpetions}
                 style={{marginTop: 15}}
@@ -1377,7 +1386,7 @@ export default function CreateEventScreen({navigation, route}) {
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
+              onPress={() => setVisibleWhoModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -1388,7 +1397,7 @@ export default function CreateEventScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Sports
+              Privacy Setting
             </Text>
 
             <Text
@@ -1404,7 +1413,7 @@ export default function CreateEventScreen({navigation, route}) {
           <FlatList
             ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
             showsVerticalScrollIndicator={false}
-            data={whoCanDataSource}
+            data={['user','player'].includes(authContext.entity.role) ? whoCanDataSourceUser : whoCanDataSourceGroup}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderWhoCan}
           />
@@ -1473,7 +1482,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    marginTop: 5,
+   
   },
   checkboxImg: {
     width: wp('5.5%'),

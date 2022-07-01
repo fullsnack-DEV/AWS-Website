@@ -1392,10 +1392,7 @@ export default function EditEventScreen({navigation, route}) {
   };
 
   const checkValidation = useCallback(() => {
-    if (!backgroundThumbnail) {
-      Alert.alert(strings.appName, 'Please choose event featured image.');
-      return false;
-    }
+
     if (eventTitle === '') {
       Alert.alert(strings.appName, 'Please Enter Event Title.');
       return false;
