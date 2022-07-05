@@ -908,6 +908,7 @@ function NotificationNavigator() {
         },
       }}
     />
+      
     </Stack.Navigator>
   );
 }

@@ -282,7 +282,7 @@ const PlayInModule = ({
                     <Text style={styles.challengeButtonTitle}>
                       {strings.challenge}
                       <Text>{` $${oppSetting?.game_fee?.fee} ${
-                        currentUserData?.currency_type ?? 'CAD'
+                        currentUserData?.currency_type ?? strings.defaultCurrency
                       }${' / match'}`}</Text>
                     </Text>
                   ) : (

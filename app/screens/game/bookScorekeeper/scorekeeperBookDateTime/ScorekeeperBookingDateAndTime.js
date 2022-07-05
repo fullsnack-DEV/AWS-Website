@@ -79,7 +79,7 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
           .then((response) => {
             console.log('Payment res', response.payload);
             body.hourly_game_fee = response?.payload?.hourly_game_fee ?? 0;
-            body.currency_type = response?.payload?.currency_type ?? 'CAD';
+            body.currency_type = response?.payload?.currency_type ?? strings.defaultCurrency;
             body.total_payout = response?.payload?.total_payout ?? 0;
             body.total_service_fee1 =
               response?.payload?.total_service_fee1 ?? 0;
@@ -388,7 +388,7 @@ const ScorekeeperBookingDateAndTime = ({navigation, route}) => {
             title={'Refund Policy'}
             value={route?.params?.settingObj?.refund_policy}
             tooltipText={
-            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
             }
             tooltipHeight={Utility.heightPercentageToDP('18%')}
             tooltipWidth={Utility.widthPercentageToDP('50%')}

@@ -9,11 +9,11 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 function EventTextInputItem({
-  title, onChangeText, value, placeholder, multiline,
+  title, onChangeText, value, placeholder, multiline,isRequired = false
 }) {
   return (
     <View style={styles.containerStyle}>
-      <Text style={styles.headerTextStyle}>{title}</Text>
+      <Text style={styles.headerTextStyle}>{title} {isRequired && <Text style={{color: colors.darkThemeColor}}> *</Text>} </Text>
       <TextInput
         placeholder={placeholder}
         style={styles.textInputStyle}

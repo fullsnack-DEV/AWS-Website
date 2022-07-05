@@ -21,6 +21,7 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
 import images from '../../../Constants/ImagePath';
 import PaymentLogs from '../../../components/invoice/PaymentLogs';
+import strings from '../../../Constants/String';
 
 export default function InvoiceDetailScreen({ navigation }) {
   // const [loading, setloading] = useState(false);
@@ -119,7 +120,7 @@ export default function InvoiceDetailScreen({ navigation }) {
 
       <InvoiceAmount
         status={'Open'}
-        currencyType={'CAD'}
+        currencyType={strings.defaultCurrency}
         totalAmount={'99.00'}
         paidAmount={'85.00'}
         openAmount={'55.00'}

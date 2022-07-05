@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable react/jsx-indent */
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unsafe-optional-chaining */
@@ -79,6 +80,7 @@ export default function WritePostScreen({navigation, route}) {
     text: 'Everyone',
     value: 0,
   });
+
   const [onPressDoneButton] = useState(
     route?.params?.onPressDone ? () => route?.params?.onPressDone : () => {},
   );
@@ -202,8 +204,6 @@ export default function WritePostScreen({navigation, route}) {
     tagsOfEntity,
   ]);
 
-
-
   useEffect(() => {
     if (searchText[currentTextInputIndex - 1] === '@') {
       setLastTagStartIndex(currentTextInputIndex - 1);
@@ -271,6 +271,10 @@ export default function WritePostScreen({navigation, route}) {
         });
         setLetModalVisible(false);
         setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
+        console.log('[...tagsOfEntity, ...tagsArray]', [
+          ...tagsOfEntity,
+          ...tagsArray,
+        ]);
         const modifiedSearch = searchText;
         const output = [
           modifiedSearch.slice(0, currentTextInputIndex - 1),
@@ -280,7 +284,7 @@ export default function WritePostScreen({navigation, route}) {
         setSearchText(output);
       }
     }
-  }, [route?.params]);
+  }, [currentTextInputIndex, route.params, searchText, tagsOfEntity]);
 
   useEffect(() => {
     console.log('searchText', searchText);
@@ -446,6 +450,8 @@ export default function WritePostScreen({navigation, route}) {
           entity_type: jsonData?.entity_type,
         });
       }
+      console.log('tagsOfEntitytagsOfEntity', tagsOfEntity);
+      console.log('tagsArraytagsArray', tagsArray);
       setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
       setLetModalVisible(false);
       textInputRef.current.focus();
@@ -528,10 +534,22 @@ export default function WritePostScreen({navigation, route}) {
     setCurrentTextInputIndex(e?.nativeEvent?.selection?.end);
   }, []);
 
-  const renderModalTagEntity = useMemo(
-    () =>
-      letModalVisible &&
-      [...users, ...groups]?.length > 0 && (
+  const renderModalTagEntity = useMemo(() => {
+    const arr = [...users, ...groups].map((obj) => {
+      if (
+        tagsOfEntity.filter(
+          (temp) =>
+            ![temp?.group_id, temp?.user_id, temp?.entity_id].includes(
+              obj?.group_id || obj?.user_id || obj?.entity_id,
+            ),
+        )
+      ) {
+        return obj;
+      }
+    });
+    console.log('arrarr', arr);
+    if (letModalVisible && arr?.length > 0) {
+      return (
         <View
           style={[
             styles.userListContainer,
@@ -539,7 +557,7 @@ export default function WritePostScreen({navigation, route}) {
           ]}>
           <FlatList
             showsVerticalScrollIndicator={false}
-            data={[...users, ...groups]}
+            data={arr}
             keyboardShouldPersistTaps={'always'}
             style={{paddingTop: hp(1)}}
             ListFooterComponent={() => <View style={{height: hp(6)}} />}
@@ -547,15 +565,16 @@ export default function WritePostScreen({navigation, route}) {
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
-      ),
-    [
-      groups,
-      letModalVisible,
-      renderTagUsersAndGroups,
-      searchFieldHeight,
-      users,
-    ],
-  );
+      );
+    }
+  }, [
+    groups,
+    letModalVisible,
+    renderTagUsersAndGroups,
+    searchFieldHeight,
+    tagsOfEntity,
+    users,
+  ]);
 
   const addStr = (str, index, stringToAdd) =>
     str.substring(0, index) + stringToAdd + str.substring(index, str.length);

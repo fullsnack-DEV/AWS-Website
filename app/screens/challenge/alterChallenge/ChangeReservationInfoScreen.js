@@ -113,7 +113,7 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
               referee.{'\n'}
               {'\n'}• You can cancel the referee reservation. The referee fee
               will be refunded according to the cancellation policy.{'\n'}
-              {'\n'}• The game fee will be refunded according to the
+              {'\n'}• The match fee will be refunded according to the
               cancellation policy.{'\n'}
               {'\n'}• The cancellation stats will be displayed on your home or
               stats, which shows the number or percentage of the cancellation

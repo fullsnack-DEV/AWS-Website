@@ -1038,7 +1038,7 @@ const NewsFeedNavigator = () => (
       name="GameFee"
       component={GameFee}
       options={{
-        title: 'Game Fee',
+        title: 'Match Fee',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1319,6 +1319,7 @@ const NewsFeedNavigator = () => (
         headerShown: false,
       }}
     />
+    
   </Stack.Navigator>
 );
 

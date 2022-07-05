@@ -813,7 +813,7 @@ export default function EditChallenge({navigation, route}) {
             <TCThickDivider />
 
             <TCChallengeTitle
-              title={'Game Fee'}
+              title={'Match Fee'}
               value={challengeObj?.game_fee?.fee}
               staticValueText={`${challengeObj?.game_fee?.currency_type} /Game`}
               valueStyle={{
@@ -1060,7 +1060,7 @@ export default function EditChallenge({navigation, route}) {
             title={'Refund Policy'}
             value={challengeObj?.refund_policy}
             tooltipText={
-            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
             }
             tooltipHeight={hp('18%')}
             tooltipWidth={wp('50%')}

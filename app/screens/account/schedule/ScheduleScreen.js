@@ -69,7 +69,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
   const refContainer = useRef();
-  const sortFilterData = ['Organizer', 'Sport', 'Reservation Type'];
+  const sortFilterData = ['Organizer', 'Sport', 'Activity Type'];
   const sortFilterDataClub = ['Organizer', 'Sport'];
 
   const timeFilterData = ['Future', 'Past'];
@@ -454,14 +454,14 @@ export default function ScheduleScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      console.log('dfsdfsdfsadfsadfsafsdf called');
+      console.log('get event list called');
       getEventsAndSlotsList();
     }
   }, [isFocused]);
 
-  const onThreeDotPress = useCallback(() => {
-    actionSheet.current.show();
-  }, []);
+  // const onThreeDotPress = useCallback(() => {
+  //   actionSheet.current.show();
+  // }, []);
 
   const onAddPlusPress = useCallback(() => {
     plusActionSheet.current.show();
@@ -552,7 +552,7 @@ export default function ScheduleScreen({navigation, route}) {
 
   const getEventsAndSlotsList = useCallback(() => {
     setloading(true);
-
+console.log('1111--');
     const eventTimeTableData = [];
     Utility.getCalendar(
       authContext?.entity?.uid,
@@ -560,6 +560,8 @@ export default function ScheduleScreen({navigation, route}) {
     )
       // blockedSlots(entityRole, uid, authContext)
       .then((response) => {
+        console.log('2222--');
+
         response = (response || []).filter((obj) => {
           if (obj.cal_type === 'blocked') {
             return obj;
@@ -577,6 +579,7 @@ export default function ScheduleScreen({navigation, route}) {
             }
           }
         });
+        console.log('3333--');
 
         response.forEach((item) => {
           if (item?.rrule) {
@@ -586,6 +589,7 @@ export default function ScheduleScreen({navigation, route}) {
             eventTimeTableData.push(item);
           }
         });
+        console.log('4444--');
 
         onDayPress(new Date());
         setAllSlots(eventTimeTableData);
@@ -601,6 +605,8 @@ export default function ScheduleScreen({navigation, route}) {
               },
             },
           };
+          console.log('5555--');
+
           getGameIndex(gameList).then((games) => {
             const listObj = response.map((obj) => {
               if (obj.game_id === obj.challenge_id) {
@@ -611,6 +617,7 @@ export default function ScheduleScreen({navigation, route}) {
             const pendingChallenge = listObj.filter((obj) => {
               return obj !== undefined;
             });
+            console.log('6666--');
 
             Utility.getGamesList([
               ...games,
@@ -948,15 +955,15 @@ export default function ScheduleScreen({navigation, route}) {
               <TouchableOpacity onPress={onAddPlusPress}>
                 <Image
                   source={images.addEvent}
-                  style={[styles.headerRightImg, {marginRight: 10}]}
+                  style={styles.headerRightImg}
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={onThreeDotPress}>
+              {/* <TouchableOpacity onPress={onThreeDotPress}>
                 <Image
                   source={images.threeDotIcon}
                   style={styles.headerRight3DotImg}
                 />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           }
         />
@@ -1593,16 +1600,17 @@ export default function ScheduleScreen({navigation, route}) {
       </View>
       <ActionSheet
         ref={plusActionSheet}
-        options={['Set challenge availibility', 'Create an event', 'Cancel']}
+        options={['Create Event','Edit Challenge Availibility', 'Cancel']}
         cancelButtonIndex={2}
         // destructiveButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
-            navigation.navigate('EditChallengeAvailability');
-          } else if (index === 1) {
+            
             navigation.navigate('CreateEventScreen', {
               comeName: 'ScheduleScreen',
             });
+          } else if (index === 1) {
+            navigation.navigate('EditChallengeAvailability');
           }
         }}
       />
@@ -1664,12 +1672,12 @@ const styles = StyleSheet.create({
     width: 25,
     tintColor: colors.lightBlackColor,
   },
-  headerRight3DotImg: {
-    height: 18,
-    resizeMode: 'contain',
-    width: 20,
-    tintColor: colors.lightBlackColor,
-  },
+  // headerRight3DotImg: {
+  //   height: 18,
+  //   resizeMode: 'contain',
+  //   width: 20,
+  //   tintColor: colors.lightBlackColor,
+  // },
   eventTitleTextStyle: {
     fontSize: 20,
     fontFamily: fonts.RBold,

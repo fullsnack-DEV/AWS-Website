@@ -101,7 +101,7 @@ export default function CanceledInvoicesScreen({ navigation }) {
 
       <View style={{ marginTop: 15 }}>
         <InvoiceRefundAmount
-        currencyType={'CAD'}
+        currencyType={strings.defaultCurrency}
         totalAmount={totalAmount ?? '00.00'}
         notRefundedAmount={notRefundAmount ?? '00.00'}
         refundedAmount={refundAmount ?? '00.00'}

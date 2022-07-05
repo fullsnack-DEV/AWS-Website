@@ -24,7 +24,6 @@ export default function ScorekeeperInviteAgreementScreen({ navigation, route }) 
 
 const sendChallengeInvitation = () => {
     console.log('Challenge Object:=>', challengeObj);
-    
 
     setloading(true);
     createChallenge(challengeObj, authContext)

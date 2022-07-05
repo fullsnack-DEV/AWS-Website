@@ -1236,7 +1236,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
               title={'Refund Policy'}
               value={challengeData?.refund_policy}
               tooltipText={
-              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
               }
               tooltipHeight={heightPercentageToDP('18%')}
               tooltipWidth={widthPercentageToDP('50%')}

@@ -13,10 +13,11 @@ function EventItemRender({
   children,
   containerStyle,
   headerTextStyle,
+  isRequired= false,
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <Text style={[styles.headerTextStyle, headerTextStyle]}>{title}</Text>
+      <Text style={[styles.headerTextStyle, headerTextStyle]}>{title} {isRequired && <Text style={{color: colors.darkThemeColor}}> *</Text>}</Text>
       {children}
     </View>
   );

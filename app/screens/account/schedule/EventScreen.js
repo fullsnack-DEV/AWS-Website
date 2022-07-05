@@ -18,12 +18,15 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
+import {useIsFocused} from '@react-navigation/native';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import ActionSheet from 'react-native-actionsheet';
 import FastImage from 'react-native-fast-image';
+
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -35,13 +38,14 @@ import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPh
 import AuthContext from '../../../auth/context';
 import TCThinDivider from '../../../components/TCThinDivider';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {attendEvent, deleteEvent} from '../../../api/Schedule';
+import {attendEvent, deleteEvent, getEventById} from '../../../api/Schedule';
 import TCProfileButton from '../../../components/TCProfileButton';
 import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCProfileView from '../../../components/TCProfileView';
 
 export default function EventScreen({navigation, route}) {
   const actionSheet = useRef();
+  const isFocused = useIsFocused();
   const editactionsheet = useRef();
   const authContext = useContext(AuthContext);
 
@@ -106,6 +110,28 @@ export default function EventScreen({navigation, route}) {
   }, [navigation]);
 
   useEffect(() => {
+    if (isFocused) {
+      setloading(true);
+      getEventById(
+        authContext.entity.role === 'user' ? 'users' : 'groups',
+        authContext.entity.uid || authContext.entity.auth.user_id,
+        eventData.cal_id,
+        authContext,
+      )
+        .then((response) => {
+          setloading(false);
+          setEventData(response.payload);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e);
+          }, 10);
+        });
+    }
+  }, [isFocused, route?.params?.comeFrom]);
+
+  useEffect(() => {
     // const getUserDetailQuery = {
 
     //   query: {
@@ -121,7 +147,7 @@ export default function EventScreen({navigation, route}) {
       from: 0,
       query: {
         terms: {
-          'user_id.keyword': [...goingData, eventData.created_by.uid],
+          'user_id.keyword': [...goingData, eventData?.created_by?.uid],
         },
       },
     };
@@ -131,12 +157,12 @@ export default function EventScreen({navigation, route}) {
       from: 0,
       query: {
         bool: {
-          must: [{match: {group_id: eventData.created_by.group_id}}],
+          must: [{match: {group_id: eventData?.created_by?.group_id}}],
         },
       },
     };
 
-    if (eventData.created_by.group_id) {
+    if (eventData?.created_by?.group_id) {
       getGroupIndex(getGroupDetailQuery)
         .then((res) => {
           setOrganizer(res[0]);
@@ -165,8 +191,8 @@ export default function EventScreen({navigation, route}) {
         });
     }
   }, [
-    eventData.created_by.group_id,
-    eventData.created_by.uid,
+    eventData?.created_by?.group_id,
+    eventData?.created_by?.uid,
     eventData.going,
   ]);
 

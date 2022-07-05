@@ -514,7 +514,7 @@ export default function GameTennisDuration({navigation, route}) {
               <Text style={styles.minText}>
                 A{' '}
                 <Text
-                  style={[styles.minText, {textDecorationLine: 'underline'}]}>
+                  style={styles.minText}>
                   {authContext.entity.role === 'team' ? 'team' : 'player'}
                 </Text>{' '}
                 must win a set by two games

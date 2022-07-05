@@ -335,7 +335,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       </View>
       {noData && searchText?.length > 0 && (
         <Text style={styles.noDataText}>
-          Please, enter at least 3 characters to see cities.
+          Please, enter at least 3 characters to see addresses.
         </Text>
       )}
       {noData && searchText?.length === 0 && nearByCity.length > 0 && (

@@ -12,6 +12,7 @@ import {
   Platform,
   FlatList,
   ScrollView,
+  Alert,
 } from 'react-native';
 import moment from 'moment';
 import {
@@ -51,6 +52,7 @@ export default function EditChallengeAvailability({navigation}) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
 
+  
   const deleteItemById = (id) => {
     const filteredData = challengeAvailable.filter((item) => item.id !== id);
     setChallengeAvailable(filteredData);
@@ -121,7 +123,24 @@ export default function EditChallengeAvailability({navigation}) {
 
       <Header
         leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => {
+            Alert.alert(
+              'Are you sure you want to quit to edit challenge availibility?',
+              '',
+              [
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                {
+                  text: 'Quit', 
+                  onPress: () => navigation.goBack()
+                },
+              ],
+              {cancelable: false},
+            );
+          }}>
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
         }
