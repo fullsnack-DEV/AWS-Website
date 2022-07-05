@@ -247,6 +247,12 @@ import InviteToEventScreen from '../screens/account/schedule/InviteToEventScreen
 import AcceptEventInviteScreen from '../screens/account/schedule/AcceptEventInviteScreen';
 import GoingListScreen from '../screens/account/schedule/GoingListScreen';
 import GameTennisDuration from '../screens/challenge/manageChallenge/settings/GameTennisDuration';
+import AccountInfoScreen from '../screens/account/userSettingPrivacy/AccountInfoScreen';
+import BasicInfoScreen from '../screens/account/userSettingPrivacy/BasicInfoScreen';
+import GroupMembersSettingScreen from '../screens/account/GroupSetting/GroupMembersSettingScreen';
+import RecruitingMemberScreen from '../screens/account/GroupSetting/RecruitingMemberScreen';
+import GroupsScreen from '../screens/account/GroupSetting/GroupsScreen';
+
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -613,7 +619,7 @@ const AccountNavigator = () => (
         },
       }}
     />
-    
+
     <Stack.Screen
       name="AcceptEventInviteScreen"
       component={AcceptEventInviteScreen}
@@ -1392,7 +1398,38 @@ const AccountNavigator = () => (
         },
       }}
     />
-
+    <Stack.Screen
+      name="AccountInfoScreen"
+      component={AccountInfoScreen}
+      options={{
+        title: 'Account Info',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="BasicInfoScreen"
+      component={BasicInfoScreen}
+      options={{
+        title: 'Basic Info',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="MembersProfileScreen"
       component={MembersProfileScreen}
@@ -2513,8 +2550,7 @@ const AccountNavigator = () => (
         },
       }}
     />
-    
-    
+
     <Stack.Screen
       name="ChangeSportsOrderScreen"
       component={ChangeSportsOrderScreen}
@@ -2531,7 +2567,6 @@ const AccountNavigator = () => (
         },
       }}
     />
-
 
     <Stack.Screen
       name="ChangeOtherListScreen"
@@ -3463,7 +3498,6 @@ const AccountNavigator = () => (
       }}
     />
 
-
     <Stack.Screen
       name="SportAccountSettingScreen"
       component={SportAccountSettingScreen}
@@ -3481,7 +3515,57 @@ const AccountNavigator = () => (
         },
       }}
     />
-    
+    <Stack.Screen
+      name="GroupMembersSettingScreen"
+      component={GroupMembersSettingScreen}
+      options={{
+        title: 'Members',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="RecruitingMemberScreen"
+      component={RecruitingMemberScreen}
+      options={{
+        title: 'Recruiting Member',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="GroupsScreen"
+      component={GroupsScreen}
+      options={{
+        title: 'Clubs',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
   </Stack.Navigator>
 );
 

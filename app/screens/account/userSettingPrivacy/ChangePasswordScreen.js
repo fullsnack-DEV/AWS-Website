@@ -106,12 +106,10 @@ export default function ChangePasswordScreen({navigation}) {
               setOldPassword('');
               setConfirmPassword('');
               setloading(false);
-              setTimeout(() => {
-                Alert.alert(
-                  strings.appName,
-                  'Your new password has beed set successfully',
-                );
-              }, 10);
+              // Alert.alert(
+              //   strings.appName,
+              //   'Your new password has beed set successfully',
+              // );
               navigation.goBack();
             });
         })
@@ -155,7 +153,7 @@ export default function ChangePasswordScreen({navigation}) {
                 fontFamily: fonts.RMedium,
                 color: colors.lightBlackColor,
               }}>
-              Done
+              Save
             </Text>
           </TouchableOpacity>
         }
@@ -254,7 +252,7 @@ const styles = StyleSheet.create({
   },
   matchFeeTxt: {
     alignSelf: 'center',
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     color: 'black',
     elevation: 3,
@@ -274,7 +272,7 @@ const styles = StyleSheet.create({
   },
   passwordView: {
     alignSelf: 'center',
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
 
     color: 'black',
@@ -299,7 +297,7 @@ const styles = StyleSheet.create({
     width: wp('92%'),
   },
   textInput: {
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     color: colors.blackColor,
     fontFamily: fonts.RRegular,

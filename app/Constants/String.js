@@ -78,6 +78,7 @@ const strings = {
   save: 'Save',
   done: 'Done',
   yes: 'Yes',
+  no: 'No',
   passwordText: 'Password (at least 6 characters)',
   passwordWarningMessage: 'Password should be atleast 6 characters.',
   confirmPasswordText: 'Confirm Password',
@@ -862,5 +863,20 @@ const strings = {
   signUp: 'Sign Up',
   addYourName: 'Add your name.',
   signupwithemail: 'Sign up with email',
+  // Profile
+  pleaseaddfirstname: 'Please add first name.',
+  pleaseaddlastname: 'Please add last name.',
+  searchByCity: 'Search by city',
+  teamName: 'Team Name',
+  clubName: 'Club Name',
+  pleaseAddClubName: 'Please add club name.',
+  pleaseAddTeamName: 'Please add team name',
+  // Basic Info
+  streetAddress: 'Street Address',
+  postalCode: 'Postal Code',
+  // Members
+  isYourTeamRecruitingMember: 'Is your team recruiting a new member?',
+  configureYourRefereeSetting:
+    'You can’t send offer, please configure your referee setting first.',
 };
 export default strings;
