@@ -275,7 +275,8 @@ const getTabBarVisibility = (route) => {
     routeName === 'GroupSettingPrivacyScreen' ||
     routeName === 'UserSettingPrivacyScreen' || 
     routeName === 'PauseGroupScreen' ||
-    routeName === 'SportAccountSettingScreen'
+    routeName === 'SportAccountSettingScreen' ||
+    routeName === 'PayoutMethodScreen'
   ) {
     return false;
   }

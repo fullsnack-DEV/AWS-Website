@@ -124,7 +124,7 @@ export default function ChooseLocationScreen({navigation, route}) {
           };
         });
         setNearByCity(
-          cityList.filter((obj) => obj.city !== currentLocation.city),
+          cityList.filter((obj) => obj?.city !== currentLocation?.city),
         );
       })
       .catch((e) => {
@@ -234,9 +234,9 @@ export default function ChooseLocationScreen({navigation, route}) {
     setLoading(true);
     console.log('Curruent location data:=>', currentLocation);
     const userData = {
-      city: currentLocation.city,
-      state_abbr: currentLocation.stateAbbr,
-      country: currentLocation.country,
+      city: currentLocation?.city,
+      state_abbr: currentLocation?.stateAbbr,
+      country: currentLocation?.country,
     };
     // updateProfile(userData, () => {
     //   navigation.navigate('ChooseSportsScreen', {
@@ -349,7 +349,7 @@ export default function ChooseLocationScreen({navigation, route}) {
                   style={styles.listItem}
                   onPress={() => getTeamsData(item)}>
                   <Text style={styles.cityList}>
-                    {item.city}, {item.state_abbr}, {item.country}
+                    {item?.city}, {item?.state_abbr}, {item?.country}
                   </Text>
                   <Separator />
                 </TouchableWithoutFeedback>
@@ -361,8 +361,8 @@ export default function ChooseLocationScreen({navigation, route}) {
                 onPress={() => getTeamsDataByCurrentLocation()}>
                 <View>
                   <Text style={[styles.cityList, {marginBottom: 3}]}>
-                    {currentLocation.city}, {currentLocation.stateAbbr},{' '}
-                    {currentLocation.country}
+                    {currentLocation?.city}, {currentLocation?.stateAbbr},{' '}
+                    {currentLocation?.country}
                   </Text>
                   <Text style={styles.curruentLocationText}>
                     Current Location

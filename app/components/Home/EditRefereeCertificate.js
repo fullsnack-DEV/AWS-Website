@@ -123,7 +123,7 @@ const EditRefereeCertificate = ({
                 const certiUrl = certificatesData;
                 certiUrl[index] = {
                   ...certiUrl[index],
-                  url: pickImages?.sourceURL,
+                  url: pickImages?.path,
                 };
                 setCertificatesData([...certiUrl]);
                 uploadImages([pickImages], authContext)

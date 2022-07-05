@@ -769,7 +769,9 @@ const strings = {
 
   refuncPolicyTitle: 'Choose one of refund policies',
 
-  gameFeeTitle: 'Set the match fee that you want to charge to your challenger.',
+  gameFeeTitle: 'Set the match fee that you want to receive from the challenger.',
+  gameFeeTitleTeam: 'Set the match fee that your team wants to receive from the challenger.',
+
   refereeFeeTitle: 'Set the referee fee that you want to charge per hour.',
   scorekeeperFeeTitle: 'Set the scorekeeper fee that you want to charge per hour.',
 

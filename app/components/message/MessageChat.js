@@ -24,9 +24,9 @@ import {
   Alert,
   TextInput,
 } from 'react-native';
+
 import FastImage from 'react-native-fast-image';
 import * as Progress from 'react-native-progress';
-
 import {useIsFocused} from '@react-navigation/native';
 import {Modalize} from 'react-native-modalize';
 import {Portal} from 'react-native-portalize';
@@ -502,7 +502,7 @@ const MessageChat = ({route, navigation}) => {
     }).then((image) => {
       setUploadImageInProgress(true);
       setSelectedImage(image ?? null);
-      const imagePath = Platform?.OS === 'ios' ? image?.sourceURL : image?.path;
+      const imagePath = image?.path; // Platform?.OS === 'ios' ? image?.sourceURL : image?.path
       const validImageSize = image?.size <= QB_MAX_ASSET_SIZE_UPLOAD;
 
       console.log('imageimage', image);
@@ -530,6 +530,7 @@ const MessageChat = ({route, navigation}) => {
           .then(() => {
             // unsubscribed from upload progress events for this file
             // remove subscription if it is not needed
+            console.log('upload done');
             subscription.remove();
           })
           .catch((error) => {
@@ -942,7 +943,6 @@ const MessageChat = ({route, navigation}) => {
           overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
           HeaderComponent={ModalHeader}
           modalStyle={{
-           
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
@@ -953,7 +953,8 @@ const MessageChat = ({route, navigation}) => {
           }}
           ref={commentModalRef}>
           <View style={styles.viewContainer}>
-            <Text style={[styles.titleLabel,{marginBottom:15,marginTop:25}]}>
+            <Text
+              style={[styles.titleLabel, {marginBottom: 15, marginTop: 25}]}>
               {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT &&
                 'CHATROOM NAME'}
             </Text>
@@ -972,9 +973,7 @@ const MessageChat = ({route, navigation}) => {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                 }}>
-                <Text style={styles.title}>
-                  {fullName}
-                </Text>
+                <Text style={styles.title}>{fullName}</Text>
                 {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
                   <FastImage
                     resizeMode={'contain'}
@@ -1023,14 +1022,18 @@ const MessageChat = ({route, navigation}) => {
           </View>
           <View>
             <TouchableOpacity style={styles.bottomView} onPress={leaveRoom}>
-              <Image style={styles.inviteImage} source={images.leave_chat_room} />
+              <Image
+                style={styles.inviteImage}
+                source={images.leave_chat_room}
+              />
               <Text style={styles.grayText}>
-                {occupantsData.length > 2 ? 'LEAVE CHATROOM' : 'DELETE CHATROOM'}
+                {occupantsData.length > 2
+                  ? 'LEAVE CHATROOM'
+                  : 'DELETE CHATROOM'}
               </Text>
             </TouchableOpacity>
           </View>
         </Modalize>
-        
       </Portal>
     </SafeAreaView>
   );
@@ -1167,7 +1170,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 15,
     marginRight: 15,
-   
   },
   titleLabel: {
     fontSize: 14,
@@ -1191,7 +1193,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: hp(1.5),
-    paddingLeft:10
+    paddingLeft: 10,
   },
   rowText: {
     width: '75%',
@@ -1216,8 +1218,6 @@ const styles = StyleSheet.create({
     // backgroundColor: colors.grayBackgroundColor,
     flexDirection: 'row',
     alignItems: 'center',
-   
-    
   },
   separator: {
     backgroundColor: colors.thinDividerColor,
@@ -1236,9 +1236,9 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     width: wp('84%'),
     shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
-    shadowRadius: 3,
+    shadowRadius: 1,
     elevation: 2,
     marginLeft: 10,
   },
@@ -1260,16 +1260,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
   },
   searchContainer: {
+    zIndex: 1000,
     width: '100%',
     backgroundColor: colors.grayBackgroundColor,
     flexDirection: 'row',
     height: 55,
     alignItems: 'center',
     justifyContent: 'space-around',
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 5},
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
-    shadowRadius: 10,
+    shadowRadius: 2,
     elevation: 2,
   },
 });

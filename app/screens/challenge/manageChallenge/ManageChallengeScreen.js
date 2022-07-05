@@ -75,7 +75,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
     { key: 'Match Fee', id: 3 },
     { key: 'Refund Policy', id: 4 },
     { key: 'Home & Away', id: 5 },
-    { key: (sportName === 'tennis' && sportType === 'single') ?  'Sets, Points & Duration' : 'Game Duration', id: 6 },
+    { key: sportName === 'tennis' ?  'Sets, Points & Duration' : 'Game Duration', id: 6 },
     { key: 'Venue', id: 7 },
     { key: 'Game Rules', id: 8 },
     { key: 'Referees', id: 9 },
@@ -265,7 +265,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
     }
     if (item.key === 'Match Fee') {
       if (settingObject?.game_fee) {
-        return `$${settingObject?.game_fee?.fee} ${settingObject?.game_fee?.currency_type}`;
+        return `${settingObject?.game_fee?.fee} ${settingObject?.game_fee?.currency_type}`;
       }
     }
     if (item.key === 'Refund Policy') {
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
     height: 15,
     marginRight: 10,
     resizeMode: 'contain',
-    tintColor: colors.grayColor,
+    tintColor: colors.lightBlackColor,
     width: 15,
   },
   separatorLine: {

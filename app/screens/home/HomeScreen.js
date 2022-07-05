@@ -3024,7 +3024,7 @@ const HomeScreen = ({navigation, route}) => {
     if (
       authContext.entity.obj.sport.toLowerCase() ===
         currentUserData.sport.toLowerCase() &&
-      settingObject?.game_duration &&
+      (settingObject?.game_duration || settingObject?.score_rules) &&
       settingObject?.availibility &&
       settingObject?.availibility === 'On' &&
       (mySettingObject?.availibility === undefined ||
@@ -3047,7 +3047,7 @@ const HomeScreen = ({navigation, route}) => {
       mySettingObject !== undefined &&
       (settingObject?.availibility === undefined ||
         settingObject?.availibility === 'Off') &&
-      mySettingObject?.game_duration &&
+      (mySettingObject?.game_duration || mySettingObject?.score_rules) &&
       (mySettingObject?.availibility !== undefined ||
         mySettingObject?.availibility === 'On') &&
       mySettingObject?.special_rules !== undefined &&
@@ -5695,7 +5695,7 @@ const HomeScreen = ({navigation, route}) => {
                       !myGroupDetail?.player_leaved)
                   ) {
                     if (
-                      obj?.game_duration &&
+                      (obj?.game_duration || obj?.score_rules) &&
                       obj?.availibility &&
                       obj?.special_rules !== undefined &&
                       obj?.general_rules !== undefined &&
@@ -5802,7 +5802,7 @@ const HomeScreen = ({navigation, route}) => {
                       !myGroupDetail?.player_leaved)
                   ) {
                     if (
-                      obj?.game_duration &&
+                      (obj?.game_duration || obj?.score_rules) &&
                       obj?.availibility &&
                       obj?.special_rules !== undefined &&
                       obj?.general_rules !== undefined &&

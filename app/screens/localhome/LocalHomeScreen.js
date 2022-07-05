@@ -1288,11 +1288,6 @@ export default function LocalHomeScreen({navigation, route}) {
                 },
               ],
               ...sports.slice(0, 12),
-              ...[
-                {
-                  sport: 'more',
-                },
-              ],
             ]}
             keyExtractor={keyExtractor}
             renderItem={sportsListView}
@@ -1308,11 +1303,25 @@ export default function LocalHomeScreen({navigation, route}) {
               });
             }}
             style={{
-              width: '100%',
-              height: 50,
-              alignContent: 'center',
+              width: '90%',
             }}
           />
+          <Text
+            style={
+              selectedSport === 'more'
+                ? [
+                    styles.sportName,
+                    {color: colors.themeColor, fontFamily: fonts.RBlack, marginLeft: 0,},
+                  ]
+                : [styles.sportName,{ marginLeft: 0,}]
+            }
+            onPress={() => {
+              setTimeout(() => {
+                setSettingPopup(true);
+              }, 100);
+            }}>
+            more
+          </Text>
         </View>
       </View>
 
@@ -1843,7 +1852,6 @@ export default function LocalHomeScreen({navigation, route}) {
         cancelButtonIndex={2}
         onPress={onCreateTeamActionSheetItemPress}
       />
-
       <ActionSheet
         ref={actionSheetTeamClub}
         title={'Create a team or club or league'}
@@ -1867,7 +1875,6 @@ const styles = StyleSheet.create({
     height: 15,
     width: 15,
   },
-
   titleHeaderView: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -1886,21 +1893,22 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     alignSelf: 'center',
-    margin: 15,
+    marginLeft: 15,
+    marginRight: 15,
   },
-
   sportsListView: {
     flexDirection: 'row',
     backgroundColor: colors.whiteColor,
     borderBottomColor: colors.veryLightGray,
     borderBottomWidth: 0.5,
     alignItems: 'center',
+    height: 45,
   },
   bottomPopupContainer: {
     paddingBottom: Platform.OS === 'ios' ? 30 : 0,
     backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     position: 'absolute',
     bottom: 0,
     width: '100%',
@@ -2004,24 +2012,21 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.userPostTimeColor,
   },
-
   backImageStyle: {
     height: 35,
     width: 35,
   },
-
   separateLine: {
     borderColor: colors.veryLightGray,
     borderWidth: 0.5,
   },
-
   // setting pop styles
   sportsIcon: {
     resizeMode: 'cover',
     height: 40,
     width: 40,
     alignSelf: 'center',
-    marginLeft: 15,
+    marginLeft: 5,
     marginRight: 15,
   },
 
@@ -2048,9 +2053,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 40,
     shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
-    shadowRadius: 5,
+    shadowRadius: 2,
     width: widthPercentageToDP('86%'),
     // alignItems: 'center',
     justifyContent: 'space-between',
@@ -2082,11 +2087,8 @@ const styles = StyleSheet.create({
     color: colors.veryLightGray,
   },
   topHeaderContainer: {
-    height: 60,
-    // justifyContent: 'space-between',
+    height: 50,
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 0,
-    marginRight: 0,
   },
 });

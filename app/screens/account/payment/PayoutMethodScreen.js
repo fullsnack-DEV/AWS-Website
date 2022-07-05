@@ -2,7 +2,7 @@ import React, {
   useState, useEffect, useContext, useRef,
 } from 'react';
 import {
-  View, StyleSheet, Alert,
+  StyleSheet, Alert, SafeAreaView,
 } from 'react-native';
 
 import { WebView } from 'react-native-webview';
@@ -79,7 +79,8 @@ export default function PayoutMethodScreen({ navigation }) {
     <ActivityLoader visible={loading} />
     )
   return (
-    <View style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
+      
       <ActivityLoader visible={loading} />
       {/* <TCInnerLoader visible={firstTimeLoad} size={50}/> */}
       {merchantURL && <WebView
@@ -114,7 +115,8 @@ export default function PayoutMethodScreen({ navigation }) {
           return true;
         }}
       />}
-    </View>
+     
+    </SafeAreaView>
   );
 }
 

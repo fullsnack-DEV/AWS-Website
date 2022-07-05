@@ -467,8 +467,6 @@ export default function ScheduleScreen({navigation, route}) {
     plusActionSheet.current.show();
   }, []);
 
- 
-
   const onDayPress = useCallback(
     (dateObj) => {
       console.log(
@@ -497,7 +495,6 @@ export default function ScheduleScreen({navigation, route}) {
         }
       }
 
-     
       let timeSlots = [];
       if (temp?.[0]?.allDay === true && temp?.[0]?.blocked === true) {
         setSlots(temp);
@@ -552,7 +549,7 @@ export default function ScheduleScreen({navigation, route}) {
 
   const getEventsAndSlotsList = useCallback(() => {
     setloading(true);
-console.log('1111--');
+    console.log('1111--');
     const eventTimeTableData = [];
     Utility.getCalendar(
       authContext?.entity?.uid,
@@ -944,7 +941,6 @@ console.log('1111--');
             <Text style={styles.eventTitleTextStyle}>Schedule</Text>
           }
           showBackgroundColor={true}
-          
           rightComponent={
             <View
               style={{
@@ -953,10 +949,7 @@ console.log('1111--');
                 justifyContent: 'space-between',
               }}>
               <TouchableOpacity onPress={onAddPlusPress}>
-                <Image
-                  source={images.addEvent}
-                  style={styles.headerRightImg}
-                />
+                <Image source={images.addEvent} style={styles.headerRightImg} />
               </TouchableOpacity>
               {/* <TouchableOpacity onPress={onThreeDotPress}>
                 <Image
@@ -1022,8 +1015,12 @@ console.log('1111--');
           <View
             style={{
               flexDirection: 'row',
-              margin: 15,
+              // margin: 15,
+              height: 45,
               justifyContent: 'space-between',
+              alignItems: 'center',
+              marginRight: 15,
+              marginLeft: 15,
             }}>
             <View style={{flexDirection: 'row'}}>
               <Text
@@ -1600,12 +1597,11 @@ console.log('1111--');
       </View>
       <ActionSheet
         ref={plusActionSheet}
-        options={['Create Event','Edit Challenge Availibility', 'Cancel']}
+        options={['Create Event', 'Edit Challenge Availibility', 'Cancel']}
         cancelButtonIndex={2}
         // destructiveButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
-            
             navigation.navigate('CreateEventScreen', {
               comeName: 'ScheduleScreen',
             });
@@ -1682,9 +1678,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
-    width:100
+    width: 100,
   },
- 
+
   separateLine: {
     borderColor: colors.veryLightGray,
     borderWidth: 0.5,
