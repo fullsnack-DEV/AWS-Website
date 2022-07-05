@@ -66,7 +66,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
     // setMarkingDays(selectedDayMarking);
 
     if (settingObject?.sport?.toLowerCase() === 'tennis') {
-      console.log('dsfsdfsadfasdf');
+      console.log('dsfsdfsadfasdf',settingObject);
       setHours(
         Utility.getHoursMinutesFromString(
           settingObject?.score_rules?.match_duration,

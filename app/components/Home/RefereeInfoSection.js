@@ -514,9 +514,7 @@ function RefereeInfoSection({
             actionSheet.current.show();
           }, 200);
           setSelectedCerti([]);
-        }}
-       
-       >
+        }}>
         <FlatList
           data={certificatesData?.length > 0 ? certificatesData : []}
           bounces={false}

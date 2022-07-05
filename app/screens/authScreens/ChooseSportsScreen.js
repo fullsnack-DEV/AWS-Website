@@ -180,6 +180,7 @@ export default function ChooseSportsScreen({navigation, route}) {
         },
       });
     } else {
+      console.log('else....');
       finalStepSignUp();
     }
   };
@@ -187,7 +188,7 @@ export default function ChooseSportsScreen({navigation, route}) {
     console.log('Call getTeamData');
     console.log('City =====>', route?.params?.locationInfo?.city);
     console.log('country =====>', route?.params?.locationInfo?.country);
-    console.log('state =====>', route?.params?.locationInfo?.state);
+    console.log('state =====>', route?.params?.locationInfo?.state_abbr);
     console.log('locationInfo =====>', route?.params?.locationInfo);
     setloading(true);
     const queryParams = {
@@ -247,11 +248,11 @@ export default function ChooseSportsScreen({navigation, route}) {
         },
       });
     }
-    if (route.params.locationInfo.state !== '') {
+    if (route.params.locationInfo.state_abbr !== '') {
       queryParams.query.bool.must[1].bool.should.push({
         match: {
           state_abbr: {
-            query: route?.params?.locationInfo?.state,
+            query: route?.params?.locationInfo?.state_abbr,
             boost: 3,
           },
         },

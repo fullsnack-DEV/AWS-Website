@@ -1039,7 +1039,6 @@ export default function ChallengePreviewScreen({navigation, route}) {
               </View>
             </View>
           </View>
-
           <TCThickDivider />
           <View>
             <TCLabel title={`Game · ${Utility.getSportName(challengeData,authContext)}`} />
@@ -1075,7 +1074,6 @@ export default function ChallengePreviewScreen({navigation, route}) {
               marginLeft={30}
             />
             <TCThinDivider />
-
             <TCInfoField
               title={'Time'}
               value={`${moment(
@@ -1090,7 +1088,6 @@ export default function ChallengePreviewScreen({navigation, route}) {
               titleStyle={{fontSize: 16}}
             />
             <TCThinDivider />
-
             <TCInfoField
               title={'Venue'}
               value={challengeData?.venue?.name}
@@ -1125,7 +1122,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
 
           {challengeData?.sport?.toLowerCase() === 'tennis'  ? <View>
             <TCGameDetailRules
-              gameRules={settingObject?.score_rules}
+              gameRules={challengeData?.score_rules}
               isMore = {isMore}
               onPressMoreLess={()=>{
                 setIsMore(!isMore)

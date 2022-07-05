@@ -175,7 +175,7 @@ export default function ScorekeeperFee({navigation, route}) {
   );
 
   const IsNumeric = (num) => num >= 0 || num < 0;
-  
+
   return (
     <View>
       <ActivityLoader visible={loading} />
@@ -192,13 +192,17 @@ export default function ScorekeeperFee({navigation, route}) {
           value={basicFee.toString()}
           keyboardType={'decimal-pad'}></TextInput>
         <Text
-          style={styles.curruency}
-          onPress={() => {
-            setVisibleCurrencyModal(true);
-          }}>
+          style={styles.curruency}>
           {currencyType}
         </Text>
       </View>
+      <Text
+          style={[styles.changeCurruency, {textDecorationLine: 'underline'}]}
+          onPress={() => {
+            setVisibleCurrencyModal(true);
+          }}>
+        {'Change currency'}
+      </Text>
       <Modal
         isVisible={visibleCurrencyModal}
         backdropColor="black"
@@ -299,6 +303,7 @@ const styles = StyleSheet.create({
     fontSize: wp('3.8%'),
     height: 40,
     width: '90%',
+    textAlign:'center'
   },
   curruency: {
     alignSelf: 'center',
@@ -306,7 +311,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    textDecorationLine: 'underline',
+    
   },
   saveButtonStyle: {
     fontFamily: fonts.RMedium,
@@ -329,4 +334,13 @@ const styles = StyleSheet.create({
 
     width: wp('100%'),
   },
+  changeCurruency: {
+    
+    textAlign:'right',
+     fontSize: 14,
+     fontFamily: fonts.RLight,
+     color: colors.lightBlackColor,
+     marginRight:15,
+     marginTop:10
+   },
 });
