@@ -204,6 +204,8 @@ import ChangeOtherListScreen from '../screens/account/schedule/ChangeOtherListSc
 import InviteToEventScreen from '../screens/account/schedule/InviteToEventScreen';
 import AcceptEventInviteScreen from '../screens/account/schedule/AcceptEventInviteScreen';
 import GoingListScreen from '../screens/account/schedule/GoingListScreen';
+import AccountInfoScreen from '../screens/account/userSettingPrivacy/AccountInfoScreen';
+import BasicInfoScreen from '../screens/account/userSettingPrivacy/BasicInfoScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1332,7 +1334,7 @@ const HomeNavigator = () => (
         },
       }}
     />
-   
+
     <Stack.Screen
       name="ChangePasswordScreen"
       component={ChangePasswordScreen}
@@ -1365,7 +1367,38 @@ const HomeNavigator = () => (
         },
       }}
     />
-
+    <Stack.Screen
+      name="AccountInfoScreen"
+      component={AccountInfoScreen}
+      options={{
+        title: 'Account Info',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="BasicInfoScreen"
+      component={BasicInfoScreen}
+      options={{
+        title: 'Basic Info',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
       name="MembersProfileScreen"
       component={MembersProfileScreen}

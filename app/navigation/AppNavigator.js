@@ -268,13 +268,16 @@ const getTabBarVisibility = (route) => {
     routeName === 'AddCardScreen' ||
     routeName === 'PaymentMethodsScreen' ||
     routeName === 'WriteReviewScreen' ||
-    routeName === 'SoccerHome' || 
+    routeName === 'SoccerHome' ||
     routeName === 'TennisHome' ||
     routeName === 'LeaveReviewTennis' ||
     routeName === 'GroupSettingPrivacyScreen' ||
-    routeName === 'UserSettingPrivacyScreen' || 
+    routeName === 'UserSettingPrivacyScreen' ||
     routeName === 'PauseGroupScreen' ||
-    routeName === 'SportAccountSettingScreen'
+    routeName === 'SportAccountSettingScreen' ||
+    routeName === 'GroupMembersSettingScreen' ||
+    routeName === 'RecruitingMemberScreen' ||
+    routeName === 'GroupsScreen'
   ) {
     return false;
   }
@@ -334,7 +337,6 @@ const AppNavigator = ({navigation}) => {
           const {clubs} = response.payload;
           const {user} = response.payload;
 
-
           const groups = [{...user}, ...clubs, ...teams];
           let notificationCount = 0;
           (groups || []).map((e) => {
@@ -342,7 +344,7 @@ const AppNavigator = ({navigation}) => {
               notificationCount += e.unread;
             }
           });
-          console.log('notificationCount',notificationCount);
+          console.log('notificationCount', notificationCount);
           setUnreadNotificationCount(notificationCount);
         }
       })
@@ -568,7 +570,7 @@ const AppNavigator = ({navigation}) => {
           },
         })}
       />
-     
+
       <Tab.Screen
         name="Schedule"
         component={ScheduleNavigator}
@@ -627,7 +629,7 @@ const AppNavigator = ({navigation}) => {
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
-          tabBarIcon:  renderTabIcon,
+          tabBarIcon: renderTabIcon,
           headerShown: false,
         })}
       />

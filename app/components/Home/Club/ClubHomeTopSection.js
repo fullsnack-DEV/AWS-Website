@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
+
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
@@ -21,13 +22,18 @@ export default function ClubHomeTopSection({
     messageButtonWidth = '32%';
   }
   if (
-    clubDetails && loggedInEntity.obj.parent_groups?.includes(clubDetails.group_id)
+    clubDetails &&
+    loggedInEntity.obj.parent_groups?.includes(clubDetails.group_id)
   ) {
     isMember = true;
   }
 
   return (
-    <View style={{paddingTop: 20, paddingBottom: 25}}>
+    <View
+      style={{
+        paddingTop: 20,
+        paddingBottom: 25,
+      }}>
       {isAdmin && (
         <TCProfileButton
           title={strings.editprofiletitle}
@@ -120,7 +126,7 @@ export default function ClubHomeTopSection({
             </View>
           )}
 
-          <TCProfileButton
+          {/* <TCProfileButton
             title={strings.message}
             style={[styles.messageButtonStyle, {width: messageButtonWidth}]}
             textStyle={styles.buttonTextStyle}
@@ -128,9 +134,10 @@ export default function ClubHomeTopSection({
             onPressProfile={() => {
               onAction('message');
             }}
-          />
+          /> */}
         </View>
       )}
+      {/* <View style={styles.sepratorView} /> */}
     </View>
   );
 }
@@ -186,17 +193,24 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  // joinFollowViewStyle: {
+  //   margin: 0,
+  //   height: 28,
+  //   width: '66%',
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  // },
   joinFollowViewStyle: {
     margin: 0,
     height: 28,
-    width: '66%',
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   messageButtonStyle: {
     marginTop: 0,
     height: 28,
-    width: '48%',
+    width: '100%',
   },
   checkMarkStyle: {
     alignSelf: 'center',
@@ -209,5 +223,10 @@ const styles = StyleSheet.create({
   buttonTextStyle: {
     fontFamily: fonts.RBold,
     fontSize: 14,
+  },
+  sepratorView: {
+    top: 25,
+    height: 1,
+    backgroundColor: colors.grayBackgroundColor,
   },
 });

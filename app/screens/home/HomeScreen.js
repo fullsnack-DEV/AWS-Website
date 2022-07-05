@@ -207,24 +207,32 @@ const HomeScreen = ({navigation, route}) => {
   const [isTeamHome, setIsTeamHome] = useState(false);
   const [playsInModalVisible, setPlaysInModalVisible] = useState(false);
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false);
-  const [scorekeeperInModalVisible, setScorekeeperInModalVisible] =
-    useState(false);
-  const [reviewDetailModalVisible, setReviewDetailModalVisible] =
-    useState(false);
+  const [scorekeeperInModalVisible, setScorekeeperInModalVisible] = useState(
+    false,
+  );
+  const [reviewDetailModalVisible, setReviewDetailModalVisible] = useState(
+    false,
+  );
   const [feedDataIndex, setFeedDataIndex] = useState(0);
   const [feedDetailIndex, setFeedDetailIndex] = useState(0);
   const [orangeFeed, setOrangeFeed] = useState(false);
   const [reviewGameData, setReviewGameData] = useState();
   const [refereeInfoModalVisible, setRefereeInfoModalVisible] = useState(false);
-  const [scorekeeperInfoModalVisible, setScorekeeperInfoModalVisible] =
-    useState(false);
-  const [refereeMatchModalVisible, setRefereeMatchModalVisible] =
-    useState(false);
-  const [scorekeeperMatchModalVisible, setScorekeeperMatchModalVisible] =
-    useState(false);
+  const [
+    scorekeeperInfoModalVisible,
+    setScorekeeperInfoModalVisible,
+  ] = useState(false);
+  const [refereeMatchModalVisible, setRefereeMatchModalVisible] = useState(
+    false,
+  );
+  const [
+    scorekeeperMatchModalVisible,
+    setScorekeeperMatchModalVisible,
+  ] = useState(false);
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false);
-  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] =
-    useState(false);
+  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(
+    false,
+  );
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserData, setCurrentUserData] = useState({});
   const [myGroupDetail] = useState(
@@ -284,17 +292,22 @@ const HomeScreen = ({navigation, route}) => {
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
   const [refereeOfferModalVisible, setRefereeOfferModalVisible] = useState();
-  const [scorekeeperOfferModalVisible, setScorekeeperOfferModalVisible] =
-    useState();
+  const [
+    scorekeeperOfferModalVisible,
+    setScorekeeperOfferModalVisible,
+  ] = useState();
 
-  const [isDoubleSportTeamCreatedVisible, setIsDoubleSportTeamCreatedVisible] =
-    useState(false);
+  const [
+    isDoubleSportTeamCreatedVisible,
+    setIsDoubleSportTeamCreatedVisible,
+  ] = useState(false);
 
   // const [reviewsData] = useState(reviews_data);
 
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
-  const timeTableSelectionDate =
-    moment(timetableSelectDate).format('YYYY-MM-DD');
+  const timeTableSelectionDate = moment(timetableSelectDate).format(
+    'YYYY-MM-DD',
+  );
 
   const [sportsSelection, setSportsSelection] = useState();
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
@@ -305,6 +318,7 @@ const HomeScreen = ({navigation, route}) => {
   const addRoleActionSheet = useRef();
   const manageChallengeActionSheet = useRef();
   const offerActionSheet = useRef();
+  const groupMessageActionSheet = useRef();
 
   useEffect(() => {
     setTimeout(() => {
@@ -627,7 +641,35 @@ const HomeScreen = ({navigation, route}) => {
                 }}
               />
             )}
-            <MarqueeText
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'flex-start',
+              }}>
+              <MarqueeText
+                style={styles.userNavigationTextStyle}
+                duration={3000}
+                marqueeOnStart
+                loop={true}>
+                {currentUserData?.full_name || currentUserData?.group_name}
+              </MarqueeText>
+
+              <Image
+                source={
+                  (currentUserData.entity_type === 'team' &&
+                    images.teamPatch) ||
+                  (currentUserData.entity_type === 'club' && images.clubPatch)
+                }
+                style={{
+                  height: 15,
+                  width: 15,
+                  resizeMode: 'cover',
+                  // backgroundColor: colors.yellowColor,
+                }}
+              />
+            </View>
+            {/* <MarqueeText
               style={styles.userNavigationTextStyle}
               duration={3000}
               marqueeOnStart
@@ -644,8 +686,9 @@ const HomeScreen = ({navigation, route}) => {
                 height: 15,
                 width: 15,
                 resizeMode: 'cover',
+                backgroundColor: colors.yellowColor,
               }}
-            />
+            /> */}
           </TouchableOpacity>
         }
         centerComponent={<View></View>}
@@ -744,7 +787,8 @@ const HomeScreen = ({navigation, route}) => {
         .then(([res1, res2, res3]) => {
           const groupDetails = {...res1.payload};
           setCurrentUserData(res1.payload);
-
+          console.log('promises:::=>', res1);
+          console.log('res11:::=>', res1);
           console.log('res1:::=>', res1.payload);
           console.log('res2:::=>', res2.payload);
           if (res1?.payload?.avg_review) {
@@ -1195,11 +1239,15 @@ const HomeScreen = ({navigation, route}) => {
           clubInviteUser();
           break;
         case 'message':
-          onMessageButtonPress(currentUserData);
+          // onMessageButtonPress(currentUserData);
+          groupMessageActionSheet.current.show();
           break;
         case 'edit':
           // navigation.navigate('EditPersonalProfileScreen');
-          navigation.navigate('PersonalInformationScreen');
+          // navigation.navigate('PersonalInformationScreen');
+          navigation.navigate('PersonalInformationScreen', {
+            isEditProfile: true,
+          });
           break;
         default:
       }
@@ -1216,6 +1264,8 @@ const HomeScreen = ({navigation, route}) => {
 
   const onClubAction = useCallback(
     (action) => {
+      console.log('Current User data', currentUserData);
+
       switch (action) {
         case 'follow':
           callFollowGroup();
@@ -1261,8 +1311,10 @@ const HomeScreen = ({navigation, route}) => {
                 : strings.clubNameplaceholder,
             nameTitle:
               authContext.entity.role === 'team'
-                ? strings.teamNameTitle
-                : strings.clubNameTitle,
+                ? strings.teamName
+                : strings.clubName,
+            sportType: currentUserData.sports_string,
+            isEditProfileTitle: true,
           });
           break;
         default:
@@ -1285,6 +1337,7 @@ const HomeScreen = ({navigation, route}) => {
 
   const onTeamAction = useCallback(
     (action) => {
+      console.log('Current User data', currentUserData.sport_type);
       switch (action) {
         case 'follow':
           callFollowGroup();
@@ -1316,8 +1369,10 @@ const HomeScreen = ({navigation, route}) => {
                 : strings.clubNameplaceholder,
             nameTitle:
               authContext.entity.role === 'team'
-                ? strings.teamNameTitle
-                : strings.clubNameTitle,
+                ? strings.teamName
+                : strings.clubName,
+            sportType: currentUserData.sport_type,
+            isEditProfileTitle: true,
           });
           break;
         default:
@@ -2764,9 +2819,11 @@ const HomeScreen = ({navigation, route}) => {
                 style={{
                   height: 58,
                   width: 93,
+
                   resizeMode: 'contain',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  alignSelf: 'flex-start',
                 }}>
                 <View
                   style={{
@@ -2817,6 +2874,7 @@ const HomeScreen = ({navigation, route}) => {
                 resizeMode: 'contain',
                 alignItems: 'center',
                 justifyContent: 'center',
+                alignSelf: 'flex-start',
               }}>
               <View
                 style={{
@@ -2988,14 +3046,32 @@ const HomeScreen = ({navigation, route}) => {
             moveToStats();
           }
         }}>
-        <Text
+        <View
           style={{
-            fontSize: 12,
-            fontFamily: fonts.RBold,
-            color: colors.lightBlackColor,
+            marginTop: 2,
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderRadius: 5,
+            height: 25,
+            justifyContent: 'center',
+            backgroundColor: colors.grayBackgroundColor,
+            paddingHorizontal: 10,
+            shadowColor: colors.blackColor,
+            shadowOffset: {width: 0, height: 2},
+            shadowOpacity: 0.1,
+            shadowRadius: 3,
+            elevation: 3,
           }}>
-          {item.toUpperCase()}
-        </Text>
+          <Text
+            style={{
+              fontSize: 14,
+              fontFamily: fonts.RMedium,
+              color: colors.lightBlackColor,
+              // backgroundColor: colors.redColor,
+            }}>
+            {item}
+          </Text>
+        </View>
       </TouchableOpacity>
     );
   }, []);
@@ -3110,7 +3186,7 @@ const HomeScreen = ({navigation, route}) => {
               'player_leaved' in myGroupDetail &&
               myGroupDetail?.player_leaved
             ) {
-              Alert.alert('You have\'t 2 players in team.');
+              Alert.alert("You have't 2 players in team.");
             }
           } else {
             console.log('invite block');
@@ -3177,14 +3253,14 @@ const HomeScreen = ({navigation, route}) => {
                     }}>
                     {(challengeButtonType() === 'both' ||
                       challengeButtonType() === 'challenge') && (
-                        <Text style={styles.challengeButtonTitle}>
-                          {strings.challenge}
-                          {settingObject?.game_fee?.fee && (
-                            <Text>{` $${settingObject?.game_fee?.fee} ${
+                      <Text style={styles.challengeButtonTitle}>
+                        {strings.challenge}
+                        {settingObject?.game_fee?.fee && (
+                          <Text>{` $${settingObject?.game_fee?.fee} ${
                             currentUserData?.currency_type ?? 'CAD'
                           }${' / match'}`}</Text>
                         )}
-                        </Text>
+                      </Text>
                     )}
                     {challengeButtonType() === 'invite' && (
                       <Text style={styles.challengeButtonTitle}>
@@ -3203,7 +3279,13 @@ const HomeScreen = ({navigation, route}) => {
 
   const renderMainFlatList = useMemo(
     () => (
-      <View style={{margin: 15, marginTop: 0, marginBottom: 0}}>
+      <View
+        style={{
+          margin: 15,
+          marginTop: 0,
+          marginBottom: 0,
+          // backgroundColor: colors.redColor,
+        }}>
         {challengeButton()}
         {isUserHome ? (
           <View style={{flex: 1}}>
@@ -3252,25 +3334,38 @@ const HomeScreen = ({navigation, route}) => {
             <TCThinDivider width={'100%'} />
           </View>
         ) : (
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={
-              isTeamHome
-                ? [
-                    'Info',
-                    'Scoreboard',
-                    'Schedule',
-                    'Gallery',
-                    'Review',
-                    'Stats',
-                  ]
-                : ['Info', 'Scoreboard', 'Schedule', 'Gallery']
-            }
-            horizontal
-            renderItem={renderHomeTabs}
-            keyExtractor={(index) => index.toString()}
-          />
+          <>
+            <View style={styles.sepratorView} />
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+                // marginTop: 0,
+                marginLeft: 4,
+              }}>
+              Timeline
+            </Text>
 
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              data={
+                isTeamHome
+                  ? [
+                      'Info',
+                      'Scoreboard',
+                      'Schedule',
+                      'Gallery',
+                      'Review',
+                      'Stats',
+                    ]
+                  : ['Info', 'Scoreboard', 'Schedule', 'Gallery']
+              }
+              horizontal
+              renderItem={renderHomeTabs}
+              keyExtractor={(index) => index.toString()}
+            />
+          </>
           // <ScrollableTabs
           //   tabs={
           //     isTeamHome
@@ -3774,8 +3869,7 @@ const HomeScreen = ({navigation, route}) => {
             {term: {'status.keyword': 'accepted'}},
             {
               term: {
-                'challenge_referee.who_secure.responsible_team_id.keyword':
-                  teamId,
+                'challenge_referee.who_secure.responsible_team_id.keyword': teamId,
               },
             },
           ],
@@ -3947,8 +4041,7 @@ const HomeScreen = ({navigation, route}) => {
             {term: {'status.keyword': 'accepted'}},
             {
               term: {
-                'challenge_scorekeepers.who_secure.responsible_team_id.keyword':
-                  teamId,
+                'challenge_scorekeepers.who_secure.responsible_team_id.keyword': teamId,
               },
             },
           ],
@@ -4222,7 +4315,7 @@ const HomeScreen = ({navigation, route}) => {
                 } else {
                   setTimeout(() => {
                     Alert.alert(
-                      'You can\'t send offer, please configure your referee setting first.',
+                      "You can't send offer, please configure your referee setting first.",
                     );
                   }, 10);
                 }
@@ -4270,7 +4363,7 @@ const HomeScreen = ({navigation, route}) => {
                 } else {
                   setTimeout(() => {
                     Alert.alert(
-                      'You can\'t send offer, please configure your scorekeeper setting first.',
+                      "You can't send offer, please configure your scorekeeper setting first.",
                     );
                   }, 10);
                 }
@@ -4279,7 +4372,24 @@ const HomeScreen = ({navigation, route}) => {
             }
           }}
         />
-
+        <ActionSheet
+          ref={groupMessageActionSheet}
+          options={[
+            currentUserData.group_name,
+            'With all members',
+            strings.cancel,
+          ]}
+          cancelButtonIndex={3}
+          onPress={(index) => {
+            if (index === 0) {
+              // Add Playing
+              onMessageButtonPress(currentUserData);
+            } else if (index === 1) {
+              // Add Refereeing
+              onMessageButtonPress(currentUserData);
+            }
+          }}
+        />
         <ActivityLoader visible={loading} />
 
         <View style={{flex: 1}}>
@@ -4289,7 +4399,7 @@ const HomeScreen = ({navigation, route}) => {
           {firstTimeLoading &&
             (route?.params?.role === 'user' ??
               authContext?.entity?.role === 'user') && (
-                <UserProfileScreenShimmer />
+              <UserProfileScreenShimmer />
             )}
           {firstTimeLoading &&
             (route?.params?.role !== 'user' ??
@@ -5734,7 +5844,7 @@ const HomeScreen = ({navigation, route}) => {
                         'player_leaved' in myGroupDetail &&
                         myGroupDetail?.player_leaved
                       ) {
-                        Alert.alert('You have\'t 2 players in team.');
+                        Alert.alert("You have't 2 players in team.");
                       }
                     } else {
                       setChallengePopup(false);
@@ -5867,7 +5977,7 @@ const HomeScreen = ({navigation, route}) => {
                         'player_leaved' in myGroupDetail ||
                         myGroupDetail?.player_leaved
                       ) {
-                        Alert.alert('You have\'t 2 players in team.');
+                        Alert.alert("You have't 2 players in team.");
                       }
                     } else {
                       console.log('invite block');
@@ -6007,7 +6117,6 @@ const styles = StyleSheet.create({
   },
   challengeButtonStyle: {
     width: '100%',
-
     height: 25,
     marginBottom: 15,
   },
@@ -6294,12 +6403,13 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   userNavigationTextStyle: {
-    width: 210,
+    width: 200,
     fontSize: 22,
     fontFamily: fonts.RBold,
     textAlign: 'left',
     marginRight: 10,
     // paddingLeft:15
+    // backgroundColor: colors.redColor,
   },
 
   closeButton: {
@@ -6346,6 +6456,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     marginTop: '20%',
+  },
+  sepratorView: {
+    top: 0,
+    height: 1,
+    backgroundColor: colors.grayBackgroundColor,
+    width: wp('100%'),
+    marginBottom: 15,
+    marginTop: 15,
+    left: -15,
   },
 });
 

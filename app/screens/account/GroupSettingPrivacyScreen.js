@@ -19,8 +19,9 @@ import images from '../../Constants/ImagePath';
 import Header from '../../components/Home/Header';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
+import strings from '../../Constants/String';
 
-export default function GroupSettingPrivacyScreen({navigation}) {
+export default function GroupSettingPrivacyScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
@@ -35,18 +36,47 @@ export default function GroupSettingPrivacyScreen({navigation}) {
 
   useEffect(() => {
     setUserSetting([
-      {key: 'Account', id: 1},
-      {key: 'Privacy', id: 2},
+      {key: 'Profile', id: 1},
+      {key: 'Members', id: 2},
+      {key: authContext.entity.role === 'club' ? 'Teams' : 'Clubs', id: 3},
+      {key: 'Account', id: 4},
+      {key: 'Privacy', id: 5},
       {
         key: `Pause ${authContext.entity.role === 'club' ? 'Club' : 'Team'}`,
-        id: 3,
+        id: 6,
       },
-      {key: 'Terminate Account', id: 4},
+      {key: 'Terminate Account', id: 7},
     ]);
   }, [authContext.entity.role]);
 
   const handleOpetions = async (opetions) => {
-    if (opetions === 'Account') {
+    console.log('auth Enity', authContext.entity.obj);
+    if (opetions === 'Profile') {
+      navigation.navigate('EditGroupProfileScreen', {
+        placeholder:
+          authContext.entity.role === 'team'
+            ? strings.teamNamePlaceholder
+            : strings.clubNameplaceholder,
+        nameTitle:
+          authContext.entity.role === 'team'
+            ? strings.teamName
+            : strings.clubName,
+        sportType:
+          authContext.entity.role === 'team'
+            ? authContext.entity.obj.sport_type
+            : authContext.entity.obj.sports_string,
+      });
+    } else if (opetions === 'Members') {
+      navigation.navigate('GroupMembersSettingScreen');
+    } else if (opetions === 'Clubs') {
+      navigation.navigate('GroupsScreen', {
+        groups: route?.params?.groups,
+      });
+    } else if (opetions === 'Teams') {
+      navigation.navigate('GroupsScreen', {
+        groups: route?.params?.groups,
+      });
+    } else if (opetions === 'Account') {
       Alert.alert('This is not decited yet');
     } else if (opetions === 'Privacy') {
       Alert.alert('This is not decited yet');

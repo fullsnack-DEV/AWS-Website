@@ -391,6 +391,7 @@ export default function AccountScreen({navigation}) {
           setloading(false);
           resolve(true);
           setTeamList([...res1.payload, ...res2.payload]);
+          console.log('Joined groups', res1.payload);
         })
         // eslint-disable-next-line prefer-promise-reject-errors
         .catch(() => reject('error'));
@@ -403,7 +404,7 @@ export default function AccountScreen({navigation}) {
     getJoinedGroups('club', authContext)
       .then((response) => {
         setClubList(response.payload);
-        console.log('club list api done Called..');
+        console.log('club list api done Called..', response.payload);
       })
       .catch((e) => {
         setloading(false);
@@ -641,7 +642,11 @@ export default function AccountScreen({navigation}) {
       if (entity.role === 'user') {
         navigation.navigate('UserSettingPrivacyScreen');
       } else {
-        navigation.navigate('GroupSettingPrivacyScreen');
+        console.log('clubs==>', club);
+        console.log('clubs list==>', clubList);
+        navigation.navigate('GroupSettingPrivacyScreen', {
+          groups: authContext?.entity?.role === 'team' ? clubList : teamList,
+        });
       }
     } else if (section === 'Members') {
       const entity = authContext.entity;

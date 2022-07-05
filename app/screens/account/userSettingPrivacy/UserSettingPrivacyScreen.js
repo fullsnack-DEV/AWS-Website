@@ -74,9 +74,9 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Sports Activities', id: 4},
             {key: 'Time Zone', id: 5},
             {key: 'Currency', id: 6},
-            {key: 'Change Password', id: 7},
-            {key: 'Deactivate Account', id: 8},
-            {key: 'Terminate Account', id: 9},
+            // {key: 'Change Password', id: 7},
+            {key: 'Deactivate Account', id: 7},
+            {key: 'Terminate Account', id: 8},
             // {key: 'Privacy Setting',id:3}
           ]);
         } else {
@@ -85,7 +85,8 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Profile', id: 2},
             {key: 'Basic Info', id: 3},
             {key: 'Sports Activities', id: 4},
-            {key: 'Currency', id: 5},
+            {key: 'Time Zone', id: 5},
+            {key: 'Currency', id: 6},
             // {key: 'Privacy Setting',id:3}
           ]);
         }
@@ -118,16 +119,20 @@ export default function UserSettingPrivacyScreen({navigation}) {
     });
 
   const handleOpetions = async (opetions) => {
-    if (opetions === 'Profile') {
+    if (opetions === 'Account Info') {
+      navigation.navigate('AccountInfoScreen');
+    } else if (opetions === 'Profile') {
       navigation.navigate('PersonalInformationScreen');
+    } else if (opetions === 'Basic Info') {
+      navigation.navigate('BasicInfoScreen');
     } else if (opetions === 'Sports Activities') {
       console.log('click on sport setting');
       navigation.navigate('SportActivityScreen');
-    } else if (opetions === 'Change Password') {
-      navigation.navigate('ChangePasswordScreen');
-    } else if (opetions === 'Currency') {
-      navigation.navigate('CurrencySettingScreen');
-    } else if (opetions === 'Privacy Setting') {
+    }
+    //  else if (opetions === 'Currency') {
+    //   navigation.navigate('CurrencySettingScreen');
+    // }
+    else if (opetions === 'Privacy Setting') {
       // groupOpetionActionSheet.show();
     } else if (opetions === 'Deactivate Account') {
       navigation.navigate('DeactivateAccountScreen');
