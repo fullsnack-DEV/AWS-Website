@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-indent */
 import React, {useEffect, useState, useContext} from 'react';
 import {
   StyleSheet,

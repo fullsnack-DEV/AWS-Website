@@ -97,11 +97,10 @@ export default function PersonalInformationScreen({navigation, route}) {
     ],
   );
 
-  const [languageData, setLanguageData] = useState(languageList);
+  const [languageData] = useState(languageList);
   const [languages, setLanguages] = useState(
     authContext?.entity?.obj?.language,
   );
-  const selectedLanguage = [];
 
   const [locationPopup, setLocationPopup] = useState(false);
   const [noData, setNoData] = useState(false);

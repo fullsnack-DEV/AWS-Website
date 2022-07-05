@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-indent */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-param-reassign */
@@ -3192,7 +3193,7 @@ const HomeScreen = ({navigation, route}) => {
               'player_leaved' in myGroupDetail &&
               myGroupDetail?.player_leaved
             ) {
-              Alert.alert("You have't 2 players in team.");
+              Alert.alert('You have’t 2 players in team.');
             }
           } else {
             console.log('invite block');
@@ -4321,9 +4322,7 @@ const HomeScreen = ({navigation, route}) => {
                   setRefereeSettingObject(refereeSetting);
                 } else {
                   setTimeout(() => {
-                    Alert.alert(
-                      "You can't send offer, please configure your referee setting first.",
-                    );
+                    Alert.alert(strings.configureYourRefereeSetting);
                   }, 10);
                 }
               });
@@ -4370,7 +4369,7 @@ const HomeScreen = ({navigation, route}) => {
                 } else {
                   setTimeout(() => {
                     Alert.alert(
-                      "You can't send offer, please configure your scorekeeper setting first.",
+                      'You can’t send offer, please configure your scorekeeper setting first.',
                     );
                   }, 10);
                 }

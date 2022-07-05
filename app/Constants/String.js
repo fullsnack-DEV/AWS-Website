@@ -876,5 +876,7 @@ const strings = {
   postalCode: 'Postal Code',
   // Members
   isYourTeamRecruitingMember: 'Is your team recruiting a new member?',
+  configureYourRefereeSetting:
+    'You can’t send offer, please configure your referee setting first.',
 };
 export default strings;

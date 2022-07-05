@@ -40,7 +40,7 @@ module.exports = {
     'react-native/no-single-element-style-arrays': 2,
     'react/prop-types': [0],
     'react/display-name': [0],
-    quotes: ['error', 'single'],
+    quotes: ['error', 'single', {avoidEscape: true}],
     'max-len': ['warn', {code: 1000}],
     'no-undef': [2],
     'react/jsx-curly-spacing': [0, 'always'],

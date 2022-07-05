@@ -15,12 +15,12 @@ export default function ClubHomeTopSection({
   onAction,
 }) {
   let isMember = false;
-  let messageButtonWidth = '100%';
-  if (loggedInEntity.role === 'team') {
-    messageButtonWidth = '48%';
-  } else if (loggedInEntity.role === 'user') {
-    messageButtonWidth = '32%';
-  }
+  // let messageButtonWidth = '100%';
+  // if (loggedInEntity.role === 'team') {
+  //   messageButtonWidth = '48%';
+  // } else if (loggedInEntity.role === 'user') {
+  //   messageButtonWidth = '32%';
+  // }
   if (
     clubDetails &&
     loggedInEntity.obj.parent_groups?.includes(clubDetails.group_id)
@@ -223,10 +223,5 @@ const styles = StyleSheet.create({
   buttonTextStyle: {
     fontFamily: fonts.RBold,
     fontSize: 14,
-  },
-  sepratorView: {
-    top: 25,
-    height: 1,
-    backgroundColor: colors.grayBackgroundColor,
   },
 });
