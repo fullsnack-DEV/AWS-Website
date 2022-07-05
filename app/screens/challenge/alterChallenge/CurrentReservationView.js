@@ -28,10 +28,12 @@ import { getNumberSuffix } from '../../../utils/gameUtils';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import RefereeAgreementView from '../../../components/challenge/RefereeAgreementView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
+import TCGameDetailRules from '../../../components/TCGameDetailRules';
 
 const entity = {};
 export default function CurruentReservationView({ reservationObj }) {
   const [challengeObj] = useState(reservationObj);
+  const [isMore,setIsMore] = useState(false);
 
   const [moreButtonReferee, setMoreButtonReferee] = useState();
   const [moreButtonScorekeeper, setMoreButtonScorekeeper] = useState();
@@ -279,12 +281,22 @@ export default function CurruentReservationView({ reservationObj }) {
           <TCThickDivider marginTop={20} />
         </View>
 
-        <TCChallengeTitle
+        {challengeObj?.sport?.toLowerCase() === 'tennis' ? <View>
+          <TCGameDetailRules
+              gameRules={challengeObj?.score_rules}
+              isMore = {isMore}
+              onPressMoreLess={()=>{
+                setIsMore(!isMore)
+              }}
+            />
+          <TCThickDivider marginTop={20} />
+        </View> :  <View>
+          <TCChallengeTitle
           title={'Game Duration'}
           isEdit={false}
 
         />
-        <TCChallengeTitle
+          <TCChallengeTitle
           containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
           title={'1st period'}
           titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
@@ -298,25 +310,26 @@ export default function CurruentReservationView({ reservationObj }) {
           staticValueText={'min.'}
         />
 
-        <FlatList
+          <FlatList
           data={challengeObj?.game_duration?.period}
           renderItem={renderPeriod}
           keyExtractor={(item, index) => index.toString()}
           style={{ marginBottom: 15 }}
         />
-        {challengeObj?.game_duration?.period?.length > 0 && (
-          <Text style={styles.normalTextStyle}>
-            {strings.gameDurationTitle2}
-          </Text>
+          {challengeObj?.game_duration?.period?.length > 0 && (
+            <Text style={styles.normalTextStyle}>
+              {strings.gameDurationTitle2}
+            </Text>
         )}
 
-        <FlatList
+          <FlatList
           data={challengeObj?.game_duration?.overtime}
           renderItem={renderOverTime}
           keyExtractor={(item, index) => index.toString()}
           style={{ marginBottom: 15 }}
         />
-        <TCThickDivider marginTop={20} />
+          <TCThickDivider marginTop={20} />
+        </View>}
 
         <View>
           <TCChallengeTitle
@@ -408,7 +421,7 @@ export default function CurruentReservationView({ reservationObj }) {
         <TCThickDivider />
 
         <TCChallengeTitle
-          title={'Game Fee'}
+          title={'Match Fee'}
           value={challengeObj?.game_fee?.fee}
           staticValueText={`${challengeObj?.game_fee?.currency_type} /Game`}
           valueStyle={{
@@ -519,7 +532,7 @@ export default function CurruentReservationView({ reservationObj }) {
         title={'Refund Policy'}
         value={challengeObj?.refund_policy}
         tooltipText={
-        '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+        '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
         }
         tooltipHeight={hp('18%')}
         tooltipWidth={wp('50%')}

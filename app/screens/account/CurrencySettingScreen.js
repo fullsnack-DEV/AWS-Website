@@ -1,6 +1,4 @@
-import React, {
- useState, useEffect, useContext, useLayoutEffect,
- } from 'react';
+import React, {useState, useEffect, useContext, useLayoutEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,9 +10,9 @@ import {
   FlatList,
 } from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import * as Utility from '../../utils/index';
-import { updateUserProfile } from '../../api/Users';
+import {updateUserProfile} from '../../api/Users';
 import AuthContext from '../../auth/context';
 import DataSource from '../../Constants/DataSource';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -25,13 +23,13 @@ import colors from '../../Constants/Colors';
 import TCLabel from '../../components/TCLabel';
 import Header from '../../components/Home/Header';
 
-export default function CurrencySettingScreen({ navigation }) {
+export default function CurrencySettingScreen({navigation}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
 
   const [curruency, setCurruency] = useState(
-    authContext.entity.obj.currency_type ?? 'CAD',
+    authContext.entity.obj.currency_type ?? strings.defaultCurrency,
   );
 
   useLayoutEffect(() => {
@@ -57,8 +55,8 @@ export default function CurrencySettingScreen({ navigation }) {
           ...authContext.entity,
           obj: response.payload,
         };
-        authContext.setEntity({ ...currentEntity });
-        Utility.setStorage('authContextEntity', { ...currentEntity });
+        authContext.setEntity({...currentEntity});
+        Utility.setStorage('authContextEntity', {...currentEntity});
 
         setloading(false);
         navigation.goBack();
@@ -71,7 +69,7 @@ export default function CurrencySettingScreen({ navigation }) {
       });
   };
 
-  const renderCurrencyType = ({ item }) => (
+  const renderCurrencyType = ({item}) => (
     <TouchableOpacity
       onPress={() => setCurruency(item?.value)}
       style={{
@@ -88,12 +86,12 @@ export default function CurrencySettingScreen({ navigation }) {
             ? images.radioCheckYellow
             : images.radioUnselect
         }
-        style={{ height: 22, width: 22 }}
+        style={{height: 22, width: 22}}
       />
     </TouchableOpacity>
   );
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
       <Header
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -136,11 +134,11 @@ export default function CurrencySettingScreen({ navigation }) {
 
         <TCLabel title={strings.curruencyType} />
         <FlatList
-          style={{ marginTop: 5 }}
+          style={{marginTop: 5}}
           data={DataSource.CurrencyType}
           renderItem={renderCurrencyType}
         />
-        <View style={{ flex: 1 }} />
+        <View style={{flex: 1}} />
       </>
     </SafeAreaView>
   );

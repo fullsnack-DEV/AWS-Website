@@ -957,12 +957,15 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const clubInviteUser = async () => {
+    setloading(true);
     const params = {
       entity_type: authContext.entity.role,
       uid: authContext.entity.uid,
     };
     inviteUser(params, userID, authContext)
       .then(() => {
+        setloading(false);
+
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
@@ -971,6 +974,8 @@ const HomeScreen = ({navigation, route}) => {
         }, 10);
       })
       .catch((error) => {
+        setloading(false);
+
         console.log('clubInviteUser error with userID', error, userID);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
@@ -1879,6 +1884,7 @@ const HomeScreen = ({navigation, route}) => {
                 Alert.alert(strings.alertmessagetitle, error.message);
               });
           }}
+          navigation={navigation}
         />
       )}
 
@@ -3094,7 +3100,7 @@ const HomeScreen = ({navigation, route}) => {
     if (
       authContext.entity.obj.sport.toLowerCase() ===
         currentUserData.sport.toLowerCase() &&
-      settingObject?.game_duration &&
+      (settingObject?.game_duration || settingObject?.score_rules) &&
       settingObject?.availibility &&
       settingObject?.availibility === 'On' &&
       (mySettingObject?.availibility === undefined ||
@@ -3117,7 +3123,7 @@ const HomeScreen = ({navigation, route}) => {
       mySettingObject !== undefined &&
       (settingObject?.availibility === undefined ||
         settingObject?.availibility === 'Off') &&
-      mySettingObject?.game_duration &&
+      (mySettingObject?.game_duration || mySettingObject?.score_rules) &&
       (mySettingObject?.availibility !== undefined ||
         mySettingObject?.availibility === 'On') &&
       mySettingObject?.special_rules !== undefined &&
@@ -3257,7 +3263,8 @@ const HomeScreen = ({navigation, route}) => {
                         {strings.challenge}
                         {settingObject?.game_fee?.fee && (
                           <Text>{` $${settingObject?.game_fee?.fee} ${
-                            currentUserData?.currency_type ?? 'CAD'
+                            currentUserData?.currency_type ??
+                            strings.defaultCurrency
                           }${' / match'}`}</Text>
                         )}
                       </Text>
@@ -5799,7 +5806,7 @@ const HomeScreen = ({navigation, route}) => {
                       !myGroupDetail?.player_leaved)
                   ) {
                     if (
-                      obj?.game_duration &&
+                      (obj?.game_duration || obj?.score_rules) &&
                       obj?.availibility &&
                       obj?.special_rules !== undefined &&
                       obj?.general_rules !== undefined &&
@@ -5906,7 +5913,7 @@ const HomeScreen = ({navigation, route}) => {
                       !myGroupDetail?.player_leaved)
                   ) {
                     if (
-                      obj?.game_duration &&
+                      (obj?.game_duration || obj?.score_rules) &&
                       obj?.availibility &&
                       obj?.special_rules !== undefined &&
                       obj?.general_rules !== undefined &&

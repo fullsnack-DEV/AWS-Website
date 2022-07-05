@@ -212,7 +212,7 @@ const MessageInviteScreen = ({ navigation }) => {
   ), [])
 
   const renderSingleTab = useCallback((data) => (
-    <View style={{ margin: wp(3) }}>
+    <SafeAreaView style={{ margin: wp(3),flex:1 }}>
       <FlatList
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
@@ -225,8 +225,9 @@ const MessageInviteScreen = ({ navigation }) => {
           data={data}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
+         
         />
-    </View>
+    </SafeAreaView>
   ), [ListEmptyComponent, renderItem])
 
   const renderTabContain = useCallback((tabKey, tabIndex) => {
@@ -304,7 +305,7 @@ const MessageInviteScreen = ({ navigation }) => {
   ), [renderSelectedContactList, selectedInvitees])
 
   const renderTabs = useMemo(() => (
-    <View>
+    <View style={{flex:1}}>
       <View style={{
         alignItems: 'center',
         flexDirection: 'row',

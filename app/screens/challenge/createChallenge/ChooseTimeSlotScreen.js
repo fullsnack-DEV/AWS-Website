@@ -55,12 +55,33 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
   const [fromPickerVisible, setFromPickerVisible] = useState(false);
   const [toPickerVisible, setToPickerVisible] = useState(false);
 
+  const [hours, setHours] = useState();
+  const [minutes, setMinutes] = useState();
+
   useEffect(() => {
     // selectedDayMarking[moment(new Date()).format('yyyy-MM-DD')] = {
     //   selected: true,
     // };
     // console.log('temp mark:', selectedDayMarking);
     // setMarkingDays(selectedDayMarking);
+
+    if (settingObject?.sport?.toLowerCase() === 'tennis') {
+      console.log('dsfsdfsadfasdf',settingObject);
+      setHours(
+        Utility.getHoursMinutesFromString(
+          settingObject?.score_rules?.match_duration,
+        ).hour,
+      );
+      setMinutes(
+        Utility.getHoursMinutesFromString(
+          settingObject?.score_rules?.match_duration,
+        ).minute,
+      );
+    } else {
+      setHours(settingObject?.game_duration?.totalHours);
+      setMinutes(settingObject?.game_duration?.totalMinutes);
+    }
+
     const dateObject = {
       dateString: moment(new Date()).format('YYYY-MM-DD'),
     };
@@ -103,7 +124,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
         </Text>
       ),
     });
-  }, [comeFrom, from, navigation, selectedSlot, to]);
+  }, [comeFrom, from, navigation, selectedSlot, to, hours, minutes]);
 
   const getBlockedSlots = () => {
     // setloading(true);
@@ -224,11 +245,9 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
     console.log('dateObj onDayPress', dateObj);
     setFrom();
     setTo();
-    getFreeslot(
-      new Date(dateObj.dateString),
-      settingObject?.game_duration?.totalMinutes * 60 +
-        settingObject?.game_duration?.totalHours * 60 * 60,
-    );
+
+    getFreeslot(new Date(dateObj.dateString), minutes * 60 + hours * 60 * 60);
+
     console.log('Date string:=>', dateObj.dateString);
     getSelectedDayEvents(dateObj.dateString);
 
@@ -315,19 +334,15 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
         if (item.starttime * 1000 < date.getTime()) {
           setFrom(date.setMinutes(date.getMinutes() + 5));
           const dt = new Date(date.getTime());
-          dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
-          dt.setMinutes(
-            dt.getMinutes() + settingObject?.game_duration?.totalMinutes,
-          );
+          dt.setHours(dt.getHours() + hours);
+          dt.setMinutes(dt.getMinutes() + minutes);
 
           setTo(dt.getTime());
         } else {
           setFrom(item.starttime * 1000);
           const dt = new Date(item.starttime * 1000);
-          dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
-          dt.setMinutes(
-            dt.getMinutes() + settingObject?.game_duration?.totalMinutes,
-          );
+          dt.setHours(dt.getHours() + hours);
+          dt.setMinutes(dt.getMinutes() + minutes);
 
           setTo(dt.getTime());
         }
@@ -350,8 +365,8 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
     setFrom(date.getTime());
 
     const dt = date;
-    dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
-    dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
+    dt.setHours(dt.getHours() + hours);
+    dt.setMinutes(dt.getMinutes() + minutes);
 
     setTo(dt.getTime());
   };
@@ -362,16 +377,16 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
     setTo(date.getTime());
 
     const dt = date;
-    dt.setHours(dt.getHours() - settingObject?.game_duration?.totalHours);
-    dt.setMinutes(dt.getMinutes() - settingObject?.game_duration?.totalMinutes);
+    dt.setHours(dt.getHours() - hours);
+    dt.setMinutes(dt.getMinutes() - minutes);
 
     setFrom(dt.getTime());
   };
 
   const maxFromDate = () => {
     const dt = new Date(selectedSlot?.endtime * 1000);
-    dt.setHours(dt.getHours() - settingObject?.game_duration?.totalHours);
-    dt.setMinutes(dt.getMinutes() - settingObject?.game_duration?.totalMinutes);
+    dt.setHours(dt.getHours() - hours);
+    dt.setMinutes(dt.getMinutes() - minutes);
 
     console.log('Date max:=>', dt);
     return dt;
@@ -379,21 +394,12 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
 
   const minToDate = () => {
     const dt = new Date();
-    dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
-    dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
+    dt.setHours(dt.getHours() + hours);
+    dt.setMinutes(dt.getMinutes() + minutes);
 
     console.log('Date min to:=>', dt);
     return dt;
   };
-
-  // const maxToDate = () => {
-  //   const dt = new Date(selectedSlot?.starttime * 1000);
-  //   dt.setHours(dt.getHours() + settingObject?.game_duration?.totalHours);
-  //   dt.setMinutes(dt.getMinutes() + settingObject?.game_duration?.totalMinutes);
-
-  //   console.log('Date max:=>', dt);
-  //   return dt;
-  // };
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -517,7 +523,7 @@ export default function ChooseTimeSlotScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.themeColor,
-              }}>{`${settingObject?.game_duration?.totalHours} Hours ${settingObject?.game_duration?.totalMinutes} Minutes`}</Text>
+              }}>{`${hours} Hours ${minutes} Minutes`}</Text>
           </View>
           <DateTimePickerView
             title={'Choose a Time'}

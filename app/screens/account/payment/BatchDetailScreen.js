@@ -446,7 +446,7 @@ export default function BatchDetailScreen({ navigation, route }) {
         </View>
 
         <InvoiceAmount
-          currencyType={'CAD'}
+          currencyType={strings.defaultCurrency}
           totalAmount={batchData?.invoice_total ?? '00.00'}
           paidAmount={batchData?.invoice_paid_total ?? '00.00'}
           openAmount={batchData?.invoice_open_total ?? '00.00'}

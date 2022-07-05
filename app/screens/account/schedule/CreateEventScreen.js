@@ -79,11 +79,11 @@ export default function CreateEventScreen({navigation, route}) {
     value: 0,
     text: 'Schedule only',
   });
-  const [minAttendees, setMinAttendees] = useState(0);
-  const [maxAttendees, setMaxAttendees] = useState(0);
+  const [minAttendees, setMinAttendees] = useState();
+  const [maxAttendees, setMaxAttendees] = useState();
   const [eventFee, setEventFee] = useState(0);
   const [refundPolicy, setRefundPolicy] = useState('');
-  const [toggle, setToggle] = useState(true);
+  const [toggle] = useState(false);
   const [eventStartDateTime, setEventStartdateTime] = useState(
     toggle
       ? new Date().setDate(new Date().getDate() + 1)
@@ -104,6 +104,7 @@ export default function CreateEventScreen({navigation, route}) {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
   const [sportsSelection, setSportsSelection] = useState();
+  const [selectedSport,setSelectedSport] = useState();
 
   const [whoOpetion, setWhoOpetion] = useState();
   const [whoCanJoinOpetion, setWhoCanJoinOpetion] = useState({
@@ -124,11 +125,19 @@ export default function CreateEventScreen({navigation, route}) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
-  const [selectWeekMonth, setSelectWeekMonth] = useState('');
+  const [selectWeekMonth, setSelectWeekMonth] = useState('Never');
   const [backgroundThumbnail, setBackgroundThumbnail] = useState();
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
 
-  const whoCanDataSource = [
+  const whoCanDataSourceUser = [
+    {text: 'Everyone', value: 0},
+    {text: 'Only me', value: 1},
+    {
+      text: 'Followers',
+      value: 3,
+    },
+  ];
+  const whoCanDataSourceGroup = [
     {text: 'Everyone', value: 0},
     {text: 'Only me', value: 1},
     {
@@ -218,6 +227,30 @@ export default function CreateEventScreen({navigation, route}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            Alert.alert(
+              'Are you sure you want to quit to create this event?',
+              '',
+              [
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                {
+                  text: 'Quit', 
+                  onPress: () => navigation.goBack()
+                },
+              ],
+              {cancelable: false},
+            );
+            
+          }}>
+          <Image source={images.backArrow} style={styles.backImageStyle} />
+        </TouchableOpacity>
+      ),
       headerRight: () => (
         <TouchableOpacity
           style={{padding: 2, marginRight: 15}}
@@ -226,19 +259,7 @@ export default function CreateEventScreen({navigation, route}) {
         </TouchableOpacity>
       ),
     });
-  }, [
-    navigation,
-    backgroundThumbnail,
-    eventTitle,
-    eventDescription,
-    sportsSelection,
-    maxAttendees,
-    minAttendees,
-    locationDetail,
-    eventFee,
-    refundPolicy,
-    eventPosted
-  ]);
+  }, [navigation, backgroundThumbnail, eventTitle, eventDescription, sportsSelection,selectedSport, maxAttendees, minAttendees, locationDetail, eventFee, refundPolicy, eventPosted, route?.params]);
 
   useEffect(() => {
     if (isFocused) {
@@ -346,10 +367,9 @@ export default function CreateEventScreen({navigation, route}) {
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
-        setSportsSelection(item);
-        setTimeout(() => {
-          setVisibleSportsModal(false);
-        }, 300);
+       
+        setSelectedSport(item);
+        
       }}>
       <View
         style={{
@@ -363,7 +383,7 @@ export default function CreateEventScreen({navigation, route}) {
           {getSportName(item, authContext)}
         </Text>
         <View style={styles.checkbox}>
-          {sportsSelection?.sport === item?.sport ? (
+          {selectedSport?.sport === item?.sport ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -585,6 +605,10 @@ export default function CreateEventScreen({navigation, route}) {
       Alert.alert(strings.appName, 'Please Enter Event Title.');
       return false;
     }
+    if (sportsSelection === undefined) {
+      Alert.alert(strings.appName, 'Please choose sport.');
+      return false;
+    }
     if (eventDescription === '') {
       Alert.alert(strings.appName, 'Please Enter Event Description.');
       return false;
@@ -613,6 +637,14 @@ export default function CreateEventScreen({navigation, route}) {
       return false;
     }
 
+   if(Number(minAttendees) > 0 && Number(maxAttendees) > 0){
+    if (Number(minAttendees) === 0) {
+      Alert.alert(
+        strings.appName,
+        'Please enter valid minimum attendees number(0 not allowed).',
+      );
+      return false;
+    }
     if (Number(maxAttendees) === 0) {
       Alert.alert(
         strings.appName,
@@ -624,33 +656,13 @@ export default function CreateEventScreen({navigation, route}) {
       Alert.alert(strings.appName, 'Please enter valid attendees number.');
       return false;
     }
+   }
 
-    if (Number(eventFee) < 1) {
-      Alert.alert(strings.appName, 'Please enter valid event fee amount.');
-      return false;
-    }
-    if (refundPolicy.length < 1) {
-      Alert.alert(
-        strings.appName,
-        'Please enter valid refund policy description.',
-      );
-      return false;
-    }
+   
+    
 
     return true;
-  }, [
-    backgroundThumbnail,
-    eventDescription,
-    eventEndDateTime,
-    eventFee,
-    eventStartDateTime,
-    eventTitle,
-    locationDetail?.venue_detail,
-    locationDetail?.venue_name,
-    maxAttendees,
-    minAttendees,
-    refundPolicy.length,
-  ]);
+  }, [eventDescription, eventEndDateTime, eventStartDateTime, eventTitle, locationDetail?.venue_detail, locationDetail?.venue_name, maxAttendees, minAttendees, sportsSelection]);
 
   const createEventDone = (data) => {
     const entity = authContext.entity;
@@ -678,7 +690,7 @@ export default function CreateEventScreen({navigation, route}) {
     ) {
       rule = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`;
     }
-    if (selectWeekMonth !== '') {
+    if (selectWeekMonth !== 'Never') {
       data[0].untilDate = Number(
         parseFloat(new Date(eventUntilDateTime).getTime() / 1000).toFixed(0),
       );
@@ -690,8 +702,11 @@ export default function CreateEventScreen({navigation, route}) {
     createEvent(entityRole, uid, data, authContext)
       .then((response) => {
         console.log('Response :-', response);
-        setloading(false);
-        navigation.navigate('ScheduleScreen');
+        setTimeout(() => {
+          setloading(false);
+          navigation.navigate('ScheduleScreen');
+        }, 1000);
+       
       })
       .catch((e) => {
         setloading(false);
@@ -720,7 +735,7 @@ export default function CreateEventScreen({navigation, route}) {
               new Date(convertDateToUTC(eventEndDateTime)).getTime() / 1000,
             ).toFixed(0),
           ),
-          is_recurring: selectWeekMonth !== '',
+          is_recurring: selectWeekMonth !== 'Never',
           blocked: is_Blocked,
           selected_sport: sportsSelection,
           who_can_see: {
@@ -732,7 +747,7 @@ export default function CreateEventScreen({navigation, route}) {
           event_posted_at: eventPosted,
           event_fee: {
             value: Number(eventFee),
-            currency_type: 'CAD',
+            currency_type: strings.defaultCurrency,
           },
           refund_policy: refundPolicy,
           min_attendees: Number(minAttendees),
@@ -809,9 +824,7 @@ export default function CreateEventScreen({navigation, route}) {
               Alert.alert(strings.appName, e.messages);
             }, 0.1);
           })
-          .finally(() => {
-            setloading(false);
-          });
+          
       } else {
         createEventDone(data);
       }
@@ -838,6 +851,7 @@ export default function CreateEventScreen({navigation, route}) {
             />
             <EventTextInputItem
               title={strings.title}
+              isRequired={true}
               placeholder={strings.titlePlaceholder}
               onChangeText={(text) => {
                 setEventTitle(text);
@@ -848,7 +862,7 @@ export default function CreateEventScreen({navigation, route}) {
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>
                 {strings.sportCreateEvent}{' '}
-                <Text style={styles.opetionalTextStyle}>{'opetional'}</Text>
+                <Text style={{color: colors.darkThemeColor}}> *</Text>
               </Text>
               <TouchableOpacity
                 onPress={() => {
@@ -867,6 +881,7 @@ export default function CreateEventScreen({navigation, route}) {
             </View>
             <EventTextInputItem
               title={strings.description}
+              isRequired={true}
               placeholder={strings.aboutPlaceholder}
               onChangeText={(text) => {
                 setEventDescription(text);
@@ -875,20 +890,8 @@ export default function CreateEventScreen({navigation, route}) {
               value={eventDescription}
             />
 
-            <EventItemRender title={strings.timeTitle}>
-              <View style={styles.toggleViewStyle}>
-                <Text style={styles.allDayText}>{strings.allDay}</Text>
-                <TouchableOpacity
-                  style={styles.checkbox}
-                  onPress={() => setToggle(!toggle)}>
-                  <Image
-                    source={
-                      toggle ? images.orangeCheckBox : images.uncheckWhite
-                    }
-                    style={styles.checkboxImg}
-                  />
-                </TouchableOpacity>
-              </View>
+            <EventItemRender title={strings.timeTitle} isRequired={true} headerTextStyle={{marginBottom:15}}>
+             
               <EventTimeSelectItem
                 title={strings.starts}
                 toggle={!toggle}
@@ -939,14 +942,15 @@ export default function CreateEventScreen({navigation, route}) {
                   },
                   {label: 'Yearly', value: 'Yearly'},
                 ]}
-                placeholder={'Does not repeat'}
+                placeholder={'Never'}
                 value={selectWeekMonth}
                 onValueChange={(value) => {
                   setSelectWeekMonth(value);
                 }}
               />
-              {selectWeekMonth !== '' && (
+              {selectWeekMonth !== 'Never' && (
                 <EventTimeSelectItem
+
                   title={strings.until}
                   toggle={!toggle}
                   date={
@@ -978,7 +982,7 @@ export default function CreateEventScreen({navigation, route}) {
               />
             </EventItemRender>
 
-            <EventItemRender title={strings.place}>
+            <EventItemRender title={strings.place} isRequired={true}>
               <TextInput
                 placeholder={'Venue name'}
                 style={styles.textInputStyle}
@@ -1131,8 +1135,10 @@ export default function CreateEventScreen({navigation, route}) {
               <View style={styles.feeContainer}>
                 <TextInput
                   style={styles.eventFeeStyle}
+                  placeholder={`${eventFee}`}
+                  keyboardType={'decimal-pad'}
                   onChangeText={(value) => setEventFee(value)}
-                  value={eventFee}
+                  // value={eventFee}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                 />
@@ -1172,6 +1178,7 @@ export default function CreateEventScreen({navigation, route}) {
                 {strings.whereEventPosted}
               </Text>
               <FlatList
+                scrollEnabled={false}
                 data={eventPostedList}
                 renderItem={renderEventPostedOpetions}
                 style={{marginTop: 15}}
@@ -1276,15 +1283,17 @@ export default function CreateEventScreen({navigation, route}) {
         backdropColor="black"
         onBackdropPress={() => setVisibleSportsModal(false)}
         onRequestClose={() => setVisibleSportsModal(false)}
-        backdropOpacity={0}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={10}
+        backdropTransitionOutTiming={10}
         style={{
           margin: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
         }}>
         <View
           style={{
             width: '100%',
-            height: Dimensions.get('window').height / 1.3,
+            height: Dimensions.get('window').height / 1.1,
             backgroundColor: 'white',
             position: 'absolute',
             bottom: 0,
@@ -1327,8 +1336,13 @@ export default function CreateEventScreen({navigation, route}) {
                 marginVertical: 20,
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
-                color: colors.themeColor,
-              }}></Text>
+                color: colors.lightBlackColor,
+              }} onPress={()=>{
+                setSportsSelection(selectedSport);
+                setTimeout(() => {
+                  setVisibleSportsModal(false);
+                }, 300);
+              }}>Apply</Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList
@@ -1346,10 +1360,13 @@ export default function CreateEventScreen({navigation, route}) {
         backdropColor="black"
         onBackdropPress={() => setVisibleWhoModal(false)}
         onRequestClose={() => setVisibleWhoModal(false)}
-        backdropOpacity={0}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={10}
+        backdropTransitionOutTiming={10}
         style={{
           margin: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
+          
         }}>
         <View
           style={{
@@ -1377,9 +1394,10 @@ export default function CreateEventScreen({navigation, route}) {
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
+              onPress={() => setVisibleWhoModal(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
+           
             <Text
               style={{
                 alignSelf: 'center',
@@ -1388,7 +1406,7 @@ export default function CreateEventScreen({navigation, route}) {
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
               }}>
-              Sports
+              Privacy Setting
             </Text>
 
             <Text
@@ -1404,7 +1422,7 @@ export default function CreateEventScreen({navigation, route}) {
           <FlatList
             ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
             showsVerticalScrollIndicator={false}
-            data={whoCanDataSource}
+            data={['user','player'].includes(authContext.entity.role) ? whoCanDataSourceUser : whoCanDataSourceGroup}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderWhoCan}
           />
@@ -1455,25 +1473,25 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
   },
 
-  toggleViewStyle: {
-    flexDirection: 'row',
-    marginHorizontal: 2,
-    justifyContent: 'flex-end',
-    paddingVertical: 3,
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  allDayText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    right: wp('8%'),
-  },
+  // toggleViewStyle: {
+  //   flexDirection: 'row',
+  //   marginHorizontal: 2,
+  //   justifyContent: 'flex-end',
+  //   paddingVertical: 3,
+  //   alignItems: 'center',
+  //   marginBottom: 8,
+  // },
+  // allDayText: {
+  //   fontSize: 16,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.lightBlackColor,
+  //   right: wp('8%'),
+  // },
   availableSubHeader: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    marginTop: 5,
+   
   },
   checkboxImg: {
     width: wp('5.5%'),
@@ -1548,18 +1566,19 @@ const styles = StyleSheet.create({
 
   closeButton: {
     alignSelf: 'center',
-    width: 13,
-    height: 13,
+    width: 15,
+    height: 15,
     marginLeft: 5,
     resizeMode: 'contain',
+    tintColor:colors.blackColor
   },
 
   separatorLine: {
     alignSelf: 'center',
     backgroundColor: colors.grayColor,
     height: 0.5,
-    marginTop: 14,
-    width: wp('92%'),
+   
+    width: wp('100%'),
   },
 
   languageList: {
@@ -1646,5 +1665,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginTop: 15,
     paddingBottom: 10,
+  },
+  backImageStyle: {
+    height: 20,
+    width: 15,
+    tintColor: colors.lightBlackColor,
+    resizeMode: 'contain',
+    marginLeft: 15,
   },
 });

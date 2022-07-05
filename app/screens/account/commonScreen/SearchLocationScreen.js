@@ -6,7 +6,7 @@ import {
   Image,
   TextInput,
   FlatList,
-
+  Keyboard
 } from 'react-native';
 
 import {
@@ -163,6 +163,7 @@ export default function SearchLocationScreen({ navigation, route }) {
         data={ cityData }
         renderItem={ renderItem }
         keyExtractor={(item, index) => index.toString()}
+        onScroll={Keyboard.dismiss}
       />
     </View>
   );

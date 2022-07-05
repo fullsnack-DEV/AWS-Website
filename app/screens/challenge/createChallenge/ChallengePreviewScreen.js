@@ -59,6 +59,7 @@ import TCTabView from '../../../components/TCTabView';
 import CurruentReservationView from '../alterChallenge/CurrentReservationView';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
 import {paymentMethods} from '../../../api/Users';
+import TCGameDetailRules from '../../../components/TCGameDetailRules';
 
 let entity = {};
 export default function ChallengePreviewScreen({navigation, route}) {
@@ -67,6 +68,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
+  const [isMore,setIsMore] = useState(false);
 
   entity = authContext.entity;
   const isFocused = useIsFocused();
@@ -1037,10 +1039,9 @@ export default function ChallengePreviewScreen({navigation, route}) {
               </View>
             </View>
           </View>
-
           <TCThickDivider />
           <View>
-            <TCLabel title={`Game · ${challengeData?.sport}`} />
+            <TCLabel title={`Game · ${Utility.getSportName(challengeData,authContext)}`} />
             <TCInfoImageField
               title={'Home'}
               image={
@@ -1073,7 +1074,6 @@ export default function ChallengePreviewScreen({navigation, route}) {
               marginLeft={30}
             />
             <TCThinDivider />
-
             <TCInfoField
               title={'Time'}
               value={`${moment(
@@ -1088,7 +1088,6 @@ export default function ChallengePreviewScreen({navigation, route}) {
               titleStyle={{fontSize: 16}}
             />
             <TCThinDivider />
-
             <TCInfoField
               title={'Venue'}
               value={challengeData?.venue?.name}
@@ -1121,8 +1120,18 @@ export default function ChallengePreviewScreen({navigation, route}) {
           />
           <TCThickDivider />
 
-          <TCLabel title={'Game Duration'} />
-          <TCChallengeTitle
+          {challengeData?.sport?.toLowerCase() === 'tennis'  ? <View>
+            <TCGameDetailRules
+              gameRules={challengeData?.score_rules}
+              isMore = {isMore}
+              onPressMoreLess={()=>{
+                setIsMore(!isMore)
+              }}
+            />
+            <TCThickDivider marginTop={20} />
+          </View> : <View>
+            <TCLabel title={'Game Duration'} />
+            <TCChallengeTitle
             containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
             title={'1st period'}
             titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
@@ -1136,25 +1145,26 @@ export default function ChallengePreviewScreen({navigation, route}) {
             staticValueText={'min.'}
           />
 
-          <FlatList
+            <FlatList
             data={challengeData?.game_duration?.period}
             renderItem={renderPeriod}
             keyExtractor={(item, index) => index.toString()}
             style={{marginBottom: 15}}
           />
-          {challengeData?.game_duration?.period?.length > 0 && (
-            <Text style={styles.normalTextStyle}>
-              {strings.gameDurationTitle2}
-            </Text>
+            {challengeData?.game_duration?.period?.length > 0 && (
+              <Text style={styles.normalTextStyle}>
+                {strings.gameDurationTitle2}
+              </Text>
           )}
 
-          <FlatList
+            <FlatList
             data={challengeData?.game_duration?.overtime}
             renderItem={renderOverTime}
             keyExtractor={(item, index) => index.toString()}
             style={{marginBottom: 15}}
           />
-          <TCThickDivider marginTop={20} />
+            <TCThickDivider marginTop={20} />
+          </View>}
 
           <View>
             <TCChallengeTitle title={'Game Rules'} />
@@ -1223,7 +1233,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
               title={'Refund Policy'}
               value={challengeData?.refund_policy}
               tooltipText={
-              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
               }
               tooltipHeight={heightPercentageToDP('18%')}
               tooltipWidth={widthPercentageToDP('50%')}

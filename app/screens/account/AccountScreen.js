@@ -31,7 +31,6 @@ import MarqueeText from 'react-native-marquee';
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -1399,19 +1398,8 @@ export default function AccountScreen({navigation}) {
       <ActivityLoader visible={loading} />
 
       <Header
-        leftComponent={
-          <View>
-            <FastImage
-              source={images.tc_message_top_icon}
-              resizeMode={'contain'}
-              style={styles.backImageStyle}
-            />
-          </View>
-        }
+        leftComponent={<Text style={styles.eventTitleTextStyle}>Account</Text>}
         showBackgroundColor={true}
-        centerComponent={
-          <Text style={styles.eventTitleTextStyle}>Account</Text>
-        }
         rightComponent={renderTopRightNotificationButton()}
       />
       <View style={styles.separateLine} />
@@ -2389,79 +2377,20 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   eventTitleTextStyle: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
-    alignSelf: 'center',
+    width: 100,
   },
   separateLine: {
     borderColor: colors.veryLightGray,
     borderWidth: 0.5,
   },
 
-  // background: {
-  //   height: '100%',
-  //   position: 'absolute',
-  //   resizeMode: 'stretch',
-  //   width: '100%',
-  //   borderTopLeftRadius: 15,
-  //   borderTopRightRadius: 15,
-  // },
-  // foundText: {
-  //   color: colors.whiteColor,
-  //   fontSize: 25,
-  //   fontFamily: fonts.RRegular,
-  //   textAlign: 'center',
-  //   marginTop: 20,
-  // },
-  // groupsImg: {
-  //   height: 75,
-  //   resizeMode: 'contain',
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  //   width: 75,
-  // },
-
-  // goToProfileButton: {
-  //   alignSelf: 'center',
-  //   borderColor: colors.whiteColor,
-  //   borderRadius: 40,
-  //   borderWidth: 1,
-  //   height: 45,
-  //   marginBottom: wp('15%'),
-  //   width: '92%',
-  // },
-  // manageChallengeDetailTitle: {
-  //   alignSelf: 'center',
-  //   fontSize: 16,
-  //   fontFamily: fonts.RRegular,
-  //   color: colors.whiteColor,
-  //   textAlign: 'center',
-  //   marginBottom: 15,
-  // },
-  // goToProfileTitle: {
-  //   color: colors.whiteColor,
-  //   fontFamily: fonts.RBold,
-  //   fontSize: 15,
-  //   height: 50,
-  //   padding: 12,
-  //   textAlign: 'center',
-  // },
-  // modalContainerViewStyle: {
-  //   height: '94%',
-  //   backgroundColor: colors.whiteColor,
-  //   borderTopLeftRadius: 15,
-  //   borderTopRightRadius: 15,
-  // },
-
   rulesText: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
-  },
-  backImageStyle: {
-    height: 35,
-    width: 35,
   },
 
   closeButton: {

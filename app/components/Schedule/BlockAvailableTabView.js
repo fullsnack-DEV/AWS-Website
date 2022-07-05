@@ -66,8 +66,9 @@ const styles = StyleSheet.create({
   activeEventPricacy: {
     flex: 1,
     backgroundColor: colors.whiteColor,
-    paddingVertical: hp('0.8'),
+   
     alignItems: 'center',
+    justifyContent:'center',
     borderRadius: wp('1.5%'),
   },
   inactiveEventPricacy: {
@@ -86,5 +87,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     letterSpacing: 0.5,
     fontSize: 16,
+    paddingVertical: hp('0.8'),
   },
 });

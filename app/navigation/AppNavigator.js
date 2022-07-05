@@ -161,6 +161,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'RefereesSetting' ||
     routeName === 'ScorekeepersSetting' ||
     routeName === 'GameDuration' ||
+    routeName === 'GameTennisDuration' ||
     routeName === 'ChallengeScreen' ||
     routeName === 'InviteChallengeScreen' ||
     routeName === 'ChooseVenueScreen' ||
@@ -274,6 +275,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'GroupSettingPrivacyScreen' ||
     routeName === 'UserSettingPrivacyScreen' ||
     routeName === 'PauseGroupScreen' ||
+    routeName === 'PayoutMethodScreen' ||
     routeName === 'SportAccountSettingScreen' ||
     routeName === 'GroupMembersSettingScreen' ||
     routeName === 'RecruitingMemberScreen' ||

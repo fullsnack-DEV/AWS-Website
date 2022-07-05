@@ -26,7 +26,7 @@ const images = {
   checkWhite: require('../assets/images/ic_white_check.png'),
   check: require('../assets/images/check.png'),
   checkGreen: require('../assets/images/green_check.png'),
-  radioCheckYellow: require('../assets/images/radio_check_yellow.png'),
+  radioCheckYellow: require('../assets/images/radioSelectYellow.png'),
   whiteUncheck: require('../assets/images/white_uncheck.png'),
   uncheckWhite: require('../assets/images/ic_white_uncheck.png'),
   checkEditor: require('../assets/images/ic_check_editor.png'),
@@ -307,7 +307,7 @@ const images = {
 
   arrowDown: require('../assets/images/arrow_down.png'),
   moveIcon: require('../assets/images/ic_move.png'),
-  checkRoundOrange: require('../assets/images/check_round_orange.png'),
+  checkRoundOrange: require('../assets/images/check_radio_orange.png'),
   radioRoundOrange: require('../assets/images/check_radio_orange.png'),
 
   addStatus: require('../assets/images/add_status.png'),

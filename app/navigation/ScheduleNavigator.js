@@ -1986,7 +1986,7 @@ const ScheduleNavigator = () => (
       name="RegisterScorekeeperForm2"
       component={RegisterScorekeeperForm2}
       options={{
-        title: 'Register as a scorekeeper',
+        title: 'Match Fee',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

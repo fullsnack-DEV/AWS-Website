@@ -22,12 +22,12 @@ function TCPlayerView({ onPress, showStar = false, data }) {
             style={styles.profileImage}
           />
         </View>
-        <View style={{ flexDirection: 'column', marginLeft: 5 }}>
+        <View style={{ flexDirection: 'column', marginLeft: 5,flex:1 }}>
           <Text style={styles.entityName} numberOfLines={2}>
             {data?.full_name}
           </Text>
           <Text style={styles.locationText} numberOfLines={1}>
-            {data?.city} · {data?.sports?.toString()}
+            {data?.city} · {data?.sports.map(value => value.sport_name).join(', ')}
           </Text>
         </View>
         {showStar && (

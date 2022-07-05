@@ -218,7 +218,7 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
                 const certiUrl = certificate;
                 certiUrl[index] = {
                   ...certiUrl[index],
-                  url: pickImages?.sourceURL,
+                  url: pickImages?.path,
                 };
                 setCertificate([...certiUrl]);
                 uploadImages([pickImages], authContext)

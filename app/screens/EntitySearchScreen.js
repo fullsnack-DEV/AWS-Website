@@ -291,7 +291,7 @@ export default function EntitySearchScreen({navigation, route}) {
       });
     }
 
-    // Game Fee filter
+    // Match Fee filter
     if (playerFilter.fee) {
       playersQuery.query.bool.must.push({
         bool: {
@@ -404,7 +404,7 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-    // Referee game fee filter
+    // Referee match fee filter
     if (refereeFilters.fee) {
       refereeQuery.query.bool.must[0].nested.query.bool.must.push({
         term: {
@@ -475,7 +475,7 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-    // Referee game fee filter
+    // Referee Match fee filter
     if (scoreKeeperFilters.fee) {
       scoreKeeperQuery.query.bool.must.push({
         range: {
@@ -543,7 +543,7 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-    // team game fee filter
+    // team match fee filter
     if (teamFilters.fee) {
       teamsQuery.query.bool.must.push({
         range: {
@@ -615,7 +615,7 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-    // club game fee filter
+    // club match fee filter
     if (clubFilters.fee) {
       clubsQuery.query.bool.must.push({
         range: {

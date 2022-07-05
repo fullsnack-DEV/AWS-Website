@@ -2761,6 +2761,7 @@ const HomeNavigator = () => (
         },
       }}
     />
+   
   </Stack.Navigator>
 );
 

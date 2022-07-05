@@ -87,6 +87,7 @@ import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInv
 import JoinedTeamsScreen from '../screens/account/JoinedTeamsScreen';
 import EntityStatScreen from '../screens/home/EntityStatScreen';
 import MessageChat from '../components/message/MessageChat';
+import GameTennisDuration from '../screens/challenge/manageChallenge/settings/GameTennisDuration';
 
 const Stack = createStackNavigator();
 
@@ -1037,7 +1038,7 @@ const NewsFeedNavigator = () => (
       name="GameFee"
       component={GameFee}
       options={{
-        title: 'Game Fee',
+        title: 'Match Fee',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1247,6 +1248,22 @@ const NewsFeedNavigator = () => (
       }}
     />
     <Stack.Screen
+      name="GameTennisDuration"
+      component={GameTennisDuration}
+      options={{
+        title: 'Sets, points & Duration',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
       name="AlterScorekeeperScreen"
       component={AlterScorekeeperScreen}
       options={{
@@ -1302,6 +1319,7 @@ const NewsFeedNavigator = () => (
         headerShown: false,
       }}
     />
+    
   </Stack.Navigator>
 );
 

@@ -454,7 +454,7 @@ export default function GroupInfo({
         </View>
       )} */}
 
-      {/* Game Fee section */}
+      {/* Match Fee section */}
       {/* Remove this section because fetch from manage challenge  */}
 
       {/* groupDetails?.entity_type === 'team' && <View>

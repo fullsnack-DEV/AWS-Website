@@ -1,6 +1,17 @@
 import React, {useState, useLayoutEffect, useContext} from 'react';
-import {StyleSheet, View, Text, TextInput, Alert} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  Alert,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import Modal from 'react-native-modal';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import colors from '../../../../Constants/Colors';
 import strings from '../../../../Constants/String';
@@ -9,6 +20,9 @@ import fonts from '../../../../Constants/Fonts';
 import AuthContext from '../../../../auth/context';
 import * as Utility from '../../../../utils';
 import {patchPlayer} from '../../../../api/Users';
+import TCThinDivider from '../../../../components/TCThinDivider';
+import DataSource from '../../../../Constants/DataSource';
+import images from '../../../../Constants/ImagePath';
 
 export default function ScorekeeperFee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
@@ -21,11 +35,12 @@ export default function ScorekeeperFee({navigation, route}) {
       ? route?.params?.settingObj?.game_fee?.fee
       : 0,
   );
-  const [currencyType] = useState(
+  const [currencyType, setCurruencyType] = useState(
     route?.params?.settingObj?.game_fee
       ? route?.params?.settingObj?.game_fee?.currency_type
-      : authContext?.entity?.obj?.currency_type ?? 'CAD',
+      : authContext?.entity?.obj?.currency_type ?? strings.defaultCurrency,
   );
+  const [visibleCurrencyModal, setVisibleCurrencyModal] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -49,7 +64,7 @@ export default function ScorekeeperFee({navigation, route}) {
 
   const onSavePressed = () => {
     if (basicFee < 1 && basicFee > 0) {
-      Alert.alert('User should not allow less than $1 game fee.');
+      Alert.alert('User should not allow less than $1 match fee.');
     } else if (
       comeFrom === 'InviteChallengeScreen' ||
       comeFrom === 'EditChallenge'
@@ -76,9 +91,10 @@ export default function ScorekeeperFee({navigation, route}) {
       };
 
       setloading(true);
-      const registerdScorekeeperData = authContext?.entity?.obj?.scorekeeper_data?.filter(
-        (obj) => obj?.sport !== sportName,
-      );
+      const registerdScorekeeperData =
+        authContext?.entity?.obj?.scorekeeper_data?.filter(
+          (obj) => obj?.sport !== sportName,
+        );
 
       let selectedSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
         (obj) => obj?.sport === sportName,
@@ -131,7 +147,35 @@ export default function ScorekeeperFee({navigation, route}) {
     }
   };
 
+  const renderCurrencyType = ({item}) => (
+    <TouchableOpacity
+      onPress={() => {
+        setCurruencyType(item?.value);
+        setTimeout(() => {
+          setVisibleCurrencyModal(false);
+        }, 300);
+      }}
+      style={{
+        paddingHorizontal: 25,
+        marginVertical: 5,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
+      <Text style={{marginTop: 15, marginBottom: 15}}>{item.label}</Text>
+      <Image
+        source={
+          currencyType === item?.value
+            ? images.radioCheckYellow
+            : images.radioUnselect
+        }
+        style={{height: 22, width: 22}}
+      />
+    </TouchableOpacity>
+  );
+
   const IsNumeric = (num) => num >= 0 || num < 0;
+
   return (
     <View>
       <ActivityLoader visible={loading} />
@@ -147,8 +191,88 @@ export default function ScorekeeperFee({navigation, route}) {
           }}
           value={basicFee.toString()}
           keyboardType={'decimal-pad'}></TextInput>
-        <Text style={styles.curruency}>{currencyType}/hour</Text>
+        <Text
+          style={styles.curruency}>
+          {currencyType}
+        </Text>
       </View>
+      <Text
+          style={[styles.changeCurruency, {textDecorationLine: 'underline'}]}
+          onPress={() => {
+            setVisibleCurrencyModal(true);
+          }}>
+        {'Change currency'}
+      </Text>
+      <Modal
+        isVisible={visibleCurrencyModal}
+        backdropColor="black"
+        onBackdropPress={() => setVisibleCurrencyModal(false)}
+        onRequestClose={() => setVisibleCurrencyModal(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={10}
+        backdropTransitionOutTiming={10}
+        style={{
+          margin: 0,
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.3,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              hitSlop={Utility.getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => setVisibleCurrencyModal(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              Currency Setting
+            </Text>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.themeColor,
+              }}></Text>
+          </View>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
+            showsVerticalScrollIndicator={false}
+            data={DataSource.CurrencyType}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderCurrencyType}
+          />
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -168,7 +292,6 @@ const styles = StyleSheet.create({
 
     marginTop: 12,
     paddingHorizontal: 15,
-    paddingRight: 30,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
@@ -179,7 +302,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: wp('3.8%'),
     height: 40,
-    width: '86%',
+    width: '90%',
+    textAlign:'center'
   },
   curruency: {
     alignSelf: 'center',
@@ -187,10 +311,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+    
   },
   saveButtonStyle: {
     fontFamily: fonts.RMedium,
     fontSize: 16,
     marginRight: 10,
   },
+  closeButton: {
+    alignSelf: 'center',
+    width: 15,
+    height: 15,
+    marginLeft: 5,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
+  },
+
+  separatorLine: {
+    alignSelf: 'center',
+    backgroundColor: colors.grayColor,
+    height: 0.5,
+
+    width: wp('100%'),
+  },
+  changeCurruency: {
+    
+    textAlign:'right',
+     fontSize: 14,
+     fontFamily: fonts.RLight,
+     color: colors.lightBlackColor,
+     marginRight:15,
+     marginTop:10
+   },
 });

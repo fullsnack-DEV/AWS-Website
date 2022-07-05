@@ -121,7 +121,7 @@ import React, {
 
        if (item.key === 'Referee Fee') {
          if (settingObject?.game_fee) {
-           return `$${settingObject?.game_fee?.fee} ${settingObject?.game_fee?.currency_type}`;
+           return `${settingObject?.game_fee?.fee} ${settingObject?.game_fee?.currency_type}`;
          }
        }
        if (item.key === 'Refund Policy') {

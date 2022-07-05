@@ -224,6 +224,8 @@ export default function ChallengePaymentScreen({route, navigation}) {
     }
     console.log('Challenge Object111:=>', body);
     
+
+    
     setloading(true);
     createChallenge(body, authContext)
       .then((response) => {
@@ -495,7 +497,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
         title={'Refund Policy'}
         value={challengeData?.refund_policy}
         tooltipText={
-        '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the game fee and service fee are not refunded.'
+        '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
         }
         tooltipHeight={hp('18%')}
         tooltipWidth={wp('50%')}
@@ -562,6 +564,8 @@ export default function ChallengePaymentScreen({route, navigation}) {
             challengeObj.min_scorekeeper = challengeData.min_scorekeeper;
             console.log('Payment obj:=>', challengeObj);
 
+
+            
             challengeOperation(
               entity.uid,
               challengeData?.challenge_id,

@@ -1,8 +1,6 @@
 /* eslint-disable react-native/no-raw-text */
 /* eslint-disable no-nested-ternary */
-import React, {
- useContext, useEffect, useRef, useState,
- } from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -18,7 +16,7 @@ import {
 import moment from 'moment';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -53,7 +51,7 @@ import TCKeyboardView from '../TCKeyboardView';
 import TCThinDivider from '../TCThinDivider';
 import DataSource from '../../Constants/DataSource';
 import MapPinWithRadious from '../Schedule/MapPinWithRadious';
-import { getSportName } from '../../utils';
+import {getSportName} from '../../utils';
 
 const privacy_Data = [
   {
@@ -246,13 +244,11 @@ function RefereeInfoSection({
   const [editLanguageModal, setEditLanguageModal] = useState(false);
   const [privacyData, setPrivacyData] = useState(privacy_Data);
   const [genderPrivacy, setGenderPrivacy] = useState(gender_privacy);
-  const [yearOfBirthPrivacy, setYearOfBirthPrivacy] = useState(
-    yearOfBirth_privacy,
-  );
+  const [yearOfBirthPrivacy, setYearOfBirthPrivacy] =
+    useState(yearOfBirth_privacy);
   const [languagePrivacy, setLanguagePrivacy] = useState(language_privacy);
-  const [currentCityPrivacy, setCurrentCityPrivacy] = useState(
-    currentCity_privacy,
-  );
+  const [currentCityPrivacy, setCurrentCityPrivacy] =
+    useState(currentCity_privacy);
   const [dateModalVisible, setDateModalVisible] = useState(false);
   const [selectedCerti, setSelectedCerti] = useState([]);
   const [editCertificateModal, setEditCertificateModal] = useState(false);
@@ -305,7 +301,7 @@ function RefereeInfoSection({
   };
 
   const handleDatePress = (date) => {
-    setInfo({ ...info, birthdayText: date });
+    setInfo({...info, birthdayText: date});
     setDateModalVisible(!dateModalVisible);
   };
   const handleCancelPress = () => {
@@ -317,31 +313,29 @@ function RefereeInfoSection({
     setCertificatesData(filteredData);
   };
 
-  const Item = ({
- item, onPress, style, isChecked,
- }) => (
-   <TouchableOpacity onPress={onPress} style={[styles.listItems, style]}>
-     <LinearGradient
+  const Item = ({item, onPress, style, isChecked}) => (
+    <TouchableOpacity onPress={onPress} style={[styles.listItems, style]}>
+      <LinearGradient
         colors={
           isChecked
             ? [colors.yellowColor, colors.orangeColor]
             : [colors.offwhite, colors.offwhite]
         }
-        style={[styles.listItems, { paddingHorizontal: 10, paddingVertical: 0 }]}>
-       <View
+        style={[styles.listItems, {paddingHorizontal: 10, paddingVertical: 0}]}>
+        <View
           style={{
             flexDirection: 'row',
           }}>
-         <View style={styles.selectUnSelectViewStyle}>
-           <Text
+          <View style={styles.selectUnSelectViewStyle}>
+            <Text
               style={{
                 ...styles.title,
                 color: isChecked ? colors.whiteColor : colors.lightBlackColor,
               }}>
-             {item.title}
-           </Text>
-           {isChecked ? (
-             <Image
+              {item.title}
+            </Text>
+            {isChecked ? (
+              <Image
                 source={images.checkWhite}
                 resizeMode={'contain'}
                 style={styles.checkboxImg}
@@ -353,10 +347,10 @@ function RefereeInfoSection({
                 style={styles.checkboxImg}
               />
             )}
-         </View>
-       </View>
-     </LinearGradient>
-   </TouchableOpacity>
+          </View>
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
   );
 
   useEffect(() => {
@@ -368,10 +362,12 @@ function RefereeInfoSection({
         return str.replace(/[-[\]\\/{}()*+?.^$|]/g, '\\$&');
       };
       const searchStr = escapeRegExp(searchLanguageText);
-      const answer = languageList?.filter((a) => a.title
+      const answer = languageList?.filter((a) =>
+        a.title
           .toLowerCase()
           .toString()
-          .match(searchStr.toLowerCase().toString()));
+          .match(searchStr.toLowerCase().toString()),
+      );
       setLanguageList([...answer]);
     }
   }, [searchLanguageText]);
@@ -389,7 +385,7 @@ function RefereeInfoSection({
     }
   }, [languageList]);
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({item}) => {
     const selectVal = item;
     return (
       <Item
@@ -408,7 +404,7 @@ function RefereeInfoSection({
     );
   };
 
-  const handleTagPress = ({ item }) => {
+  const handleTagPress = ({item}) => {
     const selectVal = item;
     languageList.map((val) => {
       if (val.id === item.id) {
@@ -426,7 +422,7 @@ function RefereeInfoSection({
     const langParams = [];
     selectedLanguage.map((lang) => {
       langNameItem.language_name = lang.title;
-      langParams.push({ ...langNameItem });
+      langParams.push({...langNameItem});
       return null;
     });
 
@@ -450,10 +446,7 @@ function RefereeInfoSection({
     };
     const newDataList = [];
     data.referee_data.forEach((item) => {
-      if (
-        item.sport
-        === selectRefereeData.sport
-      ) {
+      if (item.sport === selectRefereeData.sport) {
         newDataList.push(refereeEditParams);
       } else {
         newDataList.push(item);
@@ -480,7 +473,7 @@ function RefereeInfoSection({
             actionSheet.current.show();
           }, 200);
         }}
-        containerStyle={{ marginTop: 10, marginBottom: 12 }}>
+        containerStyle={{marginTop: 10, marginBottom: 12}}>
         <Text style={styles.bioTextStyle}>{bioText}</Text>
         <Text style={styles.signUpTimeStyle}>{strings.signedUpTime}</Text>
       </EditEventItem>
@@ -508,7 +501,7 @@ function RefereeInfoSection({
         <BasicInfoItem
           title={strings.currrentCityTitle}
           value={info.currentCity ?? '-'}
-          fieldView={{ marginBottom: 10 }}
+          fieldView={{marginBottom: 10}}
         />
       </EditEventItem>
       <View style={styles.dividerStyle} />
@@ -539,10 +532,10 @@ function RefereeInfoSection({
               No certificates found
             </Text>
           }
-          style={{ marginTop: 5, marginBottom: 15 }}
-          renderItem={({ item: certItem }) => (
+          style={{marginTop: 5, marginBottom: 15}}
+          renderItem={({item: certItem}) => (
             <CertificatesItemView
-              certificateImage={{ uri: certItem.thumbnail }}
+              certificateImage={{uri: certItem.thumbnail}}
               certificateName={certItem.title}
               teamTitleTextStyle={{
                 color: colors.lightBlackColor,
@@ -651,8 +644,8 @@ function RefereeInfoSection({
               ListEmptyComponent={
                 <Text style={styles.notAvailableTextStyle}>No Area found</Text>
               }
-              style={{ marginTop: 5, marginBottom: 15 }}
-              renderItem={({ item }) => (
+              style={{marginTop: 5, marginBottom: 15}}
+              renderItem={({item}) => (
                 <View>
                   <Text
                     style={{
@@ -685,19 +678,23 @@ function RefereeInfoSection({
                 }}>
                 Within{' '}
                 <Text
-                  style={{ color: colors.themeColor, fontFamily: fonts.RMedium }}>
+                  style={{color: colors.themeColor, fontFamily: fonts.RMedium}}>
                   {refereeSetting?.available_area?.radious}{' '}
                   {refereeSetting?.available_area?.distance_type}
                 </Text>{' '}
                 of{' '}
                 <Text
-                  style={{ color: colors.themeColor, fontFamily: fonts.RMedium }}>
+                  style={{color: colors.themeColor, fontFamily: fonts.RMedium}}>
                   {refereeSetting?.available_area?.address}
                 </Text>
               </Text>
               <MapPinWithRadious
                 coordinate={refereeSetting?.available_area?.latlong}
-                radious={refereeSetting?.available_area?.distance_type === 'Mi' ? refereeSetting?.available_area?.radious * 1609.344 : refereeSetting?.available_area?.radious * 1000}
+                radious={
+                  refereeSetting?.available_area?.distance_type === 'Mi'
+                    ? refereeSetting?.available_area?.radious * 1609.344
+                    : refereeSetting?.available_area?.radious * 1000
+                }
                 region={{
                   ...refereeSetting?.available_area?.latlong,
                   latitudeDelta: 0.0922,
@@ -732,18 +729,16 @@ function RefereeInfoSection({
         }}
         hasBackdrop
         onBackdropPress={() => setPrivacyModal(false)}
-        backdropOpacity={0}
-        
-        >
+        backdropOpacity={0}>
         <SafeAreaView
           style={[
             styles.modalContainerViewStyle,
-            { backgroundColor: colors.whiteColor },
+            {backgroundColor: colors.whiteColor},
           ]}>
           <LinearGradient
             colors={[colors.orangeColor, colors.yellowColor]}
-            end={{ x: 0.0, y: 0.25 }}
-            start={{ x: 1, y: 0.5 }}
+            end={{x: 0.0, y: 0.25}}
+            start={{x: 1, y: 0.5}}
             style={styles.gradiantHeaderViewStyle}></LinearGradient>
           <Header
             mainContainerStyle={styles.headerMainContainerStyle}
@@ -779,27 +774,27 @@ function RefereeInfoSection({
               </TouchableOpacity>
             }
           />
-          {(editPressTitle === strings.bio
-            || editPressTitle === strings.certificateTitle
-            || editPressTitle === strings.refereeFeesTitle) && (
+          {(editPressTitle === strings.bio ||
+            editPressTitle === strings.certificateTitle ||
+            editPressTitle === strings.refereeFeesTitle) && (
               <EventItemRender
               title={
-                (editPressTitle === strings.bio && strings.bioPrivacyTitle)
-                || (editPressTitle === strings.certificateTitle
-                  && strings.certiPrivacyTitle)
-                || (editPressTitle === strings.refereeFeesTitle
-                  && strings.refereeFeePrivacyTitle)
+                (editPressTitle === strings.bio && strings.bioPrivacyTitle) ||
+                (editPressTitle === strings.certificateTitle &&
+                  strings.certiPrivacyTitle) ||
+                (editPressTitle === strings.refereeFeesTitle &&
+                  strings.refereeFeePrivacyTitle)
               }
-              containerStyle={{ marginTop: 10 }}>
+              containerStyle={{marginTop: 10}}>
                 <FlatList
                 data={privacyData ?? []}
-                style={{ marginTop: 10 }}
-                ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
-                renderItem={({ item }) => (
+                style={{marginTop: 10}}
+                ItemSeparatorComponent={() => <View style={{height: 15}} />}
+                renderItem={({item}) => (
                   <RadioBtnItem
                     titleName={item.title}
                     selected={item.isSelected}
-                    touchRadioBtnStyle={{ marginRight: 5 }}
+                    touchRadioBtnStyle={{marginRight: 5}}
                     onRadioBtnPress={() => {
                       privacyData.map((scheduleItem) => {
                         const schedule = scheduleItem;
@@ -824,25 +819,25 @@ function RefereeInfoSection({
               showsVerticalScrollIndicator={false}>
               <EventItemRender
                 title={
-                  editPressTitle === strings.basicinfotitle
-                  && strings.basicInfoPrivacyTitle
+                  editPressTitle === strings.basicinfotitle &&
+                  strings.basicInfoPrivacyTitle
                 }
-                containerStyle={{ marginTop: 10 }}>
+                containerStyle={{marginTop: 10}}>
                 <FlatList
                   data={genderPrivacy ?? []}
                   bounces={false}
-                  style={{ marginTop: 10 }}
+                  style={{marginTop: 10}}
                   ListHeaderComponent={() => (
                     <Text style={styles.privacySubTitleStyle}>
                       {strings.gender}
                     </Text>
                   )}
-                  ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
-                  renderItem={({ item }) => (
+                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
+                  renderItem={({item}) => (
                     <RadioBtnItem
                       titleName={item.title}
                       selected={item.isSelected}
-                      touchRadioBtnStyle={{ marginRight: 5 }}
+                      touchRadioBtnStyle={{marginRight: 5}}
                       onRadioBtnPress={() => {
                         genderPrivacy.map((scheduleItem) => {
                           const schedule = scheduleItem;
@@ -863,18 +858,18 @@ function RefereeInfoSection({
                 <FlatList
                   data={yearOfBirthPrivacy ?? []}
                   bounces={false}
-                  style={{ marginTop: 10 }}
+                  style={{marginTop: 10}}
                   ListHeaderComponent={() => (
                     <Text style={styles.privacySubTitleStyle}>
                       {strings.yearOfBirth}
                     </Text>
                   )}
-                  ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
-                  renderItem={({ item }) => (
+                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
+                  renderItem={({item}) => (
                     <RadioBtnItem
                       titleName={item.title}
                       selected={item.isSelected}
-                      touchRadioBtnStyle={{ marginRight: 5 }}
+                      touchRadioBtnStyle={{marginRight: 5}}
                       onRadioBtnPress={() => {
                         yearOfBirthPrivacy.map((scheduleItem) => {
                           const schedule = scheduleItem;
@@ -895,18 +890,18 @@ function RefereeInfoSection({
                 <FlatList
                   data={languagePrivacy ?? []}
                   bounces={false}
-                  style={{ marginTop: 10 }}
+                  style={{marginTop: 10}}
                   ListHeaderComponent={() => (
                     <Text style={styles.privacySubTitleStyle}>
                       {strings.language}
                     </Text>
                   )}
-                  ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
-                  renderItem={({ item }) => (
+                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
+                  renderItem={({item}) => (
                     <RadioBtnItem
                       titleName={item.title}
                       selected={item.isSelected}
-                      touchRadioBtnStyle={{ marginRight: 5 }}
+                      touchRadioBtnStyle={{marginRight: 5}}
                       onRadioBtnPress={() => {
                         languagePrivacy.map((scheduleItem) => {
                           const schedule = scheduleItem;
@@ -927,18 +922,18 @@ function RefereeInfoSection({
                 <FlatList
                   data={currentCityPrivacy ?? []}
                   bounces={false}
-                  style={{ marginTop: 10 }}
+                  style={{marginTop: 10}}
                   ListHeaderComponent={() => (
                     <Text style={styles.privacySubTitleStyle}>
                       {strings.currrentCityTitle}
                     </Text>
                   )}
-                  ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
-                  renderItem={({ item }) => (
+                  ItemSeparatorComponent={() => <View style={{height: 15}} />}
+                  renderItem={({item}) => (
                     <RadioBtnItem
                       titleName={item.title}
                       selected={item.isSelected}
-                      touchRadioBtnStyle={{ marginRight: 5 }}
+                      touchRadioBtnStyle={{marginRight: 5}}
                       onRadioBtnPress={() => {
                         currentCityPrivacy.map((scheduleItem) => {
                           const schedule = scheduleItem;
@@ -993,8 +988,8 @@ function RefereeInfoSection({
             }}>
             <LinearGradient
               colors={[colors.whiteColor, colors.whiteColor]}
-              end={{ x: 0.0, y: 0.25 }}
-              start={{ x: 1, y: 0.5 }}
+              end={{x: 0.0, y: 0.25}}
+              start={{x: 1, y: 0.5}}
               style={styles.gradiantHeaderViewStyle}></LinearGradient>
             <Header
               mainContainerStyle={styles.headerMainContainerStyle}
@@ -1016,14 +1011,14 @@ function RefereeInfoSection({
                   />
                   <Text style={styles.playInTextStyle}>
                     {'Edit'}{' '}
-                    {(editPressTitle === strings.bio && strings.bio)
-                      || (editPressTitle === strings.basicinfotitle
-                        && strings.basicinfotitle)
-                      || (editPressTitle === strings.certificateTitle
-                        && strings.certificateTitle)
-                      || (editPressTitle === strings.refereeFeesTitle && 'Fee')
-                      || (editPressTitle === strings.cancellationPolicy
-                        && 'Policy')}
+                    {(editPressTitle === strings.bio && strings.bio) ||
+                      (editPressTitle === strings.basicinfotitle &&
+                        strings.basicinfotitle) ||
+                      (editPressTitle === strings.certificateTitle &&
+                        strings.certificateTitle) ||
+                      (editPressTitle === strings.refereeFeesTitle && 'Fee') ||
+                      (editPressTitle === strings.cancellationPolicy &&
+                        'Policy')}
                   </Text>
                 </View>
               }
@@ -1046,11 +1041,11 @@ function RefereeInfoSection({
               width={'100%'}
               height={1}
             />
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView style={{flex: 1}}>
               {editPressTitle === strings.bio && (
                 <View>
                   <EventTextInput
-                    textInputStyle={{ height: 150 }}
+                    textInputStyle={{height: 150}}
                     value={bioText}
                     multiline={true}
                     onChangeText={(text) => {
@@ -1064,21 +1059,21 @@ function RefereeInfoSection({
                 <View>
                   <EventItemRender
                     title={strings.gender}
-                    containerStyle={{ marginTop: 15 }}>
-                    <View style={{ marginTop: 8 }}>
+                    containerStyle={{marginTop: 15}}>
+                    <View style={{marginTop: 8}}>
                       <TCPicker
                         dataSource={DataSource.Gender}
                         placeholder={'Select Gender'}
                         value={info?.genderText ?? '-'}
                         onValueChange={(value) => {
-                          setInfo({ ...info, genderText: value });
+                          setInfo({...info, genderText: value});
                         }}
                       />
                     </View>
                   </EventItemRender>
                   <EventItemRender
                     title={strings.yearOfBirth}
-                    containerStyle={{ marginTop: 15 }}>
+                    containerStyle={{marginTop: 15}}>
                     <BirthSelectItem
                       title={
                         info?.birthdayText
@@ -1098,7 +1093,7 @@ function RefereeInfoSection({
                   </EventItemRender>
                   <EventItemRender
                     title={strings.language}
-                    containerStyle={{ marginTop: 15 }}>
+                    containerStyle={{marginTop: 15}}>
                     <BirthSelectItem
                       title={
                         selectedLanguage?.length > 0
@@ -1121,12 +1116,12 @@ function RefereeInfoSection({
                     onClose={() => setSearchLocationModal(false)}
                     onSelect={(location) => {
                       const city = location.terms?.[0]?.value;
-                      setInfo({ ...info, currentCity: city });
+                      setInfo({...info, currentCity: city});
                     }}
                   />
                   <EventItemRender
                     title={strings.currrentCityTitle}
-                    containerStyle={{ marginTop: 15 }}>
+                    containerStyle={{marginTop: 15}}>
                     <BirthSelectItem
                       title={info.currentCity}
                       onItemPress={() => {
@@ -1141,7 +1136,7 @@ function RefereeInfoSection({
                 <KeyboardAwareScrollView enableOnAndroid={false}>
                   <EventItemRender
                     title={strings.addCertiMainTitle}
-                    headerTextStyle={{ fontSize: 16 }}>
+                    headerTextStyle={{fontSize: 16}}>
                     <FlatList
                       data={
                         certificatesData?.length
@@ -1150,7 +1145,7 @@ function RefereeInfoSection({
                       }
                       scrollEnabled={true}
                       showsHorizontalScrollIndicator={false}
-                      renderItem={({ item, index }) => {
+                      renderItem={({item, index}) => {
                         if (index === certificatesData.length) {
                           return (
                             <AddCertiPhotoTitleView
@@ -1174,7 +1169,7 @@ function RefereeInfoSection({
                           );
                         }
                         return (
-                          <View style={{ marginTop: 15 }}>
+                          <View style={{marginTop: 15}}>
                             <EventTextInput
                               value={item.title}
                               onChangeText={(text) => {
@@ -1197,7 +1192,7 @@ function RefereeInfoSection({
                                 justifyContent: 'space-between',
                               }}>
                               <Image
-                                source={{ uri: item.thumbnail }}
+                                source={{uri: item.thumbnail}}
                                 style={{
                                   width: 195,
                                   height: 150,
@@ -1225,7 +1220,7 @@ function RefereeInfoSection({
                         <View>
                           {selectedCerti.length > 0 && (
                             <Image
-                              source={{ uri: selectedCerti[0].path }}
+                              source={{uri: selectedCerti[0].path}}
                               style={styles.staticSelectImageStyle}
                               resizeMode={'cover'}
                             />
@@ -1263,7 +1258,7 @@ function RefereeInfoSection({
                           />
                         </View>
                       )}
-                      ListFooterComponentStyle={{ marginTop: 20 }}
+                      ListFooterComponentStyle={{marginTop: 20}}
                       keyExtractor={(itemValue, index) => index.toString()}
                     />
                   </EventItemRender>
@@ -1287,7 +1282,7 @@ function RefereeInfoSection({
                     refereeFeeCount.toString().length > 0 ? '$' : ''
                   }
                   valueEndTitle={' CAD/match'}
-                  containerStyle={{ justifyContent: 'space-between' }}
+                  containerStyle={{justifyContent: 'space-between'}}
                 />
               )}
 
@@ -1442,8 +1437,8 @@ function RefereeInfoSection({
                 ]}>
                 <LinearGradient
                   colors={[colors.orangeColor, colors.yellowColor]}
-                  end={{ x: 0.0, y: 0.25 }}
-                  start={{ x: 1, y: 0.5 }}
+                  end={{x: 0.0, y: 0.25}}
+                  start={{x: 1, y: 0.5}}
                   style={styles.gradiantHeaderViewStyle}></LinearGradient>
                 <Header
                   mainContainerStyle={styles.headerMainContainerStyle}
@@ -1486,7 +1481,7 @@ function RefereeInfoSection({
                   }
                 />
                 <TCSearchBox
-                  style={{ margin: 15 }}
+                  style={{margin: 15}}
                   value={searchLanguageText}
                   onChangeText={(text) => {
                     if (text.length === 0) {
@@ -1502,7 +1497,7 @@ function RefereeInfoSection({
                     onTagCancelPress={handleTagPress}
                   />
                 )}
-                <View style={{ margin: wp(3) }}>
+                <View style={{margin: wp(3)}}>
                   <FlatList
                     ListEmptyComponent={
                       <Text
@@ -1528,12 +1523,12 @@ function RefereeInfoSection({
       <ActionSheet
         ref={actionSheet}
         options={[
-          (editPressTitle === strings.bio && 'Edit Bio')
-            || (editPressTitle === strings.basicinfotitle && 'Edit Basic Info')
-            || (editPressTitle === strings.certificateTitle
-              && 'Edit Certificates')
-            || (editPressTitle === strings.refereeFee && 'Edit Fee')
-            || (editPressTitle === strings.cancellationPolicy && 'Edit Policy'),
+          (editPressTitle === strings.bio && 'Edit Bio') ||
+            (editPressTitle === strings.basicinfotitle && 'Edit Basic Info') ||
+            (editPressTitle === strings.certificateTitle &&
+              'Edit Certificates') ||
+            (editPressTitle === strings.refereeFee && 'Edit Fee') ||
+            (editPressTitle === strings.cancellationPolicy && 'Edit Policy'),
           'Privacy Setting',
           'Cancel',
         ]}
@@ -1541,22 +1536,22 @@ function RefereeInfoSection({
         onPress={(index) => {
           if (index === 0) {
             if (
-              editPressTitle === strings.bio
-              || editPressTitle === strings.basicinfotitle
-              || editPressTitle === strings.refereeFee
-              || editPressTitle === strings.cancellationPolicy
+              editPressTitle === strings.bio ||
+              editPressTitle === strings.basicinfotitle ||
+              editPressTitle === strings.refereeFee ||
+              editPressTitle === strings.cancellationPolicy
             ) {
               editInfoModal();
             } else if (editPressTitle === strings.certificateTitle) {
               setEditCertificateModal(true);
             }
           } else if (
-            index === 1
-            && (editPressTitle === strings.bio
-              || editPressTitle === strings.basicinfotitle
-              || editPressTitle === strings.certificateTitle
-              || editPressTitle === strings.refereeFee
-              || editPressTitle === strings.cancellationPolicy)
+            index === 1 &&
+            (editPressTitle === strings.bio ||
+              editPressTitle === strings.basicinfotitle ||
+              editPressTitle === strings.certificateTitle ||
+              editPressTitle === strings.refereeFee ||
+              editPressTitle === strings.cancellationPolicy)
           ) {
             privacySettingModal();
           } else if (index === 2) {
@@ -1655,7 +1650,7 @@ const styles = StyleSheet.create({
     color: 'black',
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 0,

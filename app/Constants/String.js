@@ -22,8 +22,8 @@ const strings = {
   emailPlaceHolder: 'Email',
   allDay: 'All day',
   all: 'All',
-  starts: 'Starts',
-  ends: 'Ends',
+  starts: 'Start',
+  ends: 'End',
   until: 'Until',
   weekly: 'Weekly',
   addTime: 'Add time',
@@ -121,7 +121,7 @@ const strings = {
   ntrpTitle: 'NTRP',
   refereeFee: 'Referee Fee',
   cancellationPolicy: 'Cancellation Policies',
-  gameFee: 'Game Fee',
+  gameFee: 'Match Fee',
   perHour: ' (per hours)',
   ntrpSubTitle: ' (The national tennis rating program)',
   homePlaceTitle: 'Home place',
@@ -249,9 +249,9 @@ const strings = {
   strictPoint1Desc:
     'Free cancellation up to 14 days before the game reservation’s start time. However, the service fee is non-refundable.',
   strictPoint2Desc:
-    'The challenger can cancel the game reservation up to 7 days before the game reservation’s start time and get a 50% refund of the game fee, excluding the service fee.',
+    'The challenger can cancel the game reservation up to 7 days before the game reservation’s start time and get a 50% refund of the match fee, excluding the service fee.',
   strictPoint3Desc:
-    'If the challenger cancels less than 24 hours before the the game reservation’s start time,the game fee and service fee are non-refundable.',
+    'If the challenger cancels less than 24 hours before the the game reservation’s start time,the match fee and service fee are non-refundable.',
 
   moderatePoint1Title: 'Cancellation 7 days in advance',
   moderatePoint2Title: 'Cancellation less than 7 days in advance',
@@ -259,7 +259,7 @@ const strings = {
   moderatePoint1Desc:
     'Free cancellation up to 7 days before the game reservation’s start time. However, the service fee is non-refundable.',
   moderatePoint2Desc:
-    'The challenger can cancel the game reservation less than 7 days before the game reservation’s start time and get a 50% refund of the game fee, but not the service fee.',
+    'The challenger can cancel the game reservation less than 7 days before the game reservation’s start time and get a 50% refund of the match fee, but not the service fee.',
   moderatePoint3Desc:
     'If the challenger cancels less than 24 hours before the game reservation’s start time, the match fee and service fee are non-refundable.',
   flexiblePoint1Title: 'Cancellation 24 hours in advance',
@@ -267,7 +267,7 @@ const strings = {
   flexiblePoint1Desc:
     'Free cancellation up to 24 hours before the game reservation’s start time. However, the service fee is non-refundable.',
   flexiblePoint2Desc:
-    'If the challenger cancels less than 24 hours before the game reservation’s start time, the game fee and service fee are non-refundable.',
+    'If the challenger cancels less than 24 hours before the game reservation’s start time, the match fee and service fee are non-refundable.',
 
   // CreateClub Screen 1
   clubNameTitle: 'What is the club name?',
@@ -536,10 +536,11 @@ const strings = {
   addgender: 'Add Gender',
   addheight: 'Add Height',
   addweight: 'Add Weight',
-  gamefeetitle: 'Game Fee',
+  gamefeetitle: 'Match Fee',
   perhoursinbracket: '(per hours)',
-  gamefeeperhour: 'Game Fee Per Hour',
+  gamefeeperhour: 'Match Fee Per Hour',
   CAD: 'CAD',
+  defaultCurrency : 'USD',
   currencyplacholder: 'Select Currency',
   languages: 'Languages',
   sportcannotbeblank: 'Sports cannot be blank',
@@ -565,7 +566,7 @@ const strings = {
   addcard: 'Add New Card...',
   endingin: ' ****',
   addacard: 'Add a Card',
-  entergamefee: 'Enter Game Fee',
+  entergamefee: 'Enter Match Fee',
   matchfee: 'Match fee',
   refereeFeecardText: 'Referee fee',
   scorekeeperFee: 'Scorekeeper fee',
@@ -683,7 +684,7 @@ const strings = {
 
   privacySettings: 'Privacy Settings',
   gameEndedAlertText: 'Game is ended, so you can not change reservation.',
-  enterValidGameFee: 'Please enter valid game fee.',
+  enterValidGameFee: 'Please enter valid match fee.',
   whatsGoingText: "What's going on?",
   writeText: 'Please write some text or select any image.',
   cannotCancelReservationAfterGameStartText:
@@ -696,6 +697,7 @@ const strings = {
   hiringPlayerTitle: 'Recruiting Members',
   lookingForTeamTitle: 'Looking For Team/Club',
   refereesTitle: 'Referees',
+  chooseSetting: 'Choose Setting',
   scorekeeperTitle: 'Scorekeepers',
   searchTitle: 'Search by city, state or country',
   challengeeSecureText: 'The challengee secures the match place',
@@ -768,9 +770,11 @@ const strings = {
 
   refuncPolicyTitle: 'Choose one of refund policies',
 
-  gameFeeTitle: 'Set the game fee that you want to charge to your challenger.',
-  refereeFeeTitle: 'Set the referee fee that you want to charge.',
-  scorekeeperFeeTitle: 'Set the scorekeeper fee that you want to charge.',
+  gameFeeTitle: 'Set the match fee that you want to receive from the challenger.',
+  gameFeeTitleTeam: 'Set the match fee that your team wants to receive from the challenger.',
+
+  refereeFeeTitle: 'Set the referee fee that you want to charge per hour.',
+  scorekeeperFeeTitle: 'Set the scorekeeper fee that you want to charge per hour.',
 
   gameRulesTitle:
     'Write down the rules of the game you will play against the challenger.',

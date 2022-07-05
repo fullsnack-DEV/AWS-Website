@@ -22,10 +22,10 @@ export const getFeeds = async (entityType, entityId, idLt, authContext) =>
     url: `${Config.BASE_URL}/newsfeeds?entity_type=${entityType}&entity_id=${entityId}&id_lt=${idLt}`,
     authContext,
   });
-  export const getTimeline = async (entityId, idLt, authContext) =>
+  export const getTimeline = async (entityType,entityId, idLt, authContext) =>
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/timeline/${entityId}`,
+    url: `${Config.BASE_URL}${entityType}/timeline/${entityId}`,
     authContext,
   });
 

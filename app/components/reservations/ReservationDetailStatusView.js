@@ -11,7 +11,7 @@ import fonts from '../../Constants/Fonts'
 
 export default function ReservationDetailStatusView({
 
-  status = 'pending', doneBy = 'Kishan Makani', amount = 30, currencyType = 'CAD',
+  status = 'pending', doneBy = 'Kishan Makani', amount = 30, currencyType = strings.defaultCurrency,
 }) {
   return (
 

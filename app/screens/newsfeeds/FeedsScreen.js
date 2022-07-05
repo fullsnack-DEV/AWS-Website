@@ -463,15 +463,16 @@ const FeedsScreen = ({navigation}) => {
         <Header
           showBackgroundColor={true}
           leftComponent={
-            <View>
-              <FastImage
-                source={images.tc_message_top_icon}
-                resizeMode={'contain'}
-                style={styles.backImageStyle}
-              />
-            </View>
+            // <View>
+            //   <FastImage
+            //     source={images.tc_message_top_icon}
+            //     resizeMode={'contain'}
+            //     style={styles.backImageStyle}
+            //   />
+            // </View>
+            <Text style={styles.eventTitleTextStyle}>Feed</Text>
           }
-          centerComponent={<Text style={styles.eventTitleTextStyle}>Feed</Text>}
+          // centerComponent={<Text style={styles.eventTitleTextStyle}>Feed</Text>}
           rightComponent={topRightButton}
         />
         <View style={styles.separateLine} />
@@ -620,7 +621,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
   },
   eventTitleTextStyle: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     alignSelf: 'center',
@@ -631,10 +632,10 @@ const styles = StyleSheet.create({
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },
-  backImageStyle: {
-    height: 35,
-    width: 35,
-  },
+  // backImageStyle: {
+  //   height: 35,
+  //   width: 35,
+  // },
 });
 
 export default memo(FeedsScreen);

@@ -69,7 +69,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
   const refContainer = useRef();
-  const sortFilterData = ['Organizer', 'Sport', 'Reservation Type'];
+  const sortFilterData = ['Organizer', 'Sport', 'Activity Type'];
   const sortFilterDataClub = ['Organizer', 'Sport'];
 
   const timeFilterData = ['Future', 'Past'];
@@ -454,20 +454,18 @@ export default function ScheduleScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused) {
-      console.log('dfsdfsdfsadfsadfsafsdf called');
+      console.log('get event list called');
       getEventsAndSlotsList();
     }
   }, [isFocused]);
 
-  const onThreeDotPress = useCallback(() => {
-    actionSheet.current.show();
-  }, []);
+  // const onThreeDotPress = useCallback(() => {
+  //   actionSheet.current.show();
+  // }, []);
 
   const onAddPlusPress = useCallback(() => {
     plusActionSheet.current.show();
   }, []);
-
- 
 
   const onDayPress = useCallback(
     (dateObj) => {
@@ -497,7 +495,6 @@ export default function ScheduleScreen({navigation, route}) {
         }
       }
 
-     
       let timeSlots = [];
       if (temp?.[0]?.allDay === true && temp?.[0]?.blocked === true) {
         setSlots(temp);
@@ -552,7 +549,7 @@ export default function ScheduleScreen({navigation, route}) {
 
   const getEventsAndSlotsList = useCallback(() => {
     setloading(true);
-
+    console.log('1111--');
     const eventTimeTableData = [];
     Utility.getCalendar(
       authContext?.entity?.uid,
@@ -560,6 +557,8 @@ export default function ScheduleScreen({navigation, route}) {
     )
       // blockedSlots(entityRole, uid, authContext)
       .then((response) => {
+        console.log('2222--');
+
         response = (response || []).filter((obj) => {
           if (obj.cal_type === 'blocked') {
             return obj;
@@ -577,6 +576,7 @@ export default function ScheduleScreen({navigation, route}) {
             }
           }
         });
+        console.log('3333--');
 
         response.forEach((item) => {
           if (item?.rrule) {
@@ -586,6 +586,7 @@ export default function ScheduleScreen({navigation, route}) {
             eventTimeTableData.push(item);
           }
         });
+        console.log('4444--');
 
         onDayPress(new Date());
         setAllSlots(eventTimeTableData);
@@ -601,6 +602,8 @@ export default function ScheduleScreen({navigation, route}) {
               },
             },
           };
+          console.log('5555--');
+
           getGameIndex(gameList).then((games) => {
             const listObj = response.map((obj) => {
               if (obj.game_id === obj.challenge_id) {
@@ -611,6 +614,7 @@ export default function ScheduleScreen({navigation, route}) {
             const pendingChallenge = listObj.filter((obj) => {
               return obj !== undefined;
             });
+            console.log('6666--');
 
             Utility.getGamesList([
               ...games,
@@ -934,36 +938,9 @@ export default function ScheduleScreen({navigation, route}) {
         pointerEvents={pointEvent}>
         <Header
           leftComponent={
-            <TouchableOpacity
-              onPress={() => {
-                if (route?.params?.isBackVisible) {
-                  navigation.navigate('HomeScreen', {
-                    uid: route?.params?.uid,
-                    role: route?.params?.role,
-                    backButtonVisible: true,
-                    menuBtnVisible: false,
-                  });
-                }
-              }}>
-              <FastImage
-                source={
-                  route?.params?.isBackVisible
-                    ? images.backArrow
-                    : images.tc_message_top_icon
-                }
-                resizeMode={'contain'}
-                style={
-                  route?.params?.isBackVisible
-                    ? styles.backStyle
-                    : styles.backImageStyle
-                }
-              />
-            </TouchableOpacity>
-          }
-          showBackgroundColor={true}
-          centerComponent={
             <Text style={styles.eventTitleTextStyle}>Schedule</Text>
           }
+          showBackgroundColor={true}
           rightComponent={
             <View
               style={{
@@ -972,17 +949,14 @@ export default function ScheduleScreen({navigation, route}) {
                 justifyContent: 'space-between',
               }}>
               <TouchableOpacity onPress={onAddPlusPress}>
-                <Image
-                  source={images.addEvent}
-                  style={[styles.headerRightImg, {marginRight: 10}]}
-                />
+                <Image source={images.addEvent} style={styles.headerRightImg} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={onThreeDotPress}>
+              {/* <TouchableOpacity onPress={onThreeDotPress}>
                 <Image
                   source={images.threeDotIcon}
                   style={styles.headerRight3DotImg}
                 />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           }
         />
@@ -1041,8 +1015,12 @@ export default function ScheduleScreen({navigation, route}) {
           <View
             style={{
               flexDirection: 'row',
-              margin: 15,
+              // margin: 15,
+              height: 45,
               justifyContent: 'space-between',
+              alignItems: 'center',
+              marginRight: 15,
+              marginLeft: 15,
             }}>
             <View style={{flexDirection: 'row'}}>
               <Text
@@ -1619,16 +1597,16 @@ export default function ScheduleScreen({navigation, route}) {
       </View>
       <ActionSheet
         ref={plusActionSheet}
-        options={['Set challenge availibility', 'Create an event', 'Cancel']}
+        options={['Create Event', 'Edit Challenge Availibility', 'Cancel']}
         cancelButtonIndex={2}
         // destructiveButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
-            navigation.navigate('EditChallengeAvailability');
-          } else if (index === 1) {
             navigation.navigate('CreateEventScreen', {
               comeName: 'ScheduleScreen',
             });
+          } else if (index === 1) {
+            navigation.navigate('EditChallengeAvailability');
           }
         }}
       />
@@ -1690,26 +1668,19 @@ const styles = StyleSheet.create({
     width: 25,
     tintColor: colors.lightBlackColor,
   },
-  headerRight3DotImg: {
-    height: 18,
-    resizeMode: 'contain',
-    width: 20,
-    tintColor: colors.lightBlackColor,
-  },
+  // headerRight3DotImg: {
+  //   height: 18,
+  //   resizeMode: 'contain',
+  //   width: 20,
+  //   tintColor: colors.lightBlackColor,
+  // },
   eventTitleTextStyle: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
-    alignSelf: 'center',
+    width: 100,
   },
-  backImageStyle: {
-    height: 35,
-    width: 35,
-  },
-  backStyle: {
-    height: 20,
-    width: 35,
-  },
+
   separateLine: {
     borderColor: colors.veryLightGray,
     borderWidth: 0.5,

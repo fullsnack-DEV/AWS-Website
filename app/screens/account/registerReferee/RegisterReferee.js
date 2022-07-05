@@ -148,7 +148,7 @@ export default function RegisterReferee({navigation}) {
         <View style={styles.checkbox}>
           {sportsSelection?.sport === item?.sport ? (
             <Image
-              source={images.radioSelectYellow}
+              source={images.radioCheckYellow}
               style={styles.checkboxImg}
             />
           ) : (
@@ -253,7 +253,6 @@ export default function RegisterReferee({navigation}) {
         backdropTransitionOutTiming={800}
         style={{
           marginLeft: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
           marginRight: 0,
           marginBottom: 0,
           marginTop: 0,
@@ -261,7 +260,7 @@ export default function RegisterReferee({navigation}) {
         <View
           style={{
             width: '100%',
-            height: Dimensions.get('window').height / 1.3,
+            height: Dimensions.get('window').height / 1.1,
             backgroundColor: 'white',
             position: 'absolute',
             bottom: 0,
@@ -312,8 +311,8 @@ export default function RegisterReferee({navigation}) {
                   alignSelf: 'center',
                   marginVertical: 20,
                   fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.themeColor,
+                  fontFamily: fonts.RMedium,
+                  color: colors.lightBlackColor,
                 }}>
                 Apply
               </Text>
@@ -343,7 +342,7 @@ export default function RegisterReferee({navigation}) {
         <View
           style={{
             width: '100%',
-            height: Dimensions.get('window').height / 1.3,
+            height: Dimensions.get('window').height / 1.1,
             backgroundColor: 'white',
             position: 'absolute',
             bottom: 0,
@@ -389,8 +388,8 @@ export default function RegisterReferee({navigation}) {
                   alignSelf: 'center',
                   marginVertical: 20,
                   fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.themeColor,
+                  fontFamily: fonts.RMedium,
+                  color: colors.lightBlackColor,
                 }}>
                 Apply
               </Text>

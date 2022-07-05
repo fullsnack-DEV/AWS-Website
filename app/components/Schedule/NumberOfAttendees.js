@@ -36,10 +36,11 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText,min, max}) {
           Min
         </Text>
         <TextInput
-          placeholder="0"
+          placeholder={'0'}
           style={styles.minMaxStyle}
+          keyboardType={'number-pad'}
           onChangeText={onChangeMinText}
-          value={`${min}`}
+          // value={`${min}`}
           textAlignVertical={'center'}
           placeholderTextColor={colors.userPostTimeColor}
         />
@@ -70,8 +71,9 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText,min, max}) {
         <TextInput
           placeholder="100"
           style={styles.minMaxStyle}
+          keyboardType={'number-pad'}
           onChangeText={onChangeMaxText}
-          value={`${max}`}
+          // value={`${max}`}
 
           textAlignVertical={'center'}
           placeholderTextColor={colors.userPostTimeColor}
@@ -87,6 +89,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     height: 40,
+    width: '63%',
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
   },

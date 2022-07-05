@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-useless-concat */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
@@ -23,9 +24,9 @@ import {
   Alert,
   TextInput,
 } from 'react-native';
+
 import FastImage from 'react-native-fast-image';
 import * as Progress from 'react-native-progress';
-
 import {useIsFocused} from '@react-navigation/native';
 import {Modalize} from 'react-native-modalize';
 import {Portal} from 'react-native-portalize';
@@ -428,7 +429,6 @@ const MessageChat = ({route, navigation}) => {
                       <FastImage
                         source={finalImage}
                         style={{height: 27, width: 27, borderRadius: 54}}
-                        
                       />
                     </View>
                     <Text
@@ -502,7 +502,7 @@ const MessageChat = ({route, navigation}) => {
     }).then((image) => {
       setUploadImageInProgress(true);
       setSelectedImage(image ?? null);
-      const imagePath = Platform?.OS === 'ios' ? image?.sourceURL : image?.path;
+      const imagePath = image?.path; // Platform?.OS === 'ios' ? image?.sourceURL : image?.path
       const validImageSize = image?.size <= QB_MAX_ASSET_SIZE_UPLOAD;
 
       console.log('imageimage', image);
@@ -530,6 +530,7 @@ const MessageChat = ({route, navigation}) => {
           .then(() => {
             // unsubscribed from upload progress events for this file
             // remove subscription if it is not needed
+            console.log('upload done');
             subscription.remove();
           })
           .catch((error) => {
@@ -840,7 +841,9 @@ const MessageChat = ({route, navigation}) => {
       const fullImage = customData?.full_image ?? '';
       const finalImage = fullImage
         ? {uri: fullImage}
-        : images.profilePlaceHolder;
+        : ['user', 'player'].includes(customData?.entity_type)
+        ? images.profilePlaceHolder
+        : images.teamGreenPH;
       return (
         <TouchableOpacity
           style={styles.rowContainer}
@@ -852,6 +855,7 @@ const MessageChat = ({route, navigation}) => {
             textStyle={styles.rowText}
             name={customData?.full_name}
             groupType={customData?.entity_type}
+            isShowBadge={false}
           />
         </TouchableOpacity>
       );
@@ -948,83 +952,75 @@ const MessageChat = ({route, navigation}) => {
             elevation: 10,
           }}
           ref={commentModalRef}>
-          {/* <MessageInviteeDrawerScreen
-            navigation={navigation}
-            participants={occupantsData ?? []}
-            dialog={{...dialogData, ...route?.params?.dialog}}
-            commentModalRef={commentModalRef}
-          /> */}
-
           <View style={styles.viewContainer}>
-            <View style={{flex: 1, marginLeft: 15}}>
-              <Text style={styles.titleLabel}>
-                {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT &&
-                  'CHATROOM NAME'}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  commentModalRef.current.close();
-                  if (dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT)
-                    navigation.navigate('MessageEditGroupScreen', {
-                      dialog: dialogMenu,
-                      onPressDone,
-                    });
+            <Text
+              style={[styles.titleLabel, {marginBottom: 15, marginTop: 25}]}>
+              {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT &&
+                'CHATROOM NAME'}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                commentModalRef.current.close();
+                if (dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT)
+                  navigation.navigate('MessageEditGroupScreen', {
+                    dialog: dialogMenu,
+                    onPressDone,
+                  });
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
-                  <Text style={[styles.title, {marginLeft: wp(3)}]}>
-                    {fullName}
-                  </Text>
-                  {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
-                    <FastImage
-                      resizeMode={'contain'}
-                      source={images.arrowDown}
-                      style={{
-                        ...styles.downArrow,
-                        transform: [{rotateZ: '270deg'}],
-                      }}
-                    />
-                  )}
-                </View>
-              </TouchableOpacity>
-              <View style={styles.separator} />
-              <Text style={styles.titleLabel}>PARTICIPANTS</Text>
-              {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
-                <TouchableOpacity
-                  style={styles.rowContainer}
-                  onPress={() => {
-                    console.log('inviteButton');
-                    commentModalRef.current.close();
-
-                    navigation.navigate('MessageEditInviteeScreen', {
-                      dialog: dialogMenu,
-                      isAdmin: dialogMenu?.userId === myUserId,
-                      selectedInvitees: occupantsData,
-                      participants: occupantsData,
-                      onPressDone,
-                    });
-                  }}>
-                  <Image
-                    style={styles.inviteImage}
-                    source={images.plus_round_orange}
+                <Text style={styles.title}>{fullName}</Text>
+                {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
+                  <FastImage
+                    resizeMode={'contain'}
+                    source={images.arrowDown}
+                    style={{
+                      ...styles.downArrow,
+                      transform: [{rotateZ: '270deg'}],
+                    }}
                   />
-                  <Text style={[styles.rowText, {color: colors.orangeColor}]}>
-                    Invite
-                  </Text>
-                </TouchableOpacity>
-              )}
-              <FlatList
-                extraData={occupantsData}
-                data={occupantsData}
-                renderItem={renderRow}
-                keyExtractor={(item, index) => index.toString()}
-                showsVerticalScrollIndicator={false}
-              />
-            </View>
+                )}
+              </View>
+            </TouchableOpacity>
+            <View style={styles.separator} />
+            <Text style={styles.titleLabel}>PARTICIPANTS</Text>
+            {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
+              <TouchableOpacity
+                style={styles.rowContainer}
+                onPress={() => {
+                  console.log('inviteButton');
+                  commentModalRef.current.close();
+
+                  navigation.navigate('MessageEditInviteeScreen', {
+                    dialog: dialogMenu,
+                    isAdmin: dialogMenu?.userId === myUserId,
+                    selectedInvitees: occupantsData,
+                    participants: occupantsData,
+                    onPressDone,
+                  });
+                }}>
+                <Image
+                  style={styles.inviteImage}
+                  source={images.plus_round_orange}
+                />
+                <Text style={[styles.rowText, {color: colors.orangeColor}]}>
+                  Invite
+                </Text>
+              </TouchableOpacity>
+            )}
+            <FlatList
+              extraData={occupantsData}
+              data={occupantsData}
+              renderItem={renderRow}
+              keyExtractor={(item, index) => index.toString()}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+          <View>
             <TouchableOpacity style={styles.bottomView} onPress={leaveRoom}>
               <Image
                 style={styles.inviteImage}
@@ -1172,7 +1168,8 @@ const styles = StyleSheet.create({
 
   viewContainer: {
     flex: 1,
-    marginRight: wp(1),
+    marginLeft: 15,
+    marginRight: 15,
   },
   titleLabel: {
     fontSize: 14,
@@ -1188,7 +1185,6 @@ const styles = StyleSheet.create({
   },
   title: {
     width: '80%',
-    marginTop: hp(1),
     fontSize: 20,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
@@ -1197,6 +1193,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: hp(1.5),
+    paddingLeft: 10,
   },
   rowText: {
     width: '75%',
@@ -1226,7 +1223,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.thinDividerColor,
     height: 1,
     marginTop: hp(2),
-    marginBottom: 35,
+    marginBottom: 20,
   },
 
   sectionStyle: {
@@ -1239,9 +1236,9 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     width: wp('84%'),
     shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
-    shadowRadius: 3,
+    shadowRadius: 1,
     elevation: 2,
     marginLeft: 10,
   },
@@ -1263,16 +1260,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
   },
   searchContainer: {
+    zIndex: 1000,
     width: '100%',
     backgroundColor: colors.grayBackgroundColor,
     flexDirection: 'row',
     height: 55,
     alignItems: 'center',
     justifyContent: 'space-around',
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 5},
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
-    shadowRadius: 10,
+    shadowRadius: 2,
     elevation: 2,
   },
 });

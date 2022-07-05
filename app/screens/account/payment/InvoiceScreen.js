@@ -497,7 +497,7 @@ export default function InvoiceScreen({ navigation }) {
         />
 
         <InvoiceAmount
-          currencyType={'CAD'}
+          currencyType={strings.defaultCurrency}
           totalAmount={totalInvoiced ?? '00.00'}
           paidAmount={paidInvoice ?? '00.00'}
           openAmount={openInvoice ?? '00.00'}

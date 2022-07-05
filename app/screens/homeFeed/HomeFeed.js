@@ -51,7 +51,20 @@ const HomeFeed = ({
   const [footerLoading, setFooterLoading] = useState(false);
 
   useEffect(() => {
-    getTimeline(userID, '', authContext)
+    let entityType = 'users';
+    if (
+      currentUserData.entity_type === 'user' ||
+      currentUserData.entity_type === 'player'
+    ) {
+      entityType = 'users';
+    } else if (
+      currentUserData.entity_type === 'team' ||
+      currentUserData.entity_type === 'club'
+    ) {
+      entityType = 'groups';
+    }
+
+    getTimeline(entityType, userID, '', authContext)
       .then((res) => {
         setFeedCalled(true);
         setTotalUserPostCount(res?.payload?.total_count);
@@ -240,7 +253,7 @@ const HomeFeed = ({
   );
 
   const onPressDone = useCallback(
-    (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
+    (data, postDesc, tagsOfEntity, format_tagged_data, whoCanSee) => {
       let dataParams = {};
       const entityID = currentUserData?.group_id ?? currentUserData?.user_id;
       if (entityID !== authContext.entity.uid) {
@@ -264,11 +277,12 @@ const HomeFeed = ({
           text: postDesc,
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
+          who_can_see: {...whoCanSee},
         };
 
         createPostAfterUpload(dataParams);
       } else if (data) {
-        console.log('asasasasas else',data);
+        console.log('asasasasas else', data);
         const imageArray = data.map((dataItem) => dataItem);
         dataParams = {
           ...dataParams,
@@ -276,6 +290,7 @@ const HomeFeed = ({
           attachments: [],
           tagged: tagsOfEntity ?? [],
           format_tagged_data,
+          who_can_see: {...whoCanSee},
         };
         imageUploadContext.uploadData(
           authContext,
@@ -285,7 +300,7 @@ const HomeFeed = ({
         );
       }
     },
-    [authContext, createPostAfterUpload, imageUploadContext],
+    [authContext, createPostAfterUpload, currentUserData?.entity_type, currentUserData?.group_id, currentUserData?.user_id, imageUploadContext],
   );
 
   const onEndReached = () => {
