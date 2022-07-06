@@ -1,7 +1,10 @@
+import Config from 'react-native-config';
+
+
 // AsyncConstants
 export const authToken = 'authToken';
 export const token_details = 'token_details';
-export const Google_API_Key = 'AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4';
+export const Google_API_Key = Config.GOOGLE_PLACE_KEY;
 
 export const monthsSelectionData = [
   {label: 'Past 3 Months', value: 'Past 3 Months'},

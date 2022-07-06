@@ -135,7 +135,7 @@ export default function WritePostScreen({navigation, route}) {
               tagData = tagData?.map((tag) => {
                 return {
                   ...tag,
-                  entity_type: 'timeline',
+                  entity_type: 'publictimeline',
                 };
               });
               console.log('tagDatatagData', tagData);
@@ -284,7 +284,7 @@ export default function WritePostScreen({navigation, route}) {
         setSearchText(output);
       }
     }
-  }, [currentTextInputIndex, route.params, searchText, tagsOfEntity]);
+  }, [route.params]);
 
   useEffect(() => {
     console.log('searchText', searchText);

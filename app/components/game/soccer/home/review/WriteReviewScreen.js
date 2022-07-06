@@ -346,7 +346,7 @@ export default function WriteReviewScreen({navigation, route}) {
                 tagData = tagData?.map((tag) => {
                   return {
                     ...tag,
-                    entity_type: 'timeline',
+                    entity_type: 'publictimeline',
                   };
                 });
                 const format_tagged_data = JSON.parse(

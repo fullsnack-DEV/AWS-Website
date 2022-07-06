@@ -66,7 +66,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
   const getUserSettingMenu = useCallback(() => {
     checkUserIsRegistratedOrNotWithFirebase(authContext.entity.obj.email)
       .then(async (providerData) => {
-        if (providerData.includes('password')) {
+        if ((providerData || []).includes('password')) {
           setUserSetting([
             {key: 'Account Info', id: 1},
             {key: 'Profile', id: 2},

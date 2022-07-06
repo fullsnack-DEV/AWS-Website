@@ -96,7 +96,7 @@ export default function EventScheduleScreen({
                 obj?.game?.home_team?.user_id === authContext.entity.uid ||
                 obj?.game?.away_team?.user_id === authContext.entity.uid,
             );
-          } else if (selectedFilter.title.group_name === 'Other') {
+          } else if (selectedFilter.title.group_name === 'Others') {
             events = events.filter(
               (obj) =>
                 obj.created_by.uid !== authContext.entity.uid &&

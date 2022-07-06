@@ -115,7 +115,14 @@ export default function RegisterScorekeeper({navigation}) {
       Alert.alert(strings.appName, 'Sports cannot be blank');
       return false;
     }
-
+    if(selectedLanguages.length <= 0){
+      Alert.alert(strings.appName, 'Language cannot be blank');
+      return false;
+    }
+    if(description === ''){
+      Alert.alert(strings.appName, 'Description cannot be blank');
+      return false;
+    }
     const isExist = scorekeepersData?.filter((item) => item?.sport === sports);
     if (isExist?.length) {
       Alert.alert(
@@ -186,12 +193,12 @@ export default function RegisterScorekeeper({navigation}) {
           <TCFormProgress totalSteps={2} curruentStep={1} />
 
           <View>
-            <TCLabel title={strings.whichSportScorekeeper} required={false} />
+            <TCLabel title={strings.whichSport} required={true} />
             <TouchableOpacity onPress={() => setVisibleSportsModal(true)}>
               <View style={styles.searchView}>
                 <TextInput
                   style={styles.searchTextField}
-                  placeholder={strings.selectSportPlaceholder}
+                  placeholder={strings.selectSportPlaceholderScorekeeper}
                   value={getSportName(sportsSelection, authContext)}
                   editable={false}
                   pointerEvents="none"
@@ -201,7 +208,7 @@ export default function RegisterScorekeeper({navigation}) {
           </View>
 
           <View>
-            <TCLabel title={strings.whichLanguage} required={false} />
+            <TCLabel title={strings.whichLanguage} required={true} />
             <TouchableOpacity onPress={toggleModal}>
               <View style={styles.searchView}>
                 <TextInput
@@ -216,7 +223,7 @@ export default function RegisterScorekeeper({navigation}) {
           </View>
 
           <View style={{marginBottom: 10}}>
-            <TCLabel title={strings.describeSelf} required={false} />
+            <TCLabel title={strings.describeSelf} required={true} />
             <TextInput
               style={styles.descriptionTxt}
               onChangeText={(text) => onChangeText(text)}
@@ -232,7 +239,7 @@ export default function RegisterScorekeeper({navigation}) {
 
       <SafeAreaView>
         <TCGradientButton
-          isDisabled={sports === '' || selectedLanguages?.length <= 0}
+          isDisabled={sports === '' || selectedLanguages?.length <= 0 || description === ''}
           title={strings.nextTitle}
           style={{marginBottom: 5}}
           onPress={nextOnPress}
@@ -416,27 +423,24 @@ const styles = StyleSheet.create({
   checkbox: {},
   searchView: {
     alignSelf: 'center',
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    elevation: 3,
     flexDirection: 'row',
     height: 40,
 
-    marginTop: 12,
+    marginTop: 10,
     paddingLeft: 15,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
+   
 
     width: wp('92%'),
   },
   searchTextField: {
     alignSelf: 'center',
-    color: colors.blackColor,
     flex: 1,
-    fontSize: wp('3.8%'),
     width: wp('80%'),
+    fontSize: 16,
+    fontFamily:fonts.RRegular,
+    color: colors.lightBlackColor,
   },
 
   listItem: {
@@ -452,22 +456,20 @@ const styles = StyleSheet.create({
   },
 
   descriptionTxt: {
-    height: 120,
-    fontSize: wp('3.8%'),
+    height: 100,
+    fontSize: 16,
+    fontFamily:fonts.RRegular,
+    color: colors.lightBlackColor,
+
     width: wp('92%'),
     alignSelf: 'center',
     marginTop: 12,
     paddingVertical: 12,
     paddingHorizontal: 15,
-    color: 'black',
     paddingRight: 30,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
+    
   },
 
   checkboxImg: {

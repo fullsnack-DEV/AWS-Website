@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
-    borderRadius: 0,
+    borderRadius: 8,
     height: wp('96%'),
   },
 });

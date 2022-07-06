@@ -1530,7 +1530,7 @@ export default function LocalHomeScreen({navigation, route}) {
                   <TCEntityListPlaceholder
                     cardWidth={'94%'}
                     placeholderText={strings.refereesPlaceholderText}
-                    buttonText={'Register as a referee >'}
+                    buttonText={'Register as Referee >'}
                     onPress={() => {
                       navigation.navigate('RegisterReferee');
                     }}
@@ -1563,7 +1563,7 @@ export default function LocalHomeScreen({navigation, route}) {
                   <TCEntityListPlaceholder
                     cardWidth={'94%'}
                     placeholderText={strings.scorekeepersPlaceholderText}
-                    buttonText={'Register as a scorekeeper >'}
+                    buttonText={'Register as Scorekeeper >'}
                     onPress={() => {
                       navigation.navigate('RegisterScorekeeper');
                     }}

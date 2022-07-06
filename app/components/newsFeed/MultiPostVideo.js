@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 0,
+    borderRadius: 8,
     height: wp('91%'),
     justifyContent: 'center',
     width: wp('91%'),
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   singleImageDisplayStyle: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 0,
+    borderRadius: 8,
     height: wp('91%'),
     justifyContent: 'center',
     width: wp('91%'),

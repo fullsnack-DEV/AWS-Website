@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   uploadedImage: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 0,
+    borderRadius: 8,
     justifyContent: 'center',
     height: wp('91%'),
     width: wp('91%'),
