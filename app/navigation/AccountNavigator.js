@@ -252,6 +252,7 @@ import BasicInfoScreen from '../screens/account/userSettingPrivacy/BasicInfoScre
 import GroupMembersSettingScreen from '../screens/account/GroupSetting/GroupMembersSettingScreen';
 import RecruitingMemberScreen from '../screens/account/GroupSetting/RecruitingMemberScreen';
 import GroupsScreen from '../screens/account/GroupSetting/GroupsScreen';
+import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
 
 // Scorekeeper Review Screen
 
@@ -2074,7 +2075,24 @@ const AccountNavigator = () => (
       name="NotificationsListScreen"
       component={NotificationsListScreen}
       options={{
-        title: 'Notification',
+        title: 'Notifications',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    
+    <Stack.Screen
+      name="PendingRequestScreen"
+      component={PendingRequestScreen}
+      options={{
+        title: 'Pending Request',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

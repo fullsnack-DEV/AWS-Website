@@ -240,6 +240,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'SearchScreen' ||
     routeName === 'MembersViewPrivacyScreen' ||
     routeName === 'NotificationsListScreen' ||
+    routeName === 'PendingRequestScreen' ||
     routeName === 'GroupMembersScreen' ||
     routeName === 'UserConnections' ||
     routeName === 'EditGroupProfileScreen' ||

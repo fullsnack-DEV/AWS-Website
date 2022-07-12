@@ -469,9 +469,9 @@ const strings = {
   others: 'others',
   and: 'and',
 
-  pendingrequests: 'Pending Requests',
-  today: 'Today',
-  earlier: 'Earlier',
+  pendingrequests: 'PENDING REQUESTS',
+  today: 'TODAY',
+  earlier: 'EARLIER',
 
   trashmessage:
     'Notifications in trash will be permanently deleted 30 days after they are moved in trash.',

@@ -18,10 +18,8 @@ import {
   ScrollView,
   Dimensions,
   SafeAreaView,
-  TouchableOpacity,
 } from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
-import Moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
@@ -66,14 +64,13 @@ import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 import {getEventById} from '../../api/Schedule';
 
-function NotificationsListScreen({navigation}) {
+function PendingRequestScreen({navigation}) {
   const actionSheet = useRef();
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
   const [notifAPI, setNotifAPI] = useState();
   const authContext = useContext(AuthContext);
   const [mainNotificationsList, setMainNotificationsList] = useState();
-  const currentDate = new Date();
   const [selectedEntity, setSelectedEntity] = useState();
   const [activeScreen, setActiveScreen] = useState(groupList?.length === 0);
 
@@ -151,8 +148,6 @@ function NotificationsListScreen({navigation}) {
         )
           .then((obj) => {
             const reservationObj = obj.reservationObj || obj.reservationObj[0];
-
-            console.log('reservationObj:1>=>', reservationObj);
             if (reservationObj?.referee?.user_id === authContext.entity.uid) {
               navigation.navigate(obj.screenName, {
                 reservationObj,
@@ -527,7 +522,6 @@ function NotificationsListScreen({navigation}) {
     if (activeScreen) {
       setloading(true);
       const ids = item.activities.map((activity) => activity.id);
-      // setMainNotificationsList(mainNotificationsList.filter((obj) => obj.id !== ids))
       deleteNotification(ids, item.type, authContext)
         .then(() => {
           callNotificationList()
@@ -956,31 +950,12 @@ function NotificationsListScreen({navigation}) {
         .then(async (response) => {
           const pendingReqNotification = response.payload.requests;
           console.log('pendingReqNotification:=>', pendingReqNotification);
-          const todayNotifications = response.payload.notifications.filter(
-            (item) =>
-              Moment(item.created_at).format('yyyy-MM-DD') ===
-              Moment(currentDate).format('yyyy-MM-DD'),
-          );
-          const erlierNotifications = response.payload.notifications.filter(
-            (item) =>
-              Moment(item.created_at).format('yyyy-MM-DD') !==
-              Moment(currentDate).format('yyyy-MM-DD'),
-          );
+
           const array = [
             {
-              data: pendingReqNotification.length > 3 ? [...pendingReqNotification].slice(0,3) : [...pendingReqNotification],
+              data: [...pendingReqNotification],
               section: strings.pendingrequests,
               type: 'request',
-            },
-            {
-              data: [...todayNotifications],
-              section: strings.today,
-              type: 'notification',
-            },
-            {
-              data: [...erlierNotifications],
-              section: strings.earlier,
-              type: 'notification',
             },
           ];
           setMainNotificationsList([]);
@@ -1001,10 +976,7 @@ function NotificationsListScreen({navigation}) {
     <View style={styles.listItemSeparatorStyle} />
   );
 
-  const renderSectionFooter = ({section}) => {
-    if (section.section === strings.pendingrequests) {
-      return <View style={styles.thinDivider} />;
-    }
+  const renderSectionFooter = () => {
     return <View style={styles.listItemSeparatorStyle} />;
   };
 
@@ -1040,21 +1012,16 @@ function NotificationsListScreen({navigation}) {
             keyExtractor={keyExtractor}
             renderItem={RenderSections}
             renderSectionHeader={({section: {section}}) => (
-              <TouchableOpacity style={{flex: 1,backgroundColor:colors.whiteColor}} disabled={section !== strings.pendingrequests} onPress={()=>{
-                navigation.navigate('PendingRequestScreen')
-              }}>
+              <View style={{flex: 1, backgroundColor: colors.whiteColor}}>
                 <View
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                   }}>
                   <Text style={styles.header}>{section}</Text>
-                  {section === strings.pendingrequests && (
-                    <Image source={images.nextArrow} style={styles.nextArrow} />
-                  )}
                 </View>
                 <View style={styles.listItemSeparatorStyle} />
-              </TouchableOpacity>
+              </View>
             )}
             renderSectionFooter={renderSectionFooter}
           />
@@ -1182,21 +1149,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: colors.grayBackgroundColor,
   },
-  thinDivider: {
-    width: '100%',
-    height: 7,
-    alignSelf: 'center',
-    backgroundColor: colors.grayBackgroundColor,
-  },
-  nextArrow: {
-    alignSelf: 'center',
-    flex: 0.1,
-    height: 15,
-    marginRight: 10,
-    resizeMode: 'contain',
-    tintColor: colors.lightBlackColor,
-    width: 15,
-  },
 });
 
-export default NotificationsListScreen;
+export default PendingRequestScreen;
