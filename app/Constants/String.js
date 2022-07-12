@@ -165,12 +165,14 @@ const strings = {
 
   SportsTextFieldClubTitle:
     'Choose sports that members or teams in the club will play.',
-  selectSportPlaceholder: 'Choose a Sport',
+  selectSportPlaceholderReferee: 'Which sport do you want to referee?',
+  selectSportPlaceholderScorekeeper: 'Which sport do you want to scorekeeping?',
+
   teamNameTitle: 'What is the team name?',
-  whichSport: 'Which sport do you want to referee?',
+  whichSport: 'SPORT',
   whichSportScorekeeper: 'Which sport do you want to scorekeeper?',
 
-  whichLanguage: 'Which languages can you\ncommunicate in.',
+  whichLanguage: 'LANGUAGES',
   teamNamePlaceholder: 'Enter Team Name',
 
   enterNotePlaceholder: 'Enter notes',
@@ -301,7 +303,7 @@ const strings = {
   // Register Player Screen
   sportsEventsTitle: 'Sport',
   descriptionText: 'Description',
-  describeSelf: 'Describe yourself in the sport.',
+  describeSelf: 'DESCRIPTION ABOUT YOUR SELF',
   opetionalText: '(Optional)',
   descriptionPlaceholder: 'Describe yourself as a personal player',
   matchFeesTitle: 'Match Fee',
@@ -313,20 +315,20 @@ const strings = {
   // Register Referee Screen
   certificateTitle: 'Certificates',
   certiTitle:
-    'Please add the certificates or documents showing your professional experience.',
+    'CERTIFICATE',
   addCertiTitle: 'Add a Certificate',
   addCertiMainTitle:
     'Please add the certificates or documents showing your professional experience.',
   descriptionRefereePlaceholder: 'Describe yourself as a referee',
   certificateSubTitle:
     'Please add the certificates or documents showing your professional experience.',
-  addCertificateTitle: ' + Add a Certificate',
+  addCertificateTitle: ' + Add Image of Certificate',
   languageTitle: 'Language',
-  languagePlaceholder: 'Select Language',
+  languagePlaceholder: 'What languages can you speak?',
   refereeFeesTitle: 'Referee Fee',
   deleteTitle: 'Delete',
   profilePhotoUser: 'Profile Photo Of User Account',
-  titleOrDescriptionText: 'Title or Description',
+  titleOrDescriptionText: 'Add title of certificate',
   title: 'TITLE',
   sportCreateEvent: 'SPORT',
   numberOfAttend: 'NUMBER OF ATTENDEES',
@@ -878,5 +880,7 @@ const strings = {
   isYourTeamRecruitingMember: 'Is your team recruiting a new member?',
   configureYourRefereeSetting:
     'You can’t send offer, please configure your referee setting first.',
+  emailPasswordWrong: 'The email and password you entered dont match.',
+  passwordWrong: 'Your password is wrong.'
 };
 export default strings;

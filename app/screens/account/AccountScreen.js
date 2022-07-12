@@ -110,12 +110,12 @@ export default function AccountScreen({navigation}) {
   const userMenu = [
     {key: 'Reservations'},
     {key: 'Playing', member: [{opetions: 'Add a sport'}]},
-    {key: 'Refereeing', member: [{opetions: 'Register as a referee'}]},
-    {key: 'Scorekeeping', member: [{opetions: 'Register as a scorekeeper'}]},
+    {key: 'Refereeing', member: [{opetions: 'Register as Referee'}]},
+    {key: 'Scorekeeping', member: [{opetions: 'Register as Scorekeeper'}]},
     {key: 'Teams', member: [{opetions: 'Create Team'}]},
     {key: 'Clubs', member: [{opetions: 'Create Club'}]},
     // {key: 'My Leagues', member:[{opetions: 'Create a League'}]},
-    // {key: 'Register as a Referee'},
+    // {key: 'Register as Referee'},
     // {key: 'Register as a personal player'},
     // {key: 'Create Group'},
     // {key: 'Reservations'},
@@ -628,11 +628,11 @@ export default function AccountScreen({navigation}) {
       navigation.navigate('ReservationNavigator', {
         screen: 'ReservationScreen',
       });
-    } else if (section === 'Register as a Referee') {
+    } else if (section === 'Register as Referee') {
       navigation.navigate('RegisterReferee');
     } else if (section === 'Register as a personal player') {
       navigation.navigate('RegisterPlayer');
-    } else if (section === 'Register as a scorekeeper') {
+    } else if (section === 'Register as Scorekeeper') {
       navigation.navigate('RegisterScorekeeper');
     } else if (section === 'Create Club') {
       navigation.navigate('CreateClubForm1');
@@ -708,9 +708,9 @@ export default function AccountScreen({navigation}) {
   const handleOptions = useCallback(
     (options) => {
       // navigation.closeDrawer();
-      if (options === 'Register as a referee') {
+      if (options === 'Register as Referee') {
         navigation.navigate('RegisterReferee');
-      } else if (options === 'Register as a scorekeeper') {
+      } else if (options === 'Register as Scorekeeper') {
         navigation.navigate('RegisterScorekeeper');
       } else if (options === 'Add a sport') {
         navigation.navigate('RegisterPlayer');
@@ -1177,13 +1177,13 @@ export default function AccountScreen({navigation}) {
             {rowItem.opetions === 'Add a sport' && (
               <Image source={images.addSport} style={styles.subMenuItem} />
             )}
-            {rowItem.opetions === 'Register as a referee' && (
+            {rowItem.opetions === 'Register as Referee' && (
               <Image
                 source={images.registerReferee}
                 style={styles.subMenuItem}
               />
             )}
-            {rowItem.opetions === 'Register as a scorekeeper' && (
+            {rowItem.opetions === 'Register as Scorekeeper' && (
               <Image
                 source={images.registerScorekeeper}
                 style={styles.subMenuItem}

@@ -1,4 +1,10 @@
-import React, {useEffect, useState, useLayoutEffect} from 'react';
+import React, {
+  useEffect,
+  useState,
+  useLayoutEffect,
+  useCallback,
+  useContext,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,13 +21,23 @@ import {
 
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
+import Config from 'react-native-config';
+import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import apiCall from '../../utils/apiCall';
+import {QBconnectAndSubscribe, QBlogin} from '../../utils/QuickBlox';
+import {setStorage} from '../../utils';
+import {getAppSettingsWithoutAuth} from '../../api/Users';
 
 export default function EmailVerificationScreen({navigation, route}) {
+  const authContext = useContext(AuthContext);
+
+  const dummyAuthContext = {...authContext};
+
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(60);
 
@@ -50,23 +66,193 @@ export default function EmailVerificationScreen({navigation, route}) {
       ),
     });
   });
+
+  const getRedirectionScreenName = useCallback(
+    (townscupUser) =>
+      new Promise((resolve, reject) => {
+        console.log('screen name object:=>', townscupUser);
+        if (!townscupUser.birthday) resolve({screen: 'AddBirthdayScreen'});
+        else if (!townscupUser.gender) resolve({screen: 'ChooseGenderScreen'});
+        else if (!townscupUser.city) resolve({screen: 'ChooseLocationScreen'});
+        else if (!townscupUser.sports)
+          resolve({
+            screen: 'ChooseSportsScreen',
+            params: {
+              city: townscupUser?.city,
+              state: townscupUser?.state_abbr,
+              country: townscupUser?.country,
+            },
+          });
+        else reject(new Error({error: 'completed user profile'}));
+      }),
+    [],
+  );
+
+  const loginFinalRedirection = useCallback(
+    async (firebaseUser, townscupUser) => {
+      const entity = {...dummyAuthContext.entity};
+      const userData = {...townscupUser};
+
+      entity.auth.user = {...userData};
+      entity.obj = {...userData};
+      await authContext.setTokenData(dummyAuthContext?.tokenData);
+      await setStorage('authContextUser', {...userData});
+      await authContext.setUser({...userData});
+      await setStorage('authContextEntity', {...entity});
+      await setStorage('loggedInEntity', entity);
+      await authContext.setEntity({...entity});
+
+      console.log('User Data:', userData);
+      getRedirectionScreenName(userData)
+        .then((responseScreen) => {
+          setLoading(false);
+          navigation.replace(responseScreen?.screen, {
+            ...responseScreen?.params,
+          });
+        })
+        .catch(async () => {
+          entity.isLoggedIn = true;
+          await setStorage('authContextEntity', {...entity});
+          await setStorage('loggedInEntity', {...entity});
+          getAppSettingsWithoutAuth()
+            .then(async (response) => {
+              console.log('Settings without auth:=>', response);
+              await setStorage('appSetting', response.payload.app);
+              await authContext.setEntity({...entity});
+            })
+            .catch((e) => {
+              setTimeout(() => {
+                console.log('catch -> location screen setting api');
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            });
+        });
+    },
+    [
+      authContext,
+      dummyAuthContext.entity,
+      dummyAuthContext?.tokenData,
+
+      getRedirectionScreenName,
+      navigation,
+    ],
+  );
+
+  const QBInitialLogin = useCallback(
+    (firebaseUser, townscupUser) => {
+      const response = {...townscupUser};
+      let qbEntity = {...dummyAuthContext?.entity};
+
+      console.log('response : ', response);
+      console.log('qbEntity : ', qbEntity);
+
+      QBlogin(qbEntity.uid, response)
+        .then(async (res) => {
+          qbEntity = {
+            ...qbEntity,
+            QB: {...res.user, connected: true, token: res?.session?.token},
+          };
+          QBconnectAndSubscribe(qbEntity);
+          dummyAuthContext.entity = {...qbEntity};
+          loginFinalRedirection(firebaseUser, response);
+        })
+        .catch((error) => {
+          console.log('QB Login Error : ', error.message);
+          qbEntity = {...qbEntity, QB: {connected: false}};
+          dummyAuthContext.entity = {...qbEntity};
+          loginFinalRedirection(firebaseUser, response);
+        });
+    },
+    [dummyAuthContext, loginFinalRedirection],
+  );
+
+  const onAuthStateChanged = useCallback(
+    (user) => {
+      setLoading(true);
+      if (user) {
+        user.getIdTokenResult().then((idTokenResult) => {
+          const token = {
+            token: idTokenResult.token,
+            expirationTime: idTokenResult.expirationTime,
+          };
+          console.log('token:=>', token);
+          dummyAuthContext.tokenData = token;
+
+          setStorage('groupEventValue', true);
+          const userConfig = {
+            method: 'get',
+            url: `${Config.BASE_URL}/users/${user?.uid}`,
+            headers: {Authorization: `Bearer ${token?.token}`},
+          };
+          console.log('Login Request:=>', userConfig);
+          apiCall(userConfig)
+            .then((response) => {
+              console.log('ressssss==>', response);
+              if (response.status) {
+                dummyAuthContext.entity = {
+                  uid: user.uid,
+                  role: 'user',
+                  obj: response.payload,
+                  auth: {
+                    user_id: user.uid,
+                    user: response.payload,
+                  },
+                };
+                QBInitialLogin(user, response.payload);
+              } else {
+                navigation.navigate('AddNameScreen', {
+                  signupInfo: {
+                    ...route?.params?.signupInfo,
+                    emailAddress:
+                      route?.params?.signupInfo?.emailAddress ??
+                      route?.params?.emailAddress,
+                    password:
+                      route?.params?.signupInfo?.password ??
+                      route?.params?.password,
+                  },
+                });
+              }
+            })
+            .catch((error) => {
+              setLoading(false);
+              console.log(error);
+              navigation.navigate('AddNameScreen', {
+                signupInfo: {
+                  ...route?.params?.signupInfo,
+                  emailAddress:
+                    route?.params?.signupInfo?.emailAddress ??
+                    route?.params?.emailAddress,
+                  password:
+                    route?.params?.signupInfo?.password ??
+                    route?.params?.password,
+                },
+              });
+            });
+        });
+      }
+    },
+    [QBInitialLogin, dummyAuthContext],
+  );
+
   const verifyUserEmail = () => {
+    console.log(route?.params?.signupInfo);
+    console.log(route?.params?.signupInfo?.password);
     setLoading(true);
     firebase
       .auth()
       .signInWithEmailAndPassword(
-        route?.params?.signupInfo?.emailAddress,
-        route?.params?.signupInfo?.password,
+        route?.params?.signupInfo?.emailAddress ?? route?.params?.emailAddress,
+        route?.params?.signupInfo?.password ?? route?.params?.password,
       )
-      .then(async (res) => {
+      .then((res) => {
         setLoading(false);
         if (res.user.emailVerified) {
-          console.log('route?.params?.signupInfo', route?.params?.signupInfo);
-          navigation.navigate('AddNameScreen', {
-            signupInfo: {
-              ...route?.params?.signupInfo,
-            },
-          });
+          console.log('firebase user data', res);
+
+          const loginOnAuthStateChanged = firebase
+            .auth()
+            .onAuthStateChanged(onAuthStateChanged);
+          loginOnAuthStateChanged();
         } else {
           setTimeout(() => {
             Alert.alert('Your email hasn’t been verified yet.');

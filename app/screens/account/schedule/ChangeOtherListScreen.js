@@ -56,6 +56,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
           Alert.alert('', e.messages);
         });
     } else {
+      setLoading(false);
       Alert.alert('Please select any of the group.');
     }
   }, [addedGroups, authContext, navigation]);

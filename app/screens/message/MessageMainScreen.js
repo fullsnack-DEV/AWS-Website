@@ -249,7 +249,7 @@ const MessageMainScreen = ({navigation}) => {
       <Header
         showBackgroundColor={true}
         leftComponent={
-          <Text style={styles.eventTextStyle}>Chat</Text>
+          <Text style={styles.eventTextStyle}>Chats</Text>
         }
         rightComponent={
           authContext?.entity?.QB && (

@@ -57,6 +57,8 @@ import {
   QBgetUserDetail,
   QBsendMessage,
   QBleaveDialog,
+  QBDeleteMessage,
+  // QBgetDialogByID,
 } from '../../utils/QuickBlox';
 import MessageChatShimmer from '../shimmer/message/MessageChatShimmer';
 import {ShimmerView} from '../shimmer/commonComponents/ShimmerCommonComponents';
@@ -101,11 +103,6 @@ const MessageChat = ({route, navigation}) => {
   const scrollRef = useRef(null);
   const refSavedMessagesData = useRef(savedMessagesData);
 
-  console.log(
-    'route?.params?.dialogroute?.params?.dialog',
-    route?.params?.dialog,
-  );
-
   useEffect(() => {
     if (isFocused) {
       onRefresh();
@@ -113,14 +110,12 @@ const MessageChat = ({route, navigation}) => {
   }, [isFocused]);
 
   useEffect(() => {
-    console.log(1);
     if (occupantsData?.length) {
       navigation.setParams({participants: [...occupantsData]});
     }
   }, [occupantsData]);
 
   useEffect(() => {
-    console.log(4);
     const setData = (data) => {
       const dialogDatas = {
         dialogId: data?.id,
@@ -147,7 +142,6 @@ const MessageChat = ({route, navigation}) => {
   }, [route?.params?.dialog]);
 
   useEffect(() => {
-    console.log(2);
     const uid = route?.params?.userId;
 
     const setData = (data) => {
@@ -164,10 +158,6 @@ const MessageChat = ({route, navigation}) => {
           : QB_DIALOG_TYPE.SINGLE,
       );
       if (dialogDatas?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
-        console.log(
-          'dialogDatas?.dialogType === QB.chat.DIALOG_TYPE.CHAT : ',
-          dialogDatas?.dialogType === QB.chat.DIALOG_TYPE.CHAT,
-        );
         setHeadingTitle(dialogDatas?.name?.slice(2, dialogDatas?.name?.length));
       } else {
         setHeadingTitle(dialogDatas?.name);
@@ -176,7 +166,6 @@ const MessageChat = ({route, navigation}) => {
     };
 
     if (uid) {
-      console.log('QB Error UID : ', QB.users.USERS_FILTER.TYPE.STRING);
       setLoading(true);
       QBgetUserDetail(
         QB.users.USERS_FILTER.FIELD.LOGIN,
@@ -184,8 +173,6 @@ const MessageChat = ({route, navigation}) => {
         [uid].join(),
       )
         .then((userData) => {
-          console.log('userDatauserData', userData);
-
           const user = userData.users.filter((item) => item.login === uid)[0];
           QBcreateDialog([user.id])
             .then((res) => {
@@ -197,7 +184,7 @@ const MessageChat = ({route, navigation}) => {
             });
         })
         .catch((error) => {
-          console.log('QB Error123321 : ', error);
+          console.log('QB Error: ', error);
           setLoading(false);
         });
     }
@@ -224,7 +211,6 @@ const MessageChat = ({route, navigation}) => {
               [dialogData?.occupantsIds].join(),
             )
               .then((res) => {
-                console.log('USER:::::===> ', res?.users);
                 getPlaceholderText([...res?.users]);
                 setOccupantsData([...res?.users]);
 
@@ -282,12 +268,7 @@ const MessageChat = ({route, navigation}) => {
           dialogData?.dialogId,
           savedMessagesData.length,
         );
-        console.log(
-          'message list',
-          response,
-          dialogData?.dialogId,
-          savedMessagesData.length,
-        );
+
         if (onRefreshCalled) {
           refSavedMessagesData.current = [
             ...response.message,
@@ -318,9 +299,42 @@ const MessageChat = ({route, navigation}) => {
       setSavedMessagesData(searchMessageData);
     }
   };
+
+  const deleteMessage = (item) => {
+    console.log('long press', item);
+    Alert.alert(
+      'Delete',
+      'Are you sure want to delete message?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            QBDeleteMessage(item.id, authContext)
+              .then((respose) => {
+                if (respose?.errors?.length > 0) {
+                  Alert.alert(respose.errors[0]);
+                } else {
+                  // setSavedMessagesData([...savedMessagesData.filter((obj) => obj.id !== respose.SuccessfullyDeleted.ids[0])]);
+                  navigation.goBack();
+                }
+              })
+              .catch((error) => {
+                console.log('QB error : ', error);
+              });
+          },
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
   const renderMessages = useCallback(
     ({item, index}) => {
-      console.log('Messsssages', item);
       const getDateTime = (compareFormat, outputFormat) => {
         const preveiousDate =
           index > 0 && savedMessagesData[index - 1].dateSent;
@@ -342,9 +356,6 @@ const MessageChat = ({route, navigation}) => {
         userData.length > 0 && userData[0]?.customData
           ? JSON.parse(userData[0].customData)
           : {};
-      console.log('userData--->', userData);
-      console.log('occupantsData--->', occupantsData);
-      console.log('item--->', item);
 
       let isReceiver = index === 0 && item.senderId !== myUserId;
       if (!isReceiver)
@@ -359,10 +370,8 @@ const MessageChat = ({route, navigation}) => {
         userData && userData[0] ? userData[0].fullName : `T_${headingTitle}`;
       fullName = fullName.slice(2, fullName.length);
 
-      console.log('fullName--->', fullName);
       let finalImage = images.profilePlaceHolder;
       if (isReceiver) {
-        console.log('customData ::==>', customData);
         const entityType = customData?.entity_type ?? '';
         let fullImage = null;
         if (customData?.full_image) {
@@ -377,6 +386,7 @@ const MessageChat = ({route, navigation}) => {
               ? images.profilePlaceHolder
               : images.groupUsers;
       }
+
       return (
         <>
           {!loading && (
@@ -447,6 +457,8 @@ const MessageChat = ({route, navigation}) => {
                 )}
 
                 <TCMessage
+                  messageData={item}
+                  onLongPressMessage={() => deleteMessage(item)}
                   fullName={
                     customData?.is_terminate === true ? 'Unknown' : fullName
                   }
@@ -482,8 +494,6 @@ const MessageChat = ({route, navigation}) => {
       uploadedFile && messageBody.trim() === ''
         ? '[attachment]'
         : messageBody.trim();
-    console.log('dialogData?.dialogId', dialogData?.dialogId);
-    console.log('message', message);
 
     QBsendMessage(dialogData?.dialogId, message, uploadedFile).then(() => {
       setMessageBody('');
@@ -505,7 +515,6 @@ const MessageChat = ({route, navigation}) => {
       const imagePath = image?.path; // Platform?.OS === 'ios' ? image?.sourceURL : image?.path
       const validImageSize = image?.size <= QB_MAX_ASSET_SIZE_UPLOAD;
 
-      console.log('imageimage', image);
       if (!validImageSize) {
         Alert.alert('file image size error');
       } else {
@@ -530,7 +539,6 @@ const MessageChat = ({route, navigation}) => {
           .then(() => {
             // unsubscribed from upload progress events for this file
             // remove subscription if it is not needed
-            console.log('upload done');
             subscription.remove();
           })
           .catch((error) => {
@@ -611,7 +619,6 @@ const MessageChat = ({route, navigation}) => {
     ),
     [ListEmptyComponent, loading, onRefresh, renderMessages, savedMessagesData],
   );
-  console.log('occupantsData?.length', occupantsData?.length);
 
   const getPlaceholderText = useCallback((occData) => {
     const filterOcc = (occData || []).filter(
@@ -619,11 +626,7 @@ const MessageChat = ({route, navigation}) => {
         JSON.parse(obj.customData).is_pause === true ||
         JSON.parse(obj.customData).is_deactivate === true,
     );
-    console.log('filterOccfilterOcc', filterOcc);
-    console.log('occData?.length', occData?.length);
-    console.log('filterOccfilterOcc', filterOcc.length);
 
-    console.log('filterOccfilterOcc', occData?.length - filterOcc.length);
     if (occData?.length - filterOcc.length <= 1) {
       setPointEvent('none');
       setPlaceholderText('No recipients in this chatroom');
@@ -805,10 +808,6 @@ const MessageChat = ({route, navigation}) => {
   );
   const onPressDone = useCallback(
     (newDialog) => {
-      console.log('cacacacacacaca');
-      console.log('{...dialogData, ...}', {...dialogData});
-      console.log('{..., ...newDialog}', {...newDialog});
-
       navigation.setParams({dialog: {...dialogData, ...newDialog}});
       setDialogData({...dialogData, ...newDialog});
     },
@@ -992,7 +991,6 @@ const MessageChat = ({route, navigation}) => {
               <TouchableOpacity
                 style={styles.rowContainer}
                 onPress={() => {
-                  console.log('inviteButton');
                   commentModalRef.current.close();
 
                   navigation.navigate('MessageEditInviteeScreen', {

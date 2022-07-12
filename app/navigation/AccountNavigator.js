@@ -1046,7 +1046,7 @@ const AccountNavigator = () => (
       name="RegisterReferee"
       component={RegisterReferee}
       options={{
-        title: 'Register as a referee',
+        title: 'Register as Referee',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           alignSelf: 'center',
@@ -1063,7 +1063,7 @@ const AccountNavigator = () => (
       name="RegisterRefereeForm2"
       component={RegisterRefereeForm2}
       options={{
-        title: 'Register as a referee',
+        title: 'Register as Referee',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2210,7 +2210,7 @@ const AccountNavigator = () => (
       name="RegisterScorekeeper"
       component={RegisterScorekeeper}
       options={{
-        title: 'Register as a scorekeeper',
+        title: 'Register as Scorekeeper',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           alignSelf: 'center',
@@ -2227,7 +2227,7 @@ const AccountNavigator = () => (
       name="RegisterScorekeeperForm2"
       component={RegisterScorekeeperForm2}
       options={{
-        title: 'Register as a scorekeeper',
+        title: 'Register as Scorekeeper',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

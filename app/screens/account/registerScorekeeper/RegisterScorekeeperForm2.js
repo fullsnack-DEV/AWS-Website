@@ -42,7 +42,6 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const [certificate, setCertificate] = useState([{title: ''}]);
-  const [validationError, setError] = useState(null);
 
   const [imageUploadingLoader, setImageUploadingLoader] = useState(null);
   const [currentScorekeeperData, setCurrentScorekeeperData] = useState([]);
@@ -61,7 +60,6 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
       (item) => item?.title && (!item?.thumbnail || !item?.url),
     );
     if (findCertiTitleIndex !== -1) {
-      setError({certificate: findCertiTitleIndex});
       Alert.alert(strings.appName, 'Add certificate');
       return false;
     }
@@ -70,11 +68,9 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
       (item) => !item?.title && (item?.thumbnail || item?.url),
     );
     if (findIndex !== -1) {
-      setError({certificate: findIndex});
       Alert.alert(strings.appName, 'Add title for certificate');
       return false;
     }
-    setError(null);
 
     return true;
   };
@@ -175,11 +171,7 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
             placeholder={strings.titleOrDescriptionText}
             style={{
               ...styles.certificateDescription,
-              borderWidth: validationError?.certificate === index ? 1 : 0,
-              borderColor:
-                validationError?.certificate === index
-                  ? colors.redDelColor
-                  : colors.whiteColor,
+              borderWidth: 0,
             }}
             onChangeText={(text) => {
               const certi = certificate;
@@ -243,6 +235,15 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
               });
             }}>
             <View style={styles.addCertificateButton}>
+              <FastImage
+                resizeMode={FastImage.resizeMode.cover}
+                source={images.messageCamera}
+                style={{
+                  width: 27,
+                  height: 20,
+                  marginBottom: 15,
+                }}
+              />
               <Text style={styles.addCertificateText} numberOfLines={1}>
                 {strings.addCertificateTitle}
               </Text>
@@ -356,29 +357,20 @@ const styles = StyleSheet.create({
 
   addCertificateView: {
     flexDirection: 'row',
-    // backgroundColor: 'red',
-    marginTop: 12,
+
+    marginTop: 5,
     marginBottom: 12,
     width: wp('92%'),
     alignSelf: 'center',
   },
   addCertificateButton: {
     marginTop: 2,
-    flexDirection: 'row',
+    marginBottom: 5,
     alignItems: 'center',
-    alignSelf: 'center',
-    borderRadius: 5,
-    height: 25,
     justifyContent: 'center',
-    backgroundColor: colors.whiteColor,
-    paddingHorizontal: 5,
-    shadowColor: colors.blackColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-    width: 120,
-    marginBottom: 15,
+    borderRadius: 5,
+    height: 150,
+    backgroundColor: colors.textFieldBackground,
   },
   addCertificateText: {
     color: colors.lightBlackColor,
@@ -395,12 +387,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     paddingHorizontal: 15,
     color: colors.lightBlackColor,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
   },
 });

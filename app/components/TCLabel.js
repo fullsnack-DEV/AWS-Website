@@ -29,11 +29,11 @@ function TCLabel({
 const styles = StyleSheet.create({
   labelText: {
     marginLeft: 15,
-    marginTop: 20,
+    marginTop: 35,
     color: colors.lightBlackColor,
-    fontSize: 20,
+    fontSize: 16,
     textAlign: 'left',
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RBold,
   },
   mendatory: {
     color: 'red',

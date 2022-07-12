@@ -403,7 +403,7 @@ const NewsFeedPostItems = memo(
     const renderPost = useMemo(() => {
       const myData = myItem?.post_type === 'repost' ? myItem?.activity : item;
       return (
-        <View >
+        <View>
           <View style={{flexDirection: 'row', flex: 1}}>
             {myItem?.post_type === 'repost' && (
               <View
@@ -416,7 +416,12 @@ const NewsFeedPostItems = memo(
               />
             )}
             <View style={{flex: 1}}>
-              <View style={myItem?.post_type === 'repost' ? styles.mainRepostContainer : styles.mainContainer}>
+              <View
+                style={
+                  myItem?.post_type === 'repost'
+                    ? styles.mainRepostContainer
+                    : styles.mainContainer
+                }>
                 <TouchableOpacity
                   activeOpacity={1}
                   onPress={onImageProfilePress}
@@ -482,12 +487,15 @@ const NewsFeedPostItems = memo(
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
+
+                flex: 1,
               }}>
               <TouchableOpacity
                 onPress={onWriteCommentPress}
                 style={{
                   flexDirection: 'row',
                   marginRight: 25,
+                  flex: 0.5,
                 }}>
                 <View style={styles.imageTouchStyle}>
                   <Image
@@ -505,8 +513,7 @@ const NewsFeedPostItems = memo(
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: 20,
+                  flex: 0.5,
                 }}>
                 <TouchableOpacity
                   onPress={() => shareActionSheet.current.show()}
@@ -559,7 +566,23 @@ const NewsFeedPostItems = memo(
           </View>
         </View>
       );
-    }, [RenderSinglePostItems, attachedImages, commentCount, item, like, likeCount, myItem?.activity, myItem?.post_type, onImageProfilePress, onNewsFeedLikePress, onWriteCommentPress, renderDescription, renderMultiplePostItems, renderURLPreview, showThreeDot]);
+    }, [
+      RenderSinglePostItems,
+      attachedImages,
+      commentCount,
+      item,
+      like,
+      likeCount,
+      myItem?.activity,
+      myItem?.post_type,
+      onImageProfilePress,
+      onNewsFeedLikePress,
+      onWriteCommentPress,
+      renderDescription,
+      renderMultiplePostItems,
+      renderURLPreview,
+      showThreeDot,
+    ]);
 
     console.log('ittttttm', myItem);
     return (
@@ -619,8 +642,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   commentShareLikeView: {
+    flex: 1,
     flexDirection: 'row',
-    marginHorizontal: 15,
+    marginLeft: 15,
+    marginRight: 15,
     marginTop: 5,
   },
   commentlengthStyle: {
@@ -654,7 +679,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginTop: 15,
   },
-  mainRepostContainer:{
+  mainRepostContainer: {
     flex: 1,
     alignItems: 'center',
     flexDirection: 'row',

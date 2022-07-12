@@ -238,7 +238,7 @@ export default function ScheduleScreen({navigation, route}) {
               {group_name: 'All', group_id: 0},
               {group_name: 'Me', group_id: 1},
               ...setting?.payload?.user?.schedule_group_filter,
-              {group_name: 'Other', group_id: 2},
+              {group_name: 'Others', group_id: 2},
             ]);
           } else {
             getGroups(authContext)
@@ -252,13 +252,13 @@ export default function ScheduleScreen({navigation, route}) {
                     {group_name: 'Me', group_id: 1},
                     ...teams,
                     ...clubs,
-                    {group_name: 'Other', group_id: 2},
+                    {group_name: 'Others', group_id: 2},
                   ]);
                 } else {
                   setOrgenizerOpetions([
                     {group_name: 'All', group_id: 0},
                     {group_name: 'Me', group_id: 1},
-                    {group_name: 'Other', group_id: 2},
+                    {group_name: 'Others', group_id: 2},
                   ]);
                 }
 
@@ -276,7 +276,7 @@ export default function ScheduleScreen({navigation, route}) {
             setSports([
               {sport: 'All'},
               ...setting?.payload?.user?.schedule_sport_filter,
-              {sport: 'Other'},
+              {sport: 'Others'},
             ]);
           } else {
             const sportsList = [
@@ -298,7 +298,7 @@ export default function ScheduleScreen({navigation, route}) {
             });
             const data = Utility.uniqueArray(res, 'sport');
 
-            setSports([{sport: 'All'}, ...data, {sport: 'Other'}]);
+            setSports([{sport: 'All'}, ...data, {sport: 'Others'}]);
           }
         }
         setloading(false);
