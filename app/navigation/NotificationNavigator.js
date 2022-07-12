@@ -71,6 +71,7 @@ import MessageNavigator from './MessageNavigator';
 import EventScreen from '../screens/account/schedule/EventScreen';
 import AcceptEventInviteScreen from '../screens/account/schedule/AcceptEventInviteScreen';
 import GoingListScreen from '../screens/account/schedule/GoingListScreen';
+import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
 
 const Stack = createStackNavigator();
 
@@ -85,7 +86,7 @@ function NotificationNavigator() {
          name="NotificationsListScreen"
          component={NotificationsListScreen}
          options={{
-           title: 'Notification',
+           title: 'Notifications',
            headerTintColor: colors.blackColor,
            headerTitleStyle: {
              fontWeight: '500',
@@ -97,6 +98,22 @@ function NotificationNavigator() {
            },
          }}
         />
+      <Stack.Screen
+      name="PendingRequestScreen"
+      component={PendingRequestScreen}
+      options={{
+        title: 'Pending Request',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
       <Stack.Screen
          name="TrashScreen"
          component={TrashScreen}

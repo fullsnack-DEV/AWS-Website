@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Animated, StyleSheet, Text, View, I18nManager,
+  Animated, StyleSheet, View, I18nManager,
   Image,
 } from 'react-native';
 
@@ -25,7 +25,7 @@ export default class AppleStyleSwipeableRow extends Component {
         <RectButton
           style={[styles.rightAction, { backgroundColor: color }]}
           onPress={this.onPress}>
-          <Text style={styles.actionText}>{text}</Text>
+          {/* <Text style={styles.actionText}>{text}</Text> */}
           <Image source={this.props.image} style={styles.deleteImgContainer} />
         </RectButton>
       </Animated.View>
@@ -65,12 +65,12 @@ export default class AppleStyleSwipeableRow extends Component {
 }
 
 const styles = StyleSheet.create({
-  actionText: {
-    color: 'white',
-    fontSize: 16,
-    backgroundColor: 'transparent',
-    // padding: 10,
-  },
+  // actionText: {
+  //   color: 'white',
+  //   fontSize: 16,
+  //   backgroundColor: 'transparent',
+  //   // padding: 10,
+  // },
   rightAction: {
     alignItems: 'center',
     flex: 1,

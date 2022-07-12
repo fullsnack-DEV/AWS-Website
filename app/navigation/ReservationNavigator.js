@@ -42,6 +42,7 @@ import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChall
 import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 import ScorekeeperSelectMatch from '../screens/game/bookScorekeeper/selectMatch/ScorekeeperSelectMatch';
+import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
 
 const Stack = createStackNavigator();
 
@@ -452,7 +453,7 @@ const ReservationNavigator = () => (
          name="NotificationsListScreen"
          component={NotificationsListScreen}
          options={{
-           title: 'Notification',
+           title: 'Notifications',
            headerTintColor: colors.blackColor,
            headerTitleStyle: {
              fontWeight: '500',
@@ -464,6 +465,22 @@ const ReservationNavigator = () => (
            },
          }}
         />
+    <Stack.Screen
+      name="PendingRequestScreen"
+      component={PendingRequestScreen}
+      options={{
+        title: 'Pending Request',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
         name="AlterRequestAccept"
         component={ AlterRequestAccept }
