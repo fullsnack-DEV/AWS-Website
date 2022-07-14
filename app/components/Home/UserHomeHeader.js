@@ -1,6 +1,4 @@
-import React, {
- memo, useEffect, useState, useContext,useRef
-} from 'react';
+import React, {memo, useEffect, useState, useContext, useRef} from 'react';
 import {
   StyleSheet,
   View,
@@ -9,7 +7,7 @@ import {
   Image,
   SafeAreaView,
 } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import ActionSheet from 'react-native-actionsheet';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -30,7 +28,7 @@ const UserHomeHeader = ({
   const actionSheet = useRef();
 
   const authContext = useContext(AuthContext);
-console.log('Home currentUserData', currentUserData);
+  console.log('Home currentUserData', currentUserData);
   const [entityData, setEntityData] = useState(null);
   useEffect(() => {
     if (currentUserData) {
@@ -45,7 +43,7 @@ console.log('Home currentUserData', currentUserData);
       etData.city = currentUserData?.city ?? '';
       etData.country = currentUserData?.country ?? '';
       etData.teamCount = currentUserData?.joined_teams?.length ?? 0;
-      setEntityData({ ...etData });
+      setEntityData({...etData});
     }
   }, [currentUserData]);
 
@@ -72,9 +70,9 @@ console.log('Home currentUserData', currentUserData);
 
   return (
     <SafeAreaView>
-      <View style={{ width: wp('100%'), margin: 0 }}>
-        <View style={{ backgroundColor: colors.whiteColor }}>
-          <View style={{ width: '100%', marginBottom: 20 }}>
+      <View style={{width: wp('100%'), margin: 0}}>
+        <View style={{backgroundColor: colors.whiteColor}}>
+          <View style={{width: '100%', marginBottom: 20}}>
             <View style={styles.userViewStyle}>
               {/* <Text style={styles.userTextStyle}>{entityData?.fullName}</Text> */}
               <View
@@ -88,83 +86,93 @@ console.log('Home currentUserData', currentUserData);
                     style={styles.profileImageStyle}
                     source={
                       entityData?.profileImage
-                        ? { uri: entityData?.profileImage }
+                        ? {uri: entityData?.profileImage}
                         : images.profilePlaceHolder
                     }
                   />
                 </View>
-                <View style={{ alignItems: 'flex-end' }}>
+                <View style={{alignItems: 'flex-end'}}>
                   {isAdmin && (
                     <TCProfileButton
-                    title={strings.editprofiletitle}
-                    style={styles.editButtonStyle}
-                    textStyle={styles.buttonTextStyle}
-                    onPressProfile={() => onAction('edit')}
-                    showArrow={false}
-                  />
-                )}
+                      title={strings.editprofiletitle}
+                      style={styles.editButtonStyle}
+                      textStyle={styles.buttonTextStyle}
+                      onPressProfile={() => onAction('edit')}
+                      showArrow={false}
+                    />
+                  )}
 
-                  {!isAdmin && authContext?.entity?.role === 'user' && currentUserData && currentUserData.is_following && (
-                    <TCProfileButton
-                    title={strings.following}
-                    showArrow={false}
-                    style={styles.firstButtonStyle}
-                    rightImage={images.check}
-                    imageStyle={styles.checkMarkStyle}
-                    textStyle={styles.buttonTextStyle}
-                    onPressProfile={() => {
-                     actionSheet.current.show();
-                    }}
-                  />
-                )}
+                  {!isAdmin &&
+                    authContext?.entity?.role === 'user' &&
+                    currentUserData &&
+                    currentUserData.is_following && (
+                      <TCProfileButton
+                        title={strings.following}
+                        showArrow={false}
+                        style={styles.firstButtonStyle}
+                        rightImage={images.check}
+                        imageStyle={styles.checkMarkStyle}
+                        textStyle={styles.buttonTextStyle}
+                        onPressProfile={() => {
+                          actionSheet.current.show();
+                        }}
+                      />
+                    )}
 
-                  {!isAdmin && authContext?.entity?.role === 'user' && currentUserData && !currentUserData.is_following && (
-                    <TCGradientButton
-                    outerContainerStyle={styles.firstButtonOuterStyle}
-                    startGradientColor={colors.whiteColor}
-                    endGradientColor={colors.whiteColor}
-                    style={styles.firstButtonStyle}
-                    textStyle={[styles.buttonTextStyle,{color:colors.themeColor}]}
-                    title={strings.follow}
-                    onPress={() => {
-                      onAction('follow');
-                    }}
-                  />
-                )}
+                  {!isAdmin &&
+                    authContext?.entity?.role === 'user' &&
+                    currentUserData &&
+                    !currentUserData.is_following && (
+                      <TCGradientButton
+                        outerContainerStyle={styles.firstButtonOuterStyle}
+                        startGradientColor={colors.whiteColor}
+                        endGradientColor={colors.whiteColor}
+                        style={styles.firstButtonStyle}
+                        textStyle={[
+                          styles.buttonTextStyle,
+                          {color: colors.themeColor},
+                        ]}
+                        title={strings.follow}
+                        onPress={() => {
+                          onAction('follow');
+                        }}
+                      />
+                    )}
                   {!isAdmin && (
-                    <View style={{ marginTop: 10 }}>
+                    <View style={{marginTop: 10}}>
                       {loggedInEntity.role !== 'user' && (
                         <View style={styles.messageButtonStyle}>
                           {isMember && (
                             <TCProfileButton
-                            title={strings.member}
-                            style={styles.firstButtonStyle}
-                            rightImage={images.check}
-                            imageStyle={styles.checkMarkStyle}
-                            textStyle={styles.buttonTextStyle}
-                          />
-                        )}
+                              title={strings.member}
+                              style={styles.firstButtonStyle}
+                              rightImage={images.check}
+                              imageStyle={styles.checkMarkStyle}
+                              textStyle={styles.buttonTextStyle}
+                            />
+                          )}
 
                           {!isMember && (
                             <TCGradientButton
-                            outerContainerStyle={styles.firstButtonOuterStyle}
-                            style={styles.firstButtonStyle}
-                            textStyle={[styles.buttonTextStyle,{color:colors.themeColor}]}
-                            startGradientColor={colors.whiteColor}
-                            endGradientColor={colors.whiteColor}
-                            title={strings.invite}
-                            onPress={() => {
-                              onAction('invite');
-                            }}
-
-                          />
-                        )}
+                              outerContainerStyle={styles.firstButtonOuterStyle}
+                              style={styles.firstButtonStyle}
+                              textStyle={[
+                                styles.buttonTextStyle,
+                                {color: colors.themeColor},
+                              ]}
+                              startGradientColor={colors.whiteColor}
+                              endGradientColor={colors.whiteColor}
+                              title={strings.invite}
+                              onPress={() => {
+                                onAction('invite');
+                              }}
+                            />
+                          )}
                         </View>
-                    )}
+                      )}
                     </View>
-                )}
+                  )}
                 </View>
-
               </View>
 
               <Text
@@ -178,20 +186,21 @@ console.log('Home currentUserData', currentUserData);
               )}
             </View>
 
-            {(currentUserData.entity_type === 'user'
-              || currentUserData.entity_type === 'player') && (
-                <View style={styles.statusViewStyle}>
-                  {currentUserData.following_count !== undefined ? (
-                    <TouchableOpacity
+            {(currentUserData.entity_type === 'user' ||
+              currentUserData.entity_type === 'player') && (
+              // eslint-disable-next-line react/jsx-indent
+              <View style={styles.statusViewStyle}>
+                {currentUserData.following_count !== undefined ? (
+                  <TouchableOpacity
                     onPress={() => onConnectionButtonPress('following')}
                     style={styles.statusInnerViewStyle}>
-                      <Text style={styles.followingLengthText}>
-                        {entityData?.followingsCounter}
-                      </Text>
-                      <Text style={styles.followingTextStyle}>
-                        {strings.following}
-                      </Text>
-                    </TouchableOpacity>
+                    <Text style={styles.followingLengthText}>
+                      {entityData?.followingsCounter}
+                    </Text>
+                    <Text style={styles.followingTextStyle}>
+                      {strings.following}
+                    </Text>
+                  </TouchableOpacity>
                 ) : (
                   <TouchableOpacity
                     onPress={() => onConnectionButtonPress('members')}
@@ -204,49 +213,49 @@ console.log('Home currentUserData', currentUserData);
                     </Text>
                   </TouchableOpacity>
                 )}
-                  <View style={styles.followingSepratorView} />
-                  <TouchableOpacity
+                <View style={styles.followingSepratorView} />
+                <TouchableOpacity
                   onPress={() => onConnectionButtonPress('followers')}
                   style={styles.statusInnerViewStyle}>
-                    <Text style={styles.followingLengthText}>
-                      {entityData?.followersCounter}
-                    </Text>
-                    <Text style={styles.followingTextStyle}>
-                      {strings.followersRadio}
-                    </Text>
-                  </TouchableOpacity>
+                  <Text style={styles.followingLengthText}>
+                    {entityData?.followersCounter}
+                  </Text>
+                  <Text style={styles.followingTextStyle}>
+                    {strings.followersRadio}
+                  </Text>
+                </TouchableOpacity>
 
-                  <View style={styles.followingSepratorView} />
-                  {!isAdmin && (
-                    <TouchableOpacity
+                <View style={styles.followingSepratorView} />
+                {!isAdmin && (
+                  <TouchableOpacity
                     onPress={() => onAction('message')}
                     style={styles.statusInnerViewStyle}>
-                      <Image
+                    <Image
                       style={styles.messageImage}
                       source={images.messageIcon}
                     />
 
-                      <Text style={styles.followingTextStyle}>
-                        {strings.message}
-                      </Text>
-                    </TouchableOpacity>
+                    <Text style={styles.followingTextStyle}>
+                      {strings.message}
+                    </Text>
+                  </TouchableOpacity>
                 )}
-                </View>
+              </View>
             )}
           </View>
         </View>
       </View>
       <TCThinDivider width={'100%'} />
       <ActionSheet
-          ref={actionSheet}
-          options={['Unfollow', 'Cancel']}
-          cancelButtonIndex={1}
-          onPress={(index) => {
-            if (index === 0) {
-              onAction('unfollow');
-            }
-          }}
-        />
+        ref={actionSheet}
+        options={['Unfollow', 'Cancel']}
+        cancelButtonIndex={1}
+        onPress={(index) => {
+          if (index === 0) {
+            onAction('unfollow');
+          }
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -266,7 +275,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 3,
     elevation: 10,

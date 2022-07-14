@@ -1226,7 +1226,7 @@ const HomeNavigator = () => (
       name="JoinedTeamsScreen"
       component={JoinedTeamsScreen}
       options={{
-        title: 'Teams',
+        title: 'Following',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

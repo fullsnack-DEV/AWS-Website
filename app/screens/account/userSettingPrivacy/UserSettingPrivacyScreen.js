@@ -72,11 +72,10 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Profile', id: 2},
             {key: 'Basic Info', id: 3},
             {key: 'Sports Activities', id: 4},
-            {key: 'Time Zone', id: 5},
-            {key: 'Currency', id: 6},
+            {key: 'Currency', id: 5},
             // {key: 'Change Password', id: 7},
-            {key: 'Deactivate Account', id: 7},
-            {key: 'Terminate Account', id: 8},
+            {key: 'Deactivate Account', id: 6},
+            {key: 'Terminate Account', id: 7},
             // {key: 'Privacy Setting',id:3}
           ]);
         } else {
@@ -85,8 +84,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
             {key: 'Profile', id: 2},
             {key: 'Basic Info', id: 3},
             {key: 'Sports Activities', id: 4},
-            {key: 'Time Zone', id: 5},
-            {key: 'Currency', id: 6},
+            {key: 'Currency', id: 5},
             // {key: 'Privacy Setting',id:3}
           ]);
         }

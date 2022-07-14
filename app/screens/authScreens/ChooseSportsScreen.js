@@ -84,7 +84,7 @@ export default function ChooseSportsScreen({navigation, route}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: 20,
+              marginLeft: wp('5.33%'),
               tintColor: colors.whiteColor,
             }}
           />
@@ -306,9 +306,8 @@ export default function ChooseSportsScreen({navigation, route}) {
         navigateToFollowScreen(response);
       })
       .catch((e) => {
-        finalStepSignUp()
+        finalStepSignUp();
         console.log(e);
-       
       });
   };
 
@@ -508,7 +507,7 @@ export default function ChooseSportsScreen({navigation, route}) {
 
         <FlatList
           data={sports}
-          style={{top: 0, marginBottom: 35}}
+          style={{marginTop: hp('3.69%')}}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
         />
@@ -562,29 +561,27 @@ const styles = StyleSheet.create({
   },
   sportList: {
     color: colors.whiteColor,
-    fontSize: wp('4%'),
+    fontSize: 16,
     textAlign: 'left',
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
 
     // paddingLeft: wp('1%'),
-    width: wp('70%'),
+    width: wp('68%'),
     margin: wp('4%'),
     textAlignVertical: 'center',
   },
   sportText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: wp('6%'),
-    marginBottom: hp('4%'),
-    marginTop: hp('12%'),
-    paddingLeft: 30,
+    fontSize: 25,
+    marginLeft: wp('6.6%'),
+    marginTop: hp('11.39%'),
     textAlign: 'left',
-    width: wp('70%'),
   },
   nextButtonStyle: {
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginRight: 15,
+    marginRight: wp('4%'),
     color: colors.whiteColor,
   },
   container: {

@@ -412,7 +412,7 @@ export default function LoginScreen({navigation}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: 15,
+              marginLeft: wp('5.33%'),
               tintColor: colors.whiteColor,
             }}
           />
@@ -433,7 +433,7 @@ export default function LoginScreen({navigation}) {
       />
       <TCKeyboardView>
         <Text style={styles.loginText}>{strings.loginText}</Text>
-        <View style={{marginTop: 30}}>
+        <View style={{marginTop: hp('3.69%')}}>
           {renderEmailInput}
           {renderPasswordInput}
         </View>

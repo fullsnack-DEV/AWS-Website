@@ -229,7 +229,7 @@ export default function ChooseGenderScreen({navigation, route}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: 20,
+              marginLeft: wp('5.33%'),
               tintColor: colors.whiteColor,
             }}
           />
@@ -416,10 +416,20 @@ export default function ChooseGenderScreen({navigation, route}) {
         <Text style={styles.resetText}>{strings.notDisplayGenderText}</Text>
 
         <Tooltip
+          containerStyle={{
+            left: 25,
+          }}
           popover={
-            <Text style={{color: colors.themeColor, fontSize: 14}}>
-              {strings.genderText}
-            </Text>
+            <View style={{flex: 1, padding: 10}}>
+              <Text
+                style={{
+                  color: colors.themeColor,
+                  fontSize: 14,
+                  fontFamily: fonts.RRegular,
+                }}>
+                {strings.genderText}
+              </Text>
+            </View>
           }
           backgroundColor={colors.parrotColor}
           height={hp('22%')}
@@ -431,7 +441,12 @@ export default function ChooseGenderScreen({navigation, route}) {
           </Text>
         </Tooltip>
 
-        <View style={{marginTop: 40, marginLeft: 20}}>
+        <View
+          style={{
+            marginTop: hp('6.77%'),
+            marginLeft: wp('9.3%'),
+            marginRight: wp('9.3%'),
+          }}>
           <View style={styles.radioButtonView}>
             <RenderRadio
               isSelected={selected === 0}
@@ -489,21 +504,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: wp('100%'),
   },
-  checkEmailText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginLeft: 20,
-    marginTop: wp('25%'),
-    textAlign: 'left',
-  },
+
   mainContainer: {
     flex: 1,
     paddingTop: 25,
   },
   radioButtonView: {
     flexDirection: 'row',
-    marginLeft: 20,
+    // marginLeft: 20,
     marginRight: 15,
     marginTop: 20,
   },
@@ -515,36 +523,46 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
   },
+
   resetText: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginLeft: 20,
+    marginLeft: wp('6.6%'),
     marginRight: 20,
-    marginTop: 10,
+    marginTop: 5,
     textAlign: 'left',
   },
   whyAskingText: {
     color: colors.parrotColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 14,
-    marginLeft: 20,
+    marginLeft: wp('6.6%'),
     marginRight: 20,
-    marginTop: 10,
+    marginTop: hp('1.84%'),
     textAlign: 'left',
   },
+
   canNotChangeGender: {
     color: colors.parrotColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 14,
-    marginLeft: 25,
-    marginRight: 25,
+    marginRight: wp('9.33%'),
+    marginLeft: wp('9.33%'),
     textAlign: 'left',
   },
   nextButtonStyle: {
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginRight: 15,
+    marginRight: wp('4%'),
     color: colors.whiteColor,
+  },
+  checkEmailText: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 25,
+    marginLeft: wp('6.6%'),
+    marginTop: hp('11.39%'),
+    textAlign: 'left',
   },
 });

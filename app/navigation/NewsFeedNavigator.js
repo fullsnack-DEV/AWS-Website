@@ -1300,7 +1300,7 @@ const NewsFeedNavigator = () => (
       name="JoinedTeamsScreen"
       component={JoinedTeamsScreen}
       options={{
-        title: 'Teams',
+        title: 'Following',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1319,7 +1319,6 @@ const NewsFeedNavigator = () => (
         headerShown: false,
       }}
     />
-    
   </Stack.Navigator>
 );
 

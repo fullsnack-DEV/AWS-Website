@@ -42,7 +42,7 @@ export default function EmailVerificationScreen({navigation, route}) {
             style={{
               height: 20,
               width: 15,
-              marginLeft: 20,
+              marginLeft: wp('5.33%'),
               tintColor: colors.whiteColor,
             }}
           />
@@ -121,17 +121,29 @@ export default function EmailVerificationScreen({navigation, route}) {
         style={styles.background}
         source={images.loginBg}
       />
-      <View style={{marginTop: '30%', alignSelf: 'center', width: '80%'}}>
+      <View
+        style={{
+          marginTop: hp('11.39%'),
+          alignSelf: 'center',
+          width: '86.8%',
+          // backgroundColor: colors.redColor,
+        }}>
         <Text
           style={{
             fontSize: 25,
             fontFamily: fonts.RBold,
             color: colors.whiteColor,
-            marginBottom: 25,
+            marginBottom: 5,
           }}>
           Please verify your email.
         </Text>
-        <Text style={{fontSize: 16, color: 'white', fontFamily: fonts.RMedium}}>
+        <Text
+          style={{
+            fontSize: 16,
+            color: 'white',
+            fontFamily: fonts.RMedium,
+            marginVertical: 5,
+          }}>
           {getVerificationEmailText}
         </Text>
       </View>
@@ -140,31 +152,12 @@ export default function EmailVerificationScreen({navigation, route}) {
           height: 112,
           width: 180,
           alignSelf: 'center',
-          marginVertical: 15,
+          marginTop: hp('8.38%'),
+          marginBottom: hp('5.72%'),
         }}
         resizeMode={'contain'}
         source={images.emailSendIconBG}
       />
-
-      <TouchableOpacity
-        onPress={resend}
-        disabled={timer !== 0}
-        style={{alignItems: 'center'}}>
-        <Text
-          style={{
-            width: '85%',
-            textAlign: 'center',
-            color: colors.lightGreen,
-            textDecorationLine: 'underline',
-            fontSize: 13,
-            fontWeight: '700',
-          }}>
-          {timer !== 0
-            ? `YOU CAN SEND VERIFICATION EMAIL AGAIN AFTER ${timer} SECONDS.`
-            : 'SEND VERIFICATION EMAIL AGAIN'}
-        </Text>
-      </TouchableOpacity>
-
       <TouchableOpacity onPress={verifyUserEmail}>
         <View
           style={{
@@ -172,12 +165,12 @@ export default function EmailVerificationScreen({navigation, route}) {
             backgroundColor: 'white',
             borderWidth: 1,
             borderColor: 'orange',
-            width: '80%',
+            width: '86.8%',
             justifyContent: 'center',
             alignItems: 'center',
             alignSelf: 'center',
-            marginTop: '10%',
-            height: 50,
+            // marginTop: '5.72%',
+            height: 45,
           }}>
           <Text
             style={{
@@ -189,6 +182,25 @@ export default function EmailVerificationScreen({navigation, route}) {
             I’VE VERIFIED MY EMAIL ADDRESS
           </Text>
         </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={resend}
+        disabled={timer !== 0}
+        style={{alignItems: 'center'}}>
+        <Text
+          style={{
+            width: '86.6%',
+            textAlign: 'center',
+            color: colors.lightGreen,
+            textDecorationLine: 'underline',
+            fontSize: 14,
+            fontFamily: fonts.RBold,
+            marginTop: hp('2.46%'),
+          }}>
+          {timer !== 0
+            ? `YOU CAN SEND VERIFICATION EMAIL AGAIN AFTER ${timer} SECONDS.`
+            : 'SEND VERIFICATION EMAIL AGAIN'}
+        </Text>
       </TouchableOpacity>
     </LinearGradient>
   );

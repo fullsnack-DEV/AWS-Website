@@ -376,18 +376,8 @@ export default function PersonalInformationScreen({navigation, route}) {
       bodyParams.state_abbr = state;
       bodyParams.country = country;
       bodyParams.street_address = streetAddress;
-      bodyParams.postal_code = postalCode;
 
       bodyParams.description = userInfo.description;
-      bodyParams.height = userInfo.height;
-      bodyParams.weight = userInfo.weight;
-
-      if (userInfo.language) {
-        bodyParams.language = userInfo.language;
-      }
-      if (phoneNumbers) {
-        bodyParams.phone_numbers = userInfo.phone_numbers;
-      }
 
       if (profileImageChanged) {
         const imageArray = [];
@@ -428,7 +418,7 @@ export default function PersonalInformationScreen({navigation, route}) {
 
   const updateUser = (params) => {
     setloading(true);
-    console.log('bodyPARAMS:: ', params);
+    console.log('bodyPARAMS11:: ', params);
     updateUserProfile(params, authContext)
       .then((response) => {
         const accountType = getQBAccountType(response?.payload?.entity_type);
@@ -441,7 +431,6 @@ export default function PersonalInformationScreen({navigation, route}) {
         )
           .then(() => {
             setloading(false);
-
             navigation.goBack();
           })
           .catch((error) => {
