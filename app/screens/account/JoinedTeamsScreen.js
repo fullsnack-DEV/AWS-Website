@@ -25,7 +25,7 @@ import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
 import strings from '../../Constants/String';
 
-export default function JoinedTeamsScreen({route}) {
+export default function JoinedTeamsScreen({route, navigation}) {
   const [teamList, setTeamList] = useState([]);
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
@@ -65,6 +65,16 @@ export default function JoinedTeamsScreen({route}) {
         style={styles.listContainer}
         onPress={() => {
           console.log('Pressed Team..');
+          navigation.push('HomeScreen', {
+            uid: ['user', 'player']?.includes(item?.entity_type)
+              ? item?.user_id
+              : item?.group_id,
+            role: ['user', 'player']?.includes(item?.entity_type)
+              ? 'user'
+              : item.entity_type,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+          });
         }}>
         <View>
           {item.entity_type === 'player' && (
@@ -183,6 +193,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RLight,
     fontSize: wp('3.8%'),
     marginTop: 5,
+    marginRight: 55,
   },
   entityNameText: {
     color: colors.lightBlackColor,

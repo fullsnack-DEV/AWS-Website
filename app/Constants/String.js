@@ -131,7 +131,7 @@ const strings = {
   clubTeamTitle2: 'Chelsea FC',
   clubTeamTitle3: 'FC Barcelona',
   leagueTeamTitle: 'UEFA Champions League',
-
+  signupLocationText: 'Choose your home city.',
   locationText: 'Choose your city.',
   locationDescription:
     'Home city is the city where you currently reside or you mostly play sports.',
@@ -540,7 +540,7 @@ const strings = {
   perhoursinbracket: '(per hours)',
   gamefeeperhour: 'Match Fee Per Hour',
   CAD: 'CAD',
-  defaultCurrency : 'USD',
+  defaultCurrency: 'USD',
   currencyplacholder: 'Select Currency',
   languages: 'Languages',
   sportcannotbeblank: 'Sports cannot be blank',
@@ -770,11 +770,14 @@ const strings = {
 
   refuncPolicyTitle: 'Choose one of refund policies',
 
-  gameFeeTitle: 'Set the match fee that you want to receive from the challenger.',
-  gameFeeTitleTeam: 'Set the match fee that your team wants to receive from the challenger.',
+  gameFeeTitle:
+    'Set the match fee that you want to receive from the challenger.',
+  gameFeeTitleTeam:
+    'Set the match fee that your team wants to receive from the challenger.',
 
   refereeFeeTitle: 'Set the referee fee that you want to charge per hour.',
-  scorekeeperFeeTitle: 'Set the scorekeeper fee that you want to charge per hour.',
+  scorekeeperFeeTitle:
+    'Set the scorekeeper fee that you want to charge per hour.',
 
   gameRulesTitle:
     'Write down the rules of the game you will play against the challenger.',

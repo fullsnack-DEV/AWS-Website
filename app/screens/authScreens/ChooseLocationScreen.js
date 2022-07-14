@@ -312,7 +312,7 @@ export default function ChooseLocationScreen({navigation, route}) {
         style={styles.background}
         source={images.loginBg}
       />
-      <Text style={styles.LocationText}>{strings.locationText}</Text>
+      <Text style={styles.LocationText}>{strings.signupLocationText}</Text>
       <Text style={styles.LocationDescription}>
         {strings.locationDescription}
       </Text>
@@ -335,7 +335,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       </View>
       {noData && searchText?.length > 0 && (
         <Text style={styles.noDataText}>
-          Please, enter at least 3 characters to see addresses.
+          Please enter at least 3 characters to see cities.
         </Text>
       )}
       {noData && searchText?.length === 0 && nearByCity.length > 0 && (
