@@ -53,3 +53,27 @@ export const getTrash = (params, authContext) => makeAPIRequest({
   params,
   authContext,
 });
+
+export const getTrashNextList = async (params,idLt, authContext) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}/trash?id_lt=${idLt}`,
+    params,
+    authContext,
+  });
+
+  export const getPendingRequest = (params, authContext) => makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}pendingRequests`,
+    params,
+    authContext,
+  });
+
+
+  export const getPendingRequestNextList = async (params,idLt, authContext) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}/pendingRequests?id_lt=${idLt}`,
+    params,
+    authContext,
+  });

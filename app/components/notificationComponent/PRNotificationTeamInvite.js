@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import {
- View, StyleSheet, Text, TouchableOpacity,
- } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import strings from '../../Constants/String';
 import TCProfileImage from '../TCProfileImage';
 import TCGradientButton from '../TCGradientButton';
-import { parseInviteRequest } from '../../screens/notificationsScreen/PRNotificationParser';
+import {parseInviteRequest} from '../../screens/notificationsScreen/PRNotificationParser';
 
 function PRNotificationTeamInvite({
   item,
@@ -26,30 +24,32 @@ function PRNotificationTeamInvite({
   }, []);
 
   return (
-    <View style={{ backgroundColor: colors.whiteColor }}>
+    <View style={{backgroundColor: colors.whiteColor, flex: 1}}>
       {dataDictionary && (
         <TouchableOpacity onPress={onPress}>
           <View style={styles.viewFirstStyle}>
             <TCProfileImage
               entityType={dataDictionary.entityType}
-              source={{ uri: dataDictionary.imgName }}
+              source={{uri: dataDictionary.imgName}}
               containerStyle={styles.imageContainer}
               intialChar={dataDictionary.firstTitle.charAt(0).toUpperCase()}
             />
             <View style={styles.textContentStyle}>
-              <Text style={styles.textContainerStyle}>
-                <Text style={styles.boldTextStyle}>
-                  {`${dataDictionary.firstTitle} `}
+              <View style={{flex: 0.7}}>
+                <Text style={styles.textContainerStyle}>
+                  <Text style={styles.boldTextStyle}>
+                    {`${dataDictionary.firstTitle} `}
+                  </Text>
+                  <Text>{`${dataDictionary.text} `}</Text>
+                  <Text style={styles.timeStyle}>
+                    {dataDictionary.notificationTime}
+                  </Text>
                 </Text>
-                <Text>{`${dataDictionary.text} `}</Text>
-                <Text style={styles.timeStyle}>
-                  {dataDictionary.notificationTime}
-                </Text>
-              </Text>
+              </View>
               <View
                 style={
                   disabled
-                    ? [styles.viewSecondStyle, { opacity: 0.5 }]
+                    ? [styles.viewSecondStyle, {opacity: 0.5}]
                     : styles.viewSecondStyle
                 }>
                 <TCGradientButton
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginVertical: 15,
     marginRight: 15,
-    flexDirection: 'column',
+    flexDirection: 'row',
   },
   viewFirstStyle: {
     flexDirection: 'row',
@@ -99,12 +99,11 @@ const styles = StyleSheet.create({
   },
 
   viewSecondStyle: {
-
-    marginTop: 14,
+    flex: 0.3,
+    marginTop: 5,
   },
 
   acceptButtonInnerStyle: {
-
     height: 25,
     borderRadius: 5,
   },

@@ -474,7 +474,7 @@ const strings = {
   earlier: 'EARLIER',
 
   trashmessage:
-    'Notifications in trash will be permanently deleted 30 days after they are moved in trash.',
+    'Notifications in trash will be permanently deleted 60 days after they are moved in trash.',
   left: 'left',
   responsetime: '* Response time :',
   responsetimeexpired: 'RESPONSE PERIOD EXPIRED',

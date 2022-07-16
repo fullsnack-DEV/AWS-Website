@@ -43,6 +43,7 @@ import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
 import ScorekeeperSelectMatch from '../screens/game/bookScorekeeper/selectMatch/ScorekeeperSelectMatch';
 import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
+import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 
 const Stack = createStackNavigator();
 
@@ -454,6 +455,22 @@ const ReservationNavigator = () => (
          component={NotificationsListScreen}
          options={{
            title: 'Notifications',
+           headerTintColor: colors.blackColor,
+           headerTitleStyle: {
+             fontWeight: '500',
+           },
+           headerStyle: {
+             backgroundColor: colors.whiteColor,
+             borderBottomColor: colors.grayColor,
+             borderBottomWidth: 0.3,
+           },
+         }}
+        />
+    <Stack.Screen
+         name="TrashScreen"
+         component={TrashScreen}
+         options={{
+           title: 'Trash',
            headerTintColor: colors.blackColor,
            headerTitleStyle: {
              fontWeight: '500',

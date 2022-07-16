@@ -41,7 +41,6 @@ import * as Utility from '../../utils/index';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import TCNoDataView from '../../components/TCNoDataView';
 import AppleStyleSwipeableRow from '../../components/notificationComponent/AppleStyleSwipeableRow';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
@@ -777,7 +776,6 @@ function NotificationsListScreen({navigation}) {
   const notificationComponentType = (item) => {
     console.log('VERB::=>', item);
     if (isInvite(item.activities[0].verb)) {
-      console.log('Ok ok12');
       if (
         item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
         item.activities[0].verb.includes(NotificationType.inviteToEvent) ||
@@ -797,7 +795,6 @@ function NotificationsListScreen({navigation}) {
       if (
         item.activities[0].verb.includes(NotificationType.sendBasicInfoToMember)
       ) {
-        console.log('Ok ok3');
         return (
           <PRNotificationTeamInvite
             item={item}
@@ -809,6 +806,7 @@ function NotificationsListScreen({navigation}) {
           />
         );
       }
+
       return (
         <PRNotificationInviteCell
           item={item}
@@ -864,6 +862,16 @@ function NotificationsListScreen({navigation}) {
 
   const renderNotificationComponent = ({item}) => {
     console.log('Item notification:=>', item);
+    if (item.activities[0].is_request) {
+      return (
+        <AppleStyleSwipeableRow
+          onPress={() => onDelete({item})}
+          color={colors.darkThemeColor}
+          image={images.deleteIcon}>
+          {notificationComponentType(item)}
+        </AppleStyleSwipeableRow>
+      );
+    }
     return (
       <AppleStyleSwipeableRow
         onPress={() => onDelete({item})}
@@ -880,6 +888,7 @@ function NotificationsListScreen({navigation}) {
   };
 
   const RenderSections = ({item, section}) => {
+    console.log('section:', section);
     if (section.section === strings.pendingrequests) {
       return renderPendingRequestComponent({item: {...item, type: 'request'}});
     }
@@ -955,7 +964,6 @@ function NotificationsListScreen({navigation}) {
       getNotificationsList(params, authContext)
         .then(async (response) => {
           const pendingReqNotification = response.payload.requests;
-          console.log('pendingReqNotification:=>', pendingReqNotification);
           const todayNotifications = response.payload.notifications.filter(
             (item) =>
               Moment(item.created_at).format('yyyy-MM-DD') ===
@@ -966,9 +974,12 @@ function NotificationsListScreen({navigation}) {
               Moment(item.created_at).format('yyyy-MM-DD') !==
               Moment(currentDate).format('yyyy-MM-DD'),
           );
+
+          console.log('todayNotifications:=>', todayNotifications);
+
           const array = [
             {
-              data: pendingReqNotification.length > 3 ? [...pendingReqNotification].slice(0,3) : [...pendingReqNotification],
+              data:[...pendingReqNotification],
               section: strings.pendingrequests,
               type: 'request',
             },
@@ -1026,141 +1037,149 @@ function NotificationsListScreen({navigation}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View
-        style={[styles.rowViewStyle, {opacity: 1.0}]}
-        needsOffscreenAlphaCompositing>
-        <ActivityLoader visible={loading} />
-        {/* eslint-disable-next-line no-nested-ternary */}
-        {firstTimeLoading ? (
-          <NotificationListShimmer />
-        ) : mainNotificationsList?.length > 0 ? (
-          <SectionList
-            ItemSeparatorComponent={itemSeparator}
-            sections={mainNotificationsList}
-            keyExtractor={keyExtractor}
-            renderItem={RenderSections}
-            renderSectionHeader={({section: {section}}) => (
-              <TouchableOpacity style={{flex: 1,backgroundColor:colors.whiteColor}} disabled={section !== strings.pendingrequests} onPress={()=>{
-                navigation.navigate('PendingRequestScreen')
-              }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <Text style={styles.header}>{section}</Text>
-                  {section === strings.pendingrequests && (
-                    <Image source={images.nextArrow} style={styles.nextArrow} />
-                  )}
-                </View>
-                <View style={styles.listItemSeparatorStyle} />
-              </TouchableOpacity>
-            )}
-            renderSectionFooter={renderSectionFooter}
-          />
-        ) : (
-          <TCNoDataView title={'No records found'} />
-        )}
-        <ActionSheet
-          ref={actionSheet}
-          options={['Trash', 'Cancel']}
-          cancelButtonIndex={1}
-          onPress={(index) => {
-            if (index === 0) {
-              navigation.navigate('NotificationNavigator', {
-                screen: 'TrashScreen',
-                params: {
-                  selectedGroup: groupList[currentTab],
-                  selectedEntity,
-                },
-              });
-            }
-          }}
-        />
+      {firstTimeLoading && <NotificationListShimmer />}
 
-        {/* Rules notes modal */}
-        <Modal
-          isVisible={isRulesModalVisible}
-          onBackdropPress={() => setIsRulesModalVisible(false)}
-          onRequestClose={() => setIsRulesModalVisible(false)}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={300}
-          backdropTransitionOutTiming={800}
+      <ActivityLoader visible={loading} />
+      {/* eslint-disable-next-line no-nested-ternary */}
+
+      {!firstTimeLoading && mainNotificationsList.length > 0 && (
+        <SectionList
+          style={{flex: 1}}
+          ItemSeparatorComponent={itemSeparator}
+          sections={mainNotificationsList}
+          keyExtractor={keyExtractor}
+          renderItem={RenderSections}
+          renderSectionHeader={({section: {section}}) => (
+            <TouchableOpacity
+              style={{flex: 1, backgroundColor: colors.whiteColor}}
+              disabled={section !== strings.pendingrequests}
+              onPress={() => {
+                navigation.navigate('PendingRequestScreen');
+              }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={styles.header}>{section}</Text>
+                {section === strings.pendingrequests && (
+                  <Image source={images.nextArrow} style={styles.nextArrow} />
+                )}
+              </View>
+              <View style={styles.listItemSeparatorStyle} />
+            </TouchableOpacity>
+          )}
+          renderSectionFooter={renderSectionFooter}
+        />
+      )}
+
+      {!firstTimeLoading && mainNotificationsList.length <= 0 && (
+        <View
           style={{
-            margin: 0,
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Text style={styles.noEventText}>No Notification</Text>
+          <Text style={styles.dataNotFoundText}>
+            New notification will appear here.
+          </Text>
+        </View>
+      )}
+
+      <ActionSheet
+        ref={actionSheet}
+        options={['Trash', 'Cancel']}
+        cancelButtonIndex={1}
+        onPress={(index) => {
+          if (index === 0) {
+            navigation.navigate('TrashScreen', {
+              selectedGroup: groupList[currentTab],
+              selectedEntity,
+            });
+          }
+        }}
+      />
+
+      {/* Rules notes modal */}
+      <Modal
+        isVisible={isRulesModalVisible}
+        onBackdropPress={() => setIsRulesModalVisible(false)}
+        onRequestClose={() => setIsRulesModalVisible(false)}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.7,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
           }}>
           <View
             style={{
-              width: '100%',
-              height: Dimensions.get('window').height / 1.7,
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1},
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-              elevation: 15,
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
-            <View
+            <Text
               style={{
-                flexDirection: 'row',
-                paddingHorizontal: 15,
-                justifyContent: 'center',
-                alignItems: 'center',
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
               }}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                  fontSize: 16,
-                  fontFamily: fonts.RBold,
-                  color: colors.lightBlackColor,
-                }}>
-                Respond to invite to create team
-              </Text>
-            </View>
-            <View style={styles.separatorLine} />
-            <View style={{flex: 1}}>
-              <ScrollView>
-                <Text style={[styles.rulesText, {margin: 15}]}>
-                  {'When your team creates a club:'}
-                </Text>
-                <Text style={[styles.rulesText, {marginLeft: 15}]}>
-                  {'\n• your team will belong to the club initially.'}
-                </Text>
-                <Text style={[styles.rulesText, {marginLeft: 15}]}>
-                  {'\n• your team can leave the club anytime later.'}
-                </Text>
-                <Text style={[styles.rulesText, {marginLeft: 15}]}>
-                  {
-                    '\n• the admins of your team will be the admins of the club initially.'
-                  }
-                </Text>
-              </ScrollView>
-            </View>
-            <TCGradientButton
-              isDisabled={false}
-              title={strings.nextTitle}
-              style={{marginBottom: 30}}
-              onPress={onNextPressed}
-            />
+              Respond to invite to create team
+            </Text>
           </View>
-        </Modal>
-
-        {/* Rules notes modal */}
-      </View>
+          <View style={styles.separatorLine} />
+          <View style={{flex: 1}}>
+            <ScrollView>
+              <Text style={[styles.rulesText, {margin: 15}]}>
+                {'When your team creates a club:'}
+              </Text>
+              <Text style={[styles.rulesText, {marginLeft: 15}]}>
+                {'\n• your team will belong to the club initially.'}
+              </Text>
+              <Text style={[styles.rulesText, {marginLeft: 15}]}>
+                {'\n• your team can leave the club anytime later.'}
+              </Text>
+              <Text style={[styles.rulesText, {marginLeft: 15}]}>
+                {
+                  '\n• the admins of your team will be the admins of the club initially.'
+                }
+              </Text>
+            </ScrollView>
+          </View>
+          <TCGradientButton
+            isDisabled={false}
+            title={strings.nextTitle}
+            style={{marginBottom: 30}}
+            onPress={onNextPressed}
+          />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  rowViewStyle: {
-    flex: 1,
-  },
+ 
   headerRightImg: {
     height: 15,
     marginRight: 20,
@@ -1196,6 +1215,18 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: colors.lightBlackColor,
     width: 15,
+  },
+  dataNotFoundText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.veryLightBlack,
+    alignSelf: 'center',
+  },
+  noEventText: {
+    fontSize: 20,
+    fontFamily: fonts.RBold,
+    color: colors.veryLightBlack,
+    alignSelf: 'center',
   },
 });
 

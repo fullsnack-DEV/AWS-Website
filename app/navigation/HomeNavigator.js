@@ -207,6 +207,7 @@ import GoingListScreen from '../screens/account/schedule/GoingListScreen';
 import AccountInfoScreen from '../screens/account/userSettingPrivacy/AccountInfoScreen';
 import BasicInfoScreen from '../screens/account/userSettingPrivacy/BasicInfoScreen';
 import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
+import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2041,6 +2042,22 @@ const HomeNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+         name="TrashScreen"
+         component={TrashScreen}
+         options={{
+           title: 'Trash',
+           headerTintColor: colors.blackColor,
+           headerTitleStyle: {
+             fontWeight: '500',
+           },
+           headerStyle: {
+             backgroundColor: colors.whiteColor,
+             borderBottomColor: colors.grayColor,
+             borderBottomWidth: 0.3,
+           },
+         }}
+        />
     <Stack.Screen
       name="PendingRequestScreen"
       component={PendingRequestScreen}

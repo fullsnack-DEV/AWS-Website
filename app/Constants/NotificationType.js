@@ -56,6 +56,9 @@ const NotificationType = {
   // request for basic info
 
   sendBasicInfoToMember : 'sendBasicInfoToMember',
+  deleted: 'deleted',
+  accepted: 'accepted',
+  declined: 'declined',
 };
 
 export default NotificationType

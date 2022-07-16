@@ -1,59 +1,107 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View, StyleSheet, Text, TouchableOpacity,
-} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
-import strings from '../../Constants/String'
-import TCProfileImage from '../TCProfileImage'
-import TCGradientButton from '../TCGradientButton'
-import { parseInviteRequest } from '../../screens/notificationsScreen/PRNotificationParser';
+import strings from '../../Constants/String';
+import TCProfileImage from '../TCProfileImage';
+import TCGradientButton from '../TCGradientButton';
+import {parseInviteRequest} from '../../screens/notificationsScreen/PRNotificationParser';
+import NotificationType from '../../Constants/NotificationType';
 
 function PRNotificationInviteCell({
-  item, selectedEntity, onPress, onAccept, onDecline, disabled = false,
+  item,
+  selectedEntity,
+  onPress,
+  onAccept,
+  onDecline,
+  disabled = false,
+  isTrash=false,
+  entityType = 'user'
 }) {
-  const [dataDictionary, setDataDictionary] = useState()
+  const [dataDictionary, setDataDictionary] = useState();
 
   useEffect(() => {
     parseInviteRequest(item, selectedEntity).then((data) => {
-      setDataDictionary(data)
-    })
+      setDataDictionary(data);
+    });
   }, []);
 
   return (
-    <View style={{ backgroundColor: colors.whiteColor }}>
-      {dataDictionary && <TouchableOpacity onPress={onPress}>
-        <View style={styles.viewFirstStyle}>
-          <TCProfileImage
-            entityType={dataDictionary.entityType}
-            source={ { uri: dataDictionary.imgName }}
-            containerStyle={styles.imageContainer}
-            intialChar={dataDictionary.firstTitle.charAt(0).toUpperCase()}
+    <View style={{backgroundColor: colors.whiteColor,flex:1}}>
+      {dataDictionary && (
+        <TouchableOpacity onPress={onPress}>
+          <View style={styles.viewFirstStyle}>
+            <TCProfileImage
+              entityType={dataDictionary.entityType}
+              source={{uri: dataDictionary.imgName}}
+              containerStyle={styles.imageContainer}
+              intialChar={dataDictionary.firstTitle.charAt(0).toUpperCase()}
             />
-          <View style={styles.textContentStyle}>
-            <Text style={styles.textContainerStyle}>
-              <Text style={styles.boldTextStyle}>
-                {`${dataDictionary.firstTitle} `}
-              </Text>
-              <Text>{`${dataDictionary.text} `}</Text>
-              <Text style={styles.timeStyle}>{dataDictionary.notificationTime}</Text>
-            </Text>
-            <View style={disabled ? [styles.viewSecondStyle, { opacity: 0.5 }] : styles.viewSecondStyle}>
-              <TCGradientButton
-                textStyle={styles.btnTextStyle}
-                outerContainerStyle={styles.acceptBtnStyle}
-                style={styles.acceptButtonInnerStyle}
-                title={strings.accept}
-                disabled= {disabled}
-                onPress={onAccept}/>
+            <View style={styles.textContentStyle}>
+              <View style={{flex:0.6}}>
+                <Text style={styles.textContainerStyle}>
+                  <Text style={styles.boldTextStyle}>
+                    {`${dataDictionary.firstTitle} `}
+                  </Text>
+                  <Text>{`${dataDictionary.text} `}</Text>
+                  {!isTrash && <Text style={styles.timeStyle}>
+                    {dataDictionary.notificationTime}
+                  </Text>}
+                </Text>
+                {isTrash && entityType === 'user' && (
+                  <Text style={styles.timeStyle}>
+                    {(NotificationType.deleted && 'Deleted') ||
+                    (NotificationType.accepted && 'Accepted') ||
+                    (NotificationType.declined && 'declined')}
+                    <Text>
+                      {' '}{dataDictionary.notificationTime}
+                    </Text>
+                  </Text>
+              )} 
+                {isTrash && entityType === 'group' && (
+                  <Text style={styles.timeStyle}>
+                    {(NotificationType.deleted && 'Deleted') ||
+                    (NotificationType.accepted && 'Accepted') ||
+                    (NotificationType.declined && 'Declined')}
+                    <Text>
+                      {' '}by {item.activities[0].remove_by?.data?.full_name}{' '}
+                      {dataDictionary.notificationTime}
+                    </Text>
+                  </Text>
+              )}
+              </View>
+              <View
+                style={
+                  disabled
+                    ? [styles.viewSecondStyle, {opacity: 0.5}]
+                    : styles.viewSecondStyle
+                }>
+                <TCGradientButton
+                  textStyle={styles.btnTextStyle}
+                  outerContainerStyle={styles.acceptBtnStyle}
+                  style={styles.acceptButtonInnerStyle}
+                  title={strings.accept}
+                  disabled={disabled}
+                  onPress={onAccept}
+                />
 
-              <TouchableOpacity style={styles.declineBtnStyle} onPress={onDecline} disabled={disabled}>
-                <Text style={[styles.btnTextStyle, { color: colors.lightBlackColor }]}>{strings.decline}</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.declineBtnStyle}
+                  onPress={onDecline}
+                  disabled={disabled}>
+                  <Text
+                    style={[
+                      styles.btnTextStyle,
+                      {color: colors.lightBlackColor},
+                    ]}>
+                    {strings.decline}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>}
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -66,9 +114,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginVertical: 15,
     marginRight: 15,
-    flexDirection: 'column',
+    flexDirection: 'row',
   },
   viewFirstStyle: {
+    flex:1,
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },
@@ -90,9 +139,8 @@ const styles = StyleSheet.create({
 
   viewSecondStyle: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginTop: 14,
+    alignItems: 'center',
+    flex:0.4
   },
 
   acceptBtnStyle: {
@@ -101,11 +149,9 @@ const styles = StyleSheet.create({
     height: 25,
   },
   acceptButtonInnerStyle: {
-    margin: 0,
     height: 25,
     width: '100%',
     borderRadius: 5,
-
   },
   btnTextStyle: {
     fontSize: 12,
@@ -117,10 +163,16 @@ const styles = StyleSheet.create({
   declineBtnStyle: {
     width: '48%',
     height: 25,
-    borderWidth: 1,
-    borderColor: colors.veryLightBlack,
     borderRadius: 5,
     justifyContent: 'center',
+    marginLeft:5,
+
+    backgroundColor:colors.whiteColor,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
+    elevation: 3,
   },
 });
 

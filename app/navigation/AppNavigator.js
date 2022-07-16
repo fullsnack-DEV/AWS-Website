@@ -280,7 +280,8 @@ const getTabBarVisibility = (route) => {
     routeName === 'SportAccountSettingScreen' ||
     routeName === 'GroupMembersSettingScreen' ||
     routeName === 'RecruitingMemberScreen' ||
-    routeName === 'GroupsScreen'
+    routeName === 'GroupsScreen' ||
+    routeName === 'TrashScreen'
   ) {
     return false;
   }

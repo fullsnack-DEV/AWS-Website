@@ -253,6 +253,7 @@ import GroupMembersSettingScreen from '../screens/account/GroupSetting/GroupMemb
 import RecruitingMemberScreen from '../screens/account/GroupSetting/RecruitingMemberScreen';
 import GroupsScreen from '../screens/account/GroupSetting/GroupsScreen';
 import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
+import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 
 // Scorekeeper Review Screen
 
@@ -2087,7 +2088,22 @@ const AccountNavigator = () => (
         },
       }}
     />
-    
+    <Stack.Screen
+         name="TrashScreen"
+         component={TrashScreen}
+         options={{
+           title: 'Trash',
+           headerTintColor: colors.blackColor,
+           headerTitleStyle: {
+             fontWeight: '500',
+           },
+           headerStyle: {
+             backgroundColor: colors.whiteColor,
+             borderBottomColor: colors.grayColor,
+             borderBottomWidth: 0.3,
+           },
+         }}
+        />
     <Stack.Screen
       name="PendingRequestScreen"
       component={PendingRequestScreen}
