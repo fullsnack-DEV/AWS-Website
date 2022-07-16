@@ -35,7 +35,6 @@ import {func} from 'prop-types';
 import Geolocation from '@react-native-community/geolocation';
 import {ColorSpace} from 'react-native-reanimated';
 import AuthContext from '../auth/context';
-// import UserListShimmer from '../components/shimmer/commonComponents/UserListShimmer';
 import {widthPercentageToDP} from '../utils';
 import TCSearchProfileView from '../components/TCSearchProfileView';
 import TCScrollableProfileTabs from '../components/TCScrollableProfileTabs';
@@ -446,6 +445,7 @@ export default function EntitySearchScreen({navigation, route}) {
     console.log('Location -->', scoreKeeperFilters.sport);
 
     // Score keeper query
+    /*
     const scoreKeeperQuery = {
       size: pageSize,
       from: scorekeeperPageFrom,
@@ -455,6 +455,28 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       },
     };
+*/
+    const scoreKeeperQuery = {
+      size: pageSize,
+      from: scorekeeperPageFrom,
+      query: {
+        bool: {
+          must: [
+            {
+              nested: {
+                path: 'scorekeeper_data',
+                query: {
+                  bool: {
+                    must: [{term: {'scorekeeper_data.is_published': true}}],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    };
+
     // Location filter
     if (scoreKeeperFilters.location !== 'world') {
       scoreKeeperQuery.query.bool.must.push({
@@ -1256,10 +1278,10 @@ export default function EntitySearchScreen({navigation, route}) {
         setMaxFee(0);
         break;
       case 'Scorekeepers':
-        setScorekeepers({
-          location: 'world',
-          sport: 'All',
-        });
+        // setScorekeepers({
+        //   location: 'world',
+        //   sport: 'All',
+        // });
         setSelectedSport('All');
         setSelectedSportType('All');
         setMinFee(0);
@@ -2283,6 +2305,7 @@ export default function EntitySearchScreen({navigation, route}) {
                 ],
                 {cancelable: false},
               );
+              onPressReset();
             }}>
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
