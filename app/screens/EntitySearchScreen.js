@@ -1278,10 +1278,10 @@ export default function EntitySearchScreen({navigation, route}) {
         setMaxFee(0);
         break;
       case 'Scorekeepers':
-        // setScorekeepers({
-        //   location: 'world',
-        //   sport: 'All',
-        // });
+        setScorekeepers({
+          location: 'world',
+          sport: 'All',
+        });
         setSelectedSport('All');
         setSelectedSportType('All');
         setMinFee(0);
