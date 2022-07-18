@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  Text, View, StyleSheet, Image, TouchableOpacity,
-} from 'react-native';
+import {Text, View, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import images from '../../../../../Constants/ImagePath';
@@ -12,19 +10,19 @@ import TCMessageButton from '../../../../TCMessageButton';
 export default function LineUpPlayerView({
   userData,
   onButtonPress,
-//  OnRowPress,
+  //  OnRowPress,
   buttonType = 'nobutton',
 }) {
   return (
-    <TouchableOpacity >
+    <TouchableOpacity>
       {userData && (
         <View style={styles.topViewContainer}>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{flexDirection: 'row'}}>
             <View style={styles.profileView}>
               <Image
                 source={
                   userData.profile.thumbnail
-                    ? { uri: userData.profile.thumbnail }
+                    ? {uri: userData.profile.thumbnail}
                     : images.profilePlaceHolder
                 }
                 style={styles.profileImage}
@@ -33,11 +31,12 @@ export default function LineUpPlayerView({
             <View style={styles.topTextContainer}>
               <Text
                 style={styles.mediumNameText}
-                numberOfLines={
-                1
-                }>{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
+                numberOfLines={1}
+              >{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
               <Text style={styles.locationText} numberOfLines={1}>
-                {`${userData.profile.jersey_number || ''} ${userData.profile.positions || ''}`}
+                {`${userData.profile.jersey_number || ''} ${
+                  userData.profile.positions || ''
+                }`}
               </Text>
             </View>
           </View>
@@ -47,8 +46,12 @@ export default function LineUpPlayerView({
               {buttonType === 'move' && (
                 <TouchableOpacity onPress={() => onButtonPress(buttonType)}>
                   <LinearGradient
-                  colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-                  style={styles.buttonStyle}>
+                    colors={[
+                      colors.greenGradientStart,
+                      colors.greenGradientEnd,
+                    ]}
+                    style={styles.buttonStyle}
+                  >
                     <Text style={styles.buttonText}>{'MOVE'}</Text>
                   </LinearGradient>
                 </TouchableOpacity>
@@ -56,18 +59,23 @@ export default function LineUpPlayerView({
               {buttonType === 'moveup' && (
                 <TouchableOpacity onPress={() => onButtonPress(buttonType)}>
                   <LinearGradient
-                  colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-                  style={styles.buttonStyle}>
+                    colors={[
+                      colors.greenGradientStart,
+                      colors.greenGradientEnd,
+                    ]}
+                    style={styles.buttonStyle}
+                  >
                     <Text style={styles.buttonText}>{'Move up'}</Text>
                   </LinearGradient>
                 </TouchableOpacity>
               )}
               {buttonType === 'movedown' && (
                 <TCMessageButton
-                width={82}
-                height={22}
-                title={'Move down'}
-                onPress={() => onButtonPress(buttonType)}/>
+                  width={82}
+                  height={22}
+                  title={'Move down'}
+                  onPress={() => onButtonPress(buttonType)}
+                />
               )}
               {buttonType === 'email' && (
                 <TCMessageButton
@@ -80,15 +88,17 @@ export default function LineUpPlayerView({
               )}
               {buttonType === 'message' && (
                 <TCMessageButton
-                width={70}
-                height={22}
-                onPress={() => onButtonPress(buttonType)}/>
+                  width={70}
+                  height={22}
+                  onPress={() => onButtonPress(buttonType)}
+                />
               )}
               {buttonType === 'review' && (
                 <TouchableOpacity onPress={() => onButtonPress(buttonType)}>
                   <LinearGradient
-                  colors={[colors.yellowColor, colors.themeColor]}
-                  style={styles.buttonStyle}>
+                    colors={[colors.yellowColor, colors.themeColor]}
+                    style={styles.buttonStyle}
+                  >
                     <Text style={styles.buttonText}>{'Review'}</Text>
                   </LinearGradient>
                 </TouchableOpacity>
@@ -133,7 +143,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 10,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 3,
@@ -146,7 +156,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,

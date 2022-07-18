@@ -1,9 +1,7 @@
 import React from 'react';
-import {
- View, StyleSheet, TouchableOpacity, Text,
- } from 'react-native';
+import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
@@ -29,33 +27,39 @@ export default function TCTabView({
         ]}
         style={
           indexCounter === 0
-            ? [styles.activeEventPricacy, { height: activeHeight }]
-            : [styles.inactiveEventPricacy, { height: inactiveHeight }]
-        }>
+            ? [styles.activeEventPricacy, {height: activeHeight}]
+            : [styles.inactiveEventPricacy, {height: inactiveHeight}]
+        }
+      >
         <TouchableOpacity
           onPress={onFirstTabPress}
           style={
             indexCounter === 0
               ? styles.activeEventPricacy
               : styles.inactiveEventPricacy
-          }>
+          }
+        >
           <Text
             style={
               indexCounter === 0
                 ? styles.activeEventPrivacyText
                 : styles.inactiveEventPrivacyText
-            }>
+            }
+          >
             {firstTabTitle}
           </Text>
         </TouchableOpacity>
       </LinearGradient>
-      {totalTabs !== 2 && <View
-        style={{
-          height: 30,
-          width: 1,
-          backgroundColor: colors.veryLightGray,
-          alignSelf: 'center',
-        }}/>}
+      {totalTabs !== 2 && (
+        <View
+          style={{
+            height: 30,
+            width: 1,
+            backgroundColor: colors.veryLightGray,
+            alignSelf: 'center',
+          }}
+        />
+      )}
       <LinearGradient
         colors={[
           indexCounter === 1 ? colors.offwhite : colors.grayBackgroundColor,
@@ -63,33 +67,39 @@ export default function TCTabView({
         ]}
         style={
           indexCounter === 1
-          ? [styles.activeEventPricacy, { height: activeHeight }]
-          : [styles.inactiveEventPricacy, { height: inactiveHeight }]
-        }>
+            ? [styles.activeEventPricacy, {height: activeHeight}]
+            : [styles.inactiveEventPricacy, {height: inactiveHeight}]
+        }
+      >
         <TouchableOpacity
           onPress={onSecondTabPress}
           style={
             indexCounter === 1
               ? styles.activeEventPricacy
               : styles.inactiveEventPricacy
-          }>
+          }
+        >
           <Text
             style={
               indexCounter === 1
                 ? styles.activeEventPrivacyText
                 : styles.inactiveEventPrivacyText
-            }>
+            }
+          >
             {secondTabTitle}
           </Text>
         </TouchableOpacity>
       </LinearGradient>
-      {totalTabs !== 2 && <View
-        style={{
-          height: 30,
-          width: 1,
-          backgroundColor: colors.veryLightGray,
-          alignSelf: 'center',
-        }}/>}
+      {totalTabs !== 2 && (
+        <View
+          style={{
+            height: 30,
+            width: 1,
+            backgroundColor: colors.veryLightGray,
+            alignSelf: 'center',
+          }}
+        />
+      )}
       {totalTabs === 3 && (
         <LinearGradient
           colors={[
@@ -98,22 +108,25 @@ export default function TCTabView({
           ]}
           style={
             indexCounter === 2
-            ? [styles.activeEventPricacy, { height: activeHeight }]
-            : [styles.inactiveEventPricacy, { height: inactiveHeight }]
-          }>
+              ? [styles.activeEventPricacy, {height: activeHeight}]
+              : [styles.inactiveEventPricacy, {height: inactiveHeight}]
+          }
+        >
           <TouchableOpacity
             onPress={onThirdTabPress}
             style={
               indexCounter === 2
                 ? styles.activeEventPricacy
                 : styles.inactiveEventPricacy
-            }>
+            }
+          >
             <Text
               style={
                 indexCounter === 2
                   ? styles.activeEventPrivacyText
                   : styles.inactiveEventPrivacyText
-              }>
+              }
+            >
               {thirdTabTitle}
             </Text>
           </TouchableOpacity>
@@ -143,7 +156,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: wp('2%'),
-
   },
   inactiveEventPricacy: {
     flex: 1,

@@ -1,18 +1,16 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text,
-} from 'react-native';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import {StyleSheet, View, Text} from 'react-native';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
-export default function ReservationNumber({ reservationNumber = '12345678D-12' }) {
+export default function ReservationNumber({
+  reservationNumber = '12345678D-12',
+}) {
   return (
     <View>
-
       <Text style={styles.reservationNumberText}>
         Reservation No: {reservationNumber}
       </Text>
-
     </View>
   );
 }

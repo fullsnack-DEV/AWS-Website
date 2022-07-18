@@ -1,11 +1,7 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import Pie from 'react-native-pie';
-import colors from '../../Constants/Colors'
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 export default function ProgressBarCircle({
@@ -23,7 +19,7 @@ export default function ProgressBarCircle({
       />
       <View style={styles.winPercentageView}>
         <Text style={styles.winTextStyle}>{circleInnerText}</Text>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{flexDirection: 'row'}}>
           <Text style={styles.percentageTextStyle}>{percentage}</Text>
           <Text style={styles.percentIconStyle}>%</Text>
         </View>

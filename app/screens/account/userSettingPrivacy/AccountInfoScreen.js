@@ -189,7 +189,8 @@ export default function AccountInfoScreen({navigation, route}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}>
+            }}
+          >
             Account info
           </Text>
         }
@@ -198,7 +199,8 @@ export default function AccountInfoScreen({navigation, route}) {
             style={styles.headerRightButton}
             onPress={() => {
               onSavePress();
-            }}>
+            }}
+          >
             Update
           </Text>
         }
@@ -237,14 +239,16 @@ export default function AccountInfoScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('ChangePasswordScreen');
-          }}>
+          }}
+        >
           <TCLabel
             style={{
               fontFamily: fonts.RRegular,
               fontSize: 16,
               textDecorationLine: 'underline',
             }}
-            title={'Change password'}></TCLabel>
+            title={'Change password'}
+          ></TCLabel>
         </TouchableOpacity>
       </TCKeyboardView>
     </SafeAreaView>

@@ -54,7 +54,7 @@ export default function ChallengeScreen({navigation, route}) {
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
   const [settingObject] = useState(route?.params?.setting);
-  const [isMore,setIsMore] = useState(false);
+  const [isMore, setIsMore] = useState(false);
   const [groupObj] = useState(route?.params?.groupObj);
 
   console.log('setting object::=>', settingObject);
@@ -192,7 +192,8 @@ export default function ChallengeScreen({navigation, route}) {
           <View
             style={{
               flexDirection: 'row',
-            }}>
+            }}
+          >
             <Image
               source={
                 sportType !== 'single'
@@ -210,9 +211,8 @@ export default function ChallengeScreen({navigation, route}) {
                 {groupObj?.full_name ?? groupObj?.group_name}
               </Text>
               <Text
-                style={
-                  styles.locationLable
-                }>{`${groupObj?.city}, ${groupObj?.state_abbr}`}</Text>
+                style={styles.locationLable}
+              >{`${groupObj?.city}, ${groupObj?.state_abbr}`}</Text>
               <Text style={styles.locationLable}>
                 TC Level 15 TC points 3,000
               </Text>
@@ -226,7 +226,8 @@ export default function ChallengeScreen({navigation, route}) {
                 settingObject,
                 comeFrom: 'ChallengeScreen',
               });
-            }}>
+            }}
+          >
             <View style={[styles.borderButtonView, styles.shadowView]}>
               <View />
               <Text style={styles.detailButtonText}>CHECK AVAILIBILITY</Text>
@@ -286,7 +287,7 @@ export default function ChallengeScreen({navigation, route}) {
           title={'Type of Game'}
           value={settingObject?.game_type}
           tooltipText={
-          'The game result has an effect on TC points of the challengee and you.'
+            'The game result has an effect on TC points of the challengee and you.'
           }
           tooltipHeight={hp('6%')}
           tooltipWidth={wp('50%')}
@@ -310,7 +311,7 @@ export default function ChallengeScreen({navigation, route}) {
           title={'Refund Policy'}
           value={settingObject?.refund_policy}
           tooltipText={
-          '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
           }
           tooltipHeight={hp('18%')}
           tooltipWidth={wp('50%')}
@@ -398,9 +399,9 @@ export default function ChallengeScreen({navigation, route}) {
           <View>
             <TCGameDetailRules
               gameRules={settingObject?.score_rules}
-              isMore = {isMore}
-              onPressMoreLess={()=>{
-                setIsMore(!isMore)
+              isMore={isMore}
+              onPressMoreLess={() => {
+                setIsMore(!isMore);
               }}
             />
             <TCThickDivider marginTop={20} />
@@ -474,7 +475,8 @@ export default function ChallengeScreen({navigation, route}) {
                   venues: settingObject?.venue || [],
                   comeFrom: 'ChallengeScreen',
                 });
-              }}>
+              }}
+            >
               <View style={[styles.borderButtonView, styles.shadowView]}>
                 <View />
                 <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>

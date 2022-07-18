@@ -1,20 +1,19 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import Video from 'react-native-video';
 
 export default function FullVideoScreen({
-  route: { params: { url } },
+  route: {
+    params: {url},
+  },
 }) {
   return (
-    <View style={ styles.mainContainerStyle }>
+    <View style={styles.mainContainerStyle}>
       <Video
-            source={ { uri: url } }
-            style={ styles.singleImageDisplayStyle }
-            resizeMode={ 'cover' }
-        />
+        source={{uri: url}}
+        style={styles.singleImageDisplayStyle}
+        resizeMode={'cover'}
+      />
     </View>
   );
 }

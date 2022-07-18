@@ -212,8 +212,14 @@ export default function ChallengePaymentScreen({route, navigation}) {
       body.responsible_for_scorekeeper.who_secure = res_secure_scorekeeper;
     }
     console.log('body:=>', body);
-    const homeID = challengeData?.sport_type === 'single' ? body.home_team.user_id : body.home_team.group_id;
-    const awayID = challengeData?.sport_type === 'single' ? body.away_team.user_id : body.away_team.group_id;
+    const homeID =
+      challengeData?.sport_type === 'single'
+        ? body.home_team.user_id
+        : body.home_team.group_id;
+    const awayID =
+      challengeData?.sport_type === 'single'
+        ? body.away_team.user_id
+        : body.away_team.group_id;
     delete body.home_team;
     delete body.away_team;
     body.home_team = homeID;
@@ -223,9 +229,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
       body.source = defaultCard.id;
     }
     console.log('Challenge Object111:=>', body);
-    
 
-    
     setloading(true);
     createChallenge(body, authContext)
       .then((response) => {
@@ -324,7 +328,8 @@ export default function ChallengePaymentScreen({route, navigation}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
           margin: 15,
-        }}>
+        }}
+      >
         <View style={styles.challengerView}>
           <View style={styles.teamView}>
             <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -497,7 +502,7 @@ export default function ChallengePaymentScreen({route, navigation}) {
         title={'Refund Policy'}
         value={challengeData?.refund_policy}
         tooltipText={
-        '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+          '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
         }
         tooltipHeight={hp('18%')}
         tooltipWidth={wp('50%')}
@@ -564,8 +569,6 @@ export default function ChallengePaymentScreen({route, navigation}) {
             challengeObj.min_scorekeeper = challengeData.min_scorekeeper;
             console.log('Payment obj:=>', challengeObj);
 
-
-            
             challengeOperation(
               entity.uid,
               challengeData?.challenge_id,
@@ -597,7 +600,8 @@ export default function ChallengePaymentScreen({route, navigation}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           borderTopLeftRadius: 15,
           borderTopRightRadius: 15,
-        }}>
+        }}
+      >
         <View style={styles.mainContainer}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
@@ -624,7 +628,8 @@ export default function ChallengePaymentScreen({route, navigation}) {
               onPress={() => {
                 setModalVisible(false);
                 navigation.popToTop();
-              }}>
+              }}
+            >
               <Text style={styles.goToProfileTitle}>OK</Text>
             </TouchableOpacity>
           </SafeAreaView>

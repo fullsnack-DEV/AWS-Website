@@ -1,6 +1,4 @@
-import {
- Image, StyleSheet, Text, View,
- } from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import React, {
   useContext,
   useEffect,
@@ -8,12 +6,12 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import ScoreboardSportsScreen from '../ScoreboardSportsScreen';
 import UpcomingMatchScreen from '../UpcomingMatchScreen';
-import { getGameScoreboardEvents } from '../../../api/Games';
+import {getGameScoreboardEvents} from '../../../api/Games';
 import AuthContext from '../../../auth/context';
 import TCInnerLoader from '../../../components/TCInnerLoader';
 import GameStatus from '../../../Constants/GameStatus';
@@ -22,8 +20,8 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import Header from '../../../components/Home/Header';
 
-export default function UserScoreboardScreen({ route, navigation }) {
-  const { uid } = route?.params ?? '';
+export default function UserScoreboardScreen({route, navigation}) {
+  const {uid} = route?.params ?? '';
   const authContext = useContext(AuthContext);
   const [scoreboardTabNumber, setScroboardTabNumber] = useState(0);
   const [upcomingMatchData, setUpcomingMatchData] = useState([]);
@@ -71,8 +69,8 @@ export default function UserScoreboardScreen({ route, navigation }) {
 
   const topRightButton = useMemo(
     () => (
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {}}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <TouchableOpacity style={{marginRight: 10}} onPress={() => {}}>
           <FastImage
             source={images.messageSearchButton2}
             resizeMode={'contain'}
@@ -92,7 +90,7 @@ export default function UserScoreboardScreen({ route, navigation }) {
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <Header
         showBackgroundColor={true}
         leftComponent={
@@ -110,14 +108,15 @@ export default function UserScoreboardScreen({ route, navigation }) {
         rightComponent={topRightButton}
       />
       <View style={styles.separateLine} />
-      <View style={{ flexDirection: 'row', margin: 15 }}>
+      <View style={{flexDirection: 'row', margin: 15}}>
         <Text
           style={
             scoreboardTabNumber === 0
               ? styles.activeButton
               : styles.inActiveButton
           }
-          onPress={() => setScroboardTabNumber(0)}>
+          onPress={() => setScroboardTabNumber(0)}
+        >
           {`Completed (${recentMatchData?.length ?? 0})`}
         </Text>
         <Text
@@ -126,7 +125,8 @@ export default function UserScoreboardScreen({ route, navigation }) {
               ? styles.activeButton
               : styles.inActiveButton
           }
-          onPress={() => setScroboardTabNumber(1)}>
+          onPress={() => setScroboardTabNumber(1)}
+        >
           {`Upcoming (${upcomingMatchData?.length ?? 0})`}
         </Text>
       </View>
@@ -134,7 +134,7 @@ export default function UserScoreboardScreen({ route, navigation }) {
       {loading ? (
         <TCInnerLoader visible={loading} />
       ) : (
-        <View style={{ flex: 1, marginTop: 15 }}>
+        <View style={{flex: 1, marginTop: 15}}>
           {scoreboardTabNumber === 0 && (
             <ScoreboardSportsScreen
               sportsData={recentMatchData}

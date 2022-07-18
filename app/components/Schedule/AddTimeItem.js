@@ -1,18 +1,14 @@
 import React from 'react';
-import {
-  StyleSheet, Text, TouchableOpacity, Image,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-function AddTimeItem({
-  source,
-  addTimeText,
-  onAddTimePress,
-  containerStyle,
-}) {
+function AddTimeItem({source, addTimeText, onAddTimePress, containerStyle}) {
   return (
-    <TouchableOpacity style={[styles.containerStyle, containerStyle]} onPress={onAddTimePress}>
+    <TouchableOpacity
+      style={[styles.containerStyle, containerStyle]}
+      onPress={onAddTimePress}
+    >
       <Image source={source} style={styles.imageStyle} resizeMode={'contain'} />
       <Text style={styles.addTimeTextStyle}>{addTimeText}</Text>
     </TouchableOpacity>

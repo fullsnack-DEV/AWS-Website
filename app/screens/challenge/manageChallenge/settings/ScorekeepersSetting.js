@@ -65,7 +65,8 @@ export default function ScorekeepersSetting({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
@@ -109,14 +110,16 @@ export default function ScorekeepersSetting({navigation, route}) {
             setVisibleModal(false);
           }, 300);
         }
-      }}>
+      }}
+    >
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>{item}</Text>
         <View>
           {selection === item ? (
@@ -165,14 +168,13 @@ export default function ScorekeepersSetting({navigation, route}) {
     console.log('scorekeeper secure:=>', bodyParams);
 
     setloading(true);
-    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => {
+    const registerdPlayerData =
+      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
           return null;
         }
         return obj;
-      },
-    );
+      });
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -326,7 +328,8 @@ export default function ScorekeepersSetting({navigation, route}) {
             marginLeft: 15,
             marginRight: 15,
             marginTop: 15,
-          }}>
+          }}
+        >
           {strings.scorekeeperRules1}
         </Text>
         <Text
@@ -335,12 +338,14 @@ export default function ScorekeepersSetting({navigation, route}) {
             fontSize: 16,
             color: colors.lightBlackColor,
             margin: 15,
-          }}>
+          }}
+        >
           {strings.scorekeeperRules2}
         </Text>
         <TouchableOpacity
           style={styles.viewContainer}
-          onPress={() => setVisibleModal(true)}>
+          onPress={() => setVisibleModal(true)}
+        >
           <Text style={styles.itemView}> {selection || '-'}</Text>
           <View style={{flexDirection: 'row'}}>
             <Text style={styles.itemView}>{'Scorekeeper(s)'}</Text>
@@ -372,7 +377,8 @@ export default function ScorekeepersSetting({navigation, route}) {
             fontSize: 16,
             color: colors.darkThemeColor,
             margin: 15,
-          }}>
+          }}
+        >
           {
             'In order to complete this part, please click the Save button on the right top after choosing your preference.'
           }
@@ -385,13 +391,15 @@ export default function ScorekeepersSetting({navigation, route}) {
           animationOutTiming={800}
           backdropTransitionInTiming={300}
           backdropTransitionOutTiming={800}
-          style={styles.modalStyle}>
+          style={styles.modalStyle}
+        >
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeaderContainer}>
               <TouchableOpacity
                 hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
-                onPress={() => setVisibleModal(false)}>
+                onPress={() => setVisibleModal(false)}
+              >
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text style={styles.itemText}>{strings.scorekeeperTitle}</Text>

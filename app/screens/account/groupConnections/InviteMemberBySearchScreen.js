@@ -1,4 +1,10 @@
-import React, {useLayoutEffect, useState, useEffect, useContext,useCallback} from 'react';
+import React, {
+  useLayoutEffect,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+} from 'react';
 import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -67,44 +73,47 @@ export default function InviteMembersBySearchScreen({navigation}) {
       stopFetchMore = true;
     }
   };
-  const getUsers = useCallback((filterPlayer) => {
-    const membersQuery = {
-      size: pageSize,
-      from: pageFrom,
-      query: {
-        bool: {
-          must: [],
+  const getUsers = useCallback(
+    (filterPlayer) => {
+      const membersQuery = {
+        size: pageSize,
+        from: pageFrom,
+        query: {
+          bool: {
+            must: [],
+          },
         },
-      },
-    };
-    if (filterPlayer?.searchText?.length > 0) {
-      membersQuery.query.bool.must.push({
-        query_string: {
-          query: `*${filterPlayer?.searchText}*`,
-          fields: ['full_name'],
-        },
-      });
-    }
-    getUserIndex(membersQuery)
-      .then((response) => {
-        console.log('User list:->', response);
-        setloading(false);
-        if (response.length > 0) {
-          const result = response.map((obj) => {
-            // eslint-disable-next-line no-param-reassign
-            obj.isChecked = false;
-            return obj;
-          });
-          setPlayers([...players, ...result]);
-          setPageFrom(pageFrom + pageSize);
-          stopFetchMore = true;
-        }
-      })
-      .catch((error) => {
-        setloading(false);
-        Alert.alert(error);
-      });
-  },[pageFrom, pageSize, players]);
+      };
+      if (filterPlayer?.searchText?.length > 0) {
+        membersQuery.query.bool.must.push({
+          query_string: {
+            query: `*${filterPlayer?.searchText}*`,
+            fields: ['full_name'],
+          },
+        });
+      }
+      getUserIndex(membersQuery)
+        .then((response) => {
+          console.log('User list:->', response);
+          setloading(false);
+          if (response.length > 0) {
+            const result = response.map((obj) => {
+              // eslint-disable-next-line no-param-reassign
+              obj.isChecked = false;
+              return obj;
+            });
+            setPlayers([...players, ...result]);
+            setPageFrom(pageFrom + pageSize);
+            stopFetchMore = true;
+          }
+        })
+        .catch((error) => {
+          setloading(false);
+          Alert.alert(error);
+        });
+    },
+    [pageFrom, pageSize, players],
+  );
   const selectPlayer = ({item, index}) => {
     players[index].isChecked = !item.isChecked;
     setPlayers([...players]);
@@ -117,7 +126,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
     setSelectedList(selectedPlayers);
     console.log('Selected Item:', selectedPlayers);
   };
-  
+
   const renderPlayer = ({item, index}) => (
     <ProfileCheckView
       playerDetail={item}
@@ -146,15 +155,14 @@ export default function InviteMembersBySearchScreen({navigation}) {
           fontFamily: fonts.RRegular,
           color: colors.grayColor,
           fontSize: 26,
-        }}>
+        }}
+      >
         No Players
       </Text>
     </View>
   );
 
-  const ItemSeparatorComponent = useCallback(() => (
-    <TCThinDivider/>
-  ), [])
+  const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
 
   return (
     <View style={styles.mainContainer}>
@@ -178,7 +186,6 @@ export default function InviteMembersBySearchScreen({navigation}) {
           setPageFrom(0);
           setPlayers([]);
           applyFilter(tempFilter);
-        
         }}
       />
       <TCTags
@@ -197,7 +204,6 @@ export default function InviteMembersBySearchScreen({navigation}) {
         }}
       /> */}
 
-      
       <FlatList
         extraData={players}
         showsVerticalScrollIndicator={false}
@@ -212,7 +218,6 @@ export default function InviteMembersBySearchScreen({navigation}) {
         }}
         ListEmptyComponent={listEmptyComponent}
       />
-      
     </View>
   );
 }

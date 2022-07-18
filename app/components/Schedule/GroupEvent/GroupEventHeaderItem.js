@@ -1,28 +1,25 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {View, StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 
 export default function GroupEventHeaderItem({
-  onHeaderItemPress, source, title,
+  onHeaderItemPress,
+  source,
+  title,
 }) {
   return (
     <View style={styles.containerStyle}>
       <Text style={styles.titleTextStyle}>{title}</Text>
-      <TouchableOpacity style={styles.touchCheckBoxStyle} onPress={onHeaderItemPress}>
+      <TouchableOpacity
+        style={styles.touchCheckBoxStyle}
+        onPress={onHeaderItemPress}
+      >
         <Image
-            source={source}
-            style={styles.imageStyle}
-            resizeMode={'contain'}
+          source={source}
+          style={styles.imageStyle}
+          resizeMode={'contain'}
         />
       </TouchableOpacity>
     </View>

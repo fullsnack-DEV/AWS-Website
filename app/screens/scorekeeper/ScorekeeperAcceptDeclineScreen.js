@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import React, { useEffect } from 'react';
-import {
-  View, StyleSheet, Image, Text,
-} from 'react-native';
+import React, {useEffect} from 'react';
+import {View, StyleSheet, Image, Text} from 'react-native';
 
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -11,12 +9,12 @@ import fonts from '../../Constants/Fonts';
 // import strings from '../../Constants/String';
 // import { getGameHomeScreen } from '../../utils/gameUtils';
 
-export default function ScorekeeperAcceptDeclineScreen({ navigation, route }) {
+export default function ScorekeeperAcceptDeclineScreen({navigation, route}) {
   useEffect(() => {
     setTimeout(() => {
-      navigation.popToTop()
+      navigation.popToTop();
     }, 3000);
-  })
+  });
   return (
     <View style={styles.mainContainer}>
       <Image style={styles.background} source={images.orangeLayer} />
@@ -35,20 +33,29 @@ export default function ScorekeeperAcceptDeclineScreen({ navigation, route }) {
             />
           </View>
           <Text style={styles.invitationText}>
-            {(route.params.status === 'accept' && 'Reservation accepted')
-              || (route.params.status === 'decline' && 'Reservation declined')
-              || (route.params.status === 'cancel' && 'Reservation cancelled')
-              || (route.params.status === 'restored' && 'Reservation Restored')}
+            {(route.params.status === 'accept' && 'Reservation accepted') ||
+              (route.params.status === 'decline' && 'Reservation declined') ||
+              (route.params.status === 'cancel' && 'Reservation cancelled') ||
+              (route.params.status === 'restored' && 'Reservation Restored')}
           </Text>
           <Text style={styles.infoText}>
-            {(route.params.status === 'accept'
-              && `A reservation between ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} and you has been scheduled.`)
-              || (route.params.status === 'decline'
-                && `The reservation reservation request from ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} has been declined.`)
-              || (route.params.status === 'cancel'
-                && `The reservation from ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} has been cancelled.`)
-              || (route.params.status === 'restored'
-                && 'Reservation alteration request restored.')}
+            {(route.params.status === 'accept' &&
+              `A reservation between ${
+                route.params.teamObj.group_name ||
+                `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`
+              } and you has been scheduled.`) ||
+              (route.params.status === 'decline' &&
+                `The reservation reservation request from ${
+                  route.params.teamObj.group_name ||
+                  `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`
+                } has been declined.`) ||
+              (route.params.status === 'cancel' &&
+                `The reservation from ${
+                  route.params.teamObj.group_name ||
+                  `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`
+                } has been cancelled.`) ||
+              (route.params.status === 'restored' &&
+                'Reservation alteration request restored.')}
           </Text>
         </View>
       )}

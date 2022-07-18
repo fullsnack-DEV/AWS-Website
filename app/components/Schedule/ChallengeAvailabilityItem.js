@@ -121,7 +121,8 @@ function ChallengeAvailabilityItem({
               obj.allDay = !toggle;
               changeAvailablilityItem(obj);
               setToggle(!toggle);
-            }}>
+            }}
+          >
             <Image
               source={toggle ? images.checkWhiteLanguage : images.uncheckWhite}
               style={styles.checkboxImg}
@@ -182,7 +183,7 @@ function ChallengeAvailabilityItem({
         placeholder={'Does not repeat'}
         value={selectWeekMonth}
         onValueChange={(value) => {
-          console.log('LLLLLLLL',value);
+          console.log('LLLLLLLL', value);
           setSelectWeekMonth(value);
         }}
       />

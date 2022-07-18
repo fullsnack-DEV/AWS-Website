@@ -1,27 +1,23 @@
-import React, {
-useState, useEffect, useContext,
-} from 'react';
-import {
-StyleSheet, View, Text, Image, TextInput, FlatList,
-} from 'react-native';
+import React, {useState, useEffect, useContext} from 'react';
+import {StyleSheet, View, Text, Image, TextInput, FlatList} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-import { searchVenue } from '../../../api/External';
+import {searchVenue} from '../../../api/External';
 
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCNoDataView from '../../../components/TCNoDataView';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 
-export default function ChooseAddressScreen({ navigation, route }) {
+export default function ChooseAddressScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -53,7 +49,7 @@ export default function ChooseAddressScreen({ navigation, route }) {
     }
   };
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
@@ -63,8 +59,8 @@ export default function ChooseAddressScreen({ navigation, route }) {
             if (e === item) {
               e.isSelected = true;
               setTimeout(() => {
-                venueData(item)
-              }, 500)
+                venueData(item);
+              }, 500);
             } else {
               e.isSelected = false;
             }
@@ -72,15 +68,17 @@ export default function ChooseAddressScreen({ navigation, route }) {
           setCityData([...cityData]);
         }
         // getTeamsData(item)
-      }}>
+      }}
+    >
       <View
-        style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 25 }}>
+        style={{flexDirection: 'row', justifyContent: 'center', marginTop: 25}}
+      >
         <Text style={styles.cityList} numberOfLines={1}>
           {cityData[index].description}
         </Text>
         <Image
           source={cityData[index].isSelected && images.radioCheckGreenBG}
-          style={{ height: 20, width: 20, alignSelf: 'center' }}
+          style={{height: 20, width: 20, alignSelf: 'center'}}
         />
       </View>
     </TouchableWithoutFeedback>
@@ -159,7 +157,7 @@ const styles = StyleSheet.create({
     paddingRight: 5,
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 2,

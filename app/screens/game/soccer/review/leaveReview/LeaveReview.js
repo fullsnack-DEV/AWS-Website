@@ -111,7 +111,8 @@ const LeaveReview = ({navigation, route}) => {
         <TouchableOpacity
           onPress={() =>
             currentForm === 1 ? navigation.goBack() : setCurrentForm(1)
-          }>
+          }
+        >
           <Image
             source={images.backArrow}
             style={{
@@ -181,21 +182,19 @@ const LeaveReview = ({navigation, route}) => {
   //   return isValid;
   // };
 
-
   const isValidReview = () => {
     const starKeys = [];
     starAttributes?.map((star) => {
       starKeys.push(star?.name);
     });
-    const includeKey = [...starKeys,...sliderAttributes]
+    const includeKey = [...starKeys, ...sliderAttributes];
     let isValid = true;
     const reviews = _.cloneDeep(reviewsData);
     Object.keys(reviews).map((key) => {
       if (includeKey.includes(key) && isValid) {
-        if(Number(reviews?.[key]) <= 0){
+        if (Number(reviews?.[key]) <= 0) {
           isValid = false;
         }
-        
       }
       return key;
     });
@@ -205,13 +204,12 @@ const LeaveReview = ({navigation, route}) => {
   const createReview = () => {
     console.log('Review Data::=>', JSON.stringify(reviewsData));
     console.log('currentForm', currentForm);
-   
-      if (isValidReview(currentForm)) {
-        uploadMediaForTeam();
-      } else {
-        Alert.alert('Please, complete all ratings before moving to the next.');
-      }
-    
+
+    if (isValidReview(currentForm)) {
+      uploadMediaForTeam();
+    } else {
+      Alert.alert('Please, complete all ratings before moving to the next.');
+    }
   };
 
   const patchOrAddReview = () => {
@@ -268,16 +266,16 @@ const LeaveReview = ({navigation, route}) => {
     }
   };
   const uploadMediaForTeam = () => {
-
-   
-      onPressReview(currentForm, currentForm === 1
+    onPressReview(
+      currentForm,
+      currentForm === 1
         ? !!gameData?.home_review_id
         : !!gameData?.away_review_id,
-         reviewsData);
-      navigation.goBack();
-   
+      reviewsData,
+    );
+    navigation.goBack();
   };
- 
+
   const setTeamReview = (teamNo = 0, key = '', value = '') => {
     console.log(`key::${key}value::${value}`);
     if (reviewsData[key] !== value) {
@@ -295,7 +293,8 @@ const LeaveReview = ({navigation, route}) => {
           <TouchableOpacity
             onPress={() =>
               currentForm === 1 ? navigation.goBack() : navigation.pop(1)
-            }>
+            }
+          >
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
         }

@@ -1,18 +1,12 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  StyleSheet, View, Text, Image,
-} from 'react-native';
+import {TouchableOpacity, StyleSheet, View, Text, Image} from 'react-native';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 
-function RefereeReservationItem({
-  data,
-  onPressButton,
-}) {
+function RefereeReservationItem({data, onPressButton}) {
   let refereeImage = null;
   let refereeName = '';
   let status = '';
@@ -54,14 +48,23 @@ function RefereeReservationItem({
       <Text style={styles.chiefTextStyle}>{strings.chiefReferee}</Text>
       <View style={styles.refereeDataViewStyle}>
         <Image
-            source={refereeImage ? { uri: refereeImage } : images.profilePlaceHolder}
-            style={styles.refereeImageStyle}
+          source={
+            refereeImage ? {uri: refereeImage} : images.profilePlaceHolder
+          }
+          style={styles.refereeImageStyle}
         />
-        <View style={{ marginLeft: 10 }}>
+        <View style={{marginLeft: 10}}>
           <Text style={styles.refereeNameTextStyle}>{refereeName}</Text>
-          <Text style={[styles.statusTextStyle, {
-            color: statusColor,
-          }]}>{status}</Text>
+          <Text
+            style={[
+              styles.statusTextStyle,
+              {
+                color: statusColor,
+              },
+            ]}
+          >
+            {status}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>

@@ -32,7 +32,7 @@ export default function AddCardScreen({navigation}) {
   const createPaymentMethodByCard = async () => {
     const {paymentMethod, error} = await createPaymentMethod({
       paymentMethodType: 'Card',
-      });
+    });
 
     if (error) {
       Alert.alert(`Error code: ${error.code}`, error.message);
@@ -70,7 +70,8 @@ export default function AddCardScreen({navigation}) {
             onPress={() => {
               setloading(true);
               createPaymentMethodByCard();
-            }}>
+            }}
+          >
             {strings.done}
           </Text>
         ) : (
@@ -80,7 +81,8 @@ export default function AddCardScreen({navigation}) {
               fontSize: 14,
               fontFamily: fonts.RRegular,
               color: colors.lightgrayColor,
-            }}>
+            }}
+          >
             {strings.done}
           </Text>
         ),

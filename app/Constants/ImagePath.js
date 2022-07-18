@@ -51,7 +51,6 @@ const images = {
   calNextArrow: require('../assets/images/cal_next.png'),
   calPrevArrow: require('../assets/images/cal_prev.png'),
 
-
   backArrow: require('../assets/images/ic_back_arrow.png'),
   menu: require('../assets/images/menu.png'),
   threeDotIcon: require('../assets/images/three_dot_icon.png'),
@@ -234,7 +233,7 @@ const images = {
   radioUnSelectGreen: require('../assets/images/uncheck_no_tick.png'),
   radioSelectGreen: require('../assets/images/check_green_tick.png'),
   menuClose: require('../assets/images/menu_close.png'),
-  closeSearch:  require('../assets/images/close_search.png'),
+  closeSearch: require('../assets/images/close_search.png'),
 
   // create challenge
   swapTeam: require('../assets/images/swap_team.png'),
@@ -411,19 +410,18 @@ const images = {
   uncheckBox: require('../assets/images/uncheckBox.png'),
   profileLevel: require('../assets/images/profile_level.png'),
   chatPlus: require('../assets/images/chat_plus.png'),
-  recentMatch : require('../assets/images/recentMatch.png'),
-  upcomingMatch : require('../assets/images/upcomingMatch.png'),
-  shortCard : require('../assets/images/shortCard.png'),
-  settingSport : require('../assets/images/settingSport.png'),
+  recentMatch: require('../assets/images/recentMatch.png'),
+  upcomingMatch: require('../assets/images/upcomingMatch.png'),
+  shortCard: require('../assets/images/shortCard.png'),
+  settingSport: require('../assets/images/settingSport.png'),
 
-  addEvent : require('../assets/images/add_event.png'),
-  playerIcon : require('../assets/images/player_ic.png'),
+  addEvent: require('../assets/images/add_event.png'),
+  playerIcon: require('../assets/images/player_ic.png'),
 
-  refereeIcon : require('../assets/images/referee_ic.png'),
+  refereeIcon: require('../assets/images/referee_ic.png'),
 
-  scorekeeperIcon : require('../assets/images/scorekeeper_ic.png'),
+  scorekeeperIcon: require('../assets/images/scorekeeper_ic.png'),
   localHomeFilter: require('../assets/images/Filter.png'),
-
 
   addSportList: require('../assets/images/add_sport_list.png'),
   removeSportList: require('../assets/images/remove_sport_list.png'),
@@ -433,7 +431,6 @@ const images = {
   blockedChallenge: require('../assets/images/blocked_challenge.png'),
   backgroudPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
   backgroundPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
-
 };
 
 export default images;

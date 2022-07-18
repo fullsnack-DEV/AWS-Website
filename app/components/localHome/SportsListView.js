@@ -1,42 +1,45 @@
-import React, { useCallback, memo, useContext } from 'react';
-import {
- StyleSheet, View, Text, FlatList, TouchableOpacity,
- } from 'react-native';
+import React, {useCallback, memo, useContext} from 'react';
+import {StyleSheet, View, Text, FlatList, TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import images from '../../Constants/ImagePath';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../TCThinDivider';
-import { getSportName } from '../../utils';
+import {getSportName} from '../../utils';
 import AuthContext from '../../auth/context';
 
-const SportsListView = ({ sports, onSelect, defaultSport }) => {
+const SportsListView = ({sports, onSelect, defaultSport}) => {
   const authContext = useContext(AuthContext);
 
-  const renderItem = ({ item, index }) => {
+  const renderItem = ({item, index}) => {
     console.log('Default Item', item);
 
     console.log('Default sport', defaultSport);
     return (
       <TouchableOpacity
         disabled={
-          !!defaultSport?.filter(
-            (obj) => obj.sport === item.sport,
-          ).length > 0
+          !!defaultSport?.filter((obj) => obj.sport === item.sport).length > 0
         }
         style={styles.listItem}
-        onPress={() => onSelect({ item, index })}>
+        onPress={() => onSelect({item, index})}
+      >
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
             marginRight: 15,
-            opacity: defaultSport?.filter((obj) => obj.sport === item.sport).length > 0 ? 0.5 : 1,
-          }}>
-          <Text style={styles.sportList}>{getSportName(item, authContext)}</Text>
+            opacity:
+              defaultSport?.filter((obj) => obj.sport === item.sport).length > 0
+                ? 0.5
+                : 1,
+          }}
+        >
+          <Text style={styles.sportList}>
+            {getSportName(item, authContext)}
+          </Text>
           <View style={styles.checkbox}>
             {sports[index].isChecked ? (
               <FastImage

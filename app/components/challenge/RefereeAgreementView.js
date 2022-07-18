@@ -1,8 +1,6 @@
 /* eslint-disable react-native/no-raw-text */
 import React from 'react';
-import {
- View, Text, StyleSheet, Image, TouchableOpacity,
- } from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -85,46 +83,48 @@ export default function RefereeAgreementView({
             </View>
           )}
           <Text style={styles.radioMainTitle}>{radioTitle}</Text>
-          {((moreButtonVisible && agreementOpetion === 1)
-            || !moreButtonVisible) && (
-              <TouchableOpacity
+          {((moreButtonVisible && agreementOpetion === 1) ||
+            !moreButtonVisible) && (
+            <TouchableOpacity
               disabled={moreButtonVisible}
               onPress={() => {
                 radioOpetion(1);
               }}
-              style={styles.radio1Container}>
-                <Image
+              style={styles.radio1Container}
+            >
+              <Image
                 source={
                   agreementOpetion === 1
                     ? images.radioSelectYellow
                     : images.radioUnselect
                 }
-                style={{ height: 22, width: 22, resizeMode: 'contain' }}
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
                 opacity={moreButtonVisible ? 0.5 : 1}
               />
-                <Text style={styles.radio1Text}>{radio1}</Text>
-              </TouchableOpacity>
+              <Text style={styles.radio1Text}>{radio1}</Text>
+            </TouchableOpacity>
           )}
 
-          {((moreButtonVisible && agreementOpetion === 2)
-            || !moreButtonVisible) && (
-              <TouchableOpacity
+          {((moreButtonVisible && agreementOpetion === 2) ||
+            !moreButtonVisible) && (
+            <TouchableOpacity
               disabled={moreButtonVisible}
               onPress={() => {
                 radioOpetion(2);
               }}
-              style={styles.radio2Container}>
-                <Image
+              style={styles.radio2Container}
+            >
+              <Image
                 source={
                   agreementOpetion === 2
                     ? images.radioSelectYellow
                     : images.radioUnselect
                 }
-                style={{ height: 22, width: 22, resizeMode: 'contain' }}
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
                 opacity={moreButtonVisible ? 0.5 : 1}
               />
-                <Text style={styles.radio2Text}>{radio2}</Text>
-              </TouchableOpacity>
+              <Text style={styles.radio2Text}>{radio2}</Text>
+            </TouchableOpacity>
           )}
           {moreButtonVisible && (
             <Text
@@ -137,7 +137,8 @@ export default function RefereeAgreementView({
               }}
               onPress={() => {
                 morePressed(!isMore);
-              }}>
+              }}
+            >
               {isMore ? 'less' : 'more'}
             </Text>
           )}
@@ -157,46 +158,48 @@ export default function RefereeAgreementView({
           {showRules ? (
             <View opacity={0.3}>
               <Text style={styles.radioMainTitle}>{radioTitle}</Text>
-              {((moreButtonVisible && agreementOpetion === 1)
-                || !moreButtonVisible) && (
-                  <TouchableOpacity
+              {((moreButtonVisible && agreementOpetion === 1) ||
+                !moreButtonVisible) && (
+                <TouchableOpacity
                   disabled={moreButtonVisible}
                   onPress={() => {
                     radioOpetion(1);
                   }}
-                  style={styles.radio1Container}>
-                    <Image
+                  style={styles.radio1Container}
+                >
+                  <Image
                     source={
                       agreementOpetion === 1
                         ? images.radioSelectYellow
                         : images.radioUnselect
                     }
-                    style={{ height: 22, width: 22, resizeMode: 'contain' }}
+                    style={{height: 22, width: 22, resizeMode: 'contain'}}
                     opacity={moreButtonVisible ? 0.5 : 1}
                   />
-                    <Text style={styles.radio1Text}>{radio1}</Text>
-                  </TouchableOpacity>
+                  <Text style={styles.radio1Text}>{radio1}</Text>
+                </TouchableOpacity>
               )}
 
-              {((moreButtonVisible && agreementOpetion === 2)
-                || !moreButtonVisible) && (
-                  <TouchableOpacity
+              {((moreButtonVisible && agreementOpetion === 2) ||
+                !moreButtonVisible) && (
+                <TouchableOpacity
                   disabled={moreButtonVisible}
                   onPress={() => {
                     radioOpetion(2);
                   }}
-                  style={styles.radio2Container}>
-                    <Image
+                  style={styles.radio2Container}
+                >
+                  <Image
                     source={
                       agreementOpetion === 2
                         ? images.radioSelectYellow
                         : images.radioUnselect
                     }
-                    style={{ height: 22, width: 22, resizeMode: 'contain' }}
+                    style={{height: 22, width: 22, resizeMode: 'contain'}}
                     opacity={moreButtonVisible ? 0.5 : 1}
                   />
-                    <Text style={styles.radio2Text}>{radio2}</Text>
-                  </TouchableOpacity>
+                  <Text style={styles.radio2Text}>{radio2}</Text>
+                </TouchableOpacity>
               )}
               {moreButtonVisible && (
                 <Text
@@ -209,7 +212,8 @@ export default function RefereeAgreementView({
                   }}
                   onPress={() => {
                     morePressed(!isMore);
-                  }}>
+                  }}
+                >
                   {isMore ? 'less' : 'more'}
                 </Text>
               )}
@@ -224,10 +228,10 @@ export default function RefereeAgreementView({
                 textDecorationLine: 'underline',
               }}
               onPress={() => {
-                showPressed(true)
+                showPressed(true);
               }}
-              >
-              {'WHAT HAPPENS IF YOUR TEAM DOESN\'T\nSECURE REFEREES.'}
+            >
+              {"WHAT HAPPENS IF YOUR TEAM DOESN'T\nSECURE REFEREES."}
             </Text>
           )}
         </>

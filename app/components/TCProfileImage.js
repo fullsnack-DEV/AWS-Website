@@ -30,13 +30,15 @@ export default function TCProfileImage({
           borderRadius: 20,
           borderWidth: 1,
           borderColor: colors.thinDividerColor,
-        }}>
+        }}
+      >
         <Image style={styles.placeHolderImage} source={placeholder} />
       </View>
 
       {entityType !== 'user' && (
         <View
-          style={[styles.placeholderTextContainer, placeholderTextContainer]}>
+          style={[styles.placeholderTextContainer, placeholderTextContainer]}
+        >
           <Text style={[styles.placeholderText, placeholderText]}>
             {intialChar}
           </Text>

@@ -118,15 +118,15 @@ export default function GroupSettingPrivacyScreen({navigation, route}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}>
+      }}
+    >
       <View
         style={{
           flexDirection: 'row',
           opacity: isAccountDeactivated && index <= 1 ? 0.5 : 1,
         }}
-        pointerEvents={
-          isAccountDeactivated && index <= 1 ? pointEvent : 'auto'
-        }>
+        pointerEvents={isAccountDeactivated && index <= 1 ? pointEvent : 'auto'}
+      >
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Currency' && authContext?.entity?.obj?.currency_type && (
           <Text style={styles.currencyTypeStyle}>
@@ -152,7 +152,8 @@ export default function GroupSettingPrivacyScreen({navigation, route}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}>
+            }}
+          >
             Settings
           </Text>
         }

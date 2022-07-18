@@ -1,16 +1,8 @@
-import React, {
+import React from 'react';
+import {Text, View, StyleSheet, Image} from 'react-native';
 
-} from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-
-} from 'react-native';
-
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
 
 export default function TCInfoImageField({
   title,
@@ -21,15 +13,24 @@ export default function TCInfoImageField({
 }) {
   return (
     <View style={[styles.fieldView, Props]}>
-      <Text style={styles.fieldTitle} numberOfLines={2}>{title}</Text>
+      <Text style={styles.fieldTitle} numberOfLines={2}>
+        {title}
+      </Text>
       <View style={styles.fieldValue}>
-        <Image source={image} style={styles.imageView}/>
-        <Text style={{
-          marginLeft: 5, fontFamily: fonts.RMedium, fontSize: 16, color,
-        }} numberOfLines={1}>{name}</Text>
+        <Image source={image} style={styles.imageView} />
+        <Text
+          style={{
+            marginLeft: 5,
+            fontFamily: fonts.RMedium,
+            fontSize: 16,
+            color,
+          }}
+          numberOfLines={1}
+        >
+          {name}
+        </Text>
       </View>
     </View>
-
   );
 }
 const styles = StyleSheet.create({

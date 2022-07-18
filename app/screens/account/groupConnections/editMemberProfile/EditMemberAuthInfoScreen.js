@@ -275,7 +275,7 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
 
   const [loading, setLoading] = useState(false);
   const [setting, setSetting] = useState({
-    is_member:  true,
+    is_member: true,
     is_admin: groupMemberDetail.is_admin,
   });
 
@@ -335,7 +335,7 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
                     deleteMember(
                       entity.uid,
                       groupMemberDetail.user_id,
-                      authContext
+                      authContext,
                     ).then(() => {
                       setLoading(false);
                       navigation.goBack();
@@ -356,7 +356,7 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
         {cancelable: false},
       );
     } else {
-      setLoading(true)
+      setLoading(true);
       patchMember(
         entity?.obj?.group_id,
         groupMemberDetail.user_id,
@@ -455,7 +455,8 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
             alignItems: 'center',
             marginRight: 15,
             marginBottom: 15,
-          }}>
+          }}
+        >
           <View style={styles.profileView}>
             <Image
               source={
@@ -466,28 +467,36 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
               style={styles.profileImage}
             />
           </View>
-          <TCGroupNameBadge name={entity.obj.group_name} groupType={entity.role} />
+          <TCGroupNameBadge
+            name={entity.obj.group_name}
+            groupType={entity.role}
+          />
         </View>
-        <View style={[styles.checkBoxContainer,{opacity: groupMemberDetail?.teams ? 0.5 : 1 }]}>
+        <View
+          style={[
+            styles.checkBoxContainer,
+            {opacity: groupMemberDetail?.teams ? 0.5 : 1},
+          ]}
+        >
           <Text style={styles.checkBoxItemText}>Member</Text>
           <TouchableOpacity
-            disabled  ={!!groupMemberDetail?.teams}
+            disabled={!!groupMemberDetail?.teams}
             onPress={() => {
               const member_setting = !setting.is_member;
-              if(member_setting){
+              if (member_setting) {
                 setSetting({
                   ...setting,
                   is_member: member_setting,
                 });
-              }else{
+              } else {
                 setSetting({
                   ...setting,
                   is_member: false,
                   is_admin: false,
                 });
               }
-             
-            }}>
+            }}
+          >
             <Image
               source={
                 // item.join_membership_acceptedadmin === false
@@ -498,23 +507,26 @@ export default function EditMemberAuthInfoScreen({navigation, route}) {
           </TouchableOpacity>
         </View>
         <View style={styles.checkBoxContainer}>
-          <Text style={styles.checkBoxItemText}>{`${entity.role.charAt(0).toUpperCase() + entity.role.slice(1)} Admin`}</Text>
+          <Text style={styles.checkBoxItemText}>{`${
+            entity.role.charAt(0).toUpperCase() + entity.role.slice(1)
+          } Admin`}</Text>
           <TouchableOpacity
             onPress={() => {
               const admin_setting = !setting.is_admin;
-              if(admin_setting){
+              if (admin_setting) {
                 setSetting({
                   ...setting,
-                  is_member:true,
+                  is_member: true,
                   is_admin: admin_setting,
                 });
-              }else{
+              } else {
                 setSetting({
                   ...setting,
                   is_admin: false,
                 });
               }
-            }}>
+            }}
+          >
             <Image
               source={
                 setting.is_admin ? images.orangeCheckBox : images.uncheckWhite

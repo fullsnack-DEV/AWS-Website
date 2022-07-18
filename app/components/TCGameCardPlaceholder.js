@@ -1,19 +1,19 @@
-import React, { memo } from 'react';
-import {
-  View, Text, StyleSheet, Image,
-} from 'react-native';
+import React, {memo} from 'react';
+import {View, Text, StyleSheet, Image} from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
 import images from '../Constants/ImagePath';
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
 import ReservationStatus from '../Constants/ReservationStatus';
 
- function TCGameCardPlaceholder({
- data, cardWidth = '86%', placeholderText = '',
- }) {
+function TCGameCardPlaceholder({
+  data,
+  cardWidth = '86%',
+  placeholderText = '',
+}) {
   const months = [
     'Jan',
     'Feb',
@@ -41,11 +41,19 @@ import ReservationStatus from '../Constants/ReservationStatus';
   };
 
   return (
-
-    <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
+    <View style={[styles.backgroundView, {width: wp(cardWidth)}]}>
       <LinearGradient
-        colors={data?.status === ReservationStatus.cancelled ? [colors.startGrayGrdient, colors.endGrayGradient] : [colors.yellowColor, colors.assistTextColor]}
-          style={data?.status === ReservationStatus.offered ? [styles.colorView, { opacity: 0.7 }] : styles.colorView}>
+        colors={
+          data?.status === ReservationStatus.cancelled
+            ? [colors.startGrayGrdient, colors.endGrayGradient]
+            : [colors.yellowColor, colors.assistTextColor]
+        }
+        style={
+          data?.status === ReservationStatus.offered
+            ? [styles.colorView, {opacity: 0.7}]
+            : styles.colorView
+        }
+      >
         <View style={styles.dateView}>
           <Text style={styles.dateMonthText}>
             {months[new Date(data.start_datetime * 1000).getMonth()]}
@@ -72,37 +80,37 @@ import ReservationStatus from '../Constants/ReservationStatus';
             <View style={styles.leftGameView}>
               {data?.home_team?.thumbnail ? (
                 <Image
-                    source={{ uri: data?.home_team?.thumbnail }}
-                    style={styles.profileImage}
-                  />
-                ) : (
-                  <Image
-                    source={images.teamPlaceholder}
-                    style={styles.profileImage}
-                  />
-                )}
+                  source={{uri: data?.home_team?.thumbnail}}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <Image
+                  source={images.teamPlaceholder}
+                  style={styles.profileImage}
+                />
+              )}
               <Text style={styles.leftEntityText} numberOfLines={2}>
                 {data.home_team.full_name}
               </Text>
             </View>
-            ) : (
-              <View style={styles.leftGameView}>
-                {data?.home_team?.thumbnail ? (
-                  <Image
-                    source={{ uri: data?.home_team?.thumbnail }}
-                    style={styles.profileImage}
-                  />
-                ) : (
-                  <Image
-                    source={images.teamPlaceholder}
-                    style={styles.profileImage}
-                  />
-                )}
-                <Text style={styles.leftEntityText} numberOfLines={2}>
-                  {data?.home_team?.group_name}
-                </Text>
-              </View>
-            )}
+          ) : (
+            <View style={styles.leftGameView}>
+              {data?.home_team?.thumbnail ? (
+                <Image
+                  source={{uri: data?.home_team?.thumbnail}}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <Image
+                  source={images.teamPlaceholder}
+                  style={styles.profileImage}
+                />
+              )}
+              <Text style={styles.leftEntityText} numberOfLines={2}>
+                {data?.home_team?.group_name}
+              </Text>
+            </View>
+          )}
 
           <Text style={styles.vsView}>VS</Text>
 
@@ -113,43 +121,41 @@ import ReservationStatus from '../Constants/ReservationStatus';
               </Text>
               {data?.away_team?.thumbnail ? (
                 <Image
-                    source={{ uri: data?.away_team?.thumbnail }}
-                    style={styles.profileImage}
-                  />
-                ) : (
-                  <Image
-                    source={images.teamPlaceholder}
-                    style={styles.profileImage}
-                  />
-                )}
+                  source={{uri: data?.away_team?.thumbnail}}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <Image
+                  source={images.teamPlaceholder}
+                  style={styles.profileImage}
+                />
+              )}
             </View>
-            ) : (
-              <View style={styles.rightGameView}>
-                <Text style={styles.rightEntityText} numberOfLines={2}>
-                  {data?.away_team?.group_name}
-                </Text>
-                {data?.away_team?.thumbnail ? (
-                  <Image
-                    source={{ uri: data?.away_team?.thumbnail }}
-                    style={styles.profileImage}
-                  />
-                ) : (
-                  <Image
-                    source={images.teamPlaceholder}
-                    style={styles.profileImage}
-                  />
-                )}
-              </View>
-            )}
+          ) : (
+            <View style={styles.rightGameView}>
+              <Text style={styles.rightEntityText} numberOfLines={2}>
+                {data?.away_team?.group_name}
+              </Text>
+              {data?.away_team?.thumbnail ? (
+                <Image
+                  source={{uri: data?.away_team?.thumbnail}}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <Image
+                  source={images.teamPlaceholder}
+                  style={styles.profileImage}
+                />
+              )}
+            </View>
+          )}
         </View>
       </View>
       <LinearGradient
         colors={[colors.whiteColor, colors.whiteColor]}
-          style={styles.overlayStyle}>
+        style={styles.overlayStyle}
+      >
         <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
-       
-      
-      
       </LinearGradient>
     </View>
   );
@@ -164,7 +170,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 102,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.2,
     shadowRadius: 5,
     width: wp('86%'),
@@ -290,13 +296,11 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   placeholderTextStyle: {
-      fontSize: 14,
-      fontFamily: fonts.RMedium,
-      color: colors.googleColor,
-      textAlign: 'center',
+    fontSize: 14,
+    fontFamily: fonts.RMedium,
+    color: colors.googleColor,
+    textAlign: 'center',
   },
-  
- 
 });
 
-export default memo(TCGameCardPlaceholder)
+export default memo(TCGameCardPlaceholder);

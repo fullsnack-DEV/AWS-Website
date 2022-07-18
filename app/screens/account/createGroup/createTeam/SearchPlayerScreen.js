@@ -1,6 +1,4 @@
-import React, {
-  useState, useEffect, useLayoutEffect,
-} from 'react';
+import React, {useState, useEffect, useLayoutEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -18,15 +16,15 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
-import colors from '../../../../Constants/Colors'
-import fonts from '../../../../Constants/Fonts'
-import { getUserList } from '../../../../api/elasticSearch';
+import colors from '../../../../Constants/Colors';
+import fonts from '../../../../Constants/Fonts';
+import {getUserList} from '../../../../api/elasticSearch';
 
-export default function SearchPlayerScreen({ navigation, route }) {
+export default function SearchPlayerScreen({navigation, route}) {
   const [players, setPlayers] = useState([]);
   const [searchPlayers, setSearchPlayers] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState({});
@@ -40,20 +38,22 @@ export default function SearchPlayerScreen({ navigation, route }) {
     });
   }, [navigation]);
   const getPlayerList = async () => {
-    getUserList().then((response) => {
-      const arr = [];
-      for (const tempData of response) {
-        tempData.isChecked = false;
-        arr.push(tempData);
-      }
+    getUserList()
+      .then((response) => {
+        const arr = [];
+        for (const tempData of response) {
+          tempData.isChecked = false;
+          arr.push(tempData);
+        }
 
-      setPlayers(arr);
-      setSearchPlayers(arr);
-    }).catch((e) => {
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
+        setPlayers(arr);
+        setSearchPlayers(arr);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
   const selectPlayer = (item) => {
     const arr = [];
@@ -76,67 +76,68 @@ export default function SearchPlayerScreen({ navigation, route }) {
     );
     setPlayers(results);
   };
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <View>
-      <View style={ styles.listItemContainer }>
+      <View style={styles.listItemContainer}>
         {item.thumbnail === '' && (
-          <Image style={ styles.teamImg } source={ images.profilePlaceHolder } />
+          <Image style={styles.teamImg} source={images.profilePlaceHolder} />
         )}
         {item.thumbnail !== '' && (
-          <Image style={ styles.teamImg } source={ { uri: item.thumbnail } } />
+          <Image style={styles.teamImg} source={{uri: item.thumbnail}} />
         )}
 
         <View
-            style={ {
-              width: wp('72%'),
-            } }>
-          <Text style={ styles.teamNameText }>
+          style={{
+            width: wp('72%'),
+          }}
+        >
+          <Text style={styles.teamNameText}>
             {item.first_name} {item.last_name}
           </Text>
-          <Text style={ styles.cityText }>
+          <Text style={styles.cityText}>
             {item.city},{item.state_abbr}
           </Text>
         </View>
-        <View style={ styles.radioButtonView }>
-          <TouchableWithoutFeedback onPress={ () => selectPlayer(item) }>
+        <View style={styles.radioButtonView}>
+          <TouchableWithoutFeedback onPress={() => selectPlayer(item)}>
             {item.isChecked && (
-              <Image source={ images.radioSelect } style={ styles.radioImage } />
+              <Image source={images.radioSelect} style={styles.radioImage} />
             )}
             {!item.isChecked && (
               <Image
-                  source={ images.radioUnselect }
-                  style={ styles.unSelectRadioImage }
-                />
+                source={images.radioUnselect}
+                style={styles.unSelectRadioImage}
+              />
             )}
           </TouchableWithoutFeedback>
         </View>
       </View>
 
-      <View style={ styles.separatorLine }></View>
+      <View style={styles.separatorLine}></View>
     </View>
   );
 
   return (
-    <View style={ styles.mainContainer }>
+    <View style={styles.mainContainer}>
       <ScrollView>
-        <View style={ styles.sectionStyle }>
-          <Image source={ images.searchLocation } style={ styles.searchImg } />
+        <View style={styles.sectionStyle}>
+          <Image source={images.searchLocation} style={styles.searchImg} />
           <TextInput
-            style={ styles.textInput }
-            placeholder={ strings.searchHereText }
+            style={styles.textInput}
+            placeholder={strings.searchHereText}
             clearButtonMode="always"
-            placeholderTextColor={ colors.grayColor }
-            onChangeText={ (text) => searchFilterFunction(text) }
+            placeholderTextColor={colors.grayColor}
+            onChangeText={(text) => searchFilterFunction(text)}
           />
         </View>
         <FlatList
-          data={ players }
+          data={players}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={ renderItem }
+          renderItem={renderItem}
         />
       </ScrollView>
       <TouchableOpacity
-        onPress={ () => {
+        onPress={() => {
           if (route.params.player === 1) {
             navigation.navigate('CreateTeamForm1', {
               user: selectedPlayer,
@@ -148,11 +149,13 @@ export default function SearchPlayerScreen({ navigation, route }) {
               selectedPlayer: 2,
             });
           }
-        } }>
+        }}
+      >
         <LinearGradient
-          colors={ [colors.yellowColor, colors.themeColor] }
-          style={ styles.nextButton }>
-          <Text style={ styles.nextButtonText }>{strings.doneTitle}</Text>
+          colors={[colors.yellowColor, colors.themeColor]}
+          style={styles.nextButton}
+        >
+          <Text style={styles.nextButtonText}>{strings.doneTitle}</Text>
         </LinearGradient>
       </TouchableOpacity>
     </View>
@@ -191,7 +194,7 @@ const styles = StyleSheet.create({
     paddingRight: 5,
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
   },

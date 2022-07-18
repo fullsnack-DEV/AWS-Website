@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
 import React, {useContext, useEffect, useState, useCallback} from 'react';
-import { SafeAreaView, View} from 'react-native';
+import {SafeAreaView, View} from 'react-native';
 
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import ScoreboardSportsScreen from './ScoreboardSportsScreen';
-import { getScroreboardGameDetails } from '../../api/Games';
+import {getScroreboardGameDetails} from '../../api/Games';
 // import { useIsFocused } from '@react-navigation/native';
 
 // const entity = {};
@@ -18,24 +18,23 @@ export default function EntityScoreboardScreen({navigation, route}) {
   const [scoreboardSearchText, setScoreboardSearchText] = useState([]);
   const [scoreboardGameData, setScoreboardGameData] = useState([]);
   const [filterScoreboardGameData, setFilterScoreboardGameData] = useState([]);
-  const [refereeMatchModalVisible, setRefereeMatchModalVisible] = useState(
-    false,
-  );
+  const [refereeMatchModalVisible, setRefereeMatchModalVisible] =
+    useState(false);
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false);
 
   console.log('currentUserData:=>', isAdmin);
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     getScroreboardGameDetails(uid, authContext)
-    .then((res) => {
-        setLoading(false)
-      console.log('Get Scoreboard Game Details Res :-', res);
-      setScoreboardGameData(res.payload);
-    })
-    .catch((error) => {
-        setLoading(false)
-      console.log('error :-', error);
-    });
+      .then((res) => {
+        setLoading(false);
+        console.log('Get Scoreboard Game Details Res :-', res);
+        setScoreboardGameData(res.payload);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log('error :-', error);
+      });
   }, [authContext, uid]);
 
   const onScoreboardSearchTextChange = useCallback(

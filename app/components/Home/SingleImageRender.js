@@ -1,16 +1,12 @@
-import React, { useState } from 'react';
-import {
-  StyleSheet, View, TouchableWithoutFeedback,
-} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, View, TouchableWithoutFeedback} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import SingleImageModal from '../newsFeed/SingleImageModal';
 import colors from '../../Constants/Colors';
 
-function SingleImageRender({ data }) {
+function SingleImageRender({data}) {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const toggleModal = () => {
@@ -23,23 +19,31 @@ function SingleImageRender({ data }) {
         onPress={() => {
           toggleModal();
         }}
-        style={styles.imagesViewStyle}>
+        style={styles.imagesViewStyle}
+      >
         <FastImage
-            style={ styles.imageStyle }
-            source={{ uri: data.attachments[0].thumbnail }}
-            resizeMode={ FastImage.resizeMode.cover }
+          style={styles.imageStyle}
+          source={{uri: data.attachments[0].thumbnail}}
+          resizeMode={FastImage.resizeMode.cover}
         />
       </TouchableWithoutFeedback>
       <Modal
         isVisible={isModalVisible}
         backdropColor="black"
-        style={{ margin: 0 }}
-        supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
-        backdropOpacity={0}>
+        style={{margin: 0}}
+        supportedOrientations={[
+          'portrait',
+          'portrait-upside-down',
+          'landscape',
+          'landscape-left',
+          'landscape-right',
+        ]}
+        backdropOpacity={0}
+      >
         <SingleImageModal
-            uploadImageURL={data.attachments[0].thumbnail}
-            backBtnPress={() => setModalVisible(false)}
-            data={data}
+          uploadImageURL={data.attachments[0].thumbnail}
+          backBtnPress={() => setModalVisible(false)}
+          data={data}
         />
       </Modal>
     </View>

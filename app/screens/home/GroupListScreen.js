@@ -1,13 +1,11 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 
-import {
- View, FlatList, StyleSheet, Text,
- } from 'react-native';
+import {View, FlatList, StyleSheet, Text} from 'react-native';
 
 import strings from '../../Constants/String';
 import GroupListItemView from '../../components/Home/GroupListItemView';
 
-export default function GroupListScreen({ navigation, route }) {
+export default function GroupListScreen({navigation, route}) {
   const [groups] = useState(route.params.groups);
 
   useLayoutEffect(() => {
@@ -28,7 +26,7 @@ export default function GroupListScreen({ navigation, route }) {
     });
   };
 
-  const renderItems = ({ item }) => (
+  const renderItems = ({item}) => (
     <GroupListItemView groupData={item} onPress={onPressGroupList} />
   );
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Image } from 'react-native';
+import {StyleSheet, TouchableOpacity, Image} from 'react-native';
 
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -13,16 +13,18 @@ function EventColorItem({
   isNew = false,
   onChangeColorPressed,
 }) {
- 
   return (
     <TouchableOpacity
       onPress={onItemPress}
-      style={[styles.eventColorViewStyle, eventColorViewStyle]}>
-      {(item?.isSelected || item?.isNew) &&  <Image 
-        source={source}
-        style={[styles.imageStyle, imageStyle]}
-        resizeMode={'contain'}
-      />}
+      style={[styles.eventColorViewStyle, eventColorViewStyle]}
+    >
+      {(item?.isSelected || item?.isNew) && (
+        <Image
+          source={source}
+          style={[styles.imageStyle, imageStyle]}
+          resizeMode={'contain'}
+        />
+      )}
       {isNew && item?.color !== '0' && (
         <TouchableOpacity
           onPress={onChangeColorPressed}
@@ -30,7 +32,8 @@ function EventColorItem({
             position: 'absolute',
             right: -8,
             top: -8,
-          }}>
+          }}
+        >
           <Image
             source={images.resetColor}
             style={{
@@ -61,7 +64,6 @@ const styles = StyleSheet.create({
     shadowColor: colors.googleColor,
     alignItems: 'center',
     justifyContent: 'center',
-    
   },
   imageStyle: {
     height: 15,

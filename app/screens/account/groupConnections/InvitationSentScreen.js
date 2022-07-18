@@ -1,15 +1,13 @@
-import React, { useEffect } from 'react';
-import {
-  View, StyleSheet, Image, Text,
-} from 'react-native';
+import React, {useEffect} from 'react';
+import {View, StyleSheet, Image, Text} from 'react-native';
 
 import ImageSequence from 'react-native-image-sequence';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-import colors from '../../../Constants/Colors'
+import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 
-export default function InvitationSentScreen({ navigation }) {
+export default function InvitationSentScreen({navigation}) {
   const imagesSet = [
     images.emailSent1,
     images.emailSent2,
@@ -20,7 +18,7 @@ export default function InvitationSentScreen({ navigation }) {
 
   useEffect(() => {
     const timer = setInterval(() => navigation.pop(2), 5000);
-    return () => clearInterval(timer)
+    return () => clearInterval(timer);
   }, []);
 
   return (
@@ -31,10 +29,11 @@ export default function InvitationSentScreen({ navigation }) {
         <Text style={styles.invitationText}>{strings.invitationSent}</Text>
         <View style={styles.imageContainer}>
           <ImageSequence
-                    images={imagesSet}
-                    framesPerSecond={2.5}
-                    loop={true}
-                    style={styles.rotateImage} />
+            images={imagesSet}
+            framesPerSecond={2.5}
+            loop={true}
+            style={styles.rotateImage}
+          />
         </View>
       </View>
     </View>
@@ -80,4 +79,4 @@ const styles = StyleSheet.create({
     height: 146,
     resizeMode: 'contain',
   },
-})
+});

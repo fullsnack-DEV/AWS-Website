@@ -70,7 +70,8 @@ const MessageInviteeDrawerScreen = ({
                   onPressDone,
                 });
               }, 0.3);
-            }}>
+            }}
+          >
             <Image
               style={styles.inviteImage}
               source={images.plus_round_orange}
@@ -114,7 +115,8 @@ const MessageInviteeDrawerScreen = ({
       return (
         <TouchableOpacity
           style={styles.rowContainer}
-          onPress={() => onParticipantsPress(customData)}>
+          onPress={() => onParticipantsPress(customData)}
+        >
           <View style={styles.imageContainer}>
             <Image style={styles.inviteImage} source={finalImage} />
           </View>
@@ -174,13 +176,15 @@ const MessageInviteeDrawerScreen = ({
                   dialog,
                   onPressDone,
                 });
-            }}>
+            }}
+          >
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-              }}>
+              }}
+            >
               <Text style={[styles.title, {marginLeft: wp(3)}]}>
                 {fullName}
               </Text>

@@ -28,10 +28,7 @@ import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import {
-  getUserSettings,
-  saveUserSettings,
-} from '../../../api/Users';
+import {getUserSettings, saveUserSettings} from '../../../api/Users';
 
 let image_url = '';
 
@@ -42,7 +39,6 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
   const [addedSport, setAddedSport] = useState([]);
   const [removedSport, setRemovedSport] = useState([]);
   const [userSetting, setUserSetting] = useState();
-
 
   Utility.getStorage('appSetting').then((setting) => {
     console.log('APPSETTING:=', setting);
@@ -80,7 +76,8 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
           setting?.payload?.user?.schedule_sport_filter?.length > 0
         ) {
           setAddedSport([...setting?.payload?.user?.schedule_sport_filter]);
-          setRemovedSport(data.filter((e) => {
+          setRemovedSport(
+            data.filter((e) => {
               return !setting?.payload?.user?.schedule_sport_filter?.some(
                 (item) => item.sport === e.sport,
               );
@@ -109,7 +106,8 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
           onPress={() => {
             route?.params?.onBackClick(true);
             navigation.goBack();
-          }}>
+          }}
+        >
           <Image source={images.backArrow} style={styles.backImageStyle} />
         </TouchableOpacity>
       ),
@@ -121,7 +119,8 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
             fontSize: 16,
             marginRight: 10,
             color: colors.lightBlackColor,
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
@@ -170,7 +169,8 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
               removedSport.push(item);
               setRemovedSport([...removedSport]);
             }}
-            style={{alignSelf: 'center'}}>
+            style={{alignSelf: 'center'}}
+          >
             <Image
               source={images.removeSportList}
               style={styles.addIconStyle}
@@ -220,7 +220,8 @@ export default function ChangeSportsOrderScreen({navigation, route}) {
                 Alert.alert('You can add up to 10 sports to the filter bar.');
               }
             }}
-            style={{alignSelf: 'center'}}>
+            style={{alignSelf: 'center'}}
+          >
             <Image source={images.addSportList} style={styles.addIconStyle} />
           </TouchableOpacity>
           <FastImage

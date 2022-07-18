@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef } from 'react';
+import React, {useLayoutEffect, useRef} from 'react';
 import {
   View,
   StyleSheet,
@@ -23,7 +23,7 @@ import images from '../../../Constants/ImagePath';
 import PaymentLogs from '../../../components/invoice/PaymentLogs';
 import strings from '../../../Constants/String';
 
-export default function InvoiceDetailScreen({ navigation }) {
+export default function InvoiceDetailScreen({navigation}) {
   // const [loading, setloading] = useState(false);
   const actionSheet = useRef();
 
@@ -33,9 +33,11 @@ export default function InvoiceDetailScreen({ navigation }) {
     navigation.setOptions({
       headerRight: () => (
         <View style={styles.rightHeaderView}>
-          <TouchableOpacity onPress={() => {
-            actionSheet.current.show()
-          }}>
+          <TouchableOpacity
+            onPress={() => {
+              actionSheet.current.show();
+            }}
+          >
             <Image
               source={images.threeDotIcon}
               style={styles.townsCupSettingIcon}
@@ -46,13 +48,13 @@ export default function InvoiceDetailScreen({ navigation }) {
     });
   }, [navigation]);
 
-  const renderLogView = ({ item }) => {
+  const renderLogView = ({item}) => {
     console.log('item', item);
     return (
       <PaymentLogs
         data={item}
         onPressCard={() => {
-          navigation.navigate('LogDetailScreen')
+          navigation.navigate('LogDetailScreen');
         }}
       />
     );
@@ -62,8 +64,8 @@ export default function InvoiceDetailScreen({ navigation }) {
     <View style={styles.mainContainer}>
       {/* <ActivityLoader visible={loading} /> */}
 
-      <View style={{ margin: 15 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{margin: 15}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Image
             source={images.dummyPhoto}
             style={styles.invoiceProfileStyle}
@@ -73,7 +75,8 @@ export default function InvoiceDetailScreen({ navigation }) {
               fontFamily: fonts.RBold,
               fontSize: 16,
               color: colors.lightBlackColor,
-            }}>
+            }}
+          >
             {'Michael Jordan'}
           </Text>
         </View>
@@ -82,7 +85,8 @@ export default function InvoiceDetailScreen({ navigation }) {
             fontFamily: fonts.RRegular,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}>
+          }}
+        >
           Invoice no.: TR-7077071
         </Text>
         <Text
@@ -90,14 +94,16 @@ export default function InvoiceDetailScreen({ navigation }) {
             fontFamily: fonts.RRegular,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}>
+          }}
+        >
           Due at: May 11, 2020
         </Text>
       </View>
 
       <LinearGradient
         colors={[colors.grayBackgroundColor, colors.grayBackgroundColor]}
-        style={styles.paymentProgressView}>
+        style={styles.paymentProgressView}
+      >
         <LinearGradient
           colors={[colors.greenGradientEnd, colors.greenGradientStart]}
           style={{
@@ -106,13 +112,15 @@ export default function InvoiceDetailScreen({ navigation }) {
             width: '50%',
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <Text
             style={{
               color: 'white',
               fontFamily: fonts.RBold,
               fontSize: 12,
-            }}>
+            }}
+          >
             $12.50 CAD
           </Text>
         </LinearGradient>
@@ -128,13 +136,14 @@ export default function InvoiceDetailScreen({ navigation }) {
 
       <TCThinDivider marginTop={15} width={'94%'} />
 
-      <View style={{ margin: 15 }}>
+      <View style={{margin: 15}}>
         <Text
           style={{
             fontFamily: fonts.RLight,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}>
+          }}
+        >
           {'Description '}
         </Text>
 
@@ -143,7 +152,8 @@ export default function InvoiceDetailScreen({ navigation }) {
             fontFamily: fonts.RRegular,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}>
+          }}
+        >
           Membership fee for May
         </Text>
       </View>
@@ -165,7 +175,8 @@ export default function InvoiceDetailScreen({ navigation }) {
 
       <LinearGradient
         colors={[colors.yellowColor, colors.darkThemeColor]}
-        style={styles.activeEventPricacy}>
+        style={styles.activeEventPricacy}
+      >
         <TouchableOpacity onPress={() => Alert.alert('Add payment')}>
           <Text style={styles.activeEventPrivacyText}>{'PAY NOW'}</Text>
         </TouchableOpacity>
@@ -189,7 +200,8 @@ export default function InvoiceDetailScreen({ navigation }) {
           fontSize: 20,
           color: colors.lightBlackColor,
           margin: 15,
-        }}>
+        }}
+      >
         Log
       </Text>
       <FlatList
@@ -277,7 +289,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     flexDirection: 'row',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 13,

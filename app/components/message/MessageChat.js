@@ -70,7 +70,8 @@ const GradiantContainer = ({style, ...props}) => (
     start={{x: 0, y: 0}}
     end={{x: 1, y: 0}}
     style={style}
-    colors={[colors.themeColor1, colors.themeColor3]}>
+    colors={[colors.themeColor1, colors.themeColor3]}
+  >
     {props.children}
   </LinearGradient>
 );
@@ -395,14 +396,16 @@ const MessageChat = ({route, navigation}) => {
               style={{
                 flex: 1,
                 marginTop: hp(1),
-              }}>
+              }}
+            >
               {displayDate && (
                 <Text
                   style={{
                     ...styles.timeContainer,
                     fontSize: 12,
                     textAlign: 'center',
-                  }}>
+                  }}
+                >
                   {moment(displayDate, 'D MMM').isSame(moment(), 'D')
                     ? 'Today'
                     : displayDate}
@@ -413,7 +416,8 @@ const MessageChat = ({route, navigation}) => {
                   style={{
                     ...styles.timeContainer,
                     textAlign: type === 'receiver' ? 'center' : 'right',
-                  }}>
+                  }}
+                >
                   {displayTime}
                 </Text>
               )}
@@ -421,7 +425,8 @@ const MessageChat = ({route, navigation}) => {
                 style={{
                   flex: 1,
                   alignSelf: type === 'sender' ? 'flex-end' : 'flex-start',
-                }}>
+                }}
+              >
                 {isReceiver && (
                   <View
                     style={{
@@ -434,7 +439,8 @@ const MessageChat = ({route, navigation}) => {
                         customData?.under_terminate === true
                           ? 0.5
                           : 1,
-                    }}>
+                    }}
+                  >
                     <View style={{...styles.avatarContainer}}>
                       <FastImage
                         source={finalImage}
@@ -449,7 +455,8 @@ const MessageChat = ({route, navigation}) => {
                         fontSize: 12,
                         marginTop: 2,
                         marginLeft: 8,
-                      }}>
+                      }}
+                    >
                       {/* eslint-disable-next-line no-mixed-operators */}
                       {customData?.is_terminate === true ? 'Unknown' : fullName}
                     </Text>
@@ -565,14 +572,15 @@ const MessageChat = ({route, navigation}) => {
             </Text>
           ) : (
             <ShimmerView style={{alignSelf: 'center'}} />
-        )
+          )
         }
         rightComponent={
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
               onPress={() => {
                 setHideSearchView(!hideSearchView);
-              }}>
+              }}
+            >
               <Image
                 source={images.chatSearch}
                 style={[styles.rightSearchImageStyle, {marginRight: 10}]}
@@ -584,7 +592,8 @@ const MessageChat = ({route, navigation}) => {
               onPress={() => {
                 commentModalRef.current.open();
                 // navigation.setParams({participants: [occupantsData]});
-              }}>
+              }}
+            >
               <Image source={images.chat3Dot} style={styles.rightImageStyle} />
             </TouchableOpacity>
           </View>
@@ -643,7 +652,8 @@ const MessageChat = ({route, navigation}) => {
         shadowOpacity: 0.2,
         shadowRadius: 10,
         elevation: 2,
-      }}>
+      }}
+    >
       {selectedImage && (
         <View>
           <View style={styles.selectedImageContainer}>
@@ -670,7 +680,8 @@ const MessageChat = ({route, navigation}) => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     position: 'absolute',
-                  }}>
+                  }}
+                >
                   <FastImage
                     source={images.videoPlayBtn}
                     tintColor={'white'}
@@ -716,7 +727,8 @@ const MessageChat = ({route, navigation}) => {
                 setSelectedImage(null);
                 setUploadImageInProgress(false);
                 setUploadedFile(null);
-              }}>
+              }}
+            >
               <FastImage
                 source={images.cancelImage}
                 style={{height: 14, width: 14}}
@@ -788,14 +800,15 @@ const MessageChat = ({route, navigation}) => {
             right: '4%',
             opacity: pointEvent === 'none' ? 0.5 : 1,
           }}
-          pointerEvents={pointEvent}>
+          pointerEvents={pointEvent}
+        >
           {((selectedImage && !uploadImageInProgress) ||
             messageBody.length > 0) && (
-              <TouchableOpacity onPress={sendMessage}>
-                <GradiantContainer style={styles.sendButtonContainer}>
-                  <Image source={images.sendButton} style={styles.sendButton} />
-                </GradiantContainer>
-              </TouchableOpacity>
+            <TouchableOpacity onPress={sendMessage}>
+              <GradiantContainer style={styles.sendButtonContainer}>
+                <Image source={images.sendButton} style={styles.sendButton} />
+              </GradiantContainer>
+            </TouchableOpacity>
           )}
         </View>
       </View>
@@ -846,7 +859,8 @@ const MessageChat = ({route, navigation}) => {
       return (
         <TouchableOpacity
           style={styles.rowContainer}
-          onPress={() => onParticipantsPress(customData)}>
+          onPress={() => onParticipantsPress(customData)}
+        >
           <View style={styles.imageContainer}>
             <Image style={styles.inviteImage} source={finalImage} />
           </View>
@@ -929,7 +943,8 @@ const MessageChat = ({route, navigation}) => {
       ) : (
         <KeyboardAvoidingView
           style={{flex: 1}}
-          behavior={Platform.OS === 'ios' ? 'padding' : null}>
+          behavior={Platform.OS === 'ios' ? 'padding' : null}
+        >
           {messageList}
           {hideSearchView && renderBottomChatTools()}
         </KeyboardAvoidingView>
@@ -950,10 +965,12 @@ const MessageChat = ({route, navigation}) => {
             shadowRadius: 10,
             elevation: 10,
           }}
-          ref={commentModalRef}>
+          ref={commentModalRef}
+        >
           <View style={styles.viewContainer}>
             <Text
-              style={[styles.titleLabel, {marginBottom: 15, marginTop: 25}]}>
+              style={[styles.titleLabel, {marginBottom: 15, marginTop: 25}]}
+            >
               {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT &&
                 'CHATROOM NAME'}
             </Text>
@@ -965,13 +982,15 @@ const MessageChat = ({route, navigation}) => {
                     dialog: dialogMenu,
                     onPressDone,
                   });
-              }}>
+              }}
+            >
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                }}>
+                }}
+              >
                 <Text style={styles.title}>{fullName}</Text>
                 {dialogMenu?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
                   <FastImage
@@ -1000,7 +1019,8 @@ const MessageChat = ({route, navigation}) => {
                     participants: occupantsData,
                     onPressDone,
                   });
-                }}>
+                }}
+              >
                 <Image
                   style={styles.inviteImage}
                   source={images.plus_round_orange}

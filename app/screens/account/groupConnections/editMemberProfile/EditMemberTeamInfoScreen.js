@@ -37,11 +37,14 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
   const [role, setRole] = useState('');
   const [switchUser, setSwitchUser] = useState({});
 
-  const [groupMemberDetail, setGroupMemberDetail] = useState(route?.params?.groupMemberDetail);
-  const [positions, setPositions] = useState(route.params.groupMemberDetail.positions ?? [{}]);
+  const [groupMemberDetail, setGroupMemberDetail] = useState(
+    route?.params?.groupMemberDetail,
+  );
+  const [positions, setPositions] = useState(
+    route.params.groupMemberDetail.positions ?? [{}],
+  );
 
   useEffect(() => {
-    
     setPlayerStatus(route.params.groupMemberDetail.status);
     console.log('MEMBER DETAIL ::', groupMemberDetail);
     const getAuthEntity = async () => {
@@ -81,7 +84,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
       ...bodyParams,
     };
 
-    console.log('groupMemberDetail:=>',body);
+    console.log('groupMemberDetail:=>', body);
     patchMember(
       groupMemberDetail.group_id,
       groupMemberDetail.user_id,
@@ -90,8 +93,8 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
     )
       .then((response) => {
         setloading(false);
-        navigation.navigate('MembersProfileScreen',{
-          modifiedMemberDetail: response.payload
+        navigation.navigate('MembersProfileScreen', {
+          modifiedMemberDetail: response.payload,
         });
       })
       .catch((e) => {
@@ -100,8 +103,21 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext, groupMemberDetail.appearance, groupMemberDetail.group_id, groupMemberDetail.is_admin, groupMemberDetail.is_coach, groupMemberDetail.is_member, groupMemberDetail.jersey_number, groupMemberDetail.note, groupMemberDetail.positions, groupMemberDetail.status, groupMemberDetail.user_id, navigation, positions]);
-
+  }, [
+    authContext,
+    groupMemberDetail.appearance,
+    groupMemberDetail.group_id,
+    groupMemberDetail.is_admin,
+    groupMemberDetail.is_coach,
+    groupMemberDetail.is_member,
+    groupMemberDetail.jersey_number,
+    groupMemberDetail.note,
+    groupMemberDetail.positions,
+    groupMemberDetail.status,
+    groupMemberDetail.user_id,
+    navigation,
+    positions,
+  ]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -136,8 +152,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
     setPositions([...positions, obj]);
   };
 
-  
-  const renderPosition = ({ index}) => (
+  const renderPosition = ({index}) => (
     <TCTextField
       value={positions[index]}
       onChangeText={(text) => {
@@ -158,7 +173,7 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
 
       <View style={styles.mainCheckBoxContainer}>
         <Text style={styles.checkBoxTitle}>Admin Authority And Role</Text>
-        
+
         <View style={styles.checkBoxContainer}>
           <Text style={styles.checkBoxItemText}>Player</Text>
 
@@ -168,7 +183,8 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
                 ...groupMemberDetail,
                 is_member: !groupMemberDetail.is_member,
               });
-            }}>
+            }}
+          >
             <Image
               source={
                 groupMemberDetail.is_member
@@ -188,7 +204,8 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
                 ...groupMemberDetail,
                 is_coach: !groupMemberDetail.is_coach,
               });
-            }}>
+            }}
+          >
             <Image
               source={
                 groupMemberDetail.is_coach
@@ -208,7 +225,8 @@ export default function EditMemberTeamInfoScreen({navigation, route}) {
                 ...groupMemberDetail,
                 is_admin: !groupMemberDetail.is_admin,
               });
-            }}>
+            }}
+          >
             <Image
               source={
                 groupMemberDetail.is_admin
@@ -336,8 +354,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 25,
     marginBottom: 10,
-    justifyContent:'space-between',
-    marginRight:15,
+    justifyContent: 'space-between',
+    marginRight: 15,
   },
   mainCheckBoxContainer: {
     marginLeft: 15,

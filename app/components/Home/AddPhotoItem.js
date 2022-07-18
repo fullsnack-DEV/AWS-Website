@@ -1,33 +1,24 @@
 import React from 'react';
-import {
-  StyleSheet, Text, Image,
-} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {StyleSheet, Text, Image} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-function AddPhotoItem({
-  onAddPhotoPress,
-  disabled,
-}) {
+function AddPhotoItem({onAddPhotoPress, disabled}) {
   return (
-
     <TouchableOpacity
-        style={styles.headerImagePickerView}
-        onPress={onAddPhotoPress}
-        disabled={disabled}>
+      style={styles.headerImagePickerView}
+      onPress={onAddPhotoPress}
+      disabled={disabled}
+    >
       <LinearGradient
-          colors={[colors.yellowColor, colors.themeColor]}
-          style={styles.headerImagePickerView}>
-        <Image
-        style={styles.plusImageStyle}
-        source={images.plus}
-      />
+        colors={[colors.yellowColor, colors.themeColor]}
+        style={styles.headerImagePickerView}
+      >
+        <Image style={styles.plusImageStyle} source={images.plus} />
         <Text style={styles.addPhotoTextStyle}>Add Photo</Text>
       </LinearGradient>
     </TouchableOpacity>

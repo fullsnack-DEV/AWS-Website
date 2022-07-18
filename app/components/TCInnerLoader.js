@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, {Fragment} from 'react';
 import FastImage from 'react-native-fast-image';
 import images from '../Constants/ImagePath';
 
@@ -22,5 +22,5 @@ const TCInnerLoader = ({
       />
     )}
   </Fragment>
-)
+);
 export default TCInnerLoader;

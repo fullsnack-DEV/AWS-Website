@@ -24,7 +24,6 @@ const TCMessage = ({
   messageStyle,
   attachments = [],
 }) => {
-
   const [showAssetsModal, setShowAssetsModal] = useState(false);
   const [fileUrls, setFileUrls] = useState([]);
   const [play, setPlay] = useState(false);
@@ -39,15 +38,13 @@ const TCMessage = ({
       start={{x: 0, y: 0}}
       end={{x: 1, y: 0}}
       style={style}
-      colors={[startGradiantColor, endGradiantColor]}>
+      colors={[startGradiantColor, endGradiantColor]}
+    >
       {props.children}
     </LinearGradient>
   );
 
-  console.log(
-    'message chat data',
-    messageData
-  );
+  console.log('message chat data', messageData);
   useEffect(() => {
     attachments.map((item) =>
       QBgetFileURL(item.id).then((fileUrl) => {
@@ -77,7 +74,8 @@ const TCMessage = ({
             borderTopLeftRadius: type === 'receiver' ? 0 : wp(2),
             borderBottomRightRadius: type === 'sender' ? 0 : wp(2),
             ...messageStyle,
-          }}>
+          }}
+        >
           {body === '[attachment]' || (
             <View style={{alignSelf: 'flex-start', padding: wp(2)}}>
               <Text
@@ -87,7 +85,8 @@ const TCMessage = ({
                     type === 'sender'
                       ? colors.lightBlackColor // lightBlackColor
                       : colors.lightBlackColor,
-                }}>
+                }}
+              >
                 {body}
               </Text>
             </View>
@@ -99,7 +98,8 @@ const TCMessage = ({
             style={{
               ...messageStyle,
               marginTop: 0,
-            }}>
+            }}
+          >
             {fileUrls.map((item, index) => {
               if (attachments[index]?.type === 'file') {
                 return (
@@ -139,13 +139,15 @@ const TCMessage = ({
                         left: 0,
                         alignItems: 'center',
                         justifyContent: 'center',
-                      }}>
+                      }}
+                    >
                       <TouchableHighlight
                         style={styles.pauseMuteStyle}
                         activeOpacity={0.5}
                         onPress={() => {
                           setPlay(!play);
-                        }}>
+                        }}
+                      >
                         <FastImage
                           tintColor={'white'}
                           resizeMode={'contain'}
@@ -164,7 +166,8 @@ const TCMessage = ({
               return (
                 <TouchableOpacity
                   key={index}
-                  onPress={() => setShowAssetsModal(true)}>
+                  onPress={() => setShowAssetsModal(true)}
+                >
                   <Image
                     source={{uri: item}}
                     key={item}
@@ -192,7 +195,7 @@ const TCMessage = ({
                       console.log(
                         'sasasas---',
                         e.nativeEvent.loaded / e.nativeEvent.total,
-                    )
+                      )
                     }
                   />
                 </TouchableOpacity>
@@ -206,7 +209,8 @@ const TCMessage = ({
           style={{margin: 0}}
           onBackdropPress={() => setShowAssetsModal(false)}
           onRequestClose={() => setShowAssetsModal(false)}
-          backdropOpacity={0}>
+          backdropOpacity={0}
+        >
           <MessageChatAssetModal
             title={fullName}
             assetType={attachments[0]?.type === 'file' ? 'video' : 'image'}

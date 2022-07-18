@@ -1,8 +1,6 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text, TouchableOpacity, Image,
-} from 'react-native';
-import { ColorPicker } from 'react-native-color-picker';
+import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
+import {ColorPicker} from 'react-native-color-picker';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -25,36 +23,50 @@ function DefaultColorModal({
 }) {
   return (
     <Modal
-        isVisible={isModalVisible}
-        backdropColor="black"
-        style={{ margin: 0, justifyContent: 'flex-end' }}
-        hasBackdrop
-        onBackdropPress={onBackdropPress}
-        backdropOpacity={0}
+      isVisible={isModalVisible}
+      backdropColor="black"
+      style={{margin: 0, justifyContent: 'flex-end'}}
+      hasBackdrop
+      onBackdropPress={onBackdropPress}
+      backdropOpacity={0}
     >
       <View style={[styles.containerStyle, containerStyle]}>
         <Header
-            mainContainerStyle={styles.headerMainContainerStyle}
-            leftComponent={
-              <TouchableOpacity onPress={onCancelImagePress}>
-                <Image source={cancelImageSource} style={styles.cancelImageStyle} resizeMode={'contain'} />
+          mainContainerStyle={styles.headerMainContainerStyle}
+          leftComponent={
+            <TouchableOpacity onPress={onCancelImagePress}>
+              <Image
+                source={cancelImageSource}
+                style={styles.cancelImageStyle}
+                resizeMode={'contain'}
+              />
+            </TouchableOpacity>
+          }
+          centerComponent={
+            <Text style={styles.headerCenterStyle}>{headerCenterText}</Text>
+          }
+          rightComponent={
+            doneButtonDisplay && (
+              <TouchableOpacity style={{padding: 2}} onPress={onDonePress}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: fonts.RRegular,
+                    color: colors.lightBlackColor,
+                  }}
+                >
+                  Done
+                </Text>
               </TouchableOpacity>
-            }
-            centerComponent={
-              <Text style={styles.headerCenterStyle}>{headerCenterText}</Text>
-            }
-            rightComponent={
-              (doneButtonDisplay && <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
-                <Text style={{ fontSize: 14, fontFamily: fonts.RRegular, color: colors.lightBlackColor }}>Done</Text>
-              </TouchableOpacity>)
-            }
-          />
+            )
+          }
+        />
         <View style={styles.sepratorStyle} />
         <ColorPicker
-              onColorSelected={onColorSelected}
-            //   defaultColor={colors.lightgrayColor}
-              style={styles.colorPickerStyle}
-            />
+          onColorSelected={onColorSelected}
+          //   defaultColor={colors.lightgrayColor}
+          style={styles.colorPickerStyle}
+        />
       </View>
     </Modal>
   );

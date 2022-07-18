@@ -12,4 +12,4 @@ const ReservationStatus = {
   completed: 'completed',
 };
 
-export default ReservationStatus
+export default ReservationStatus;

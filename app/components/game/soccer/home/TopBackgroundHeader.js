@@ -65,7 +65,8 @@ const TopBackgroundHeader = ({
   const renderForeground = () => (
     <LinearGradient
       colors={['transparent', 'rgba(0,0,0,0.4)']}
-      style={styles.topImageInnerContainer}>
+      style={styles.topImageInnerContainer}
+    >
       {renderTopHeader}
       <Text style={styles.vsTextStyle}>VS</Text>
       <View style={styles.topHeaderAbsoluteContainer}>
@@ -118,7 +119,8 @@ const TopBackgroundHeader = ({
               marginHorizontal: 5,
               paddingRight: 5,
               borderLeftWidth: 1,
-            }}>
+            }}
+          >
             <Text style={styles.bottomInfoText}>
               {moment(new Date(gameData?.start_datetime * 1000 ?? '')).format(
                 'MMM DD , hh:mm a',
@@ -147,7 +149,8 @@ const TopBackgroundHeader = ({
           ...styles.topCloseHeaderText,
           fontFamily: fonts.RMedium,
           color,
-        }}>
+        }}
+      >
         {teamNumber === 1 ? firstTeamScore : secondTeamScore ?? 0}
       </Text>
     );
@@ -225,7 +228,8 @@ const TopBackgroundHeader = ({
                   ...styles.teamLogoContainer,
                   height: 25,
                   width: 25,
-                }}>
+                }}
+              >
                 <FastImage
                   resizeMode={'cover'}
                   source={
@@ -241,7 +245,8 @@ const TopBackgroundHeader = ({
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}>
+                }}
+              >
                 {getScoreText(
                   gameData?.home_team_goal,
                   gameData?.away_team_goal ?? 0,
@@ -260,7 +265,8 @@ const TopBackgroundHeader = ({
                   height: 25,
                   width: 25,
                   marginRight: wp(2),
-                }}>
+                }}
+              >
                 <FastImage
                   resizeMode={'cover'}
                   source={
@@ -317,17 +323,17 @@ const TopBackgroundHeader = ({
                 }}
               />
             </TouchableOpacity>
-        )
+          )
         }
       />
     ),
     [handleGoBack, headerTitleShown, isAdmin],
   );
 
-  const onScroll = useCallback((e) => (onEndReached ? onReachedEnd(e) : null), [
-    onEndReached,
-    onReachedEnd,
-  ]);
+  const onScroll = useCallback(
+    (e) => (onEndReached ? onReachedEnd(e) : null),
+    [onEndReached, onReachedEnd],
+  );
 
   const renderTopHeader = useMemo(
     () => (
@@ -383,7 +389,8 @@ const TopBackgroundHeader = ({
         renderFixedHeader={renderFixedHeader}
         renderStickyHeader={renderStickyHeader}
         renderForeground={renderForeground}
-        renderBackground={renderBackground}>
+        renderBackground={renderBackground}
+      >
         {useMemo(() => {
           let destructiveButtonIndex = null;
           const options = [];

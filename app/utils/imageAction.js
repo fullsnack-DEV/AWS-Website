@@ -106,21 +106,27 @@ const originalImageSize = (imageData) => {
   };
   if (imageData.height < imageData.width) {
     if (imageData.height > O_LANDSCAPE_IMAGE_HEIGHT) {
-      img.height = O_LANDSCAPE_IMAGE_HEIGHT
-      img.width = parseInt((imageData.width / imageData.height) * O_LANDSCAPE_IMAGE_HEIGHT, 10)
+      img.height = O_LANDSCAPE_IMAGE_HEIGHT;
+      img.width = parseInt(
+        (imageData.width / imageData.height) * O_LANDSCAPE_IMAGE_HEIGHT,
+        10,
+      );
     } else {
-      img.height = imageData.height
-      img.width = imageData.width
+      img.height = imageData.height;
+      img.width = imageData.width;
     }
-      return img
+    return img;
   }
-    if (imageData.width > O_PORTRAIT_IMAGE_WIDTH) {
-      img.height = parseInt((imageData.height / imageData.width) * O_PORTRAIT_IMAGE_WIDTH, 10)
-      img.width = O_PORTRAIT_IMAGE_WIDTH
-    } else {
-      img.height = imageData.height
-      img.width = imageData.width
-    }
+  if (imageData.width > O_PORTRAIT_IMAGE_WIDTH) {
+    img.height = parseInt(
+      (imageData.height / imageData.width) * O_PORTRAIT_IMAGE_WIDTH,
+      10,
+    );
+    img.width = O_PORTRAIT_IMAGE_WIDTH;
+  } else {
+    img.height = imageData.height;
+    img.width = imageData.width;
+  }
 
   return img;
 
@@ -193,7 +199,7 @@ const uploadImages = async (
 ) =>
   new Promise((resolve, reject) => {
     const responses = [];
-    console.log('ccccimages',images);
+    console.log('ccccimages', images);
     const source = axios.CancelToken.source();
     cancelRequest(source);
     getImagePreSignedURL(

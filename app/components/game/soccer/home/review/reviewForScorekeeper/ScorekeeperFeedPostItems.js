@@ -21,7 +21,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { Text } from 'react-native-elements';
+import {Text} from 'react-native-elements';
 
 import ActionSheet from 'react-native-actionsheet';
 
@@ -32,9 +32,9 @@ import Carousel from 'react-native-snap-carousel';
 import ActivityLoader from '../../../../../loader/ActivityLoader';
 import AuthContext from '../../../../../../auth/context';
 import images from '../../../../../../Constants/ImagePath';
-import { commentPostTimeCalculate } from '../../../../../../Constants/LoaderImages';
+import {commentPostTimeCalculate} from '../../../../../../Constants/LoaderImages';
 
-import { createReaction, getReactions } from '../../../../../../api/NewsFeeds';
+import {createReaction, getReactions} from '../../../../../../api/NewsFeeds';
 import colors from '../../../../../../Constants/Colors';
 import fonts from '../../../../../../Constants/Fonts';
 import SingleImage from '../../../../../newsFeed/SingleImage';
@@ -110,8 +110,8 @@ function ScorekeeperFeedPostItems({
   let descriptions = '';
   if (item?.object) {
     if (
-      JSON.parse(item?.object)?.scorekeeperReview?.attachments !== undefined
-      && JSON.parse(item?.object)?.scorekeeperReview?.attachments?.length > 0
+      JSON.parse(item?.object)?.scorekeeperReview?.attachments !== undefined &&
+      JSON.parse(item?.object)?.scorekeeperReview?.attachments?.length > 0
     ) {
       attachedImages = JSON.parse(item?.object)?.scorekeeperReview?.attachments;
     }
@@ -125,7 +125,7 @@ function ScorekeeperFeedPostItems({
   }
 
   const renderSinglePostItems = useCallback(
-    ({ item: attachItem }) => {
+    ({item: attachItem}) => {
       if (attachItem?.type === 'image') {
         return (
           <SingleImage
@@ -155,10 +155,10 @@ function ScorekeeperFeedPostItems({
     [item],
   );
 
-  const listSpace = () => <View style={{ width: wp('2%') }} />;
+  const listSpace = () => <View style={{width: wp('2%')}} />;
 
   const renderMultiplePostItems = useCallback(
-    ({ item: multiAttachItem, index }) => {
+    ({item: multiAttachItem, index}) => {
       if (multiAttachItem?.type === 'image') {
         return (
           <PostImageSet
@@ -196,7 +196,8 @@ function ScorekeeperFeedPostItems({
     [item],
   );
 
-  const newsFeedItemsKeyExtractor = (keyItem, index) => `innerFeed${index?.id?.toString()}`;
+  const newsFeedItemsKeyExtractor = (keyItem, index) =>
+    `innerFeed${index?.id?.toString()}`;
 
   const onNewsFeedLikePress = () => {
     setLike(!like);
@@ -266,15 +267,14 @@ function ScorekeeperFeedPostItems({
 
   return (
     <View>
-
       <View style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
         <TouchableWithoutFeedback onPress={onImageProfilePress}>
           <Image
-              style={styles.background}
-              source={!userImage ? images.profilePlaceHolder : { uri: userImage }}
-              resizeMode={'cover'}
-            />
+            style={styles.background}
+            source={!userImage ? images.profilePlaceHolder : {uri: userImage}}
+            resizeMode={'cover'}
+          />
         </TouchableWithoutFeedback>
         <View style={styles.userNameView}>
           <Text style={styles.userNameTxt} onPress={onImageProfilePress}>
@@ -286,215 +286,231 @@ function ScorekeeperFeedPostItems({
         </View>
         {threeDotBtnDisplay && (
           <TouchableOpacity
-              style={styles.dotImageTouchStyle}
-              onPress={() => {
-                actionSheet.current.show();
-              }}>
+            style={styles.dotImageTouchStyle}
+            onPress={() => {
+              actionSheet.current.show();
+            }}
+          >
             <Image
-                style={styles.dotImageStyle}
-                source={images.threeDotIcon}
-                resizeMode={'contain'}
-              />
+              style={styles.dotImageStyle}
+              source={images.threeDotIcon}
+              resizeMode={'contain'}
+            />
           </TouchableOpacity>
-          )}
+        )}
       </View>
       <View>
         <NewsFeedDescription
-            descriptions={descriptions}
-            character={attachedImages?.length > 0 ? 140 : 480}
-            tagData={JSON.parse(item?.object)?.scorekeeperReview?.tagged ?? []}
-            navigation={navigation}
-          />
-        <View style={{ marginTop: 10, marginLeft: 10 }}></View>
+          descriptions={descriptions}
+          character={attachedImages?.length > 0 ? 140 : 480}
+          tagData={JSON.parse(item?.object)?.scorekeeperReview?.tagged ?? []}
+          navigation={navigation}
+        />
+        <View style={{marginTop: 10, marginLeft: 10}}></View>
         {attachedImages && attachedImages?.length === 1 ? (
           <FlatList
-              initialNumToRender={1}
-              maxToRenderPerBatch={5}
-              data={attachedImages}
-              horizontal={true}
-              bounces={false}
-              showsHorizontalScrollIndicator={false}
-              ListHeaderComponent={listSpace}
-              ListFooterComponent={listSpace}
-              ItemSeparatorComponent={listSpace}
-              renderItem={renderSinglePostItems}
-              keyExtractor={newsFeedItemsKeyExtractor}
-            />
-          ) : (
-            <Carousel
-              data={attachedImages}
-              renderItem={renderMultiplePostItems}
-              inactiveSlideScale={1}
-              inactiveSlideOpacity={1}
-              sliderWidth={wp(100)}
-              itemWidth={wp(94)}
-            />
-          )}
-        {(descriptions?.toLowerCase()?.indexOf('http://') === 0
-            || descriptions?.toLowerCase()?.indexOf('https://') === 0) && (
-              <RNUrlPreview
-              text={descriptions}
-              containerStyle={styles.urlPreviewContainerStyle}
-              imageProps={{ resizeMode: 'cover' }}
-              imageStyle={styles.previewImageStyle}
-            />
-          )}
+            initialNumToRender={1}
+            maxToRenderPerBatch={5}
+            data={attachedImages}
+            horizontal={true}
+            bounces={false}
+            showsHorizontalScrollIndicator={false}
+            ListHeaderComponent={listSpace}
+            ListFooterComponent={listSpace}
+            ItemSeparatorComponent={listSpace}
+            renderItem={renderSinglePostItems}
+            keyExtractor={newsFeedItemsKeyExtractor}
+          />
+        ) : (
+          <Carousel
+            data={attachedImages}
+            renderItem={renderMultiplePostItems}
+            inactiveSlideScale={1}
+            inactiveSlideOpacity={1}
+            sliderWidth={wp(100)}
+            itemWidth={wp(94)}
+          />
+        )}
+        {(descriptions?.toLowerCase()?.indexOf('http://') === 0 ||
+          descriptions?.toLowerCase()?.indexOf('https://') === 0) && (
+          <RNUrlPreview
+            text={descriptions}
+            containerStyle={styles.urlPreviewContainerStyle}
+            imageProps={{resizeMode: 'cover'}}
+            imageStyle={styles.previewImageStyle}
+          />
+        )}
 
         <View style={styles.commentShareLikeView}>
           <View
+            style={{
+              flexDirection: 'row',
+              width: wp('60%'),
+            }}
+          >
+            <View
               style={{
                 flexDirection: 'row',
-                width: wp('60%'),
-              }}>
-            <View
-                style={{
-                  flexDirection: 'row',
-                }}>
+              }}
+            >
               <TouchableOpacity
-                  onPress={() => {
-                    //  navigation.navigate('WriteCommentScreen', {
-                    //    data: item,
-                    //  });
-                  }}
-                  style={styles.imageTouchStyle}>
+                onPress={() => {
+                  //  navigation.navigate('WriteCommentScreen', {
+                  //    data: item,
+                  //  });
+                }}
+                style={styles.imageTouchStyle}
+              >
                 <Image
-                    style={styles.commentImage}
-                    source={images.commentImage}
-                    resizeMode={'contain'}
-                  />
+                  style={styles.commentImage}
+                  source={images.commentImage}
+                  resizeMode={'contain'}
+                />
               </TouchableOpacity>
               {item?.reaction_counts?.comment !== undefined && (
                 <Text style={styles.commentlengthStyle}>
                   {commentData.length ?? 0}
                 </Text>
-                )}
+              )}
             </View>
 
             <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginLeft: 10,
-                }}>
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginLeft: 10,
+              }}
+            >
               <TouchableOpacity
-                  onPress={() => shareActionSheet.current.show()}
-                  style={styles.imageTouchStyle}>
+                onPress={() => shareActionSheet.current.show()}
+                style={styles.imageTouchStyle}
+              >
                 <Image
-                    style={styles.commentImage}
-                    source={images.shareImage}
-                    resizeMode={'contain'}
-                  />
+                  style={styles.commentImage}
+                  source={images.shareImage}
+                  resizeMode={'contain'}
+                />
               </TouchableOpacity>
               <Text style={styles.commentlengthStyle}>{0}</Text>
             </View>
           </View>
 
           <View
-              style={{
-                flexDirection: 'row',
-                width: wp('32%'),
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-              }}>
+            style={{
+              flexDirection: 'row',
+              width: wp('32%'),
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+            }}
+          >
             {item?.reaction_counts?.clap !== undefined && (
               <Text
-                  style={[
-                    styles.commentlengthStyle,
-                    {
-                      color:
-                        like === true ? '#FF8A01' : colors.reactionCountColor,
-                    },
-                  ]}>
+                style={[
+                  styles.commentlengthStyle,
+                  {
+                    color:
+                      like === true ? '#FF8A01' : colors.reactionCountColor,
+                  },
+                ]}
+              >
                 {likeCount === 0 ? '' : likeCount}
               </Text>
-              )}
+            )}
             <TouchableOpacity
-                onPress={onNewsFeedLikePress}
-                style={styles.imageTouchStyle}>
+              onPress={onNewsFeedLikePress}
+              style={styles.imageTouchStyle}
+            >
               <Image
-                  style={styles.commentImage}
-                  source={like ? images.likeImage : images.unlikeImage}
-                  resizeMode={'contain'}
-                />
+                style={styles.commentImage}
+                source={like ? images.likeImage : images.unlikeImage}
+                resizeMode={'contain'}
+              />
             </TouchableOpacity>
           </View>
         </View>
 
         <ActionSheet
-            ref={actionSheet}
-            title={'News Feed Post'}
-            options={['Edit Post', 'Delete Post', 'Cancel']}
-            cancelButtonIndex={2}
-            destructiveButtonIndex={1}
-            onPress={onActionSheetItemPress}
-          />
+          ref={actionSheet}
+          title={'News Feed Post'}
+          options={['Edit Post', 'Delete Post', 'Cancel']}
+          cancelButtonIndex={2}
+          destructiveButtonIndex={1}
+          onPress={onActionSheetItemPress}
+        />
 
         <ActionSheet
-            ref={shareActionSheet}
-            title={'Reviews Feed Post'}
-            options={['Share', 'Copy Link', 'More Options', 'Cancel']}
-            cancelButtonIndex={3}
-            // destructiveButtonIndex={1}
-            onPress={onShareActionSheetItemPress}
-          />
+          ref={shareActionSheet}
+          title={'Reviews Feed Post'}
+          options={['Share', 'Copy Link', 'More Options', 'Cancel']}
+          cancelButtonIndex={3}
+          // destructiveButtonIndex={1}
+          onPress={onShareActionSheetItemPress}
+        />
       </View>
       {commentData?.length > 2 && !viewAllComment && (
         <Text
-            style={{
-              fontFamily: fonts.RRegular,
-              fontSize: 14,
-              color: colors.grayColor,
-              marginLeft: 20,
-              marginBottom: 5,
-            }} onPress={() => {
-              setViewAllComment(!viewAllComment)
-            }}>{`View ${commentData?.length - 2} more comments`}</Text>
-        )}
+          style={{
+            fontFamily: fonts.RRegular,
+            fontSize: 14,
+            color: colors.grayColor,
+            marginLeft: 20,
+            marginBottom: 5,
+          }}
+          onPress={() => {
+            setViewAllComment(!viewAllComment);
+          }}
+        >{`View ${commentData?.length - 2} more comments`}</Text>
+      )}
       {commentData?.length > 2 && viewAllComment && (
         <Text
-            style={{
-              fontFamily: fonts.RRegular,
-              fontSize: 14,
-              color: colors.grayColor,
-              marginLeft: 20,
-              marginBottom: 5,
-            }} onPress={() => {
-              setViewAllComment(!viewAllComment)
-            }}>{'Show only 2 comments'}</Text>
-        )}
+          style={{
+            fontFamily: fonts.RRegular,
+            fontSize: 14,
+            color: colors.grayColor,
+            marginLeft: 20,
+            marginBottom: 5,
+          }}
+          onPress={() => {
+            setViewAllComment(!viewAllComment);
+          }}
+        >
+          {'Show only 2 comments'}
+        </Text>
+      )}
 
       {commentData && commentData?.length > 2 ? (
         <FlatList
-            data={viewAllComment ? commentData : commentData.slice(0, 2)}
-            renderItem={({ item: commentItem }) => (
-              <WriteReviewComment data={commentItem} />
-            )}
-            keyExtractor={(index) => index.toString()}
-          />
-        ) : (
-          <FlatList
-            data={commentData}
-            renderItem={({ item: commentItem }) => (
-              <WriteReviewComment data={commentItem} />
-            )}
-            keyExtractor={(index) => index.toString()}
-          />
-        )}
+          data={viewAllComment ? commentData : commentData.slice(0, 2)}
+          renderItem={({item: commentItem}) => (
+            <WriteReviewComment data={commentItem} />
+          )}
+          keyExtractor={(index) => index.toString()}
+        />
+      ) : (
+        <FlatList
+          data={commentData}
+          renderItem={({item: commentItem}) => (
+            <WriteReviewComment data={commentItem} />
+          )}
+          keyExtractor={(index) => index.toString()}
+        />
+      )}
 
-      {profileObject?.user_id === authContext?.entity?.uid && <View style={{ marginLeft: 15, marginRight: 15, flexDirection: 'row' }}>
-        <Image
+      {profileObject?.user_id === authContext?.entity?.uid && (
+        <View style={{marginLeft: 15, marginRight: 15, flexDirection: 'row'}}>
+          <Image
             style={styles.background}
             source={
               !authContext?.entity?.obj?.thumbnail
                 ? images.profilePlaceHolder
-                : { uri: authContext?.entity?.obj?.thumbnail }
+                : {uri: authContext?.entity?.obj?.thumbnail}
             }
             resizeMode={'cover'}
           />
-        {/* <TCTextField placeholder={'add a comment'}/> */}
-        <View style={styles.textContainer}>
-          <TextInput
+          {/* <TCTextField placeholder={'add a comment'}/> */}
+          <View style={styles.textContainer}>
+            <TextInput
               style={styles.textInput}
               placeholder={'add a comment'}
               placeholderTextColor={colors.userPostTimeColor}
@@ -507,9 +523,9 @@ function ScorekeeperFeedPostItems({
               onSubmitEditing={handleSend}
               // textAlignVertical={multiline ? 'top' : 'center'}
             />
+          </View>
         </View>
-      </View>}
-
+      )}
     </View>
   );
 }
@@ -597,7 +613,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 3,

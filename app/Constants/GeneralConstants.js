@@ -3,7 +3,6 @@ const EntityStatus = {
   refereein: 'referee',
   scorekeeperin: 'scorekeeper',
   addNew: 'add_new',
-
 };
 
-export default EntityStatus
+export default EntityStatus;

@@ -22,7 +22,7 @@ import SingleVideoRender from '../../components/Home/SingleVideoRender';
 import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
 
 const AllInOneGallery = ({
-    isAdmin,
+  isAdmin,
   entity_id,
   entity_type,
   onAddPhotoPress,
@@ -83,7 +83,10 @@ const AllInOneGallery = ({
         typeof item?.object === 'string'
           ? JSON.parse(item?.object)
           : item?.object;
-      if ((index === 0 && authContext.entity.uid === entity_id) || (index === 0 && entity_type === 'game' && isAdmin )) {
+      if (
+        (index === 0 && authContext.entity.uid === entity_id) ||
+        (index === 0 && entity_type === 'game' && isAdmin)
+      ) {
         return (
           <AddPhotoItem
             onAddPhotoPress={() => {
@@ -117,12 +120,13 @@ const AllInOneGallery = ({
     [authContext.entity.uid, entity_id, onAddPhotoPress],
   );
 
-console.log('isAdminisAdmin',isAdmin);
-console.log('authContext.entity.uid',authContext.entity.uid);
-
+  console.log('isAdminisAdmin', isAdmin);
+  console.log('authContext.entity.uid', authContext.entity.uid);
 
   const finalGalleryData =
-    (authContext.entity.uid === entity_id || isAdmin) ? ['0', ...galleryData] : galleryData;
+    authContext.entity.uid === entity_id || isAdmin
+      ? ['0', ...galleryData]
+      : galleryData;
   return (
     <View>
       <View
@@ -132,7 +136,8 @@ console.log('authContext.entity.uid',authContext.entity.uid);
           borderBottomColor: colors.lightgrayColor,
           borderBottomWidth: 1,
           marginBottom: 15,
-        }}>
+        }}
+      >
         {showSubTabs &&
           [GALLERY_TYPE.FROMME, GALLERY_TYPE.TAGGED].map((item) => (
             <TouchableOpacity
@@ -141,7 +146,8 @@ console.log('authContext.entity.uid',authContext.entity.uid);
               onPress={() => {
                 setGalleryData([]);
                 setGalleryType(item);
-              }}>
+              }}
+            >
               <Text
                 style={{
                   color:
@@ -150,7 +156,8 @@ console.log('authContext.entity.uid',authContext.entity.uid);
                       : colors.lightBlackColor,
                   fontFamily:
                     item === galleryType ? fonts.RBold : fonts.RRegular,
-                }}>
+                }}
+              >
                 {_.startCase(item)}
               </Text>
             </TouchableOpacity>
@@ -163,7 +170,8 @@ console.log('authContext.entity.uid',authContext.entity.uid);
               textAlign: 'center',
               fontFamily: fonts.RLight,
               fontSize: 16,
-            }}>
+            }}
+          >
             No Gallery Found
           </Text>
         }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -19,9 +19,9 @@ import {
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import { getGroupList, getUserList } from '../../api/elasticSearch';
+import {getGroupList, getUserList} from '../../api/elasticSearch';
 
-export default function TagUserScreen({ backBtnPress, onItemPress }) {
+export default function TagUserScreen({backBtnPress, onItemPress}) {
   const [searchUser, setSearchUser] = useState('');
   const [userData, setUserData] = useState([]);
   const [groupData, setGroupData] = useState([]);
@@ -34,7 +34,7 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
       })
       .catch((e) => {
         console.log('eeeee Get Users :-', e.response);
-        Alert.alert('', e.messages)
+        Alert.alert('', e.messages);
       });
   }, []);
 
@@ -45,18 +45,18 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
       })
       .catch((e) => {
         console.log('eeeee Get Group Users :-', e.response);
-        Alert.alert('', e.messages)
+        Alert.alert('', e.messages);
       });
   }, []);
 
   const changeGroupData = [];
-  (groupData).map((item) => {
+  groupData.map((item) => {
     const obj = {
       ...item,
       full_name: item.group_name,
     };
     return changeGroupData.push(obj);
-  })
+  });
 
   const data = [...userData, ...changeGroupData];
   if (data) {
@@ -69,19 +69,20 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: 'white' }}
-      behavior={ Platform.OS === 'ios' ? 'padding' : null }>
+      style={{flex: 1, backgroundColor: 'white'}}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+    >
       <SafeAreaView>
-        <View style={ styles.containerStyle }>
-          <View style={ styles.backIconViewStyle }>
+        <View style={styles.containerStyle}>
+          <View style={styles.backIconViewStyle}>
             <TouchableOpacity onPress={backBtnPress}>
-              <Image source={ images.backArrow } style={ styles.backImage } />
+              <Image source={images.backArrow} style={styles.backImage} />
             </TouchableOpacity>
           </View>
-          <View style={ styles.writePostViewStyle }>
-            <Text style={ styles.writePostTextStyle }>{'Tag User'}</Text>
+          <View style={styles.writePostViewStyle}>
+            <Text style={styles.writePostTextStyle}>{'Tag User'}</Text>
           </View>
-          <View style={ styles.doneViewStyle }>
+          <View style={styles.doneViewStyle}>
             {/* <Text
                         style={ styles.doneTextStyle }
                         onPress={ () => { }}>
@@ -90,46 +91,53 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
           </View>
         </View>
       </SafeAreaView>
-      <View style={ styles.sperateLine } />
+      <View style={styles.sperateLine} />
       <View style={styles.searchViewStyle}>
         <View style={styles.searchImageViewStyle}>
-          <Image
-                  source={images.searchUser}
-                  style={styles.searchImageStyle}
-                />
+          <Image source={images.searchUser} style={styles.searchImageStyle} />
         </View>
         <TextInput
-            placeholder={'Search User....'}
-            placeholderTextColor={colors.disableColor}
-            style={styles.searchUserTextStyle}
-            autoCorrect={false}
-            autoFocus={true}
-            onChangeText={ (text) => {
-              const newData = data.filter((item) => {
-                const itemData = item.full_name ? item.full_name.toUpperCase() : ''.toUpperCase();
-                const textData = text.toUpperCase();
-                return itemData.indexOf(textData) > -1;
-              });
-              setFilteredUserData(newData);
-              setSearchUser(text);
-            } }
-            value={searchUser} />
+          placeholder={'Search User....'}
+          placeholderTextColor={colors.disableColor}
+          style={styles.searchUserTextStyle}
+          autoCorrect={false}
+          autoFocus={true}
+          onChangeText={(text) => {
+            const newData = data.filter((item) => {
+              const itemData = item.full_name
+                ? item.full_name.toUpperCase()
+                : ''.toUpperCase();
+              const textData = text.toUpperCase();
+              return itemData.indexOf(textData) > -1;
+            });
+            setFilteredUserData(newData);
+            setSearchUser(text);
+          }}
+          value={searchUser}
+        />
       </View>
       <FlatList
-          data={searchUser.length > 0 ? filteredUserData : data}
-          keyboardShouldPersistTaps={'always'}
-          style={{ paddingTop: hp(1) }}
-          ListFooterComponent={() => <View style={{ height: hp(6) }} />}
-          renderItem={ ({ item }) => {
-            if (item && item.full_name) {
-              return <Text style={styles.userTextStyle} onPress={() => {
-                onItemPress(item)
-              }}>{item.full_name}</Text>
-            }
-            return <View />
-          } }
-          keyExtractor={ (item, index) => index.toString() }
-        />
+        data={searchUser.length > 0 ? filteredUserData : data}
+        keyboardShouldPersistTaps={'always'}
+        style={{paddingTop: hp(1)}}
+        ListFooterComponent={() => <View style={{height: hp(6)}} />}
+        renderItem={({item}) => {
+          if (item && item.full_name) {
+            return (
+              <Text
+                style={styles.userTextStyle}
+                onPress={() => {
+                  onItemPress(item);
+                }}
+              >
+                {item.full_name}
+              </Text>
+            );
+          }
+          return <View />;
+        }}
+        keyExtractor={(item, index) => index.toString()}
+      />
     </KeyboardAvoidingView>
   );
 }

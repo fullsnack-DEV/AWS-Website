@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, {useContext} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,12 +6,12 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import moment from 'moment';
-import colors from '../../Constants/Colors'
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import RecentMatchItems from '../../components/Home/RecentMatchItems';
 import AuthContext from '../../auth/context';
-import { getEventById } from '../../api/Schedule';
-import { getGameHomeScreen } from '../../utils/gameUtils';
+import {getEventById} from '../../api/Schedule';
+import {getGameHomeScreen} from '../../utils/gameUtils';
 
 export default function ScoreboardSportsScreen({
   sportsData,
@@ -21,7 +21,7 @@ export default function ScoreboardSportsScreen({
   comeFrom = '',
   onBackPress = () => {},
 }) {
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const filterData = [];
   let dataNotFound = true;
   if (sportsData) {
@@ -34,14 +34,14 @@ export default function ScoreboardSportsScreen({
       const dateFormat = moment(startDate).format('YYYY-MM-DD hh:mm:ss');
       let dateText = null;
       if (startDate.getTime() > new Date().getTime()) {
-        dateText = 'Future'
+        dateText = 'Future';
       } else {
         dateText = moment(dateFormat).calendar(null, {
           sameDay: '[Today]',
           lastDay: '[Yesterday]',
           lastWeek: '[Past]',
           sameElse: '[Past]',
-        })
+        });
       }
       if (dateText === 'Today') {
         todayData.push(item_filter);
@@ -61,64 +61,84 @@ export default function ScoreboardSportsScreen({
         dataNotFound = false;
       }
       return null;
-    })
-    if (pastData?.length > 0) filterData.push({ title: 'Past', data: pastData })
-    if (todayData?.length > 0) filterData.push({ title: 'Today', data: todayData })
-    if (yesterdayData?.length > 0) filterData.push({ title: 'Yesterday', data: yesterdayData })
-    if (futureData?.length > 0) filterData.push({ title: 'Future', data: futureData })
+    });
+    if (pastData?.length > 0) filterData.push({title: 'Past', data: pastData});
+    if (todayData?.length > 0)
+      filterData.push({title: 'Today', data: todayData});
+    if (yesterdayData?.length > 0)
+      filterData.push({title: 'Yesterday', data: yesterdayData});
+    if (futureData?.length > 0)
+      filterData.push({title: 'Future', data: futureData});
   }
 
   const onGameCardClick = (item) => {
     if (comeFrom !== 'UserScoreboardScreen') {
-      onItemPress()
+      onItemPress();
     }
     setTimeout(() => {
-      const entity = authContext.entity
+      const entity = authContext.entity;
       if (item?.game_id) {
         if (item?.sport) {
           const gameHome = getGameHomeScreen(item?.sport);
           navigation.navigate(gameHome, {
             gameId: item?.game_id,
             onBackPress: () => onBackPress(),
-          })
+          });
         }
       } else {
-        getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
-          navigation.navigate('EventScreen', { data: response.payload, gameData: item });
-        }).catch((e) => {
-          console.log('Error :-', e);
-        })
+        getEventById(
+          entity.role === 'user' ? 'users' : 'groups',
+          entity.uid || entity.auth.user_id,
+          item.cal_id,
+          authContext,
+        )
+          .then((response) => {
+            navigation.navigate('EventScreen', {
+              data: response.payload,
+              gameData: item,
+            });
+          })
+          .catch((e) => {
+            console.log('Error :-', e);
+          });
       }
-    }, 1000)
-  }
+    }, 1000);
+  };
 
   return (
-    <KeyboardAvoidingView style={ styles.mainContainer }>
-      {dataNotFound
-        ? <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
-        : <SectionList
-          renderItem={ ({ item }) => {
+    <KeyboardAvoidingView style={styles.mainContainer}>
+      {dataNotFound ? (
+        <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
+      ) : (
+        <SectionList
+          renderItem={({item}) => {
             let isAssistantReferee = false;
-            const myRefereeData = item?.referees?.filter((refereeItem) => refereeItem?.referee_id === authContext?.entity?.uid);
-            if (myRefereeData?.length > 0 && !myRefereeData?.[0]?.chief_referee) isAssistantReferee = true;
+            const myRefereeData = item?.referees?.filter(
+              (refereeItem) =>
+                refereeItem?.referee_id === authContext?.entity?.uid,
+            );
+            if (myRefereeData?.length > 0 && !myRefereeData?.[0]?.chief_referee)
+              isAssistantReferee = true;
             return (
               <RecentMatchItems
-                    data={item}
-                    // onThreeDotPress={() => {}}
-                    showEventNumbers={showEventNumbers}
-                    showAssistReferee={isAssistantReferee}
-                    onItemPress={() => onGameCardClick(item)}
-                />
+                data={item}
+                // onThreeDotPress={() => {}}
+                showEventNumbers={showEventNumbers}
+                showAssistReferee={isAssistantReferee}
+                onItemPress={() => onGameCardClick(item)}
+              />
+            );
+          }}
+          renderSectionHeader={({section}) =>
+            section.data.length > 0 && (
+              <Text style={styles.sectionHeader}>{section.title}</Text>
             )
-          } }
-          renderSectionHeader={ ({ section }) => (
-            section.data.length > 0 && <Text style={ styles.sectionHeader }>{section.title}</Text>
-          ) }
+          }
           sections={filterData}
           keyExtractor={(item, index) => index.toString()}
           bounces={false}
         />
-      }
+      )}
     </KeyboardAvoidingView>
   );
 }

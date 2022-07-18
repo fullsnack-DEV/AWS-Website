@@ -1,16 +1,13 @@
 import React from 'react';
-import {
- Image,
- View, StyleSheet, Text, TouchableOpacity,
- } from 'react-native';
- import moment from 'moment';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {Image, View, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import moment from 'moment';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-export default function UserInvoiceView({ data, onPressCard }) {
-    console.log(data);
+export default function UserInvoiceView({data, onPressCard}) {
+  console.log(data);
   return (
     <TouchableOpacity style={styles.viewContainer} onPress={onPressCard}>
       <View
@@ -18,23 +15,27 @@ export default function UserInvoiceView({ data, onPressCard }) {
           width: '20%',
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
-        <Text
-          style={styles.dateView}>
-          {`${ moment(new Date(data.due_date * 1000)).format('MMM')}\n${moment(new Date(data.due_date * 1000)).format('DD')}`}
+        }}
+      >
+        <Text style={styles.dateView}>
+          {`${moment(new Date(data.due_date * 1000)).format('MMM')}\n${moment(
+            new Date(data.due_date * 1000),
+          ).format('DD')}`}
         </Text>
       </View>
       <View
         style={{
           width: '80%',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}>
+          }}
+        >
           {data?.invoice_title}
         </Text>
         <Text
@@ -42,27 +43,39 @@ export default function UserInvoiceView({ data, onPressCard }) {
             fontFamily: fonts.RMedium,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}>${data?.amount_paid}
+          }}
+        >
+          ${data?.amount_paid}
           <Text
             style={{
               fontFamily: fonts.RLight,
               fontSize: 14,
               color: colors.lightBlackColor,
-            }}>{` of $${data?.amount_due}`}
+            }}
+          >
+            {` of $${data?.amount_due}`}
           </Text>
         </Text>
-        <View style={{ flexDirection: 'row', marginTop: 2 }}>
-          <Image source={data?.group?.thumbnail && data?.group?.thumbnail !== '' ? { uri: data?.group?.thumbnail } : images.profilePlaceHolder} style={ styles.teamProfileImage } />
-          <Text style={styles.nameText } numberOfLines={5}>{data?.group?.group_name}</Text>
-          <Image source={images.teamT} style={ styles.teamTImage } />
+        <View style={{flexDirection: 'row', marginTop: 2}}>
+          <Image
+            source={
+              data?.group?.thumbnail && data?.group?.thumbnail !== ''
+                ? {uri: data?.group?.thumbnail}
+                : images.profilePlaceHolder
+            }
+            style={styles.teamProfileImage}
+          />
+          <Text style={styles.nameText} numberOfLines={5}>
+            {data?.group?.group_name}
+          </Text>
+          <Image source={images.teamT} style={styles.teamTImage} />
         </View>
 
-        <View
-          style={styles.percentageView}>
+        <View style={styles.percentageView}>
           <View
             style={{
               height: 3,
-              width: `${((100 * data?.amount_paid) / data?.amount_due)}%`,
+              width: `${(100 * data?.amount_paid) / data?.amount_due}%`,
               backgroundColor: colors.greeColor,
             }}
           />
@@ -84,7 +97,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,

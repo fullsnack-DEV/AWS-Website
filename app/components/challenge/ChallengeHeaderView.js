@@ -1,20 +1,19 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import {
- StyleSheet, Text, Image, View,
- } from 'react-native';
+import {StyleSheet, Text, Image, View} from 'react-native';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 
-export default function ChallengeHeaderView({ challenger, challengee, role }) {
+export default function ChallengeHeaderView({challenger, challengee, role}) {
   return (
     <View
       style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 15,
-      }}>
+      }}
+    >
       <View>
         {/* <LinearGradient
         colors={[colors.greenGradientEnd, colors.greenGradientStart]}
@@ -43,10 +42,10 @@ export default function ChallengeHeaderView({ challenger, challengee, role }) {
             source={
               role === 'user'
                 ? challenger?.thumbnail
-                  ? { uri: challenger?.thumbnail }
+                  ? {uri: challenger?.thumbnail}
                   : images.profilePlaceHolder
                 : challenger?.thumbnail
-                ? { uri: challenger?.thumbnail }
+                ? {uri: challenger?.thumbnail}
                 : images.teamPlaceholder
             }
             style={styles.teamProfileImage}
@@ -59,14 +58,16 @@ export default function ChallengeHeaderView({ challenger, challengee, role }) {
       <View
         style={{
           height: 20,
-        }}>
+        }}
+      >
         <Text
           style={{
             fontSize: 16,
             fontFamily: fonts.RLight,
             color: colors.lightBlackColor,
             alignSelf: 'center',
-          }}>
+          }}
+        >
           VS
         </Text>
       </View>
@@ -101,10 +102,10 @@ export default function ChallengeHeaderView({ challenger, challengee, role }) {
             source={
               role === 'user'
                 ? challengee?.thumbnail
-                  ? { uri: challengee?.thumbnail }
+                  ? {uri: challengee?.thumbnail}
                   : images.profilePlaceHolder
                 : challengee?.thumbnail
-                ? { uri: challengee?.thumbnail }
+                ? {uri: challengee?.thumbnail}
                 : images.teamPlaceholder
             }
             style={styles.teamProfileImage}

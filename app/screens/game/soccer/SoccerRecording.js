@@ -104,8 +104,7 @@ export default function SoccerRecording({navigation, route}) {
 
         if (homeField.length <= 0) {
           setIsLineUpSet('Your team does not configure lineup yet.');
-        }
-        else if (awayField.length <= 0){
+        } else if (awayField.length <= 0) {
           setIsLineUpSet('Away team does not configure lineup yet.');
         }
       })
@@ -323,7 +322,8 @@ export default function SoccerRecording({navigation, route}) {
       headerRight: () => (
         <TouchableWithoutFeedback
           onPress={() => actionSheet.current.show()}
-          hitSlop={getHitSlop(15)}>
+          hitSlop={getHitSlop(15)}
+        >
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),
@@ -504,7 +504,8 @@ export default function SoccerRecording({navigation, route}) {
               onPress={() => {
                 console.log('Clicked..');
                 setPickerShow(false);
-              }}>
+              }}
+            >
               <View style={styles.leftView}>
                 <View style={styles.profileShadow}>
                   <Image
@@ -522,7 +523,8 @@ export default function SoccerRecording({navigation, route}) {
                       ? styles.leftText
                       : [styles.leftText, {color: colors.themeColor}]
                   }
-                  numberOfLines={2}>
+                  numberOfLines={2}
+                >
                   {gameObj?.home_team?.group_name}
                 </Text>
               </View>
@@ -539,8 +541,9 @@ export default function SoccerRecording({navigation, route}) {
                         : {
                             fontFamily: fonts.RBold,
                             color: colors.themeColor,
+                          }
                     }
-                    }>
+                  >
                     {gameObj?.home_team_goal} :{' '}
                   </Text>
 
@@ -554,8 +557,9 @@ export default function SoccerRecording({navigation, route}) {
                         : {
                             fontFamily: fonts.RBold,
                             color: colors.themeColor,
+                          }
                     }
-                    }>
+                  >
                     {gameObj.away_team_goal}
                   </Text>
                 </Text>
@@ -568,7 +572,8 @@ export default function SoccerRecording({navigation, route}) {
                       ? styles.rightText
                       : [styles.rightText, {color: colors.themeColor}]
                   }
-                  numberOfLines={2}>
+                  numberOfLines={2}
+                >
                   {gameObj?.away_team?.group_name}
                 </Text>
 
@@ -593,7 +598,8 @@ export default function SoccerRecording({navigation, route}) {
                     onPress={() => {
                       // setDate();
                       date = null;
-                    }}>
+                    }}
+                  >
                     <Image
                       source={images.curruentTime}
                       style={styles.curruentTimeImg}
@@ -606,7 +612,8 @@ export default function SoccerRecording({navigation, route}) {
                 style={styles.startTime}
                 onPress={() => {
                   setPickerShow(!pickerShow);
-                }}>
+                }}
+              >
                 {(gameObj &&
                   gameObj.status &&
                   gameObj.status === GameStatus.accepted) ||
@@ -657,16 +664,19 @@ export default function SoccerRecording({navigation, route}) {
             style={{
               flex: 1,
               justifyContent: 'center',
-            }}>
+            }}
+          >
             <View>
               <View
                 style={
                   pickerShow
                     ? styles.entityView
                     : [styles.entityView, {marginBottom: 30}]
-                }>
+                }
+              >
                 <TouchableOpacity
-                  onPress={() => setSelectedTeam(gameObj?.home_team?.group_id)}>
+                  onPress={() => setSelectedTeam(gameObj?.home_team?.group_id)}
+                >
                   {selectedTeam === gameObj?.home_team?.group_id ? (
                     <LinearGradient
                       colors={
@@ -674,7 +684,8 @@ export default function SoccerRecording({navigation, route}) {
                           ? [colors.yellowColor, colors.themeColor]
                           : [colors.whiteColor, colors.whiteColor]
                       }
-                      style={styles.leftEntityView}>
+                      style={styles.leftEntityView}
+                    >
                       <Image
                         source={
                           gameObj &&
@@ -711,7 +722,8 @@ export default function SoccerRecording({navigation, route}) {
                 <Text style={styles.vs}>VS</Text>
 
                 <TouchableOpacity
-                  onPress={() => setSelectedTeam(gameObj?.away_team?.group_id)}>
+                  onPress={() => setSelectedTeam(gameObj?.away_team?.group_id)}
+                >
                   {selectedTeam === gameObj?.away_team?.group_id ? (
                     <LinearGradient
                       colors={
@@ -719,7 +731,8 @@ export default function SoccerRecording({navigation, route}) {
                           ? [colors.yellowColor, colors.themeColor]
                           : [colors.whiteColor, colors.whiteColor]
                       }
-                      style={styles.rightEntityView}>
+                      style={styles.rightEntityView}
+                    >
                       <Image
                         source={
                           gameObj &&
@@ -791,10 +804,12 @@ export default function SoccerRecording({navigation, route}) {
                           addGameRecordDetail(gameObj.game_id, body);
                         }
                       }
-                    }}>
+                    }}
+                  >
                     <LinearGradient
                       colors={[colors.yellowColor, colors.themeColor]}
-                      style={styles.plusButton}>
+                      style={styles.plusButton}
+                    >
                       <Image source={images.gamePlus} style={styles.gamePlus} />
                     </LinearGradient>
                   </TouchableOpacity>
@@ -835,7 +850,8 @@ export default function SoccerRecording({navigation, route}) {
                           );
                         }
                       }
-                    }}>
+                    }}
+                  >
                     <Image
                       source={images.deleteRecentGoal}
                       style={styles.gameMinus}
@@ -853,7 +869,10 @@ export default function SoccerRecording({navigation, route}) {
                 <TCGameButton
                   title="Start"
                   onPress={() => {
-                    if(gameObj.start_datetime > Number((new Date().getTime()/1000).toFixed(0))){
+                    if (
+                      gameObj.start_datetime >
+                      Number((new Date().getTime() / 1000).toFixed(0))
+                    ) {
                       if (isLineUpSet) {
                         Alert.alert(isLineUpSet);
                       } else if (
@@ -866,9 +885,9 @@ export default function SoccerRecording({navigation, route}) {
                         );
                       } else {
                         lastTimeStamp = date
-                          ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(
-                              0,
-                            )
+                          ? parseFloat(
+                              date.setMilliseconds(0, 0) / 1000,
+                            ).toFixed(0)
                           : parseFloat(new Date().getTime() / 1000).toFixed(0);
                         lastVerb = GameVerb.Start;
                         const body = [
@@ -880,12 +899,9 @@ export default function SoccerRecording({navigation, route}) {
                         ];
                         addGameRecordDetail(gameObj.game_id, body);
                       }
-                    }else{
-                      Alert.alert(
-                        'Game cannot be start because its expired.',
-                      );
+                    } else {
+                      Alert.alert('Game cannot be start because its expired.');
                     }
-                   
                   }}
                   gradientColor={[colors.yellowColor, colors.themeColor]}
                   imageName={images.gameStart}
@@ -918,7 +934,7 @@ export default function SoccerRecording({navigation, route}) {
               )}
               {(gameObj.status === GameStatus.playing ||
                 gameObj.status === GameStatus.resume) && (
-                  <TCGameButton
+                <TCGameButton
                   title="Pause"
                   onPress={() => {
                     lastTimeStamp = parseFloat(
@@ -943,7 +959,7 @@ export default function SoccerRecording({navigation, route}) {
               {(gameObj.status === GameStatus.playing ||
                 gameObj.status === GameStatus.paused ||
                 gameObj.status === GameStatus.resume) && (
-                  <TCGameButton
+                <TCGameButton
                   title="Match End"
                   onPress={() => {
                     Alert.alert(
@@ -989,7 +1005,7 @@ export default function SoccerRecording({navigation, route}) {
                 gameObj.status === GameStatus.paused ||
                 gameObj.status === GameStatus.ended ||
                 gameObj.status === GameStatus.resume) && (
-                  <TCGameButton
+                <TCGameButton
                   title="Records"
                   onPress={() => {
                     navigation.navigate('SoccerRecordList', {
@@ -1008,7 +1024,7 @@ export default function SoccerRecording({navigation, route}) {
                 gameObj.status === GameStatus.paused ||
                 gameObj.status === GameStatus.ended ||
                 gameObj.status === GameStatus.resume) && (
-                  <TCGameButton
+                <TCGameButton
                   title="Details"
                   onPress={() => {
                     navigation.navigate('GameDetailRecord', {

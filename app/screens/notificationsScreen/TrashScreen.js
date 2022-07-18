@@ -1,249 +1,212 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useCallback,
-} from 'react';
+import React, {useEffect, useState, useContext, useCallback} from 'react';
 import {
   View,
   StyleSheet,
-
-  SectionList,
   Text,
   Alert,
+  SafeAreaView,
+  FlatList,
 } from 'react-native';
 
-import Moment from 'moment';
-import { useIsFocused } from '@react-navigation/native';
-import { toggleView } from '../../utils/index'
+import {useIsFocused} from '@react-navigation/native';
 import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
 import NotificationItem from '../../components/notificationComponent/NotificationItem';
 import PRNotificationInviteCell from '../../components/notificationComponent/PRNotificationInviteCell';
 import NotificationType from '../../Constants/NotificationType';
-import {
-  getTrash,
-  restoreNotification,
-
-} from '../../api/Notificaitons';
+import {getTrash, getTrashNextList} from '../../api/Notificaitons';
 import AuthContext from '../../auth/context';
-import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCNoDataView from '../../components/TCNoDataView';
-import AppleStyleSwipeableRow from '../../components/notificationComponent/AppleStyleSwipeableRow';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 
 import NotificationListShimmer from '../../components/shimmer/account/NotificationListShimmer';
+import TCInnerLoader from '../../components/TCInnerLoader';
 
-function TrashScreen({ navigation, route }) {
+function TrashScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
-  const [mainNotificationsList, setMainNotificationsList] = useState();
-  const currentDate = new Date();
+  const [notificationsList, setNotificationsList] = useState();
   const [selectedEntity, setSelectedEntity] = useState();
   const isFocused = useIsFocused();
-const [showNoteToast, setShowNoteToast] = useState()
   const [loading, setloading] = useState(false);
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
+  const [loadMore, setLoadMore] = useState(false);
 
-  const onRestore = ({ item }) => {
-    setloading(true)
-    const ids = [];
-    for (const temData of item.activities) {
-      ids.push(temData.id);
-    }
-    restoreNotification(ids, item.type, authContext).then(() => {
-      setloading(false)
-      callNotificationList()
-    })
-      .catch((e) => {
-        setloading(false)
-        Alert.alert(e.messages);
-      });
-  };
-
-  const openToast = () => {
-    toggleView(() => setShowNoteToast(true), 500)
-    setTimeout(() => { toggleView(() => setShowNoteToast(false), 500) }, 5000)
-  }
-  const isInvite = (verb) => verb.includes(NotificationType.inviteToJoinClub)
-    || verb.includes(NotificationType.invitePlayerToJoinTeam)
-    || verb.includes(NotificationType.invitePlayerToJoinClub)
-    || verb.includes(NotificationType.inviteToConnectProfile)
-    || verb.includes(NotificationType.invitePlayerToJoingame);
+  const isInvite = (verb) =>
+    verb.includes(NotificationType.inviteToJoinClub) ||
+    verb.includes(NotificationType.invitePlayerToJoinTeam) ||
+    verb.includes(NotificationType.invitePlayerToJoinClub) ||
+    verb.includes(NotificationType.inviteToConnectProfile) ||
+    verb.includes(NotificationType.invitePlayerToJoingame);
 
   const openHomePage = (item) => {
-      if (item?.entityType && item?.entityId) {
-        navigation.push('HomeScreen', {
-          uid: item?.entityId,
-          backButtonVisible: true,
-          menuBtnVisible: false,
-          role: item?.entityType,
-        });
-      }
+    if (item?.entityType && item?.entityId) {
+      navigation.push('HomeScreen', {
+        uid: item?.entityId,
+        backButtonVisible: true,
+        menuBtnVisible: false,
+        role: item?.entityType,
+      });
+    }
   };
 
-  const renderPendingRequestComponent = ({ item }) => (
-    <AppleStyleSwipeableRow
-      onPress={() => onRestore({ item })}
-      color={colors.themeColor}
-      image={images.roundArrow}>
-      {isInvite(item.activities[0].verb) && (
-        <PRNotificationInviteCell
-          item={item}
-          disabled={true}
-          selectedEntity={selectedEntity}
-          onPressFirstEntity={openHomePage}
-        />
-      )}
+  const RenderSections = ({item}) => {
+    if (item.activities[0].is_request) {
+      return (
+        <View>
+          {isInvite(item.activities[0].verb) && (
+            <PRNotificationInviteCell
+              item={item}
+              isTrash={true}
+              entityType={
+                authContext.entity.role === 'user' ||
+                authContext.entity.role === 'player'
+                  ? 'user'
+                  : 'group'
+              } // user or group
+              disabled={true}
+              selectedEntity={selectedEntity}
+              onPressFirstEntity={openHomePage}
+            />
+          )}
 
-      {!isInvite(item.activities[0].verb) && (
-        <PRNotificationDetailMessageItem
-          item={item}
-          disabled={true}
-          selectedEntity={selectedEntity}
-          onPressFirstEntity={openHomePage}
-        />
-      )}
-    </AppleStyleSwipeableRow>
-  );
-
-  const renderNotificationComponent = ({ item }) => (
-    <AppleStyleSwipeableRow
-      onPress={() => onRestore({ item })}
-      color={colors.themeColor}
-      image={images.roundArrow}>
-      <NotificationItem
-        data={item}
-        onPressFirstEntity={openHomePage}
-        onPressSecondEntity={openHomePage}
-        onPressCard={() => {}}
-      />
-    </AppleStyleSwipeableRow>
-  );
-
-  const RenderSections = ({ item, section }) => {
-    if (section.section === strings.pendingrequests) {
-      return renderPendingRequestComponent({ item: { ...item, type: 'request' } });
+          {!isInvite(item.activities[0].verb) && (
+            <PRNotificationDetailMessageItem
+              item={item}
+              isTrash={true}
+              entityType={
+                authContext.entity.role === 'user' ||
+                authContext.entity.role === 'player'
+                  ? 'user'
+                  : 'group'
+              } // user or group
+              disabled={true}
+              selectedEntity={selectedEntity}
+              onPressFirstEntity={openHomePage}
+            />
+          )}
+        </View>
+      );
     }
-    if (
-      section.section === strings.earlier
-      || section.section === strings.today
-    ) {
-      return renderNotificationComponent({
-        item: { ...item, type: 'notification' },
-      });
+    if (!item.activities[0].is_request) {
+      return (
+        <NotificationItem
+          data={item}
+          isTrash={true}
+          entityType={
+            authContext.entity.role === 'user' ||
+            authContext.entity.role === 'player'
+              ? 'user'
+              : 'group'
+          } // user or group
+          onPressFirstEntity={openHomePage}
+          onPressSecondEntity={openHomePage}
+          onPressCard={() => {}}
+        />
+      );
     }
     return null;
   };
 
   useEffect(() => {
     if (isFocused) {
-      setTimeout(() => {
-        openToast()
-      }, 1000)
       setFirstTimeLoading(true);
-        callNotificationList()
-          .then(() => setFirstTimeLoading(false))
-          .catch(() => setFirstTimeLoading(false));
+      getTrashData();
     }
   }, [isFocused]);
 
-  const callNotificationList = () => new Promise((resolve, reject) => {
-      const entity = route?.params?.selectedGroup;
-      setSelectedEntity(entity);
-      const params = {
-        uid: entity.entity_type === 'player' ? entity.user_id : entity.group_id,
-      };
-      getTrash(params, authContext)
-        .then(async (response) => {
-          const pendingReqNotification = response.payload.requests;
-          const todayNotifications = response.payload.notifications.filter(
-            (item) => Moment(item.created_at).format('yyyy-MM-DD')
-              === Moment(currentDate).format('yyyy-MM-DD'),
-          );
-          const erlierNotifications = response.payload.notifications.filter(
-            (item) => Moment(item.created_at).format('yyyy-MM-DD')
-              !== Moment(currentDate).format('yyyy-MM-DD'),
-          );
-          const array = [
-            {
-              data: [...pendingReqNotification],
-              section: strings.pendingrequests,
-              type: 'request',
-            },
-            {
-              data: [...todayNotifications],
-              section: strings.today,
-              type: 'notification',
-            },
-            {
-              data: [...erlierNotifications],
-              section: strings.earlier,
-              type: 'notification',
-            },
-          ];
-          setMainNotificationsList([]);
-          setMainNotificationsList([
-            ...array.filter((item) => item.data.length !== 0),
-          ]);
-          resolve(true);
-        })
-        .catch((e) => {
-          // eslint-disable-next-line prefer-promise-reject-errors
-          reject('error');
-          Alert.alert(e.messages);
-        });
-    });
+  const getTrashData = () => {
+    const entity = route?.params?.selectedGroup;
+    setSelectedEntity(entity);
+    const params = {
+      uid: entity.entity_type === 'player' ? entity.user_id : entity.group_id,
+    };
+    getTrash(params, authContext)
+      .then(async (response) => {
+        setloading(false);
+        setLoadMore(false);
+        setFirstTimeLoading(false);
+        setNotificationsList([...response.payload.notifications]);
+      })
+      .catch((e) => {
+        Alert.alert(e.messages);
+      });
+  };
+
+  const getNextTrashData = () => {
+    const entity = route?.params?.selectedGroup;
+    setSelectedEntity(entity);
+    const params = {
+      uid: entity.entity_type === 'player' ? entity.user_id : entity.group_id,
+    };
+    const id_lt = notificationsList[notificationsList.length - 1].id;
+    getTrashNextList(params, id_lt, authContext)
+      .then(async (response) => {
+        setloading(false);
+        setLoadMore(false);
+        setFirstTimeLoading(false);
+        setNotificationsList([
+          ...notificationsList,
+          ...response.payload.notifications,
+        ]);
+      })
+      .catch((e) => {
+        Alert.alert(e.messages);
+      });
+  };
 
   const itemSeparator = () => (
     // Item Separator
     <View style={styles.listItemSeparatorStyle} />
   );
 
-  const renderSectionFooter = ({ section }) => {
-    if (section.section === strings.pendingrequests) {
-      return (
-        <View
-          style={[
-            styles.listItemSeparatorStyle,
-            { height: 7, backgroundColor: colors.grayBackgroundColor },
-          ]}
-        />
-      );
-    }
-    return <View style={styles.listItemSeparatorStyle} />;
-  };
   const keyExtractor = useCallback((item, index) => index.toString(), []);
+
+  const onLoadMore = (e) => {
+    let paddingToBottom = 10;
+    paddingToBottom += e.nativeEvent.layoutMeasurement.height;
+    const currentOffset = e.nativeEvent.contentOffset.y;
+    const direction = currentOffset > 50 ? 'down' : 'up';
+    if (direction === 'up') {
+      if (
+        e.nativeEvent.contentOffset.y >=
+        e.nativeEvent.contentSize.height - paddingToBottom
+      ) {
+        if (!loadMore) {
+          console.log('next page');
+          setLoadMore(true);
+          setTimeout(() => {
+            getNextTrashData();
+          }, 1000);
+        }
+      }
+    }
+  };
 
   return (
     <View style={styles.rowViewStyle}>
       <ActivityLoader visible={loading} />
-
-      {showNoteToast && <View style={styles.trashMessageContainerStyle}>
-        <Text style={styles.trashMessageStyle}>{strings.trashmessage}</Text>
-      </View>}
       {/* eslint-disable-next-line no-nested-ternary */}
       {firstTimeLoading ? (
         <NotificationListShimmer />
-      ) : mainNotificationsList?.length > 0 ? (
-        <SectionList
+      ) : notificationsList?.length > 0 ? (
+        <FlatList
           ItemSeparatorComponent={itemSeparator}
-          sections={mainNotificationsList}
+          data={notificationsList}
           keyExtractor={keyExtractor}
           renderItem={RenderSections}
-          renderSectionHeader={({ section: { section } }) => (
-            <View style={{ flex: 1, flexDirection: 'column-reverse' }}>
-              <View style={styles.listItemSeparatorStyle} />
-              <Text style={styles.header}>{section}</Text>
-            </View>
-          )}
-          renderSectionFooter={renderSectionFooter}
+          onScroll={onLoadMore}
         />
       ) : (
         <TCNoDataView title={'No records found'} />
       )}
-
+      {loadMore && (
+        <TCInnerLoader allowMargin={false} size={60} visible={loadMore} />
+      )}
+      <SafeAreaView style={styles.trashMessageContainerStyle}>
+        <Text style={styles.trashMessageStyle}>{strings.trashmessage}</Text>
+      </SafeAreaView>
     </View>
   );
 }
@@ -251,14 +214,7 @@ const styles = StyleSheet.create({
   rowViewStyle: {
     flex: 1,
   },
-  header: {
-    backgroundColor: '#fff',
-    fontFamily: fonts.RRegular,
-    fontSize: 20,
-    padding: 15,
-    color: colors.lightBlackColor,
-    alignContent: 'center',
-  },
+
   listItemSeparatorStyle: {
     height: 0.5,
     width: '100%',
@@ -267,12 +223,15 @@ const styles = StyleSheet.create({
   trashMessageContainerStyle: {
     paddingHorizontal: 15,
     paddingVertical: 10,
-    backgroundColor: colors.thinDividerColor,
+    // backgroundColor: colors.thinDividerColor,
   },
   trashMessageStyle: {
     fontFamily: fonts.RRegular,
-    fontSize: 12,
-    color: colors.darkGrayTrashColor,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    textAlign: 'center',
+    margin: 15,
+    marginBottom: 0,
   },
 });
 

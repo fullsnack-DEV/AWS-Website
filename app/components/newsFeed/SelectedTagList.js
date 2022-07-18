@@ -7,18 +7,28 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
-import images from '../../Constants/ImagePath'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
+import images from '../../Constants/ImagePath';
 
-export default function SelectedTagList({ dataSource, titleKey, onTagCancelPress }) {
-  const renderTags = ({ item, index }) => (
+export default function SelectedTagList({
+  dataSource,
+  titleKey,
+  onTagCancelPress,
+}) {
+  const renderTags = ({item, index}) => (
     <>
-      <View style={styles.textContainer} onPress={() => onTagCancelPress({ item, index })}>
+      <View
+        style={styles.textContainer}
+        onPress={() => onTagCancelPress({item, index})}
+      >
         <Text style={styles.tagTitleText}>{item[titleKey]}</Text>
-        <Image source={images.tagDivider} style={styles.dividerImage}/>
-        <TouchableOpacity style={styles.closeButton} onPress={() => onTagCancelPress({ item, index })}>
-          <Image source={images.cancelImage} style={styles.closeButton}/>
+        <Image source={images.tagDivider} style={styles.dividerImage} />
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => onTagCancelPress({item, index})}
+        >
+          <Image source={images.cancelImage} style={styles.closeButton} />
         </TouchableOpacity>
       </View>
     </>
@@ -47,7 +57,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 13,
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 3,

@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    marginBottom:15
+    marginBottom: 15,
   },
   headerTextStyle: {
     fontSize: 16,
@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     width: wp('20'),
     paddingLeft: 5,
-   
   },
   inputAndroid: {
     alignSelf: 'center',
@@ -73,13 +72,12 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   inputIOS: {
-    alignSelf: 'center', 
+    alignSelf: 'center',
     color: colors.lightBlackColor,
     fontSize: 16,
     fontFamily: fonts.RRegular,
     height: 30,
     paddingHorizontal: '30%',
-   
   },
   downArrow: {
     height: 15,

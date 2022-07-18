@@ -24,11 +24,10 @@ export default function AlterChallengeModalView({
 }) {
   return (
     <Modal
-
       isVisible={modalVisible}
       backdropColor="black"
-    //   onBackdropPress={backdropPress}
-    //   onRequestClose={onClose}
+      //   onBackdropPress={backdropPress}
+      //   onRequestClose={onClose}
       backdropOpacity={0.5}
       style={{
         margin: 0,
@@ -36,7 +35,8 @@ export default function AlterChallengeModalView({
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
-      }}>
+      }}
+    >
       <View style={styles.mainContainer}>
         <Image style={styles.background} source={images.orangeLayer} />
         <Image style={styles.background} source={images.entityCreatedBG} />
@@ -56,12 +56,11 @@ export default function AlterChallengeModalView({
         {status !== 'sent' && (
           <View style={styles.mailContainer}>
             <Text style={styles.invitationText}>
-              {(status === 'accept' && 'Alteration request\naccepted')
-                || (status === 'decline' && 'Alteration request\ndeclined')
-                || (status === 'cancel' && 'Alteration request\ncancelled')
-                || (status === 'restored' && 'Alteration request\nRestored')}
+              {(status === 'accept' && 'Alteration request\naccepted') ||
+                (status === 'decline' && 'Alteration request\ndeclined') ||
+                (status === 'cancel' && 'Alteration request\ncancelled') ||
+                (status === 'restored' && 'Alteration request\nRestored')}
             </Text>
-
           </View>
         )}
         <SafeAreaView>
@@ -69,7 +68,8 @@ export default function AlterChallengeModalView({
             style={styles.goToProfileButton}
             onPress={() => {
               navigation.popToTop();
-            }}>
+            }}
+          >
             <Text style={styles.goToProfileTitle}>OK</Text>
           </TouchableOpacity>
         </SafeAreaView>
@@ -129,5 +129,4 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     borderRadius: 150,
   },
-
 });

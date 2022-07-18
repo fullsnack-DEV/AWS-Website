@@ -342,14 +342,16 @@ export default function InviteChallengeScreen({navigation, route}) {
             backgroundColor: colors.grayBackgroundColor,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <Text
             style={{
               fontSize: 12,
               fontFamily: fonts.RRegular,
               color: colors.lightBlackColor,
               padding: 15,
-            }}>
+            }}
+          >
             {strings.inviteToChallengeText}
           </Text>
         </View>
@@ -369,7 +371,8 @@ export default function InviteChallengeScreen({navigation, route}) {
             flexDirection: 'row',
             justifyContent: 'space-between',
             margin: 15,
-          }}>
+          }}
+        >
           <View style={styles.challengerView}>
             <View style={styles.teamView}>
               <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -426,7 +429,7 @@ export default function InviteChallengeScreen({navigation, route}) {
           title={'Type of Game'}
           value={settingObject?.game_type}
           tooltipText={
-          'The game result has an effect on TC points of the challengee and you.'
+            'The game result has an effect on TC points of the challengee and you.'
           }
           tooltipHeight={hp('6%')}
           tooltipWidth={wp('50%')}
@@ -470,7 +473,7 @@ export default function InviteChallengeScreen({navigation, route}) {
           title={'Refund Policy'}
           value={settingObject?.refund_policy}
           tooltipText={
-          '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
           }
           tooltipHeight={hp('18%')}
           tooltipWidth={wp('50%')}
@@ -690,7 +693,8 @@ export default function InviteChallengeScreen({navigation, route}) {
                   settingObject,
                   comeFrom: 'InviteChallengeScreen',
                 });
-              }}>
+              }}
+            >
               <View style={[styles.borderButtonView, styles.shadowView]}>
                 <View />
                 <Text style={styles.detailButtonText}>
@@ -736,7 +740,8 @@ export default function InviteChallengeScreen({navigation, route}) {
                   venues: settingObject?.venue || [],
                   comeFrom: 'InviteChallengeScreen',
                 });
-              }}>
+              }}
+            >
               <View style={[styles.borderButtonView, styles.shadowView]}>
                 <View />
                 <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>

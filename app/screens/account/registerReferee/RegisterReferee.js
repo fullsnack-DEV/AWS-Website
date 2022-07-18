@@ -91,14 +91,16 @@ export default function RegisterReferee({navigation}) {
       style={styles.listItem}
       onPress={() => {
         isIconCheckedOrNot({item, index});
-      }}>
+      }}
+    >
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>{item.language}</Text>
         <View style={styles.checkbox}>
           {languages[index].isChecked ? (
@@ -116,11 +118,11 @@ export default function RegisterReferee({navigation}) {
       Alert.alert(strings.appName, 'Sports cannot be blank');
       return false;
     }
-    if(selectedLanguages.length <= 0){
+    if (selectedLanguages.length <= 0) {
       Alert.alert(strings.appName, 'Language cannot be blank');
       return false;
     }
-    if(description === ''){
+    if (description === '') {
       Alert.alert(strings.appName, 'Description cannot be blank');
       return false;
     }
@@ -141,14 +143,16 @@ export default function RegisterReferee({navigation}) {
   const renderSports = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
-      onPress={() => setSportsSelection(item)}>
+      onPress={() => setSportsSelection(item)}
+    >
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>
           {getSportName(item, authContext)}
         </Text>
@@ -242,7 +246,11 @@ export default function RegisterReferee({navigation}) {
 
       <SafeAreaView>
         <TCGradientButton
-          isDisabled={sports === '' || selectedLanguages?.length <= 0 || description === ''}
+          isDisabled={
+            sports === '' ||
+            selectedLanguages?.length <= 0 ||
+            description === ''
+          }
           title={strings.nextTitle}
           style={{marginBottom: 5}}
           onPress={nextOnPress}
@@ -262,7 +270,8 @@ export default function RegisterReferee({navigation}) {
           marginRight: 0,
           marginBottom: 0,
           marginTop: 0,
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -278,18 +287,21 @@ export default function RegisterReferee({navigation}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setModalVisible(false)}>
+              onPress={() => setModalVisible(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -299,7 +311,8 @@ export default function RegisterReferee({navigation}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Languages
             </Text>
             <TouchableOpacity
@@ -311,7 +324,8 @@ export default function RegisterReferee({navigation}) {
                 }
                 setSelectedLanguages(selectedLanguage);
                 toggleModal();
-              }}>
+              }}
+            >
               <Text
                 style={{
                   alignSelf: 'center',
@@ -319,7 +333,8 @@ export default function RegisterReferee({navigation}) {
                   fontSize: 16,
                   fontFamily: fonts.RMedium,
                   color: colors.lightBlackColor,
-                }}>
+                }}
+              >
                 Apply
               </Text>
             </TouchableOpacity>
@@ -344,7 +359,8 @@ export default function RegisterReferee({navigation}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -360,18 +376,21 @@ export default function RegisterReferee({navigation}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
+              onPress={() => setVisibleSportsModal(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -381,14 +400,16 @@ export default function RegisterReferee({navigation}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Sports
             </Text>
             <TouchableOpacity
               onPress={() => {
                 setSports(sportsSelection?.sport);
                 setVisibleSportsModal(false);
-              }}>
+              }}
+            >
               <Text
                 style={{
                   alignSelf: 'center',
@@ -396,7 +417,8 @@ export default function RegisterReferee({navigation}) {
                   fontSize: 16,
                   fontFamily: fonts.RMedium,
                   color: colors.lightBlackColor,
-                }}>
+                }}
+              >
                 Apply
               </Text>
             </TouchableOpacity>
@@ -431,7 +453,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-   
+
     flexDirection: 'row',
     height: 40,
 

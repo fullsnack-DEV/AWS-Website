@@ -116,7 +116,8 @@ export default function SignupFromLoginScreen({navigation, route}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+      style={styles.mainContainer}
+    >
       <ActivityLoader visible={loading} />
       <FastImage
         resizeMode={'stretch'}
@@ -144,7 +145,8 @@ export default function SignupFromLoginScreen({navigation, route}) {
               }).then((pickImages) => {
                 setProfilePic(pickImages);
               });
-            }}>
+            }}
+          >
             <FastImage
               source={images.certificateUpload}
               style={styles.cameraIcon}

@@ -10,33 +10,31 @@ import {
 } from 'react-native';
 
 import Moment from 'moment';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import images from '../../Constants/ImagePath';
 
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
-function Feed({ data, navigation }) {
-  const { navigate } = navigation;
+function Feed({data, navigation}) {
+  const {navigate} = navigation;
 
   const json = JSON.parse(data.object);
 
-  const renderItem = ({ index }) => {
+  const renderItem = ({index}) => {
     if (json.attachments.length >= 3) {
       return (
         <TouchableWithoutFeedback>
           <View>
             <Image
-              source={ { uri: json.attachments[index].thumbnail } }
-              style={ styles.multipleMedia }
+              source={{uri: json.attachments[index].thumbnail}}
+              style={styles.multipleMedia}
             />
             <View
-              style={ {
+              style={{
                 backgroundColor: colors.blackColor,
                 height: 20,
                 width: 30,
@@ -47,32 +45,37 @@ function Feed({ data, navigation }) {
                 opacity: 0.5,
                 justifyContent: 'center',
                 alignItems: 'center',
-              } }>
+              }}
+            >
               <Text
-                style={ {
+                style={{
                   color: colors.whiteColor,
                   // fontFamily: fonts.RRegular,
                   fontSize: wp('2.8%'),
-                } }>
+                }}
+              >
                 {index + 1}/{json.attachments.length}
               </Text>
             </View>
           </View>
         </TouchableWithoutFeedback>
       );
-    } if (json.attachments.length === 2) {
+    }
+    if (json.attachments.length === 2) {
       return (
         <TouchableWithoutFeedback
-          style={ styles.listItem }
-          onPress={ () => console.log('Image pressed..', json.attachments[index].thumbnail)
-          }>
+          style={styles.listItem}
+          onPress={() =>
+            console.log('Image pressed..', json.attachments[index].thumbnail)
+          }
+        >
           <View>
             <Image
-              source={ { uri: json.attachments[index].thumbnail } }
-              style={ styles.twoMedia }
+              source={{uri: json.attachments[index].thumbnail}}
+              style={styles.twoMedia}
             />
             <View
-              style={ {
+              style={{
                 backgroundColor: colors.blackColor,
                 height: 20,
                 width: 30,
@@ -83,147 +86,155 @@ function Feed({ data, navigation }) {
                 opacity: 0.5,
                 justifyContent: 'center',
                 alignItems: 'center',
-              } }>
+              }}
+            >
               <Text
-                style={ {
+                style={{
                   color: colors.whiteColor,
                   // fontFamily: fonts.RRegular,
                   fontSize: wp('2.8%'),
-                } }>
+                }}
+              >
                 {index + 1}/{json.attachments.length}
               </Text>
             </View>
           </View>
         </TouchableWithoutFeedback>
       );
-    } if (
-      json.attachments.length === 1
-      && json.attachments[index].media_width > json.attachments[index].media_height
+    }
+    if (
+      json.attachments.length === 1 &&
+      json.attachments[index].media_width > json.attachments[index].media_height
     ) {
       return (
         <TouchableWithoutFeedback
-          style={ styles.listItem }
-          onPress={ () => pushToPostDetail(
-            json.attachments[index].type,
-            json.attachments[index].url,
-          )
-          }>
+          style={styles.listItem}
+          onPress={() =>
+            pushToPostDetail(
+              json.attachments[index].type,
+              json.attachments[index].url,
+            )
+          }
+        >
           <Image
-            source={ { uri: json.attachments[index].thumbnail } }
-            style={ styles.singleMediaLandscap }
-          />
-        </TouchableWithoutFeedback>
-      );
-    } if (
-      json.attachments.length === 1
-      && json.attachments[index].media_width < json.attachments[index].media_height
-    ) {
-      return (
-        <TouchableWithoutFeedback
-          style={ styles.listItem }
-          onPress={ () => pushToPostDetail(
-            json.attachments[index].type,
-            json.attachments[index].url,
-          )
-          }>
-          <Image
-            source={ { uri: json.attachments[index].thumbnail } }
-            style={ styles.singleMediaPortrait }
+            source={{uri: json.attachments[index].thumbnail}}
+            style={styles.singleMediaLandscap}
           />
         </TouchableWithoutFeedback>
       );
     }
-    return <View />
+    if (
+      json.attachments.length === 1 &&
+      json.attachments[index].media_width < json.attachments[index].media_height
+    ) {
+      return (
+        <TouchableWithoutFeedback
+          style={styles.listItem}
+          onPress={() =>
+            pushToPostDetail(
+              json.attachments[index].type,
+              json.attachments[index].url,
+            )
+          }
+        >
+          <Image
+            source={{uri: json.attachments[index].thumbnail}}
+            style={styles.singleMediaPortrait}
+          />
+        </TouchableWithoutFeedback>
+      );
+    }
+    return <View />;
   };
   const pushToPostDetail = (type, url) => {
     if (type === 'video') {
-      navigate('NewsFeedVideoPlayer', { url });
+      navigate('NewsFeedVideoPlayer', {url});
     } else {
       navigate('NewsFeedVideoPlayer');
     }
   };
   return (
-    <View style={ styles.mainContainer }>
-      <View style={ styles.feedheader }>
+    <View style={styles.mainContainer}>
+      <View style={styles.feedheader}>
         {data.actor.data.entity_type === 'club' ? (
           <Image
-            style={ styles.clubProfileImg }
-            source={ { uri: data.actor.data.thumbnail } }
+            style={styles.clubProfileImg}
+            source={{uri: data.actor.data.thumbnail}}
           />
         ) : null}
         {data.actor.data.entity_type === 'team' ? (
           <Image
-            style={ styles.profileImg }
-            source={ { uri: data.actor.data.thumbnail } }
+            style={styles.profileImg}
+            source={{uri: data.actor.data.thumbnail}}
           />
         ) : null}
         {data.actor.data.entity_type === 'player' ? (
           <Image
-            style={ styles.profileImg }
-            source={ { uri: data.actor.data.thumbnail } }
+            style={styles.profileImg}
+            source={{uri: data.actor.data.thumbnail}}
           />
         ) : null}
-        <View style={ styles.entityheader }>
-          <Text style={ styles.entityName }>{data.actor.data.full_name}</Text>
-          <Text style={ styles.date }>{Moment(data.time).format('MMM d')}</Text>
+        <View style={styles.entityheader}>
+          <Text style={styles.entityName}>{data.actor.data.full_name}</Text>
+          <Text style={styles.date}>{Moment(data.time).format('MMM d')}</Text>
         </View>
       </View>
       <FlatList
-        data={ json.attachments }
-        keyExtractor={ () => json.attachments.url }
-        renderItem={ renderItem }
-        horizontal={ true }
-        scrollEnabled={ true }
-        showsHorizontalScrollIndicator={ false }
-        ItemSeparatorComponent={ () => (
-          <View style={ styles.separatorLine }></View>
-        ) }
-        style={ { marginTop: 10 } }
+        data={json.attachments}
+        keyExtractor={() => json.attachments.url}
+        renderItem={renderItem}
+        horizontal={true}
+        scrollEnabled={true}
+        showsHorizontalScrollIndicator={false}
+        ItemSeparatorComponent={() => (
+          <View style={styles.separatorLine}></View>
+        )}
+        style={{marginTop: 10}}
       />
-      <Text style={ styles.feedDescription }>{json.text}</Text>
+      <Text style={styles.feedDescription}>{json.text}</Text>
 
-      <View style={ styles.feedBottomView }>
-        <Image style={ styles.commentImage } source={ images.feedComment } />
-        <Image style={ styles.shareImage } source={ images.feedShare } />
+      <View style={styles.feedBottomView}>
+        <Image style={styles.commentImage} source={images.feedComment} />
+        <Image style={styles.shareImage} source={images.feedShare} />
 
-        <Image style={ styles.likeImage } source={ images.feedLike } />
+        <Image style={styles.likeImage} source={images.feedLike} />
       </View>
       {data.reaction_counts.clap === 0 ? (
-        <View style={ styles.deviderLineWithoutMargin } />
+        <View style={styles.deviderLineWithoutMargin} />
       ) : (
-        <View style={ styles.deviderLine } />
+        <View style={styles.deviderLine} />
       )}
 
       {data.reaction_counts.clap > 0 || data.reaction_counts.comment > 0 ? (
-        <View style={ styles.feedBottomView }>
+        <View style={styles.feedBottomView}>
           {data.reaction_counts.comment > 0 && (
-            <Text style={ styles.noOfComment }>
+            <Text style={styles.noOfComment}>
               {data.reaction_counts.comment} Comments
             </Text>
           )}
           {data.reaction_counts.clap > 0 && (
-            <Text style={ styles.noOfLike }>
+            <Text style={styles.noOfLike}>
               {data.reaction_counts.clap} Likes
             </Text>
           )}
         </View>
       ) : null}
       {data.reaction_counts.comment > 0 ? (
-        <View style={ styles.feedBottomView }>
-          <Text style={ styles.comment }>Hi</Text>
+        <View style={styles.feedBottomView}>
+          <Text style={styles.comment}>Hi</Text>
 
-          <Text style={ styles.commentTime }>Just now</Text>
+          <Text style={styles.commentTime}>Just now</Text>
         </View>
       ) : null}
       {data.reaction_counts.comment >= 2 ? (
-        <View style={ styles.viewMore }>
-          <Text style={ styles.moreComment }>
+        <View style={styles.viewMore}>
+          <Text style={styles.moreComment}>
             view {data.reaction_counts.comment - 1} more comments
           </Text>
         </View>
       ) : null}
 
-      <View style={ styles.feedSeparatorLine } />
+      <View style={styles.feedSeparatorLine} />
     </View>
   );
 }

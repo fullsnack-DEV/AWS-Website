@@ -1,8 +1,6 @@
 /* eslint-disable react-native/no-raw-text */
 import React from 'react';
-import {
- View, Text, StyleSheet, Image, TouchableOpacity,
- } from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -85,46 +83,48 @@ export default function ScorekeeperAgreementView({
             </View>
           )}
           <Text style={styles.radioMainTitle}>{radioTitle}</Text>
-          {((moreButtonVisible && agreementOpetion === 1)
-            || !moreButtonVisible) && (
-              <TouchableOpacity
+          {((moreButtonVisible && agreementOpetion === 1) ||
+            !moreButtonVisible) && (
+            <TouchableOpacity
               disabled={moreButtonVisible}
               onPress={() => {
                 radioOpetion(1);
               }}
-              style={styles.radio1Container}>
-                <Image
+              style={styles.radio1Container}
+            >
+              <Image
                 source={
                   agreementOpetion === 1
                     ? images.radioSelectYellow
                     : images.radioUnselect
                 }
-                style={{ height: 22, width: 22, resizeMode: 'contain' }}
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
                 opacity={moreButtonVisible ? 0.5 : 1}
               />
-                <Text style={styles.radio1Text}>{radio1}</Text>
-              </TouchableOpacity>
+              <Text style={styles.radio1Text}>{radio1}</Text>
+            </TouchableOpacity>
           )}
 
-          {((moreButtonVisible && agreementOpetion === 2)
-            || !moreButtonVisible) && (
-              <TouchableOpacity
+          {((moreButtonVisible && agreementOpetion === 2) ||
+            !moreButtonVisible) && (
+            <TouchableOpacity
               disabled={moreButtonVisible}
               onPress={() => {
                 radioOpetion(2);
               }}
-              style={styles.radio2Container}>
-                <Image
+              style={styles.radio2Container}
+            >
+              <Image
                 source={
                   agreementOpetion === 2
                     ? images.radioSelectYellow
                     : images.radioUnselect
                 }
-                style={{ height: 22, width: 22, resizeMode: 'contain' }}
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
                 opacity={moreButtonVisible ? 0.5 : 1}
               />
-                <Text style={styles.radio2Text}>{radio2}</Text>
-              </TouchableOpacity>
+              <Text style={styles.radio2Text}>{radio2}</Text>
+            </TouchableOpacity>
           )}
           {moreButtonVisible && (
             <Text
@@ -137,7 +137,8 @@ export default function ScorekeeperAgreementView({
               }}
               onPress={() => {
                 morePressed(!isMore);
-              }}>
+              }}
+            >
               {isMore ? 'less' : 'more'}
             </Text>
           )}
@@ -151,65 +152,70 @@ export default function ScorekeeperAgreementView({
               <Text style={styles.rule2}>{rules2}</Text>
             </View>
           )}
-          {showRules ? <View opacity={0.3}>
-            <Text style={styles.radioMainTitle}>{radioTitle}</Text>
-            {((moreButtonVisible && agreementOpetion === 1)
-            || !moreButtonVisible) && (
-              <TouchableOpacity
-              disabled={moreButtonVisible}
-              onPress={() => {
-                radioOpetion(1);
-              }}
-              style={styles.radio1Container}>
-                <Image
-                source={
-                  agreementOpetion === 1
-                    ? images.radioSelectYellow
-                    : images.radioUnselect
-                }
-                style={{ height: 22, width: 22, resizeMode: 'contain' }}
-                opacity={moreButtonVisible ? 0.5 : 1}
-              />
-                <Text style={styles.radio1Text}>{radio1}</Text>
-              </TouchableOpacity>
-          )}
+          {showRules ? (
+            <View opacity={0.3}>
+              <Text style={styles.radioMainTitle}>{radioTitle}</Text>
+              {((moreButtonVisible && agreementOpetion === 1) ||
+                !moreButtonVisible) && (
+                <TouchableOpacity
+                  disabled={moreButtonVisible}
+                  onPress={() => {
+                    radioOpetion(1);
+                  }}
+                  style={styles.radio1Container}
+                >
+                  <Image
+                    source={
+                      agreementOpetion === 1
+                        ? images.radioSelectYellow
+                        : images.radioUnselect
+                    }
+                    style={{height: 22, width: 22, resizeMode: 'contain'}}
+                    opacity={moreButtonVisible ? 0.5 : 1}
+                  />
+                  <Text style={styles.radio1Text}>{radio1}</Text>
+                </TouchableOpacity>
+              )}
 
-            {((moreButtonVisible && agreementOpetion === 2)
-            || !moreButtonVisible) && (
-              <TouchableOpacity
-              disabled={moreButtonVisible}
-              onPress={() => {
-                radioOpetion(2);
-              }}
-              style={styles.radio2Container}>
-                <Image
-                source={
-                  agreementOpetion === 2
-                    ? images.radioSelectYellow
-                    : images.radioUnselect
-                }
-                style={{ height: 22, width: 22, resizeMode: 'contain' }}
-                opacity={moreButtonVisible ? 0.5 : 1}
-              />
-                <Text style={styles.radio2Text}>{radio2}</Text>
-              </TouchableOpacity>
-          )}
-            {moreButtonVisible && (
-              <Text
-              style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.userPostTimeColor,
-                textAlign: 'right',
-                marginRight: 15,
-              }}
-              onPress={() => {
-                morePressed(!isMore);
-              }}>
-                {isMore ? 'less' : 'more'}
-              </Text>
-          )}
-          </View> : (
+              {((moreButtonVisible && agreementOpetion === 2) ||
+                !moreButtonVisible) && (
+                <TouchableOpacity
+                  disabled={moreButtonVisible}
+                  onPress={() => {
+                    radioOpetion(2);
+                  }}
+                  style={styles.radio2Container}
+                >
+                  <Image
+                    source={
+                      agreementOpetion === 2
+                        ? images.radioSelectYellow
+                        : images.radioUnselect
+                    }
+                    style={{height: 22, width: 22, resizeMode: 'contain'}}
+                    opacity={moreButtonVisible ? 0.5 : 1}
+                  />
+                  <Text style={styles.radio2Text}>{radio2}</Text>
+                </TouchableOpacity>
+              )}
+              {moreButtonVisible && (
+                <Text
+                  style={{
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    color: colors.userPostTimeColor,
+                    textAlign: 'right',
+                    marginRight: 15,
+                  }}
+                  onPress={() => {
+                    morePressed(!isMore);
+                  }}
+                >
+                  {isMore ? 'less' : 'more'}
+                </Text>
+              )}
+            </View>
+          ) : (
             <Text
               style={{
                 fontFamily: fonts.RBold,
@@ -219,10 +225,10 @@ export default function ScorekeeperAgreementView({
                 textDecorationLine: 'underline',
               }}
               onPress={() => {
-                showPressed(true)
+                showPressed(true);
               }}
-              >
-              {'WHAT HAPPENS IF YOUR TEAM DOESN\'T\nSECURE SCOREKEEPER.'}
+            >
+              {"WHAT HAPPENS IF YOUR TEAM DOESN'T\nSECURE SCOREKEEPER."}
             </Text>
           )}
         </>

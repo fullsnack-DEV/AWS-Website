@@ -168,7 +168,8 @@ export default function LookingForSettingScreen({navigation, route}) {
     <TouchableWithoutFeedback
       onPress={() => {
         setLookingFor(!lookingFor);
-      }}>
+      }}
+    >
       <View style={styles.radioItem}>
         <Text style={styles.languageList}>{item.key}</Text>
         <View style={styles.checkbox}>
@@ -198,7 +199,8 @@ export default function LookingForSettingScreen({navigation, route}) {
           alignItems: 'center',
           justifyContent: 'space-between',
           marginRight: 15,
-        }}>
+        }}
+      >
         <FlatList
           // ItemSeparatorComponent={() => <TCThinDivider />}
           data={lookingOpetions}

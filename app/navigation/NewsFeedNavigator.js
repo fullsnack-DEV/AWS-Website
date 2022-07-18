@@ -96,7 +96,8 @@ const NewsFeedNavigator = () => (
     screenOptions={{
       gestureEnabled: false,
       headerBackTitleVisible: false,
-    }}>
+    }}
+  >
     <Stack.Screen
       name="FeedsScreen"
       component={FeedsScreen}
@@ -1319,7 +1320,6 @@ const NewsFeedNavigator = () => (
         headerShown: false,
       }}
     />
-    
   </Stack.Navigator>
 );
 

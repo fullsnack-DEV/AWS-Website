@@ -21,7 +21,8 @@ const TCShortsPlaceholder = ({onPress}) => {
       <FastImage source={images.shortCard} style={styles.shortView} />
       <LinearGradient
         colors={[colors.whiteColor, colors.whiteColor]}
-        style={styles.overlayStyle}>
+        style={styles.overlayStyle}
+      >
         <Text style={styles.placeholderTextStyle}>{'NO SHORTS'}</Text>
         <TouchableOpacity onPress={onPress}>
           <Text style={styles.startTitle} numberOfLines={2}>
@@ -43,7 +44,6 @@ const styles = StyleSheet.create({
   backgroundView: {
     flexDirection: 'row',
     width: Dimensions.get('window').width,
-   
   },
   overlayStyle: {
     alignSelf: 'center',

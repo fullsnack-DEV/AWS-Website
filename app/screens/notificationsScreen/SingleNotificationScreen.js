@@ -15,7 +15,7 @@ import {
   TextInput,
   Keyboard,
   SafeAreaView,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import _ from 'lodash';
@@ -27,10 +27,9 @@ import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import AuthContext from '../../auth/context';
 import {createReaction} from '../../api/NewsFeeds';
 
-
 function SingleNotificationScreen({route, navigation}) {
   const postItem = route.params?.notificationItem?.activities?.[0];
-  console.log('Post Item:=>',postItem);
+  console.log('Post Item:=>', postItem);
   const [commentTxt, setCommentTxt] = useState('');
   const keyboardDidShowListener = useRef();
   const keyboardDidHideListener = useRef();
@@ -61,112 +60,123 @@ function SingleNotificationScreen({route, navigation}) {
 
   const authContext = useContext(AuthContext);
   const onLikePress = (item) => {
-    console.log('ITEM 123:=>',item);
+    console.log('ITEM 123:=>', item);
     const bodyParams = {
-        reaction_type: 'clap',
-        activity_id: item.id,
+      reaction_type: 'clap',
+      activity_id: item.id,
     };
     createReaction(bodyParams, authContext)
-        .then((res) => {
-            const pData = _.cloneDeep(postItem)
-            const pIndex = pData.findIndex(((pItem) => pItem?.id === item?.id));
-            const likeIndex = pData[pIndex].own_reactions?.clap?.findIndex((likeItem) => likeItem?.user_id === authContext?.entity?.uid) ?? -1;
-            if (likeIndex === -1) {
-                pData[pIndex].own_reactions = { ...pData?.[pIndex]?.own_reactions }
-                pData[pIndex].own_reactions.clap = [...pData?.[pIndex]?.own_reactions?.clap]
-                pData[pIndex].own_reactions.clap.push(res?.payload)
-                pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts }
-                pData[pIndex].reaction_counts.clap = pData?.[pIndex]?.reaction_counts?.clap + 1 ?? 0;
-            } else {
-                pData[pIndex].own_reactions = { ...pData?.[pIndex]?.own_reactions }
-                pData[pIndex].own_reactions.clap = [...pData?.[pIndex]?.own_reactions?.clap]
-                pData[pIndex].own_reactions.clap = pData?.[pIndex]?.own_reactions?.clap?.filter((likeItem) => likeItem?.user_id !== authContext?.entity?.uid)
-                pData[pIndex].reaction_counts = { ...pData?.[pIndex]?.reaction_counts }
-                pData[pIndex].reaction_counts.clap = pData?.[pIndex]?.reaction_counts?.clap - 1 ?? 0;
-            }
-            console.log('pData[pIndex]',pData[pIndex]);
-        }).catch((e) => {
-            console.log(e.message)
-    });
-}
+      .then((res) => {
+        const pData = _.cloneDeep(postItem);
+        const pIndex = pData.findIndex((pItem) => pItem?.id === item?.id);
+        const likeIndex =
+          pData[pIndex].own_reactions?.clap?.findIndex(
+            (likeItem) => likeItem?.user_id === authContext?.entity?.uid,
+          ) ?? -1;
+        if (likeIndex === -1) {
+          pData[pIndex].own_reactions = {...pData?.[pIndex]?.own_reactions};
+          pData[pIndex].own_reactions.clap = [
+            ...pData?.[pIndex]?.own_reactions?.clap,
+          ];
+          pData[pIndex].own_reactions.clap.push(res?.payload);
+          pData[pIndex].reaction_counts = {...pData?.[pIndex]?.reaction_counts};
+          pData[pIndex].reaction_counts.clap =
+            pData?.[pIndex]?.reaction_counts?.clap + 1 ?? 0;
+        } else {
+          pData[pIndex].own_reactions = {...pData?.[pIndex]?.own_reactions};
+          pData[pIndex].own_reactions.clap = [
+            ...pData?.[pIndex]?.own_reactions?.clap,
+          ];
+          pData[pIndex].own_reactions.clap = pData?.[
+            pIndex
+          ]?.own_reactions?.clap?.filter(
+            (likeItem) => likeItem?.user_id !== authContext?.entity?.uid,
+          );
+          pData[pIndex].reaction_counts = {...pData?.[pIndex]?.reaction_counts};
+          pData[pIndex].reaction_counts.clap =
+            pData?.[pIndex]?.reaction_counts?.clap - 1 ?? 0;
+        }
+        console.log('pData[pIndex]', pData[pIndex]);
+      })
+      .catch((e) => {
+        console.log(e.message);
+      });
+  };
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <TouchableWithoutFeedback onPress={()=> Keyboard.dismiss()}>
-        <View style={{flex:1}}>
-          <View style={{flex: 1,marginTop:15}}>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={{flex: 1}}>
+          <View style={{flex: 1, marginTop: 15}}>
             <NewsFeedPostItems
-          pullRefresh={false}
-          item={postItem}
-          navigation={navigation}
-          caller_id={authContext?.entity?.uid}
-          // onEditPressDone={onEditPressDone}
-          // onImageProfilePress={() => onProfilePress(item)}
-          onLikePress={() => onLikePress(postItem)}
-          // onDeletePost={onDeleteButtonPress}
-        />
+              pullRefresh={false}
+              item={postItem}
+              navigation={navigation}
+              caller_id={authContext?.entity?.uid}
+              // onEditPressDone={onEditPressDone}
+              // onImageProfilePress={() => onProfilePress(item)}
+              onLikePress={() => onLikePress(postItem)}
+              // onDeletePost={onDeleteButtonPress}
+            />
           </View>
-          <View
-        style={[
-          styles.bottomSafeAreaStyle,
-          {bottom: keyboardOffset},
-        ]}>
+          <View style={[styles.bottomSafeAreaStyle, {bottom: keyboardOffset}]}>
             {/* <View style={styles.bottomSperateLine} /> */}
             <View style={styles.bottomImgView}>
               <View style={styles.commentReportView}>
                 <Image
-              source={
-                postItem?.full_image
-                  ? {uri: postItem?.full_image}
-                  : images.profilePlaceHolder
-              }
-              resizeMode={'cover'}
-              style={{width: 40, height: 40, borderRadius: 40 / 2}}
-            />
+                  source={
+                    postItem?.full_image
+                      ? {uri: postItem?.full_image}
+                      : images.profilePlaceHolder
+                  }
+                  resizeMode={'cover'}
+                  style={{width: 40, height: 40, borderRadius: 40 / 2}}
+                />
               </View>
               <View style={styles.onlyMeViewStyle}>
                 <TextInput
-              placeholder={'Write a comment'}
-              placeholderTextColor={colors.userPostTimeColor}
-              multiline={true}
-              textAlignVertical={'top'}
-              value={commentTxt}
-              onChangeText={setCommentTxt}
-              style={{
-                textAlignVertical: 'center',
-                fontSize: 14,
-                lineHeight: 14,
-                width: wp('66%'),
-                marginHorizontal: '2%',
-                color: colors.lightBlackColor,
-                fontFamily: fonts.RRegular,
-                paddingVertical: 0,
-                paddingLeft: 8,
-                alignSelf: 'center',
-                maxHeight: hp(20),
-              }}
-            />
+                  placeholder={'Write a comment'}
+                  placeholderTextColor={colors.userPostTimeColor}
+                  multiline={true}
+                  textAlignVertical={'top'}
+                  value={commentTxt}
+                  onChangeText={setCommentTxt}
+                  style={{
+                    textAlignVertical: 'center',
+                    fontSize: 14,
+                    lineHeight: 14,
+                    width: wp('66%'),
+                    marginHorizontal: '2%',
+                    color: colors.lightBlackColor,
+                    fontFamily: fonts.RRegular,
+                    paddingVertical: 0,
+                    paddingLeft: 8,
+                    alignSelf: 'center',
+                    maxHeight: hp(20),
+                  }}
+                />
                 {commentTxt.trim().length > 0 && (
                   <TouchableOpacity
-                onPress={() => {
-                  const bodyParams = {
-                    reaction_type: 'comment',
-                    activity_id: postItem?.id,
-                    data: {
-                      text: commentTxt,
-                    },
-                  };
-                  createReaction(bodyParams, authContext)
-                    .then(() => {
-                      setCommentTxt('');
-                    })
-                    .catch((e) => {
-                      console.log(e);
-                    });
-                }}>
+                    onPress={() => {
+                      const bodyParams = {
+                        reaction_type: 'comment',
+                        activity_id: postItem?.id,
+                        data: {
+                          text: commentTxt,
+                        },
+                      };
+                      createReaction(bodyParams, authContext)
+                        .then(() => {
+                          setCommentTxt('');
+                        })
+                        .catch((e) => {
+                          console.log(e);
+                        });
+                    }}
+                  >
                     <Text style={styles.sendTextStyle}>SEND</Text>
                   </TouchableOpacity>
-            )}
+                )}
               </View>
             </View>
           </View>

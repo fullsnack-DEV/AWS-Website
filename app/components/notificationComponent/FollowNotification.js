@@ -1,21 +1,19 @@
 import React from 'react';
-import {
-  View, StyleSheet, Text, Image, TouchableOpacity,
-} from 'react-native';
+import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import fonts from '../../Constants/Fonts';
 import PATH from '../../Constants/ImagePath';
-import Colors from '../../Constants/Colors'
-import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
-import TCFollowButton from '../TCFollowButton'
+import Colors from '../../Constants/Colors';
+import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
+import TCFollowButton from '../TCFollowButton';
 
 function FollowNotification(data) {
-  const activity = data.data.activities[0]
+  const activity = data.data.activities[0];
   let actorName = '';
   let placeHolder = '';
   let notificationText = '';
   let notificationCreatedAt = '';
   if (data && data.data.created_at) {
-    notificationCreatedAt = data.data.created_at
+    notificationCreatedAt = data.data.created_at;
   }
   if (data && activity.object) {
     const jsonObject = JSON.parse(activity.object);
@@ -29,32 +27,44 @@ function FollowNotification(data) {
     placeHolder = PATH.clubPlaceholder;
   }
   actorName = activity.actor.data.full_name;
-  const actorImage = activity.actor.data.thumbnail
+  const actorImage = activity.actor.data.thumbnail;
 
   return (
     <View>
       <TouchableOpacity onPress={data.card}>
         <View style={styles.viewFirstStyle}>
           <Image
-            source={ actorImage ? { uri: actorImage } : placeHolder }
-            style={styles.imageContainer}></Image>
+            source={actorImage ? {uri: actorImage} : placeHolder}
+            style={styles.imageContainer}
+          ></Image>
           <Text style={styles.textContainerStyle}>
-            <Text style={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: Colors.lightBlackColor,
-            }}>
+            <Text
+              style={{
+                fontFamily: fonts.RBold,
+                fontSize: 16,
+                color: Colors.lightBlackColor,
+              }}
+            >
               {' '}
               {actorName}{' '}
             </Text>
-            <Text style={{
-              fontFamily: fonts.RLight,
-              fontSize: 16,
-              color: Colors.lightBlackColor,
-            }}>{notificationText} {commentPostTimeCalculate(notificationCreatedAt)}</Text>
+            <Text
+              style={{
+                fontFamily: fonts.RLight,
+                fontSize: 16,
+                color: Colors.lightBlackColor,
+              }}
+            >
+              {notificationText}{' '}
+              {commentPostTimeCalculate(notificationCreatedAt)}
+            </Text>
           </Text>
-          <TCFollowButton title={'Follow'} width={75} alignSelf = 'center' marginTop={25}/>
-
+          <TCFollowButton
+            title={'Follow'}
+            width={75}
+            alignSelf="center"
+            marginTop={25}
+          />
         </View>
         <View style={styles.separatorView}></View>
       </TouchableOpacity>

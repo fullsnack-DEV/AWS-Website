@@ -80,7 +80,8 @@ export default function MembersProfileScreen({navigation, route}) {
         whoSeeID === entity.uid &&
         !loading && (
           <TouchableWithoutFeedback
-            onPress={() => actionSheet?.current?.show()}>
+            onPress={() => actionSheet?.current?.show()}
+          >
             <Image
               source={images.horizontal3Dot}
               style={styles.navigationRightItem}
@@ -201,7 +202,8 @@ export default function MembersProfileScreen({navigation, route}) {
             fontFamily: fonts.RMedium,
             fontSize: 18,
             color: colors.userPostTimeColor,
-          }}>
+          }}
+        >
           No Joined Teams Available
         </Text>
       </View>
@@ -245,7 +247,8 @@ export default function MembersProfileScreen({navigation, route}) {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 marginBottom: 10,
-              }}>
+              }}
+            >
               <TCMemberProfile
                 image={
                   memberDetail?.thumbnail
@@ -263,7 +266,8 @@ export default function MembersProfileScreen({navigation, route}) {
                     navigation.navigate('EditMemberInfoScreen', {
                       memberInfo: memberDetail,
                     });
-                  }}>
+                  }}
+                >
                   <Image source={images.editSection} style={styles.editImage} />
                 </TouchableWithoutFeedback>
               )}
@@ -327,7 +331,8 @@ export default function MembersProfileScreen({navigation, route}) {
                       });
                     }
                   });
-                }}>
+                }}
+              >
                 <View style={styles.inviteButtonContainer}>
                   <Text style={styles.inviteTextStyle}>
                     Invite or Connect to an Account
@@ -346,7 +351,8 @@ export default function MembersProfileScreen({navigation, route}) {
                     navigation.navigate('EditMemberBasicInfoScreen', {
                       memberInfo: memberDetail,
                     })
-                  }>
+                  }
+                >
                   <Image source={images.editSection} style={styles.editImage} />
                 </TouchableWithoutFeedback>
               )}
@@ -484,7 +490,7 @@ export default function MembersProfileScreen({navigation, route}) {
                         note: memberDetail?.note,
                         user_id: memberDetail?.user_id,
                       },
-              ]
+                    ]
               }
               ListEmptyComponent={listEmptyView}
               ItemSeparatorComponent={renderSeparator}
@@ -515,7 +521,8 @@ export default function MembersProfileScreen({navigation, route}) {
                     navigation.navigate('EditClubNotesScreen', {
                       memberInfo: memberDetail,
                     })
-                  }>
+                  }
+                >
                   <Image source={images.editSection} style={styles.editImage} />
                 </TouchableWithoutFeedback>
               )}
@@ -538,7 +545,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     'Membership & Admin Authority',
                     'Delete Member from Club',
                     'Cancel',
-            ]
+                  ]
             }
             cancelButtonIndex={2}
             destructiveButtonIndex={1}

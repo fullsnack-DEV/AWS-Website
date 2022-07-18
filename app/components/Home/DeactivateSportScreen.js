@@ -173,7 +173,8 @@ export default function DeactivateSportScreen({navigation, route}) {
           }}
           hasBackdrop
           onBackdropPress={() => setModalVisible(false)}
-          backdropOpacity={0}>
+          backdropOpacity={0}
+        >
           <View style={styles.modalContainerViewStyle}>
             <Image style={styles.background} source={images.orangeLayer} />
             <Image style={styles.background} source={images.entityCreatedBG} />
@@ -184,7 +185,8 @@ export default function DeactivateSportScreen({navigation, route}) {
                 }, 10);
                 navigation.goBack();
               }}
-              style={{alignSelf: 'flex-end'}}>
+              style={{alignSelf: 'flex-end'}}
+            >
               <Image
                 source={images.cancelWhite}
                 style={{
@@ -203,7 +205,8 @@ export default function DeactivateSportScreen({navigation, route}) {
                 alignItems: 'center',
                 flex: 1,
                 justifyContent: 'center',
-              }}>
+              }}
+            >
               <Text style={styles.foundText}>{getSpportText()}</Text>
               <Text style={styles.manageChallengeDetailTitle}>
                 You can reactivated this activity anytime by adding it to your

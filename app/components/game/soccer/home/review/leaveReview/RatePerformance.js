@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native'
+import {View, Text, StyleSheet} from 'react-native';
 import colors from '../../../../../../Constants/Colors';
 import fonts from '../../../../../../Constants/Fonts';
 import TCAttributeRatingWithSlider from '../../../../../TCAttributeRatingWithSlider';
@@ -22,52 +22,59 @@ const RatePerformance = ({
   console.log('starAttributes for team:=> : ', starAttributes);
   return (
     <View style={styles.mainContainer}>
-
       {/*    Title */}
-      <Text style={styles.titleText}>Rate performance <Text style={{ color: colors.redDelColor }}>*</Text></Text>
+      <Text style={styles.titleText}>
+        Rate performance <Text style={{color: colors.redDelColor}}>*</Text>
+      </Text>
 
       {/* Ratings */}
       <View style={styles.rateSection}>
-
         {/* Poor Excellent Section */}
-        <View style={{ ...styles.poorExcellentSection }}>
-          <View style={{ flex: 0.3 }}/>
+        <View style={{...styles.poorExcellentSection}}>
+          <View style={{flex: 0.3}} />
           <View style={styles.poorExcellentChildSection}>
             <Text style={styles.poorExcellenceText}>Poor</Text>
             <Text>Excellent</Text>
           </View>
-          <View style={{ flex: 0.1 }}/>
+          <View style={{flex: 0.1}} />
         </View>
 
         {/*    Rating Slider */}
-        {reviewAttributes.length ? reviewAttributes.map((item, index) => (<View key={index}>
-          <TCAttributeRatingWithSlider
-            selectedTrackColors={teamNo === 0
-              ? [colors.yellowColor, colors.themeColor]
-              : [colors.blueGradiantEnd, colors.blueGradiantStart]}
-                setTeamReview={setTeamReview}
-                title={item}
-                rating={reviewsData[item]}
-            />
-        </View>)) : null}
+        {reviewAttributes.length
+          ? reviewAttributes.map((item, index) => (
+              <View key={index}>
+                <TCAttributeRatingWithSlider
+                  selectedTrackColors={
+                    teamNo === 0
+                      ? [colors.yellowColor, colors.themeColor]
+                      : [colors.blueGradiantEnd, colors.blueGradiantStart]
+                  }
+                  setTeamReview={setTeamReview}
+                  title={item}
+                  rating={reviewsData[item]}
+                />
+              </View>
+            ))
+          : null}
       </View>
 
       {/* Questions */}
       {starAttributes.map((item, index) => (
-        <View style={{ marginVertical: 5 }} key={index}>
+        <View style={{marginVertical: 5}} key={index}>
           <Text style={styles.questionText}>{item.description}</Text>
           <TCRatingStarSlider
             currentRating={reviewsData[item.name]}
             onPress={(star) => {
-              setTeamReview(item.name, star)
+              setTeamReview(item.name, star);
             }}
-              style={{ alignSelf: 'flex-end' }}
-              starColor={starColor}/>
+            style={{alignSelf: 'flex-end'}}
+            starColor={starColor}
+          />
         </View>
       ))}
     </View>
-  )
-}
+  );
+};
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
@@ -101,5 +108,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
   },
-})
+});
 export default RatePerformance;

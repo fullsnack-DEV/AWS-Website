@@ -31,19 +31,15 @@ export default function AvailibilityReferee({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
     });
   }, [navigation, acceptChallenge]);
 
-
-
-
-  
   const onSavePressed = () => {
-
     const refereeSetting = (
       authContext?.entity?.obj?.referee_data ?? []
     ).filter((obj) => obj.sport === sportName)?.[0]?.setting;
@@ -123,13 +119,15 @@ export default function AvailibilityReferee({navigation, route}) {
             justifyContent: 'space-between',
             margin: 15,
             marginTop: 35,
-          }}>
+          }}
+        >
           <Text
             style={{
               fontSize: 16,
               fontFamily: fonts.RRegular,
               color: colors.lightBlackColor,
-            }}>
+            }}
+          >
             {strings.AvailibilityRefereeSubTitle}
           </Text>
           <ToggleView

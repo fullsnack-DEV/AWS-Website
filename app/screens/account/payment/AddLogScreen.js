@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useContext } from 'react';
+import React, {useState, useLayoutEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -20,14 +20,14 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-import { addLog } from '../../../api/Invoice';
+import {addLog} from '../../../api/Invoice';
 import AuthContext from '../../../auth/context';
 
-export default function AddLogScreen({ navigation, route }) {
+export default function AddLogScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
-const [invoiceDetail] = useState(route?.params?.invoiceDetail);
-console.log('IDetail:=>', invoiceDetail);
+  const [invoiceDetail] = useState(route?.params?.invoiceDetail);
+  console.log('IDetail:=>', invoiceDetail);
   // const isFocused = useIsFocused();
   const [paymentSwitchSelection, setPaymentSwitchSelection] = useState(0);
   const [paymentType, setPaymentType] = useState(0);
@@ -42,11 +42,14 @@ console.log('IDetail:=>', invoiceDetail);
           onPress={() => {
             if (addLogValidation()) {
               setloading(true);
-              const body = {}
+              const body = {};
               body.payment_mode = paymentType === 0 ? 'Cash' : 'Cheque';
               body.amount = Number(parseFloat(amount).toFixed(2));
-              body.payment_date = Number((new Date().getTime() / 1000).toFixed(0));
-              body.transaction_type = paymentSwitchSelection === 0 ? 'payment' : 'refund';
+              body.payment_date = Number(
+                (new Date().getTime() / 1000).toFixed(0),
+              );
+              body.transaction_type =
+                paymentSwitchSelection === 0 ? 'payment' : 'refund';
               body.notes = note;
 
               addLog(invoiceDetail?.invoice_id, body, authContext)
@@ -61,7 +64,8 @@ console.log('IDetail:=>', invoiceDetail);
                   }, 10);
                 });
             }
-          }}>
+          }}
+        >
           <Text>Done</Text>
         </TouchableOpacity>
       ),
@@ -104,7 +108,7 @@ console.log('IDetail:=>', invoiceDetail);
           firstTabTitle={'PAYMENT'}
           secondTabTitle={'REFUND'}
           indexCounter={paymentSwitchSelection}
-          eventPrivacyContianer={{ width: 100 }}
+          eventPrivacyContianer={{width: 100}}
           onFirstTabPress={() => setPaymentSwitchSelection(0)}
           onSecondTabPress={() => setPaymentSwitchSelection(1)}
           activeHeight={36}
@@ -117,20 +121,22 @@ console.log('IDetail:=>', invoiceDetail);
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}
-          onPress={() => setPaymentType(0)}>
+          onPress={() => setPaymentType(0)}
+        >
           <Text
             style={{
               fontFamily: fonts.RRegular,
               fontSize: 16,
               color: colors.lightBlackColor,
-            }}>
+            }}
+          >
             In Cash
           </Text>
           <Image
             source={
               paymentType === 0 ? images.radioCheckYellow : images.radioUnselect
             }
-            style={{ height: 22, width: 22 }}
+            style={{height: 22, width: 22}}
           />
         </TouchableOpacity>
 
@@ -140,20 +146,22 @@ console.log('IDetail:=>', invoiceDetail);
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}
-          onPress={() => setPaymentType(1)}>
+          onPress={() => setPaymentType(1)}
+        >
           <Text
             style={{
               fontFamily: fonts.RRegular,
               fontSize: 16,
               color: colors.lightBlackColor,
-            }}>
+            }}
+          >
             By check
           </Text>
           <Image
             source={
               paymentType === 1 ? images.radioCheckYellow : images.radioUnselect
             }
-            style={{ height: 22, width: 22, resizeMode: 'contain' }}
+            style={{height: 22, width: 22, resizeMode: 'contain'}}
           />
         </TouchableOpacity>
 
@@ -167,7 +175,8 @@ console.log('IDetail:=>', invoiceDetail);
               color: colors.lightBlackColor,
               marginLeft: 15,
               marginTop: 15,
-            }}>
+            }}
+          >
             {strings.amountTitle}
           </Text>
           <TextInput
@@ -175,11 +184,12 @@ console.log('IDetail:=>', invoiceDetail);
             style={styles.amountTxt}
             onChangeText={(text) => {
               if (IsNumeric(text)) {
-                setAmount(text)
+                setAmount(text);
               }
             }}
             keyboardType="numeric"
-            value={amount}></TextInput>
+            value={amount}
+          ></TextInput>
         </View>
 
         <View>
@@ -190,7 +200,8 @@ console.log('IDetail:=>', invoiceDetail);
               color: colors.lightBlackColor,
               marginLeft: 15,
               marginTop: 15,
-            }}>
+            }}
+          >
             {strings.noteTitle}
           </Text>
           <TextInput
@@ -198,7 +209,8 @@ console.log('IDetail:=>', invoiceDetail);
             style={styles.noteTxt}
             multiline
             onChangeText={(text) => setNote(text)}
-            value={note}></TextInput>
+            value={note}
+          ></TextInput>
         </View>
       </View>
     </ScrollView>
@@ -227,7 +239,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingRight: 30,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
 
@@ -246,7 +258,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 15,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
 

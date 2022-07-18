@@ -1,14 +1,7 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableWithoutFeedback,
-} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import colors from '../../Constants/Colors'
+import {StyleSheet, View, Text, TouchableWithoutFeedback} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import MatchBetweenSection from './MatchBetweenSection';
 
@@ -30,19 +23,27 @@ export default function RecentMatchItems({
   return (
     <TouchableWithoutFeedback style={styles.backgroundView}>
       <View style={styles.backgroundView}>
-        <View style={[styles.colorView, { backgroundColor: eventColor }]}>
+        <View style={[styles.colorView, {backgroundColor: eventColor}]}>
           <Text style={styles.dateMonthText}>{startDate1}</Text>
           <Text style={styles.dateText}>{startDate2}</Text>
         </View>
         <View style={styles.eventText}>
-          <Text style={[styles.eventTitle, { color: eventColor }]} numberOfLines={1}>
+          <Text
+            style={[styles.eventTitle, {color: eventColor}]}
+            numberOfLines={1}
+          >
             {title}
           </Text>
           <View style={styles.bottomView}>
             <Text style={styles.eventTime}>{startTime} - </Text>
             <Text style={styles.eventTime}>{endTime}</Text>
             <View style={styles.timeCityDividerStyle} />
-            <Text style={[styles.eventTime, { width: wp('42%') }]} numberOfLines={1}>{location}</Text>
+            <Text
+              style={[styles.eventTime, {width: wp('42%')}]}
+              numberOfLines={1}
+            >
+              {location}
+            </Text>
           </View>
           <MatchBetweenSection
             firstUserImage={firstUserImage}
@@ -51,7 +52,7 @@ export default function RecentMatchItems({
             secondText={secondTeamText}
             firstTeamPoint={firstTeamPoint}
             secondTeamPoint={secondTeamPoint}
-            title = {title}
+            title={title}
           />
         </View>
       </View>
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     flexDirection: 'row',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: wp('94%'),

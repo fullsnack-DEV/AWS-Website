@@ -1,10 +1,4 @@
-import React, {
-  memo,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-} from 'react';
+import React, {memo, useCallback, useContext, useMemo, useRef} from 'react';
 import {
   StyleSheet,
   View,
@@ -28,9 +22,6 @@ import {getHitSlop} from '../../utils';
 import {ImageUploadContext} from '../../context/GetContexts';
 
 const heightOfProgressView = 60;
-
-
-
 
 const SingleImageProgressBar = memo(
   ({totalUpload, numberOfUploaded, imageData, onCancelPress}) => {
@@ -61,7 +52,8 @@ const SingleImageProgressBar = memo(
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'absolute',
-              }}>
+              }}
+            >
               <FastImage
                 source={images.videoPlayBtn}
                 tintColor={'white'}
@@ -111,7 +103,8 @@ const SingleImageProgressBar = memo(
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={styles.cancelTouchStyle}
-                onPress={onCancelPress}>
+                onPress={onCancelPress}
+              >
                 <Image
                   style={styles.cancelImagestyle}
                   source={images.cancelImage}
@@ -137,7 +130,6 @@ const SingleImageProgressBar = memo(
 const ImageProgress = () => {
   const imageUploadContext = useContext(ImageUploadContext);
   const flatListRef = useRef();
-  
 
   // useEffect(() => {
   //   console.log('IMAGE CONT', imageUploadContext)
@@ -170,8 +162,6 @@ const ImageProgress = () => {
     [onCancelImageUpload],
   );
 
-
-
   const renderSingleUploadData = useCallback(
     ({item}) => (
       <SingleImageProgressBar
@@ -184,7 +174,6 @@ const ImageProgress = () => {
     [onCancelPress],
   );
 
-
   const flatListKeyRef = useCallback((item) => item?.id?.toString(), []);
   const onContentSizeChange = useCallback(
     () => flatListRef.current.scrollToEnd(),
@@ -194,9 +183,14 @@ const ImageProgress = () => {
     <View
       style={{
         ...styles.mainViewContainer,
-        maxHeight: heightOfProgressView * imageUploadContext?.state?.uploadingData?.length,
-        height:  heightOfProgressView * imageUploadContext?.state?.uploadingData?.length,
-      }}>
+        maxHeight:
+          heightOfProgressView *
+          imageUploadContext?.state?.uploadingData?.length,
+        height:
+          heightOfProgressView *
+          imageUploadContext?.state?.uploadingData?.length,
+      }}
+    >
       {/* Arrow
       {imageUploadContext?.state?.uploadingData?.length > 1 && (
         <TouchableOpacity
@@ -232,7 +226,6 @@ const ImageProgress = () => {
 };
 
 const styles = StyleSheet.create({
-  
   mainViewContainer: {
     flex: 1,
     position: 'absolute',

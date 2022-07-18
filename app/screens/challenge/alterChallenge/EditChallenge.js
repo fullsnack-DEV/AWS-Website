@@ -491,7 +491,8 @@ export default function EditChallenge({navigation, route}) {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 margin: 15,
-              }}>
+              }}
+            >
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -627,7 +628,7 @@ export default function EditChallenge({navigation, route}) {
                     !_.isEqual(
                       challengeObj?.score_rules,
                       oldVersion?.score_rules,
-                  )
+                    )
                   }
                   onEditPress={() => {
                     navigation.navigate('GameTennisDuration', {
@@ -656,7 +657,7 @@ export default function EditChallenge({navigation, route}) {
                     !_.isEqual(
                       challengeObj?.game_duration,
                       oldVersion?.game_duration,
-                  )
+                    )
                   }
                   onEditPress={() => {
                     navigation.navigate('GameDuration', {
@@ -796,7 +797,7 @@ export default function EditChallenge({navigation, route}) {
               title={'Game Type'}
               value={challengeObj?.game_type}
               tooltipText={
-              'The game result has an effect on TC points of the challengee and you.'
+                'The game result has an effect on TC points of the challengee and you.'
               }
               tooltipHeight={hp('6%')}
               tooltipWidth={wp('50%')}
@@ -873,7 +874,7 @@ export default function EditChallenge({navigation, route}) {
                 !!(
                   challengeObj?.general_rules !== oldVersion?.general_rules ||
                   challengeObj?.special_rules !== oldVersion?.special_rules
-              )
+                )
               }
               onEditPress={() => {
                 navigation.navigate('GameRules', {
@@ -941,7 +942,7 @@ export default function EditChallenge({navigation, route}) {
                 !_.isEqual(
                   challengeObj?.responsible_for_referee,
                   oldVersion?.responsible_for_referee,
-              )
+                )
               }
               isEdit={true}
               onEditPress={() => {
@@ -988,7 +989,7 @@ export default function EditChallenge({navigation, route}) {
               teamB={getChallengee()?.group_name ?? getChallengee()?.full_name}
               numberOfScorekeeper={
                 challengeObj?.responsible_for_scorekeeper?.who_secure?.length ??
-              0
+                0
               }
               agreementOpetion={challengeObj?.min_scorekeeper === 0 ? 1 : 2}
               moreButtonVisible={true}
@@ -1000,7 +1001,7 @@ export default function EditChallenge({navigation, route}) {
                 !_.isEqual(
                   challengeObj?.responsible_for_scorekeeper,
                   oldVersion?.responsible_for_scorekeeper,
-              )
+                )
               }
               isEdit={true}
               onEditPress={() => {
@@ -1034,7 +1035,7 @@ export default function EditChallenge({navigation, route}) {
                   total_stripe_fee: challengeObj?.total_stripe_fee,
                   total_payout: challengeObj?.total_payout,
                   total_amount: challengeObj?.total_amount,
-              }
+                }
               }
               currency={challengeObj?.game_fee?.currency_type}
               isChallenger={challengeObj?.challenger === entity.uid}
@@ -1060,7 +1061,7 @@ export default function EditChallenge({navigation, route}) {
             title={'Refund Policy'}
             value={challengeObj?.refund_policy}
             tooltipText={
-            '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
             }
             tooltipHeight={hp('18%')}
             tooltipWidth={wp('50%')}
@@ -1129,7 +1130,8 @@ export default function EditChallenge({navigation, route}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           borderTopLeftRadius: 15,
           borderTopRightRadius: 15,
-        }}>
+        }}
+      >
         <View style={styles.mainContainer}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
@@ -1152,7 +1154,8 @@ export default function EditChallenge({navigation, route}) {
               onPress={() => {
                 setAlterModalVisible(false);
                 navigation.popToTop();
-              }}>
+              }}
+            >
               <Text style={styles.goToProfileTitle}>OK</Text>
             </TouchableOpacity>
           </SafeAreaView>

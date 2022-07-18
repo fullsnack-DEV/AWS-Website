@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image, TouchableOpacity,
-} from 'react-native';
+import {Text, View, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -18,17 +13,20 @@ export default function TeamClubLeagueView({
   return (
     <TouchableOpacity onPress={onProfilePress} style={styles.topViewContainer}>
       <View style={styles.profileView}>
-        <Image source={teamImage} style={ styles.profileImage } />
+        <Image source={teamImage} style={styles.profileImage} />
       </View>
       <View style={styles.topTextContainer}>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{flexDirection: 'row'}}>
           <Text style={styles.teamTitleTextStyle}>{teamTitle}</Text>
-          <Image source={teamIcon} style={styles.teamIconStyle} resizeMode={'contain'} />
+          <Image
+            source={teamIcon}
+            style={styles.teamIconStyle}
+            resizeMode={'contain'}
+          />
         </View>
         <Text style={styles.userNameTextStyle}>{teamCityName}</Text>
       </View>
     </TouchableOpacity>
-
   );
 }
 const styles = StyleSheet.create({
@@ -51,7 +49,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,

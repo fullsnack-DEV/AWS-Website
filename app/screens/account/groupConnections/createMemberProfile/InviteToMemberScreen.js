@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useContext } from 'react';
+import React, {useLayoutEffect, useState, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -7,7 +7,7 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import { acceptRequest, declineRequest } from '../../../../api/Notificaitons';
+import {acceptRequest, declineRequest} from '../../../../api/Notificaitons';
 import AuthContext from '../../../../auth/context';
 
 import TCProfileView from '../../../../components/TCProfileView';
@@ -16,10 +16,10 @@ import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
-import { widthPercentageToDP } from '../../../../utils';
+import {widthPercentageToDP} from '../../../../utils';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
-export default function InviteToMemberScreen({ navigation, route }) {
+export default function InviteToMemberScreen({navigation, route}) {
   const [data] = useState(route?.params?.data);
   const authContext = useContext(AuthContext);
 
@@ -74,9 +74,12 @@ export default function InviteToMemberScreen({ navigation, route }) {
       <View style={styles.mailContainer}>
         <View>
           <Text style={styles.mainTextStyle}>
-            <Text style={{ fontFamily: fonts.RBlack }}>
+            <Text style={{fontFamily: fonts.RBlack}}>
               {data?.activities?.[0]?.actor?.data?.full_name}
-            </Text>{' sent you a request to connect your account  to one of their exsiting member profiles. When you accept it, you will be a member in the team and the profile will be connected to your account.'}
+            </Text>
+            {
+              ' sent you a request to connect your account  to one of their exsiting member profiles. When you accept it, you will be a member in the team and the profile will be connected to your account.'
+            }
           </Text>
         </View>
 
@@ -84,7 +87,7 @@ export default function InviteToMemberScreen({ navigation, route }) {
           <TCProfileView
             image={
               authContext.entity.obj.thumbnail
-                ? { uri: authContext.entity.obj.thumbnail }
+                ? {uri: authContext.entity.obj.thumbnail}
                 : images.profilePlaceHolder
             }
             style={styles.profileImage}
@@ -98,7 +101,9 @@ export default function InviteToMemberScreen({ navigation, route }) {
           <TCProfileView
             image={images.profilePlaceHolder}
             style={styles.profileImage}
-            name={`${JSON.parse(data.activities[0].object)?.connectInfo?.first_name} ${JSON.parse(data.activities[0].object)?.connectInfo?.last_name}`}
+            name={`${
+              JSON.parse(data.activities[0].object)?.connectInfo?.first_name
+            } ${JSON.parse(data.activities[0].object)?.connectInfo?.last_name}`}
             location={data?.activities?.[0]?.actor?.data?.full_name}
             color={colors.whiteColor}
           />
@@ -106,7 +111,9 @@ export default function InviteToMemberScreen({ navigation, route }) {
 
         <View>
           <Text style={styles.infoText}>
-            {'If the name on the profile is different from the name on your account, it will be replaced with the name on your account.'}
+            {
+              'If the name on the profile is different from the name on your account, it will be replaced with the name on your account.'
+            }
           </Text>
           <View style={styles.bottomButtonContainer}>
             <TCSmallButton
@@ -116,23 +123,22 @@ export default function InviteToMemberScreen({ navigation, route }) {
                 borderWidth: 1,
                 borderRadious: 80,
               }}
-              textStyle={{ color: colors.whiteColor }}
+              textStyle={{color: colors.whiteColor}}
               title={strings.declineTitle}
               onPress={() => {
                 onDecline(data.activities[0].id);
               }}
-              style={{ width: widthPercentageToDP('42%') }}
+              style={{width: widthPercentageToDP('42%')}}
             />
             <TCSmallButton
               title={strings.acceptTitle}
-              textStyle={{ color: colors.themeColor }}
+              textStyle={{color: colors.themeColor}}
               onPress={() => {
-               
                 onAccept(data.activities[0].id);
               }}
               startGradientColor={colors.whiteColor}
               endGradientColor={colors.whiteColor}
-              style={{ width: widthPercentageToDP('42%') }}
+              style={{width: widthPercentageToDP('42%')}}
             />
           </View>
         </View>

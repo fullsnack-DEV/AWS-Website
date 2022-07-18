@@ -1,44 +1,53 @@
-import React, {
-  useRef,
-} from 'react';
+import React, {useRef} from 'react';
 import {
   StyleSheet,
   Image,
   View,
-  TouchableWithoutFeedback, TouchableOpacity, Text,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+  Text,
 } from 'react-native';
 import images from '../../../Constants/ImagePath';
-import colors from '../../../Constants/Colors'
+import colors from '../../../Constants/Colors';
 import TennisMatchRecordsList from './TennisMatchRecordsList';
 import Header from '../../../components/Home/Header';
 import fonts from '../../../Constants/Fonts';
-import { widthPercentageToDP as wp } from '../../../utils';
+import {widthPercentageToDP as wp} from '../../../utils';
 
-export default function TennisRecordList({ route, navigation }) {
+export default function TennisRecordList({route, navigation}) {
   const matchRecords3DotRef = useRef();
   const onThreeDotPress = () => {
     matchRecords3DotRef.current.show();
-  }
+  };
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <Header
-          leftComponent={
-            <TouchableOpacity onPress={() => navigation.goBack() }>
-              <Image source={images.backArrow} style={styles.backImageStyle} />
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={styles.eventTextStyle}>Match records</Text>
-          }
-          rightComponent={route?.params?.isAdmin
-            && <TouchableWithoutFeedback
-                    onPress={onThreeDotPress}>
-              <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image source={images.backArrow} style={styles.backImageStyle} />
+          </TouchableOpacity>
+        }
+        centerComponent={
+          <Text style={styles.eventTextStyle}>Match records</Text>
+        }
+        rightComponent={
+          route?.params?.isAdmin && (
+            <TouchableWithoutFeedback onPress={onThreeDotPress}>
+              <Image
+                source={images.vertical3Dot}
+                style={styles.headerRightImg}
+              />
             </TouchableWithoutFeedback>
-          }
+          )
+        }
       />
-      <View style={ styles.sperateLine } />
-      <TennisMatchRecordsList navigation={navigation} matchRecords3DotRef={matchRecords3DotRef} isAdmin={route?.params?.isAdmin} matchData={route?.params?.gameData}/>
+      <View style={styles.sperateLine} />
+      <TennisMatchRecordsList
+        navigation={navigation}
+        matchRecords3DotRef={matchRecords3DotRef}
+        isAdmin={route?.params?.isAdmin}
+        matchData={route?.params?.gameData}
+      />
     </View>
   );
 }

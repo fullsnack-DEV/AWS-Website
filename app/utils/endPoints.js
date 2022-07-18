@@ -5,8 +5,8 @@ const api = {
     userDetail: 'users/',
     addUser: 'users',
     sportsList: 'games/sports',
-    locationSearch:
-      `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(cities)&key=${Config.GOOGLE_PLACE_KEY}&input=`,groupSearch: '/groups/search?',
+    locationSearch: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(cities)&key=${Config.GOOGLE_PLACE_KEY}&input=`,
+    groupSearch: '/groups/search?',
   },
   // NewsFeed Constants
   newsFeed: {
@@ -32,7 +32,6 @@ const api = {
   // Notification Constants
   notification: {
     notificationsList: 'notifications',
-
   },
   // Account Constants
   account: {

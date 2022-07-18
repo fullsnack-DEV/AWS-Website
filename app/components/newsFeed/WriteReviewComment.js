@@ -1,16 +1,12 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text,
-} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {StyleSheet, View, Text} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 // import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
 
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
-function WriteReviewComment({ data }) {
+function WriteReviewComment({data}) {
   let commentText = '';
   if (data && data.data && data.data.text) {
     commentText = data.data.text;
@@ -22,24 +18,18 @@ function WriteReviewComment({ data }) {
   }
 
   return (
-
-    <View style={ styles.mainContainer }>
-      <View style={ styles.userNameView }>
-        <View style={ styles.userCommentTextStyle }>
-          <Text style={ styles.userNameTxt }>
-            {userName}{' '}</Text>
-          <Text style={ styles.commentTextStyle }>{commentText}</Text>
-
+    <View style={styles.mainContainer}>
+      <View style={styles.userNameView}>
+        <View style={styles.userCommentTextStyle}>
+          <Text style={styles.userNameTxt}>{userName} </Text>
+          <Text style={styles.commentTextStyle}>{commentText}</Text>
         </View>
-
       </View>
     </View>
-
   );
 }
 
 const styles = StyleSheet.create({
-
   commentTextStyle: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,

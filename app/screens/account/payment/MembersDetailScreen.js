@@ -79,7 +79,8 @@ export default function MembersDetailScreen({navigation, route}) {
       headerRight: () => (
         <View style={styles.rightHeaderView}>
           <TouchableOpacity
-            onPress={() => createInvoiceModalRef.current.open()}>
+            onPress={() => createInvoiceModalRef.current.open()}
+          >
             <Image
               source={images.plusInvoice}
               style={styles.townsCupPlusIcon}
@@ -153,7 +154,8 @@ export default function MembersDetailScreen({navigation, route}) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => recipientModalRef.current.close()}>
+          onPress={() => recipientModalRef.current.close()}
+        >
           Cancel
         </Text>
 
@@ -170,7 +172,8 @@ export default function MembersDetailScreen({navigation, route}) {
             console.log(result);
             setSelectedRecipient(result);
             recipientModalRef.current.close();
-          }}>
+          }}
+        >
           Done
         </Text>
       </View>
@@ -184,7 +187,8 @@ export default function MembersDetailScreen({navigation, route}) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => createInvoiceModalRef.current.close()}>
+          onPress={() => createInvoiceModalRef.current.close()}
+        >
           Cancel
         </Text>
 
@@ -220,7 +224,8 @@ export default function MembersDetailScreen({navigation, route}) {
                   }, 10);
                 });
             }
-          }}>
+          }}
+        >
           Send
         </Text>
       </View>
@@ -293,7 +298,8 @@ export default function MembersDetailScreen({navigation, route}) {
             tempObj.selected = !tempObj?.selected;
             recipientData[index] = tempObj;
             setRecipientData([...recipientData]);
-          }}>
+          }}
+        >
           <Image
             source={
               item?.selected ? images.orangeCheckBox : images.uncheckEditor
@@ -368,7 +374,8 @@ export default function MembersDetailScreen({navigation, route}) {
             elevation: 10,
           }}
           HeaderComponent={createInvoiceModalHeader}
-          ref={createInvoiceModalRef}>
+          ref={createInvoiceModalRef}
+        >
           <View>
             <View>
               <TouchableOpacity
@@ -380,13 +387,15 @@ export default function MembersDetailScreen({navigation, route}) {
                   marginLeft: 15,
                   marginRight: 15,
                   flexDirection: 'row',
-                }}>
+                }}
+              >
                 <Text
                   style={
                     selectedRecipient.length > 0
                       ? styles.totalRecipient
                       : styles.recipientText
-                  }>
+                  }
+                >
                   {selectedRecipient.length > 0
                     ? `${selectedRecipient.length} Recipients`
                     : 'Recipients'}
@@ -407,13 +416,15 @@ export default function MembersDetailScreen({navigation, route}) {
                   marginLeft: 15,
                   marginRight: 15,
                   flexDirection: 'row',
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   Due Date
                 </Text>
                 <Text
@@ -421,7 +432,8 @@ export default function MembersDetailScreen({navigation, route}) {
                     selectedDueDate
                       ? styles.dueDateSelectedText
                       : styles.dueDateText
-                  }>
+                  }
+                >
                   {selectedDueDate
                     ? moment(selectedDueDate).format('MMM DD, YYYY')
                     : 'Please select'}
@@ -455,13 +467,15 @@ export default function MembersDetailScreen({navigation, route}) {
                   color: colors.lightBlackColor,
                   marginLeft: 15,
                   marginTop: 15,
-                }}>
+                }}
+              >
                 {strings.invoiceTitle}
               </Text>
               <TextInput
                 style={styles.amountTxt}
                 onChangeText={(text) => setInvoiceTitle(text)}
-                value={invoiceTitle}></TextInput>
+                value={invoiceTitle}
+              ></TextInput>
             </View>
 
             <View>
@@ -472,7 +486,8 @@ export default function MembersDetailScreen({navigation, route}) {
                   color: colors.lightBlackColor,
                   marginLeft: 15,
                   marginTop: 15,
-                }}>
+                }}
+              >
                 {strings.amountDueTitle}
               </Text>
               <TextInput
@@ -483,7 +498,8 @@ export default function MembersDetailScreen({navigation, route}) {
                   }
                 }}
                 keyboardType="numeric"
-                value={amount}></TextInput>
+                value={amount}
+              ></TextInput>
             </View>
 
             <View style={{marginBottom: 10}}>
@@ -494,14 +510,16 @@ export default function MembersDetailScreen({navigation, route}) {
                   color: colors.lightBlackColor,
                   marginLeft: 15,
                   marginTop: 15,
-                }}>
+                }}
+              >
                 {strings.invoiceDescTitle}
               </Text>
               <TextInput
                 style={styles.noteTxt}
                 multiline
                 onChangeText={(text) => setNote(text)}
-                value={note}></TextInput>
+                value={note}
+              ></TextInput>
             </View>
           </View>
         </Modalize>
@@ -525,7 +543,8 @@ export default function MembersDetailScreen({navigation, route}) {
             elevation: 10,
           }}
           HeaderComponent={RecipientsModalHeader}
-          ref={recipientModalRef}>
+          ref={recipientModalRef}
+        >
           <View>
             <View>
               <View>
@@ -537,13 +556,15 @@ export default function MembersDetailScreen({navigation, route}) {
                     marginLeft: 15,
                     marginRight: 15,
                     flexDirection: 'row',
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
                       fontFamily: fonts.RRegular,
                       fontSize: 16,
                       color: colors.lightBlackColor,
-                    }}>
+                    }}
+                  >
                     All
                   </Text>
                   {/* <Image source={images.orangeCheckBox} style={styles.checkButton} /> */}
@@ -558,7 +579,8 @@ export default function MembersDetailScreen({navigation, route}) {
                       });
 
                       setRecipientData([...result]);
-                    }}>
+                    }}
+                  >
                     <Image
                       source={
                         recipientAllData
@@ -578,7 +600,8 @@ export default function MembersDetailScreen({navigation, route}) {
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   Members
                 </Text>
                 <FlatList

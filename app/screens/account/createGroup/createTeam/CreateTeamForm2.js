@@ -128,14 +128,16 @@ export default function CreateTeamForm2({navigation, route}) {
       style={styles.listItem}
       onPress={() => {
         isIconCheckedOrNot({item, index});
-      }}>
+      }}
+    >
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>{item.language}</Text>
         <View style={styles.checkbox}>
           {languages[index].isChecked ? (
@@ -157,7 +159,8 @@ export default function CreateTeamForm2({navigation, route}) {
           setFollower(item);
           setVisibleFollowersModal(false);
         }, 300);
-      }}>
+      }}
+    >
       <View
         style={{
           padding: 20,
@@ -165,7 +168,8 @@ export default function CreateTeamForm2({navigation, route}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
           // backgroundColor: 'red',
-        }}>
+        }}
+      >
         <TCFollowerList
           type={'medium'}
           name={item.full_name}
@@ -197,14 +201,16 @@ export default function CreateTeamForm2({navigation, route}) {
           setGender(item?.label);
           setVisibleGendersModal(false);
         }, 300);
-      }}>
+      }}
+    >
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>{item.label}</Text>
         <View style={styles.checkbox}>
           {gendersSelection === item?.value ? (
@@ -286,7 +292,8 @@ export default function CreateTeamForm2({navigation, route}) {
       <KeyboardAwareScrollView>
         <ScrollView
           style={styles.mainContainer}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           {followersList ? (
             <View style={styles.fieldView}>
               <TCLabel title={strings.followersDescription} />
@@ -297,7 +304,8 @@ export default function CreateTeamForm2({navigation, route}) {
                     marginTop: 25,
                     flexDirection: 'row',
                     justifyContent: 'space-between',
-                  }}>
+                  }}
+                >
                   <TCFollowerList
                     type={'medium'}
                     name={follower?.full_name}
@@ -314,7 +322,8 @@ export default function CreateTeamForm2({navigation, route}) {
                     onPress={() => {
                       setFollower();
                       setFollowersSelection();
-                    }}>
+                    }}
+                  >
                     <Image
                       source={images.cancelImage}
                       style={styles.closeButton}
@@ -325,10 +334,12 @@ export default function CreateTeamForm2({navigation, route}) {
               {!follower && (
                 <TouchableOpacity
                   style={styles.languageView}
-                  onPress={() => setVisibleFollowersModal(true)}>
+                  onPress={() => setVisibleFollowersModal(true)}
+                >
                   <Text
                     style={styles.languagePlaceholderText}
-                    numberOfLines={1}>
+                    numberOfLines={1}
+                  >
                     {strings.followersPlaceholder}
                   </Text>
                 </TouchableOpacity>
@@ -364,7 +375,8 @@ export default function CreateTeamForm2({navigation, route}) {
                     marginLeft: 15,
                     marginRight: 15,
                     justifyContent: 'space-between',
-                  }}>
+                  }}
+                >
                   <RNPickerSelect
                     placeholder={{
                       label: strings.minPlaceholder,
@@ -482,7 +494,8 @@ export default function CreateTeamForm2({navigation, route}) {
                   ? styles.languageText
                   : styles.languagePlaceholderText
               }
-              numberOfLines={50}>
+              numberOfLines={50}
+            >
               {languagesName || 'Add language'}
             </Text>
           </TouchableOpacity>
@@ -491,7 +504,8 @@ export default function CreateTeamForm2({navigation, route}) {
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <Text style={styles.LocationText}>
               {strings.descriptionTeamTextDetails}
             </Text>
@@ -531,7 +545,8 @@ export default function CreateTeamForm2({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -547,18 +562,21 @@ export default function CreateTeamForm2({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setModalVisible(false)}>
+              onPress={() => setModalVisible(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -568,7 +586,8 @@ export default function CreateTeamForm2({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Languages
             </Text>
             <TouchableOpacity
@@ -580,7 +599,8 @@ export default function CreateTeamForm2({navigation, route}) {
                 }
                 setSelectedLanguages(selectedLanguage);
                 toggleModal();
-              }}>
+              }}
+            >
               <Text
                 style={{
                   alignSelf: 'center',
@@ -588,7 +608,8 @@ export default function CreateTeamForm2({navigation, route}) {
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
-                }}>
+                }}
+              >
                 Apply
               </Text>
             </TouchableOpacity>
@@ -613,7 +634,8 @@ export default function CreateTeamForm2({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -629,18 +651,21 @@ export default function CreateTeamForm2({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleGendersModal(false)}>
+              onPress={() => setVisibleGendersModal(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -650,7 +675,8 @@ export default function CreateTeamForm2({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               {strings.playersGenderText}
             </Text>
 
@@ -661,7 +687,8 @@ export default function CreateTeamForm2({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.themeColor,
-              }}></Text>
+              }}
+            ></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList
@@ -682,7 +709,8 @@ export default function CreateTeamForm2({navigation, route}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -698,18 +726,21 @@ export default function CreateTeamForm2({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleFollowersModal(false)}>
+              onPress={() => setVisibleFollowersModal(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -719,7 +750,8 @@ export default function CreateTeamForm2({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Player
             </Text>
 
@@ -730,7 +762,8 @@ export default function CreateTeamForm2({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.themeColor,
-              }}></Text>
+              }}
+            ></Text>
           </View>
           <View style={styles.separatorLine} />
 

@@ -28,8 +28,8 @@ import {
   SectionList,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { hasNotch } from 'react-native-device-info';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {hasNotch} from 'react-native-device-info';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -37,18 +37,18 @@ import {
 import ActionSheet from 'react-native-actionsheet';
 // import ImageZoom from 'react-native-image-pan-zoom';
 import SwipeUpDownModal from 'react-native-swipe-modal-up-down';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import { stubTrue } from 'lodash';
-import { color } from 'react-native-reanimated';
+import {stubTrue} from 'lodash';
+import {color} from 'react-native-reanimated';
 import * as Utility from '../../utils/index';
-import { createReaction, getReactions } from '../../api/NewsFeeds';
+import {createReaction, getReactions} from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
-import { getTaggedText } from '../../utils';
+import {getTaggedText} from '../../utils';
 
-import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
+import {commentPostTimeCalculate} from '../../Constants/LoaderImages';
 import PostDescSection from '../newsFeed/PostDescSection';
 import TagView from '../newsFeed/TagView';
 import ShortsPlayer from './ShortsPlayer';
@@ -109,20 +109,28 @@ function ShortsVideoView({
   console.log('Video Item:', videoItem);
   const profileItem = multiAttachItem?.actor?.data;
   const descriptionItem = JSON.parse(multiAttachItem?.object)?.text;
-  const taggedItems = useMemo(() => JSON.parse(multiAttachItem?.object)?.format_tagged_data || [], [multiAttachItem?.object]);
+  const taggedItems = useMemo(
+    () => JSON.parse(multiAttachItem?.object)?.format_tagged_data || [],
+    [multiAttachItem?.object],
+  );
 
   const entityTagList = taggedItems.filter(
-    (e) => e?.entity_type === 'player'
-      || e?.entity_type === 'team'
-      || e?.entity_type === 'club'
-      || e?.entity_type === 'user',
+    (e) =>
+      e?.entity_type === 'player' ||
+      e?.entity_type === 'team' ||
+      e?.entity_type === 'club' ||
+      e?.entity_type === 'user',
   );
-  const gameTagList = useMemo(() => taggedItems.filter((e) => e?.entity_type === 'game'), [taggedItems]);
+  const gameTagList = useMemo(
+    () => taggedItems.filter((e) => e?.entity_type === 'game'),
+    [taggedItems],
+  );
 
   const taggedText = useMemo(() => getTaggedText(taggedItems), [taggedItems]);
   // const [componentHeight, onLayout] = Utility.useComponentSize();
   const [keyboardOffset, setKeyboardOffset] = useState(0);
-  const onKeyboardShow = (event) => setKeyboardOffset(event.endCoordinates.height);
+  const onKeyboardShow = (event) =>
+    setKeyboardOffset(event.endCoordinates.height);
   const onKeyboardHide = () => setKeyboardOffset(0);
   const keyboardDidShowListener = useRef();
   const keyboardDidHideListener = useRef();
@@ -148,7 +156,7 @@ function ShortsVideoView({
   }, []);
 
   const onLayout = useCallback((event) => {
-    const { height } = event.nativeEvent.layout;
+    const {height} = event.nativeEvent.layout;
     setComponentHeight(height);
   }, []);
 
@@ -187,7 +195,7 @@ function ShortsVideoView({
     [caller_id],
   );
 
-  const onShareActionSheetItemPress = ({ index: shareIndex }) => {
+  const onShareActionSheetItemPress = ({index: shareIndex}) => {
     if (shareIndex === 0) {
       Alert.alert('report video');
     } else if (shareIndex === 1) {
@@ -237,7 +245,7 @@ function ShortsVideoView({
   }
 
   const renderComments = useCallback(
-    ({ item }) => <WriteCommentItems data={item} />,
+    ({item}) => <WriteCommentItems data={item} />,
     [],
   );
   const listEmptyComponent = () => (
@@ -252,7 +260,7 @@ function ShortsVideoView({
   // }, []);
 
   const renderEntityTaggedItems = useCallback(
-    ({ item }) => {
+    ({item}) => {
       let teamIcon = '';
       let teamImagePH = '';
       if (item?.entity_type === 'team') {
@@ -271,7 +279,8 @@ function ShortsVideoView({
         <TouchableWithoutFeedback
           onPress={() => {
             onclosePress(!isClosed);
-          }}>
+          }}
+        >
           <TaggedEntityView
             onProfilePress={() => {
               navigation.push('HomeScreen', {
@@ -285,7 +294,7 @@ function ShortsVideoView({
             }}
             teamImage={
               item?.entity_data?.thumbnail
-                ? { uri: item?.entity_data?.thumbnail }
+                ? {uri: item?.entity_data?.thumbnail}
                 : teamImagePH
             }
             teamTitle={item?.entity_data?.full_name}
@@ -299,18 +308,19 @@ function ShortsVideoView({
   );
 
   const renderMatchTaggedItems = useCallback(
-    ({ item }) => (
+    ({item}) => (
       <TouchableWithoutFeedback
         onPress={() => {
           onclosePress(!isClosed);
-        }}>
+        }}
+      >
         <TCGameCard data={item?.entity_data} cardWidth={'92%'} />
       </TouchableWithoutFeedback>
     ),
     [isClosed, onclosePress],
   );
 
-  const renderSeparator = ({ section }) => {
+  const renderSeparator = ({section}) => {
     if (section.title === strings.taggedPeopleText) {
       return <View style={styles.saperatorLine} />;
     }
@@ -328,19 +338,20 @@ function ShortsVideoView({
     ) {
       if (hasNotch()) {
         return (
-          insets.top
-          + (windowHeight
-            - videoItem?.media_height * (windowWidth / videoItem?.media_width))
-            / 2
+          insets.top +
+          (windowHeight -
+            videoItem?.media_height * (windowWidth / videoItem?.media_width)) /
+            2
         );
       }
 
-        return (
-          insets.top - 20
-          + (windowHeight
-            - videoItem?.media_height * (windowWidth / videoItem?.media_width))
-            / 2
-        );
+      return (
+        insets.top -
+        20 +
+        (windowHeight -
+          videoItem?.media_height * (windowWidth / videoItem?.media_width)) /
+          2
+      );
     }
     if (
       Number(
@@ -353,14 +364,14 @@ function ShortsVideoView({
   };
 
   return (
-    <View style={{ backgroundColor: colors.blackColor, flex: 1 }}>
+    <View style={{backgroundColor: colors.blackColor, flex: 1}}>
       <View style={styles.mainViewContainer}>
         {!hideButton && (
           <View style={styles.playPauseContainer}>
             <Image
               source={!isPlay ? images.gamePause : images.gameStart}
               resizeMode={'contain'}
-              style={{ height: 20, wodth: 12.5 }}
+              style={{height: 20, wodth: 12.5}}
             />
           </View>
         )}
@@ -372,7 +383,8 @@ function ShortsVideoView({
             top: 0,
             left: 0,
             right: 0,
-          }}>
+          }}
+        >
           <Image source={images.portraitVideoImage} resizeMode={'cover'} />
           <ShortsPlayer
             curruentIndex={index}
@@ -388,8 +400,8 @@ function ShortsVideoView({
             containerStyle={{
               ...styles.videoDisplayStyle, // AVH*DW/AVW
               height:
-                videoItem?.media_height
-                * (windowWidth / videoItem?.media_width),
+                videoItem?.media_height *
+                (windowWidth / videoItem?.media_width),
               marginTop: getMarginTop(),
               position: 'absolute',
             }}
@@ -397,8 +409,8 @@ function ShortsVideoView({
               ...styles.videoDisplayStyle,
 
               height:
-                videoItem?.media_height
-                * (windowWidth / videoItem?.media_width),
+                videoItem?.media_height *
+                (windowWidth / videoItem?.media_width),
               // marginTop:
               //   Dimensions.get('window').height
               //   > Dimensions.get('window').width * 1.78
@@ -417,7 +429,8 @@ function ShortsVideoView({
           Dimensions.get('window').height - videoItem?.media_height
         }\nNotch Height: ${insets.top}`}</Text> */}
         <View
-          style={{ ...styles.commentShareLikeView, zIndex: !isClosed ? 1 : 0 }}>
+          style={{...styles.commentShareLikeView, zIndex: !isClosed ? 1 : 0}}
+        >
           <View style={{}}>
             <TouchableOpacity
               onPress={() => {
@@ -429,7 +442,8 @@ function ShortsVideoView({
                 setLike(!like);
                 onLikePress(multiAttachItem);
               }}
-              style={styles.imageTouchStyle}>
+              style={styles.imageTouchStyle}
+            >
               <Image
                 style={styles.commentImage}
                 source={like ? images.shortLike : images.shortDisLike}
@@ -443,7 +457,8 @@ function ShortsVideoView({
                   {
                     color: like === true ? '#FF8A01' : colors.whiteColor,
                   },
-                ]}>
+                ]}
+              >
                 {likeCount}
               </Text>
             )}
@@ -451,16 +466,18 @@ function ShortsVideoView({
           <View>
             <TouchableOpacity
               onPress={() => setShowModelComment(true)}
-              style={styles.imageTouchStyle}>
+              style={styles.imageTouchStyle}
+            >
               <Image
-                style={[styles.commentImage, { top: 2 }]}
+                style={[styles.commentImage, {top: 2}]}
                 source={images.shortComment}
                 resizeMode={'cover'}
               />
             </TouchableOpacity>
 
-            <Text style={styles.commentlengthStyle}>{commentCount > 0 ? commentCount : ' '}</Text>
-
+            <Text style={styles.commentlengthStyle}>
+              {commentCount > 0 ? commentCount : ' '}
+            </Text>
           </View>
 
           <View>
@@ -468,7 +485,8 @@ function ShortsVideoView({
               onPress={() => {
                 shareActionSheet.current.show();
               }}
-              style={styles.imageTouchStyle}>
+              style={styles.imageTouchStyle}
+            >
               <Image
                 style={styles.commentImage}
                 source={images.shortShare}
@@ -482,7 +500,8 @@ function ShortsVideoView({
             style={styles.imageTouchStyle}
             onPress={() => {
               shareActionSheet.current.show();
-            }}>
+            }}
+          >
             <Image
               source={images.vertical3Dot}
               resizeMode={'contain'}
@@ -501,11 +520,13 @@ function ShortsVideoView({
             {
               height: isClosed ? componentHeight + 100 : componentHeight + 120,
             },
-          ]}>
+          ]}
+        >
           <View
             style={{
               flex: 1,
-            }}>
+            }}
+          >
             <ScrollView
               scrollEventThrottle={100}
               nestedScrollEnabled={true}
@@ -525,25 +546,28 @@ function ShortsVideoView({
                           ? windowHeight - 110
                           : componentHeight,
                       bottom: 24,
+                    }
               }
-              }>
+            >
               {!isClosed && (
                 <View
                   onLayout={onLayout}
                   style={{
                     paddingBottom: 40,
                     width: '85%',
-                  }}>
+                  }}
+                >
                   <View style={styles.mainContainer}>
                     <TouchableWithoutFeedback
-                      onPress={() => onProfilePress(multiAttachItem)}>
+                      onPress={() => onProfilePress(multiAttachItem)}
+                    >
                       <View style={styles.backgroundProfileView}>
                         <Image
                           style={styles.background}
                           source={
                             !profileItem?.thumbnail
                               ? images.profilePlaceHolder
-                              : { uri: profileItem?.thumbnail }
+                              : {uri: profileItem?.thumbnail}
                           }
                           resizeMode={'cover'}
                         />
@@ -552,7 +576,8 @@ function ShortsVideoView({
                     <View style={styles.userNameView}>
                       <Text
                         style={styles.userNameTxt}
-                        onPress={() => onProfilePress(multiAttachItem)}>
+                        onPress={() => onProfilePress(multiAttachItem)}
+                      >
                         {profileItem?.full_name}
                       </Text>
                       <Text style={styles.activeTimeAgoTxt}>
@@ -565,16 +590,16 @@ function ShortsVideoView({
                     {topDesc ? (
                       <PostDescSection
                         descriptions={descriptionItem ?? ''}
-                        containerStyle={{ marginHorizontal: 15 }}
-                        descriptionTxt={{ color: colors.whiteColor }}
+                        containerStyle={{marginHorizontal: 15}}
+                        descriptionTxt={{color: colors.whiteColor}}
                         onReadMorePress={() => setTopDesc(false)}
                       />
                     ) : (
                       <PostDescSection
                         descriptions={descriptionItem ?? ''}
                         character={50}
-                        containerStyle={{ marginHorizontal: 12 }}
-                        descriptionTxt={{ color: colors.whiteColor }}
+                        containerStyle={{marginHorizontal: 12}}
+                        descriptionTxt={{color: colors.whiteColor}}
                         onReadMorePress={() => {
                           if (descriptionItem.length > 50) {
                             setTopDesc(true);
@@ -591,7 +616,8 @@ function ShortsVideoView({
                       style={styles.mainContainerStyle}
                       onPress={() => {
                         setIsClosed(!isClosed);
-                      }}>
+                      }}
+                    >
                       <Image
                         source={images.tagGreenImage}
                         style={styles.imageStyle}
@@ -610,44 +636,44 @@ function ShortsVideoView({
           <Modal
             isVisible={isClosed}
             backdropColor="black"
-            style={{ margin: 0 }}
-            backdropOpacity={0.5}>
-            <SafeAreaView style={{ flex: 1, marginTop: hp(10) }}>
+            style={{margin: 0}}
+            backdropOpacity={0.5}
+          >
+            <SafeAreaView style={{flex: 1, marginTop: hp(10)}}>
               <TouchableWithoutFeedback
-                          style={styles.closeContainer}
-                          onPress={() => {
-                            setIsClosed(!isClosed);
-                          }}>
+                style={styles.closeContainer}
+                onPress={() => {
+                  setIsClosed(!isClosed);
+                }}
+              >
                 <Image
-                            source={images.menuClose}
-                            style={styles.closeImageStyle}
-                            resizeMode={'contain'}
-                          />
+                  source={images.menuClose}
+                  style={styles.closeImageStyle}
+                  resizeMode={'contain'}
+                />
               </TouchableWithoutFeedback>
               <SectionList
                 nestedScrollEnabled={true}
                 ItemSeparatorComponent={renderSeparator}
                 stickySectionHeadersEnabled={true}
-                renderSectionHeader={({ section: { title } }) => {
+                renderSectionHeader={({section: {title}}) => {
                   if (
-                    gameTagList.length > 0
-                    && title === strings.taggedMatchesText
+                    gameTagList.length > 0 &&
+                    title === strings.taggedMatchesText
                   ) {
                     return (
                       <View style={styles.closeStyle}>
                         <Text style={styles.tagTitle}>{title}</Text>
-
                       </View>
                     );
                   }
                   if (
-                    entityTagList.length > 0
-                    && title === strings.taggedPeopleText
+                    entityTagList.length > 0 &&
+                    title === strings.taggedPeopleText
                   ) {
                     return (
                       <View style={styles.closeStyle}>
                         <Text style={styles.tagTitle}>{title}</Text>
-
                       </View>
                     );
                   }
@@ -684,30 +710,31 @@ function ShortsVideoView({
           PressToanimateDirection={'down'}
           // fade={true}
           ContentModal={
-            <View style={{ flex: 1 }}>
+            <View style={{flex: 1}}>
               <TCThinDivider width={'100%'} height={1} />
               <FlatList
                 data={commentData}
                 renderItem={renderComments}
                 keyExtractor={(item) => index.toString()}
                 ListEmptyComponent={listEmptyComponent}
-                style={{ marginBottom: 100 }}
+                style={{marginBottom: 100}}
               />
 
               <SafeAreaView
                 style={[
                   styles.bottomSafeAreaStyle,
-                  { bottom: keyboardOffset, position: 'absolute' },
-                ]}>
+                  {bottom: keyboardOffset, position: 'absolute'},
+                ]}
+              >
                 {/* <View style={styles.bottomSperateLine} /> */}
                 <View style={styles.bottomImgView}>
                   <View style={styles.commentReportView}>
                     <Image
                       source={
-                        userImage ? { uri: userImage } : images.profilePlaceHolder
+                        userImage ? {uri: userImage} : images.profilePlaceHolder
                       }
                       resizeMode={'cover'}
-                      style={{ width: 40, height: 40, borderRadius: 40 / 2 }}
+                      style={{width: 40, height: 40, borderRadius: 40 / 2}}
                     />
                   </View>
                   <View style={styles.onlyMeViewStyle}>
@@ -753,7 +780,8 @@ function ShortsVideoView({
                             .catch((e) => {
                               console.log(e);
                             });
-                        }}>
+                        }}
+                      >
                         <Text style={styles.sendTextStyle}>SEND</Text>
                       </TouchableOpacity>
                     )}
@@ -770,7 +798,8 @@ function ShortsVideoView({
                 onPress={() => {
                   setShowModelComment(false);
                   setanimateModal(false);
-                }}>
+                }}
+              >
                 <Text>Comments</Text>
               </TouchableOpacity>
             </View>
@@ -897,7 +926,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: wp('2%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 0.5,
     width: wp('80%'),
@@ -999,8 +1028,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-     paddingBottom: 10,
-     paddingTop: 10,
+    paddingBottom: 10,
+    paddingTop: 10,
     // backgroundColor: 'black',
   },
   closeImageStyle: {
@@ -1008,7 +1037,6 @@ const styles = StyleSheet.create({
     width: 12,
     resizeMode: 'contain',
     tintColor: colors.whiteColor,
-
   },
 });
 

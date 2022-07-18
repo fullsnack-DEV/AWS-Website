@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -6,7 +6,6 @@ import {
   TextInput,
   FlatList,
   TouchableOpacity,
-
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {
@@ -21,11 +20,11 @@ import Separator from '../Separator';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import { searchLocationPlaceDetail, searchLocations } from '../../api/External'
-import { getHitSlop } from '../../utils';
+import {searchLocationPlaceDetail, searchLocations} from '../../api/External';
+import {getHitSlop} from '../../utils';
 
-export default function ModalLocationSearch({ visible, onSelect, onClose }) {
-  const authContext = useContext(AuthContext)
+export default function ModalLocationSearch({visible, onSelect, onClose}) {
+  const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -46,75 +45,99 @@ export default function ModalLocationSearch({ visible, onSelect, onClose }) {
     }
   };
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = ({item, index}) => (
     <TouchableOpacity
-            style={ styles.listItem }
-            onPress={ () => {
-              searchLocationPlaceDetail(item?.place_id, authContext).then((response) => {
-                const data = {
-                  ...item,
-                  longitude: response?.result?.geometry?.location?.lng,
-                  latitude: response?.result?.geometry?.location?.lat,
-                }
-                onClose();
-                onSelect(data);
-              }).catch(onClose)
-            } }>
-      <Text style={ styles.cityList }>{cityData[index].description}</Text>
+      style={styles.listItem}
+      onPress={() => {
+        searchLocationPlaceDetail(item?.place_id, authContext)
+          .then((response) => {
+            const data = {
+              ...item,
+              longitude: response?.result?.geometry?.location?.lng,
+              latitude: response?.result?.geometry?.location?.lat,
+            };
+            onClose();
+            onSelect(data);
+          })
+          .catch(onClose);
+      }}
+    >
+      <Text style={styles.cityList}>{cityData[index].description}</Text>
 
       <Separator />
     </TouchableOpacity>
   );
   return (
     <Modal
-        transparent={true}
-        isVisible={visible}
-        backdropColor="transparent"
-        style={{
-          height: hp(100),
-          width: wp(100),
-          margin: 0,
-          justifyContent: 'flex-end',
-          backgroundColor: colors.yellowColor,
-          marginLeft: 0,
-          marginRight: 0,
-          marginBottom: 0,
-        }}
-        hasBackdrop
-        onBackdropPress={onClose}
-        backdropOpacity={0}
+      transparent={true}
+      isVisible={visible}
+      backdropColor="transparent"
+      style={{
+        height: hp(100),
+        width: wp(100),
+        margin: 0,
+        justifyContent: 'flex-end',
+        backgroundColor: colors.yellowColor,
+        marginLeft: 0,
+        marginRight: 0,
+        marginBottom: 0,
+      }}
+      hasBackdrop
+      onBackdropPress={onClose}
+      backdropOpacity={0}
     >
-      <FastImage style={ styles.background } resizeMode={'stretch'} source={ images.orangeLayer } />
-      <FastImage style={ styles.background } resizeMode={'stretch'} source={ images.bgImage } />
-      <TouchableOpacity 
-       hitSlop={getHitSlop(15)}
-      onPress={onClose} style={{
-        position: 'absolute', right: wp(5), top: hp(8),
-      }}>
-        <FastImage source={images.cancelImage} resizeMode={'contain'} tintColor={colors.whiteColor} style={styles.closeButton}/>
+      <FastImage
+        style={styles.background}
+        resizeMode={'stretch'}
+        source={images.orangeLayer}
+      />
+      <FastImage
+        style={styles.background}
+        resizeMode={'stretch'}
+        source={images.bgImage}
+      />
+      <TouchableOpacity
+        hitSlop={getHitSlop(15)}
+        onPress={onClose}
+        style={{
+          position: 'absolute',
+          right: wp(5),
+          top: hp(8),
+        }}
+      >
+        <FastImage
+          source={images.cancelImage}
+          resizeMode={'contain'}
+          tintColor={colors.whiteColor}
+          style={styles.closeButton}
+        />
       </TouchableOpacity>
-      <Text style={ styles.LocationText }>{strings.locationText}</Text>
+      <Text style={styles.LocationText}>{strings.locationText}</Text>
 
-      <View style={ styles.sectionStyle }>
-        <FastImage source={ images.searchLocation } resizeMode={'contain'} style={ styles.searchImg } />
+      <View style={styles.sectionStyle}>
+        <FastImage
+          source={images.searchLocation}
+          resizeMode={'contain'}
+          style={styles.searchImg}
+        />
         <TextInput
-                    style={ styles.textInput }
-                    placeholder={ strings.locationPlaceholderText }
-                    clearButtonMode="always"
-                    placeholderTextColor={ colors.themeColor }
-                    onChangeText={ (text) => setSearchText(text) }
-                />
+          style={styles.textInput}
+          placeholder={strings.locationPlaceholderText}
+          clearButtonMode="always"
+          placeholderTextColor={colors.themeColor}
+          onChangeText={(text) => setSearchText(text)}
+        />
       </View>
       {noData && (
-        <Text style={ styles.noDataText }>
+        <Text style={styles.noDataText}>
           Please enter atleast 3 characters to see city
         </Text>
       )}
       <FlatList
-                data={ cityData }
-                renderItem={ renderItem }
-                keyExtractor={(item, index) => index.toString()}
-            />
+        data={cityData}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+      />
     </Modal>
   );
 }
@@ -181,7 +204,7 @@ const styles = StyleSheet.create({
     paddingRight: 5,
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
   },

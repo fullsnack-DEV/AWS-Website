@@ -48,4 +48,3 @@ export const searchNearByCity = async (latValue, longValue, radiusValue) =>
     method: 'get',
     url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latValue},${longValue}&radius=${radiusValue}`,
   });
-

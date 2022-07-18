@@ -91,7 +91,7 @@ class CalendarDayComponent extends React.PureComponent {
 
     return (
       <View style={styles.container}>
-        <View >
+        <View>
           {this.props.horizontal ? (
             <View>
               <Text style={styles.weekName} numberOfLines={1}>
@@ -102,7 +102,8 @@ class CalendarDayComponent extends React.PureComponent {
         </View>
         <TouchableOpacity
           style={[styles.content, contentStyle.content]}
-          onPress={this.onDayPress}>
+          onPress={this.onDayPress}
+        >
           <Text style={[styles.contentText, contentStyle.text]}>
             {String(this.props.children)}
           </Text>

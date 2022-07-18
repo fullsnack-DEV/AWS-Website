@@ -81,14 +81,15 @@ export default function ActivitySettingScreen({navigation, route}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}>
+      }}
+    >
       <View style={{flexDirection: 'row'}}>
         <Text style={styles.listItems}>{item.key}</Text>
         {(item.key === 'Looking For Team' ||
           item.key === 'Looking For Club') && (
-            <Text style={styles.currencyTypeStyle}>
-              {sportObj.is_active ? 'Yes' : 'No'}
-            </Text>
+          <Text style={styles.currencyTypeStyle}>
+            {sportObj.is_active ? 'Yes' : 'No'}
+          </Text>
         )}
         <Image source={images.nextArrow} style={styles.nextArrow} />
       </View>

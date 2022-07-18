@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
+import {StyleSheet, TouchableOpacity, Text} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   widthPercentageToDP as wp,
@@ -28,25 +24,48 @@ export default function BlockAvailableTabView({
 }) {
   return (
     <LinearGradient
-        colors={[startGradientColor, endGradientColor]}
-        style={[styles.eventPrivacyContianer, style]}
-      >
+      colors={[startGradientColor, endGradientColor]}
+      style={[styles.eventPrivacyContianer, style]}
+    >
       <TouchableOpacity
-            onPress={onFirstTabPress}
-            style={blocked ? [styles.activeEventPricacy, activeEventPricacy] : [styles.inactiveEventPricacy, inactiveEventPricacy]}
-        >
+        onPress={onFirstTabPress}
+        style={
+          blocked
+            ? [styles.activeEventPricacy, activeEventPricacy]
+            : [styles.inactiveEventPricacy, inactiveEventPricacy]
+        }
+      >
         <Text
-          style={blocked ? [styles.activeEventPrivacyText, activeEventPrivacyText, { color: colors.grayColor }]
-            : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]}
-        >{firstTabTitle}</Text>
+          style={
+            blocked
+              ? [
+                  styles.activeEventPrivacyText,
+                  activeEventPrivacyText,
+                  {color: colors.grayColor},
+                ]
+              : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
+          }
+        >
+          {firstTabTitle}
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
-            onPress={onSecondTabPress}
-            style={!blocked ? [styles.activeEventPricacy, activeEventPricacy] : [styles.inactiveEventPricacy, inactiveEventPricacy]}
+        onPress={onSecondTabPress}
+        style={
+          !blocked
+            ? [styles.activeEventPricacy, activeEventPricacy]
+            : [styles.inactiveEventPricacy, inactiveEventPricacy]
+        }
+      >
+        <Text
+          style={
+            !blocked
+              ? [styles.activeEventPrivacyText, activeEventPrivacyText]
+              : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
+          }
         >
-        <Text style={!blocked ? [styles.activeEventPrivacyText, activeEventPrivacyText]
-          : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]}
-        >{secondTabTitle}</Text>
+          {secondTabTitle}
+        </Text>
       </TouchableOpacity>
     </LinearGradient>
   );
@@ -66,9 +85,9 @@ const styles = StyleSheet.create({
   activeEventPricacy: {
     flex: 1,
     backgroundColor: colors.whiteColor,
-   
+
     alignItems: 'center',
-    justifyContent:'center',
+    justifyContent: 'center',
     borderRadius: wp('1.5%'),
   },
   inactiveEventPricacy: {

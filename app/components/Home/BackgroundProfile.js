@@ -130,7 +130,8 @@ export default function BackgroundProfile({
 
               <TouchableOpacity
                 onPress={() => onConnectionButtonPress('members')}
-                style={styles.statusInnerViewStyle}>
+                style={styles.statusInnerViewStyle}
+              >
                 <Text style={styles.followingLengthText}>
                   {entityData?.memberCount}
                 </Text>
@@ -141,7 +142,8 @@ export default function BackgroundProfile({
 
               <TouchableOpacity
                 onPress={() => onConnectionButtonPress('followers')}
-                style={styles.statusInnerViewStyle}>
+                style={styles.statusInnerViewStyle}
+              >
                 <Text style={styles.followingLengthText}>
                   {entityData?.followersCounter}
                 </Text>
@@ -152,7 +154,8 @@ export default function BackgroundProfile({
               {loggedInEntity.uid !== currentUserData.group_id && (
                 <TouchableOpacity
                   onPress={() => onAction('message')}
-                  style={styles.statusInnerViewStyle}>
+                  style={styles.statusInnerViewStyle}
+                >
                   <Image
                     style={styles.messageImage}
                     source={images.messageIcon}
@@ -166,7 +169,8 @@ export default function BackgroundProfile({
               {currentUserData.following_count !== undefined ? (
                 <TouchableOpacity
                   onPress={() => onConnectionButtonPress('following')}
-                  style={styles.statusInnerViewStyle}>
+                  style={styles.statusInnerViewStyle}
+                >
                   <Text style={styles.followingTextStyle}>
                     {strings.following}
                     <Text style={styles.followingLengthText}>
@@ -177,7 +181,8 @@ export default function BackgroundProfile({
               ) : (
                 <TouchableOpacity
                   onPress={() => onConnectionButtonPress('members')}
-                  style={styles.statusInnerViewStyle}>
+                  style={styles.statusInnerViewStyle}
+                >
                   <Text style={styles.followingLengthText}>
                     {entityData?.memberCount}
                     <Text style={styles.followingTextStyle}>
@@ -190,7 +195,8 @@ export default function BackgroundProfile({
 
               <TouchableOpacity
                 onPress={() => onConnectionButtonPress('followers')}
-                style={styles.statusInnerViewStyle}>
+                style={styles.statusInnerViewStyle}
+              >
                 <Text style={styles.followingLengthText}>
                   {entityData?.followersCounter}
                   <Text style={styles.followingTextStyle}>
@@ -204,7 +210,8 @@ export default function BackgroundProfile({
                 loggedInEntity.uid !== currentUserData.group_id && (
                   <TouchableOpacity
                     onPress={() => onAction('message')}
-                    style={styles.statusInnerViewStyle}>
+                    style={styles.statusInnerViewStyle}
+                  >
                     <Image
                       style={styles.messageImage}
                       source={images.messageIcon}
@@ -220,7 +227,8 @@ export default function BackgroundProfile({
                 currentUserData?.createdBy?.uid !== loggedInEntity.uid && (
                   <TouchableOpacity
                     onPress={() => onAction('message')}
-                    style={styles.statusInnerViewStyle}>
+                    style={styles.statusInnerViewStyle}
+                  >
                     <Image
                       style={styles.messageImage}
                       source={images.messageIcon}
@@ -244,11 +252,11 @@ export default function BackgroundProfile({
                 justifyContent: 'flex-start',
                 alignItems: 'flex-start',
                 marginBottom: 10,
-              }}>
+              }}
+            >
               <Text
-                style={
-                  styles.cityTextStyle
-                }>{`${entityData?.city}, ${entityData?.country}`}</Text>
+                style={styles.cityTextStyle}
+              >{`${entityData?.city}, ${entityData?.country}`}</Text>
               {(currentUserData.entity_type === 'team' ||
                 (currentUserData.entity_type === 'club' &&
                   currentUserData.sports_string)) && (
@@ -257,7 +265,8 @@ export default function BackgroundProfile({
                     flexDirection: 'row',
                     justifyContent: 'flex-start',
                     alignItems: 'flex-start',
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       backgroundColor: colors.lightBlackColor,
@@ -280,7 +289,8 @@ export default function BackgroundProfile({
             {currentUserData.hiringPlayers === 'Yes' && (
               <LinearGradient
                 colors={[colors.themeColor1, colors.themeColor3]}
-                style={styles.recruitingView}>
+                style={styles.recruitingView}
+              >
                 <Text style={styles.recruitingMembersText}>
                   Recruiting Members
                 </Text>

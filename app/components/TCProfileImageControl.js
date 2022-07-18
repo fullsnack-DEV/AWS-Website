@@ -1,7 +1,5 @@
 import React from 'react';
-import {
- StyleSheet, TouchableOpacity, View, Image,
- } from 'react-native';
+import {StyleSheet, TouchableOpacity, View, Image} from 'react-native';
 
 import colors from '../Constants/Colors';
 import images from '../Constants/ImagePath';
@@ -22,9 +20,10 @@ function TCProfileImageControl({
   showEditButtons = false,
 }) {
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{margin:10,borderRadius:10,overflow:'hidden',
-    height: 135,}}>
+    <View style={{flex: 1}}>
+      <View
+        style={{margin: 10, borderRadius: 10, overflow: 'hidden', height: 135}}
+      >
         <TCImage
           containerStyle={[styles.bgContainerStyle]}
           imageStyle={[styles.bgImageStyle, bgImageStyle]}
@@ -35,7 +34,8 @@ function TCProfileImageControl({
         {showEditButtons && (
           <TouchableOpacity
             style={styles.bgCameraButtonStyle}
-            onPress={onPressBGImage}>
+            onPress={onPressBGImage}
+          >
             <Image
               style={[styles.bgImageButtonStyle, bgImageButtonStyle]}
               source={buttonImage}
@@ -47,7 +47,7 @@ function TCProfileImageControl({
         imageStyle={[
           styles.profileImageStyle,
           profileImageStyle,
-          { marginTop: showEditButtons ? -40 : -36 },
+          {marginTop: showEditButtons ? -40 : -36},
         ]}
         source={profileImage || profileImagePlaceholder}
         defaultSource={profileImagePlaceholder}
@@ -55,7 +55,8 @@ function TCProfileImageControl({
       {showEditButtons && (
         <TouchableOpacity
           style={styles.profileCameraButtonStyle}
-          onPress={onPressProfileImage}>
+          onPress={onPressProfileImage}
+        >
           <Image
             style={[styles.profileImageButtonStyle, profileImageButtonStyle]}
             source={buttonImage}

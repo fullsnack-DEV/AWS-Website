@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import strings from '../../Constants/String';
 import TCThinDivider from '../TCThinDivider';
-import { getShortTimeDifForReservation } from '../../utils/Time';
+import {getShortTimeDifForReservation} from '../../utils/Time';
 
 export default function MatchFeesCard({
   senderOrReceiver = 'sender',
@@ -23,14 +23,16 @@ export default function MatchFeesCard({
         <View>
           <View style={styles.feesRow}>
             <Text style={styles.matchServiceFeeText}>
-              {(type === 'referee' && strings.refereeFeecardText)
-                || (type === 'challenge' && strings.matchfee)
-                || (type === 'scorekeeper' && strings.scorekeeperFee)}{' '}
+              {(type === 'referee' && strings.refereeFeecardText) ||
+                (type === 'challenge' && strings.matchfee) ||
+                (type === 'scorekeeper' && strings.scorekeeperFee)}{' '}
               {challengeObj.manual_fee === false && (
                 <Text style={styles.smallFeeText}>
                   {' '}
                   ${challengeObj.hourly_game_fee || 0}{' '}
-                  {(challengeObj?.currency_type)?.toUpperCase() || strings.defaultCurrency} x{' '}
+                  {challengeObj?.currency_type?.toUpperCase() ||
+                    strings.defaultCurrency}{' '}
+                  x{' '}
                   {getShortTimeDifForReservation(
                     challengeObj.start_datetime,
                     challengeObj.end_datetime,
@@ -39,8 +41,12 @@ export default function MatchFeesCard({
               )}
             </Text>
             <Text style={styles.matchServiceFeeText}>
-              {`$${parseFloat(challengeObj?.total_game_charges ?? challengeObj?.total_game_fee).toFixed(2)} ${
-                (challengeObj?.currency_type)?.toUpperCase() || strings.defaultCurrency
+              {`$${parseFloat(
+                challengeObj?.total_game_charges ??
+                  challengeObj?.total_game_fee,
+              ).toFixed(2)} ${
+                challengeObj?.currency_type?.toUpperCase() ||
+                strings.defaultCurrency
               }`}
             </Text>
           </View>
@@ -51,24 +57,28 @@ export default function MatchFeesCard({
               {senderOrReceiver === 'sender'
                 ? challengeObj?.total_service_fee1?.toFixed(2)
                 : challengeObj?.total_service_fee2?.toFixed(2)}{' '}
-              {(challengeObj?.currency_type)?.toUpperCase() || strings.defaultCurrency}
+              {challengeObj?.currency_type?.toUpperCase() ||
+                strings.defaultCurrency}
             </Text>
           </View>
 
-          {senderOrReceiver === 'sender' && <View style={styles.feesRow}>
-            <Text style={styles.matchServiceFeeText}>International card fee</Text>
-            <Text style={styles.matchServiceFeeText}>
-              {senderOrReceiver === 'sender' ? '$' : '-$'}
-              
-              {challengeObj?.international_card_fee?.toFixed(2)}{' '}
-               
-              {(challengeObj?.currency_type)?.toUpperCase() || strings.defaultCurrency}
-            </Text>
-          </View>}
+          {senderOrReceiver === 'sender' && (
+            <View style={styles.feesRow}>
+              <Text style={styles.matchServiceFeeText}>
+                International card fee
+              </Text>
+              <Text style={styles.matchServiceFeeText}>
+                {senderOrReceiver === 'sender' ? '$' : '-$'}
+                {challengeObj?.international_card_fee?.toFixed(2)}{' '}
+                {challengeObj?.currency_type?.toUpperCase() ||
+                  strings.defaultCurrency}
+              </Text>
+            </View>
+          )}
 
-          <View style={{ flex: 1 }} />
-          <TCThinDivider width={'94%'}/>
-          <View style={[styles.feesRow, { marginBottom: 5 }]}>
+          <View style={{flex: 1}} />
+          <TCThinDivider width={'94%'} />
+          <View style={[styles.feesRow, {marginBottom: 5}]}>
             <Text style={styles.feeStructureText}>
               {senderOrReceiver === 'sender'
                 ? 'Total payment'
@@ -79,7 +89,8 @@ export default function MatchFeesCard({
               {senderOrReceiver === 'sender'
                 ? challengeObj?.total_amount?.toFixed(2)
                 : challengeObj?.total_payout?.toFixed(2)}{' '}
-              {(challengeObj?.currency_type)?.toUpperCase() || strings.defaultCurrency}
+              {challengeObj?.currency_type?.toUpperCase() ||
+                strings.defaultCurrency}
             </Text>
           </View>
         </View>
@@ -96,7 +107,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     height: 120, // 102
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.2,
     shadowRadius: 5,
     width: wp('92%'),

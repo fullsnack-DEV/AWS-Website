@@ -1,13 +1,11 @@
 import React from 'react';
-import {
- View, StyleSheet, Text, Image, TouchableOpacity,
- } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-export default function MemberInvoiceView({ data, onPressCard }) {
+export default function MemberInvoiceView({data, onPressCard}) {
   console.log(data);
   return (
     <TouchableOpacity style={styles.viewContainer} onPress={onPressCard}>
@@ -16,22 +14,32 @@ export default function MemberInvoiceView({ data, onPressCard }) {
           width: '20%',
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <View style={styles.profileContainer}>
-          <Image source={data?.thumbnail && data?.thumbnail !== '' ? { uri: data?.thumbnail } : images.profilePlaceHolder} style={styles.townsCupPlusIcon} />
+          <Image
+            source={
+              data?.thumbnail && data?.thumbnail !== ''
+                ? {uri: data?.thumbnail}
+                : images.profilePlaceHolder
+            }
+            style={styles.townsCupPlusIcon}
+          />
         </View>
       </View>
       <View
         style={{
           width: '80%',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}>
+          }}
+        >
           {`${data?.first_name} ${data?.last_name}`}
         </Text>
         <Text
@@ -39,13 +47,17 @@ export default function MemberInvoiceView({ data, onPressCard }) {
             fontFamily: fonts.RMedium,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}>${data?.invoice_paid_total}
+          }}
+        >
+          ${data?.invoice_paid_total}
           <Text
             style={{
               fontFamily: fonts.RLight,
               fontSize: 14,
               color: colors.lightBlackColor,
-            }}>{` of $${data?.invoice_total}`}
+            }}
+          >
+            {` of $${data?.invoice_total}`}
           </Text>
         </Text>
         <Text
@@ -53,13 +65,17 @@ export default function MemberInvoiceView({ data, onPressCard }) {
             fontFamily: fonts.RLight,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}>{`${data?.invoices?.length} invoices`}
+          }}
+        >
+          {`${data?.invoices?.length} invoices`}
         </Text>
         <View style={styles.percentageView}>
           <View
             style={{
               height: 3,
-              width: `${((100 * data?.invoice_paid_total) / data?.invoice_total)}%`,
+              width: `${
+                (100 * data?.invoice_paid_total) / data?.invoice_total
+              }%`,
               backgroundColor: colors.greeColor,
             }}
           />
@@ -82,7 +98,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,
@@ -108,7 +124,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 2,
     elevation: 5,

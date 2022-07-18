@@ -111,18 +111,18 @@ const EntityStatScreen = ({route}) => {
     )
       .then((RDMChartData) => {
         //  RDM Chart
-        
-          console.log('RDMChartData', RDMChartData);
-          if (RDMChartData.payload) {
-            // barChartData.payload[0].data.map((gameChartItem) => {
-            //   gameChart.push(gameChartItem.value);
-            //   console.log(gameChartItem);
-            //   months.push(gameChartItem?.month_name);
-            //   return null;
-            // });
-            setgamesRDMChartData(RDMChartData.payload);
-          }
-      
+
+        console.log('RDMChartData', RDMChartData);
+        if (RDMChartData.payload) {
+          // barChartData.payload[0].data.map((gameChartItem) => {
+          //   gameChart.push(gameChartItem.value);
+          //   console.log(gameChartItem);
+          //   months.push(gameChartItem?.month_name);
+          //   return null;
+          // });
+          setgamesRDMChartData(RDMChartData.payload);
+        }
+
         setloading(false);
       })
       .catch((error) => {

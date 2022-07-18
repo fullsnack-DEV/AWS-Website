@@ -657,10 +657,8 @@ export default function WelcomeScreen({navigation}) {
           email,
           provider: 'apple',
           successCallback: async () => {
-            const appleAndroidCredential = await auth.AppleAuthProvider.credential(
-              id_token,
-              nonce,
-            );
+            const appleAndroidCredential =
+              await auth.AppleAuthProvider.credential(id_token, nonce);
             await signInSignUpWithSocialCredential(
               appleAndroidCredential,
               'APPLE Android| ',
@@ -718,7 +716,8 @@ export default function WelcomeScreen({navigation}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+      style={styles.mainContainer}
+    >
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <ActivityLoader visible={loading} />
       {renderBackgroundImages}
@@ -759,7 +758,8 @@ export default function WelcomeScreen({navigation}) {
 
           <TouchableOpacity
             style={styles.allButton}
-            onPress={() => navigation.navigate('SignupScreen')}>
+            onPress={() => navigation.navigate('SignupScreen')}
+          >
             <FastImage
               source={images.email}
               resizeMode={'contain'}
@@ -771,7 +771,8 @@ export default function WelcomeScreen({navigation}) {
           <TouchableOpacity
             hitSlop={getHitSlop(15)}
             onPress={() => navigation.navigate('LoginScreen')}
-            style={styles.alreadyView}>
+            style={styles.alreadyView}
+          >
             <Text style={styles.alreadyMemberText}>
               {strings.alreadyMember}
               <Text> </Text>
@@ -779,7 +780,8 @@ export default function WelcomeScreen({navigation}) {
                 style={{
                   textDecorationLine: 'underline',
                   fontFamily: fonts.RBold,
-                }}>
+                }}
+              >
                 Log In
               </Text>
             </Text>

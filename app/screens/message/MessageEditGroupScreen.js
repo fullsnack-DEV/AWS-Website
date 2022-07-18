@@ -46,7 +46,10 @@ const MessageEditGroupScreen = ({route, navigation}) => {
     if (route?.params?.dialog) {
       console.log('route?.params?.dialog', route?.params?.dialog);
       setGroupName(route?.params?.dialog?.name);
-      setGroupProfile({...groupProfile,thumbnail: route?.params?.dialog?.photo})
+      setGroupProfile({
+        ...groupProfile,
+        thumbnail: route?.params?.dialog?.photo,
+      });
     }
   }, []);
 
@@ -101,40 +104,39 @@ const MessageEditGroupScreen = ({route, navigation}) => {
         if (profileImageChanged) {
           imageArray.push({path: groupData.thumbnail});
           uploadImages(imageArray, authContext)
-          .then((responses) => {
-            console.log('image response', responses);
+            .then((responses) => {
+              console.log('image response', responses);
 
-            if (profileImageChanged) {
-              setGroupProfile({
-                ...groupProfile,
-                thumbnail: responses[0].thumbnail,
-                full_image: responses[0].fullImage,
-              });
-              groupData.full_image = responses[0].thumbnail;
-              groupData.thumbnail = responses[0].fullImage;
-            }
-            console.log('if press',groupData);
+              if (profileImageChanged) {
+                setGroupProfile({
+                  ...groupProfile,
+                  thumbnail: responses[0].thumbnail,
+                  full_image: responses[0].fullImage,
+                });
+                groupData.full_image = responses[0].thumbnail;
+                groupData.thumbnail = responses[0].fullImage;
+              }
+              console.log('if press', groupData);
 
-            onDonePress(groupData);
-          })
-          .catch((e) => {
-            setTimeout(() => {
-              Alert.alert(strings.appName, e.messages);
-            }, 0.1);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-        }else{
+              onDonePress(groupData);
+            })
+            .catch((e) => {
+              setTimeout(() => {
+                Alert.alert(strings.appName, e.messages);
+              }, 0.1);
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        } else {
           onDonePress(groupData);
         }
-        
       } else {
-        console.log('else press',groupData);
+        console.log('else press', groupData);
         onDonePress(groupData);
       }
     }
-  },[authContext, checkValidation, groupProfile, profileImageChanged])
+  }, [authContext, checkValidation, groupProfile, profileImageChanged]);
 
   const updateDialog = useCallback(
     (dialogId, photo) => {
@@ -157,13 +159,12 @@ const MessageEditGroupScreen = ({route, navigation}) => {
   const onDonePress = useCallback(
     (data) => {
       if (route?.params?.dialog) {
-        
         const dialogId = route?.params?.dialog?.id;
         if (data?.thumbnail && data?.thumbnail !== '') {
-          console.log('if update call',data);
+          console.log('if update call', data);
           updateDialog(dialogId, data?.thumbnail);
         } else {
-          console.log('else update call',data);
+          console.log('else update call', data);
 
           updateDialog(dialogId, '');
         }
@@ -194,7 +195,8 @@ const MessageEditGroupScreen = ({route, navigation}) => {
                 ...styles.eventTextStyle,
                 width: 100,
                 textAlign: 'right',
-              }}>
+              }}
+            >
               Done
             </Text>
           </TouchableOpacity>
@@ -213,7 +215,8 @@ const MessageEditGroupScreen = ({route, navigation}) => {
         <TouchableOpacity
           onPress={() => {
             onBGImageClicked();
-          }}>
+          }}
+        >
           <FastImage
             resizeMode={'cover'}
             source={

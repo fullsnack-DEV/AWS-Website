@@ -1,12 +1,8 @@
 import React from 'react';
-import {
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import {StyleSheet, TextInput, View} from 'react-native';
 
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
 
 function TCTextField({
   placeholder,
@@ -22,20 +18,20 @@ function TCTextField({
   ...otherProps
 }) {
   return (
-    <View style={[styles.textContainer, style, { height }]}>
+    <View style={[styles.textContainer, style, {height}]}>
       <TextInput
-      style={ [styles.textInput, textStyle, { height }] }
-      placeholder={ placeholder }
-      placeholderTextColor={ placeholderTextColor }
-      autoCapitalize={'none'}
-      autoCorrect={false}
-      editable={editable}
-      secureTextEntry={ secureText }
-      keyboardType={ keyboardType }
-      multiline={multiline}
-      textAlignVertical={multiline ? 'top' : 'center'}
-      { ...otherProps }
-  />
+        style={[styles.textInput, textStyle, {height}]}
+        placeholder={placeholder}
+        placeholderTextColor={placeholderTextColor}
+        autoCapitalize={'none'}
+        autoCorrect={false}
+        editable={editable}
+        secureTextEntry={secureText}
+        keyboardType={keyboardType}
+        multiline={multiline}
+        textAlignVertical={multiline ? 'top' : 'center'}
+        {...otherProps}
+      />
       {leftView}
     </View>
   );
@@ -50,7 +46,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 4,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.3,
     shadowRadius: 1,
     elevation: 1,

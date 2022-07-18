@@ -12,4 +12,4 @@ const RefereeReservationStatus = {
   requestcancelled: 'requestcancelled',
 };
 
-export default RefereeReservationStatus
+export default RefereeReservationStatus;

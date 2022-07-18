@@ -314,8 +314,7 @@ const strings = {
 
   // Register Referee Screen
   certificateTitle: 'Certificates',
-  certiTitle:
-    'CERTIFICATE',
+  certiTitle: 'CERTIFICATE',
   addCertiTitle: 'Add a Certificate',
   addCertiMainTitle:
     'Please add the certificates or documents showing your professional experience.',
@@ -474,7 +473,7 @@ const strings = {
   earlier: 'EARLIER',
 
   trashmessage:
-    'Notifications in trash will be permanently deleted 30 days after they are moved in trash.',
+    'Notifications in trash will be permanently deleted 60 days after they are moved in trash.',
   left: 'left',
   responsetime: '* Response time :',
   responsetimeexpired: 'RESPONSE PERIOD EXPIRED',
@@ -542,7 +541,7 @@ const strings = {
   perhoursinbracket: '(per hours)',
   gamefeeperhour: 'Match Fee Per Hour',
   CAD: 'CAD',
-  defaultCurrency : 'USD',
+  defaultCurrency: 'USD',
   currencyplacholder: 'Select Currency',
   languages: 'Languages',
   sportcannotbeblank: 'Sports cannot be blank',
@@ -772,11 +771,14 @@ const strings = {
 
   refuncPolicyTitle: 'Choose one of refund policies',
 
-  gameFeeTitle: 'Set the match fee that you want to receive from the challenger.',
-  gameFeeTitleTeam: 'Set the match fee that your team wants to receive from the challenger.',
+  gameFeeTitle:
+    'Set the match fee that you want to receive from the challenger.',
+  gameFeeTitleTeam:
+    'Set the match fee that your team wants to receive from the challenger.',
 
   refereeFeeTitle: 'Set the referee fee that you want to charge per hour.',
-  scorekeeperFeeTitle: 'Set the scorekeeper fee that you want to charge per hour.',
+  scorekeeperFeeTitle:
+    'Set the scorekeeper fee that you want to charge per hour.',
 
   gameRulesTitle:
     'Write down the rules of the game you will play against the challenger.',
@@ -881,6 +883,6 @@ const strings = {
   configureYourRefereeSetting:
     'You can’t send offer, please configure your referee setting first.',
   emailPasswordWrong: 'The email and password you entered dont match.',
-  passwordWrong: 'Your password is wrong.'
+  passwordWrong: 'Your password is wrong.',
 };
 export default strings;

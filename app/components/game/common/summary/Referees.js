@@ -285,7 +285,7 @@ const Referees = ({
           // });
         } else {
           Alert.alert(
-            'You can\'t send offer, please configure your referee setting first.',
+            "You can't send offer, please configure your referee setting first.",
           );
         }
       })
@@ -400,7 +400,8 @@ const Referees = ({
           fontSize: 16,
           color: colors.lightBlackColor,
           marginLeft: 15,
-        }}>
+        }}
+      >
         Which team do you want to send a referee offer to?
       </Text>
     </View>
@@ -424,10 +425,12 @@ const Referees = ({
                 sportName: gameData?.sport,
               });
             }, 500);
-          }}>
+          }}
+        >
           <LinearGradient
             colors={[colors.yellowColor, colors.orangeColor]}
-            style={styles.teamContainer}>
+            style={styles.teamContainer}
+          >
             <View style={styles.profileView}>
               <Image
                 source={
@@ -441,12 +444,14 @@ const Referees = ({
             <View style={styles.topTextContainer}>
               <Text
                 style={[styles.nameText, {color: colors.whiteColor}]}
-                numberOfLines={1}>
+                numberOfLines={1}
+              >
                 {item?.group_name}
               </Text>
               <Text
                 style={[styles.locationText, {color: colors.whiteColor}]}
-                numberOfLines={1}>
+                numberOfLines={1}
+              >
                 {item?.city}
               </Text>
             </View>
@@ -468,10 +473,12 @@ const Referees = ({
                 sportName: gameData?.sport,
               });
             }, 500);
-          }}>
+          }}
+        >
           <View
             colors={[colors.whiteColor, colors.whiteColor]}
-            style={styles.teamContainer}>
+            style={styles.teamContainer}
+          >
             <View style={styles.profileView}>
               <Image
                 source={

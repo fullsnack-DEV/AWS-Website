@@ -195,7 +195,8 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
               certiUrl.splice(index, 1);
               setCertificate([...certiUrl]);
             }
-          }}></TouchableOpacity>
+          }}
+        ></TouchableOpacity>
         {/* ) : null} */}
         {!item?.url && (
           <TouchableWithoutFeedback
@@ -233,7 +234,8 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
                     }
                   });
               });
-            }}>
+            }}
+          >
             <View style={styles.addCertificateButton}>
               <FastImage
                 resizeMode={FastImage.resizeMode.cover}
@@ -256,7 +258,8 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
           style={{
             padding: 15,
             alignSelf: 'flex-start',
-          }}>
+          }}
+        >
           <View>
             <FastImage
               resizeMode={FastImage.resizeMode.cover}
@@ -279,7 +282,8 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
               onPress={() => {
                 certificate.splice(index, 1);
                 setCertificate([...certificate]);
-              }}>
+              }}
+            >
               <Image
                 source={images.menuClose}
                 style={{
@@ -303,7 +307,8 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexDirection: 'row',
-                }}>
+                }}
+              >
                 <TCInnerLoader visible={index === imageUploadingLoader} />
                 <Text
                   style={{
@@ -311,7 +316,8 @@ export default function RegisterScorekeeperForm2({navigation, route}) {
                     fontSize: 20,
                     color: colors.yellowColor,
                     marginLeft: 5,
-                  }}>
+                  }}
+                >
                   Uploading...
                 </Text>
               </View>

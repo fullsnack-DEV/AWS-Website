@@ -208,7 +208,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               //   navigation.navigate('CreateMemberProfileClubForm2', { form1: memberInfo })
               // }
             }
-          }}>
+          }}
+        >
           Done
         </Text>
       ),
@@ -385,7 +386,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <View style={{...styles.halfMatchFeeView, shadowStyle}}>
           <TextInput
             placeholder={'Height'}
@@ -396,7 +398,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 ...memberInfo,
                 height: {
                   height: text,
-                  height_type:  memberInfo?.height?.height_type,
+                  height_type: memberInfo?.height?.height_type,
                 },
               });
             }}
@@ -465,7 +467,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
           <TextInput
             placeholder={'Weight'}
@@ -476,7 +479,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 ...memberInfo,
                 weight: {
                   weight: text,
-                  weight_type:  memberInfo?.weight?.weight_type,
+                  weight_type: memberInfo?.weight?.weight_type,
                 },
               });
             }}
@@ -581,7 +584,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 ...setting,
                 birthday: !setting?.birthday,
               });
-            }}>
+            }}
+          >
             <Image
               source={
                 setting?.birthday === true
@@ -614,7 +618,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               ...setting,
               height: !setting?.height,
             });
-          }}>
+          }}
+        >
           <Image
             source={
               setting?.height === true
@@ -635,7 +640,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               ...setting,
               weight: !setting?.weight,
             });
-          }}>
+          }}
+        >
           <Image
             source={
               setting?.weight ? images.orangeCheckBox : images.uncheckWhite
@@ -680,7 +686,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 ...setting,
                 phone: !setting?.phone,
               });
-            }}>
+            }}
+          >
             <Image
               source={
                 setting?.phone ? images.orangeCheckBox : images.uncheckWhite
@@ -711,7 +718,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               ...setting,
               address: !setting?.address,
             });
-          }}>
+          }}
+        >
           <Image
             source={
               setting?.address ? images.orangeCheckBox : images.uncheckWhite
@@ -737,14 +745,16 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           navigation.navigate('SearchLocationScreen', {
             comeFrom: 'RequestBasicInfoScreen',
           })
-        }>
+        }
+      >
         <TextInput
           placeholder={strings.searchCityPlaceholder}
           placeholderTextColor={colors.userPostTimeColor}
           style={[styles.matchFeeTxt, {marginBottom: 5}]}
           value={location}
           editable={false}
-          pointerEvents="none"></TextInput>
+          pointerEvents="none"
+        ></TextInput>
       </TouchableOpacity>
 
       <View>

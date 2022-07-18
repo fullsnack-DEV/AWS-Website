@@ -123,14 +123,16 @@ const VideoPost = memo(
     );
     return (
       <View
-        style={{...styles.mainContainer, height: getImageDimention().height}}>
+        style={{...styles.mainContainer, height: getImageDimention().height}}
+      >
         <View
           style={{
             ...styles.singleImageDisplayStyle,
             borderWidth: 1,
             borderColor: colors.lightgrayColor,
             height: getImageDimention().height,
-          }}>
+          }}
+        >
           <FastImage
             style={styles.loadimageStyle}
             source={images.imageLoadingGIF}
@@ -163,7 +165,8 @@ const VideoPost = memo(
             </Text>
             <TouchableHighlight
               style={styles.pauseMuteStyle}
-              onPress={onPressMuteUnmute}>
+              onPress={onPressMuteUnmute}
+            >
               <FastImage
                 resizeMode={'contain'}
                 tintColor={'white'}

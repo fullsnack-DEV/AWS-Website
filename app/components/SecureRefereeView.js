@@ -1,14 +1,16 @@
 import React from 'react';
-import {
-  StyleSheet, Text, View, Image,
- } from 'react-native';
+import {StyleSheet, Text, View, Image} from 'react-native';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 function SecureRefereeView({
- entityName, entity, entityNumber = 1, style, image,
- }) {
+  entityName,
+  entity,
+  entityNumber = 1,
+  style,
+  image,
+}) {
   return (
     <View style={[styles.teamContainer, style]}>
       <Text style={styles.venueTitle}>
@@ -50,7 +52,7 @@ const styles = StyleSheet.create({
   teamViewStyle: {
     // flex: 1,
     flexDirection: 'row',
-   // alignItems: 'center',
+    // alignItems: 'center',
   },
 
   imageView: {
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 20,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.4,
     shadowRadius: 1,
   },

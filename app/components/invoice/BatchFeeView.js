@@ -1,15 +1,13 @@
 import React from 'react';
-import {
- View, StyleSheet, Text, TouchableOpacity,
- } from 'react-native';
- import moment from 'moment';
+import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import moment from 'moment';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-export default function BatchFeeView({ data, onPressCard }) {
-    console.log(data);
+export default function BatchFeeView({data, onPressCard}) {
+  console.log(data);
   return (
     <TouchableOpacity style={styles.viewContainer} onPress={onPressCard}>
       <View
@@ -17,23 +15,27 @@ export default function BatchFeeView({ data, onPressCard }) {
           width: '20%',
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
-        <Text
-          style={styles.dateView}>
-          {`${ moment(new Date(data.due_date * 1000)).format('MMM')}\n${moment(new Date(data.due_date * 1000)).format('DD')}`}
+        }}
+      >
+        <Text style={styles.dateView}>
+          {`${moment(new Date(data.due_date * 1000)).format('MMM')}\n${moment(
+            new Date(data.due_date * 1000),
+          ).format('DD')}`}
         </Text>
       </View>
       <View
         style={{
           width: '80%',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}>
+          }}
+        >
           {data?.invoice_title}
         </Text>
         <Text
@@ -41,13 +43,17 @@ export default function BatchFeeView({ data, onPressCard }) {
             fontFamily: fonts.RMedium,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}>${data?.invoice_paid_total}
+          }}
+        >
+          ${data?.invoice_paid_total}
           <Text
             style={{
               fontFamily: fonts.RLight,
               fontSize: 14,
               color: colors.lightBlackColor,
-            }}>{` of $${data?.invoice_total}`}
+            }}
+          >
+            {` of $${data?.invoice_total}`}
           </Text>
         </Text>
 
@@ -57,15 +63,17 @@ export default function BatchFeeView({ data, onPressCard }) {
             fontSize: 14,
             color: colors.lightBlackColor,
             marginTop: 2,
-          }}>
+          }}
+        >
           {`${data?.invoices?.length} Recepients`}
         </Text>
-        <View
-          style={styles.percentageView}>
+        <View style={styles.percentageView}>
           <View
             style={{
               height: 3,
-              width: `${((100 * data?.invoice_paid_total) / data?.invoice_total)}%`,
+              width: `${
+                (100 * data?.invoice_paid_total) / data?.invoice_total
+              }%`,
               backgroundColor: colors.greeColor,
             }}
           />
@@ -87,7 +95,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,

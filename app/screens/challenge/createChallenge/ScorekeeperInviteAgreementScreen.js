@@ -1,7 +1,5 @@
-import React, { useContext, useState } from 'react';
-import {
- StyleSheet, View, SafeAreaView, Alert,
-} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {StyleSheet, View, SafeAreaView, Alert} from 'react-native';
 import AuthContext from '../../../auth/context';
 
 import colors from '../../../Constants/Colors';
@@ -9,10 +7,10 @@ import strings from '../../../Constants/String';
 import TCGradientButton from '../../../components/TCGradientButton';
 import TCFormProgress from '../../../components/TCFormProgress';
 import ScorekeeperAgreementView from '../../../components/challenge/ScorekeeperAgreementView';
-import { createChallenge } from '../../../api/Challenge';
+import {createChallenge} from '../../../api/Challenge';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-export default function ScorekeeperInviteAgreementScreen({ navigation, route }) {
+export default function ScorekeeperInviteAgreementScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [opetion, setOpetion] = useState(1);
   const [challengeObj] = useState(route?.params?.challengeObj);
@@ -22,7 +20,7 @@ export default function ScorekeeperInviteAgreementScreen({ navigation, route }) 
   const [show, setShow] = useState(false);
   const [loading, setloading] = useState(false);
 
-const sendChallengeInvitation = () => {
+  const sendChallengeInvitation = () => {
     console.log('Challenge Object:=>', challengeObj);
 
     setloading(true);
@@ -49,27 +47,26 @@ const sendChallengeInvitation = () => {
 
       <ScorekeeperAgreementView
         teamA={
-          authContext?.entity?.obj?.group_name
-          ?? authContext?.entity?.obj?.full_name
+          authContext?.entity?.obj?.group_name ??
+          authContext?.entity?.obj?.full_name
         }
         teamB={groupObj?.group_name ?? groupObj?.full_name}
-        type = {type}
-
+        type={type}
         numberOfScorekeeper={
           challengeObj?.responsible_for_scorekeeper?.who_secure?.length ?? 0
         }
         radioOpetion={(ope) => {
-            setOpetion(ope)
+          setOpetion(ope);
         }}
         agreementOpetion={opetion}
         moreButtonVisible={false}
-        showRules = {show}
-        showPressed = {(value) => {
-                setShow(value)
+        showRules={show}
+        showPressed={(value) => {
+          setShow(value);
         }}
       />
 
-      <View style={{ flex: 1 }} />
+      <View style={{flex: 1}} />
       <SafeAreaView>
         <TCGradientButton
           title={strings.sendInviteTitle}
@@ -80,7 +77,7 @@ const sendChallengeInvitation = () => {
           shadow={true}
           marginTop={15}
           onPress={() => {
-            sendChallengeInvitation()
+            sendChallengeInvitation();
           }}
         />
       </SafeAreaView>

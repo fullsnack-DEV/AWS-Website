@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -14,27 +14,38 @@ export default function InvoiceAmount({
   style,
 }) {
   return (
-    <View style={ style}>
-      {status && <View style={styles.containerView}>
-        <Text style={ styles.titleText}>Status</Text>
-        <Text
-          style={{
-            fontSize: 16,
-            fontFamily: fonts.RMedium,
-            color: status === 'Paid' ? colors.greenColorCard : status === 'Cancelled' ? colors.userPostTimeColor : colors.darkThemeColor,
-          }}>{status}
-        </Text>
-      </View>
-
-      }
+    <View style={style}>
+      {status && (
+        <View style={styles.containerView}>
+          <Text style={styles.titleText}>Status</Text>
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: fonts.RMedium,
+              color:
+                status === 'Paid'
+                  ? colors.greenColorCard
+                  : status === 'Cancelled'
+                  ? colors.userPostTimeColor
+                  : colors.darkThemeColor,
+            }}
+          >
+            {status}
+          </Text>
+        </View>
+      )}
       <View style={styles.containerView}>
-        <Text style={styles.titleText}>{status ? 'Invoiced Amount' : 'Total Invoiced'}</Text>
+        <Text style={styles.titleText}>
+          {status ? 'Invoiced Amount' : 'Total Invoiced'}
+        </Text>
         <Text
           style={{
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.lightBlackColor,
-          }}>{`$${totalAmount} ${currencyType}`}
+          }}
+        >
+          {`$${totalAmount} ${currencyType}`}
         </Text>
       </View>
 
@@ -45,7 +56,9 @@ export default function InvoiceAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.greenColorCard,
-          }}>{`$${paidAmount} ${currencyType}`}
+          }}
+        >
+          {`$${paidAmount} ${currencyType}`}
         </Text>
       </View>
 
@@ -56,7 +69,9 @@ export default function InvoiceAmount({
             fontSize: 16,
             fontFamily: fonts.RMedium,
             color: colors.darkThemeColor,
-          }}>{`$${openAmount} ${currencyType}`}
+          }}
+        >
+          {`$${openAmount} ${currencyType}`}
         </Text>
       </View>
     </View>

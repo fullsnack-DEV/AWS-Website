@@ -9,49 +9,62 @@ export const toShortTimeFromString = (timeToconvert) => {
   const year = moment(new Date()).diff(timeToconvert, 'year');
   const date = moment(timeToconvert);
   if (year >= 1) {
-    return date.format('MMM D, yyyy')
-  } if (month >= 1) {
-    return date.format('MMM D')
-  } if (week >= 1) {
-    return date.format('MMM D')
-  } if (day >= 1) {
+    return date.format('MMM D, yyyy');
+  }
+  if (month >= 1) {
+    return date.format('MMM D');
+  }
+  if (week >= 1) {
+    return date.format('MMM D');
+  }
+  if (day >= 1) {
     return `${day}d`;
-  } if (hour >= 1) {
+  }
+  if (hour >= 1) {
     return `${hour}h`;
-  } if (minute >= 1) {
+  }
+  if (minute >= 1) {
     return `${minute}m`;
   }
   return 'Just now';
-}
+};
 
 export const getShortTimeDifForReservation = (sDate, eDate) => {
-  let delta
+  let delta;
   if (sDate.toString().length > 10) {
-    delta = Math.abs(parseFloat((sDate / 1000).toFixed(0)) - parseFloat((eDate / 1000).toFixed(0)));
+    delta = Math.abs(
+      parseFloat((sDate / 1000).toFixed(0)) -
+        parseFloat((eDate / 1000).toFixed(0)),
+    );
   } else {
-    delta = Math.abs(parseFloat((sDate).toFixed(0)) - parseFloat((eDate).toFixed(0)));
+    delta = Math.abs(
+      parseFloat(sDate.toFixed(0)) - parseFloat(eDate.toFixed(0)),
+    );
   }
 
   const hours = Math.floor(delta / 3600) % 24;
   delta -= hours * 3600;
   const minutes = Math.floor(delta / 60) % 60;
   delta -= minutes * 60;
-  let time = ''
+  let time = '';
 
   if (hours > 0) {
     if (minutes > 0) {
-      time = `${hours}:${minutes}h`
+      time = `${hours}:${minutes}h`;
     } else {
-      time = `${hours}h`
+      time = `${hours}h`;
     }
   } else {
-    time = `${minutes}m`
+    time = `${minutes}m`;
   }
   return time;
 };
 
 export const getTimeDifForReservation = (sDate, eDate) => {
-  let delta = Math.abs(parseFloat((sDate / 1000).toFixed(0)) - parseFloat((eDate / 1000).toFixed(0)));
+  let delta = Math.abs(
+    parseFloat((sDate / 1000).toFixed(0)) -
+      parseFloat((eDate / 1000).toFixed(0)),
+  );
 
   const hours = Math.floor(delta / 3600) % 24;
   delta -= hours * 3600;
@@ -59,21 +72,21 @@ export const getTimeDifForReservation = (sDate, eDate) => {
   const minutes = Math.floor(delta / 60) % 60;
   delta -= minutes * 60;
 
-  let time = ''
+  let time = '';
 
   if (hours > 0) {
     if (hours === 1) {
-      time = `${hours} hour `
+      time = `${hours} hour `;
     } else {
-      time = `${hours} hours `
+      time = `${hours} hours `;
     }
   }
 
   if (minutes > 0) {
     if (minutes === 1) {
-      time = `${time}${minutes} minute`
+      time = `${time}${minutes} minute`;
     } else {
-      time = `${time}${minutes} minutes`
+      time = `${time}${minutes} minutes`;
     }
   }
 

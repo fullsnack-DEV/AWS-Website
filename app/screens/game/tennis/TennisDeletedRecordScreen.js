@@ -1,32 +1,31 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Image,
-  View,
-  TouchableOpacity, Text,
-} from 'react-native';
+import {StyleSheet, Image, View, TouchableOpacity, Text} from 'react-native';
 import images from '../../../Constants/ImagePath';
-import colors from '../../../Constants/Colors'
+import colors from '../../../Constants/Colors';
 import Header from '../../../components/Home/Header';
 import fonts from '../../../Constants/Fonts';
-import { widthPercentageToDP as wp } from '../../../utils';
+import {widthPercentageToDP as wp} from '../../../utils';
 import TennisDeletedRecordsList from '../../../components/game/tennis/TennisDeletedRecordsList';
 
-export default function TennisDeletedRecordScreen({ route, navigation }) {
+export default function TennisDeletedRecordScreen({route, navigation}) {
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <Header
-          leftComponent={
-            <TouchableOpacity onPress={() => navigation.goBack() }>
-              <Image source={images.backArrow} style={styles.backImageStyle} />
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={styles.eventTextStyle}>Deleted records</Text>
-          }
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image source={images.backArrow} style={styles.backImageStyle} />
+          </TouchableOpacity>
+        }
+        centerComponent={
+          <Text style={styles.eventTextStyle}>Deleted records</Text>
+        }
       />
-      <View style={ styles.sperateLine } />
-      <TennisDeletedRecordsList navigation={navigation} isAdmin={route?.params?.isAdmin} matchData={route?.params?.gameData}/>
+      <View style={styles.sperateLine} />
+      <TennisDeletedRecordsList
+        navigation={navigation}
+        isAdmin={route?.params?.isAdmin}
+        matchData={route?.params?.gameData}
+      />
     </View>
   );
 }

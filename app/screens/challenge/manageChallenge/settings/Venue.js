@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import {patchPlayer} from '../../../../api/Users';
 import {patchGroup} from '../../../../api/Groups';
@@ -31,7 +30,7 @@ import TCTextInputClear from '../../../../components/TCTextInputClear';
 
 export default function Venue({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
-  const [sportName] = useState(route?.params?.sportName)
+  const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
 
   const authContext = useContext(AuthContext);
@@ -72,7 +71,8 @@ export default function Venue({navigation, route}) {
             } else {
               onSavePressed();
             }
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
@@ -105,7 +105,8 @@ export default function Venue({navigation, route}) {
             onPress={() => {
               venue.splice(index, 1);
               setVenue([...venue]);
-            }}>
+            }}
+          >
             Delete
           </Text>
         )}
@@ -153,7 +154,8 @@ pointerEvents="none"
             navigation.navigate('ChooseAddressScreen', {
               comeFrom: 'Venue',
             });
-          }}>
+          }}
+        >
           <TextInput
             editable={false}
             pointerEvents="none"
@@ -264,14 +266,13 @@ pointerEvents="none"
       }),
     };
     setloading(true);
-    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => {
+    const registerdPlayerData =
+      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
           return null;
         }
         return obj;
-      },
-    );
+      });
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -347,12 +348,10 @@ pointerEvents="none"
           authContext.setEntity({...entity});
 
           await Utility.setStorage('authContextEntity', {...entity});
-         
-          navigation.navigate(comeFrom, {
-          settingObj: response.payload.setting,
-          });
-         
 
+          navigation.navigate(comeFrom, {
+            settingObj: response.payload.setting,
+          });
         } else {
           Alert.alert(strings.appName, response.messages);
         }

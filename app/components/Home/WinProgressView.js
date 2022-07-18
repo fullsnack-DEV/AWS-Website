@@ -1,11 +1,7 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import * as Progress from 'react-native-progress';
-import colors from '../../Constants/Colors'
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 export default function WinProgressView({
@@ -21,17 +17,19 @@ export default function WinProgressView({
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <Text style={[styles.textStyle, textStyle]}>{titleText}</Text>
-      
+
       <Progress.Bar
-          animated={false}
-          progress={progress}
-          width={100}
-          height={6}
-          borderRadius={8}
-          style={[styles.progressBarStyle, progressBarStyle]}
-          color={prgressColor}
-        />
-      <Text style={[styles.percentageTextStyle, percentageTextStyle]}>{percentageCount}</Text>
+        animated={false}
+        progress={progress}
+        width={100}
+        height={6}
+        borderRadius={8}
+        style={[styles.progressBarStyle, progressBarStyle]}
+        color={prgressColor}
+      />
+      <Text style={[styles.percentageTextStyle, percentageTextStyle]}>
+        {percentageCount}
+      </Text>
     </View>
   );
 }

@@ -1,23 +1,18 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-} from 'react-native';
+import {Text, View, StyleSheet} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-export default function LanguageViewInInfo({
-  title,
-  languageName,
-}) {
+export default function LanguageViewInInfo({title, languageName}) {
   return (
-
     <View style={styles.containerStyle}>
       <Text style={styles.titleStyle}>{title}</Text>
-      <Text style={[styles.titleStyle, { fontFamily: fonts.RRegular, marginTop: 3 }]}>{languageName}</Text>
+      <Text
+        style={[styles.titleStyle, {fontFamily: fonts.RRegular, marginTop: 3}]}
+      >
+        {languageName}
+      </Text>
     </View>
-
   );
 }
 const styles = StyleSheet.create({

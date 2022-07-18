@@ -30,7 +30,8 @@ const PlaysInBio = ({isAdmin, currentUserData, sportName, onSave}) => {
         editButtonVisible={isAdmin}
         title={strings.bio}
         onEditPress={() => actionSheet.current.show()}
-        containerStyle={{marginVertical: 10}}>
+        containerStyle={{marginVertical: 10}}
+      >
         <Text style={styles.bioTextStyle}>
           {registerSport?.descriptions ?? ''}
         </Text>
@@ -98,7 +99,8 @@ const EditPlaysInModal = ({
       heading={`${
         editModalType !== strings.privacySettings ? 'Edit ' : ''
       }${editModalType}`}
-      onSavePress={onSavePress}>
+      onSavePress={onSavePress}
+    >
       {editModalType === strings.bio ? (
         <EventTextInput value={bio} multiline={true} onChangeText={setBio} />
       ) : (

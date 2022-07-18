@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-  StyleSheet, View, Image, TouchableOpacity,
-} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {StyleSheet, View, Image, TouchableOpacity} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import images from '../../Constants/ImagePath';
 import EventTextInput from '../Schedule/EventTextInput';
 
@@ -26,7 +22,11 @@ function AddCertiPhotoTitleView({
       />
       <View style={styles.pickImageViewStyle}>
         <TouchableOpacity onPress={onPickImagePress}>
-          <Image source={images.certiImagePick} style={styles.pickIconStyle} resizeMode={'contain'} />
+          <Image
+            source={images.certiImagePick}
+            style={styles.pickIconStyle}
+            resizeMode={'contain'}
+          />
         </TouchableOpacity>
       </View>
     </View>

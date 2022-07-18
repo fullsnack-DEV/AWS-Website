@@ -1,6 +1,4 @@
-import React, {
- useCallback, useState, useLayoutEffect, useContext,
- } from 'react';
+import React, {useCallback, useState, useLayoutEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -8,7 +6,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  FlatList
+  FlatList,
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -22,8 +20,7 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
 
-
-export default function SportSettingScreen({ navigation, route }) {
+export default function SportSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const [sportsSource] = useState(route?.params?.sports);
@@ -38,7 +35,6 @@ export default function SportSettingScreen({ navigation, route }) {
     });
   }, [navigation, sportsSource]);
 
-  
   const onPressSave = () => {
     console.log('sportsSource', sportsSource);
     Utility.setStorage('sportSetting', sportsSource).then(() => {
@@ -47,17 +43,19 @@ export default function SportSettingScreen({ navigation, route }) {
   };
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const renderSportsView = useCallback(
-    ({ item }) => item.sport !== 'All' && (
-      <View style={styles.sportsBackgroundView}>
-        <View style={{ flexDirection: 'row' }}>
-          <Image source={images.gameGoal} style={styles.sportsIcon} />
-          <Text style={styles.sportNameTitle}>{Utility.getSportName(item, authContext)}</Text>
+    ({item}) =>
+      item.sport !== 'All' && (
+        <View style={styles.sportsBackgroundView}>
+          <View style={{flexDirection: 'row'}}>
+            <Image source={images.gameGoal} style={styles.sportsIcon} />
+            <Text style={styles.sportNameTitle}>
+              {Utility.getSportName(item, authContext)}
+            </Text>
+          </View>
         </View>
-      </View>
       ),
     [],
   );
-
 
   return (
     <View style={{flex: 1}}>
@@ -94,7 +92,6 @@ export default function SportSettingScreen({ navigation, route }) {
           marginBottom: 15,
           paddingVertical: 15,
         }}
-       
       />
       <SafeAreaView>
         <TouchableOpacity
@@ -104,11 +101,11 @@ export default function SportSettingScreen({ navigation, route }) {
             navigation.navigate('AddOrDeleteSport', {
               sports: sportsSource,
             });
-          }}>
+          }}
+        >
           <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
         </TouchableOpacity>
       </SafeAreaView>
-      
     </View>
   );
 }
@@ -121,7 +118,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
   },
- 
+
   sportNameTitle: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
@@ -169,7 +166,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     marginBottom: 15,
   },
-  
+
   nextButtonStyle: {
     fontFamily: fonts.RRegular,
     fontSize: 16,

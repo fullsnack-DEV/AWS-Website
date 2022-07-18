@@ -201,10 +201,10 @@ export default function EventScheduleScreen({
           renderSectionHeader={({section}) =>
             (section?.data || [])?.filter((obj) => obj.cal_type === 'event')
               .length > 0 && (
-                <Text style={styles.sectionHeader}>
-                  {days[new Date(section.title).getDay()]}, {section.title}
-                </Text>
-          )
+              <Text style={styles.sectionHeader}>
+                {days[new Date(section.title).getDay()]}, {section.title}
+              </Text>
+            )
           }
           sections={filterData}
           keyExtractor={(item, index) => index.toString()}

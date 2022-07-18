@@ -62,7 +62,7 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
     setGroups({...groups, entity_type: entity.role});
   };
   const createMember = () => {
-   setloading(true);
+    setloading(true);
     let bodyParams = {};
     if (route.params.form2.full_image) {
       const imageArray = [];
@@ -84,7 +84,7 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
             group_id: entity.uid,
             note,
           };
-         
+
           console.log('BODY PARAMS:', bodyParams);
           createProfile(bodyParams);
         })
@@ -95,7 +95,6 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
           }, 10);
         });
     } else {
-      
       bodyParams = {
         ...route.params.form2,
         group: groups,
@@ -103,7 +102,7 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
         note,
       };
       console.log('BODY PARAMS11:', bodyParams);
-      
+
       createProfile(bodyParams);
     }
   };
@@ -147,8 +146,9 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            margin:15
-          }}>
+            margin: 15,
+          }}
+        >
           <View style={styles.profileView}>
             <Image
               source={images.clubPlaceholder}
@@ -174,7 +174,6 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
   );
 }
 const styles = StyleSheet.create({
-  
   mainContainer: {
     flex: 1,
     flexDirection: 'column',

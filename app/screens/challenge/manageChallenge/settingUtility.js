@@ -1,12 +1,18 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable consistent-return */
-import { Alert } from 'react-native';
+import {Alert} from 'react-native';
 import strings from '../../../Constants/String';
-import { getUserDetails } from '../../../api/Users';
-import { getGroupDetails } from '../../../api/Groups';
+import {getUserDetails} from '../../../api/Users';
+import {getGroupDetails} from '../../../api/Groups';
 
-export const getSetting = async (entityID, entityType, sportName, authContext, sportType = '') => {
+export const getSetting = async (
+  entityID,
+  entityType,
+  sportName,
+  authContext,
+  sportType = '',
+) => {
   let obj = {};
   console.log('1');
 
@@ -14,78 +20,84 @@ export const getSetting = async (entityID, entityType, sportName, authContext, s
     console.log('user11');
 
     if (entityID === authContext.entity.uid) {
-      obj = (authContext?.entity?.obj?.registered_sports ?? []).filter(
+      obj =
+        (authContext?.entity?.obj?.registered_sports ?? []).filter(
           (o) => o.sport === sportName && o.sport_type === sportType,
         )[0]?.setting ?? {};
-        return obj
+      return obj;
     }
-      return getUserDetails(entityID, authContext)
-        .then((response) => {
-          obj = (response?.payload?.registered_sports ?? []).filter(
-            (o) => o.sport === sportName && o.sport_type === sportType,
-          )[0]?.setting ?? {}
-          return obj
-        })
-        // eslint-disable-next-line no-unused-vars
-        
+    return getUserDetails(entityID, authContext).then((response) => {
+      obj =
+        (response?.payload?.registered_sports ?? []).filter(
+          (o) => o.sport === sportName && o.sport_type === sportType,
+        )[0]?.setting ?? {};
+      return obj;
+    });
+    // eslint-disable-next-line no-unused-vars
   }
   if (entityType === 'team') {
     if (entityID === authContext.entity.uid) {
       obj = authContext?.entity?.obj?.setting ?? {};
-      return obj
+      return obj;
     }
-        return getGroupDetails(entityID, authContext)
+    return (
+      getGroupDetails(entityID, authContext)
         .then((response) => {
-            console.log('team setting obj:=>', response);
-          obj = response?.payload?.setting
-          return obj
+          console.log('team setting obj:=>', response);
+          obj = response?.payload?.setting;
+          return obj;
         })
         // eslint-disable-next-line no-unused-vars
         .catch((e) => {
           setTimeout(() => {
             // Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
-        });
+        })
+    );
   }
   if (entityType === 'referee') {
     if (entityID === authContext.entity.uid) {
-      obj = (authContext?.entity?.obj?.referee_data ?? []).filter(
+      obj =
+        (authContext?.entity?.obj?.referee_data ?? []).filter(
           (o) => o?.sport === sportName,
         )[0]?.setting ?? {};
-        return obj
+      return obj;
     }
-       return getUserDetails(entityID, authContext)
-        .then((response) => {
-          obj = (response?.payload?.referee_data ?? []).filter(
+    return getUserDetails(entityID, authContext)
+      .then((response) => {
+        obj =
+          (response?.payload?.referee_data ?? []).filter(
             (o) => o?.sport === sportName,
-          )[0]?.setting ?? {}
-          return obj
-        })
-        .catch((e) => {
-          setTimeout(() => {
-            // Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+          )[0]?.setting ?? {};
+        return obj;
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          // Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   }
   if (entityType === 'scorekeeper') {
     if (entityID === authContext.entity.uid) {
-      obj = (authContext?.entity?.obj?.scorekeeper_data ?? []).filter(
+      obj =
+        (authContext?.entity?.obj?.scorekeeper_data ?? []).filter(
           (o) => o.sport === sportName,
         )[0]?.setting ?? {};
-        return obj
+      return obj;
     }
-        return getUserDetails(entityID, authContext)
-        .then((response) => {
-          obj = (response?.payload?.scorekeeper_data ?? []).filter(
+    return getUserDetails(entityID, authContext)
+      .then((response) => {
+        obj =
+          (response?.payload?.scorekeeper_data ?? []).filter(
             (o) => o.sport === sportName,
-          )[0]?.setting ?? {}
-          return obj
-        })
-        .catch((e) => {
-          setTimeout(() => {
-            // Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+          )[0]?.setting ?? {};
+        return obj;
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          // Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   }
-  return obj
+  return obj;
 };

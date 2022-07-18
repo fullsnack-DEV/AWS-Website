@@ -348,7 +348,8 @@ export default function RefereesListScreen({navigation, route}) {
           fontFamily: fonts.RRegular,
           color: colors.grayColor,
           fontSize: 26,
-        }}>
+        }}
+      >
         No Referees
       </Text>
     </View>
@@ -440,21 +441,25 @@ export default function RefereesListScreen({navigation, route}) {
         animationInTiming={300}
         animationOutTiming={800}
         backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}>
+        backdropTransitionOutTiming={800}
+      >
         <View
           style={[
             styles.bottomPopupContainer,
             {height: Dimensions.get('window').height - 100},
-          ]}>
+          ]}
+        >
           <KeyboardAvoidingView
             style={{flex: 1}}
             keyboardVerticalOffset={keyboardVerticalOffset}
-            behavior={Platform.OS === 'ios' ? 'padding' : null}>
+            behavior={Platform.OS === 'ios' ? 'padding' : null}
+          >
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
                   onPress={() => setSettingPopup(false)}
-                  style={styles.cancelText}>
+                  style={styles.cancelText}
+                >
                   Cancel
                 </Text>
                 <Text style={styles.locationText}>Filter</Text>
@@ -480,7 +485,8 @@ export default function RefereesListScreen({navigation, route}) {
                         applyFilter(tempFilter);
                       }, 100);
                     }
-                  }}>
+                  }}
+                >
                   {'Apply'}
                 </Text>
               </View>
@@ -496,7 +502,8 @@ export default function RefereesListScreen({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}>
+                      }}
+                    >
                       <Text style={styles.filterTitle}>World</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
@@ -506,7 +513,8 @@ export default function RefereesListScreen({navigation, route}) {
                           //   ...filters,
                           //   location: 'world',
                           // });
-                        }}>
+                        }}
+                      >
                         <Image
                           source={
                             locationFilterOpetion === 0
@@ -522,7 +530,8 @@ export default function RefereesListScreen({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}>
+                      }}
+                    >
                       <Text style={styles.filterTitle}>Home City</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
@@ -541,7 +550,8 @@ export default function RefereesListScreen({navigation, route}) {
                           //       .toUpperCase()
                           //     + authContext?.entity?.obj?.city.slice(1),
                           // });
-                        }}>
+                        }}
+                      >
                         <Image
                           source={
                             locationFilterOpetion === 1
@@ -557,13 +567,15 @@ export default function RefereesListScreen({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}>
+                      }}
+                    >
                       <Text style={styles.filterTitle}>Current City</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
                           getLocation();
-                        }}>
+                        }}
+                      >
                         <Image
                           source={
                             locationFilterOpetion === 2
@@ -582,12 +594,14 @@ export default function RefereesListScreen({navigation, route}) {
                         navigation.navigate('SearchCityScreen', {
                           comeFrom: 'RefereesListScreen',
                         });
-                      }}>
+                      }}
+                    >
                       <View
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                        }}>
+                        }}
+                      >
                         {/* <TCSearchCityView
                     getCity={(value) => {
                       console.log('Value:=>', value);
@@ -604,7 +618,8 @@ export default function RefereesListScreen({navigation, route}) {
                         <View
                           style={{
                             alignSelf: 'center',
-                          }}>
+                          }}
+                        >
                           <Image
                             source={
                               locationFilterOpetion === 3
@@ -624,7 +639,8 @@ export default function RefereesListScreen({navigation, route}) {
                       flexDirection: 'column',
                       margin: 15,
                       justifyContent: 'space-between',
-                    }}>
+                    }}
+                  >
                     <View style={{}}>
                       <Text style={styles.filterTitle}>Sport</Text>
                     </View>
@@ -802,7 +818,8 @@ export default function RefereesListScreen({navigation, route}) {
                     flexDirection: 'column',
                     margin: 15,
                     justifyContent: 'space-between',
-                  }}>
+                  }}
+                >
                   <View style={{}}>
                     <Text style={styles.filterTitle}>Referee fee</Text>
                   </View>
@@ -811,7 +828,8 @@ export default function RefereesListScreen({navigation, route}) {
                       style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                      }}>
+                      }}
+                    >
                       <TextInput
                         onChangeText={(text) => setMinFee(text)}
                         value={minFee}
@@ -859,7 +877,8 @@ export default function RefereesListScreen({navigation, route}) {
                 ],
                 {cancelable: false},
               );
-            }}>
+            }}
+          >
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>

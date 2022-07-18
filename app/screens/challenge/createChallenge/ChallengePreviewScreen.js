@@ -68,7 +68,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
-  const [isMore,setIsMore] = useState(false);
+  const [isMore, setIsMore] = useState(false);
 
   entity = authContext.entity;
   const isFocused = useIsFocused();
@@ -613,7 +613,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
           {(challengeData?.game_status === GameStatus.accepted ||
             challengeData?.game_status === GameStatus.reset ||
             !challengeData?.game_status) && (
-              <TCSmallButton
+            <TCSmallButton
               isBorderButton={true}
               borderstyle={{
                 borderColor: colors.userPostTimeColor,
@@ -913,7 +913,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
 
       {(challengeData?.status === ReservationStatus.changeRequest ||
         selectedTab === 1) && (
-          <TCTabView
+        <TCTabView
           totalTabs={2}
           firstTabTitle={'ALTERATION REQUEST'}
           secondTabTitle={'CURRENT RESERVATION'}
@@ -936,7 +936,8 @@ export default function ChallengePreviewScreen({navigation, route}) {
                     ? 0
                     : 15,
               },
-            ]}>
+            ]}
+          >
             Request No.{`${challengeData?.challenge_id}`}
           </Text>
           <ChallengeStatusView
@@ -985,7 +986,8 @@ export default function ChallengePreviewScreen({navigation, route}) {
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}>
+            }}
+          >
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -1041,7 +1043,12 @@ export default function ChallengePreviewScreen({navigation, route}) {
           </View>
           <TCThickDivider />
           <View>
-            <TCLabel title={`Game · ${Utility.getSportName(challengeData,authContext)}`} />
+            <TCLabel
+              title={`Game · ${Utility.getSportName(
+                challengeData,
+                authContext,
+              )}`}
+            />
             <TCInfoImageField
               title={'Home'}
               image={
@@ -1113,58 +1120,66 @@ export default function ChallengePreviewScreen({navigation, route}) {
             title={'Game Type'}
             value={challengeData?.game_type}
             tooltipText={
-            'The game result has an effect on TC points of the challengee and you.'
+              'The game result has an effect on TC points of the challengee and you.'
             }
             tooltipHeight={heightPercentageToDP('6%')}
             tooltipWidth={widthPercentageToDP('50%')}
           />
           <TCThickDivider />
 
-          {challengeData?.sport?.toLowerCase() === 'tennis'  ? <View>
-            <TCGameDetailRules
-              gameRules={challengeData?.score_rules}
-              isMore = {isMore}
-              onPressMoreLess={()=>{
-                setIsMore(!isMore)
-              }}
-            />
-            <TCThickDivider marginTop={20} />
-          </View> : <View>
-            <TCLabel title={'Game Duration'} />
-            <TCChallengeTitle
-            containerStyle={{marginLeft: 25, marginTop: 15, marginBottom: 5}}
-            title={'1st period'}
-            titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
-            value={challengeData?.game_duration?.first_period}
-            valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-            }}
-            staticValueText={'min.'}
-          />
+          {challengeData?.sport?.toLowerCase() === 'tennis' ? (
+            <View>
+              <TCGameDetailRules
+                gameRules={challengeData?.score_rules}
+                isMore={isMore}
+                onPressMoreLess={() => {
+                  setIsMore(!isMore);
+                }}
+              />
+              <TCThickDivider marginTop={20} />
+            </View>
+          ) : (
+            <View>
+              <TCLabel title={'Game Duration'} />
+              <TCChallengeTitle
+                containerStyle={{
+                  marginLeft: 25,
+                  marginTop: 15,
+                  marginBottom: 5,
+                }}
+                title={'1st period'}
+                titleStyle={{fontSize: 16, fontFamily: fonts.RRegular}}
+                value={challengeData?.game_duration?.first_period}
+                valueStyle={{
+                  fontFamily: fonts.RBold,
+                  fontSize: 16,
+                  color: colors.greenColorCard,
+                  marginRight: 2,
+                }}
+                staticValueText={'min.'}
+              />
 
-            <FlatList
-            data={challengeData?.game_duration?.period}
-            renderItem={renderPeriod}
-            keyExtractor={(item, index) => index.toString()}
-            style={{marginBottom: 15}}
-          />
-            {challengeData?.game_duration?.period?.length > 0 && (
-              <Text style={styles.normalTextStyle}>
-                {strings.gameDurationTitle2}
-              </Text>
+              <FlatList
+                data={challengeData?.game_duration?.period}
+                renderItem={renderPeriod}
+                keyExtractor={(item, index) => index.toString()}
+                style={{marginBottom: 15}}
+              />
+              {challengeData?.game_duration?.period?.length > 0 && (
+                <Text style={styles.normalTextStyle}>
+                  {strings.gameDurationTitle2}
+                </Text>
+              )}
+
+              <FlatList
+                data={challengeData?.game_duration?.overtime}
+                renderItem={renderOverTime}
+                keyExtractor={(item, index) => index.toString()}
+                style={{marginBottom: 15}}
+              />
+              <TCThickDivider marginTop={20} />
+            </View>
           )}
-
-            <FlatList
-            data={challengeData?.game_duration?.overtime}
-            renderItem={renderOverTime}
-            keyExtractor={(item, index) => index.toString()}
-            style={{marginBottom: 15}}
-          />
-            <TCThickDivider marginTop={20} />
-          </View>}
 
           <View>
             <TCChallengeTitle title={'Game Rules'} />
@@ -1191,7 +1206,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
                 }
                 numberOfReferee={
                   challengeData?.responsible_for_referee?.who_secure?.length ??
-                0
+                  0
                 }
                 agreementOpetion={challengeData?.min_referee === 0 ? 1 : 2}
                 moreButtonVisible={true}
@@ -1233,7 +1248,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
               title={'Refund Policy'}
               value={challengeData?.refund_policy}
               tooltipText={
-              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+                '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
               }
               tooltipHeight={heightPercentageToDP('18%')}
               tooltipWidth={widthPercentageToDP('50%')}
@@ -1293,7 +1308,7 @@ export default function ChallengePreviewScreen({navigation, route}) {
                           challengeData?.status ===
                             ReservationStatus.requestcancelled ||
                           challengeData?.status === ReservationStatus.cancelled
-                      )
+                        )
                       }
                       onPress={() => {
                         navigation.navigate('PaymentMethodsScreen', {
@@ -1338,7 +1353,8 @@ export default function ChallengePreviewScreen({navigation, route}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           borderTopLeftRadius: 15,
           borderTopRightRadius: 15,
-        }}>
+        }}
+      >
         <View style={styles.mainContainer}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
@@ -1462,7 +1478,8 @@ export default function ChallengePreviewScreen({navigation, route}) {
                 style={styles.goToProfileButton}
                 onPress={() => {
                   navigation.popToTop();
-                }}>
+                }}
+              >
                 <Text style={styles.goToProfileTitle}>OK</Text>
               </TouchableOpacity>
             </SafeAreaView>
@@ -1541,7 +1558,8 @@ export default function ChallengePreviewScreen({navigation, route}) {
           backgroundColor: 'rgba(0,0,0,0.5)',
           borderTopLeftRadius: 15,
           borderTopRightRadius: 15,
-        }}>
+        }}
+      >
         <View style={styles.mainContainer}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
@@ -1578,7 +1596,8 @@ export default function ChallengePreviewScreen({navigation, route}) {
               onPress={() => {
                 setAlterModalVisible(false);
                 navigation.popToTop();
-              }}>
+              }}
+            >
               <Text style={styles.goToProfileTitle}>OK</Text>
             </TouchableOpacity>
           </SafeAreaView>

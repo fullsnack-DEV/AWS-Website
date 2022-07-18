@@ -31,7 +31,8 @@ const AuthNavigator = () => (
       headerTransparent: true,
       headerTitle: false,
       headerBackTitleVisible: false,
-    }}>
+    }}
+  >
     <Stack.Screen
       name="WelcomeScreen"
       component={WelcomeScreen}

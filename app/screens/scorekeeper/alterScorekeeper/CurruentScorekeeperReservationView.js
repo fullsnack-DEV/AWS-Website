@@ -1,12 +1,10 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
-import React, { useEffect, useState, useContext } from 'react';
-import {
- StyleSheet, View, Text, Image,
- } from 'react-native';
+import React, {useEffect, useState, useContext} from 'react';
+import {StyleSheet, View, Text, Image} from 'react-native';
 import moment from 'moment';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import _ from 'lodash';
 
 import fonts from '../../../Constants/Fonts';
@@ -33,7 +31,10 @@ import ScorekeeperReservationTitle from '../../../components/reservations/Scorek
 
 let entity = {};
 
-export default function CurruentScorekeeperReservationView({ reservationObj, navigation }) {
+export default function CurruentScorekeeperReservationView({
+  reservationObj,
+  navigation,
+}) {
   const authContext = useContext(AuthContext);
 
   const isFocused = useIsFocused();
@@ -46,7 +47,8 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
   }, [isFocused]);
 
   const getDayTimeDifferent = (sDate, eDate) => {
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+    let delta =
+      Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
     const days = Math.floor(delta / 86400);
     delta -= days * 86400;
@@ -60,10 +62,10 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
     return `${days}d ${hours}h ${minutes}m`;
   };
   const checkSenderOrReceiver = (reservationObject) => {
-    const teampObj = { ...reservationObject };
+    const teampObj = {...reservationObject};
     if (
-      teampObj?.status === ScorekeeperReservationStatus.pendingpayment
-      || teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
+      teampObj?.status === ScorekeeperReservationStatus.pendingpayment ||
+      teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
     ) {
       if (teampObj?.updated_by) {
         if (teampObj?.updated_by?.group_id) {
@@ -79,18 +81,18 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
     } else if (teampObj?.updated_by) {
       if (teampObj?.updated_by?.group_id) {
         if (
-          teampObj?.automatic_request
-          && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-          && entity.obj.entity_type === 'team'
+          teampObj?.automatic_request &&
+          teampObj?.status === ScorekeeperReservationStatus.changeRequest &&
+          entity.obj.entity_type === 'team'
         ) {
           teampObj.requested_by = teampObj.initiated_by;
         } else {
           teampObj.requested_by = teampObj.updated_by.group_id;
         }
       } else if (
-        teampObj?.automatic_request
-        && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-        && teampObj?.scorekeeper?.user_id !== entity.uid
+        teampObj?.automatic_request &&
+        teampObj?.status === ScorekeeperReservationStatus.changeRequest &&
+        teampObj?.scorekeeper?.user_id !== entity.uid
       ) {
         teampObj.requested_by = teampObj.initiated_by;
       } else {
@@ -111,10 +113,10 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
   };
 
   const checkScorekeeperOrTeam = (reservationObject) => {
-    const teampObj = { ...reservationObject };
+    const teampObj = {...reservationObject};
     if (
-      teampObj?.status === ScorekeeperReservationStatus.pendingpayment
-      || teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
+      teampObj?.status === ScorekeeperReservationStatus.pendingpayment ||
+      teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
     ) {
       if (teampObj?.updated_by) {
         if (teampObj?.updated_by?.group_id) {
@@ -130,18 +132,18 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
     } else if (teampObj?.updated_by) {
       if (teampObj?.updated_by?.group_id) {
         if (
-          teampObj?.automatic_request
-          && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-          && entity.obj.entity_type === 'team'
+          teampObj?.automatic_request &&
+          teampObj?.status === ScorekeeperReservationStatus.changeRequest &&
+          entity.obj.entity_type === 'team'
         ) {
           teampObj.requested_by = teampObj.initiated_by;
         } else {
           teampObj.requested_by = teampObj.updated_by.group_id;
         }
       } else if (
-        teampObj?.automatic_request
-        && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-        && teampObj?.scorekeeper?.user_id !== entity.uid
+        teampObj?.automatic_request &&
+        teampObj?.status === ScorekeeperReservationStatus.changeRequest &&
+        teampObj?.scorekeeper?.user_id !== entity.uid
       ) {
         teampObj.requested_by = teampObj.initiated_by;
       } else {
@@ -173,8 +175,8 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
     }
     if (!reservationObject?.game?.user_challenge) {
       if (
-        reservationObject?.initiated_by
-        === reservationObject?.game?.home_team?.group_id
+        reservationObject?.initiated_by ===
+        reservationObject?.game?.home_team?.group_id
       ) {
         return `${reservationObject?.game?.home_team.group_name}`;
       }
@@ -182,17 +184,18 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
     }
     console.log('user challenge');
     if (
-        reservationObject?.initiated_by === reservationObject?.game?.home_team?.user_id
+      reservationObject?.initiated_by ===
+      reservationObject?.game?.home_team?.user_id
     ) {
       return `${reservationObject?.game?.home_team.first_name} ${reservationObject?.game?.home_team.last_name}`;
     }
     return `${reservationObject?.game?.away_team.first_name} ${reservationObject?.game?.away_team.last_name}`;
   };
 
-  const Title = ({ text, required }) => (
+  const Title = ({text, required}) => (
     <Text style={styles.titleText}>
       {text}
-      {required && <Text style={{ color: colors.redDelColor }}> * </Text>}
+      {required && <Text style={{color: colors.redDelColor}}> * </Text>}
     </Text>
   );
 
@@ -203,7 +206,7 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
     return `${startDate} - ${endDate} (${duration})`;
   };
 
-  const Seperator = ({ height = 7 }) => (
+  const Seperator = ({height = 7}) => (
     <View
       style={{
         width: '100%',
@@ -217,16 +220,16 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
   const getRequester = (param) => {
     if (entity.uid === param?.scorekeeper?.user_id) {
       if (
-        param?.initiated_by
-        === (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)
+        param?.initiated_by ===
+        (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)
       ) {
         return param?.game?.home_team;
       }
       return param?.game?.away_team;
     }
     if (
-      entity.uid
-      === (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)
+      entity.uid ===
+      (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)
     ) {
       return param?.game?.home_team;
     }
@@ -236,7 +239,7 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
   return (
     <TCKeyboardView>
       {bodyParams && (
-        <View style={{ marginBottom: 20 }}>
+        <View style={{marginBottom: 20}}>
           <ReservationNumber reservationNumber={bodyParams.reservation_id} />
           <View
             style={{
@@ -244,13 +247,11 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}>
+            }}
+          >
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
-                <Image
-                    source={images.reqIcon}
-                    style={styles.reqOutImage}
-                  />
+                <Image source={images.reqIcon} style={styles.reqOutImage} />
                 <Text style={styles.challengerText}>Requester</Text>
               </View>
 
@@ -259,7 +260,7 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
                   <Image
                     source={
                       getRequester(bodyParams).thumbnail
-                        ? { uri: getRequester(bodyParams).thumbnail }
+                        ? {uri: getRequester(bodyParams).thumbnail}
                         : images.teamPlaceholder
                     }
                     style={styles.profileImage}
@@ -267,10 +268,10 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
                 </View>
                 <Text style={styles.teamNameText}>
                   {getRequester(bodyParams).group_id
-                      ? `${getRequester(bodyParams).group_name}`
-                      : `${getRequester(bodyParams).first_name} ${
-                          getRequester(bodyParams).last_name
-                        }`}
+                    ? `${getRequester(bodyParams).group_name}`
+                    : `${getRequester(bodyParams).first_name} ${
+                        getRequester(bodyParams).last_name
+                      }`}
                 </Text>
               </View>
             </View>
@@ -291,23 +292,23 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
                   /> */}
                 <View style={styles.profileView}>
                   <Image
-                      source={
-                        bodyParams?.scorekeeper?.full_image
-                          ? { uri: bodyParams?.scorekeeper?.full_image }
-                          : images.profilePlaceHolder
-                      }
-                      style={styles.profileImage}
-                    />
+                    source={
+                      bodyParams?.scorekeeper?.full_image
+                        ? {uri: bodyParams?.scorekeeper?.full_image}
+                        : images.profilePlaceHolder
+                    }
+                    style={styles.profileImage}
+                  />
                 </View>
                 <Text
-                    style={{
-                      marginLeft: 5,
-                      fontFamily: fonts.RMedium,
-                      fontSize: 16,
-                      color: colors.lightBlackColor,
-                      width: '80%',
-
-                    }}>
+                  style={{
+                    marginLeft: 5,
+                    fontFamily: fonts.RMedium,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                    width: '80%',
+                  }}
+                >
                   {`${bodyParams?.scorekeeper?.first_name} ${bodyParams?.scorekeeper?.last_name}`}
                 </Text>
               </View>
@@ -315,7 +316,11 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
           </View>
           <TCThinDivider />
 
-          <ScorekeeperReservationTitle reservationObject={bodyParams} showDesc={true} containerStyle={{ margin: 15 }}/>
+          <ScorekeeperReservationTitle
+            reservationObject={bodyParams}
+            showDesc={true}
+            containerStyle={{margin: 15}}
+          />
 
           <TCThickDivider marginTop={15} />
 
@@ -344,10 +349,10 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
                     <TCInfoField
                       title={'Date'}
                       value={
-                        bodyParams?.start_datetime
-                        && moment(bodyParams?.start_datetime * 1000).format(
+                        bodyParams?.start_datetime &&
+                        moment(bodyParams?.start_datetime * 1000).format(
                           'MMM DD, YYYY',
-                      )
+                        )
                       }
                       titleStyle={{
                         alignSelf: 'flex-start',
@@ -418,10 +423,14 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
             <View>
               <TCChallengeTitle title={'Game Rules'} />
               <Text style={styles.rulesTitle}>General Rules</Text>
-              <Text style={styles.rulesDetail}>{bodyParams?.game?.general_rules}</Text>
-              <View style={{ marginBottom: 10 }} />
+              <Text style={styles.rulesDetail}>
+                {bodyParams?.game?.general_rules}
+              </Text>
+              <View style={{marginBottom: 10}} />
               <Text style={styles.rulesTitle}>Special Rules</Text>
-              <Text style={[styles.rulesDetail, { marginBottom: 10 }]}>{bodyParams?.game?.special_rules}</Text>
+              <Text style={[styles.rulesDetail, {marginBottom: 10}]}>
+                {bodyParams?.game?.special_rules}
+              </Text>
             </View>
           )}
           <TCThickDivider marginTop={20} />
@@ -452,7 +461,6 @@ export default function CurruentScorekeeperReservationView({ reservationObj, nav
   );
 }
 const styles = StyleSheet.create({
-
   teamView: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -482,7 +490,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     width: '80%',
-
   },
   challengerView: {
     marginRight: 15,
@@ -516,7 +523,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,

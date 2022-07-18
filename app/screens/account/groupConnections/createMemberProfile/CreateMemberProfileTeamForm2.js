@@ -32,7 +32,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [playerStatus, setPlayerStatus] = useState([]);
   const [setting, setSetting] = useState({
-    is_member:  true,
+    is_member: true,
     is_admin: true,
   });
   // const [groups, setGroups] = useState({
@@ -63,8 +63,6 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
       position: '',
     },
   ]);
-
-
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -113,7 +111,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
             ...bodyParams,
             ...setting,
             ...groupMemberDetail,
-           // group_id: entity.uid,
+            // group_id: entity.uid,
           };
           console.log('BODY PARAMS:', bodyParams);
           createProfile(bodyParams);
@@ -198,20 +196,23 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
       <ActivityLoader visible={loading} />
       <TCFormProgress totalSteps={2} curruentStep={2} />
 
-      <Text style={[styles.checkBoxTitle,{marginTop:15,marginBottom:0,marginLeft:15}]}>
+      <Text
+        style={[
+          styles.checkBoxTitle,
+          {marginTop: 15, marginBottom: 0, marginLeft: 15},
+        ]}
+      >
         Membership {'&'} Admin Authority
       </Text>
       <View style={styles.mainCheckBoxContainer}>
-       
-          
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            
+
             marginRight: 15,
-            
-          }}>
+          }}
+        >
           <View style={styles.profileView}>
             <Image
               source={
@@ -227,50 +228,57 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
             groupType={entity.role}
           />
         </View>
-        
+
         <View style={styles.mainCheckBoxContainer}>
-          <View style={[styles.checkBoxContainer,{opacity:0.5}]}>
-            <Text style={[styles.checkBoxItemText,{marginLeft:0}]}>Member</Text>
+          <View style={[styles.checkBoxContainer, {opacity: 0.5}]}>
+            <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>
+              Member
+            </Text>
             <TouchableOpacity
-            disabled={true}
-            onPress={() => {
-              const member_setting = !setting.is_member;
-              setSetting({
-                ...setting,
-                is_member: member_setting,
-              });
-            }}>
+              disabled={true}
+              onPress={() => {
+                const member_setting = !setting.is_member;
+                setSetting({
+                  ...setting,
+                  is_member: member_setting,
+                });
+              }}
+            >
               <Image
-              source={
-                // item.join_membership_acceptedadmin === false
-                setting.is_member ? images.orangeCheckBox : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
+                source={
+                  // item.join_membership_acceptedadmin === false
+                  setting.is_member
+                    ? images.orangeCheckBox
+                    : images.uncheckWhite
+                }
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
+              />
             </TouchableOpacity>
           </View>
           <View style={styles.checkBoxContainer}>
-            <Text style={[styles.checkBoxItemText,{marginLeft:0}]}>{`${entity.role.charAt(0).toUpperCase() + entity.role.slice(1)} Admin`}</Text>
+            <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>{`${
+              entity.role.charAt(0).toUpperCase() + entity.role.slice(1)
+            } Admin`}</Text>
             <TouchableOpacity
-            onPress={() => {
-              const admin_setting = !setting.is_admin;
-              setSetting({
-                ...setting,
-                is_admin: admin_setting,
-              });
-            }}>
+              onPress={() => {
+                const admin_setting = !setting.is_admin;
+                setSetting({
+                  ...setting,
+                  is_admin: admin_setting,
+                });
+              }}
+            >
               <Image
-              source={
-                setting.is_admin ? images.orangeCheckBox : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
+                source={
+                  setting.is_admin ? images.orangeCheckBox : images.uncheckWhite
+                }
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
+              />
             </TouchableOpacity>
           </View>
         </View>
       </View>
 
-     
       <View style={styles.mainCheckBoxContainer}>
         <Text style={styles.checkBoxTitle}>Roles</Text>
         <View style={styles.checkBoxContainer}>
@@ -281,7 +289,8 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 is_player: !groupMemberDetail.is_player,
               });
-            }}>
+            }}
+          >
             <Image
               source={
                 groupMemberDetail.is_player
@@ -291,7 +300,6 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-          
         </View>
         <View style={styles.checkBoxContainer}>
           <Text style={styles.checkBoxItemText}>Coach</Text>
@@ -301,7 +309,8 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 is_coach: !groupMemberDetail.is_coach,
               });
-            }}>
+            }}
+          >
             <Image
               source={
                 groupMemberDetail.is_coach
@@ -311,7 +320,6 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-          
         </View>
         <View style={styles.checkBoxContainer}>
           <Text style={styles.checkBoxItemText}>Others</Text>
@@ -321,7 +329,8 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 is_others: !groupMemberDetail.is_others,
               });
-            }}>
+            }}
+          >
             <Image
               source={
                 groupMemberDetail.is_others
@@ -331,10 +340,7 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-          
         </View>
-      
-       
       </View>
       <View>
         <TCLable title={'Position'} />
@@ -391,7 +397,8 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 status: playerStatus,
               });
-            }}>
+            }}
+          >
             <Image
               source={
                 playerStatus.indexOf('Injured') !== -1
@@ -401,7 +408,6 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-         
         </View>
         <View style={styles.checkBoxContainer}>
           <Text style={styles.checkBoxItemText}>Long-term Away</Text>
@@ -418,7 +424,8 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 status: playerStatus,
               });
-            }}>
+            }}
+          >
             <Image
               source={
                 playerStatus.some((el) => el === 'Long-term Away')
@@ -428,7 +435,6 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-         
         </View>
         <View style={styles.checkBoxContainer}>
           <Text style={styles.checkBoxItemText}>Suspended</Text>
@@ -445,7 +451,8 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
                 ...groupMemberDetail,
                 status: playerStatus,
               });
-            }}>
+            }}
+          >
             <Image
               source={
                 playerStatus.some((el) => el === 'Suspended')
@@ -455,7 +462,6 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
           </TouchableOpacity>
-         
         </View>
       </View>
       <View>
@@ -476,8 +482,6 @@ export default function CreateMemberProfileTeamForm2({navigation, route}) {
   );
 }
 const styles = StyleSheet.create({
-
-
   profileView: {
     backgroundColor: colors.whiteColor,
     height: 26,
@@ -509,10 +513,10 @@ const styles = StyleSheet.create({
   checkBoxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     height: 25,
     marginBottom: 10,
-    marginRight:15
+    marginRight: 15,
   },
   mainCheckBoxContainer: {
     marginLeft: 15,

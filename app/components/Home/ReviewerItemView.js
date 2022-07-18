@@ -1,10 +1,22 @@
 /* eslint-disable consistent-return */
 import React, {
- useRef, useState, useEffect, useCallback, useContext,
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
 } from 'react';
 import {
-StyleSheet, View, Image, TouchableOpacity, Text, Alert, FlatList, TextInput, SafeAreaView,
- Keyboard,
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+  Text,
+  Alert,
+  FlatList,
+  TextInput,
+  SafeAreaView,
+  Keyboard,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -12,11 +24,11 @@ import {
 } from 'react-native-responsive-screen';
 import Video from 'react-native-video';
 import FastImage from 'react-native-fast-image';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
 import moment from 'moment';
 import SwipeUpDownModal from 'react-native-swipe-modal-up-down';
-import { createReaction, getReactions } from '../../api/NewsFeeds';
+import {createReaction, getReactions} from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -47,9 +59,7 @@ function ReviewerItemView({
     item?.reaction_counts?.comment ?? 0,
   );
   const [like, setLike] = useState(false);
-  const [likeCount, setLikeCount] = useState(
-    item?.reaction_counts?.clap ?? 0,
-  );
+  const [likeCount, setLikeCount] = useState(item?.reaction_counts?.clap ?? 0);
 
   const actionSheet = useRef();
   let attachedImages = [];
@@ -58,7 +68,8 @@ function ReviewerItemView({
   }
 
   const [keyboardOffset, setKeyboardOffset] = useState(0);
-  const onKeyboardShow = (event) => setKeyboardOffset(event.endCoordinates.height);
+  const onKeyboardShow = (event) =>
+    setKeyboardOffset(event.endCoordinates.height);
   const onKeyboardHide = () => setKeyboardOffset(0);
   const keyboardDidShowListener = useRef();
   const keyboardDidHideListener = useRef();
@@ -98,8 +109,10 @@ function ReviewerItemView({
   useEffect(() => {
     console.log('review ooo::=>', JSON.parse(item?.object)?.playerReview);
     setReviewObj(
-      JSON.parse(item?.object)?.refereeReview
-        || JSON.parse(item?.object)?.scorekeeperReview || JSON.parse(item?.object)?.playerReview || JSON.parse(item?.object)?.gameReview,
+      JSON.parse(item?.object)?.refereeReview ||
+        JSON.parse(item?.object)?.scorekeeperReview ||
+        JSON.parse(item?.object)?.playerReview ||
+        JSON.parse(item?.object)?.gameReview,
     );
   }, [item]);
 
@@ -142,19 +155,28 @@ function ReviewerItemView({
     [authContext],
   );
 
-const isAdmin = () => {
-  console.log('gameData:=>', gameData);
-  console.log('Home:', gameData?.home_team?.id);
-  console.log('Away:', gameData?.away_team?.id);
-  console.log('Curruent :', currentUserDetail?.group_id ?? currentUserDetail?.user_id);
-  if (gameData?.home_team?.id === (currentUserDetail?.group_id ?? currentUserDetail?.user_id)) {
-    return true
-  }
-  if (gameData?.away_team?.id === (currentUserDetail?.group_id ?? currentUserDetail?.user_id)) {
-    return true
-  }
-  return false
-}
+  const isAdmin = () => {
+    console.log('gameData:=>', gameData);
+    console.log('Home:', gameData?.home_team?.id);
+    console.log('Away:', gameData?.away_team?.id);
+    console.log(
+      'Curruent :',
+      currentUserDetail?.group_id ?? currentUserDetail?.user_id,
+    );
+    if (
+      gameData?.home_team?.id ===
+      (currentUserDetail?.group_id ?? currentUserDetail?.user_id)
+    ) {
+      return true;
+    }
+    if (
+      gameData?.away_team?.id ===
+      (currentUserDetail?.group_id ?? currentUserDetail?.user_id)
+    ) {
+      return true;
+    }
+    return false;
+  };
   const getTeamData = () => {
     const obj = {};
     if (reviewObj?.member === 'home') {
@@ -190,7 +212,7 @@ const isAdmin = () => {
   };
 
   const renderComments = useCallback(
-    ({ item: comments }) => <WriteCommentItems data={comments} />,
+    ({item: comments}) => <WriteCommentItems data={comments} />,
     [],
   );
   const listEmptyComponent = () => (
@@ -210,7 +232,7 @@ const isAdmin = () => {
               style={styles.background}
               source={
                 item?.actor?.data?.full_image
-                  ? { uri: item?.actor?.data?.full_image }
+                  ? {uri: item?.actor?.data?.full_image}
                   : images.profilePlaceHolder
               }
               resizeMode={'cover'}
@@ -225,59 +247,81 @@ const isAdmin = () => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 marginTop: 3,
-              }}>
-              <Text style={styles.activeTimeAgoTxt}>{moment(new Date(reviewObj?.created_at * 1000)).format('MMM DD')}</Text>
+              }}
+            >
+              <Text style={styles.activeTimeAgoTxt}>
+                {moment(new Date(reviewObj?.created_at * 1000)).format(
+                  'MMM DD',
+                )}
+              </Text>
 
-              {reviewObj?.member !== 'both' ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={styles.eventImageViewStyle}>
-                  <Image
-                  source={
-                    (reviewObj?.member
-                      === 'home' && (getTeamData()?.image ? { uri: getTeamData()?.image } : images.teamPlaceholder))
-                    || (reviewObj?.member
-                      === 'away' && (getTeamData()?.image ? { uri: getTeamData()?.image } : images.teamPlaceholder))
-                    || (reviewObj?.member
-                      === 'referee' && getTeamData()?.image)
-                    || (reviewObj?.member
-                      === 'scorekeeper' && getTeamData()?.image)
-                    || (reviewObj?.member
-                      === 'opponent' && getTeamData()?.image)
-                  }
-                  style={styles.imageStyle}
-                  resizeMode={'contain'}
-                />
+              {reviewObj?.member !== 'both' ? (
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <View style={styles.eventImageViewStyle}>
+                    <Image
+                      source={
+                        (reviewObj?.member === 'home' &&
+                          (getTeamData()?.image
+                            ? {uri: getTeamData()?.image}
+                            : images.teamPlaceholder)) ||
+                        (reviewObj?.member === 'away' &&
+                          (getTeamData()?.image
+                            ? {uri: getTeamData()?.image}
+                            : images.teamPlaceholder)) ||
+                        (reviewObj?.member === 'referee' &&
+                          getTeamData()?.image) ||
+                        (reviewObj?.member === 'scorekeeper' &&
+                          getTeamData()?.image) ||
+                        (reviewObj?.member === 'opponent' &&
+                          getTeamData()?.image)
+                      }
+                      style={styles.imageStyle}
+                      resizeMode={'contain'}
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.activeTimeAgoTxt,
+                      {fontSize: 12, fontFamily: fonts.RMedium},
+                    ]}
+                  >
+                    {getTeamData()?.name}
+                  </Text>
                 </View>
-                <Text
-                style={[
-                  styles.activeTimeAgoTxt,
-                  { fontSize: 12, fontFamily: fonts.RMedium },
-                ]}>
-                  {getTeamData()?.name}
-                </Text>
-              </View> : <View>
-                <View style={styles.eventImageViewStyle}>
-                  <Image
-                  source={getTeamData()?.home_image ? { uri: getTeamData()?.home_image } : images.teamPlaceholder}
-                  style={styles.imageStyle}
-                  resizeMode={'contain'}
-                />
+              ) : (
+                <View>
+                  <View style={styles.eventImageViewStyle}>
+                    <Image
+                      source={
+                        getTeamData()?.home_image
+                          ? {uri: getTeamData()?.home_image}
+                          : images.teamPlaceholder
+                      }
+                      style={styles.imageStyle}
+                      resizeMode={'contain'}
+                    />
+                  </View>
+                  <View style={styles.eventImageViewStyle}>
+                    <Image
+                      source={
+                        getTeamData()?.away_image
+                          ? {uri: getTeamData()?.away_image}
+                          : images.teamPlaceholder
+                      }
+                      style={styles.imageStyle}
+                      resizeMode={'contain'}
+                    />
+                  </View>
                 </View>
-                <View style={styles.eventImageViewStyle}>
-                  <Image
-                  source={getTeamData()?.away_image ? { uri: getTeamData()?.away_image } : images.teamPlaceholder}
-                  style={styles.imageStyle}
-                  resizeMode={'contain'}
-                />
-                </View>
-              </View>}
-
+              )}
             </View>
           </View>
           <TouchableOpacity
             style={styles.dotImageTouchStyle}
             onPress={() => {
               actionSheet.current.show();
-            }}>
+            }}
+          >
             <Image
               style={styles.dotImageStyle}
               source={images.dotImage}
@@ -289,21 +333,21 @@ const isAdmin = () => {
           <PostDescription
             descriptions={reviewObj?.comment ?? ''}
             character={125}
-            containerStyle={{ marginHorizontal: 12 }}
+            containerStyle={{marginHorizontal: 12}}
             onReadMorePress={onReadMorePress}
           />
           {attachedImages.length > 0 && (
             <View style={styles.mainImageView}>
-              {attachedImages.length >= 1
-                && attachedImages[0]?.type?.split('/')[0] === 'image' && (
+              {attachedImages.length >= 1 &&
+                attachedImages[0]?.type?.split('/')[0] === 'image' && (
                   <Image
-                    source={{ uri: attachedImages[0].thumbnail }}
+                    source={{uri: attachedImages[0].thumbnail}}
                     style={styles.postImageStyle}
                     resizeMode={'cover'}
                   />
                 )}
-              {attachedImages.length >= 1
-                && attachedImages[0]?.type?.split('/')[0] === 'video' && (
+              {attachedImages.length >= 1 &&
+                attachedImages[0]?.type?.split('/')[0] === 'video' && (
                   <View>
                     <View
                       style={{
@@ -315,7 +359,8 @@ const isAdmin = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'absolute',
-                      }}>
+                      }}
+                    >
                       <FastImage
                         source={images.videoPlayBtn}
                         tintColor={'white'}
@@ -330,7 +375,7 @@ const isAdmin = () => {
                       ref={videoPlayerRef}
                       paused={false}
                       muted={true}
-                      source={{ uri: attachedImages[0].url }}
+                      source={{uri: attachedImages[0].url}}
                       style={styles.uploadedImage}
                       resizeMode={'cover'}
                       onLoad={() => {
@@ -339,16 +384,16 @@ const isAdmin = () => {
                     />
                   </View>
                 )}
-              {attachedImages.length >= 2
-                && attachedImages[1]?.type?.split('/')[0] === 'image' && (
+              {attachedImages.length >= 2 &&
+                attachedImages[1]?.type?.split('/')[0] === 'image' && (
                   <Image
-                    source={{ uri: attachedImages[1].thumbnail }}
+                    source={{uri: attachedImages[1].thumbnail}}
                     style={styles.postImageStyle}
                     resizeMode={'cover'}
                   />
                 )}
-              {attachedImages.length >= 2
-                && attachedImages[1]?.type?.split('/')[0] === 'video' && (
+              {attachedImages.length >= 2 &&
+                attachedImages[1]?.type?.split('/')[0] === 'video' && (
                   <View>
                     <View
                       style={{
@@ -360,7 +405,8 @@ const isAdmin = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'absolute',
-                      }}>
+                      }}
+                    >
                       <FastImage
                         source={images.videoPlayBtn}
                         tintColor={'white'}
@@ -375,7 +421,7 @@ const isAdmin = () => {
                       ref={videoPlayerRef}
                       paused={false}
                       muted={true}
-                      source={{ uri: attachedImages[1].url }}
+                      source={{uri: attachedImages[1].url}}
                       style={styles.uploadedImage}
                       resizeMode={'cover'}
                       onLoad={() => {
@@ -384,11 +430,11 @@ const isAdmin = () => {
                     />
                   </View>
                 )}
-              {attachedImages.length >= 3
-                && attachedImages[2]?.type?.split('/')[0] === 'image' && (
+              {attachedImages.length >= 3 &&
+                attachedImages[2]?.type?.split('/')[0] === 'image' && (
                   <View style={styles.threePlusImageView}>
                     <Image
-                      source={{ uri: attachedImages[2].thumbnail }}
+                      source={{uri: attachedImages[2].thumbnail}}
                       style={styles.postImageStyle}
                       resizeMode={'cover'}
                     />
@@ -401,8 +447,8 @@ const isAdmin = () => {
                     )}
                   </View>
                 )}
-              {attachedImages.length >= 3
-                && attachedImages[2]?.type?.split('/')[0] === 'video' && (
+              {attachedImages.length >= 3 &&
+                attachedImages[2]?.type?.split('/')[0] === 'video' && (
                   <View style={styles.threePlusImageView}>
                     <View>
                       <View
@@ -415,7 +461,8 @@ const isAdmin = () => {
                           alignItems: 'center',
                           justifyContent: 'center',
                           position: 'absolute',
-                        }}>
+                        }}
+                      >
                         <FastImage
                           source={images.videoPlayBtn}
                           tintColor={'white'}
@@ -430,7 +477,7 @@ const isAdmin = () => {
                         ref={videoPlayerRef}
                         paused={false}
                         muted={true}
-                        source={{ uri: attachedImages[2].url }}
+                        source={{uri: attachedImages[2].url}}
                         style={styles.uploadedImage}
                         resizeMode={'cover'}
                         onLoad={() => {
@@ -450,30 +497,33 @@ const isAdmin = () => {
             </View>
           )}
 
-          <View style={{ marginTop: 10, marginLeft: 10 }}></View>
+          <View style={{marginTop: 10, marginLeft: 10}}></View>
 
           <View style={styles.commentShareLikeView}>
             <View
               style={{
                 flexDirection: 'row',
                 width: wp('52%'),
-              }}>
+              }}
+            >
               <TouchableWithoutFeedback
                 style={{
                   flexDirection: 'row',
                 }}
                 onPress={() => {
                   if (isAdmin()) {
-                    setShowModelComment(true)
+                    setShowModelComment(true);
                   }
                 }}
-                >
+              >
                 <Image
                   style={styles.commentImage}
                   source={images.commentImage}
                   resizeMode={'contain'}
                 />
-                <Text style={styles.commentlengthStyle}>{commentCount > 0 ? commentCount : ' '}</Text>
+                <Text style={styles.commentlengthStyle}>
+                  {commentCount > 0 ? commentCount : ' '}
+                </Text>
               </TouchableWithoutFeedback>
 
               <TouchableWithoutFeedback
@@ -484,7 +534,7 @@ const isAdmin = () => {
                   marginLeft: 10,
                 }}
                 onPress={() => Alert.alert('Share')}
-                >
+              >
                 <Image
                   style={styles.commentImage}
                   source={images.shareImage}
@@ -513,18 +563,20 @@ const isAdmin = () => {
                   onLikePress(item);
                 }
               }}
-              >
+            >
               {likeCount > 0 && (
                 <Text
-                style={[
-                  styles.commentlengthStyle,
-                  {
-                    color: like === true ? colors.themeColor : colors.whiteColor,
-                  },
-                ]}>
+                  style={[
+                    styles.commentlengthStyle,
+                    {
+                      color:
+                        like === true ? colors.themeColor : colors.whiteColor,
+                    },
+                  ]}
+                >
                   {likeCount}
                 </Text>
-            )}
+              )}
               <Image
                 style={styles.commentImage}
                 source={like ? images.likeImage : images.unlikeImage}
@@ -534,13 +586,12 @@ const isAdmin = () => {
           </View>
           <ActionSheet
             ref={actionSheet}
-
             options={['Report', 'Cancel']}
             cancelButtonIndex={1}
             // destructiveButtonIndex={1}
             onPress={(index) => {
               if (index === 0) {
-                Alert.alert('Report pressed')
+                Alert.alert('Report pressed');
               } else if (index === 1) {
                 // onDeletePost();
               }
@@ -560,8 +611,10 @@ const isAdmin = () => {
       {totalData?.length > 2 && indexNumber === 2 && (
         <TouchableOpacity
           style={styles.maxReviewTouchStyle}
-          onPress={() => onFeedPress(item, feedIndex, gameData, indexNumber, true)
-          }>
+          onPress={() =>
+            onFeedPress(item, feedIndex, gameData, indexNumber, true)
+          }
+        >
           <Text style={styles.maxCountTextStyle}>
             {totalData?.length > 2 && indexNumber === 2
               ? `+${totalData?.length - 2} `
@@ -572,106 +625,114 @@ const isAdmin = () => {
       )}
 
       <SwipeUpDownModal
-          modalVisible={ShowComment}
-          PressToanimate={true}
-          OpenModalDirection={'down'}
-          PressToanimateDirection={'down'}
-          // fade={true}
-          ContentModal={
-            <View style={{ flex: 1 }}>
-              <TCThinDivider width={'100%'} height={1} />
-              <FlatList
-                data={commentData}
-                renderItem={renderComments}
-                keyExtractor={(index) => index.toString()}
-                ListEmptyComponent={listEmptyComponent}
-                style={{ marginBottom: 100 }}
-              />
+        modalVisible={ShowComment}
+        PressToanimate={true}
+        OpenModalDirection={'down'}
+        PressToanimateDirection={'down'}
+        // fade={true}
+        ContentModal={
+          <View style={{flex: 1}}>
+            <TCThinDivider width={'100%'} height={1} />
+            <FlatList
+              data={commentData}
+              renderItem={renderComments}
+              keyExtractor={(index) => index.toString()}
+              ListEmptyComponent={listEmptyComponent}
+              style={{marginBottom: 100}}
+            />
 
-              <SafeAreaView
-                style={[
-                  styles.bottomSafeAreaStyle,
-                  { bottom: keyboardOffset, position: 'absolute' },
-                ]}>
-                {/* <View style={styles.bottomSperateLine} /> */}
-                <View style={styles.bottomImgView}>
-                  <View style={styles.commentReportView}>
-                    <Image
-                      source={
-                        currentUserDetail?.thumbnail ? { uri: currentUserDetail?.thumbnail } : images.profilePlaceHolder
-                      }
-                      resizeMode={'cover'}
-                      style={{ width: 40, height: 40, borderRadius: 40 / 2 }}
-                    />
-                  </View>
-                  <View style={styles.onlyMeViewStyle}>
-                    <TextInput
-                      placeholder={'Write a comment'}
-                      placeholderTextColor={colors.userPostTimeColor}
-                      multiline={true}
-                      textAlignVertical={'top'}
-                      value={commentTxt}
-                      onChangeText={(text) => setCommentText(text)}
-                      style={{
-                        textAlignVertical: 'center',
-                        fontSize: 14,
-                        lineHeight: 14,
-                        width: wp('66%'),
-                        marginHorizontal: '2%',
-                        color: colors.lightBlackColor,
-                        fontFamily: fonts.RRegular,
-                        paddingVertical: 0,
-                        paddingLeft: 8,
-                        alignSelf: 'center',
-                        maxHeight: hp(20),
-                      }}
-                    />
-                    {commentTxt.trim().length > 0 && (
-                      <TouchableOpacity
-                        onPress={() => {
-                          const bodyParams = {
-                            reaction_type: 'comment',
-                            activity_id: item?.id,
-                            data: {
-                              text: commentTxt,
-                            },
-                          };
-                          createReaction(bodyParams, authContext)
-                            .then((response) => {
-                              const dataOfComment = [...commentData];
-                              dataOfComment.unshift(response.payload);
-                              setCommentData(dataOfComment);
-                              setCommentCount(dataOfComment.length);
-                              setCommentText('');
-                            })
-                            .catch((e) => {
-                              console.log(e);
-                            });
-                        }}>
-                        <Text style={styles.sendTextStyle}>SEND</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
+            <SafeAreaView
+              style={[
+                styles.bottomSafeAreaStyle,
+                {bottom: keyboardOffset, position: 'absolute'},
+              ]}
+            >
+              {/* <View style={styles.bottomSperateLine} /> */}
+              <View style={styles.bottomImgView}>
+                <View style={styles.commentReportView}>
+                  <Image
+                    source={
+                      currentUserDetail?.thumbnail
+                        ? {uri: currentUserDetail?.thumbnail}
+                        : images.profilePlaceHolder
+                    }
+                    resizeMode={'cover'}
+                    style={{width: 40, height: 40, borderRadius: 40 / 2}}
+                  />
                 </View>
-              </SafeAreaView>
-            </View>
-          }
-          HeaderStyle={styles.headerContent}
-          ContentModalStyle={styles.Modal}
-          HeaderContent={
-            <View style={styles.containerHeader}>
-              <TouchableOpacity
-                onPress={() => {
-                  setShowModelComment(false);
-                }}>
-                <Text>{`Reply from ${authContext?.entity?.obj?.full_name || authContext?.entity?.obj?.group_name}`}</Text>
-              </TouchableOpacity>
-            </View>
-          }
-          onClose={() => {
-            setShowModelComment(false);
-          }}
-        />
+                <View style={styles.onlyMeViewStyle}>
+                  <TextInput
+                    placeholder={'Write a comment'}
+                    placeholderTextColor={colors.userPostTimeColor}
+                    multiline={true}
+                    textAlignVertical={'top'}
+                    value={commentTxt}
+                    onChangeText={(text) => setCommentText(text)}
+                    style={{
+                      textAlignVertical: 'center',
+                      fontSize: 14,
+                      lineHeight: 14,
+                      width: wp('66%'),
+                      marginHorizontal: '2%',
+                      color: colors.lightBlackColor,
+                      fontFamily: fonts.RRegular,
+                      paddingVertical: 0,
+                      paddingLeft: 8,
+                      alignSelf: 'center',
+                      maxHeight: hp(20),
+                    }}
+                  />
+                  {commentTxt.trim().length > 0 && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        const bodyParams = {
+                          reaction_type: 'comment',
+                          activity_id: item?.id,
+                          data: {
+                            text: commentTxt,
+                          },
+                        };
+                        createReaction(bodyParams, authContext)
+                          .then((response) => {
+                            const dataOfComment = [...commentData];
+                            dataOfComment.unshift(response.payload);
+                            setCommentData(dataOfComment);
+                            setCommentCount(dataOfComment.length);
+                            setCommentText('');
+                          })
+                          .catch((e) => {
+                            console.log(e);
+                          });
+                      }}
+                    >
+                      <Text style={styles.sendTextStyle}>SEND</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            </SafeAreaView>
+          </View>
+        }
+        HeaderStyle={styles.headerContent}
+        ContentModalStyle={styles.Modal}
+        HeaderContent={
+          <View style={styles.containerHeader}>
+            <TouchableOpacity
+              onPress={() => {
+                setShowModelComment(false);
+              }}
+            >
+              <Text>{`Reply from ${
+                authContext?.entity?.obj?.full_name ||
+                authContext?.entity?.obj?.group_name
+              }`}</Text>
+            </TouchableOpacity>
+          </View>
+        }
+        onClose={() => {
+          setShowModelComment(false);
+        }}
+      />
     </View>
   );
 }
@@ -874,7 +935,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: wp('2%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 0.5,
     width: wp('80%'),
@@ -894,7 +955,6 @@ const styles = StyleSheet.create({
     width: '100%',
     elevation: 5,
   },
-
 });
 
 export default ReviewerItemView;

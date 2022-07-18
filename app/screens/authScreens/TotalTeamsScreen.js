@@ -1,10 +1,5 @@
-import React, { useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-} from 'react-native';
+import React, {useEffect} from 'react';
+import {StyleSheet, View, Text, Image} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
@@ -14,12 +9,12 @@ import {
 import {useIsFocused} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
 const DELAY_PAGE_TIME = 2000;
-export default function TotalTeamsScreen({ navigation, route }) {
+export default function TotalTeamsScreen({navigation, route}) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -31,26 +26,37 @@ export default function TotalTeamsScreen({ navigation, route }) {
           city: route.params.city,
           state: route.params.state,
           country: route.params.country,
-        })
-      }, DELAY_PAGE_TIME)
+        });
+      }, DELAY_PAGE_TIME);
     }
-   
-  }, [isFocused, navigation, route.params.city, route.params.country, route.params.state, route.params.teamData])
+  }, [
+    isFocused,
+    navigation,
+    route.params.city,
+    route.params.country,
+    route.params.state,
+    route.params.teamData,
+  ]);
   return (
     <LinearGradient
-          colors={[colors.themeColor1, colors.themeColor3]}
-          style={styles.mainContainer}>
-      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
+      colors={[colors.themeColor1, colors.themeColor3]}
+      style={styles.mainContainer}
+    >
+      <FastImage
+        resizeMode={'stretch'}
+        style={styles.background}
+        source={images.loginBg}
+      />
 
-      <View style={ styles.sectionStyle }>
-        <Image source={ images.groupIcon } style={ styles.groupsImg } />
-        <Text style={ styles.LocationText }>
-          <Text style={ styles.foundText }> We found </Text>
-          <Text style={ styles.LocationText }>
-            {route.params.totalTeams}
+      <View style={styles.sectionStyle}>
+        <Image source={images.groupIcon} style={styles.groupsImg} />
+        <Text style={styles.LocationText}>
+          <Text style={styles.foundText}> We found </Text>
+          <Text style={styles.LocationText}>{route.params.totalTeams}</Text>
+          <Text style={styles.foundText}> teams in </Text>
+          <Text style={styles.LocationText}>
+            {route.params.city}, {route.params.state}
           </Text>
-          <Text style={ styles.foundText }> teams in </Text>
-          <Text style={ styles.LocationText }>{route.params.city}, {route.params.state}</Text>
         </Text>
       </View>
     </LinearGradient>

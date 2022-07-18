@@ -15,7 +15,8 @@ import {getGameHomeScreen} from '../../utils/gameUtils';
 import {getTaggedText} from '../../utils';
 import TaggedModal from '../modals/TaggedModal';
 
-const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
+const urlRegex =
+  /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
 const tagRegex = /(?!\w)@\w+/gim;
 
@@ -128,7 +129,8 @@ const NewsFeedDescription = ({
       return (
         <Text
           onPress={() => isTagName && handleNamePress(match, startTagIndex)}
-          style={{...styles.username, color}}>
+          style={{...styles.username, color}}
+        >
           {match}
         </Text>
       );
@@ -200,14 +202,16 @@ const NewsFeedDescription = ({
             seeMoreStyle={[styles.moreText, 'more']}
             onExpand={() => {
               console.log('called expand function');
-            }}>
+            }}
+          >
             <ParsedText
               style={[styles.text, descriptionTxt]}
               parse={[
                 {pattern: tagRegex, renderText: renderTagText},
                 {pattern: urlRegex, renderText: renderURLText},
               ]}
-              childrenProps={{allowFontScaling: false}}>
+              childrenProps={{allowFontScaling: false}}
+            >
               {descriptions}
             </ParsedText>
           </ReadMore>
