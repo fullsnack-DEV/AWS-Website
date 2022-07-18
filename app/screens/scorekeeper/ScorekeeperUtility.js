@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import {Alert} from 'react-native';
 import {getReservation} from '../../api/Challenge';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';

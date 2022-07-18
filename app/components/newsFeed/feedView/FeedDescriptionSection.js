@@ -1,3 +1,4 @@
+/* eslint-disable no-cond-assign */
 /* eslint-disable no-useless-escape */
 
 import React, {
@@ -106,8 +107,7 @@ const FeedDescriptionSection = ({
       return (
         <Text
           onPress={() => isTagName && handleNamePress(match, startTagIndex)}
-          style={{...styles.username, color}}
-        >
+          style={{...styles.username, color}}>
           {match}
         </Text>
       );
@@ -132,16 +132,14 @@ const FeedDescriptionSection = ({
                 {pattern: tagRegex, renderText: renderTagText},
                 {pattern: urlRegex, renderText: renderURLText},
               ]}
-              childrenProps={{allowFontScaling: false}}
-            >
+              childrenProps={{allowFontScaling: false}}>
               {readMore ? descriptions : descriptions.substring(0, character)}
             </ParsedText>
             {descriptions?.length > character && !readMore ? '... ' : ' '}
             {descriptions?.length > character && (
               <Text
                 onPress={toggleNumberOfLines}
-                style={[styles.descText, descText]}
-              >
+                style={[styles.descText, descText]}>
                 {readMore ? 'less' : 'more'}
               </Text>
             )}

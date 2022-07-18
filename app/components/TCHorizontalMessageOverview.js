@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import React, {memo, useMemo} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import moment from 'moment';
@@ -30,8 +31,7 @@ const TCHorizontalMessageOverview = memo(
     return (
       <TouchableOpacity
         style={styles.horizontalMessageOverviewContainer}
-        onPress={onPress}
-      >
+        onPress={onPress}>
         <MessageOccupantsProfilePic occupantsIds={occupantsIds} />
         <View style={styles.rightContainer}>
           <View style={styles.rightTitleContainer}>

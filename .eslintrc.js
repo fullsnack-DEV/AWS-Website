@@ -25,7 +25,6 @@ module.exports = {
     'no-unsafe-optional-chaining': 'off',
     'no-console': 'off',
     'template-curly-spacing': 'off',
-    indent: 'off',
     'prefer-destructuring': 0,
     'no-use-before-define': [
       'error',
@@ -46,11 +45,8 @@ module.exports = {
     'react/jsx-curly-spacing': [0, 'always'],
     'no-restricted-syntax': [0],
     'no-tabs': 0,
-    'react/jsx-indent': [
-      2,
-      2,
-      {checkAttributes: true, indentLogicalExpressions: true},
-    ],
+    indent: ['off'],
+    'react/jsx-indent': ['warn', 2],
 
     'no-plusplus': ['error', {allowForLoopAfterthoughts: true}],
     'one-var-declaration-per-line': [0],

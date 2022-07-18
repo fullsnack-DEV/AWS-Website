@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-param-reassign */
 import {Alert} from 'react-native';
 import {getChallenge} from '../../api/Challenge';

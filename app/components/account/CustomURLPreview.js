@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 /* eslint-disable no-useless-escape */
 
 import React, {memo} from 'react';
@@ -40,8 +41,7 @@ const CustomURLPreview = memo(({text}) => {
     return (
       <TouchableWithoutFeedback
         style={styles.youtubeVideoContainer}
-        onPress={() => Linking.openURL(youtubeMatch?.[0])}
-      >
+        onPress={() => Linking.openURL(youtubeMatch?.[0])}>
         {/*  Youtube Video Image View */}
         {YOUTUBE_OPTION === 1 && (
           <View>
@@ -59,8 +59,7 @@ const CustomURLPreview = memo(({text}) => {
                 position: 'absolute',
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}
-            >
+              }}>
               <FastImage
                 source={images.youtubePlayButton}
                 resizeMode={'contain'}
