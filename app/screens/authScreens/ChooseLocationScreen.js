@@ -77,7 +77,8 @@ export default function ChooseLocationScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}>
+          }}
+        >
           <Image
             source={images.backArrow}
             style={{
@@ -294,7 +295,8 @@ export default function ChooseLocationScreen({navigation, route}) {
   const renderItem = ({item, index}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
-      onPress={() => getTeamsData(item)}>
+      onPress={() => getTeamsData(item)}
+    >
       <Text style={styles.cityList}>{cityData[index].description}</Text>
       <Separator />
     </TouchableWithoutFeedback>
@@ -305,7 +307,8 @@ export default function ChooseLocationScreen({navigation, route}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+      style={styles.mainContainer}
+    >
       <ActivityLoader visible={loading} />
       <FastImage
         resizeMode={'stretch'}
@@ -347,7 +350,8 @@ export default function ChooseLocationScreen({navigation, route}) {
               return (
                 <TouchableWithoutFeedback
                   style={styles.listItem}
-                  onPress={() => getTeamsData(item)}>
+                  onPress={() => getTeamsData(item)}
+                >
                   <Text style={styles.cityList}>
                     {item?.city}, {item?.state_abbr}, {item?.country}
                   </Text>
@@ -358,7 +362,8 @@ export default function ChooseLocationScreen({navigation, route}) {
             ListHeaderComponent={() => (
               <TouchableWithoutFeedback
                 style={styles.listItem}
-                onPress={() => getTeamsDataByCurrentLocation()}>
+                onPress={() => getTeamsDataByCurrentLocation()}
+              >
                 <View>
                   <Text style={[styles.cityList, {marginBottom: 3}]}>
                     {currentLocation?.city}, {currentLocation?.stateAbbr},{' '}

@@ -1,7 +1,5 @@
 import React from 'react';
-import {
- Text, View, StyleSheet, Pressable, FlatList,
- } from 'react-native';
+import {Text, View, StyleSheet, Pressable, FlatList} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import fonts from '../../../../../Constants/Fonts';
 import images from '../../../../../Constants/ImagePath';
@@ -42,16 +40,18 @@ const UserReview = ({
           <FastImage
             source={
               teamData?.full_image
-                ? { uri: teamData?.full_image }
+                ? {uri: teamData?.full_image}
                 : images.teamPlaceholder
             }
             resizeMode={'contain'}
-            style={{ height: 50, width: 50, borderRadius: 100 }}
+            style={{height: 50, width: 50, borderRadius: 100}}
           />
         </View>
 
         {/*    Team name */}
-        <Text style={styles.teamName}>{teamData?.group_name ?? teamData?.full_name}</Text>
+        <Text style={styles.teamName}>
+          {teamData?.group_name ?? teamData?.full_name}
+        </Text>
 
         {/*    Country Name */}
         <Text style={styles.countryName}>{teamData?.country}</Text>
@@ -84,7 +84,7 @@ const UserReview = ({
             paddingVertical: 20,
             backgroundColor: colors.offwhite,
             shadowColor: colors.googleColor,
-            shadowOffset: { width: 0, height: 2 },
+            shadowOffset: {width: 0, height: 2},
             shadowOpacity: 0.3,
             shadowRadius: 5,
             elevation: 5,
@@ -99,13 +99,14 @@ const UserReview = ({
               selectedImageList: reviewsData?.attachments || [],
               taggedData: tags || [],
             });
-          }}>
+          }}
+        >
           <View>
             {reviewsData?.comment !== '' ? (
               <NewsFeedDescription
                 disableTouch={true}
                 descriptions={reviewsData.comment}
-                containerStyle={{ marginHorizontal: 5, marginVertical: 2 }}
+                containerStyle={{marginHorizontal: 5, marginVertical: 2}}
                 tagData={tags || []}
                 // tags={tags}
               />
@@ -115,7 +116,8 @@ const UserReview = ({
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.grayColor,
-                }}>
+                }}
+              >
                 {`Describe what you thought and felt about ${
                   teamData?.full_name ?? teamData?.group_name
                 } while watching or playing the game.`}
@@ -129,7 +131,7 @@ const UserReview = ({
         horizontal={true}
         // scrollEnabled={true}
         showsHorizontalScrollIndicator={false}
-        renderItem={({ item, index }) => (
+        renderItem={({item, index}) => (
           <SelectedImageList
             data={item}
             isClose={false}
@@ -146,13 +148,13 @@ const UserReview = ({
             }}
           />
         )}
-        ItemSeparatorComponent={() => <View style={{ width: 5 }} />}
-        style={{ paddingTop: 10, marginHorizontal: 10 }}
+        ItemSeparatorComponent={() => <View style={{width: 5}} />}
+        style={{paddingTop: 10, marginHorizontal: 10}}
         keyExtractor={(item, index) => index.toString()}
       />
       {/*  Footer */}
       <Text style={styles.footerText}>
-        (<Text style={{ color: colors.redDelColor }}>*</Text> required)
+        (<Text style={{color: colors.redDelColor}}>*</Text> required)
       </Text>
     </View>
   </TCKeyboardView>
@@ -174,7 +176,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 6,
     elevation: 13,

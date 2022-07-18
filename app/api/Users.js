@@ -253,7 +253,6 @@ export const userDeactivate = (authContext) =>
     authContext,
   });
 
-
 export const userTerminate = (authContext) =>
   makeAPIRequest({
     method: 'delete',

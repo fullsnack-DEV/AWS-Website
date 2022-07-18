@@ -1,28 +1,21 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import {Text, StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
-const TCPopupMessage = ({
-  top = 13, message, style,
-}) => (
-
+const TCPopupMessage = ({top = 13, message, style}) => (
   <LinearGradient
-        colors={[colors.yellowColor, colors.themeColor]}
-        style={{
-          ...styles.mainContainer,
-          top,
-          ...style,
-
-        }}
-    >
-
-    <Text style={styles.message}>
-      {message}
-    </Text>
+    colors={[colors.yellowColor, colors.themeColor]}
+    style={{
+      ...styles.mainContainer,
+      top,
+      ...style,
+    }}
+  >
+    <Text style={styles.message}>{message}</Text>
   </LinearGradient>
-)
+);
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -38,5 +31,5 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     textAlign: 'justify',
   },
-})
+});
 export default TCPopupMessage;

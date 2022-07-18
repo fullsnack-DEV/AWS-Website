@@ -1,67 +1,69 @@
-import React, { memo } from 'react';
+import React, {memo} from 'react';
 
-import {
-  StyleSheet, Platform, View, TextInput,
-
-} from 'react-native';
+import {StyleSheet, Platform, View, TextInput} from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import RNPickerSelect from 'react-native-picker-select';
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
-import images from '../Constants/ImagePath'
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
+import images from '../Constants/ImagePath';
 
 const TCPhoneNumber = ({
-  placeholder, value, numberValue, onValueChange, onChangeText,
+  placeholder,
+  value,
+  numberValue,
+  onValueChange,
+  onChangeText,
 }) => {
-  console.log('this value', value)
+  console.log('this value', value);
 
   const onPhoneNumberCountryChanged = async (local_countryCode) => {
     if (onValueChange) {
       onValueChange(local_countryCode);
     }
-  }
+  };
 
   return (
-    <View
-         style={ styles.mainContainer}>
+    <View style={styles.mainContainer}>
       <RNPickerSelect
-           placeholder={ {
-             label: placeholder,
-           } }
-           items={ [
-             { label: 'Canada(+1)', value: 'Canada(+1)' },
-             { label: 'United States(+1)', value: 'United States(+1)' },
-           ] }
-           onValueChange={ onPhoneNumberCountryChanged }
-           value={ value }
-           // disabled={ !editMode }
-           useNativeAndroidPickerStyle={ false }
-           // eslint-disable-next-line no-sequences
-           style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
-           
-           Icon={ () => (
-             <FastImage
-             resizeMode='contain'
-                 source={ images.dropDownArrow }
-                 style={ styles.miniDownArrow }
-               />
-           ) }
-         />
-      <View style={ styles.halfMatchFeeView }>
+        placeholder={{
+          label: placeholder,
+        }}
+        items={[
+          {label: 'Canada(+1)', value: 'Canada(+1)'},
+          {label: 'United States(+1)', value: 'United States(+1)'},
+        ]}
+        onValueChange={onPhoneNumberCountryChanged}
+        value={value}
+        // disabled={ !editMode }
+        useNativeAndroidPickerStyle={false}
+        // eslint-disable-next-line no-sequences
+        style={{
+          ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid),
+          ...styles,
+        }}
+        Icon={() => (
+          <FastImage
+            resizeMode="contain"
+            source={images.dropDownArrow}
+            style={styles.miniDownArrow}
+          />
+        )}
+      />
+      <View style={styles.halfMatchFeeView}>
         <TextInput
-             placeholder={ 'Phone number' }
-             style={ styles.halffeeText }
-             keyboardType={ 'number-pad' }
-             onChangeText={ onChangeText }
-             maxLength={10}
-             // editable={ editMode }
-             value={ numberValue }></TextInput>
-
+          placeholder={'Phone number'}
+          style={styles.halffeeText}
+          keyboardType={'number-pad'}
+          onChangeText={onChangeText}
+          maxLength={10}
+          // editable={ editMode }
+          value={numberValue}
+        ></TextInput>
       </View>
     </View>
   );
-}
+};
 const styles = StyleSheet.create({
   mainContainer: {
     flexDirection: 'row',
@@ -69,7 +71,6 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginBottom: 10,
     justifyContent: 'space-between',
-
   },
   halfMatchFeeView: {
     backgroundColor: colors.offwhite,
@@ -83,12 +84,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingRight: 10,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.4,
     shadowRadius: 1,
     elevation: 3,
     width: '48%',
-
   },
   halffeeText: {
     fontSize: 16,
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
   },
@@ -138,6 +138,5 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 });
-
 
 export default memo(TCPhoneNumber);

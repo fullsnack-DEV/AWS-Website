@@ -1,8 +1,6 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-vars */
-import React, {
- useState, useEffect, useLayoutEffect, useContext,
- } from 'react';
+import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
 import {
   Alert,
   ScrollView,
@@ -18,7 +16,7 @@ import _ from 'lodash';
 import FastImage from 'react-native-fast-image';
 import fonts from '../../../../../../Constants/Fonts';
 
-import { STAR_COLOR } from '../../../../../../utils';
+import {STAR_COLOR} from '../../../../../../utils';
 import {
   addScorekeeperReview,
   patchScorekeeperReview,
@@ -38,7 +36,7 @@ import strings from '../../../../../../Constants/String';
 import ActivityLoader from '../../../../../loader/ActivityLoader';
 import NewsFeedDescription from '../../../../../newsFeed/NewsFeedDescription';
 
-export default function ScorekeeperReviewScreen({ navigation, route }) {
+export default function ScorekeeperReviewScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
@@ -59,7 +57,6 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
       : () => {},
   );
 
-
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = authContext.entity;
@@ -72,7 +69,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
   }, [authContext.entity, navigation]);
 
   useEffect(() => {
-    const obj = { ...reviewsData };
+    const obj = {...reviewsData};
     if (route?.params?.searchText) {
       obj.comment = route?.params?.searchText ?? '';
       setReviewsData(obj);
@@ -83,7 +80,6 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
       setReviewsData(obj);
     }
     if (route?.params?.entityTags) {
-
       obj.tagged = route?.params?.entityTags;
       setReviewsData(obj);
     }
@@ -106,7 +102,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
       // )?.scorekeeperReview;
       const reviewObj = route?.params?.gameReviewData;
       console.log('Edit review Data::=>', reviewObj);
-      setReviewsData({ ...reviewObj });
+      setReviewsData({...reviewObj});
     }
   }, [route?.params?.gameReviewData]);
 
@@ -117,8 +113,6 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
     }
   }, []);
 
-  
-
   const loadSliderAttributes = (attributes) => {
     setLoading(true);
     // setSliderAttributesForReferee([...attributes]);
@@ -128,9 +122,9 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
       return true;
     });
     let reviews = _.cloneDeep(reviewsData);
-    reviews = { ...reviews, ...attr };
+    reviews = {...reviews, ...attr};
 
-    setReviewsData({ ...reviews });
+    setReviewsData({...reviews});
     setLoading(false);
   };
 
@@ -142,9 +136,9 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
       return true;
     });
     let reviews = _.cloneDeep(reviewsData);
-    reviews = { ...reviews, ...attr };
+    reviews = {...reviews, ...attr};
 
-    setReviewsData({ ...reviews });
+    setReviewsData({...reviews});
     setLoading(false);
   };
 
@@ -153,15 +147,14 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
     starAttributesForScorekeeper?.map((star) => {
       starKeys.push(star?.name);
     });
-    const includeKey = [...starKeys,...sliderAttributesForScorekeeper]
+    const includeKey = [...starKeys, ...sliderAttributesForScorekeeper];
     let isValid = true;
     const reviews = _.cloneDeep(reviewsData);
     Object.keys(reviews).map((key) => {
       if (includeKey.includes(key) && isValid) {
-        if(Number(reviews?.[key]) <= 0){
+        if (Number(reviews?.[key]) <= 0) {
           isValid = false;
         }
-        
       }
       return key;
     });
@@ -182,7 +175,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
       const reviews = _.cloneDeep(reviewsData);
 
       reviews[key] = value;
-      setReviewsData({ ...reviews });
+      setReviewsData({...reviews});
       console.log(`reviews::${JSON.stringify(reviews)}`);
     }
   };
@@ -191,7 +184,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
     if (userData?.review_id) {
       setLoading(true);
       console.log('Edited Review Object reviewData::=>', data);
-      const teamReview = { ...data };
+      const teamReview = {...data};
       delete teamReview.created_at;
       delete teamReview.entity_type;
       delete teamReview.entity_id;
@@ -250,15 +243,10 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
 
   const uploadMedia = () => {
     setLoading(false); // CHANGED
-    
-      onPressReview(
-        1,
-        !!userData?.review_id,
-        reviewsData,
-        userData?.user_id,
-      );
-      navigation.goBack();
-    
+
+    onPressReview(1, !!userData?.review_id, reviewsData, userData?.user_id);
+    navigation.goBack();
+
     // if (reviewsData?.attachments?.length) {
     //   const UrlArray = [];
     //   const pathArray = [];
@@ -296,7 +284,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
     // }
   };
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <Header
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -321,10 +309,8 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
             <View style={styles.mainContainer}>
               {/* Title */}
               <Text style={styles.titleText}>
-                Please, rate the performance of{' '}
-                {userData?.first_name}{' '}
-                {userData?.last_name} and leave a review for the
-                scorekeeper.
+                Please, rate the performance of {userData?.first_name}{' '}
+                {userData?.last_name} and leave a review for the scorekeeper.
               </Text>
 
               {/*  Logo Container */}
@@ -334,24 +320,21 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                   <FastImage
                     source={
                       userData?.thumbnail
-                        ? { uri: userData?.thumbnail }
+                        ? {uri: userData?.thumbnail}
                         : images.teamPlaceholder
                     }
                     resizeMode={'contain'}
-                    style={{ height: 50, width: 50 }}
+                    style={{height: 50, width: 50}}
                   />
                 </View>
 
                 {/*    Team name */}
                 <Text style={styles.teamName}>
-                  {userData?.first_name}{' '}
-                  {userData?.last_name}
+                  {userData?.first_name} {userData?.last_name}
                 </Text>
 
                 {/*    Country Name */}
-                <Text style={styles.countryName}>
-                  {userData?.country}
-                </Text>
+                <Text style={styles.countryName}>{userData?.country}</Text>
               </View>
 
               {/* Seperator */}
@@ -363,55 +346,50 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                 {/*    Title */}
                 <Text style={styles.titleText}>
                   Rate performance{' '}
-                  <Text style={{ color: colors.redDelColor }}>*</Text>
+                  <Text style={{color: colors.redDelColor}}>*</Text>
                 </Text>
 
                 {/* Ratings */}
                 <View style={styles.rateSection}>
-                  {sliderAttributesForScorekeeper?.map(
-                    (item, index) => (
-                      <View
-                        style={{
-                          marginVertical: 10,
-                          flexDirection: 'row',
-                        }}
-                        key={index}>
-                        <Text style={styles.starText}>
-                          {item.charAt(0).toUpperCase() + item.slice(1)}
-                        </Text>
-                        <View style={{ flex: 1 }}>
-                          <TCRatingStarSlider
-                            currentRating={reviewsData[item]}
-                            onPress={(star) => {
-                              setTeamReview(item, star);
-                            }}
-                            style={{ alignSelf: 'flex-end' }}
-                            starColor={STAR_COLOR.GREEN}
-                          />
-                        </View>
+                  {sliderAttributesForScorekeeper?.map((item, index) => (
+                    <View
+                      style={{
+                        marginVertical: 10,
+                        flexDirection: 'row',
+                      }}
+                      key={index}
+                    >
+                      <Text style={styles.starText}>
+                        {item.charAt(0).toUpperCase() + item.slice(1)}
+                      </Text>
+                      <View style={{flex: 1}}>
+                        <TCRatingStarSlider
+                          currentRating={reviewsData[item]}
+                          onPress={(star) => {
+                            setTeamReview(item, star);
+                          }}
+                          style={{alignSelf: 'flex-end'}}
+                          starColor={STAR_COLOR.GREEN}
+                        />
                       </View>
-                    ),
-                  )}
+                    </View>
+                  ))}
                 </View>
 
                 {/* Questions */}
-                {starAttributesForScorekeeper?.map(
-                  (item, index) => (
-                    <View style={{ marginVertical: 5 }} key={index}>
-                      <Text style={styles.questionText}>
-                        {item.title}
-                      </Text>
-                      <TCRatingStarSlider
-                        currentRating={reviewsData[item.name]}
-                        onPress={(star) => {
-                          setTeamReview(item.name, star);
-                        }}
-                        style={{ alignSelf: 'flex-end' }}
-                        starColor={STAR_COLOR.GREEN}
-                      />
-                    </View>
-                  ),
-                )}
+                {starAttributesForScorekeeper?.map((item, index) => (
+                  <View style={{marginVertical: 5}} key={index}>
+                    <Text style={styles.questionText}>{item.title}</Text>
+                    <TCRatingStarSlider
+                      currentRating={reviewsData[item.name]}
+                      onPress={(star) => {
+                        setTeamReview(item.name, star);
+                      }}
+                      style={{alignSelf: 'flex-end'}}
+                      starColor={STAR_COLOR.GREEN}
+                    />
+                  </View>
+                ))}
               </View>
 
               {/*  Leave a Review */}
@@ -427,7 +405,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                     paddingVertical: 20,
                     backgroundColor: colors.offwhite,
                     shadowColor: colors.googleColor,
-                    shadowOffset: { width: 0, height: 2 },
+                    shadowOffset: {width: 0, height: 2},
                     shadowOpacity: 0.3,
                     shadowRadius: 5,
                     elevation: 5,
@@ -441,11 +419,12 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                       // onPressDone: callthis,
                       selectedImageList: reviewsData?.attachments || [],
                       taggedData:
-                        route?.params?.format_tagged_data
-                        || reviewsData?.format_tagged_data
-                        || [],
+                        route?.params?.format_tagged_data ||
+                        reviewsData?.format_tagged_data ||
+                        [],
                     });
-                  }}>
+                  }}
+                >
                   <View>
                     {reviewsData?.comment?.length > 0 ? (
                       <NewsFeedDescription
@@ -456,9 +435,9 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                           marginVertical: 2,
                         }}
                         tagData={
-                          route?.params?.format_tagged_data
-                          || reviewsData?.format_tagged_data
-                          || []
+                          route?.params?.format_tagged_data ||
+                          reviewsData?.format_tagged_data ||
+                          []
                         }
                         // tags={tags}
                       />
@@ -468,7 +447,8 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                           fontFamily: fonts.RRegular,
                           fontSize: 16,
                           color: colors.grayColor,
-                        }}>
+                        }}
+                      >
                         {`Describe what you thought and felt about ${userData?.first_name} ${userData?.last_name} while watching or playing the game.`}
                       </Text>
                     )}
@@ -480,7 +460,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                 horizontal={true}
                 // scrollEnabled={true}
                 showsHorizontalScrollIndicator={false}
-                renderItem={({ item, index }) => (
+                renderItem={({item, index}) => (
                   <SelectedImageList
                     data={item}
                     isClose={false}
@@ -497,13 +477,13 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                     }}
                   />
                 )}
-                ItemSeparatorComponent={() => <View style={{ width: 5 }} />}
-                style={{ paddingTop: 10, marginHorizontal: 10 }}
+                ItemSeparatorComponent={() => <View style={{width: 5}} />}
+                style={{paddingTop: 10, marginHorizontal: 10}}
                 keyExtractor={(item, index) => index.toString()}
               />
               {/*  Footer */}
               <Text style={styles.footerText}>
-                (<Text style={{ color: colors.redDelColor }}>*</Text> required)
+                (<Text style={{color: colors.redDelColor}}>*</Text> required)
               </Text>
             </View>
           </TCKeyboardView>
@@ -528,7 +508,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 6,
     elevation: 13,

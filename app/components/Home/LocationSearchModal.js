@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -18,28 +18,35 @@ import strings from '../../Constants/String';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import { searchLocationPlaceDetail, searchCityState, searchVenue } from '../../api/External';
+import {
+  searchLocationPlaceDetail,
+  searchCityState,
+  searchVenue,
+} from '../../api/External';
 import TCThinDivider from '../TCThinDivider';
 
 export default function LocationSearchModal({
- visible, onSelect, onClose, addressType,
- }) {
+  visible,
+  onSelect,
+  onClose,
+  addressType,
+}) {
   const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
 
   const getLocationData = (searchLocationText) => {
-      if (addressType === 'short') {
-        searchCityState(searchLocationText, authContext).then((response) => {
-            setCityData(response.predictions);
-          });
-      } else {
-        searchVenue(searchLocationText, authContext).then((response) => {
-            setCityData(response.predictions);
-          });
-      }
+    if (addressType === 'short') {
+      searchCityState(searchLocationText, authContext).then((response) => {
+        setCityData(response.predictions);
+      });
+    } else {
+      searchVenue(searchLocationText, authContext).then((response) => {
+        setCityData(response.predictions);
+      });
+    }
   };
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = ({item, index}) => (
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
@@ -54,7 +61,8 @@ export default function LocationSearchModal({
             onSelect(data);
           })
           .catch(onClose);
-      }}>
+      }}
+    >
       <Text style={styles.cityList}>{cityData[index].description}</Text>
 
       <TCThinDivider />
@@ -71,7 +79,8 @@ export default function LocationSearchModal({
         margin: 0,
         backgroundColor: colors.whiteOpacityColor,
       }}
-      visible={visible}>
+      visible={visible}
+    >
       <View style={styles.bottomPopupContainer}>
         <View style={styles.viewsContainer}>
           <Text onPress={onClose} style={styles.cancelText}>
@@ -82,15 +91,15 @@ export default function LocationSearchModal({
         </View>
         <TCThinDivider width={'100%'} />
 
-        <View style={{ backgroundColor: colors.grayBackgroundColor }}>
+        <View style={{backgroundColor: colors.grayBackgroundColor}}>
           <View style={styles.sectionStyle}>
             <TextInput
-            style={styles.textInput}
-            placeholder={strings.searchByCityStateText}
-            clearButtonMode="always"
-            placeholderTextColor={colors.grayColor}
-            onChangeText={(text) => getLocationData(text)}
-          />
+              style={styles.textInput}
+              placeholder={strings.searchByCityStateText}
+              clearButtonMode="always"
+              placeholderTextColor={colors.grayColor}
+              onChangeText={(text) => getLocationData(text)}
+            />
           </View>
         </View>
 
@@ -104,7 +113,6 @@ export default function LocationSearchModal({
   );
 }
 const styles = StyleSheet.create({
-
   cityList: {
     color: colors.lightBlackColor,
     fontSize: wp('4%'),
@@ -122,7 +130,6 @@ const styles = StyleSheet.create({
   },
 
   sectionStyle: {
-
     alignItems: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 25,
@@ -135,7 +142,7 @@ const styles = StyleSheet.create({
     paddingRight: 5,
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
@@ -160,7 +167,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.5,
         shadowRadius: 8,
       },

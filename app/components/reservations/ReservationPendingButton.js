@@ -1,31 +1,27 @@
 import React from 'react';
-import {
-  StyleSheet, Text, TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
 
 import strings from '../../Constants/String';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
-export default function ReservationPendingButton({ onPressButon }) {
+export default function ReservationPendingButton({onPressButon}) {
   return (
-
     <TouchableOpacity onPress={onPressButon}>
       <LinearGradient
-                    colors={[colors.yellowColor, colors.themeColor]}
-                    style={styles.pendingButton}>
+        colors={[colors.yellowColor, colors.themeColor]}
+        style={styles.pendingButton}
+      >
         <Text style={styles.pendingTimerText}>{strings.respondWithinText}</Text>
       </LinearGradient>
     </TouchableOpacity>
-
   );
 }
 
 const styles = StyleSheet.create({
-
   pendingButton: {
     alignItems: 'center',
     alignSelf: 'center',
@@ -43,5 +39,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
   },
-
 });

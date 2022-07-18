@@ -409,8 +409,8 @@ export default function RefereeReservationScreen({navigation, route}) {
         bodyParams.status === RefereeReservationStatus.requestcancelled ||
         (bodyParams.status === RefereeReservationStatus.declined &&
           bodyParams.version > 3)) && (
-            <View>
-              <TCBorderButton
+        <View>
+          <TCBorderButton
             title={strings.alterReservation}
             textColor={colors.grayColor}
             borderColor={colors.grayColor}
@@ -428,18 +428,16 @@ export default function RefereeReservationScreen({navigation, route}) {
                   reservationObj: bodyParams,
                   lastConfirmVersion: bodyParams,
                 });
-              } else if(bodyParams?.game?.status === GameStatus.ended){
-                  Alert.alert(
-                    'Game is ended so you can not change reservation.',
-                  );
-                }else{
-                  Alert.alert(
-                    'Reservation cannot be change after game time passed or offer expired.',
-                  );
-                }
+              } else if (bodyParams?.game?.status === GameStatus.ended) {
+                Alert.alert('Game is ended so you can not change reservation.');
+              } else {
+                Alert.alert(
+                  'Reservation cannot be change after game time passed or offer expired.',
+                );
+              }
             }}
           />
-              <TCBorderButton
+          <TCBorderButton
             title={strings.cancelreservation}
             textColor={colors.whiteColor}
             borderColor={colors.grayColor}
@@ -477,11 +475,11 @@ export default function RefereeReservationScreen({navigation, route}) {
               }
             }}
           />
-            </View>
+        </View>
       )}
       {(bodyParams.status === RefereeReservationStatus.pendingpayment ||
         bodyParams.status === RefereeReservationStatus.approved) && (
-          <TCBorderButton
+        <TCBorderButton
           title={strings.cancelreservation}
           textColor={colors.whiteColor}
           borderColor={colors.grayColor}
@@ -540,7 +538,8 @@ export default function RefereeReservationScreen({navigation, route}) {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 margin: 15,
-              }}>
+              }}
+            >
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -599,7 +598,8 @@ export default function RefereeReservationScreen({navigation, route}) {
                       fontSize: 16,
                       color: colors.lightBlackColor,
                       width: '80%',
-                    }}>
+                    }}
+                  >
                     {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
                   </Text>
                 </View>
@@ -704,7 +704,7 @@ export default function RefereeReservationScreen({navigation, route}) {
                           bodyParams?.start_datetime &&
                           moment(bodyParams?.start_datetime * 1000).format(
                             'MMM DD, YYYY',
-                        )
+                          )
                         }
                         titleStyle={{
                           alignSelf: 'flex-start',
@@ -804,13 +804,15 @@ export default function RefereeReservationScreen({navigation, route}) {
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   {_.startCase(
                     bodyParams?.chief_referee ? 'Chief' : 'Assistant',
                   )}{' '}
@@ -824,7 +826,7 @@ export default function RefereeReservationScreen({navigation, route}) {
                 title={'Refund Policy'}
                 value={bodyParams?.refund_policy}
                 tooltipText={
-                '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+                  '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
                 }
                 tooltipHeight={heightPercentageToDP('18%')}
                 tooltipWidth={widthPercentageToDP('50%')}

@@ -49,7 +49,6 @@ export default function JoinedTeamsScreen({route, navigation}) {
     )
       .then((res) => {
         setloading(false);
-        console.log('Following list===>', res.payload);
         setTeamList(res.payload);
       })
       .catch((error) => {
@@ -153,7 +152,8 @@ export default function JoinedTeamsScreen({route, navigation}) {
       style={styles.listContainer}
       onPress={() => {
         console.log('Pressed Team..');
-      }}>
+      }}
+    >
       <View>
         <Image
           source={item?.thumbnail ? {uri: item?.thumbnail} : images.team_ph}

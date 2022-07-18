@@ -78,7 +78,8 @@ export default function ChooseSportsScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}>
+          }}
+        >
           <Image
             source={images.backArrow}
             style={{
@@ -100,7 +101,8 @@ export default function ChooseSportsScreen({navigation, route}) {
               Alert.alert(strings.appName, 'Please choose at least one sport.');
               return false;
             }
-          }}>
+          }}
+        >
           {strings.next}
         </Text>
       ),
@@ -317,7 +319,8 @@ export default function ChooseSportsScreen({navigation, route}) {
         style={styles.listItem}
         onPress={() => {
           isIconCheckedOrNot({item, index});
-        }}>
+        }}
+      >
         <FastImage
           resizeMode={'contain'}
           source={{uri: `${image_base_url}${item.player_image}`}}
@@ -494,7 +497,8 @@ export default function ChooseSportsScreen({navigation, route}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+      style={styles.mainContainer}
+    >
       <ActivityLoader visible={loading} />
       <FastImage
         resizeMode={'stretch'}

@@ -1,18 +1,19 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-expressions */
-import React, { memo, useContext } from 'react';
-import {
- View, Text, StyleSheet, Image, TouchableOpacity,
- } from 'react-native';
+import React, {memo, useContext} from 'react';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
-import { getSportName } from '../utils';
+import {getSportName} from '../utils';
 import AuthContext from '../auth/context';
 
 const TCAvailableForChallenge = ({
- data, entityType, selectedSport, onPress,
+  data,
+  entityType,
+  selectedSport,
+  onPress,
 }) => {
   const authContext = useContext(AuthContext);
 
@@ -27,8 +28,10 @@ const TCAvailableForChallenge = ({
   if (entityType === 'player') {
     if (selectedSport.sport !== 'All') {
       const filterdData = (data?.registered_sports || []).filter(
-        (obj) => obj.sport === selectedSport.sport && obj.sport_type === selectedSport.sport_type
-          && obj?.setting?.availibility === 'On',
+        (obj) =>
+          obj.sport === selectedSport.sport &&
+          obj.sport_type === selectedSport.sport_type &&
+          obj?.setting?.availibility === 'On',
       );
       console.log('filterdData', filterdData);
       if (filterdData.length > 0) {
@@ -48,7 +51,10 @@ const TCAvailableForChallenge = ({
         currency = filterdData?.[0].setting?.game_fee?.currency_type;
       }
       if (filterdData.length === 2) {
-        sportText = `${getSportName(filterdData[0], authContext)} and  ${getSportName(filterdData[1], authContext)}`;
+        sportText = `${getSportName(
+          filterdData[0],
+          authContext,
+        )} and  ${getSportName(filterdData[1], authContext)}`;
       }
       if (filterdData.length > 2) {
         sportText = `${getSportName(filterdData[0], authContext)} and  ${
@@ -63,24 +69,28 @@ const TCAvailableForChallenge = ({
   }
 
   return (
-
-    <TouchableOpacity style={{ flexDirection: 'row' }} onPress={onPress}>
+    <TouchableOpacity style={{flexDirection: 'row'}} onPress={onPress}>
       <Image
-            source={
-              data?.thumbnail
-                ? { uri: data?.thumbnail }
-                : images.profilePlaceHolder
-            }
-            style={styles.profileImage}
-          />
-      <View style={{ flexDirection: 'column', marginLeft: 10 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        source={
+          data?.thumbnail ? {uri: data?.thumbnail} : images.profilePlaceHolder
+        }
+        style={styles.profileImage}
+      />
+      <View style={{flexDirection: 'column', marginLeft: 10}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text style={styles.entityTitle} numberOfLines={2}>
             {entityName}
           </Text>
           {entityType === 'team' && (
-            <Image source={(entityType === 'team' && images.teamT) || (entityType === 'club' && images.clubC) || (entityType === 'league' && images.leagueL)} style={styles.teamTImage} />
-              )}
+            <Image
+              source={
+                (entityType === 'team' && images.teamT) ||
+                (entityType === 'club' && images.clubC) ||
+                (entityType === 'league' && images.leagueL)
+              }
+              style={styles.teamTImage}
+            />
+          )}
         </View>
         <View>
           <Text style={styles.smallTitle} numberOfLines={2}>
@@ -94,12 +104,10 @@ const TCAvailableForChallenge = ({
         </View>
       </View>
     </TouchableOpacity>
-
   );
 };
 
 const styles = StyleSheet.create({
-
   profileImage: {
     height: 40,
     width: 40,

@@ -108,7 +108,8 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
             } else {
               onSavePressed();
             }
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
@@ -155,9 +156,10 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
 
     setloading(true);
 
-    const registerdScorekeeperData = authContext?.entity?.obj?.scorekeeper_data?.filter(
-      (obj) => obj?.sport !== sportName,
-    );
+    const registerdScorekeeperData =
+      authContext?.entity?.obj?.scorekeeper_data?.filter(
+        (obj) => obj?.sport !== sportName,
+      );
 
     let selectedSport = authContext?.entity?.obj?.scorekeeper_data?.filter(
       (obj) => obj?.sport === sportName,
@@ -228,7 +230,8 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
               onPress={() => {
                 addressList.splice(index, 1);
                 setAddressList([...addressList]);
-              }}>
+              }}
+            >
               Delete
             </Text>
           )}
@@ -239,7 +242,8 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
             setAddressModalVisible(true);
             setAddressType('short');
             setAddressListIndex(index);
-          }}>
+          }}
+        >
           <TextInput
             editable={false}
             pointerEvents="none"
@@ -273,7 +277,8 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
             onPress={() => {
               setAreaRadio(0);
               setAddressType('short');
-            }}>
+            }}
+          >
             <Text style={[styles.radioTitleText, {flex: 0.9}]}>
               {strings.addAreaText}
             </Text>
@@ -302,7 +307,8 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
 
             <TouchableOpacity
               style={styles.buttonView}
-              onPress={() => addAddress()}>
+              onPress={() => addAddress()}
+            >
               <Text style={styles.textStyle} numberOfLines={1}>
                 {'+ Add Area'}
               </Text>
@@ -319,12 +325,14 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
             margin: 0,
             backgroundColor: colors.whiteOpacityColor,
           }}
-          visible={distancePopup}>
+          visible={distancePopup}
+        >
           <View style={styles.bottomPopupContainer}>
             <View style={styles.viewsContainer}>
               <Text
                 onPress={() => setDistancePopup(false)}
-                style={styles.cancelText}>
+                style={styles.cancelText}
+              >
                 Cancel
               </Text>
               <Text style={styles.locationText}>Range</Text>
@@ -337,16 +345,19 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
                 setTimeout(() => {
                   setDistancePopup(false);
                 }, 600);
-              }}>
+              }}
+            >
               {selectedDistanceOption === 0 ? (
                 <LinearGradient
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
-                  style={styles.backgroundView}>
+                  style={styles.backgroundView}
+                >
                   <Text
                     style={[
                       styles.curruentLocationText,
                       {color: colors.whiteColor},
-                    ]}>
+                    ]}
+                  >
                     Mi
                   </Text>
                 </LinearGradient>
@@ -362,11 +373,13 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
                 setTimeout(() => {
                   setDistancePopup(false);
                 }, 600);
-              }}>
+              }}
+            >
               {selectedDistanceOption === 1 ? (
                 <LinearGradient
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
-                  style={styles.backgroundView}>
+                  style={styles.backgroundView}
+                >
                   <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
                     Km
                   </Text>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import _ from 'lodash';
 import fonts from '../Constants/Fonts';
 import colors from '../Constants/Colors';
@@ -12,27 +12,26 @@ const TCAttributeRatingWithSlider = ({
   rating = 0,
 }) => (
   <View style={styles.mainContainer}>
-
     {/*    Title */}
     <Text style={styles.titleText}>{_.startCase(title)}</Text>
 
     {/*  Rating Slider */}
     <View style={styles.ratingContainer}>
       <TCSlider
-            value={rating}
-            selectedTrackColors={selectedTrackColors}
-            setValue={(val) => {
-              setTeamReview(title, val)
-            }}
-        />
+        value={rating}
+        selectedTrackColors={selectedTrackColors}
+        setValue={(val) => {
+          setTeamReview(title, val);
+        }}
+      />
     </View>
 
     {/* Rating Text */}
-    <Text style={{ ...styles.ratingText, color: selectedTrackColors[0] }}>
+    <Text style={{...styles.ratingText, color: selectedTrackColors[0]}}>
       {rating === 0 ? '-' : rating}
     </Text>
   </View>
-)
+);
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -59,6 +58,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RMedium,
   },
-
-})
+});
 export default TCAttributeRatingWithSlider;

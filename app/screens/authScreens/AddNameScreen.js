@@ -53,7 +53,8 @@ export default function SignupScreen({navigation, route}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}>
+          }}
+        >
           <Image
             source={images.backArrow}
             style={{
@@ -72,7 +73,8 @@ export default function SignupScreen({navigation, route}) {
             if (validate()) {
               uploadProfilePicAndGeneratePreSignedUrls();
             }
-          }}>
+          }}
+        >
           Next
         </Text>
       ),
@@ -322,7 +324,8 @@ export default function SignupScreen({navigation, route}) {
       />
       <LinearGradient
         colors={[colors.themeColor1, colors.themeColor3]}
-        style={styles.mainContainer}>
+        style={styles.mainContainer}
+      >
         <ActivityLoader visible={loading} />
         <FastImage
           resizeMode={'stretch'}
@@ -340,7 +343,8 @@ export default function SignupScreen({navigation, route}) {
               style={styles.profile}
               onPress={() => {
                 onProfileImageClicked();
-              }}>
+              }}
+            >
               {/* <FastImage
                 resizeMode={'contain'}
                 source={
@@ -407,7 +411,8 @@ export default function SignupScreen({navigation, route}) {
               style={styles.profileCameraButtonStyle}
               onPress={() => {
                 onProfileImageClicked();
-              }}>
+              }}
+            >
               <FastImage
                 source={images.certificateUpload}
                 style={styles.cameraIcon}

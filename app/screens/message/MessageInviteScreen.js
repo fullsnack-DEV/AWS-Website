@@ -1,5 +1,9 @@
 import React, {
-  useState, useEffect, useContext, useMemo, useCallback,
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+  useCallback,
 } from 'react';
 import {
   Alert,
@@ -21,14 +25,21 @@ import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
-import { getQBProfilePic, QBcreateDialog, QBgetAllUsers } from '../../utils/QuickBlox';
-import AuthContext from '../../auth/context'
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from '../../utils';
+import {
+  getQBProfilePic,
+  QBcreateDialog,
+  QBgetAllUsers,
+} from '../../utils/QuickBlox';
+import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCGroupNameBadge from '../../components/TCGroupNameBadge';
 
-const MessageInviteScreen = ({ navigation }) => {
-  const authContext = useContext(AuthContext)
+const MessageInviteScreen = ({navigation}) => {
+  const authContext = useContext(AuthContext);
   const TAB_ITEMS = ['All', 'People', 'Teams', 'Clubs', 'Leagues'];
   const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -47,8 +58,14 @@ const MessageInviteScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (searchText !== '') {
-      const dataTabList = [inviteeData, peopleData, teamsData, clubsData, leaguesData]
-      const data = dataTabList[currentTab]
+      const dataTabList = [
+        inviteeData,
+        peopleData,
+        teamsData,
+        clubsData,
+        leaguesData,
+      ];
+      const data = dataTabList[currentTab];
 
       const escapeRegExp = (str) => {
         if (!_.isString(str)) {
@@ -56,27 +73,31 @@ const MessageInviteScreen = ({ navigation }) => {
         }
         return str.replace(/[-[\]\\/{}()*+?.^$|]/g, '\\$&');
       };
-      const searchStr = escapeRegExp(searchText)
-      const answer = data?.filter((a) => (a.fullName)
-        .toLowerCase()
-        .toString()
-        .match(searchStr.toLowerCase().toString()));
-      setSearchData([...answer])
+      const searchStr = escapeRegExp(searchText);
+      const answer = data?.filter((a) =>
+        a.fullName
+          .toLowerCase()
+          .toString()
+          .match(searchStr.toLowerCase().toString()),
+      );
+      setSearchData([...answer]);
     }
-  }, [searchText])
+  }, [searchText]);
 
   const getAllUsers = () => {
     setLoading(true);
-    QBgetAllUsers(QB).then((res) => {
-      getAllTypesData(res.users)
-    }).catch(() => {
-      setInviteeData([]);
-      setLoading(false);
-    })
-  }
+    QBgetAllUsers(QB)
+      .then((res) => {
+        getAllTypesData(res.users);
+      })
+      .catch(() => {
+        setInviteeData([]);
+        setLoading(false);
+      });
+  };
 
   const getAllTypesData = async (AllUsers) => {
-    const entity = authContext.entity
+    const entity = authContext.entity;
     const myUid = entity.QB.id;
     const users = AllUsers.filter((user) => user.id !== myUid);
     setInviteeData(users);
@@ -85,8 +106,9 @@ const MessageInviteScreen = ({ navigation }) => {
     const teamData = [];
     const leagueData = [];
     users.map((item) => {
-      const customData = item && item.customData ? JSON.parse(item.customData) : {};
-      const entityType = _.get(customData, ['entity_type'], '')
+      const customData =
+        item && item.customData ? JSON.parse(item.customData) : {};
+      const entityType = _.get(customData, ['entity_type'], '');
       if (entityType === 'player') {
         personData.push(item);
       } else if (entityType === 'club') {
@@ -103,284 +125,419 @@ const MessageInviteScreen = ({ navigation }) => {
     setTeamsData([...teamData]);
     setLeaguesData([...leagueData]);
     setLoading(false);
-  }
-  const Item = useCallback(({
-    item, onPress, style, isChecked,
-  }) => {
+  };
+  const Item = useCallback(({item, onPress, style, isChecked}) => {
     const customData = item?.customData ? JSON.parse(item.customData) : {};
     const entityType = _.get(customData, ['entity_type'], '');
     const fullName = customData?.full_name ?? customData?.group_name;
-    const fullImage = _.get(customData, ['full_image'], '')
-    const city = _.get(customData, ['city'], '')
-    const placeHolderImage = entityType === 'player'
-      ? images.profilePlaceHolder
-      : images.groupUsers;
-    const finalImage = fullImage
-      ? { uri: fullImage }
-      : placeHolderImage
+    const fullImage = _.get(customData, ['full_image'], '');
+    const city = _.get(customData, ['city'], '');
+    const placeHolderImage =
+      entityType === 'player' ? images.profilePlaceHolder : images.groupUsers;
+    const finalImage = fullImage ? {uri: fullImage} : placeHolderImage;
     return (
       <TouchableOpacity onPress={onPress} style={[styles.listItems, style]}>
         <View
-        colors={isChecked ? [colors.greenGradientStart, colors.greenGradientEnd] : [colors.offwhite, colors.offwhite]}
-        style={[styles.listItems, { padding: 10 }]}>
-          <View style={{
-            flexDirection: 'row',
-          }}>
+          colors={
+            isChecked
+              ? [colors.greenGradientStart, colors.greenGradientEnd]
+              : [colors.offwhite, colors.offwhite]
+          }
+          style={[styles.listItems, {padding: 10}]}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+            }}
+          >
             <View style={styles.imageMainContainer}>
-              <FastImage resizeMode={'cover'} source={finalImage} style={styles.imageContainer}/>
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
-              <View style={{
-                flex: 3, justifyContent: 'center', marginLeft: hp(1),
-              }}>
-                <TCGroupNameBadge textStyle={{ ...styles.title, color: colors.lightBlackColor }} groupType={entityType} name={fullName}/>
-                <Text style={{ ...styles.subTitle, color: colors.lightBlackColor }}>{city}</Text>
-              </View>
-              {isChecked ? <Image source={images.yellowCheckBox} resizeMode={'contain'} style={ styles.checkboxImg }/>
-                : <Image source={images.messageCheckboxBorder} resizeMode={'contain'} style={ styles.checkboxImg }/>
-            }
-            </View>
-          </View>
-        </View>
-      </TouchableOpacity>)
-  }, [])
-
-  const toggleSelection = useCallback((isChecked, user) => {
-    if (isChecked) {
-        const uIndex = selectedInvitees.findIndex((item) => user?.id === item?.id);
-        if (uIndex !== -1) selectedInvitees.splice(uIndex, 1);
-    } else {
-      selectedInvitees.push(user);
-    }
-    setSelectedInvitees([...selectedInvitees]);
-  }, [selectedInvitees]);
-
-  const renderSelectedContactList = useCallback(({ item }) => {
-    const customData = item && item.customData ? JSON.parse(item.customData) : {};
-    const entityType = _.get(customData, ['entity_type'], '');
-    const fullName = _.get(customData, ['full_name'], '')
-    const fullImage = _.get(customData, ['full_image'], '')
-    const type = entityType === 'player' ? QB.chat.DIALOG_TYPE.CHAT : QB.chat.DIALOG_TYPE.GROUP_CHAT
-
-    return (
-      <View style={styles.selectedContactInnerView}>
-        <View>
-          <View>
-            <View style={styles.selectedContactImageContainer}>
               <FastImage
-                resizeMode={'contain'}
-                source={getQBProfilePic(type, '', fullImage)}
-                style={styles.selectedContactImage}
+                resizeMode={'cover'}
+                source={finalImage}
+                style={styles.imageContainer}
               />
             </View>
-            <TouchableOpacity
-              style={styles.selectedContactButtonView}
-              onPress={() => toggleSelection(true, item)}>
-              <Image source={images.cancelWhite} style={styles.deSelectedContactImage} />
-            </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                flex: 1,
+              }}
+            >
+              <View
+                style={{
+                  flex: 3,
+                  justifyContent: 'center',
+                  marginLeft: hp(1),
+                }}
+              >
+                <TCGroupNameBadge
+                  textStyle={{...styles.title, color: colors.lightBlackColor}}
+                  groupType={entityType}
+                  name={fullName}
+                />
+                <Text
+                  style={{...styles.subTitle, color: colors.lightBlackColor}}
+                >
+                  {city}
+                </Text>
+              </View>
+              {isChecked ? (
+                <Image
+                  source={images.yellowCheckBox}
+                  resizeMode={'contain'}
+                  style={styles.checkboxImg}
+                />
+              ) : (
+                <Image
+                  source={images.messageCheckboxBorder}
+                  resizeMode={'contain'}
+                  style={styles.checkboxImg}
+                />
+              )}
+            </View>
           </View>
-          <Text
-              ellipsizeMode={'tail'}
-            numberOfLines={2}
-            style={{
-              flex: 1,
-              fontSize: 10,
-              fontFamily: fonts.RBold,
-              textAlign: 'center',
-              width: 50,
-            }}>
-            {fullName}
-          </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
-  }, [toggleSelection]);
+  }, []);
 
-  const renderItem = useCallback(({ item }) => {
-    const isChecked = selectedInvitees.some((val) => val.id === item.id)
-    return (
-      <Item
-        item={item}
-        onPress={() => toggleSelection(isChecked, item)}
-        isChecked={isChecked}
-      />
-    );
-  }, [selectedInvitees, toggleSelection]);
+  const toggleSelection = useCallback(
+    (isChecked, user) => {
+      if (isChecked) {
+        const uIndex = selectedInvitees.findIndex(
+          (item) => user?.id === item?.id,
+        );
+        if (uIndex !== -1) selectedInvitees.splice(uIndex, 1);
+      } else {
+        selectedInvitees.push(user);
+      }
+      setSelectedInvitees([...selectedInvitees]);
+    },
+    [selectedInvitees],
+  );
 
-  const ListEmptyComponent = useMemo(() => (
-    <Text style={{ textAlign: 'center', marginTop: hp(2), color: colors.userPostTimeColor }}>No Records Found</Text>
-  ), [])
+  const renderSelectedContactList = useCallback(
+    ({item}) => {
+      const customData =
+        item && item.customData ? JSON.parse(item.customData) : {};
+      const entityType = _.get(customData, ['entity_type'], '');
+      const fullName = _.get(customData, ['full_name'], '');
+      const fullImage = _.get(customData, ['full_image'], '');
+      const type =
+        entityType === 'player'
+          ? QB.chat.DIALOG_TYPE.CHAT
+          : QB.chat.DIALOG_TYPE.GROUP_CHAT;
 
-  const renderSingleTab = useCallback((data) => (
-    <SafeAreaView style={{ margin: wp(3),flex:1 }}>
-      <FlatList
+      return (
+        <View style={styles.selectedContactInnerView}>
+          <View>
+            <View>
+              <View style={styles.selectedContactImageContainer}>
+                <FastImage
+                  resizeMode={'contain'}
+                  source={getQBProfilePic(type, '', fullImage)}
+                  style={styles.selectedContactImage}
+                />
+              </View>
+              <TouchableOpacity
+                style={styles.selectedContactButtonView}
+                onPress={() => toggleSelection(true, item)}
+              >
+                <Image
+                  source={images.cancelWhite}
+                  style={styles.deSelectedContactImage}
+                />
+              </TouchableOpacity>
+            </View>
+            <Text
+              ellipsizeMode={'tail'}
+              numberOfLines={2}
+              style={{
+                flex: 1,
+                fontSize: 10,
+                fontFamily: fonts.RBold,
+                textAlign: 'center',
+                width: 50,
+              }}
+            >
+              {fullName}
+            </Text>
+          </View>
+        </View>
+      );
+    },
+    [toggleSelection],
+  );
+
+  const renderItem = useCallback(
+    ({item}) => {
+      const isChecked = selectedInvitees.some((val) => val.id === item.id);
+      return (
+        <Item
+          item={item}
+          onPress={() => toggleSelection(isChecked, item)}
+          isChecked={isChecked}
+        />
+      );
+    },
+    [selectedInvitees, toggleSelection],
+  );
+
+  const ListEmptyComponent = useMemo(
+    () => (
+      <Text
+        style={{
+          textAlign: 'center',
+          marginTop: hp(2),
+          color: colors.userPostTimeColor,
+        }}
+      >
+        No Records Found
+      </Text>
+    ),
+    [],
+  );
+
+  const renderSingleTab = useCallback(
+    (data) => (
+      <SafeAreaView style={{margin: wp(3), flex: 1}}>
+        <FlatList
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           removeClippedSubviews={true}
           legacyImplementation={true}
           maxToRenderPerBatch={10}
           initialNumToRender={5}
-          ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: colors.grayBackgroundColor }}/>}
+          ItemSeparatorComponent={() => (
+            <View
+              style={{height: 1, backgroundColor: colors.grayBackgroundColor}}
+            />
+          )}
           ListEmptyComponent={ListEmptyComponent}
           data={data}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
-         
         />
-    </SafeAreaView>
-  ), [ListEmptyComponent, renderItem])
+      </SafeAreaView>
+    ),
+    [ListEmptyComponent, renderItem],
+  );
 
-  const renderTabContain = useCallback((tabKey, tabIndex) => {
-    const dataTabList = [inviteeData, peopleData, teamsData, clubsData, leaguesData]
-    return tabIndex === currentTab && (
-      <View tabLabel={tabKey} style={{ flex: 1 }}>
-        {loading
-            ? <UserListShimmer/>
-            : renderSingleTab(searchText === '' ? dataTabList[tabIndex] : searchData)
-        }
-      </View>
-    )
-  }, [clubsData, currentTab, inviteeData, leaguesData, loading, peopleData, renderSingleTab, searchData, searchText, teamsData])
+  const renderTabContain = useCallback(
+    (tabKey, tabIndex) => {
+      const dataTabList = [
+        inviteeData,
+        peopleData,
+        teamsData,
+        clubsData,
+        leaguesData,
+      ];
+      return (
+        tabIndex === currentTab && (
+          <View tabLabel={tabKey} style={{flex: 1}}>
+            {loading ? (
+              <UserListShimmer />
+            ) : (
+              renderSingleTab(
+                searchText === '' ? dataTabList[tabIndex] : searchData,
+              )
+            )}
+          </View>
+        )
+      );
+    },
+    [
+      clubsData,
+      currentTab,
+      inviteeData,
+      leaguesData,
+      loading,
+      peopleData,
+      renderSingleTab,
+      searchData,
+      searchText,
+      teamsData,
+    ],
+  );
 
   const handlePress = useCallback(() => {
-      const occupantsIds = []
-      selectedInvitees.filter((item) => occupantsIds.push(item.id))
-      if (occupantsIds.length > 0) {
-        if (occupantsIds.length === 1) {
-          QBcreateDialog(occupantsIds).then((res) => {
+    const occupantsIds = [];
+    selectedInvitees.filter((item) => occupantsIds.push(item.id));
+    if (occupantsIds.length > 0) {
+      if (occupantsIds.length === 1) {
+        QBcreateDialog(occupantsIds)
+          .then((res) => {
             setSelectedInvitees([]);
-            navigation.replace('MessageChat',{ dialog: res });
-          }).catch((error) => {
-            console.log(error);
+            navigation.replace('MessageChat', {dialog: res});
           })
-        } else {
-          setSelectedInvitees([]);
-          navigation.replace('MessageNewGroupScreen', {
-            selectedInviteesData: selectedInvitees,
+          .catch((error) => {
+            console.log(error);
           });
-        }
       } else {
-        Alert.alert('Select Members')
+        setSelectedInvitees([]);
+        navigation.replace('MessageNewGroupScreen', {
+          selectedInviteesData: selectedInvitees,
+        });
       }
-  }, [navigation, selectedInvitees])
+    } else {
+      Alert.alert('Select Members');
+    }
+  }, [navigation, selectedInvitees]);
 
-  const renderHeader = useMemo(() => (
-    <Header
-        leftContainerStyle={{ paddingLeft: 10 }}
-          leftComponent={
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <FastImage resizeMode={'contain'} source={images.backArrow} style={styles.backImageStyle}/>
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={styles.eventTitleTextStyle}>Invite</Text>
-          }
-          rightComponent={
-            <TouchableOpacity onPress={handlePress} disabled={selectedInvitees.length < 1}>
-              <Text style={{ ...styles.eventTextStyle, fontSize: 14 ,opacity: selectedInvitees.length < 1 ? 0.5 : 1}}>
-                {
-                  selectedInvitees
-                  && (selectedInvitees.length > 1)
-                      ? 'Next'
-                      : 'Create'}
-              </Text>
-            </TouchableOpacity>
-          }
+  const renderHeader = useMemo(
+    () => (
+      <Header
+        leftContainerStyle={{paddingLeft: 10}}
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <FastImage
+              resizeMode={'contain'}
+              source={images.backArrow}
+              style={styles.backImageStyle}
+            />
+          </TouchableOpacity>
+        }
+        centerComponent={<Text style={styles.eventTitleTextStyle}>Invite</Text>}
+        rightComponent={
+          <TouchableOpacity
+            onPress={handlePress}
+            disabled={selectedInvitees.length < 1}
+          >
+            <Text
+              style={{
+                ...styles.eventTextStyle,
+                fontSize: 14,
+                opacity: selectedInvitees.length < 1 ? 0.5 : 1,
+              }}
+            >
+              {selectedInvitees && selectedInvitees.length > 1
+                ? 'Next'
+                : 'Create'}
+            </Text>
+          </TouchableOpacity>
+        }
       />
-  ), [handlePress, navigation, selectedInvitees])
+    ),
+    [handlePress, navigation, selectedInvitees],
+  );
 
-  const renderSelectedInvitees = useMemo(() => selectedInvitees.length > 0 && (
-    <View style={styles.selectedInviteesMainView}>
-      <FlatList
-          style={{ paddingHorizontal: 15 }}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
+  const renderSelectedInvitees = useMemo(
+    () =>
+      selectedInvitees.length > 0 && (
+        <View style={styles.selectedInviteesMainView}>
+          <FlatList
+            style={{paddingHorizontal: 15}}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
             horizontal={true}
             data={selectedInvitees || []}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderSelectedContactList}
             extraData={selectedInvitees}
-        />
-    </View>
-  ), [renderSelectedContactList, selectedInvitees])
+          />
+        </View>
+      ),
+    [renderSelectedContactList, selectedInvitees],
+  );
 
-  const renderTabs = useMemo(() => (
-    <View style={{flex:1}}>
-      <View style={{
-        alignItems: 'center',
-        flexDirection: 'row',
-        height: 45,
-      }}>
-        {TAB_ITEMS.map((item, index) => (
-          <TouchableOpacity
+  const renderTabs = useMemo(
+    () => (
+      <View style={{flex: 1}}>
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            height: 45,
+          }}
+        >
+          {TAB_ITEMS.map((item, index) => (
+            <TouchableOpacity
               activeOpacity={1}
-              key={index} style={{
-              width: wp(100) / 5,
-              height: 45,
-              alignItems: 'center',
-              justifyContent: 'center',
-              }} onPress={() => {
-            setCurrentTab(index)
-            setSearchText('');
-              }}>
-            <View
+              key={index}
+              style={{
+                width: wp(100) / 5,
+                height: 45,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              onPress={() => {
+                setCurrentTab(index);
+                setSearchText('');
+              }}
+            >
+              <View
                 style={{
                   width: '100%',
                   height: 43,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
-            >
-              <Text style={{
-              width: '100%',
-              alignSelf: 'center',
-              fontSize: 16,
-              textAlign: 'center',
-              fontFamily: currentTab === index ? fonts.RBold : fonts.RRegular,
-              color: currentTab === index ? colors.darkYellowColor : colors.lightBlackColor,
-              }}>
-                {item}
-              </Text>
-            </View>
-            <LinearGradient
-                    colors={
+              >
+                <Text
+                  style={{
+                    width: '100%',
+                    alignSelf: 'center',
+                    fontSize: 16,
+                    textAlign: 'center',
+                    fontFamily:
+                      currentTab === index ? fonts.RBold : fonts.RRegular,
+                    color:
                       currentTab === index
-                          ? [colors.themeColor, colors.themeColor3]
-                          : [colors.thinDividerColor, 'transparent']
-                    }
-                    style={{
-                      alignSelf: 'flex-end',
-                      width: '100%',
-                      height: currentTab === index ? 3 : 1,
-                    }}/>
-
-          </TouchableOpacity>
-        ))}
+                        ? colors.darkYellowColor
+                        : colors.lightBlackColor,
+                  }}
+                >
+                  {item}
+                </Text>
+              </View>
+              <LinearGradient
+                colors={
+                  currentTab === index
+                    ? [colors.themeColor, colors.themeColor3]
+                    : [colors.thinDividerColor, 'transparent']
+                }
+                style={{
+                  alignSelf: 'flex-end',
+                  width: '100%',
+                  height: currentTab === index ? 3 : 1,
+                }}
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={{flex: 1, width: wp(100)}}>
+          {TAB_ITEMS?.map(renderTabContain)}
+        </View>
       </View>
-      <View style={{ flex: 1, width: wp(100) }}>
-        {TAB_ITEMS?.map(renderTabContain)}
-      </View>
-    </View>
-  ), [TAB_ITEMS, currentTab])
+    ),
+    [TAB_ITEMS, currentTab],
+  );
 
   return (
     <SafeAreaView style={styles.mainContainer}>
       {renderHeader}
-      <View style={ styles.separateLine } />
+      <View style={styles.separateLine} />
       {renderSelectedInvitees}
-      <View style={{ backgroundColor: colors.grayBackgroundColor, width: '100%', padding: 15 }}>
+      <View
+        style={{
+          backgroundColor: colors.grayBackgroundColor,
+          width: '100%',
+          padding: 15,
+        }}
+      >
         <TextInput
-            autoFocus={true}
-            value={searchText}
-            onChangeText={setSearchText}
-            style={styles.textInputStyle}
-            placeholder={'Search'}
+          autoFocus={true}
+          value={searchText}
+          onChangeText={setSearchText}
+          style={styles.textInputStyle}
+          placeholder={'Search'}
         />
       </View>
-      <View style={styles.sperateLine}/>
+      <View style={styles.sperateLine} />
       {renderTabs}
     </SafeAreaView>
-  )
+  );
 };
 
 const styles = StyleSheet.create({
@@ -398,7 +555,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 20,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 1,
@@ -430,7 +587,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1.5 },
+    shadowOffset: {width: 0, height: 1.5},
     shadowOpacity: 0.16,
     shadowRadius: 1.5,
     elevation: 1.5,
@@ -446,7 +603,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 16,
     color: colors.lightBlackColor,
-
   },
   subTitle: {
     fontFamily: fonts.RLight,
@@ -497,7 +653,7 @@ const styles = StyleSheet.create({
     borderRadius: wp(6),
     alignSelf: 'center',
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1.5 },
+    shadowOffset: {width: 0, height: 1.5},
     marginBottom: 5,
     shadowOpacity: 0.16,
     shadowRadius: 3,

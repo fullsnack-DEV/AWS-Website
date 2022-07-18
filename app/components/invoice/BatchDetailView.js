@@ -1,13 +1,11 @@
 import React from 'react';
-import {
- View, StyleSheet, Text, Image, TouchableOpacity,
- } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-export default function BatchDetailView({ data, onPressCard }) {
+export default function BatchDetailView({data, onPressCard}) {
   console.log(data);
   return (
     <TouchableOpacity style={styles.viewContainer} onPress={onPressCard}>
@@ -16,22 +14,32 @@ export default function BatchDetailView({ data, onPressCard }) {
           width: '20%',
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <View style={styles.profileContainer}>
-          <Image source={data?.user?.thumbnail && data?.user?.thumbnail !== '' ? { uri: data?.user?.thumbnail } : images.profilePlaceHolder} style={styles.townsCupPlusIcon} />
+          <Image
+            source={
+              data?.user?.thumbnail && data?.user?.thumbnail !== ''
+                ? {uri: data?.user?.thumbnail}
+                : images.profilePlaceHolder
+            }
+            style={styles.townsCupPlusIcon}
+          />
         </View>
       </View>
       <View
         style={{
           width: '80%',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <Text
           style={{
             fontFamily: fonts.RMedium,
             fontSize: 16,
             color: colors.lightBlackColor,
-          }}>
+          }}
+        >
           {`${data?.user?.first_name} ${data?.user?.last_name}`}
         </Text>
         <Text
@@ -39,13 +47,17 @@ export default function BatchDetailView({ data, onPressCard }) {
             fontFamily: fonts.RMedium,
             fontSize: 14,
             color: colors.lightBlackColor,
-          }}>{data?.amount_paid}
+          }}
+        >
+          {data?.amount_paid}
           <Text
             style={{
               fontFamily: fonts.RLight,
               fontSize: 14,
               color: colors.lightBlackColor,
-            }}>{` of $${data?.amount_due}`}
+            }}
+          >
+            {` of $${data?.amount_due}`}
           </Text>
         </Text>
 
@@ -53,7 +65,7 @@ export default function BatchDetailView({ data, onPressCard }) {
           <View
             style={{
               height: 3,
-              width: `${((100 * data?.amount_paid) / data?.amount_due)}%`,
+              width: `${(100 * data?.amount_paid) / data?.amount_due}%`,
               backgroundColor: colors.greeColor,
             }}
           />
@@ -76,7 +88,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,
@@ -102,7 +114,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 2,
     elevation: 5,

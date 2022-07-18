@@ -123,9 +123,10 @@ export default function BookScorekeeper({navigation, route}) {
                         {term: {'scorekeeper_data.is_published': true}},
                         {
                           term: {
-                            'scorekeeper_data.setting.scorekeeper_availibility.keyword': {
-                              value: 'On',
-                            },
+                            'scorekeeper_data.setting.scorekeeper_availibility.keyword':
+                              {
+                                value: 'On',
+                              },
                           },
                         },
                       ],
@@ -393,7 +394,8 @@ export default function BookScorekeeper({navigation, route}) {
           fontFamily: fonts.RRegular,
           color: colors.grayColor,
           fontSize: 26,
-        }}>
+        }}
+      >
         No Scorekeepers
       </Text>
     </View>
@@ -470,21 +472,25 @@ export default function BookScorekeeper({navigation, route}) {
         animationInTiming={300}
         animationOutTiming={800}
         backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}>
+        backdropTransitionOutTiming={800}
+      >
         <View
           style={[
             styles.bottomPopupContainer,
             {height: Dimensions.get('window').height - 100},
-          ]}>
+          ]}
+        >
           <KeyboardAvoidingView
             style={{flex: 1}}
             keyboardVerticalOffset={keyboardVerticalOffset}
-            behavior={Platform.OS === 'ios' ? 'padding' : null}>
+            behavior={Platform.OS === 'ios' ? 'padding' : null}
+          >
             <ScrollView style={{flex: 1}}>
               <View style={styles.viewsContainer}>
                 <Text
                   onPress={() => setSettingPopup(false)}
-                  style={styles.cancelText}>
+                  style={styles.cancelText}
+                >
                   Cancel
                 </Text>
                 <Text style={styles.locationText}>Filter</Text>
@@ -510,7 +516,8 @@ export default function BookScorekeeper({navigation, route}) {
                       }, 100);
                       console.log('DONE::');
                     }
-                  }}>
+                  }}
+                >
                   {'Apply'}
                 </Text>
               </View>
@@ -526,7 +533,8 @@ export default function BookScorekeeper({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}>
+                      }}
+                    >
                       <Text style={styles.filterTitle}>World</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
@@ -536,7 +544,8 @@ export default function BookScorekeeper({navigation, route}) {
                           //   ...filters,
                           //   location: 'world',
                           // });
-                        }}>
+                        }}
+                      >
                         <Image
                           source={
                             locationFilterOpetion === 0
@@ -552,7 +561,8 @@ export default function BookScorekeeper({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}>
+                      }}
+                    >
                       <Text style={styles.filterTitle}>Home City</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
@@ -571,7 +581,8 @@ export default function BookScorekeeper({navigation, route}) {
                           //       .toUpperCase()
                           //     + authContext?.entity?.obj?.city.slice(1),
                           // });
-                        }}>
+                        }}
+                      >
                         <Image
                           source={
                             locationFilterOpetion === 1
@@ -587,13 +598,15 @@ export default function BookScorekeeper({navigation, route}) {
                         flexDirection: 'row',
                         marginBottom: 10,
                         justifyContent: 'space-between',
-                      }}>
+                      }}
+                    >
                       <Text style={styles.filterTitle}>Current City</Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           setLocationFilterOpetion(2);
                           getLocation();
-                        }}>
+                        }}
+                      >
                         <Image
                           source={
                             locationFilterOpetion === 2
@@ -612,12 +625,14 @@ export default function BookScorekeeper({navigation, route}) {
                         navigation.navigate('SearchCityScreen', {
                           comeFrom: 'BookScorekeeper',
                         });
-                      }}>
+                      }}
+                    >
                       <View
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                        }}>
+                        }}
+                      >
                         {/* <TCSearchCityView
                       getCity={(value) => {
                         console.log('Value:=>', value);
@@ -636,7 +651,8 @@ export default function BookScorekeeper({navigation, route}) {
                         <View
                           style={{
                             alignSelf: 'center',
-                          }}>
+                          }}
+                        >
                           <Image
                             source={
                               locationFilterOpetion === 3
@@ -662,12 +678,14 @@ export default function BookScorekeeper({navigation, route}) {
                         onPress={() => {
                           setDatePickerFor('from');
                           setShow(!show);
-                        }}>
+                        }}
+                      >
                         <View
                           style={{
                             height: 35,
                             justifyContent: 'center',
-                          }}>
+                          }}
+                        >
                           <Text style={styles.fieldTitle} numberOfLines={1}>
                             From
                           </Text>
@@ -688,12 +706,14 @@ export default function BookScorekeeper({navigation, route}) {
                         onPress={() => {
                           setDatePickerFor('to');
                           setShow(!show);
-                        }}>
+                        }}
+                      >
                         <View
                           style={{
                             height: 35,
                             justifyContent: 'center',
-                          }}>
+                          }}
+                        >
                           <Text style={styles.fieldTitle} numberOfLines={1}>
                             To
                           </Text>
@@ -715,7 +735,8 @@ export default function BookScorekeeper({navigation, route}) {
                         color: colors.lightBlackColor,
                         textAlign: 'right',
                         marginTop: 10,
-                      }}>
+                      }}
+                    >
                       Time zone{' '}
                       <Text
                         style={{
@@ -723,7 +744,8 @@ export default function BookScorekeeper({navigation, route}) {
                           fontFamily: fonts.RRegular,
                           color: colors.lightBlackColor,
                           textDecorationLine: 'underline',
-                        }}>
+                        }}
+                      >
                         Vancouver
                       </Text>
                     </Text>
@@ -796,7 +818,8 @@ export default function BookScorekeeper({navigation, route}) {
                   flexDirection: 'column',
                   margin: 15,
                   justifyContent: 'space-between',
-                }}>
+                }}
+              >
                 <View style={{}}>
                   <Text style={styles.filterTitle}>Scorekeeper fee</Text>
                 </View>
@@ -805,7 +828,8 @@ export default function BookScorekeeper({navigation, route}) {
                     style={{
                       flexDirection: 'row',
                       justifyContent: 'space-between',
-                    }}>
+                    }}
+                  >
                     <TextInput
                       onChangeText={(text) => setMinFee(text)}
                       value={minFee}
@@ -853,7 +877,8 @@ export default function BookScorekeeper({navigation, route}) {
                 ],
                 {cancelable: false},
               );
-            }}>
+            }}
+          >
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>

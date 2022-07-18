@@ -1,44 +1,51 @@
-import React, { memo } from 'react';
-import {
-  Text, View, StyleSheet, TouchableOpacity,
-} from 'react-native';
+import React, {memo} from 'react';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import fonts from '../../../../../Constants/Fonts';
 import colors from '../../../../../Constants/Colors';
 import images from '../../../../../Constants/ImagePath';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../../../../utils';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from '../../../../../utils';
 import MatchRecordsList from './MatchRecordsList';
 
 const MatchRecords = ({
-  gameData, gameId, navigation, getGameMatchRecords, isAdmin,
+  gameData,
+  gameId,
+  navigation,
+  getGameMatchRecords,
+  isAdmin,
 }) => (
   <View style={styles.mainContainer}>
     {/*      Match Records Sections */}
     <View style={styles.contentContainer}>
-      <TouchableOpacity style={{ flexDirection: 'row', padding: 10 }} onPress={() => {
-        navigation.navigate('TennisRecordList', { gameId, gameData, isAdmin })
-      }}>
-        <Text style={styles.title}>
-          Match records
-        </Text>
+      <TouchableOpacity
+        style={{flexDirection: 'row', padding: 10}}
+        onPress={() => {
+          navigation.navigate('TennisRecordList', {gameId, gameData, isAdmin});
+        }}
+      >
+        <Text style={styles.title}>Match records</Text>
         <FastImage
-                        resizeMode={'contain'}
-                        source={images.arrowGraterthan}
-                        style={{
-                          width: 8,
-                          height: 12,
-                          alignSelf: 'center',
-                          marginLeft: wp(1),
-                        }}/>
+          resizeMode={'contain'}
+          source={images.arrowGraterthan}
+          style={{
+            width: 8,
+            height: 12,
+            alignSelf: 'center',
+            marginLeft: wp(1),
+          }}
+        />
       </TouchableOpacity>
       <MatchRecordsList
-                    gameData={gameData}
-                    gameId={gameId}
-                    getGameMatchRecords={getGameMatchRecords}
-                />
+        gameData={gameData}
+        gameId={gameId}
+        getGameMatchRecords={getGameMatchRecords}
+      />
     </View>
   </View>
-)
+);
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -46,13 +53,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     marginBottom: hp(1),
   },
-  contentContainer: {
-
-  },
+  contentContainer: {},
   title: {
     fontFamily: fonts.RRegular,
     fontSize: 20,
     color: colors.lightBlackColor,
   },
-})
+});
 export default memo(MatchRecords);

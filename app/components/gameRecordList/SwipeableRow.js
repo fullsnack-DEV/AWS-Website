@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, {useRef} from 'react';
 import {
   Animated,
   StyleSheet,
@@ -15,7 +15,7 @@ import colors from '../../Constants/Colors';
 
 const SwipeableRow = ({
   onPress = () => {},
-  buttons = [{ key: 'delete', fillColor: '#E63E3F', image: images.deleteIcon }],
+  buttons = [{key: 'delete', fillColor: '#E63E3F', image: images.deleteIcon}],
   enabled = true,
   children,
   showLabel = true,
@@ -37,20 +37,23 @@ const SwipeableRow = ({
             key={index}
             activeOpacity={1}
             onPress={() => onItemPress(item?.key)}
-            style={{ justifyContent: 'center', alignItems: 'center', width: 57 }}>
+            style={{justifyContent: 'center', alignItems: 'center', width: 57}}
+          >
             <LinearGradient
               colors={
                 Array.isArray(item.fillColor)
                   ? item.fillColor
                   : [item.fillColor, item.fillColor]
               }
-              style={{ justifyContent: 'center', alignItems: 'center' }}>
+              style={{justifyContent: 'center', alignItems: 'center'}}
+            >
               <Animated.View
                 style={{
                   paddingHorizontal: 10,
                   minWidth: 57,
-                  ...(scaleEnabled && { transform: [{ scale }] }),
-                }}>
+                  ...(scaleEnabled && {transform: [{scale}]}),
+                }}
+              >
                 <View style={styles.rightAction}>
                   <Image
                     source={item?.image}
@@ -83,7 +86,8 @@ const SwipeableRow = ({
       ref={swipeableRef}
       friction={2}
       rightThreshold={40}
-      renderRightActions={renderRightActions}>
+      renderRightActions={renderRightActions}
+    >
       {children}
     </Swipeable>
   ) : (

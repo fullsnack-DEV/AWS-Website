@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text,
-} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {StyleSheet, View, Text} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -13,11 +9,14 @@ function EventItemRender({
   children,
   containerStyle,
   headerTextStyle,
-  isRequired= false,
+  isRequired = false,
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <Text style={[styles.headerTextStyle, headerTextStyle]}>{title} {isRequired && <Text style={{color: colors.darkThemeColor}}> *</Text>}</Text>
+      <Text style={[styles.headerTextStyle, headerTextStyle]}>
+        {title}{' '}
+        {isRequired && <Text style={{color: colors.darkThemeColor}}> *</Text>}
+      </Text>
       {children}
     </View>
   );

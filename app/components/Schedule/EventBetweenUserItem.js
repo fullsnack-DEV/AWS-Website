@@ -1,28 +1,35 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text, Image,
-} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {StyleSheet, View, Text, Image} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 function EventBetweenUserItem({
-  firstUserImage, firstText, secondUserImage, secondText,
+  firstUserImage,
+  firstText,
+  secondUserImage,
+  secondText,
 }) {
   return (
     <View style={styles.containerStyle}>
       <View style={styles.firstUserViewStyle}>
         <View style={styles.eventImageViewStyle}>
-          <Image source={firstUserImage} style={styles.imageStyle} resizeMode={'cover'} />
+          <Image
+            source={firstUserImage}
+            style={styles.imageStyle}
+            resizeMode={'cover'}
+          />
         </View>
         <Text style={styles.textStyle}>{firstText}</Text>
       </View>
       <Text style={styles.vsTextStyle}>{'vs'}</Text>
       <View style={styles.firstUserViewStyle}>
         <View style={styles.eventImageViewStyle}>
-          <Image source={secondUserImage} style={styles.imageStyle} resizeMode={'cover'} />
+          <Image
+            source={secondUserImage}
+            style={styles.imageStyle}
+            resizeMode={'cover'}
+          />
         </View>
         <Text style={styles.textStyle}>{secondText}</Text>
       </View>

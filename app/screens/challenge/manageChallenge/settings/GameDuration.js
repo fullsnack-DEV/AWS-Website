@@ -96,7 +96,8 @@ export default function GameDuration({navigation, route}) {
             } else {
               onSavePressed();
             }
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
@@ -139,7 +140,8 @@ export default function GameDuration({navigation, route}) {
               onPress={() => {
                 period.splice(index, 1);
                 setPeriod([...period]);
-              }}>
+              }}
+            >
               Delete
             </Text>
           )}
@@ -200,7 +202,8 @@ export default function GameDuration({navigation, route}) {
               onPress={() => {
                 overTime.splice(index, 1);
                 setOverTime([...overTime]);
-              }}>
+              }}
+            >
               Delete
             </Text>
           )}
@@ -304,14 +307,13 @@ export default function GameDuration({navigation, route}) {
     console.log('body params:=>', bodyParams);
 
     setloading(true);
-    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => {
+    const registerdPlayerData =
+      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
           return null;
         }
         return obj;
-      },
-    );
+      });
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -470,7 +472,8 @@ export default function GameDuration({navigation, route}) {
             style={[
               styles.textTitle,
               {marginLeft: 15, marginRight: 15, marginBottom: -10},
-            ]}>
+            ]}
+          >
             <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
               {strings.firstPeriodText}
             </Text>
@@ -510,12 +513,14 @@ export default function GameDuration({navigation, route}) {
               justifyContent: 'center',
               marginBottom: 5,
               marginTop: 10,
-            }}>
+            }}
+          >
             <TouchableOpacity
               style={styles.checkBoxContainer}
               onPress={() => {
                 setWithOverTime(!withOverTime);
-              }}>
+              }}
+            >
               <Text style={[styles.minText, {marginLeft: 10}]}>
                 {strings.withoutOverTimeText}
               </Text>
@@ -539,12 +544,14 @@ export default function GameDuration({navigation, route}) {
             style={{
               justifyContent: 'center',
               marginTop: 10,
-            }}>
+            }}
+          >
             <TouchableOpacity
               style={styles.checkBoxContainer}
               onPress={() => {
                 setWithOverTime(!withOverTime);
-              }}>
+              }}
+            >
               <Text style={[styles.minText, {marginLeft: 10}]}>
                 {strings.withOverTimeText}
               </Text>

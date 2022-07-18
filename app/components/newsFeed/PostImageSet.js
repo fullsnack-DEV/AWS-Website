@@ -38,7 +38,8 @@ function PostImageSet({
         style={[
           styles.uploadedImage,
           {borderWidth: 1, borderColor: colors.lightgrayColor},
-        ]}>
+        ]}
+      >
         <FastImage
           style={styles.imageStyle}
           source={images.imageLoadingGIF}
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
   uploadedImage: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 0,
+    borderRadius: 8,
     justifyContent: 'center',
     height: wp('91%'),
     width: wp('91%'),

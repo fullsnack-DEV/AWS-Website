@@ -1,76 +1,162 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
-  View, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback,
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Dimensions,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import fonts from '../../Constants/Fonts';
-import strings from '../../Constants/String'
-import TCProfileImage from '../TCProfileImage'
-import colors from '../../Constants/Colors'
-import AuthContext from '../../auth/context'
-import { parseRequest } from '../../screens/notificationsScreen/PRNotificationParser';
+import strings from '../../Constants/String';
+import TCProfileImage from '../TCProfileImage';
+import colors from '../../Constants/Colors';
+import AuthContext from '../../auth/context';
+import {parseRequest} from '../../screens/notificationsScreen/PRNotificationParser';
+import NotificationType from '../../Constants/NotificationType';
 
 function PRNotificationDetailMessageItem({
-  item, selectedEntity, onPress, onDetailPress, onMessagePress, onPressFirstEntity, disabled = false,
+  item,
+  selectedEntity,
+  onPress,
+  onDetailPress,
+  onPressFirstEntity,
+  disabled = false,
+  isTrash = false,
+  entityType = 'user',
 }) {
-  const authContext = useContext(AuthContext)
-  const [dataDictionary, setDataDictionary] = useState()
-console.log('Detail item cell');
+  const authContext = useContext(AuthContext);
+  const [dataDictionary, setDataDictionary] = useState();
+  console.log('Detail item cell');
 
   useEffect(() => {
     parseRequest(item, selectedEntity, authContext.entity).then((data) => {
-console.log('Notification data11:', data);
+      console.log('Notification data11:', item);
 
-      setDataDictionary(data)
-    })
+      setDataDictionary(data);
+    });
   }, []);
 
   return (
-    <View style={{ backgroundColor: colors.whiteColor }}>
-      {dataDictionary && <TouchableOpacity onPress={onPress}>
-        <View style={styles.viewFirstStyle}>
-          <TouchableOpacity onPress={() => {
-            onPressFirstEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
-          }}>
-            <TCProfileImage
-              entityType={dataDictionary.entityType}
-              source={ { uri: dataDictionary.imgName }}
-              containerStyle={styles.imageContainer}
-              intialChar={dataDictionary.firstTitle?.charAt(0).toUpperCase()}
+    <View style={{backgroundColor: colors.whiteColor}}>
+      {dataDictionary && (
+        <TouchableOpacity onPress={onPress}>
+          <View style={styles.viewFirstStyle}>
+            <TouchableOpacity
+              onPress={() => {
+                onPressFirstEntity({
+                  entityType: dataDictionary.entityType,
+                  entityId: dataDictionary.entityId,
+                });
+              }}
+            >
+              <TCProfileImage
+                entityType={dataDictionary.entityType}
+                source={{uri: dataDictionary.imgName}}
+                containerStyle={styles.imageContainer}
+                intialChar={dataDictionary.firstTitle?.charAt(0).toUpperCase()}
               />
-          </TouchableOpacity>
-          <View style={styles.textContentStyle}>
-            <Text style={styles.textContainerStyle}>
-              {dataDictionary.preText && <Text>{`${dataDictionary.preText}`}</Text>}
-              <TouchableWithoutFeedback onPress={() => {
-                onPressFirstEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
-              }}>
-                <Text style={styles.boldTextStyle}>{dataDictionary.preText ? `${dataDictionary.firstTitle}` : `${dataDictionary.firstTitle} `}</Text>
-              </TouchableWithoutFeedback>
-              <Text>{`${dataDictionary.text} `}</Text>
-              {dataDictionary.doneByText && <Text style={styles.timeStyle}>{dataDictionary.doneByText} </Text>}
-              {dataDictionary.doneByTitle && <Text style={styles.smallBoldStyle}>{dataDictionary.doneByTitle} </Text>}
-              <Text style={styles.timeStyle}>{dataDictionary.notificationTime}</Text>
-            </Text>
-            {(dataDictionary.isExpired || dataDictionary.isGameTimePassed) && <Text style={[{ marginTop: 8 },
-              styles.smallBoldStyle] }>{strings.responsetimeexpired}</Text>}
-            {(!dataDictionary.isExpired && !dataDictionary.isGameTimePassed && dataDictionary.expiryText) && <Text
-              style={styles.respnseTimeStyle}>{`${strings.responsetime} `}
-              <Text style={styles.respnseTimeBoldStyle}>{dataDictionary.expiryText}</Text>
-              {` ${strings.left}`}
-            </Text>}
-            <View style={disabled ? [styles.viewSecondStyle, { opacity: 0.5 }] : styles.viewSecondStyle}>
-              <TouchableOpacity style={styles.detailBtnStyle} onPress={onDetailPress} disabled={disabled}>
-                <Text style={styles.detailBtnTextStyle}>{strings.detailText}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.messageBtnStyle} disabled={disabled} onPress={() => {
-                onMessagePress({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
-              }}>
-                <Text style={[styles.detailBtnTextStyle, { color: colors.kHexColor45C1C0 }]}>{strings.message.toUpperCase()}</Text>
-              </TouchableOpacity>
+            </TouchableOpacity>
+            <View style={styles.textContentStyle}>
+              <View style={{flex: 0.7}}>
+                <Text style={styles.textContainerStyle}>
+                  {dataDictionary.preText && (
+                    <Text>{`${dataDictionary.preText}`}</Text>
+                  )}
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      onPressFirstEntity({
+                        entityType: dataDictionary.entityType,
+                        entityId: dataDictionary.entityId,
+                      });
+                    }}
+                  >
+                    <Text style={styles.boldTextStyle}>
+                      {dataDictionary.preText
+                        ? `${dataDictionary.firstTitle}`
+                        : `${dataDictionary.firstTitle} `}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <Text>{`${dataDictionary.text} `}</Text>
+                  {dataDictionary.doneByText && (
+                    <Text style={styles.timeStyle}>
+                      {dataDictionary.doneByText}{' '}
+                    </Text>
+                  )}
+                  {dataDictionary.doneByTitle && (
+                    <Text style={styles.smallBoldStyle}>
+                      {dataDictionary.doneByTitle}{' '}
+                    </Text>
+                  )}
+                  {!isTrash && (
+                    <Text style={styles.timeStyle}>
+                      {dataDictionary.notificationTime}
+                    </Text>
+                  )}
+                </Text>
+
+                {isTrash && entityType === 'user' && (
+                  <Text style={styles.timeStyle}>
+                    {(NotificationType.deleted && 'Deleted') ||
+                      (NotificationType.accepted && 'Accepted') ||
+                      (NotificationType.declined && 'declined')}
+                    <Text> {dataDictionary.notificationTime}</Text>
+                  </Text>
+                )}
+                {isTrash && entityType === 'group' && (
+                  <Text style={styles.timeStyle}>
+                    {(NotificationType.deleted && 'Deleted') ||
+                      (NotificationType.accepted && 'Accepted') ||
+                      (NotificationType.declined && 'Declined')}
+                    <Text>
+                      {' '}
+                      by {item.activities[0].remove_by?.data?.full_name}{' '}
+                      {dataDictionary.notificationTime}
+                    </Text>
+                  </Text>
+                )}
+
+                {(dataDictionary.isExpired ||
+                  dataDictionary.isGameTimePassed) && (
+                  <Text style={[{marginTop: 8}, styles.smallBoldStyle]}>
+                    {strings.responsetimeexpired}
+                  </Text>
+                )}
+                {!dataDictionary.isExpired &&
+                  !dataDictionary.isGameTimePassed &&
+                  dataDictionary.expiryText && (
+                    <Text style={styles.respnseTimeStyle}>
+                      {`${strings.responsetime} `}
+                      <Text style={styles.respnseTimeBoldStyle}>
+                        {dataDictionary.expiryText}
+                      </Text>
+                      {` ${strings.left}`}
+                    </Text>
+                  )}
+              </View>
+              <View
+                style={
+                  disabled
+                    ? [styles.viewSecondStyle, {opacity: 0.5}]
+                    : styles.viewSecondStyle
+                }
+              >
+                <LinearGradient
+                  colors={[colors.themeColor1, colors.localHomeGradientEnd]}
+                  style={styles.detailBtnStyle}
+                >
+                  <TouchableOpacity onPress={onDetailPress} disabled={disabled}>
+                    <Text style={styles.detailBtnTextStyle}>
+                      {strings.respondWithinText}
+                    </Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>}
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -81,9 +167,10 @@ const styles = StyleSheet.create({
   },
   textContentStyle: {
     flex: 1,
+    width: Dimensions.get('window').width,
     marginVertical: 15,
     marginRight: 15,
-    flexDirection: 'column',
+    flexDirection: 'row',
   },
   viewFirstStyle: {
     flexDirection: 'row',
@@ -111,13 +198,11 @@ const styles = StyleSheet.create({
   },
 
   viewSecondStyle: {
+    flex: 0.3,
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginTop: 14,
   },
   detailBtnStyle: {
-    width: '48%',
+    flex: 1,
     height: 25,
     borderWidth: 1,
     borderColor: '#FF8A01',
@@ -127,18 +212,9 @@ const styles = StyleSheet.create({
   detailBtnTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RBold,
-    color: '#FF8A01',
+    color: colors.whiteColor,
     textAlign: 'center',
   },
-  messageBtnStyle: {
-    width: '48%',
-    height: 25,
-    borderWidth: 1,
-    borderColor: '#45C1C0',
-    borderRadius: 5,
-    justifyContent: 'center',
-  },
-
   respnseTimeStyle: {
     fontFamily: fonts.RRegular,
     fontSize: 12,

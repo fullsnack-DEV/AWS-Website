@@ -83,7 +83,8 @@ function MultiPostVideo({
         style={[
           styles.singleImageDisplayStyle,
           {borderWidth: 1, borderColor: colors.lightgrayColor},
-        ]}>
+        ]}
+      >
         <FastImage
           style={styles.loadimageStyle}
           source={images.imageLoadingGIF}
@@ -94,7 +95,8 @@ function MultiPostVideo({
       <TouchableWithoutFeedback
         onPress={() => {
           toggleModal();
-        }}>
+        }}
+      >
         <Video
           repeat={true}
           ref={videoPlayerRef}
@@ -131,7 +133,8 @@ function MultiPostVideo({
             style={styles.pauseMuteStyle}
             onPress={() => {
               setMute(!mute);
-            }}>
+            }}
+          >
             <FastImage
               resizeMode={'contain'}
               tintColor={'white'}
@@ -211,7 +214,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 0,
+    borderRadius: 8,
     height: wp('91%'),
     justifyContent: 'center',
     width: wp('91%'),
@@ -219,7 +222,7 @@ const styles = StyleSheet.create({
   singleImageDisplayStyle: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 0,
+    borderRadius: 8,
     height: wp('91%'),
     justifyContent: 'center',
     width: wp('91%'),

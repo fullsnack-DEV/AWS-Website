@@ -99,7 +99,8 @@ export default function EventScreen({navigation, route}) {
       headerRight: () => (
         <TouchableOpacity
           style={{padding: 2, marginRight: 15}}
-          onPress={() => actionSheet.current.show()}>
+          onPress={() => actionSheet.current.show()}
+        >
           <Image
             source={images.vertical3Dot}
             style={styles.threeDotImageStyle}
@@ -262,7 +263,8 @@ export default function EventScreen({navigation, route}) {
               alignItems: 'center',
               marginLeft: 15,
               marginTop: 5,
-            }}>
+            }}
+          >
             <Image
               source={images.availableChallenge}
               style={styles.availableImageStyle}
@@ -276,7 +278,8 @@ export default function EventScreen({navigation, route}) {
               alignItems: 'center',
               marginLeft: 15,
               marginTop: 5,
-            }}>
+            }}
+          >
             <Image
               source={images.blockedChallenge}
               style={styles.availableImageStyle}
@@ -320,7 +323,8 @@ export default function EventScreen({navigation, route}) {
                   going_ids: eventData?.going ?? [],
                   eventData,
                 });
-              }}>{`${strings.goingTitle} (${eventData?.going?.length})`}</Text>
+              }}
+            >{`${strings.goingTitle} (${eventData?.going?.length})`}</Text>
             <FlatList
               data={going}
               horizontal
@@ -394,7 +398,8 @@ export default function EventScreen({navigation, route}) {
                 fontSize: 12,
                 fontFamily: fonts.RRegular,
                 textDecorationLine: 'underline',
-              }}>
+              }}
+            >
               {'\n'}Read payment policy for more information.
             </Text>
           </Text>
@@ -438,7 +443,8 @@ export default function EventScreen({navigation, route}) {
           shadowOpacity: 1.0,
           shadowRadius: 4,
           elevation: 2,
-        }}>
+        }}
+      >
         <TCProfileButton
           title={
             eventData?.going?.filter(

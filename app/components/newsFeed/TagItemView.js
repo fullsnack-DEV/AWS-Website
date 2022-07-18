@@ -1,10 +1,8 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text, Image,
-} from 'react-native';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import {StyleSheet, View, Text, Image} from 'react-native';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
 function TagItemView({
   source,
@@ -18,7 +16,7 @@ function TagItemView({
       style={styles.mainContainerStyle}
       onPress={onItemPress}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <Image source={source} style={styles.imageStyle} resizeMode={'cover'} />
         <View style={styles.textViewStyle}>
           <Text style={styles.userNameTextStyle}>{userName}</Text>

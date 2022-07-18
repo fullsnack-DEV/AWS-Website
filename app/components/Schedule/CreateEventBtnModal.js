@@ -1,15 +1,20 @@
 import React from 'react';
 import {
-  Image, TouchableOpacity, Modal, StyleSheet, View, Text,
+  Image,
+  TouchableOpacity,
+  Modal,
+  StyleSheet,
+  View,
+  Text,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import colors from '../../Constants/Colors'
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import { getHitSlop } from '../../utils';
+import {getHitSlop} from '../../utils';
 
 function CreateEventBtnModal({
   visible = false,
@@ -19,29 +24,44 @@ function CreateEventBtnModal({
 }) {
   if (!visible) return null;
   return (
-    <Modal
-      visible={true}
-      transparent={true}
-      animationType={'slide'}
-    >
+    <Modal visible={true} transparent={true} animationType={'slide'}>
       <View style={styles.containerStyle}>
         <View style={styles.indicatorViewStyle}>
           <View style={styles.eventViewStyle}>
             <Text style={styles.textStyle}>Set challenge availability</Text>
-            <TouchableOpacity style={styles.createEventBtnStyle} onPress={onChallengePress}>
-              <Image source={images.createEventImage} style={styles.imageStyle} resizeMode={'contain'} />
+            <TouchableOpacity
+              style={styles.createEventBtnStyle}
+              onPress={onChallengePress}
+            >
+              <Image
+                source={images.createEventImage}
+                style={styles.imageStyle}
+                resizeMode={'contain'}
+              />
             </TouchableOpacity>
           </View>
-          <View style={[styles.eventViewStyle, { marginVertical: 10 }]}>
+          <View style={[styles.eventViewStyle, {marginVertical: 10}]}>
             <Text style={styles.textStyle}>Create an event</Text>
-            <TouchableOpacity style={styles.createEventBtnStyle} onPress={onCreateEventPress}>
-              <Image source={images.createEventImage} style={styles.imageStyle} resizeMode={'contain'} />
+            <TouchableOpacity
+              style={styles.createEventBtnStyle}
+              onPress={onCreateEventPress}
+            >
+              <Image
+                source={images.createEventImage}
+                style={styles.imageStyle}
+                resizeMode={'contain'}
+              />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity 
-           hitSlop={getHitSlop(15)}
-          style={styles.cancelBtnStyle} onPress={onCancelPress}>
-            <Image source={images.cancelImage} style={styles.cancelImageStyle} />
+          <TouchableOpacity
+            hitSlop={getHitSlop(15)}
+            style={styles.cancelBtnStyle}
+            onPress={onCancelPress}
+          >
+            <Image
+              source={images.cancelImage}
+              style={styles.cancelImageStyle}
+            />
           </TouchableOpacity>
         </View>
       </View>

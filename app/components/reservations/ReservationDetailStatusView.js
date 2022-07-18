@@ -1,43 +1,48 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text, TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 
 import strings from '../../Constants/String';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
 export default function ReservationDetailStatusView({
-
-  status = 'pending', doneBy = 'Kishan Makani', amount = 30, currencyType = strings.defaultCurrency,
+  status = 'pending',
+  doneBy = 'Kishan Makani',
+  amount = 30,
+  currencyType = strings.defaultCurrency,
 }) {
   return (
-
     <View style={styles.reservationTitleView}>
       <TouchableOpacity>
         <LinearGradient
-            colors={[colors.yellowColor, colors.themeColor]}
-            style={styles.borderView}>
+          colors={[colors.yellowColor, colors.themeColor]}
+          style={styles.borderView}
+        >
           <View style={styles.dateView}>
             <Text style={styles.dateText}>Feb{'\n'}15</Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>
       <View style={styles.reservationTypeView}>
-        {status === 'pending' && <Text style={[styles.reservationText, { color: '#616161' }]}>
-          ALTETATION REQUEST PENDING
-        </Text>}
+        {status === 'pending' && (
+          <Text style={[styles.reservationText, {color: '#616161'}]}>
+            ALTETATION REQUEST PENDING
+          </Text>
+        )}
 
-        <Text style={styles.doneByText}>{strings.doneByText}<Text style={styles.doneByNameText}> {doneBy}</Text></Text>
-
+        <Text style={styles.doneByText}>
+          {strings.doneByText}
+          <Text style={styles.doneByNameText}> {doneBy}</Text>
+        </Text>
       </View>
       <View style={styles.amountView}>
-        <Text style={styles.amountText}>${amount} {currencyType}</Text>
+        <Text style={styles.amountText}>
+          ${amount} {currencyType}
+        </Text>
       </View>
     </View>
-
   );
 }
 
@@ -65,7 +70,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.RMedium,
     textAlign: 'center',
-
   },
 
   dateView: {
@@ -101,6 +105,5 @@ const styles = StyleSheet.create({
     alignContent: 'flex-start',
     alignSelf: 'center',
     marginLeft: 10,
-
   },
 });

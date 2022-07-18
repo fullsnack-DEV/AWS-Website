@@ -252,6 +252,8 @@ import BasicInfoScreen from '../screens/account/userSettingPrivacy/BasicInfoScre
 import GroupMembersSettingScreen from '../screens/account/GroupSetting/GroupMembersSettingScreen';
 import RecruitingMemberScreen from '../screens/account/GroupSetting/RecruitingMemberScreen';
 import GroupsScreen from '../screens/account/GroupSetting/GroupsScreen';
+import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
+import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 
 // Scorekeeper Review Screen
 
@@ -265,7 +267,8 @@ const AccountNavigator = () => (
       // headerTitle: true,
       gestureEnabled: false,
       headerBackTitleVisible: false,
-    }}>
+    }}
+  >
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
@@ -1046,7 +1049,7 @@ const AccountNavigator = () => (
       name="RegisterReferee"
       component={RegisterReferee}
       options={{
-        title: 'Register as a referee',
+        title: 'Register as Referee',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           alignSelf: 'center',
@@ -1063,7 +1066,7 @@ const AccountNavigator = () => (
       name="RegisterRefereeForm2"
       component={RegisterRefereeForm2}
       options={{
-        title: 'Register as a referee',
+        title: 'Register as Referee',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2074,7 +2077,39 @@ const AccountNavigator = () => (
       name="NotificationsListScreen"
       component={NotificationsListScreen}
       options={{
-        title: 'Notification',
+        title: 'Notifications',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="TrashScreen"
+      component={TrashScreen}
+      options={{
+        title: 'Trash',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="PendingRequestScreen"
+      component={PendingRequestScreen}
+      options={{
+        title: 'Pending Request',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2210,7 +2245,7 @@ const AccountNavigator = () => (
       name="RegisterScorekeeper"
       component={RegisterScorekeeper}
       options={{
-        title: 'Register as a scorekeeper',
+        title: 'Register as Scorekeeper',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           alignSelf: 'center',
@@ -2227,7 +2262,7 @@ const AccountNavigator = () => (
       name="RegisterScorekeeperForm2"
       component={RegisterScorekeeperForm2}
       options={{
-        title: 'Register as a scorekeeper',
+        title: 'Register as Scorekeeper',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

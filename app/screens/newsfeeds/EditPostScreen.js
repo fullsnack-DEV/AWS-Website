@@ -31,12 +31,13 @@ import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import { getTaggedEntityData} from '../../utils';
+import {getTaggedEntityData} from '../../utils';
 import {getPickedData, MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
 import TCGameCard from '../../components/TCGameCard';
-import {getGroupIndex,  getUserIndex} from '../../api/elasticSearch';
+import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 
-const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
+const urlRegex =
+  /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
 const tagRegex = /(?!\w)@\w+/gim;
 
@@ -71,7 +72,6 @@ const EditPostScreen = ({navigation, route}) => {
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-
     const userQuery = {
       size: 1000,
       query: {
@@ -288,19 +288,20 @@ const EditPostScreen = ({navigation, route}) => {
 
   const searchFilterFunction = useCallback(
     (text) => {
-      console.log('search text',text);
+      console.log('search text', text);
       if (text?.length > 0) {
-    
-
-        let userData = searchUsers.filter((a) => !tagsOfEntity.some((b) => a.user_id === b.entity_id));  
-        let groupData = searchGroups.filter((o1) => !tagsOfEntity.some((o2) => o1.group_id === o2?.entity_id));
-
-  
-         userData = userData.filter(
-          (x) => x?.full_name?.toLowerCase().includes(text?.toLowerCase()),
+        let userData = searchUsers.filter(
+          (a) => !tagsOfEntity.some((b) => a.user_id === b.entity_id),
         );
-         groupData = groupData.filter(
-          (x) =>  x?.group_name?.toLowerCase().includes(text?.toLowerCase()),
+        let groupData = searchGroups.filter(
+          (o1) => !tagsOfEntity.some((o2) => o1.group_id === o2?.entity_id),
+        );
+
+        userData = userData.filter((x) =>
+          x?.full_name?.toLowerCase().includes(text?.toLowerCase()),
+        );
+        groupData = groupData.filter((x) =>
+          x?.group_name?.toLowerCase().includes(text?.toLowerCase()),
         );
         setUsers([...userData]);
         setGroups([...groupData]);
@@ -322,7 +323,8 @@ const EditPostScreen = ({navigation, route}) => {
         style={{
           ...styles.username,
           color: colors.greeColor,
-        }}>{`${matchingString}`}</Text>
+        }}
+      >{`${matchingString}`}</Text>
     ),
     [],
   );
@@ -347,7 +349,8 @@ const EditPostScreen = ({navigation, route}) => {
     ({item}) => (
       <TouchableOpacity
         onPress={() => onTagPress(item)}
-        style={styles.userListStyle}>
+        style={styles.userListStyle}
+      >
         <Image
           source={
             item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
@@ -360,9 +363,8 @@ const EditPostScreen = ({navigation, route}) => {
             : `${item.first_name} ${item.last_name}`}
         </Text>
         <Text
-          style={
-            styles.locationTextStyle
-          }>{`${item.city}, ${item.state_abbr}`}</Text>
+          style={styles.locationTextStyle}
+        >{`${item.city}, ${item.state_abbr}`}</Text>
       </TouchableOpacity>
     ),
     [onTagPress],
@@ -376,7 +378,8 @@ const EditPostScreen = ({navigation, route}) => {
           style={[
             styles.userListContainer,
             {marginTop: searchFieldHeight + 20},
-          ]}>
+          ]}
+        >
           <FlatList
             showsVerticalScrollIndicator={false}
             data={[...users, ...groups]}
@@ -546,7 +549,8 @@ const EditPostScreen = ({navigation, route}) => {
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}>
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+    >
       <ActivityLoader visible={loading} />
       <SafeAreaView>
         <View style={styles.containerStyle}>
@@ -600,7 +604,8 @@ const EditPostScreen = ({navigation, route}) => {
                   format_tagged_data,
                 );
               }
-            }}>
+            }}
+          >
             <Text style={styles.doneTextStyle}>Done</Text>
           </TouchableOpacity>
         </View>
@@ -634,10 +639,12 @@ const EditPostScreen = ({navigation, route}) => {
           style={styles.textInputField}
           multiline={true}
           autoCapitalize="none"
-          textAlignVertical={'top'}>
+          textAlignVertical={'top'}
+        >
           <ParsedText
             parse={[{pattern: tagRegex, renderText: renderTagText}]}
-            childrenProps={{allowFontScaling: false}}>
+            childrenProps={{allowFontScaling: false}}
+          >
             {searchText}
           </ParsedText>
         </TextInput>
@@ -661,7 +668,8 @@ const EditPostScreen = ({navigation, route}) => {
             style={[
               styles.onlyMeViewStyle,
               {flex: 1, justifyContent: 'flex-end'},
-            ]}>
+            ]}
+          >
             {selectImage?.length < MAX_UPLOAD_POST_ASSETS && (
               <ImageButton
                 source={images.pickImage}

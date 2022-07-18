@@ -1,14 +1,9 @@
 import React from 'react';
-import {
-  StyleSheet, Text, TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-function BirthSelectItem({
-  title,
-  onItemPress,
-}) {
+function BirthSelectItem({title, onItemPress}) {
   return (
     <TouchableOpacity style={styles.dateSelectStyle} onPress={onItemPress}>
       <Text style={styles.dateTextStyle}>{title}</Text>
@@ -27,7 +22,7 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     paddingVertical: 10,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: '92%',

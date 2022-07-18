@@ -1,6 +1,4 @@
-import React, {
-  useLayoutEffect, useState, useEffect, useContext,
-} from 'react';
+import React, {useLayoutEffect, useState, useEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -10,7 +8,7 @@ import {
   Image,
   FlatList,
   Alert,
-  SafeAreaView
+  SafeAreaView,
 } from 'react-native';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -33,7 +31,7 @@ import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import LineUpPlayerMultiSelectionView from '../../../components/game/soccer/home/lineUp/LineUpPlayerMultiSelectionView';
 
-export default function EditRosterScreen({ navigation, route }) {
+export default function EditRosterScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const [loading, setLoading] = useState(false);
@@ -47,10 +45,10 @@ export default function EditRosterScreen({ navigation, route }) {
 
   useEffect(() => {
     if (
-      route
-        && route.params
-        && route.params.gameObj
-        && route.params.selectedTeam
+      route &&
+      route.params &&
+      route.params.gameObj &&
+      route.params.selectedTeam
     ) {
       getLineUpOfTeams(
         route.params.selectedTeam === 'home'
@@ -62,38 +60,44 @@ export default function EditRosterScreen({ navigation, route }) {
   }, [route]);
   const getLineUpOfTeams = (teamID, gameID) => {
     setLoading(true);
-    getGameLineUp(teamID, gameID, authContext).then((response) => {
-      const nonRosterData = response.payload.non_roster.map((el) => {
-        const o = { ...el };
-        o.modified = false;
-        o.selected = false;
-        return o;
-      });
+    getGameLineUp(teamID, gameID, authContext)
+      .then((response) => {
+        const nonRosterData = response.payload.non_roster.map((el) => {
+          const o = {...el};
+          o.modified = false;
+          o.selected = false;
+          return o;
+        });
 
-      const rosterData = response.payload.roster.map((el) => {
-        const o = { ...el };
-        o.modified = false;
-        o.selected = false;
-        return o;
-      });
+        const rosterData = response.payload.roster.map((el) => {
+          const o = {...el};
+          o.modified = false;
+          o.selected = false;
+          return o;
+        });
 
-      setLoading(false);
-      setNonRoster(nonRosterData);
-      setRoster(rosterData);
-      setSearchRoster(rosterData);
-      setSearchNonRoster(nonRosterData);
-      console.log('roseter api data:: ', JSON.stringify(response.payload));
-    }).catch((e) => {
-      setLoading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
+        setLoading(false);
+        setNonRoster(nonRosterData);
+        setRoster(rosterData);
+        setSearchRoster(rosterData);
+        setSearchNonRoster(nonRosterData);
+        console.log('roseter api data:: ', JSON.stringify(response.payload));
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
 
-  useLayoutEffect(() => {
-
-  }, [nonRoster, roster, enabledSection, selected, selectedMember]);
+  useLayoutEffect(() => {}, [
+    nonRoster,
+    roster,
+    enabledSection,
+    selected,
+    selectedMember,
+  ]);
 
   const sectionNumber = () => {
     if (roster.some((e) => e.selected === true)) {
@@ -130,86 +134,82 @@ export default function EditRosterScreen({ navigation, route }) {
   //     nonRoster.splice(index, 1);
   //     setNonRoster([...nonRoster]);
   //   }
-  const renderNonRoster = ({ item }) => (
+  const renderNonRoster = ({item}) => (
     <LineUpPlayerView
-        buttonType={'moveup'}
-        userData={item}
-        onButtonPress={(bType) => {
-          if (bType === 'moveup') {
-            setSelectedMember(item);
-            const index = nonRoster.findIndex(
-              (obj) => obj === item,
-            );
-            console.log('ITEM INDEX::', [...roster]);
-            const tempNonRoster = item
-            tempNonRoster.modified = true;
-            tempNonRoster.lineup = 'subs';
-            roster.unshift(tempNonRoster);
-            setRoster([...roster]);
-            nonRoster.splice(index, 1);
-            setNonRoster([...nonRoster]);
-          }
-          console.log('ITEM BTYPE::', bType);
-          console.log('ITEM PRESSED::', item);
-        }}
-      />
-  );
-  const renderNonRosterMultiple = ({ item }) => (
-    <LineUpPlayerMultiSelectionView
-        userData={item}
-        enable={enabledSection === 1 }
-        onButtonPress={(checked) => {
-          setEnabledSection(sectionNumber());
-          const tempNonRoster = [...nonRoster];
+      buttonType={'moveup'}
+      userData={item}
+      onButtonPress={(bType) => {
+        if (bType === 'moveup') {
+          setSelectedMember(item);
           const index = nonRoster.findIndex((obj) => obj === item);
-          tempNonRoster[index].selected = !checked;
-          console.log('ITEM BTYPE::', tempNonRoster[index].selected);
-          setNonRoster([...tempNonRoster]);
-          setEnabledSection(sectionNumber());
-        }}
-      />
+          console.log('ITEM INDEX::', [...roster]);
+          const tempNonRoster = item;
+          tempNonRoster.modified = true;
+          tempNonRoster.lineup = 'subs';
+          roster.unshift(tempNonRoster);
+          setRoster([...roster]);
+          nonRoster.splice(index, 1);
+          setNonRoster([...nonRoster]);
+        }
+        console.log('ITEM BTYPE::', bType);
+        console.log('ITEM PRESSED::', item);
+      }}
+    />
   );
-  const renderRoster = ({ item }) => (
-    <LineUpPlayerView
-        buttonType={'movedown'}
-        userData={item}
-        onButtonPress={(bType) => {
-          if (bType === 'movedown') {
-            setSelectedMember(item);
-            const index = roster.findIndex(
-              (obj) => obj === item,
-            );
-            const tempRoster = item
-            tempRoster.modified = true;
-            tempRoster.lineup = undefined;
-            nonRoster.unshift(tempRoster);
-            setNonRoster([...nonRoster]);
-            roster.splice(index, 1);
-            setRoster([...roster]);
-          }
-          console.log('ITEM BTYPE::', bType);
-          console.log('ITEM PRESSED::', item);
-        }}
-      />
-  );
-  const renderRosterMultiple = ({ item }) => (
+  const renderNonRosterMultiple = ({item}) => (
     <LineUpPlayerMultiSelectionView
-        userData={item}
-        enable={enabledSection === 3 || false}
-        onButtonPress={(checked) => {
-          setEnabledSection(sectionNumber());
-
-          console.log('ENABLED::', enabledSection);
-          const tempRoster = [...roster];
+      userData={item}
+      enable={enabledSection === 1}
+      onButtonPress={(checked) => {
+        setEnabledSection(sectionNumber());
+        const tempNonRoster = [...nonRoster];
+        const index = nonRoster.findIndex((obj) => obj === item);
+        tempNonRoster[index].selected = !checked;
+        console.log('ITEM BTYPE::', tempNonRoster[index].selected);
+        setNonRoster([...tempNonRoster]);
+        setEnabledSection(sectionNumber());
+      }}
+    />
+  );
+  const renderRoster = ({item}) => (
+    <LineUpPlayerView
+      buttonType={'movedown'}
+      userData={item}
+      onButtonPress={(bType) => {
+        if (bType === 'movedown') {
+          setSelectedMember(item);
           const index = roster.findIndex((obj) => obj === item);
-          console.log('FIRST VALUE:: ', tempRoster[index].selected);
-          tempRoster[index].selected = !checked;
-          console.log('LAST VALUE:: ', tempRoster[index]);
-          setRoster([...tempRoster]);
+          const tempRoster = item;
+          tempRoster.modified = true;
+          tempRoster.lineup = undefined;
+          nonRoster.unshift(tempRoster);
+          setNonRoster([...nonRoster]);
+          roster.splice(index, 1);
+          setRoster([...roster]);
+        }
+        console.log('ITEM BTYPE::', bType);
+        console.log('ITEM PRESSED::', item);
+      }}
+    />
+  );
+  const renderRosterMultiple = ({item}) => (
+    <LineUpPlayerMultiSelectionView
+      userData={item}
+      enable={enabledSection === 3 || false}
+      onButtonPress={(checked) => {
+        setEnabledSection(sectionNumber());
 
-          setEnabledSection(sectionNumber());
-        }}
-      />
+        console.log('ENABLED::', enabledSection);
+        const tempRoster = [...roster];
+        const index = roster.findIndex((obj) => obj === item);
+        console.log('FIRST VALUE:: ', tempRoster[index].selected);
+        tempRoster[index].selected = !checked;
+        console.log('LAST VALUE:: ', tempRoster[index]);
+        setRoster([...tempRoster]);
+
+        setEnabledSection(sectionNumber());
+      }}
+    />
   );
 
   //   const renderMoveToView = ({ item, index }) => (
@@ -254,7 +254,7 @@ export default function EditRosterScreen({ navigation, route }) {
   const saveButtonPress = () => {
     setLoading(true);
     const modifiedData = roster.filter((e) => e.modified === true);
-    console.log('modified:=>',modifiedData);
+    console.log('modified:=>', modifiedData);
     const tempArray = [];
     // eslint-disable-next-line array-callback-return
     modifiedData.map((e) => {
@@ -266,9 +266,7 @@ export default function EditRosterScreen({ navigation, route }) {
     });
     console.log('tempArray Object', tempArray);
 
-    const modifiedNonRosterData = nonRoster.filter(
-      (e) => e.modified === true,
-    );
+    const modifiedNonRosterData = nonRoster.filter((e) => e.modified === true);
     const tempNonRosterArray = [];
     // eslint-disable-next-line array-callback-return
     modifiedNonRosterData.map((e) => {
@@ -280,10 +278,10 @@ export default function EditRosterScreen({ navigation, route }) {
 
     if (tempArray.length > 0) {
       if (
-        route
-          && route.params
-          && route.params.gameObj
-          && route.params.selectedTeam
+        route &&
+        route.params &&
+        route.params.gameObj &&
+        route.params.selectedTeam
       ) {
         createGameLineUp(
           route.params.selectedTeam === 'home'
@@ -292,29 +290,31 @@ export default function EditRosterScreen({ navigation, route }) {
           route.params.gameObj.game_id,
           tempArray,
           authContext,
-        ).then((response) => {
-          console.log('Response:::', response.payload);
+        )
+          .then((response) => {
+            console.log('Response:::', response.payload);
 
-          if (tempNonRosterArray.length > 0) {
-            deleteGameLineUp(
-              route.params.selectedTeam === 'home'
-                ? route.params.gameObj.home_team.group_id
-                : route.params.gameObj.away_team.group_id,
-              route.params.gameObj.game_id,
-              tempNonRosterArray,
-              authContext,
-            ).then(() => {
+            if (tempNonRosterArray.length > 0) {
+              deleteGameLineUp(
+                route.params.selectedTeam === 'home'
+                  ? route.params.gameObj.home_team.group_id
+                  : route.params.gameObj.away_team.group_id,
+                route.params.gameObj.game_id,
+                tempNonRosterArray,
+                authContext,
+              ).then(() => {
+                setLoading(false);
+                navigation.goBack();
+              });
+            } else {
               setLoading(false);
               navigation.goBack();
-            });
-          } else {
+            }
+          })
+          .catch((error) => {
             setLoading(false);
-            navigation.goBack();
-          }
-        }).catch((error) => {
-          setLoading(false)
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error), 10)
-        });
+            setTimeout(() => Alert.alert(strings.alertmessagetitle, error), 10);
+          });
       }
     } else if (tempNonRosterArray.length > 0) {
       deleteGameLineUp(
@@ -323,46 +323,53 @@ export default function EditRosterScreen({ navigation, route }) {
           : route.params.gameObj.away_team.group_id,
         route.params.gameObj.game_id,
         tempNonRosterArray,
-      ).then(() => {
-        setLoading(false);
-        navigation.goBack();
-      }).catch((error) => {
-          setLoading(false)
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error), 10)
+      )
+        .then(() => {
+          setLoading(false);
+          navigation.goBack();
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error), 10);
         });
     } else {
       setLoading(false);
       Alert.alert('Please modify lineup first');
     }
-  }
+  };
 
   const searchFilterFunction = (text) => {
     const resultRoster = searchRoster.filter(
-      (x) => x.profile.first_name.includes(text) || x.profile.last_name.includes(text),
+      (x) =>
+        x.profile.first_name.includes(text) ||
+        x.profile.last_name.includes(text),
     );
 
     const resultNonRoster = searchNonRoster.filter(
-      (x) => x.profile.first_name.includes(text) || x.profile.last_name.includes(text),
+      (x) =>
+        x.profile.first_name.includes(text) ||
+        x.profile.last_name.includes(text),
     );
     setRoster(resultRoster);
     setNonRoster(resultNonRoster);
   };
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
       <View style={styles.mainContainer}>
         <TCSearchBox
-          style={{ alignSelf: 'center', marginTop: 15 }}
-          onChangeText={ (text) => searchFilterFunction(text) }/>
+          style={{alignSelf: 'center', marginTop: 15}}
+          onChangeText={(text) => searchFilterFunction(text)}
+        />
         <TCGreenSwitcher
-            firstTabText={'Single selection'}
-            secondTabText={'Multi Selection'}
-            selectedTab={selected}
-            onFirstTabPress={() => setSelected(1)}
-            onSecondTabPress={() => setSelected(2)}
-          />
+          firstTabText={'Single selection'}
+          secondTabText={'Multi Selection'}
+          selectedTab={selected}
+          onFirstTabPress={() => setSelected(1)}
+          onSecondTabPress={() => setSelected(2)}
+        />
         {selected === 1 ? (
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             <ScrollView>
               <TCLabel title={'Roster'} />
 
@@ -392,13 +399,12 @@ export default function EditRosterScreen({ navigation, route }) {
             <TCGradientButton
               title={strings.saveTitle}
               onPress={() => {
-                saveButtonPress()
+                saveButtonPress();
               }}
             />
-
           </View>
         ) : (
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             <ScrollView>
               <TCLabel title={'Roster'} />
 
@@ -425,76 +431,73 @@ export default function EditRosterScreen({ navigation, route }) {
                 />
               )}
             </ScrollView>
-            <TouchableOpacity onPress={() => {
-              if (enabledSection === 1) {
-                const tempArray = [];
-                // eslint-disable-next-line array-callback-return
-                roster.map((e) => {
-                  if (e.selected === true) {
-                    e.modified = true;
-                    e.selected = false;
-                    e.lineup = undefined;
-                    nonRoster.unshift(e);
-                    tempArray.push(e)
-                  }
-                })
-                setNonRoster([...nonRoster]);
-                // eslint-disable-next-line array-callback-return
-                tempArray.map((e) => {
-                  const index = roster.findIndex(
-                    (obj) => obj === e,
-                  );
-                  roster.splice(index, 1);
-                })
-                setRoster([...roster]);
-                setEnabledSection(0)
-              } else {
-                const tempArray = [];
-                // eslint-disable-next-line array-callback-return
-                nonRoster.map((e) => {
-                  if (e.selected) {
-                    e.modified = true;
-                    e.selected = false;
-                    e.lineup = 'subs';
-                    roster.unshift(e);
-                    tempArray.push(e)
-                  }
-                })
-                setRoster([...roster]);
-                // eslint-disable-next-line array-callback-return
-                tempArray.map((e) => {
-                  const index = nonRoster.findIndex(
-                    (obj) => obj === e,
-                  );
-                  nonRoster.splice(index, 1);
-                })
-                setEnabledSection(0)
-                setNonRoster([...nonRoster]);
-              }
-            }} disabled={enabledSection === 0}>
-              <Image
-              source={images.moveFlottyButton}
-              style={{
-                width: 80,
-                height: 80,
-                resizeMode: 'cover',
-                position: 'absolute',
-                right: 0,
-                bottom: 0,
-
+            <TouchableOpacity
+              onPress={() => {
+                if (enabledSection === 1) {
+                  const tempArray = [];
+                  // eslint-disable-next-line array-callback-return
+                  roster.map((e) => {
+                    if (e.selected === true) {
+                      e.modified = true;
+                      e.selected = false;
+                      e.lineup = undefined;
+                      nonRoster.unshift(e);
+                      tempArray.push(e);
+                    }
+                  });
+                  setNonRoster([...nonRoster]);
+                  // eslint-disable-next-line array-callback-return
+                  tempArray.map((e) => {
+                    const index = roster.findIndex((obj) => obj === e);
+                    roster.splice(index, 1);
+                  });
+                  setRoster([...roster]);
+                  setEnabledSection(0);
+                } else {
+                  const tempArray = [];
+                  // eslint-disable-next-line array-callback-return
+                  nonRoster.map((e) => {
+                    if (e.selected) {
+                      e.modified = true;
+                      e.selected = false;
+                      e.lineup = 'subs';
+                      roster.unshift(e);
+                      tempArray.push(e);
+                    }
+                  });
+                  setRoster([...roster]);
+                  // eslint-disable-next-line array-callback-return
+                  tempArray.map((e) => {
+                    const index = nonRoster.findIndex((obj) => obj === e);
+                    nonRoster.splice(index, 1);
+                  });
+                  setEnabledSection(0);
+                  setNonRoster([...nonRoster]);
+                }
               }}
-            />
+              disabled={enabledSection === 0}
+            >
+              <Image
+                source={images.moveFlottyButton}
+                style={{
+                  width: 80,
+                  height: 80,
+                  resizeMode: 'cover',
+                  position: 'absolute',
+                  right: 0,
+                  bottom: 0,
+                }}
+              />
             </TouchableOpacity>
             <TCGradientButton
               title={strings.saveTitle}
               onPress={() => {
-                saveButtonPress()
+                saveButtonPress();
               }}
             />
           </View>
         )}
       </View>
-
     </SafeAreaView>
   );
 }

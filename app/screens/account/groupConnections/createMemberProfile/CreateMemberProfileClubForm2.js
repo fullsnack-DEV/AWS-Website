@@ -5,7 +5,6 @@ import {
   Text,
   Image,
   ScrollView,
- 
   TouchableOpacity,
 } from 'react-native';
 import images from '../../../../Constants/ImagePath';
@@ -21,7 +20,7 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
   const [setting, setSetting] = useState({
-    is_member:  true,
+    is_member: true,
     is_admin: true,
   });
 
@@ -30,7 +29,6 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
   //   is_admin: false,
   // });
 
-  
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -39,21 +37,21 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
         </Text>
       ),
     });
-  }, [navigation,setting]);
+  }, [navigation, setting]);
 
   const pressedNext = () => {
     const membersAuthority = {
       ...route.params.form1,
       group_id: entity.uid,
       is_admin: setting.is_admin,
-      is_member: setting.is_member
+      is_member: setting.is_member,
     };
-    console.log('membersAuthority',membersAuthority);
+    console.log('membersAuthority', membersAuthority);
     navigation.navigate('CreateMemberProfileClubForm3', {
       form2: membersAuthority,
     });
   };
-  
+
   return (
     <ScrollView style={styles.mainContainer}>
       <TCFormProgress totalSteps={3} curruentStep={2} />
@@ -67,8 +65,8 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
             flexDirection: 'row',
             alignItems: 'center',
             marginRight: 15,
-            
-          }}>
+          }}
+        >
           <View style={styles.profileView}>
             <Image
               source={
@@ -85,55 +83,57 @@ export default function CreateMemberProfileClubForm2({navigation, route}) {
           />
         </View>
         <View style={styles.mainCheckBoxContainer}>
-          <View style={[styles.checkBoxContainer,{opacity:0.5}]}>
+          <View style={[styles.checkBoxContainer, {opacity: 0.5}]}>
             <Text style={styles.checkBoxItemText}>Member</Text>
             <TouchableOpacity
-            disabled={true}
-            onPress={() => {
-              const member_setting = !setting.is_member;
-              setSetting({
-                ...setting,
-                is_member: member_setting,
-              });
-            }}>
+              disabled={true}
+              onPress={() => {
+                const member_setting = !setting.is_member;
+                setSetting({
+                  ...setting,
+                  is_member: member_setting,
+                });
+              }}
+            >
               <Image
-              source={
-                // item.join_membership_acceptedadmin === false
-                setting.is_member ? images.orangeCheckBox : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
+                source={
+                  // item.join_membership_acceptedadmin === false
+                  setting.is_member
+                    ? images.orangeCheckBox
+                    : images.uncheckWhite
+                }
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
+              />
             </TouchableOpacity>
           </View>
           <View style={styles.checkBoxContainer}>
-            <Text style={[styles.checkBoxItemText,{marginLeft:0}]}>{`${entity.role.charAt(0).toUpperCase() + entity.role.slice(1)} Admin`}</Text>
+            <Text style={[styles.checkBoxItemText, {marginLeft: 0}]}>{`${
+              entity.role.charAt(0).toUpperCase() + entity.role.slice(1)
+            } Admin`}</Text>
             <TouchableOpacity
-            onPress={() => {
-              const admin_setting = !setting.is_admin;
-              setSetting({
-                ...setting,
-                is_admin: admin_setting,
-              });
-            }}>
+              onPress={() => {
+                const admin_setting = !setting.is_admin;
+                setSetting({
+                  ...setting,
+                  is_admin: admin_setting,
+                });
+              }}
+            >
               <Image
-              source={
-                setting.is_admin ? images.orangeCheckBox : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
+                source={
+                  setting.is_admin ? images.orangeCheckBox : images.uncheckWhite
+                }
+                style={{height: 22, width: 22, resizeMode: 'contain'}}
+              />
             </TouchableOpacity>
           </View>
         </View>
       </View>
       <TCThinDivider />
-      
-
-     
     </ScrollView>
   );
 }
 const styles = StyleSheet.create({
-  
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -172,9 +172,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 25,
     marginBottom: 15,
-    marginRight:15,
-    justifyContent:'space-between'
-    
+    marginRight: 15,
+    justifyContent: 'space-between',
   },
   mainCheckBoxContainer: {
     marginLeft: 15,
@@ -186,13 +185,11 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 20,
     marginBottom: 10,
-    marginTop:15,
+    marginTop: 15,
   },
   checkBoxItemText: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
   },
-
-  
 });

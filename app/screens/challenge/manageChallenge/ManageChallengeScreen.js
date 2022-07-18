@@ -1,7 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, {
- useState, useEffect, useContext, useCallback,
-} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {
   StyleSheet,
   View,
@@ -13,7 +11,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
@@ -21,7 +19,7 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 
-export default function ManageChallengeScreen({ navigation, route }) {
+export default function ManageChallengeScreen({navigation, route}) {
   const [settingObject, setSettingObject] = useState();
   const [showBottomNotes, setShowBottomNotes] = useState(true);
   const authContext = useContext(AuthContext);
@@ -31,11 +29,8 @@ export default function ManageChallengeScreen({ navigation, route }) {
   const [sportType] = useState(route?.params?.sportType);
   const [groupObj] = useState(route?.params?.groupObj);
 
-
-
   console.log('sportName:::=>', sportName);
   console.log('sportType:::=>', sportType);
-
 
   const getSettings = useCallback(() => {
     if (authContext.entity.role === 'team') {
@@ -43,8 +38,8 @@ export default function ManageChallengeScreen({ navigation, route }) {
       setSettingObject(authContext?.entity?.obj?.setting);
     }
     if (
-      authContext.entity.role === 'player'
-      || authContext.entity.role === 'user'
+      authContext.entity.role === 'player' ||
+      authContext.entity.role === 'user'
     ) {
       console.log(
         'Au1212121212:::=>',
@@ -70,16 +65,19 @@ export default function ManageChallengeScreen({ navigation, route }) {
   }, [authContext, getSettings, route?.params?.settingObj, sportName]);
 
   const challengeSettingMenu = [
-    { key: 'Availability', id: 1 },
-    { key: 'Game Type', id: 2 },
-    { key: 'Match Fee', id: 3 },
-    { key: 'Refund Policy', id: 4 },
-    { key: 'Home & Away', id: 5 },
-    { key: sportName === 'tennis' ?  'Sets, Points & Duration' : 'Game Duration', id: 6 },
-    { key: 'Venue', id: 7 },
-    { key: 'Game Rules', id: 8 },
-    { key: 'Referees', id: 9 },
-    { key: 'Scorekeepers', id: 10 },
+    {key: 'Availability', id: 1},
+    {key: 'Game Type', id: 2},
+    {key: 'Match Fee', id: 3},
+    {key: 'Refund Policy', id: 4},
+    {key: 'Home & Away', id: 5},
+    {
+      key: sportName === 'tennis' ? 'Sets, Points & Duration' : 'Game Duration',
+      id: 6,
+    },
+    {key: 'Venue', id: 7},
+    {key: 'Game Rules', id: 8},
+    {key: 'Referees', id: 9},
+    {key: 'Scorekeepers', id: 10},
   ];
   const handleOpetions = async (opetions) => {
     if (opetions === 'Availability') {
@@ -189,7 +187,7 @@ export default function ManageChallengeScreen({ navigation, route }) {
           sportType,
         });
       }
-    }else if (opetions === 'Venue') {
+    } else if (opetions === 'Venue') {
       if (settingObject) {
         navigation.navigate('Venue', {
           settingObj: settingObject,
@@ -324,13 +322,14 @@ export default function ManageChallengeScreen({ navigation, route }) {
 
     return 'incomplete';
   };
-  const renderMenu = ({ item }) => (
+  const renderMenu = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}>
-      <View style={{ flexDirection: 'row' }}>
+      }}
+    >
+      <View style={{flexDirection: 'row'}}>
         <Text style={styles.listItems}>{item.key}</Text>
 
         {getSettingValue(item) === 'incomplete' ? (
@@ -356,13 +355,15 @@ export default function ManageChallengeScreen({ navigation, route }) {
         {/* <ActivityLoader visible={loading} /> */}
 
         <View
-          style={{ padding: 15, backgroundColor: colors.grayBackgroundColor }}>
+          style={{padding: 15, backgroundColor: colors.grayBackgroundColor}}
+        >
           <Text
             style={{
               fontSize: 14,
               fontFamily: fonts.RRegular,
               color: colors.lightBlackColor,
-            }}>
+            }}
+          >
             {strings.challengeSettingTitle}
           </Text>
         </View>
@@ -379,14 +380,16 @@ export default function ManageChallengeScreen({ navigation, route }) {
       {showBottomNotes && (
         <LinearGradient
           colors={[colors.yellowColor, colors.orangeGradientColor]}
-          style={styles.challengeNotesView}>
+          style={styles.challengeNotesView}
+        >
           <Text
             style={{
               color: colors.whiteColor,
               fontFamily: fonts.RBold,
               fontSize: 14,
               width: '88%',
-            }}>
+            }}
+          >
             {strings.challengeSettingNotes}
           </Text>
           <TouchableOpacity onPress={() => setShowBottomNotes(false)}>

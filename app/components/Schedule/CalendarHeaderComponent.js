@@ -1,13 +1,11 @@
 import React from 'react';
-import {
- View, Text, StyleSheet, Image, TouchableOpacity,
- } from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import { getHitSlop } from '../../utils';
+import {getHitSlop} from '../../utils';
 
 const weekDaysNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const now = moment();
@@ -50,36 +48,37 @@ class CalendarHeaderComponent extends React.PureComponent {
     return (
       <View>
         <View style={styles.header}>
-
-          <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+          <View style={{flexDirection: 'row', alignSelf: 'center'}}>
             <View
-                style={[
-                  styles.iconContainer,
-                  this.shouldLeftArrowBeDisabled() ? styles.disabled : {},
-                ]}>
+              style={[
+                styles.iconContainer,
+                this.shouldLeftArrowBeDisabled() ? styles.disabled : {},
+              ]}
+            >
               <TouchableOpacity
-                  hitSlop={getHitSlop(15)}
-                  onPress={this.onPressArrowLeft}
-                  disabled={this.shouldLeftArrowBeDisabled()}>
+                hitSlop={getHitSlop(15)}
+                onPress={this.onPressArrowLeft}
+                disabled={this.shouldLeftArrowBeDisabled()}
+              >
                 <Image
-                    style={[styles.icon, styles.leftIcon]}
-                    source={images.calNextArrow}
-                  />
+                  style={[styles.icon, styles.leftIcon]}
+                  source={images.calNextArrow}
+                />
               </TouchableOpacity>
             </View>
             <Text style={styles.dateText}>
               {moment(this.props.month.getTime()).format('MMMM YYYY')}
             </Text>
             <TouchableOpacity
-                style={styles.iconContainer}
-                hitSlop={getHitSlop(15)}
-                onPress={this.onPressArrowRight}>
+              style={styles.iconContainer}
+              hitSlop={getHitSlop(15)}
+              onPress={this.onPressArrowRight}
+            >
               <Image style={styles.icon} source={images.calNextArrow} />
             </TouchableOpacity>
           </View>
-
         </View>
-       
+
         {
           // not showing week day in case of horizontal calendar, this will be handled by day component
           this.props.horizontal ? null : (
@@ -144,7 +143,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   leftIcon: {
-    transform: [{ rotate: '180deg' }],
+    transform: [{rotate: '180deg'}],
   },
   icon: {
     width: 15,

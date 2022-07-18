@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet, Image, View,
-
-} from 'react-native';
+import {StyleSheet, Image, View} from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
 import colors from '../../Constants/Colors';
@@ -30,15 +27,17 @@ export default function StatsSelectionView({
         onDonePress={onDonePress}
         useNativeAndroidPickerStyle={false}
         textInputProps={{
-          style: { ...styles.inputStyle, ...styles },
+          style: {...styles.inputStyle, ...styles},
         }}
         value={value}
         Icon={() => (
-          <View style={{
-            justifyContent: 'center',
-            top: '40%',
-            paddingRight: 5,
-          }}>
+          <View
+            style={{
+              justifyContent: 'center',
+              top: '40%',
+              paddingRight: 5,
+            }}
+          >
             <Image source={images.dropDownArrow} style={styles.downArrow} />
           </View>
         )}
@@ -62,7 +61,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     elevation: 10,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     paddingRight: 25,

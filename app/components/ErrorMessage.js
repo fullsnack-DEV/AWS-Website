@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-} from 'react-native';
+import {StyleSheet, Text} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
@@ -11,7 +8,7 @@ import {
 
 import colors from '../Constants/Colors';
 
-function ErrorMessage({ error, visible }) {
+function ErrorMessage({error, visible}) {
   if (!visible || !error) return null;
   return <Text style={styles.errorText}>{error}</Text>;
 }

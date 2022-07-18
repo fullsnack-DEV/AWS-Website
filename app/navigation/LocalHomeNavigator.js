@@ -55,7 +55,8 @@ const LocalHomeNavigator = () => (
       gestureEnabled: false,
       headerBackTitleVisible: false,
       // <Image source={images.backArrow} style={{height:12,width:12,resizeMode:'contain'}} />,
-    }}>
+    }}
+  >
     <Stack.Screen
       name="LocalHomeScreen"
       component={LocalHomeScreen}
@@ -399,7 +400,6 @@ const LocalHomeNavigator = () => (
       }}
     />
 
-
     <Stack.Screen
       name="RegisterPlayer"
       component={RegisterPlayer}
@@ -436,7 +436,7 @@ const LocalHomeNavigator = () => (
       name="RegisterReferee"
       component={RegisterReferee}
       options={{
-        title: 'Register as a referee',
+        title: 'Register as Referee',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           alignSelf: 'center',
@@ -453,7 +453,7 @@ const LocalHomeNavigator = () => (
       name="RegisterRefereeForm2"
       component={RegisterRefereeForm2}
       options={{
-        title: 'Register as a referee',
+        title: 'Register as Referee',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -486,12 +486,12 @@ const LocalHomeNavigator = () => (
         headerShown: false,
       }}
     />
-  
+
     <Stack.Screen
       name="RegisterScorekeeper"
       component={RegisterScorekeeper}
       options={{
-        title: 'Register as a scorekeeper',
+        title: 'Register as Scorekeeper',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           alignSelf: 'center',
@@ -509,7 +509,7 @@ const LocalHomeNavigator = () => (
       name="RegisterScorekeeperForm2"
       component={RegisterScorekeeperForm2}
       options={{
-        title: 'Register as a scorekeeper',
+        title: 'Register as Scorekeeper',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -653,7 +653,7 @@ const LocalHomeNavigator = () => (
         headerShown: false,
       }}
     />
-   
+
     {/* <Stack.Screen
         name="SearchLocationScreen"
         component={ SearchLocationScreen }
@@ -663,14 +663,6 @@ const LocalHomeNavigator = () => (
           headerTintColor: colors.whiteColor,
         } }
       /> */}
-
- 
-    
-    
-
-    
-
-  
   </Stack.Navigator>
 );
 

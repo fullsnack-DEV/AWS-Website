@@ -288,7 +288,8 @@ const NewsFeedPostItems = memo(
           <TouchableOpacity
             activeOpacity={1}
             onPress={onImageProfilePress}
-            style={styles.imageMainContainer}>
+            style={styles.imageMainContainer}
+          >
             <Image
               style={styles.background}
               source={
@@ -303,7 +304,8 @@ const NewsFeedPostItems = memo(
             <Text
               numberOfLines={1}
               style={styles.userNameTxt}
-              onPress={onImageProfilePress}>
+              onPress={onImageProfilePress}
+            >
               {item?.actor?.data?.full_name}
             </Text>
             <Text style={styles.activeTimeAgoTxt}>
@@ -317,7 +319,8 @@ const NewsFeedPostItems = memo(
               style={styles.dotImageTouchStyle}
               onPress={() => {
                 actionSheet.current.show();
-              }}>
+              }}
+            >
               <Image
                 style={styles.dotImageStyle}
                 source={images.threeDotIcon}
@@ -403,7 +406,7 @@ const NewsFeedPostItems = memo(
     const renderPost = useMemo(() => {
       const myData = myItem?.post_type === 'repost' ? myItem?.activity : item;
       return (
-        <View >
+        <View>
           <View style={{flexDirection: 'row', flex: 1}}>
             {myItem?.post_type === 'repost' && (
               <View
@@ -416,11 +419,18 @@ const NewsFeedPostItems = memo(
               />
             )}
             <View style={{flex: 1}}>
-              <View style={myItem?.post_type === 'repost' ? styles.mainRepostContainer : styles.mainContainer}>
+              <View
+                style={
+                  myItem?.post_type === 'repost'
+                    ? styles.mainRepostContainer
+                    : styles.mainContainer
+                }
+              >
                 <TouchableOpacity
                   activeOpacity={1}
                   onPress={onImageProfilePress}
-                  style={styles.imageMainContainer}>
+                  style={styles.imageMainContainer}
+                >
                   <Image
                     style={styles.background}
                     source={
@@ -435,7 +445,8 @@ const NewsFeedPostItems = memo(
                   <Text
                     numberOfLines={1}
                     style={styles.userNameTxt}
-                    onPress={onImageProfilePress}>
+                    onPress={onImageProfilePress}
+                  >
                     {myData?.actor?.data?.full_name}
                   </Text>
                   <Text style={styles.activeTimeAgoTxt}>
@@ -449,7 +460,8 @@ const NewsFeedPostItems = memo(
                     style={styles.dotImageTouchStyle}
                     onPress={() => {
                       actionSheet.current.show();
-                    }}>
+                    }}
+                  >
                     <Image
                       style={styles.dotImageStyle}
                       source={images.threeDotIcon}
@@ -482,13 +494,18 @@ const NewsFeedPostItems = memo(
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-              }}>
+
+                flex: 1,
+              }}
+            >
               <TouchableOpacity
                 onPress={onWriteCommentPress}
                 style={{
                   flexDirection: 'row',
                   marginRight: 25,
-                }}>
+                  flex: 0.5,
+                }}
+              >
                 <View style={styles.imageTouchStyle}>
                   <Image
                     style={styles.commentImage}
@@ -505,12 +522,13 @@ const NewsFeedPostItems = memo(
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: 20,
-                }}>
+                  flex: 0.5,
+                }}
+              >
                 <TouchableOpacity
                   onPress={() => shareActionSheet.current.show()}
-                  style={styles.imageTouchStyle}>
+                  style={styles.imageTouchStyle}
+                >
                   <Image
                     style={styles.commentImage}
                     source={images.shareImage}
@@ -528,13 +546,15 @@ const NewsFeedPostItems = memo(
                 justifyContent: 'flex-end',
                 alignItems: 'center',
                 marginLeft: 20,
-              }}>
+              }}
+            >
               <TouchableOpacity
                 style={{marginRight: 5}}
                 onPress={() => {
                   console.log('Like obj:=>', item);
                   likersModalRef.current.open();
-                }}>
+                }}
+              >
                 <Text
                   style={[
                     styles.commentlengthStyle,
@@ -542,13 +562,15 @@ const NewsFeedPostItems = memo(
                       color:
                         like === true ? '#FF8A01' : colors.reactionCountColor,
                     },
-                  ]}>
+                  ]}
+                >
                   {likeCount <= 0 ? '' : likeCount}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={onNewsFeedLikePress}
-                style={styles.imageTouchStyle}>
+                style={styles.imageTouchStyle}
+              >
                 <Image
                   style={styles.commentImage}
                   source={like ? images.likeImage : images.unlikeImage}
@@ -559,7 +581,23 @@ const NewsFeedPostItems = memo(
           </View>
         </View>
       );
-    }, [RenderSinglePostItems, attachedImages, commentCount, item, like, likeCount, myItem?.activity, myItem?.post_type, onImageProfilePress, onNewsFeedLikePress, onWriteCommentPress, renderDescription, renderMultiplePostItems, renderURLPreview, showThreeDot]);
+    }, [
+      RenderSinglePostItems,
+      attachedImages,
+      commentCount,
+      item,
+      like,
+      likeCount,
+      myItem?.activity,
+      myItem?.post_type,
+      onImageProfilePress,
+      onNewsFeedLikePress,
+      onWriteCommentPress,
+      renderDescription,
+      renderMultiplePostItems,
+      renderURLPreview,
+      showThreeDot,
+    ]);
 
     console.log('ittttttm', myItem);
     return (
@@ -619,8 +657,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   commentShareLikeView: {
+    flex: 1,
     flexDirection: 'row',
-    marginHorizontal: 15,
+    marginLeft: 15,
+    marginRight: 15,
     marginTop: 5,
   },
   commentlengthStyle: {
@@ -654,7 +694,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginTop: 15,
   },
-  mainRepostContainer:{
+  mainRepostContainer: {
     flex: 1,
     alignItems: 'center',
     flexDirection: 'row',

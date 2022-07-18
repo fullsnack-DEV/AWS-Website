@@ -121,18 +121,21 @@ export default function DefaultColorScreen({navigation}) {
   const getImageOfColor = (data) => {
     if (data.isNew && data.isSelected) {
       return images.check;
-    } if (data.isNew) {
+    }
+    if (data.isNew) {
       return images.plus;
-    } if (data.isSelected) {
+    }
+    if (data.isSelected) {
       return images.check;
     }
-    return null
+    return null;
   };
 
   const renderCreatedEventsColorItem = ({item}) => {
     return (
       <View
-        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
+        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}
+      >
         <EventColorItem
           item={item}
           isNew={!!item?.isNew}
@@ -179,7 +182,8 @@ export default function DefaultColorScreen({navigation}) {
   const renderImportedEventsColorItem = ({item}) => {
     return (
       <View
-        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
+        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}
+      >
         <EventColorItem
           item={item}
           isNew={!!item?.isNew}
@@ -225,7 +229,8 @@ export default function DefaultColorScreen({navigation}) {
   const renderGamesEventsColorItem = ({item}) => {
     return (
       <View
-        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}>
+        style={{marginRight: Dimensions.get('window').width > 360 ? -1 : 5}}
+      >
         <EventColorItem
           item={item}
           isNew={!!item?.isNew}
@@ -278,7 +283,8 @@ export default function DefaultColorScreen({navigation}) {
   return (
     <KeyboardAvoidingView
       style={styles.mainContainerStyle}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}>
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+    >
       <Header
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -291,7 +297,8 @@ export default function DefaultColorScreen({navigation}) {
         rightComponent={
           <TouchableOpacity
             style={{padding: 2, fontFamily: fonts.RMedium, fontSize: 10}}
-            onPress={onDonePress}>
+            onPress={onDonePress}
+          >
             <Text>Save</Text>
           </TouchableOpacity>
         }

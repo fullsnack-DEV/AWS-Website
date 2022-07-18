@@ -413,8 +413,8 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
         bodyParams.status === ScorekeeperReservationStatus.requestcancelled ||
         (bodyParams.status === ScorekeeperReservationStatus.declined &&
           bodyParams.version > 3)) && (
-            <View>
-              <TCBorderButton
+        <View>
+          <TCBorderButton
             title={strings.alterReservation}
             textColor={colors.grayColor}
             borderColor={colors.grayColor}
@@ -441,7 +441,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
               }
             }}
           />
-              <TCBorderButton
+          <TCBorderButton
             title={strings.cancelreservation}
             textColor={colors.whiteColor}
             borderColor={colors.grayColor}
@@ -479,11 +479,11 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
               }
             }}
           />
-            </View>
+        </View>
       )}
       {(bodyParams.status === ScorekeeperReservationStatus.pendingpayment ||
         bodyParams.status === ScorekeeperReservationStatus.approved) && (
-          <TCBorderButton
+        <TCBorderButton
           title={strings.cancelreservation}
           textColor={colors.whiteColor}
           borderColor={colors.grayColor}
@@ -542,7 +542,8 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 margin: 15,
-              }}>
+              }}
+            >
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -601,7 +602,8 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
                       fontSize: 16,
                       color: colors.lightBlackColor,
                       width: '80%',
-                    }}>
+                    }}
+                  >
                     {`${bodyParams?.scorekeeper?.first_name} ${bodyParams?.scorekeeper?.last_name}`}
                   </Text>
                 </View>
@@ -662,7 +664,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
             {bodyParams?.scorekeeper?.user_id !== entity.uid &&
               bodyParams.status ===
                 ScorekeeperReservationStatus.pendingpayment && (
-                  <TCGradientButton
+                <TCGradientButton
                   title={'TRY TO PAY AGAIN'}
                   onPress={() => {
                     navigation.navigate('PayAgainScorekeeperScreen', {
@@ -707,7 +709,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
                           bodyParams?.start_datetime &&
                           moment(bodyParams?.start_datetime * 1000).format(
                             'MMM DD, YYYY',
-                        )
+                          )
                         }
                         titleStyle={{
                           alignSelf: 'flex-start',
@@ -803,7 +805,7 @@ export default function ScorekeeperReservationScreen({navigation, route}) {
                 title={'Refund Policy'}
                 value={bodyParams?.refund_policy}
                 tooltipText={
-                '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+                  '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
                 }
                 tooltipHeight={heightPercentageToDP('18%')}
                 tooltipWidth={widthPercentageToDP('50%')}

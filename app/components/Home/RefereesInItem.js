@@ -1,19 +1,18 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text, Image, TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-function RefereesInItem({
-  title, children, containerStyle, onItemPress,
-}) {
+function RefereesInItem({title, children, containerStyle, onItemPress}) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <TouchableOpacity style={styles.titleViewStyle} onPress={onItemPress}>
         <Text style={styles.headerTextStyle}>{title}</Text>
-        <Image source={images.arrowGraterthan} style={styles.graterThanImageStyle} />
+        <Image
+          source={images.arrowGraterthan}
+          style={styles.graterThanImageStyle}
+        />
       </TouchableOpacity>
       {children}
     </View>

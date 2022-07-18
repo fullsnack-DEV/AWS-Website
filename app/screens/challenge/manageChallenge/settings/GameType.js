@@ -32,7 +32,7 @@ export default function GameType({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
-  
+
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -50,7 +50,8 @@ export default function GameType({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
@@ -68,14 +69,13 @@ export default function GameType({navigation, route}) {
         (typeSelection.key === strings.allType && 'All'),
     };
     setloading(true);
-    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => {
+    const registerdPlayerData =
+      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
           return null;
         }
         return obj;
-      },
-    );
+      });
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -186,7 +186,8 @@ export default function GameType({navigation, route}) {
     <TouchableWithoutFeedback
       onPress={() => {
         setTypeSelection(item);
-      }}>
+      }}
+    >
       <View style={styles.radioItem}>
         <Text style={styles.languageList}>{item.key}</Text>
         <View style={styles.checkbox}>
@@ -206,7 +207,8 @@ export default function GameType({navigation, route}) {
   return (
     <ScrollView
       style={styles.mainContainer}
-      showsVerticalScrollIndicator={false}>
+      showsVerticalScrollIndicator={false}
+    >
       <ActivityLoader visible={loading} />
       <TCLable title={strings.gameTyleTitle} required={false} />
       <FlatList
@@ -217,22 +219,22 @@ export default function GameType({navigation, route}) {
       />
       {(typeSelection.key === strings.officialOnly ||
         typeSelection.key === strings.allType) && (
-          <View style={styles.gameTypeNotes}>
-            <Text style={styles.gameTypeTitle}>{strings.officialGameType}</Text>
-            <Text style={styles.gameTypeNotesDetail}>
-              {strings.challengeSettingTitle}
-            </Text>
-          </View>
+        <View style={styles.gameTypeNotes}>
+          <Text style={styles.gameTypeTitle}>{strings.officialGameType}</Text>
+          <Text style={styles.gameTypeNotesDetail}>
+            {strings.challengeSettingTitle}
+          </Text>
+        </View>
       )}
 
       {(typeSelection.key === strings.friendlyOnly ||
         typeSelection.key === strings.allType) && (
-          <View style={styles.gameTypeNotes}>
-            <Text style={styles.gameTypeTitle}>{strings.friendlyGameType}</Text>
-            <Text style={styles.gameTypeNotesDetail}>
-              {strings.challengeSettingTitle}
-            </Text>
-          </View>
+        <View style={styles.gameTypeNotes}>
+          <Text style={styles.gameTypeTitle}>{strings.friendlyGameType}</Text>
+          <Text style={styles.gameTypeNotesDetail}>
+            {strings.challengeSettingTitle}
+          </Text>
+        </View>
       )}
     </ScrollView>
   );

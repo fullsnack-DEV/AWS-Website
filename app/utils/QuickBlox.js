@@ -228,7 +228,6 @@ export const QBupdateUser = async (
   currentData,
   authContext,
 ) => {
-  console.log('customDatacustomData', customData);
   const nameType =
     customData?.entity_type === 'player' ? 'full_name' : 'group_name';
   const fullName = userAccountType + _.get(customData, [nameType], 'Full Name');
@@ -268,7 +267,6 @@ export const QBupdateUser = async (
   };
   custData.full_name = pureName;
   const qbObj = authContext?.entity?.QB;
-  console.log('get QB OBJ---', custData);
   const url = `${QUICKBLOX_BASE_URL}/users/${qbObj?.id}.json`;
   const userObj = {
     user: {
@@ -277,9 +275,6 @@ export const QBupdateUser = async (
     },
   };
   if (qbObj?.token) {
-    console.log('urlurl', url);
-    console.log('qbObj?.token', qbObj?.token);
-
     return fetch(url, {
       method: 'PUT',
       headers: {
@@ -290,7 +285,6 @@ export const QBupdateUser = async (
     })
       .then((response) => response.json())
       .then(async (data) => {
-        console.log('quick blox update call', data);
         const entity = authContext.entity;
         const qbUser = data?.user;
         entity.QB = {
@@ -332,7 +326,6 @@ export const QBsetupSettings = async () => {
 export const QBgetDialogs = async (request = {}) => {
   const connected = await QBChatConnected();
 
-  console.log('QB connnn', connected);
   if (connected) {
     try {
       const {append, ...params} = request || {};
@@ -350,6 +343,32 @@ export const QBgetDialogs = async (request = {}) => {
   return 'error';
 };
 
+export const QBgetDialogByID = async (dialogID) => {
+  const connected = await QBChatConnected();
+
+  if (connected) {
+    const dialogsIds = [];
+    dialogsIds.push(dialogID);
+    const filter = {
+      field: QB.chat.DIALOGS_FILTER.FIELD.ID,
+      operator: QB.chat.DIALOGS_FILTER.OPERATOR.IN,
+      value: dialogsIds.join(),
+    };
+    const getDialogsQuery = {
+      filter,
+    };
+    return QB.chat
+      .getDialogs(getDialogsQuery)
+      .then((result) => {
+        return result;
+      })
+      .catch((e) => {
+        // handle error
+        console.log(e);
+      });
+  }
+  return 'error';
+};
 export const QBgetMessages = (dialogId, skipCount = 0) => {
   return QBChatConnected().then((connected) => {
     if (connected) {
@@ -366,7 +385,6 @@ export const QBgetMessages = (dialogId, skipCount = 0) => {
     throw new Error('server-not-connected');
   });
 };
-
 export const QBsendMessage = (dialogId, body, file = null) =>
   QBChatConnected().then((connected) => {
     if (connected) {
@@ -383,12 +401,10 @@ export const QBsendMessage = (dialogId, body, file = null) =>
           },
         ];
       }
-
       return QB.chat.sendMessage(message);
     }
     throw new Error('server-not-connected');
   });
-
 export const QBcreateDialog = (
   occupantsIds = [],
   dialogType = QB_DIALOG_TYPE.SINGLE,
@@ -407,8 +423,7 @@ export const QBcreateDialog = (
         dialogParams.name = groupName;
         dialogParams.type = type;
       }
-     
-      console.log('dialogParamsdialogParams',dialogParams);
+
       return QB.chat.createDialog(dialogParams);
     }
     throw new Error('server-not-connected');
@@ -426,15 +441,14 @@ export const QBupdateDialogNameAndPhoto = (
       if (name !== '') update.name = name;
       if (photo !== '') {
         update.photo = photo;
-      }else{
-        
+      } else {
         return QB.chat.updateDialog(update);
       }
-     
+
       const qbObj = authContext?.entity?.QB;
       const url = `${QUICKBLOX_BASE_URL}/chat/Dialog/${dialogId}.json`;
 
-      console.log('URL::=>',url);
+      console.log('URL::=>', url);
       return qbApiCall({
         url,
         method: 'PUT',
@@ -442,15 +456,15 @@ export const QBupdateDialogNameAndPhoto = (
         data: update,
       })
         .then((res) => {
-          console.log('reeererererer',res);
-         return {
-          dialogId: res?._id,
-          name: res?.name,
-          occupantsIds: res?.occupants_ids,
-          dialogType: res?.type,
-          photo: res?.photo,
-          created_at: res?.created_at,
-        }})
+          return {
+            dialogId: res?._id,
+            name: res?.name,
+            occupantsIds: res?.occupants_ids,
+            dialogType: res?.type,
+            photo: res?.photo,
+            created_at: res?.created_at,
+          };
+        })
         .catch((error) => ({status: 'error', error}));
     }
     throw new Error('server-not-connected');
@@ -468,12 +482,11 @@ export const QBupdateDialogInvitees = async (
         addUsers,
         removeUsers,
       };
-      console.log('updateupdate', update);
 
       return QB.chat
         .updateDialog(update)
         .then((updatedDialog) => {
-          // handle as necessary
+          // handle as necessarys
           return updatedDialog;
         })
         .catch((e) => {
@@ -483,6 +496,29 @@ export const QBupdateDialogInvitees = async (
     }
     throw new Error('server-not-connected');
   });
+
+export const QBDeleteMessage = async (messageId, authContext) => {
+  const qbObj = authContext?.entity?.QB;
+  return QBChatConnected().then((connected) => {
+    if (connected) {
+      const url = `${QUICKBLOX_BASE_URL}/chat/Message/${messageId},${messageId}.json`;
+      console.log('QB Url Delete:-', url);
+      console.log('QB Token:-', qbObj?.token);
+      return fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'QB-Token': qbObj?.token,
+        },
+        body: JSON.stringify({force: 1}),
+      })
+        .then((response) => response.json())
+        .then((response) => response)
+        .catch((err) => console.error(err));
+    }
+    throw new Error('server-not-connected');
+  });
+};
 
 export const QBupdateDialogInvitees2 = async (
   dialogId,
@@ -535,10 +571,8 @@ export const QBgetAllUsers = () =>
 
 export const QBgetUserDetail = (field, fieldType, value) =>
   QBChatConnected().then((connected) => {
-    console.log('connected:', connected);
     if (connected) {
       return Utility.getStorage('appSetting').then(async (setting) => {
-        console.log('SETTTTTTING USERS_LIST_LIMIT:', setting);
         const filter = {
           field,
           type: fieldType,

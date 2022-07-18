@@ -1,6 +1,10 @@
-import React, { memo } from 'react';
+import React, {memo} from 'react';
 import {
-  StyleSheet, Text, TouchableWithoutFeedback, View, Image,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+  Image,
 } from 'react-native';
 
 import colors from '../Constants/Colors';
@@ -18,13 +22,16 @@ const TCProfileButton = ({
 }) => (
   <TouchableWithoutFeedback onPress={onPressProfile}>
     <View style={[styles.buttonView, style]}>
-      <Text style={[styles.textStyle, textStyle]} numberOfLines={1}>{title}</Text>
-      {showArrow && <Image source={ rightImage } style={ [styles.arrowImage, imageStyle] } />}
+      <Text style={[styles.textStyle, textStyle]} numberOfLines={1}>
+        {title}
+      </Text>
+      {showArrow && (
+        <Image source={rightImage} style={[styles.arrowImage, imageStyle]} />
+      )}
     </View>
   </TouchableWithoutFeedback>
-  )
+);
 const styles = StyleSheet.create({
-
   buttonView: {
     marginTop: 2,
     flexDirection: 'row',
@@ -35,7 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     paddingHorizontal: 5,
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,

@@ -1,5 +1,3 @@
-
-
 /* eslint-disable default-case */
 /* eslint-disable no-dupe-else-if */
 /* eslint-disable no-nested-ternary */
@@ -66,18 +64,18 @@ import uploadImages from '../../../utils/imageAction';
 import {editEvent} from '../../../api/Schedule';
 
 export default function EditEventScreen({navigation, route}) {
-  console.log('EVENT DATA==>',route?.params?.data);
+  console.log('EVENT DATA==>', route?.params?.data);
   let rule = 'Never';
   if (route.params.data.rrule) {
-          const a = route.params.data.rrule;
-          console.log('RULESa:=>', a);
-          const arr = a.split(';');
-          console.log('RULESarr:=>', arr);
-          const str = arr[0].substring(5).toLowerCase();
-          console.log('RULESstr:=>', str);
-          rule = str.charAt(0).toUpperCase() + str.slice(1);
-          console.log('RULES:=>', rule);
-        }
+    const a = route.params.data.rrule;
+    console.log('RULESa:=>', a);
+    const arr = a.split(';');
+    console.log('RULESarr:=>', arr);
+    const str = arr[0].substring(5).toLowerCase();
+    console.log('RULESstr:=>', str);
+    rule = str.charAt(0).toUpperCase() + str.slice(1);
+    console.log('RULES:=>', rule);
+  }
   const eventPostedList = [
     {value: 0, text: 'Schedule only'},
     {value: 1, text: 'Schedule & posts'},
@@ -93,7 +91,7 @@ export default function EditEventScreen({navigation, route}) {
     eventData.descriptions,
   );
   const [eventPosted, setEventPosted] = useState({
-    ...eventData?.event_posted_at
+    ...eventData?.event_posted_at,
   });
   const [minAttendees, setMinAttendees] = useState(eventData.min_attendees);
   const [maxAttendees, setMaxAttendees] = useState(eventData.max_attendees);
@@ -103,15 +101,12 @@ export default function EditEventScreen({navigation, route}) {
   );
   const [toggle] = useState(eventData.allDay);
   const [eventStartDateTime, setEventStartdateTime] = useState(
-   
-       new Date(eventData.start_datetime * 1000)
-      ?? getNearDateTime(new Date()),
+    new Date(eventData.start_datetime * 1000) ?? getNearDateTime(new Date()),
   );
 
   const [eventEndDateTime, setEventEnddateTime] = useState(
-    
-       new Date(eventData.end_datetime * 1000)
-      ?? moment(eventStartDateTime).add(5, 'm').toDate(),
+    new Date(eventData.end_datetime * 1000) ??
+      moment(eventStartDateTime).add(5, 'm').toDate(),
   );
   const [eventUntilDateTime, setEventUntildateTime] =
     useState(eventEndDateTime);
@@ -126,14 +121,14 @@ export default function EditEventScreen({navigation, route}) {
   const [sportsSelection, setSportsSelection] = useState(
     eventData?.selected_sport,
   );
-  const [selectedSport,setSelectedSport] = useState(eventData?.selected_sport);
+  const [selectedSport, setSelectedSport] = useState(eventData?.selected_sport);
 
   const [whoOpetion, setWhoOpetion] = useState();
   const [whoCanJoinOpetion, setWhoCanJoinOpetion] = useState({
-    ...eventData?.who_can_join
+    ...eventData?.who_can_join,
   });
   const [whoCanSeeOpetion, setWhoCanSeeOpetion] = useState({
-    ...eventData?.who_can_see
+    ...eventData?.who_can_see,
   });
 
   const [sportsData, setSportsData] = useState([]);
@@ -244,12 +239,25 @@ export default function EditEventScreen({navigation, route}) {
       headerRight: () => (
         <TouchableOpacity
           style={{padding: 2, marginRight: 15}}
-          onPress={onDonePress}>
+          onPress={onDonePress}
+        >
           <Text>Done</Text>
         </TouchableOpacity>
       ),
     });
-  }, [navigation, backgroundThumbnail, eventTitle, eventDescription, sportsSelection, maxAttendees, minAttendees, locationDetail, eventFee, refundPolicy, selectedSport]);
+  }, [
+    navigation,
+    backgroundThumbnail,
+    eventTitle,
+    eventDescription,
+    sportsSelection,
+    maxAttendees,
+    minAttendees,
+    locationDetail,
+    eventFee,
+    refundPolicy,
+    selectedSport,
+  ]);
 
   useEffect(() => {
     if (isFocused) {
@@ -314,7 +322,6 @@ export default function EditEventScreen({navigation, route}) {
       })
       .catch(() => {
         setloading(false);
-       
       });
   }, [authContext]);
 
@@ -356,7 +363,8 @@ export default function EditEventScreen({navigation, route}) {
       style={styles.listItem}
       onPress={() => {
         setSelectedSport(item);
-      }}>
+      }}
+    >
       <View
         style={{
           padding: 20,
@@ -364,7 +372,8 @@ export default function EditEventScreen({navigation, route}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginRight: 15,
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>
           {getSportName(item, authContext)}
         </Text>
@@ -396,7 +405,8 @@ export default function EditEventScreen({navigation, route}) {
           setTimeout(() => {
             setVisibleWhoModal(false);
           }, 300);
-        }}>
+        }}
+      >
         <View
           style={{
             padding: 20,
@@ -404,13 +414,14 @@ export default function EditEventScreen({navigation, route}) {
             flexDirection: 'row',
             justifyContent: 'space-between',
             marginRight: 15,
-          }}>
+          }}
+        >
           <Text style={styles.languageList}>{item.text}</Text>
           <View style={styles.checkbox}>
             {(whoOpetion === 'see' && whoCanSeeOpetion.value === item?.value) ||
             (whoOpetion === 'join' &&
               whoCanJoinOpetion.value === item?.value) ? (
-                <Image
+              <Image
                 source={images.radioCheckYellow}
                 style={styles.checkboxImg}
               />
@@ -423,7 +434,7 @@ export default function EditEventScreen({navigation, route}) {
     );
   };
 
-  const renderEventPostedOpetions = ({ item}) => {
+  const renderEventPostedOpetions = ({item}) => {
     return (
       <View
         style={{
@@ -431,11 +442,13 @@ export default function EditEventScreen({navigation, route}) {
           marginBottom: 15,
 
           marginRight: 15,
-        }}>
+        }}
+      >
         <TouchableOpacity
           onPress={() => {
             setEventPosted(item);
-          }}>
+          }}
+        >
           <Image
             source={
               eventPosted.value === item.value
@@ -584,7 +597,6 @@ export default function EditEventScreen({navigation, route}) {
   };
 
   const checkValidation = useCallback(() => {
-
     if (eventTitle === '') {
       Alert.alert(strings.appName, 'Please Enter Event Title.');
       return false;
@@ -621,32 +633,39 @@ export default function EditEventScreen({navigation, route}) {
       return false;
     }
 
-   if(Number(minAttendees) > 0 && Number(maxAttendees) > 0){
-    if (Number(minAttendees) === 0) {
-      Alert.alert(
-        strings.appName,
-        'Please enter valid minimum attendees number(0 not allowed).',
-      );
-      return false;
+    if (Number(minAttendees) > 0 && Number(maxAttendees) > 0) {
+      if (Number(minAttendees) === 0) {
+        Alert.alert(
+          strings.appName,
+          'Please enter valid minimum attendees number(0 not allowed).',
+        );
+        return false;
+      }
+      if (Number(maxAttendees) === 0) {
+        Alert.alert(
+          strings.appName,
+          'Please enter valid maximum attendees number(0 not allowed).',
+        );
+        return false;
+      }
+      if (Number(minAttendees) > Number(maxAttendees)) {
+        Alert.alert(strings.appName, 'Please enter valid attendees number.');
+        return false;
+      }
     }
-    if (Number(maxAttendees) === 0) {
-      Alert.alert(
-        strings.appName,
-        'Please enter valid maximum attendees number(0 not allowed).',
-      );
-      return false;
-    }
-    if (Number(minAttendees) > Number(maxAttendees)) {
-      Alert.alert(strings.appName, 'Please enter valid attendees number.');
-      return false;
-    }
-   }
-
-   
-    
 
     return true;
-  }, [eventDescription, eventEndDateTime, eventStartDateTime, eventTitle, locationDetail?.venue_detail, locationDetail?.venue_name, maxAttendees, minAttendees, sportsSelection]);
+  }, [
+    eventDescription,
+    eventEndDateTime,
+    eventStartDateTime,
+    eventTitle,
+    locationDetail?.venue_detail,
+    locationDetail?.venue_name,
+    maxAttendees,
+    minAttendees,
+    sportsSelection,
+  ]);
 
   const createEventDone = (data) => {
     const entity = authContext.entity;
@@ -701,63 +720,60 @@ export default function EditEventScreen({navigation, route}) {
       setloading(true);
       const entity = authContext.entity;
       const entityRole = entity.role === 'user' ? 'users' : 'groups';
-      const data = 
-        {
-          ...eventData,
-          title: eventTitle,
-          descriptions: eventDescription,
-          background_thumbnail : eventData.background_thumbnail,
-           background_full_image : eventData.background_full_image,
-          allDay: toggle,
-          start_datetime: Number(
-            parseFloat(
-              new Date(convertDateToUTC(eventStartDateTime)).getTime() / 1000,
-            ).toFixed(0),
-          ),
-          end_datetime: Number(
-            parseFloat(
-              new Date(convertDateToUTC(eventEndDateTime)).getTime() / 1000,
-            ).toFixed(0),
-          ),
-          is_recurring: selectWeekMonth !== 'Never',
-          blocked: is_Blocked,
-          selected_sport: sportsSelection,
-          who_can_see: {
-            ...whoCanSeeOpetion,
+      const data = {
+        ...eventData,
+        title: eventTitle,
+        descriptions: eventDescription,
+        background_thumbnail: eventData.background_thumbnail,
+        background_full_image: eventData.background_full_image,
+        allDay: toggle,
+        start_datetime: Number(
+          parseFloat(
+            new Date(convertDateToUTC(eventStartDateTime)).getTime() / 1000,
+          ).toFixed(0),
+        ),
+        end_datetime: Number(
+          parseFloat(
+            new Date(convertDateToUTC(eventEndDateTime)).getTime() / 1000,
+          ).toFixed(0),
+        ),
+        is_recurring: selectWeekMonth !== 'Never',
+        blocked: is_Blocked,
+        selected_sport: sportsSelection,
+        who_can_see: {
+          ...whoCanSeeOpetion,
+        },
+        who_can_join: {
+          ...whoCanJoinOpetion,
+        },
+        event_posted_at: eventPosted,
+        event_fee: {
+          value: Number(eventFee),
+          currency_type: strings.defaultCurrency,
+        },
+        refund_policy: refundPolicy,
+        min_attendees: Number(minAttendees),
+        max_attendees: Number(maxAttendees),
+        entity_type:
+          authContext.entity.role === 'user'
+            ? 'player'
+            : authContext.entity.role,
+        participants: [
+          {
+            entity_id:
+              authContext.entity.obj.user_id || authContext.entity.obj.group_id,
+            entity_type: entityRole,
           },
-          who_can_join: {
-            ...whoCanJoinOpetion,
-          },
-          event_posted_at: eventPosted,
-          event_fee: {
-            value: Number(eventFee),
-            currency_type: strings.defaultCurrency,
-          },
-          refund_policy: refundPolicy,
-          min_attendees: Number(minAttendees),
-          max_attendees: Number(maxAttendees),
-          entity_type:
-            authContext.entity.role === 'user'
-              ? 'player'
-              : authContext.entity.role,
-          participants: [
-            {
-              entity_id:
-                authContext.entity.obj.user_id ||
-                authContext.entity.obj.group_id,
-              entity_type: entityRole,
-            },
-          ],
+        ],
 
-          location: {
-            location_name: searchLocation,
-            latitude: locationDetail.lat,
-            longitude: locationDetail.lng,
-            venue_name: locationDetail.venue_name,
-            venue_detail: locationDetail.venue_detail,
-          },
-        };
-      
+        location: {
+          location_name: searchLocation,
+          latitude: locationDetail.lat,
+          longitude: locationDetail.lng,
+          venue_name: locationDetail.venue_name,
+          venue_detail: locationDetail.venue_detail,
+        },
+      };
 
       if (whoCanSeeOpetion.value === 2) {
         const checkedGroup = groupsSeeList.filter((obj) => obj.isSelected);
@@ -804,8 +820,7 @@ export default function EditEventScreen({navigation, route}) {
             setTimeout(() => {
               Alert.alert(strings.appName, e.messages);
             }, 0.1);
-          })
-          
+          });
       } else {
         createEventDone(data);
       }
@@ -821,7 +836,6 @@ export default function EditEventScreen({navigation, route}) {
         <ScrollView bounces={false} nestedScrollEnabled={true}>
           <SafeAreaView>
             <EventBackgroundPhoto
-            
               isEdit={!!backgroundThumbnail}
               isPreview={false}
               imageURL={
@@ -849,7 +863,8 @@ export default function EditEventScreen({navigation, route}) {
               <TouchableOpacity
                 onPress={() => {
                   setVisibleSportsModal(true);
-                }}>
+                }}
+              >
                 <TextInput
                   placeholder={strings.sportPlaceholder}
                   style={styles.textInputStyle}
@@ -872,8 +887,11 @@ export default function EditEventScreen({navigation, route}) {
               value={eventDescription}
             />
 
-            <EventItemRender title={strings.timeTitle} isRequired={true} headerTextStyle={{marginBottom:15}}>
-              
+            <EventItemRender
+              title={strings.timeTitle}
+              isRequired={true}
+              headerTextStyle={{marginBottom: 15}}
+            >
               <EventTimeSelectItem
                 title={strings.starts}
                 toggle={!toggle}
@@ -1045,7 +1063,8 @@ export default function EditEventScreen({navigation, route}) {
                 onPress={() => {
                   setWhoOpetion('join');
                   setVisibleWhoModal(true);
-                }}>
+                }}
+              >
                 <View style={styles.dropContainer}>
                   <Text style={styles.textInputDropStyle}>
                     {whoCanJoinOpetion.text}
@@ -1070,7 +1089,8 @@ export default function EditEventScreen({navigation, route}) {
                           isSelected: !isAll,
                         }));
                         setGroupsJoinList([...groups]);
-                      }}>
+                      }}
+                    >
                       <Image
                         source={
                           isAll ? images.orangeCheckBox : images.uncheckWhite
@@ -1162,7 +1182,8 @@ export default function EditEventScreen({navigation, route}) {
                 onPress={() => {
                   setWhoOpetion('see');
                   setVisibleWhoModal(true);
-                }}>
+                }}
+              >
                 <View style={styles.dropContainer}>
                   <Text style={styles.textInputDropStyle}>
                     {whoCanSeeOpetion.text}
@@ -1187,7 +1208,8 @@ export default function EditEventScreen({navigation, route}) {
                           isSelected: !isAll,
                         }));
                         setGroupsSeeList([...groups]);
-                      }}>
+                      }}
+                    >
                       <Image
                         source={
                           isAll ? images.orangeCheckBox : images.uncheckWhite
@@ -1260,8 +1282,8 @@ export default function EditEventScreen({navigation, route}) {
         backdropTransitionOutTiming={10}
         style={{
           margin: 0,
-          
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -1277,18 +1299,21 @@ export default function EditEventScreen({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
+              onPress={() => setVisibleSportsModal(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -1298,7 +1323,8 @@ export default function EditEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Sports
             </Text>
 
@@ -1309,12 +1335,16 @@ export default function EditEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.lightBlackColor,
-              }} onPress={()=>{
+              }}
+              onPress={() => {
                 setSportsSelection(selectedSport);
                 setTimeout(() => {
                   setVisibleSportsModal(false);
                 }, 300);
-              }}>Apply</Text>
+              }}
+            >
+              Apply
+            </Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList
@@ -1338,8 +1368,8 @@ export default function EditEventScreen({navigation, route}) {
         backdropTransitionOutTiming={10}
         style={{
           margin: 0,
-          
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -1355,18 +1385,21 @@ export default function EditEventScreen({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleWhoModal(false)}>
+              onPress={() => setVisibleWhoModal(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -1376,7 +1409,8 @@ export default function EditEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Privacy Setting
             </Text>
 
@@ -1387,7 +1421,8 @@ export default function EditEventScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.themeColor,
-              }}></Text>
+              }}
+            ></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList

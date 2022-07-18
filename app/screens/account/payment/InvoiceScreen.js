@@ -26,15 +26,15 @@ import {
 
 // import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-import { Modalize } from 'react-native-modalize';
-import { Portal } from 'react-native-portalize';
+import {Modalize} from 'react-native-modalize';
+import {Portal} from 'react-native-portalize';
 import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import { getGroupMembers } from '../../../api/Groups';
-import { createInvoice, getTeamInvoice } from '../../../api/Invoice';
+import {getGroupMembers} from '../../../api/Groups';
+import {createInvoice, getTeamInvoice} from '../../../api/Invoice';
 
 import AuthContext from '../../../auth/context';
 
@@ -46,7 +46,7 @@ import TopFilterBar from '../../../components/invoice/TopFilterBar';
 import BatchFeeView from '../../../components/invoice/BatchFeeView';
 import strings from '../../../Constants/String';
 import TCThinDivider from '../../../components/TCThinDivider';
-import { heightPercentageToDP as hp } from '../../../utils';
+import {heightPercentageToDP as hp} from '../../../utils';
 import DataSource from '../../../Constants/DataSource';
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
@@ -54,7 +54,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 let totalInvoiced, paidInvoice, openInvoice;
 
-export default function InvoiceScreen({ navigation }) {
+export default function InvoiceScreen({navigation}) {
   const filterByDate = [
     'All invoices',
     'Past 90 days',
@@ -117,7 +117,8 @@ export default function InvoiceScreen({ navigation }) {
       headerRight: () => (
         <View style={styles.rightHeaderView}>
           <TouchableOpacity
-            onPress={() => createInvoiceModalRef.current.open()}>
+            onPress={() => createInvoiceModalRef.current.open()}
+          >
             <Image
               source={images.plusInvoice}
               style={styles.townsCupPlusIcon}
@@ -135,20 +136,20 @@ export default function InvoiceScreen({ navigation }) {
   }, [navigation, memberList]);
 
   useEffect(() => {
-      setloading(true);
-      getGroupMembers(authContext.entity.uid, authContext)
-        .then((response) => {
-          console.log('');
-          setloading(false);
+    setloading(true);
+    getGroupMembers(authContext.entity.uid, authContext)
+      .then((response) => {
+        console.log('');
+        setloading(false);
 
-          setRecipientData(response.payload);
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+        setRecipientData(response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   }, [authContext]);
 
   useEffect(() => {
@@ -174,12 +175,13 @@ export default function InvoiceScreen({ navigation }) {
     }
   }, [authContext, isFocused]);
 
-  const renderMemberView = ({ item }) => {
+  const renderMemberView = ({item}) => {
     console.log('item', item);
     return (
       <MemberInvoiceView
         data={item}
-        onPressCard={() => navigation.navigate('MembersDetailScreen', {
+        onPressCard={() =>
+          navigation.navigate('MembersDetailScreen', {
             from: 'member',
             memberData: item,
           })
@@ -188,12 +190,13 @@ export default function InvoiceScreen({ navigation }) {
     );
   };
 
-  const renderBatchView = ({ item }) => {
+  const renderBatchView = ({item}) => {
     console.log('item', item);
     return (
       <BatchFeeView
         data={item}
-        onPressCard={() => navigation.navigate('BatchDetailScreen', {
+        onPressCard={() =>
+          navigation.navigate('BatchDetailScreen', {
             from: 'batch',
             batchData: item,
           })
@@ -207,7 +210,8 @@ export default function InvoiceScreen({ navigation }) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => createInvoiceModalRef.current.close()}>
+          onPress={() => createInvoiceModalRef.current.close()}
+        >
           Cancel
         </Text>
 
@@ -258,7 +262,8 @@ export default function InvoiceScreen({ navigation }) {
                   }, 10);
                 });
             }
-          }}>
+          }}
+        >
           Send
         </Text>
       </View>
@@ -272,7 +277,8 @@ export default function InvoiceScreen({ navigation }) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => recipientModalRef.current.close()}>
+          onPress={() => recipientModalRef.current.close()}
+        >
           Cancel
         </Text>
 
@@ -289,7 +295,8 @@ export default function InvoiceScreen({ navigation }) {
             console.log(result);
             setSelectedRecipient(result);
             recipientModalRef.current.close();
-          }}>
+          }}
+        >
           Done
         </Text>
       </View>
@@ -303,7 +310,8 @@ export default function InvoiceScreen({ navigation }) {
       <View style={styles.headerButtonStyle}>
         <Text
           style={styles.cancelText}
-          onPress={() => filterModalRef.current.close()}>
+          onPress={() => filterModalRef.current.close()}
+        >
           Cancel
         </Text>
 
@@ -312,7 +320,8 @@ export default function InvoiceScreen({ navigation }) {
           style={styles.sendText}
           onPress={() => {
             filterModalRef.current.close();
-          }}>
+          }}
+        >
           Apply
         </Text>
       </View>
@@ -321,7 +330,7 @@ export default function InvoiceScreen({ navigation }) {
     </View>
   );
 
-  const renderRecipients = ({ item, index }) => (
+  const renderRecipients = ({item, index}) => (
     <>
       <View style={styles.recipientContainer}>
         <View style={styles.profileContainer}>
@@ -329,7 +338,7 @@ export default function InvoiceScreen({ navigation }) {
             <Image
               source={
                 item?.thumbnail && item?.thumbnail !== ''
-                  ? { uri: item?.thumbnail }
+                  ? {uri: item?.thumbnail}
                   : images.profilePlaceHolder
               }
               style={styles.profileImgStyle}
@@ -347,7 +356,8 @@ export default function InvoiceScreen({ navigation }) {
             tempObj.selected = !tempObj?.selected;
             recipientData[index] = tempObj;
             setRecipientData([...recipientData]);
-          }}>
+          }}
+        >
           <Image
             source={
               item?.selected ? images.orangeCheckBox : images.uncheckEditor
@@ -362,7 +372,7 @@ export default function InvoiceScreen({ navigation }) {
   const getSelectedDayEvents = useCallback((date) => {
     const markedDates = {};
     console.log('MARKED::', Object.keys(markedDates));
-    markedDates[date] = { selected: true };
+    markedDates[date] = {selected: true};
     setMarkingDays(markedDates);
     console.log('MARKED DATES::', JSON.stringify(markedDates));
   }, []);
@@ -437,13 +447,18 @@ export default function InvoiceScreen({ navigation }) {
         return memberList;
       }
       if (status === 'Paid') {
-        return memberList.filter((obj) => obj.invoices.some((innerObj) => innerObj.invoice_status === 'Paid'));
+        return memberList.filter((obj) =>
+          obj.invoices.some((innerObj) => innerObj.invoice_status === 'Paid'),
+        );
       }
       if (status === 'Open') {
-        return memberList.filter((obj) => obj.invoices.some(
-            (innerObj) => innerObj.invoice_status === 'Unpaid'
-              || innerObj.invoice_status === 'Partially Paid',
-          ));
+        return memberList.filter((obj) =>
+          obj.invoices.some(
+            (innerObj) =>
+              innerObj.invoice_status === 'Unpaid' ||
+              innerObj.invoice_status === 'Partially Paid',
+          ),
+        );
       }
     },
     [memberList],
@@ -458,13 +473,18 @@ export default function InvoiceScreen({ navigation }) {
         return batchList;
       }
       if (status === 'Paid') {
-        return batchList.filter((obj) => obj.invoices.some((innerObj) => innerObj.invoice_status === 'Paid'));
+        return batchList.filter((obj) =>
+          obj.invoices.some((innerObj) => innerObj.invoice_status === 'Paid'),
+        );
       }
       if (status === 'Open') {
-        return batchList.filter((obj) => obj.invoices.some(
-            (innerObj) => innerObj.invoice_status === 'Unpaid'
-              || innerObj.invoice_status === 'Partially Paid',
-          ));
+        return batchList.filter((obj) =>
+          obj.invoices.some(
+            (innerObj) =>
+              innerObj.invoice_status === 'Unpaid' ||
+              innerObj.invoice_status === 'Partially Paid',
+          ),
+        );
       }
     },
     [batchList],
@@ -483,13 +503,13 @@ export default function InvoiceScreen({ navigation }) {
         }}
       />
 
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         <TCTabView
           totalTabs={2}
           firstTabTitle={`MEMBERS (${memberList.length})`}
           secondTabTitle={`BATCHES (${batchList.length})`}
           indexCounter={maintabNumber}
-          eventPrivacyContianer={{ width: 100 }}
+          eventPrivacyContianer={{width: 100}}
           onFirstTabPress={() => setMaintabNumber(0)}
           onSecondTabPress={() => setMaintabNumber(1)}
           activeHeight={36}
@@ -521,7 +541,7 @@ export default function InvoiceScreen({ navigation }) {
               : batchListByFilter('All').length
           })`}
           indexCounter={tabNumber}
-          eventPrivacyContianer={{ width: 100 }}
+          eventPrivacyContianer={{width: 100}}
           onFirstTabPress={() => {
             setTabNumber(0);
           }}
@@ -535,13 +555,13 @@ export default function InvoiceScreen({ navigation }) {
           inactiveHeight={30}
         />
 
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{flex: 1}}>
           {maintabNumber === 0 ? (
             <FlatList
               data={
-                (tabNumber === 0 && memberListByFilter('Open'))
-                || (tabNumber === 1 && memberListByFilter('Paid'))
-                || (tabNumber === 2 && memberListByFilter('All'))
+                (tabNumber === 0 && memberListByFilter('Open')) ||
+                (tabNumber === 1 && memberListByFilter('Paid')) ||
+                (tabNumber === 2 && memberListByFilter('All'))
               }
               renderItem={renderMemberView}
               keyExtractor={(item, index) => index.toString()}
@@ -549,9 +569,9 @@ export default function InvoiceScreen({ navigation }) {
           ) : (
             <FlatList
               data={
-                (tabNumber === 0 && batchListByFilter('Open'))
-                || (tabNumber === 1 && batchListByFilter('Paid'))
-                || (tabNumber === 2 && batchListByFilter('All'))
+                (tabNumber === 0 && batchListByFilter('Open')) ||
+                (tabNumber === 1 && batchListByFilter('Paid')) ||
+                (tabNumber === 2 && batchListByFilter('All'))
               }
               renderItem={renderBatchView} // renderInvoiceView
               keyExtractor={(item, index) => index.toString()}
@@ -567,7 +587,9 @@ export default function InvoiceScreen({ navigation }) {
         // destructiveButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
-            navigation.navigate('CanceledInvoicesScreen', { from: maintabNumber === 0 ? 'member' : 'batch' });
+            navigation.navigate('CanceledInvoicesScreen', {
+              from: maintabNumber === 0 ? 'member' : 'batch',
+            });
           }
         }}
       />
@@ -576,7 +598,7 @@ export default function InvoiceScreen({ navigation }) {
         <Modalize
           withHandle={false}
           // adjustToContentHeight={true}
-          overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}
           // snapPoint={hp(50)}
           modalStyle={{
             flex: 1,
@@ -584,13 +606,14 @@ export default function InvoiceScreen({ navigation }) {
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
           }}
           HeaderComponent={createInvoiceModalHeader}
-          ref={createInvoiceModalRef}>
+          ref={createInvoiceModalRef}
+        >
           <View>
             <View>
               <TouchableOpacity
@@ -602,13 +625,15 @@ export default function InvoiceScreen({ navigation }) {
                   marginLeft: 15,
                   marginRight: 15,
                   flexDirection: 'row',
-                }}>
+                }}
+              >
                 <Text
                   style={
                     selectedRecipient.length > 0
                       ? styles.totalRecipient
                       : styles.recipientText
-                  }>
+                  }
+                >
                   {selectedRecipient.length > 0
                     ? `${selectedRecipient.length} Recipients`
                     : 'Recipients'}
@@ -629,13 +654,15 @@ export default function InvoiceScreen({ navigation }) {
                   marginLeft: 15,
                   marginRight: 15,
                   flexDirection: 'row',
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   Due Date
                 </Text>
                 <Text
@@ -643,7 +670,8 @@ export default function InvoiceScreen({ navigation }) {
                     selectedDueDate
                       ? styles.dueDateSelectedText
                       : styles.dueDateText
-                  }>
+                  }
+                >
                   {selectedDueDate
                     ? moment(selectedDueDate).format('MMM DD, YYYY')
                     : 'Please select'}
@@ -677,13 +705,15 @@ export default function InvoiceScreen({ navigation }) {
                   color: colors.lightBlackColor,
                   marginLeft: 15,
                   marginTop: 15,
-                }}>
+                }}
+              >
                 {strings.invoiceTitle}
               </Text>
               <TextInput
                 style={styles.amountTxt}
                 onChangeText={(text) => setInvoiceTitle(text)}
-                value={invoiceTitle}></TextInput>
+                value={invoiceTitle}
+              ></TextInput>
             </View>
 
             <View>
@@ -694,21 +724,23 @@ export default function InvoiceScreen({ navigation }) {
                   color: colors.lightBlackColor,
                   marginLeft: 15,
                   marginTop: 15,
-                }}>
+                }}
+              >
                 {strings.amountDueTitle}
               </Text>
               <TextInput
                 style={styles.amountTxt}
                 onChangeText={(text) => {
                   if (IsNumeric(text)) {
-                    setAmount(text)
+                    setAmount(text);
                   }
                 }}
                 keyboardType="numeric"
-                value={amount}></TextInput>
+                value={amount}
+              ></TextInput>
             </View>
 
-            <View style={{ marginBottom: 10 }}>
+            <View style={{marginBottom: 10}}>
               <Text
                 style={{
                   fontFamily: fonts.RRegular,
@@ -716,14 +748,16 @@ export default function InvoiceScreen({ navigation }) {
                   color: colors.lightBlackColor,
                   marginLeft: 15,
                   marginTop: 15,
-                }}>
+                }}
+              >
                 {strings.invoiceDescTitle}
               </Text>
               <TextInput
                 style={styles.noteTxt}
                 multiline
                 onChangeText={(text) => setNote(text)}
-                value={note}></TextInput>
+                value={note}
+              ></TextInput>
             </View>
           </View>
         </Modalize>
@@ -733,7 +767,7 @@ export default function InvoiceScreen({ navigation }) {
         <Modalize
           withHandle={false}
           adjustToContentHeight={true}
-          overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}
           snapPoint={hp(50)}
           modalStyle={{
             flex: 1,
@@ -741,13 +775,14 @@ export default function InvoiceScreen({ navigation }) {
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
           }}
           HeaderComponent={RecipientsModalHeader}
-          ref={recipientModalRef}>
+          ref={recipientModalRef}
+        >
           <View>
             <View>
               <View>
@@ -759,13 +794,15 @@ export default function InvoiceScreen({ navigation }) {
                     marginLeft: 15,
                     marginRight: 15,
                     flexDirection: 'row',
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
                       fontFamily: fonts.RRegular,
                       fontSize: 16,
                       color: colors.lightBlackColor,
-                    }}>
+                    }}
+                  >
                     All
                   </Text>
                   {/* <Image source={images.orangeCheckBox} style={styles.checkButton} /> */}
@@ -774,13 +811,14 @@ export default function InvoiceScreen({ navigation }) {
                       // onTagCancelPress({ item, index }
                       setRecipientAllData(!recipientAllData);
                       const result = recipientData.map((el) => {
-                        const o = { ...el };
+                        const o = {...el};
                         o.selected = !recipientAllData;
                         return o;
                       });
 
                       setRecipientData([...result]);
-                    }}>
+                    }}
+                  >
                     <Image
                       source={
                         recipientAllData
@@ -794,13 +832,14 @@ export default function InvoiceScreen({ navigation }) {
                 <TCThinDivider width={'92%'} />
               </View>
 
-              <View style={{ margin: 15 }}>
+              <View style={{margin: 15}}>
                 <Text
                   style={{
                     fontFamily: fonts.RRegular,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   Members
                 </Text>
                 <FlatList
@@ -819,28 +858,31 @@ export default function InvoiceScreen({ navigation }) {
       <Portal>
         <Modalize
           withHandle={false}
-          overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}
           modalStyle={{
             flex: 1,
             height: '86%',
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
           }}
           HeaderComponent={filterModalHeader}
-          ref={filterModalRef}>
+          ref={filterModalRef}
+        >
           <View>
             <View>
               <Text style={styles.radioHeader}>Filter by payment</Text>
               <View>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterPayment(DataSource.filterByPayment[0])
-                  }>
+                  onPress={() =>
+                    setFilterPayment(DataSource.filterByPayment[0])
+                  }
+                >
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByPayment[0]}
                   </Text>
@@ -855,8 +897,10 @@ export default function InvoiceScreen({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterPayment(DataSource.filterByPayment[1])
-                  }>
+                  onPress={() =>
+                    setFilterPayment(DataSource.filterByPayment[1])
+                  }
+                >
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByPayment[1]}
                   </Text>
@@ -871,8 +915,10 @@ export default function InvoiceScreen({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterPayment(DataSource.filterByPayment[2])
-                  }>
+                  onPress={() =>
+                    setFilterPayment(DataSource.filterByPayment[2])
+                  }
+                >
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByPayment[2]}
                   </Text>
@@ -889,12 +935,13 @@ export default function InvoiceScreen({ navigation }) {
               <TCThinDivider width={'92%'} marginTop={15} />
             </View>
             {/* filter by batch */}
-            <View style={{ marginTop: 10 }}>
+            <View style={{marginTop: 10}}>
               <Text style={styles.radioHeader}>Filter by Member of Batch</Text>
               <View>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterBatch(DataSource.filterByBatch[0])}>
+                  onPress={() => setFilterBatch(DataSource.filterByBatch[0])}
+                >
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByBatch[0]}
                   </Text>
@@ -909,7 +956,8 @@ export default function InvoiceScreen({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterBatch(DataSource.filterByBatch[1])}>
+                  onPress={() => setFilterBatch(DataSource.filterByBatch[1])}
+                >
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByBatch[1]}
                   </Text>
@@ -924,7 +972,8 @@ export default function InvoiceScreen({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterBatch(DataSource.filterByBatch[2])}>
+                  onPress={() => setFilterBatch(DataSource.filterByBatch[2])}
+                >
                   <Text style={styles.radioTitle}>
                     {DataSource.filterByBatch[2]}
                   </Text>
@@ -942,12 +991,13 @@ export default function InvoiceScreen({ navigation }) {
             </View>
 
             {/* filter by date */}
-            <View style={{ marginTop: 10 }}>
+            <View style={{marginTop: 10}}>
               <Text style={styles.radioHeader}>Filter by date</Text>
               <View>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[0])}>
+                  onPress={() => setFilterDate(filterByDate[0])}
+                >
                   <Text style={styles.radioTitle}>{filterByDate[0]}</Text>
                   <Image
                     source={
@@ -960,7 +1010,8 @@ export default function InvoiceScreen({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[1])}>
+                  onPress={() => setFilterDate(filterByDate[1])}
+                >
                   <Text style={styles.radioTitle}>{filterByDate[1]}</Text>
                   <Image
                     source={
@@ -973,7 +1024,8 @@ export default function InvoiceScreen({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[2])}>
+                  onPress={() => setFilterDate(filterByDate[2])}
+                >
                   <Text style={styles.radioTitle}>{filterByDate[2]}</Text>
                   <Image
                     source={
@@ -986,7 +1038,8 @@ export default function InvoiceScreen({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[3])}>
+                  onPress={() => setFilterDate(filterByDate[3])}
+                >
                   <Text style={styles.radioTitle}>{filterByDate[3]}</Text>
                   <Image
                     source={
@@ -999,7 +1052,8 @@ export default function InvoiceScreen({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[4])}>
+                  onPress={() => setFilterDate(filterByDate[4])}
+                >
                   <Text style={styles.radioTitle}>{filterByDate[4]}</Text>
                   <Image
                     source={
@@ -1012,7 +1066,8 @@ export default function InvoiceScreen({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.radioItem}
-                  onPress={() => setFilterDate(filterByDate[5])}>
+                  onPress={() => setFilterDate(filterByDate[5])}
+                >
                   <Text style={styles.radioTitle}>{filterByDate[5]}</Text>
                   <Image
                     source={
@@ -1031,22 +1086,26 @@ export default function InvoiceScreen({ navigation }) {
                     margin: 15,
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       flexDirection: 'row',
                       flex: 0.5,
                       alignItems: 'center',
-                    }}>
+                    }}
+                  >
                     <Text style={styles.fromToTitle}>From</Text>
                     <TouchableOpacity
                       style={styles.dateView}
-                      onPress={() => setFromdateVisisble(!fromdateVisisble)}>
+                      onPress={() => setFromdateVisisble(!fromdateVisisble)}
+                    >
                       <Text
                         style={[
                           styles.radioTitle,
-                          { paddingLeft: 15, paddingRight: 15 },
-                        ]}>
+                          {paddingLeft: 15, paddingRight: 15},
+                        ]}
+                      >
                         {moment(filterFromDate).format('MMM DD, YYYY')}
                       </Text>
                     </TouchableOpacity>
@@ -1056,16 +1115,19 @@ export default function InvoiceScreen({ navigation }) {
                       flexDirection: 'row',
                       flex: 0.5,
                       alignItems: 'center',
-                    }}>
+                    }}
+                  >
                     <Text style={styles.fromToTitle}>To</Text>
                     <TouchableOpacity
                       style={styles.dateView}
-                      onPress={() => setTodateVisisble(!todateVisisble)}>
+                      onPress={() => setTodateVisisble(!todateVisisble)}
+                    >
                       <Text
                         style={[
                           styles.radioTitle,
-                          { paddingLeft: 15, paddingRight: 15 },
-                        ]}>
+                          {paddingLeft: 15, paddingRight: 15},
+                        ]}
+                      >
                         {moment(filterToDate).format('MMM DD, YYYY')}
                       </Text>
                     </TouchableOpacity>
@@ -1189,7 +1251,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingRight: 30,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
 
@@ -1208,7 +1270,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 15,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
 
@@ -1253,7 +1315,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 64,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,
@@ -1285,7 +1347,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 15,
   },
-  radioImage: { height: 20, width: 20, resizeMode: 'contain' },
+  radioImage: {height: 20, width: 20, resizeMode: 'contain'},
   fromToTitle: {
     fontFamily: fonts.RRegular,
     fontSize: 14,
@@ -1300,7 +1362,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
   },

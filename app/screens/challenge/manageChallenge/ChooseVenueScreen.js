@@ -1,7 +1,5 @@
 /* eslint-disable array-callback-return */
-import React, {
- useEffect, useState, useContext, useLayoutEffect,
- } from 'react';
+import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -16,7 +14,7 @@ import {
 
 import EventMapView from '../../../components/Schedule/EventMapView';
 import TCTextInputClear from '../../../components/TCTextInputClear';
-import { getLatLong } from '../../../api/External';
+import {getLatLong} from '../../../api/External';
 import AuthContext from '../../../auth/context';
 
 import colors from '../../../Constants/Colors';
@@ -24,11 +22,10 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 
-function ChooseVenueScreen({ navigation, route }) {
+function ChooseVenueScreen({navigation, route}) {
   const [venues] = useState(route?.params?.venues);
   const [comeFrom] = useState(route?.params?.comeFrom);
 
-  
   const authContext = useContext(AuthContext);
 
   const [venueFooter, setVenueFooter] = useState(
@@ -44,7 +41,7 @@ function ChooseVenueScreen({ navigation, route }) {
           state: venues[venues.length - 1].state,
           country: venues[venues.length - 1].country,
         }
-      : { isCustom: true },
+      : {isCustom: true},
   );
   const [isChanged, setIsChanged] = useState(
     !venues[venues.length - 1].isCustom,
@@ -70,9 +67,9 @@ function ChooseVenueScreen({ navigation, route }) {
             if (selectedVenue) {
               if (selectedVenue.isCustom) {
                 if (
-                  selectedVenue.name
-                  && selectedVenue.address
-                  && selectedVenue.details
+                  selectedVenue.name &&
+                  selectedVenue.address &&
+                  selectedVenue.details
                 ) {
                   navigation.navigate(comeFrom, {
                     selectedVenueObj: selectedVenue,
@@ -80,33 +77,34 @@ function ChooseVenueScreen({ navigation, route }) {
                 } else {
                   Alert.alert('Please fill all details of venue.');
                 }
-              } else if(comeFrom === 'EditChallenge'){
-                  navigation.navigate(comeFrom, {
-                    selectedVenueObj: selectedVenue,
-                    groupObj: route?.params?.groupObj,
-                    sportName: route?.params?.challengeObj?.sport,
-                    challengeObj: route?.params?.challengeObj,
-                    lastConfirmVersion: route?.params?.challengeObj,
-                    settingObj: route?.params?.settingObj,
-                  });
-                }else{
-                  navigation.navigate(comeFrom, {
-                    selectedVenueObj: selectedVenue,
-                  });
-                }
+              } else if (comeFrom === 'EditChallenge') {
+                navigation.navigate(comeFrom, {
+                  selectedVenueObj: selectedVenue,
+                  groupObj: route?.params?.groupObj,
+                  sportName: route?.params?.challengeObj?.sport,
+                  challengeObj: route?.params?.challengeObj,
+                  lastConfirmVersion: route?.params?.challengeObj,
+                  settingObj: route?.params?.settingObj,
+                });
+              } else {
+                navigation.navigate(comeFrom, {
+                  selectedVenueObj: selectedVenue,
+                });
+              }
             } else {
               Alert.alert('Please choose any one venue.');
             }
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
     });
   }, [comeFrom, navigation, selectedVenue, venues]);
 
-  const renderVenueList = ({ item }) => {
+  const renderVenueList = ({item}) => {
     if (item?.isCustom && isChanged) {
-      return renderFooter({ item });
+      return renderFooter({item});
     }
     return (
       <View>
@@ -117,18 +115,20 @@ function ChooseVenueScreen({ navigation, route }) {
             alignItems: 'center',
             marginLeft: 15,
             marginRight: 15,
-          }}>
-          <View style={{ flex: 0.9 }}>
+          }}
+        >
+          <View style={{flex: 0.9}}>
             <Text style={styles.venueTitle}>{item.name}</Text>
             <Text style={styles.venueAddress} numberOfLines={1}>
               {item.address}
             </Text>
           </View>
           <TouchableOpacity
-            style={{ flex: 0.1 }}
+            style={{flex: 0.1}}
             onPress={() => {
               setSelectedVenue(item);
-            }}>
+            }}
+          >
             {selectedVenue === item ? (
               <Image
                 source={images.radioCheckYellow}
@@ -155,7 +155,8 @@ function ChooseVenueScreen({ navigation, route }) {
               textAlign: 'right',
               marginRight: 15,
               marginTop: 10,
-            }}>
+            }}
+          >
             Change
           </Text>
         )}
@@ -198,21 +199,22 @@ function ChooseVenueScreen({ navigation, route }) {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       };
-      setVenueFooter({ ...venueFooter, ...ven });
-      console.log('Ven:=>', { ...venueFooter, ...ven });
+      setVenueFooter({...venueFooter, ...ven});
+      console.log('Ven:=>', {...venueFooter, ...ven});
     });
   };
 
-  const renderFooter = ({ item }) => (
+  const renderFooter = ({item}) => (
     <View>
-      <View style={[styles.viewTitleContainer, { marginRight: 15 }]}>
+      <View style={[styles.viewTitleContainer, {marginRight: 15}]}>
         <Text style={styles.venueCountTitle}>Other place</Text>
         <TouchableOpacity
-          style={{ flex: 0.1 }}
+          style={{flex: 0.1}}
           onPress={() => {
             console.log('Custom venue item:=>', item);
             setSelectedVenue(item);
-          }}>
+          }}
+        >
           {selectedVenue === item ? (
             <Image
               source={images.radioCheckYellow}
@@ -228,13 +230,13 @@ function ChooseVenueScreen({ navigation, route }) {
         <TCTextInputClear
           placeholder={strings.venueNamePlaceholder}
           onChangeText={(text) => {
-            const ven = { ...venueFooter };
+            const ven = {...venueFooter};
             ven.name = text;
             setVenueFooter(ven);
           }}
           value={venueFooter.name}
           onPressClear={() => {
-            const ven = { ...venueFooter };
+            const ven = {...venueFooter};
             ven.name = '';
             setVenueFooter(ven);
           }}
@@ -247,7 +249,8 @@ function ChooseVenueScreen({ navigation, route }) {
             navigation.navigate('ChooseAddressScreen', {
               comeFrom: 'ChooseVenueScreen',
             });
-          }}>
+          }}
+        >
           <TextInput
             editable={false}
             pointerEvents="none"
@@ -260,13 +263,13 @@ function ChooseVenueScreen({ navigation, route }) {
         <TCTextInputClear
           placeholder={strings.venueDetailsPlaceholder}
           onChangeText={(text) => {
-            const ven = { ...venueFooter };
+            const ven = {...venueFooter};
             ven.details = text;
             setVenueFooter(ven);
           }}
           value={venueFooter.details}
           onPressClear={() => {
-            const ven = { ...venueFooter };
+            const ven = {...venueFooter};
             ven.details = '';
             setVenueFooter(ven);
           }}
@@ -292,7 +295,7 @@ function ChooseVenueScreen({ navigation, route }) {
         ItemSeparatorComponent={() => (
           <View style={styles.separatorLine}></View>
         )}
-        style={{ marginTop: 20 }}
+        style={{marginTop: 20}}
       />
     </SafeAreaView>
   );
@@ -365,7 +368,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,

@@ -32,7 +32,8 @@ export default function MessageChatAssetModal({
       <View style={{flex: 1}}>
         {assetType === 'video' ? (
           <View
-            style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+            style={{alignItems: 'center', justifyContent: 'center', flex: 1}}
+          >
             <Image
               source={images.portraitVideoImage}
               resizeMode={'cover'}
@@ -49,7 +50,8 @@ export default function MessageChatAssetModal({
                   height: portraitImgDimention.height,
                   position: 'absolute',
                 },
-              ]}>
+              ]}
+            >
               <FastImage
                 style={styles.loadimageStyle}
                 source={images.imageLoadingGIF}
@@ -78,7 +80,8 @@ export default function MessageChatAssetModal({
             cropWidth={Dimensions.get('window').width}
             cropHeight={Dimensions.get('window').height}
             imageWidth={portraitImgDimention.width}
-            imageHeight={portraitImgDimention.height}>
+            imageHeight={portraitImgDimention.height}
+          >
             <View
               style={[
                 styles.singleImageDisplayStyle,
@@ -87,7 +90,8 @@ export default function MessageChatAssetModal({
                   height: portraitImgDimention.height,
                   position: 'absolute',
                 },
-              ]}>
+              ]}
+            >
               <FastImage
                 style={styles.loadimageStyle}
                 source={images.imageLoadingGIF}
@@ -135,7 +139,8 @@ export default function MessageChatAssetModal({
                 onPress={() => {
                   Orientation.lockToPortrait();
                   backBtnPress();
-                }}>
+                }}
+              >
                 <Image
                   source={images.backArrow}
                   resizeMode={'contain'}
@@ -150,7 +155,8 @@ export default function MessageChatAssetModal({
                   fontSize: 16,
                   color: colors.blackColor,
                   textAlign: 'center',
-                }}>
+                }}
+              >
                 {title}
               </Text>
             }

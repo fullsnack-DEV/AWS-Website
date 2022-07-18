@@ -1,21 +1,20 @@
 import React from 'react';
-import {
-  StyleSheet, Image, View, Text,
+import {StyleSheet, Image, View, Text} from 'react-native';
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
+import images from '../Constants/ImagePath';
 
-} from 'react-native';
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
-import images from '../Constants/ImagePath'
-
-export default function TCClubClipView({ name, image }) {
+export default function TCClubClipView({name, image}) {
   return (
     <View style={styles.clubViewStyle}>
-      <Image source={image ? { uri: image } : images.clubPlaceholderSmall } style={ styles.clubImageView } />
-      <Text ellipsizeMode={'tail'} numberOfLines={1}
-            style={styles.textStyle}>
+      <Image
+        source={image ? {uri: image} : images.clubPlaceholderSmall}
+        style={styles.clubImageView}
+      />
+      <Text ellipsizeMode={'tail'} numberOfLines={1} style={styles.textStyle}>
         {name}
       </Text>
-      <Image source={ images.clubC} style={ styles.clubTrademarkStyle } />
+      <Image source={images.clubC} style={styles.clubTrademarkStyle} />
     </View>
   );
 }
@@ -30,7 +29,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: colors.whiteColor,
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.29,
     shadowRadius: 3,
     elevation: 3,

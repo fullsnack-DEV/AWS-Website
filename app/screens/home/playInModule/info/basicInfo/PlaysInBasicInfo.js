@@ -18,19 +18,19 @@ import DataSource from '../../../../../Constants/DataSource';
 // import AuthContext from '../../../../../auth/context';
 // import * as Utility from '../../../../../utils';
 
-
 const PlaysInBasicInfo = ({isAdmin, currentUserData, onSave}) => {
   const actionSheet = useRef();
   const [showEditPlaysInModal, setShowEditPlaysInModal] = useState(false);
   const [editModalType, setEditModalType] = useState('');
 
-  console.log('showEditPlaysInModal',showEditPlaysInModal);
+  console.log('showEditPlaysInModal', showEditPlaysInModal);
   return (
     <View>
       <EditEventItem
         editButtonVisible={isAdmin}
         title={strings.basicinfotitle}
-        onEditPress={() => actionSheet.current.show()}>
+        onEditPress={() => actionSheet.current.show()}
+      >
         <BasicInfoItem title={strings.gender} value={currentUserData?.gender} />
 
         <BasicInfoItem
@@ -127,8 +127,8 @@ const EditPlaysInModal = ({
       };
       onSave(params)
         .then((res) => {
-          console.log('respppppp:',res);
-          closeEditPlayInModal()
+          console.log('respppppp:', res);
+          closeEditPlayInModal();
           // setTimeout(async() => {
           //   const entity = authContext.entity;
           // authContext.setEntity({...entity});
@@ -153,7 +153,8 @@ const EditPlaysInModal = ({
       heading={`${
         editModalType !== strings.privacySettings ? 'Edit ' : ''
       }${editModalType}`}
-      onSavePress={onSavePress}>
+      onSavePress={onSavePress}
+    >
       <ModalLocationSearch
         visible={searchLocationModal}
         onClose={() => setSearchLocationModal(false)}
@@ -167,7 +168,8 @@ const EditPlaysInModal = ({
           {/*   Gender */}
           <EventItemRender
             title={strings.gender}
-            containerStyle={{marginTop: 15}}>
+            containerStyle={{marginTop: 15}}
+          >
             <View style={{marginTop: 8}}>
               <TCPicker
                 dataSource={DataSource.Gender}
@@ -183,7 +185,8 @@ const EditPlaysInModal = ({
           {/*  Birthday */}
           <EventItemRender
             title={strings.yearOfBirth}
-            containerStyle={{marginTop: 15}}>
+            containerStyle={{marginTop: 15}}
+          >
             <BirthSelectItem
               title={moment(birthdayText * 1000).format('YYYY')}
               onItemPress={() => setDateModalVisible(!dateModalVisible)}
@@ -202,7 +205,8 @@ const EditPlaysInModal = ({
           {/*  Height */}
           <EventItemRender
             title={strings.height}
-            containerStyle={{marginTop: 15}}>
+            containerStyle={{marginTop: 15}}
+          >
             <EventTextInput
               value={userData?.height}
               placeholder={'Enter Height'}
@@ -218,7 +222,8 @@ const EditPlaysInModal = ({
           {/*  Weight */}
           <EventItemRender
             title={strings.weight}
-            containerStyle={{marginTop: 15}}>
+            containerStyle={{marginTop: 15}}
+          >
             <EventTextInput
               value={userData?.weight}
               placeholder={'Enter Weight'}
@@ -234,7 +239,8 @@ const EditPlaysInModal = ({
           {/*  Most Used Foot */}
           <EventItemRender
             title={strings.mostUsedFoot}
-            containerStyle={{marginTop: 15}}>
+            containerStyle={{marginTop: 15}}
+          >
             <View style={{marginTop: 8}}>
               <TCPicker
                 dataSource={[
@@ -254,7 +260,8 @@ const EditPlaysInModal = ({
           {/* City */}
           <EventItemRender
             title={strings.currrentCityTitle}
-            containerStyle={{marginTop: 15}}>
+            containerStyle={{marginTop: 15}}
+          >
             <BirthSelectItem
               title={userData?.city}
               onItemPress={() => {

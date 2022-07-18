@@ -268,21 +268,25 @@ const PlayInModule = ({
         playInObject?.sport !== 'soccer' && (
           <TouchableOpacity
             onPress={onChallengePress}
-            style={styles.challengeButtonContainer}>
+            style={styles.challengeButtonContainer}
+          >
             <LinearGradient
               colors={[colors.themeColor, '#FF3B00']}
-              style={styles.challengeLinearContainer}>
+              style={styles.challengeLinearContainer}
+            >
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'center',
-                }}>
+                }}
+              >
                 {(challengeType === 'both' || challengeType === 'challenge') &&
                   (oppSetting?.game_fee?.fee ? (
                     <Text style={styles.challengeButtonTitle}>
                       {strings.challenge}
                       <Text>{` $${oppSetting?.game_fee?.fee} ${
-                        currentUserData?.currency_type ?? strings.defaultCurrency
+                        currentUserData?.currency_type ??
+                        strings.defaultCurrency
                       }${' / match'}`}</Text>
                     </Text>
                   ) : (
@@ -356,7 +360,7 @@ const PlayInModule = ({
       mySetting !== undefined &&
       (oppSetting?.availibility === undefined ||
         oppSetting?.availibility === 'Off') &&
-        (mySetting?.game_duration || mySetting?.score_rules) &&
+      (mySetting?.game_duration || mySetting?.score_rules) &&
       (mySetting?.availibility !== undefined ||
         mySetting?.availibility === 'On') &&
       mySetting?.special_rules !== undefined &&
@@ -447,7 +451,8 @@ const PlayInModule = ({
         }}
         hasBackdrop
         onBackdropPress={onClose}
-        backdropOpacity={0}>
+        backdropOpacity={0}
+      >
         <View style={styles.modalContainerViewStyle}>
           <SafeAreaView style={{flex: 1}}>
             {renderHeader}

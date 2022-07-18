@@ -47,7 +47,8 @@ export default function HomeAway({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
@@ -73,14 +74,13 @@ export default function HomeAway({navigation, route}) {
           : 'Away',
     };
     setloading(true);
-    const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter(
-      (obj) => {
+    const registerdPlayerData =
+      authContext?.entity?.obj?.registered_sports?.filter((obj) => {
         if (obj.sport === sportName && obj.sport_type === sportType) {
           return null;
         }
         return obj;
-      },
-    );
+      });
 
     let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
       (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
@@ -230,7 +230,8 @@ export default function HomeAway({navigation, route}) {
           </View>
           <TouchableOpacity
             style={styles.swapContainer}
-            onPress={() => swapTeam()}>
+            onPress={() => swapTeam()}
+          >
             <Image source={images.swapTeam} style={styles.swapImageStyle} />
           </TouchableOpacity>
           <View style={styles.teamContainer}>

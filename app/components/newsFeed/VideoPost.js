@@ -123,14 +123,16 @@ const VideoPost = memo(
     );
     return (
       <View
-        style={{...styles.mainContainer, height: getImageDimention().height}}>
+        style={{...styles.mainContainer, height: getImageDimention().height}}
+      >
         <View
           style={{
             ...styles.singleImageDisplayStyle,
             borderWidth: 1,
             borderColor: colors.lightgrayColor,
             height: getImageDimention().height,
-          }}>
+          }}
+        >
           <FastImage
             style={styles.loadimageStyle}
             source={images.imageLoadingGIF}
@@ -163,7 +165,8 @@ const VideoPost = memo(
             </Text>
             <TouchableHighlight
               style={styles.pauseMuteStyle}
-              onPress={onPressMuteUnmute}>
+              onPress={onPressMuteUnmute}
+            >
               <FastImage
                 resizeMode={'contain'}
                 tintColor={'white'}
@@ -198,7 +201,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-end',
     backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 0,
+    borderRadius: 8,
     justifyContent: 'center',
     padding: wp('2%'),
     position: 'absolute',
@@ -221,7 +224,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 0,
+    borderRadius: 8,
     height: wp('96%'),
     justifyContent: 'center',
     marginVertical: wp('1%'),
@@ -230,7 +233,7 @@ const styles = StyleSheet.create({
   singleImageDisplayStyle: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 0,
+    borderRadius: 8,
     height: wp('96%'),
     justifyContent: 'center',
     width: wp('96%'),

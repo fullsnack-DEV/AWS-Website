@@ -1,9 +1,7 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable consistent-return */
-import React, { memo, useContext } from 'react';
-import {
- StyleSheet, View, Text, Image, TouchableOpacity,
- } from 'react-native';
+import React, {memo, useContext} from 'react';
+import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
 import moment from 'moment';
 import AuthContext from '../../auth/context';
 
@@ -16,10 +14,10 @@ import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 import RefereeReservationTitle from './RefereeReservationTitle';
 import ScorekeeperReservationTitle from './ScorekeeperReservationTitle';
-import { getSportName } from '../../utils';
+import {getSportName} from '../../utils';
 
 let entity = {};
-function ReservationStatusView({ data, onClick }) {
+function ReservationStatusView({data, onClick}) {
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
 
@@ -29,8 +27,8 @@ function ReservationStatusView({ data, onClick }) {
     console.log('Data Obj', data);
 
     if (
-      challengeObj?.status === ReservationStatus.pendingpayment
-      || challengeObj?.status === ReservationStatus.pendingrequestpayment
+      challengeObj?.status === ReservationStatus.pendingpayment ||
+      challengeObj?.status === ReservationStatus.pendingrequestpayment
     ) {
       if (challengeObj?.requested_by === entity.uid) {
         return 'sender';
@@ -38,8 +36,8 @@ function ReservationStatusView({ data, onClick }) {
       return 'receiver';
     }
     if (
-      challengeObj?.status === ReservationStatus.requestcancelled
-      || challengeObj?.status === ReservationStatus.cancelled
+      challengeObj?.status === ReservationStatus.requestcancelled ||
+      challengeObj?.status === ReservationStatus.cancelled
     ) {
       if (challengeObj?.requested_by === entity.uid) {
         return 'sender';
@@ -86,10 +84,10 @@ function ReservationStatusView({ data, onClick }) {
 
   const checkSenderOrReceiverReferee = (reservationObj) => {
     console.log('checkSenderOrReceiverReferee', reservationObj);
-    const teampObj = { ...reservationObj };
+    const teampObj = {...reservationObj};
     if (
-      teampObj?.status === RefereeReservationStatus.pendingpayment
-      || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
+      teampObj?.status === RefereeReservationStatus.pendingpayment ||
+      teampObj?.status === RefereeReservationStatus.pendingrequestpayment
     ) {
       if (teampObj?.updated_by) {
         if (teampObj?.updated_by?.group_id) {
@@ -105,18 +103,18 @@ function ReservationStatusView({ data, onClick }) {
     } else if (teampObj?.updated_by) {
       if (teampObj?.updated_by?.group_id) {
         if (
-          teampObj?.automatic_request
-          && teampObj?.status === RefereeReservationStatus.changeRequest
-          && entity?.obj?.entity_type === 'team'
+          teampObj?.automatic_request &&
+          teampObj?.status === RefereeReservationStatus.changeRequest &&
+          entity?.obj?.entity_type === 'team'
         ) {
           teampObj.requested_by = teampObj.initiated_by;
         } else {
           teampObj.requested_by = teampObj.updated_by.group_id;
         }
       } else if (
-        teampObj?.automatic_request
-        && teampObj?.status === RefereeReservationStatus.changeRequest
-        && teampObj?.referee?.user_id !== entity.uid
+        teampObj?.automatic_request &&
+        teampObj?.status === RefereeReservationStatus.changeRequest &&
+        teampObj?.referee?.user_id !== entity.uid
       ) {
         teampObj.requested_by = teampObj.initiated_by;
       } else {
@@ -137,10 +135,10 @@ function ReservationStatusView({ data, onClick }) {
   };
 
   const checkSenderOrReceiverScorekeeper = (reservationObj) => {
-    const teampObj = { ...reservationObj };
+    const teampObj = {...reservationObj};
     if (
-      teampObj?.status === ScorekeeperReservationStatus.pendingpayment
-      || teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
+      teampObj?.status === ScorekeeperReservationStatus.pendingpayment ||
+      teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
     ) {
       if (teampObj?.updated_by) {
         if (teampObj?.updated_by?.group_id) {
@@ -156,18 +154,18 @@ function ReservationStatusView({ data, onClick }) {
     } else if (teampObj?.updated_by) {
       if (teampObj?.updated_by?.group_id) {
         if (
-          teampObj?.automatic_request
-          && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-          && entity?.obj?.entity_type === 'team'
+          teampObj?.automatic_request &&
+          teampObj?.status === ScorekeeperReservationStatus.changeRequest &&
+          entity?.obj?.entity_type === 'team'
         ) {
           teampObj.requested_by = teampObj.initiated_by;
         } else {
           teampObj.requested_by = teampObj.updated_by.group_id;
         }
       } else if (
-        teampObj?.automatic_request
-        && teampObj?.status === ScorekeeperReservationStatus.changeRequest
-        && teampObj?.referee?.user_id !== entity.uid
+        teampObj?.automatic_request &&
+        teampObj?.status === ScorekeeperReservationStatus.changeRequest &&
+        teampObj?.referee?.user_id !== entity.uid
       ) {
         teampObj.requested_by = teampObj.initiated_by;
       } else {
@@ -196,7 +194,8 @@ function ReservationStatusView({ data, onClick }) {
             fontSize: 12,
             color: colors.lightBlackColor,
             textAlign: 'center',
-          }}>
+          }}
+        >
           {moment(getDate()).format('MMM')}
         </Text>
         <Text
@@ -205,41 +204,52 @@ function ReservationStatusView({ data, onClick }) {
             fontSize: 25,
             color: colors.lightBlackColor,
             textAlign: 'center',
-          }}>
+          }}
+        >
           {moment(getDate()).format('DD')}
         </Text>
       </View>
 
-      <TouchableOpacity style={{ marginLeft: 15 }} onPress={onClick}>
+      <TouchableOpacity style={{marginLeft: 15}} onPress={onClick}>
         {/* <Text style={[styles.reservationText, { color: getReservationStatus().color }]}>
           {getReservationStatus().status}
         </Text> */}
         {data?.referee_id && (
-          <RefereeReservationTitle reservationObject={data} showDesc={false} fontSize={16} containerStyle={{ margin: 0 }}/>
+          <RefereeReservationTitle
+            reservationObject={data}
+            showDesc={false}
+            fontSize={16}
+            containerStyle={{margin: 0}}
+          />
         )}
 
         {data?.scorekeeper_id && (
-          <ScorekeeperReservationTitle reservationObject={data} showDesc={false} fontSize={16} containerStyle={{ margin: 0 }}/>
+          <ScorekeeperReservationTitle
+            reservationObject={data}
+            showDesc={false}
+            fontSize={16}
+            containerStyle={{margin: 0}}
+          />
         )}
 
         {!data?.referee_id && !data?.scorekeeper_id && (
           <ChallengeStatusTitle
             challengeObj={data}
             isSender={
-              (data?.referee_id
-                && checkSenderOrReceiverReferee(data) === 'sender')
-              || (data?.scorekeeper_id
-                && checkSenderOrReceiverScorekeeper(data) === 'sender')
-              || (!data?.referee_id
-                && !data?.scorekeeper_id
-                && checkSenderOrReceiver(data) === 'sender')
+              (data?.referee_id &&
+                checkSenderOrReceiverReferee(data) === 'sender') ||
+              (data?.scorekeeper_id &&
+                checkSenderOrReceiverScorekeeper(data) === 'sender') ||
+              (!data?.referee_id &&
+                !data?.scorekeeper_id &&
+                checkSenderOrReceiver(data) === 'sender')
             }
             // isTeam={!!data?.home_team?.group_name}
             teamName={data}
             // receiverName={challengee?.full_name ?? challengee?.group_name}
             offerExpiry={
-              ReservationStatus.offered === 'offered'
-              || ReservationStatus.offered === 'changeRequest'
+              ReservationStatus.offered === 'offered' ||
+              ReservationStatus.offered === 'changeRequest'
                 ? new Date().getTime()
                 : ''
             } // only if status offered
@@ -247,21 +257,25 @@ function ReservationStatusView({ data, onClick }) {
           />
         )}
 
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           {!data?.referee_id && !data?.scorekeeper_id && (
-            <Text style={styles.matchText}>Match · {getSportName(data,authContext)}</Text>
+            <Text style={styles.matchText}>
+              Match · {getSportName(data, authContext)}
+            </Text>
           )}
           {data?.referee_id && (
-            <Text style={styles.matchText}>Referee · {getSportName(data,authContext)}</Text>
+            <Text style={styles.matchText}>
+              Referee · {getSportName(data, authContext)}
+            </Text>
           )}
           {data?.scorekeeper_id && (
             <Text style={styles.matchText}>
-              Scorekeeper · {getSportName(data,authContext)}
+              Scorekeeper · {getSportName(data, authContext)}
             </Text>
           )}
           <Image
             source={images.nextArrow}
-            style={{ height: 12, width: 8, marginLeft: 10 }}
+            style={{height: 12, width: 8, marginLeft: 10}}
           />
         </View>
       </TouchableOpacity>

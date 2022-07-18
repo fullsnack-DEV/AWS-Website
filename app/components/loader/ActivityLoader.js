@@ -1,19 +1,15 @@
 import React from 'react';
-import {
-  ActivityIndicator, Modal, StyleSheet, View,
-} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import colors from '../../Constants/Colors'
+import {ActivityIndicator, Modal, StyleSheet, View} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import colors from '../../Constants/Colors';
 
-function ActivityLoader({ visible = false }) {
+function ActivityLoader({visible = false}) {
   if (!visible) return null;
   return (
-    <Modal visible={ true } transparent={ true } style={ { backgroundColor: '#fff' } }>
-      <View style={ styles.containerStyle }>
-        <View style={ styles.indicatorViewStyle }>
-          <ActivityIndicator size={ 'large' } color={ colors.whiteColor } />
+    <Modal visible={true} transparent={true} style={{backgroundColor: '#fff'}}>
+      <View style={styles.containerStyle}>
+        <View style={styles.indicatorViewStyle}>
+          <ActivityIndicator size={'large'} color={colors.whiteColor} />
         </View>
       </View>
     </Modal>

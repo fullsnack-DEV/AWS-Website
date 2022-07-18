@@ -66,7 +66,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
   const getUserSettingMenu = useCallback(() => {
     checkUserIsRegistratedOrNotWithFirebase(authContext.entity.obj.email)
       .then(async (providerData) => {
-        if (providerData.includes('password')) {
+        if ((providerData || []).includes('password')) {
           setUserSetting([
             {key: 'Account Info', id: 1},
             {key: 'Profile', id: 2},
@@ -144,15 +144,15 @@ export default function UserSettingPrivacyScreen({navigation}) {
       style={styles.listContainer}
       onPress={() => {
         handleOpetions(item.key);
-      }}>
+      }}
+    >
       <View
         style={{
           flexDirection: 'row',
           opacity: isAccountDeactivated && index <= 3 ? 0.5 : 1,
         }}
-        pointerEvents={
-          isAccountDeactivated && index <= 3 ? pointEvent : 'auto'
-        }>
+        pointerEvents={isAccountDeactivated && index <= 3 ? pointEvent : 'auto'}
+      >
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === 'Currency' && authContext?.entity?.obj?.currency_type && (
           <Text style={styles.currencyTypeStyle}>
@@ -178,7 +178,8 @@ export default function UserSettingPrivacyScreen({navigation}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}>
+            }}
+          >
             Settings
           </Text>
         }

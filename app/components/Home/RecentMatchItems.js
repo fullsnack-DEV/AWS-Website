@@ -6,12 +6,10 @@ import {
   Image,
   TouchableWithoutFeedback,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
 import images from '../../Constants/ImagePath';
-import colors from '../../Constants/Colors'
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import MatchBetweenRecentView from './MatchBetweenRecentView';
 import strings from '../../Constants/String';
@@ -48,7 +46,11 @@ export default function RecentMatchItems({
     team1Image = data.home_team.thumbnail;
   }
   let team1Title = '';
-  if (data && data.home_team && (data.home_team.full_name || data.home_team.group_name)) {
+  if (
+    data &&
+    data.home_team &&
+    (data.home_team.full_name || data.home_team.group_name)
+  ) {
     team1Title = data.home_team.full_name || data.home_team.group_name;
   }
   let team1Point = '0';
@@ -60,7 +62,11 @@ export default function RecentMatchItems({
     team2Image = data.away_team.thumbnail;
   }
   let team2Title = '';
-  if (data && data.away_team && (data.away_team.full_name || data.away_team.group_name)) {
+  if (
+    data &&
+    data.away_team &&
+    (data.away_team.full_name || data.away_team.group_name)
+  ) {
     team2Title = data.away_team.full_name || data.away_team.group_name;
   }
   let team2Point = '0';
@@ -69,42 +75,84 @@ export default function RecentMatchItems({
   }
 
   return (
-    <TouchableWithoutFeedback style={styles.backgroundView} onPress={onItemPress}>
+    <TouchableWithoutFeedback
+      style={styles.backgroundView}
+      onPress={onItemPress}
+    >
       <View style={styles.backgroundView}>
-        <View style={[styles.colorView, { backgroundColor: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]}>
-          <Text style={styles.dateMonthText}>{moment(startDate).format('MMM')}</Text>
+        <View
+          style={[
+            styles.colorView,
+            {
+              backgroundColor:
+                eventColor[0] !== '#' ? `#${eventColor}` : eventColor,
+            },
+          ]}
+        >
+          <Text style={styles.dateMonthText}>
+            {moment(startDate).format('MMM')}
+          </Text>
           <Text style={styles.dateText}>{moment(startDate).format('DD')}</Text>
         </View>
         <View style={styles.eventText}>
           <View style={styles.eventTitlewithDot}>
             <View style={styles.eventNumbersTitleView}>
-              <Text style={[styles.eventTitle, { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]} numberOfLines={1}>
+              <Text
+                style={[
+                  styles.eventTitle,
+                  {
+                    color:
+                      eventColor[0] !== '#' ? `#${eventColor}` : eventColor,
+                  },
+                ]}
+                numberOfLines={1}
+              >
                 {title}
               </Text>
-              {showEventNumbers && <Text style={styles.eventNumberStyle}>{'(1/3)'}</Text>}
+              {showEventNumbers && (
+                <Text style={styles.eventNumberStyle}>{'(1/3)'}</Text>
+              )}
             </View>
             {/* <TouchableOpacity onPress={onThreeDotPress}>
               <Image source={images.vertical3Dot} style={styles.threedot} resizeMode={'contain'} />
             </TouchableOpacity> */}
           </View>
           <View style={styles.bottomView}>
-            <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
+            <Text style={styles.eventTime}>{`${moment(startDate).format(
+              'LT',
+            )} - `}</Text>
             <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
             <View style={styles.timeCityDividerStyle} />
-            <Text numberOfLines={1} style={[styles.eventTime, { width: wp('42%') }]}>{location}</Text>
+            <Text
+              numberOfLines={1}
+              style={[styles.eventTime, {width: wp('42%')}]}
+            >
+              {location}
+            </Text>
           </View>
-          {showAssistReferee && <View style={styles.assistRefereeViewStyle}>
-            <Image source={images.assistReferee} style={styles.assistRefereeStyle} />
-            <Text style={styles.assistTitleStyle}>{strings.assistRefereeTitle}</Text>
-          </View>}
+          {showAssistReferee && (
+            <View style={styles.assistRefereeViewStyle}>
+              <Image
+                source={images.assistReferee}
+                style={styles.assistRefereeStyle}
+              />
+              <Text style={styles.assistTitleStyle}>
+                {strings.assistRefereeTitle}
+              </Text>
+            </View>
+          )}
           <MatchBetweenRecentView
-            firstUserImage={team1Image ? { uri: team1Image } : images.team_ph}
+            firstUserImage={team1Image ? {uri: team1Image} : images.team_ph}
             firstText={team1Title}
-            secondUserImage={team2Image ? { uri: team2Image } : images.team_ph}
+            secondUserImage={team2Image ? {uri: team2Image} : images.team_ph}
             secondText={team2Title}
             firstTeamPoint={team1Point}
             secondTeamPoint={team2Point}
-            containerStyle={{ marginVertical: 20, marginBottom: 10, marginHorizontal: 8 }}
+            containerStyle={{
+              marginVertical: 20,
+              marginBottom: 10,
+              marginHorizontal: 8,
+            }}
           />
         </View>
       </View>
@@ -121,7 +169,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 15,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: wp('94%'),

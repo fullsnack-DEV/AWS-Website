@@ -19,7 +19,7 @@
 //   return {data, error, loading, request};
 // };
 
-import { useState } from 'react';
+import {useState} from 'react';
 
 const useApi = (apiFunction) => {
   const [data, setData] = useState([]);
@@ -39,7 +39,10 @@ const useApi = (apiFunction) => {
     setLoading(false);
     console.log('RESPONSE DATA: ', json);
     return {
-      data, error, loading, request,
+      data,
+      error,
+      loading,
+      request,
     };
     // await apiFunction(...args)
     //   .then((response) => response.json())
@@ -53,7 +56,10 @@ const useApi = (apiFunction) => {
     //   });
   };
   return {
-    data, error, loading, request,
+    data,
+    error,
+    loading,
+    request,
   };
 };
-export default useApi
+export default useApi;

@@ -1,67 +1,50 @@
-import makeAPIRequest from '../utils/Global';
-import apiCall from '../utils/apiCall';
+import makeAPIRequest from '../utils/googleApiCall';
 
 export const searchLocations = async (query, types = 'regions') =>
-  apiCall({
+  makeAPIRequest({
     method: 'get',
-    url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(${types})&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4&input=${query}`,
+    url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(${types})&input=${query}`,
   });
 
 export const searchCityState = async (query) =>
-  apiCall({
-    method: 'get',
-    url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4&input=${query}`,
-  });
-
-export const searchVenue = async (query, authContext) =>
   makeAPIRequest({
     method: 'get',
-    authContext,
-    url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?type=address&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4&input=${query}`,
+    url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${query}`,
   });
 
-export const getLatLong = async (addressText, authContext) =>
+export const searchVenue = async (query) =>
   makeAPIRequest({
     method: 'get',
-    authContext,
+    url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?type=address&input=${query}`,
+  });
+
+export const getLatLong = async (addressText) =>
+  makeAPIRequest({
+    method: 'get',
     url: `https://maps.googleapis.com/maps/api/geocode/json?address=${addressText.replace(
       / /g,
       '+',
-    )}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
-    // url: `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeID}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
+    )}`,
   });
-export const searchLocationPlaceDetail = async (place_id, authContext) =>
+export const searchLocationPlaceDetail = async (place_id) =>
   makeAPIRequest({
     method: 'get',
-    authContext,
-    url: `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
+    url: `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}`,
   });
 
-export const getLocationNameWithLatLong = async (
-  latValue,
-  longValue,
-  authContext,
-) =>
+export const getLocationNameWithLatLong = async (latValue, longValue) =>
   makeAPIRequest({
     method: 'get',
-    authContext,
-    url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latValue},${longValue}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
+    url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latValue},${longValue}`,
   });
 
-export const getLatLongFromPlaceID = async (placeID, authContext) =>
+export const getLatLongFromPlaceID = async (placeID) =>
   makeAPIRequest({
     method: 'get',
-    authContext,
-    url: `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeID}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
+    url: `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeID}`,
   });
-export const searchNearByCity = async (
-  latValue,
-  longValue,
-  radiusValue,
-  authContext,
-) =>
+export const searchNearByCity = async (latValue, longValue, radiusValue) =>
   makeAPIRequest({
     method: 'get',
-    authContext,
-    url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latValue},${longValue}&radius=${radiusValue}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
+    url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latValue},${longValue}&radius=${radiusValue}`,
   });

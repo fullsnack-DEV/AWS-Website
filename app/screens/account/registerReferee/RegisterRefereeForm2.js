@@ -39,7 +39,6 @@ export default function RegisterRefereeForm2({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const [certificate, setCertificate] = useState([{title: ''}]);
-  const [validationError, setError] = useState(null);
 
   const [imageUploadingLoader, setImageUploadingLoader] = useState(null);
   const [currentRefereeData, setCurrentRefereeData] = useState([]);
@@ -58,7 +57,6 @@ export default function RegisterRefereeForm2({navigation, route}) {
       (item) => item?.title && (!item?.thumbnail || !item?.url),
     );
     if (findCertiTitleIndex !== -1) {
-      setError({certificate: findCertiTitleIndex});
       Alert.alert(strings.appName, 'Add certificate');
       return false;
     }
@@ -67,11 +65,9 @@ export default function RegisterRefereeForm2({navigation, route}) {
       (item) => !item?.title && (item?.thumbnail || item?.url),
     );
     if (findIndex !== -1) {
-      setError({certificate: findIndex});
       Alert.alert(strings.appName, 'Add title for certificate');
       return false;
     }
-    setError(null);
 
     return true;
   };
@@ -81,23 +77,23 @@ export default function RegisterRefereeForm2({navigation, route}) {
     if (isValid) {
       setloading(true);
       if (route?.params?.bodyParams) {
-        const bodyParams = {...route?.params?.bodyParams,
-          certificates : certificate,
-          is_published : true,
-          type : 'referee',
+        const bodyParams = {
+          ...route?.params?.bodyParams,
+          certificates: certificate,
+          is_published: true,
+          type: 'referee',
         };
         bodyParams.certificates.pop();
 
         const refereeData = currentRefereeData;
         refereeData.push(bodyParams);
-        
+
         const auth = {
           ...authContext?.entity?.obj,
           sport_setting: {},
         };
 
-        let registerdRefereeData =
-          authContext?.entity?.obj?.referee_data || [];
+        let registerdRefereeData = authContext?.entity?.obj?.referee_data || [];
 
         if (
           authContext?.entity?.obj?.referee_data?.some(
@@ -106,8 +102,8 @@ export default function RegisterRefereeForm2({navigation, route}) {
               obj.sport_type === bodyParams.sport_type,
           )
         ) {
-          registerdRefereeData =
-            authContext?.entity?.obj?.referee_data.map((item) => {
+          registerdRefereeData = authContext?.entity?.obj?.referee_data.map(
+            (item) => {
               return item.sport === bodyParams.sport &&
                 item.sport_type === bodyParams.sport_type
                 ? {
@@ -115,7 +111,8 @@ export default function RegisterRefereeForm2({navigation, route}) {
                     is_published: true,
                   }
                 : item;
-            });
+            },
+          );
         } else {
           registerdRefereeData.push(bodyParams);
         }
@@ -172,11 +169,7 @@ export default function RegisterRefereeForm2({navigation, route}) {
             placeholder={strings.titleOrDescriptionText}
             style={{
               ...styles.certificateDescription,
-              borderWidth: validationError?.certificate === index ? 1 : 0,
-              borderColor:
-                validationError?.certificate === index
-                  ? colors.redDelColor
-                  : colors.whiteColor,
+              borderWidth: 0,
             }}
             onChangeText={(text) => {
               const certi = certificate;
@@ -200,7 +193,8 @@ export default function RegisterRefereeForm2({navigation, route}) {
               certiUrl.splice(index, 1);
               setCertificate([...certiUrl]);
             }
-          }}></TouchableOpacity>
+          }}
+        ></TouchableOpacity>
         {/* ) : null} */}
         {!item?.url && (
           <TouchableWithoutFeedback
@@ -238,8 +232,18 @@ export default function RegisterRefereeForm2({navigation, route}) {
                     }
                   });
               });
-            }}>
+            }}
+          >
             <View style={styles.addCertificateButton}>
+              <FastImage
+                resizeMode={FastImage.resizeMode.cover}
+                source={images.messageCamera}
+                style={{
+                  width: 27,
+                  height: 20,
+                  marginBottom: 15,
+                }}
+              />
               <Text style={styles.addCertificateText} numberOfLines={1}>
                 {strings.addCertificateTitle}
               </Text>
@@ -252,7 +256,8 @@ export default function RegisterRefereeForm2({navigation, route}) {
           style={{
             padding: 15,
             alignSelf: 'flex-start',
-          }}>
+          }}
+        >
           <View>
             <FastImage
               resizeMode={FastImage.resizeMode.cover}
@@ -275,7 +280,8 @@ export default function RegisterRefereeForm2({navigation, route}) {
               onPress={() => {
                 certificate.splice(index, 1);
                 setCertificate([...certificate]);
-              }}>
+              }}
+            >
               <Image
                 source={images.menuClose}
                 style={{
@@ -299,7 +305,8 @@ export default function RegisterRefereeForm2({navigation, route}) {
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexDirection: 'row',
-                }}>
+                }}
+              >
                 <TCInnerLoader visible={index === imageUploadingLoader} />
                 <Text
                   style={{
@@ -307,7 +314,8 @@ export default function RegisterRefereeForm2({navigation, route}) {
                     fontSize: 20,
                     color: colors.yellowColor,
                     marginLeft: 5,
-                  }}>
+                  }}
+                >
                   Uploading...
                 </Text>
               </View>
@@ -353,34 +361,23 @@ const styles = StyleSheet.create({
 
   addCertificateView: {
     flexDirection: 'row',
-    // backgroundColor: 'red',
-    marginTop: 12,
+    marginTop: 5,
     marginBottom: 12,
     width: wp('92%'),
     alignSelf: 'center',
   },
   addCertificateButton: {
     marginTop: 2,
-    flexDirection: 'row',
+    marginBottom: 5,
     alignItems: 'center',
-    alignSelf: 'center',
-    borderRadius: 5,
-    height: 25,
     justifyContent: 'center',
-    backgroundColor: colors.whiteColor,
-    paddingHorizontal: 5,
-    shadowColor: colors.blackColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-    width: 120,
-    marginBottom: 15,
+    borderRadius: 5,
+    height: 150,
+    backgroundColor: colors.textFieldBackground,
   },
   addCertificateText: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
-
     fontSize: 12,
   },
 
@@ -392,12 +389,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     paddingHorizontal: 15,
     color: colors.lightBlackColor,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
   },
 });

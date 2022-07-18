@@ -38,7 +38,8 @@ export default function UserBasicInfoScreen({navigation, route}) {
           }}
           onPress={() => {
             onSaveButtonClicked();
-          }}>
+          }}
+        >
           {strings.done}
         </Text>
       ),

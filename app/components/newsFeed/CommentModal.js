@@ -20,17 +20,16 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { Text } from 'react-native-elements';
+import {Text} from 'react-native-elements';
 
-import { Modalize } from 'react-native-modalize';
-import { Portal } from 'react-native-portalize';
-import { useIsFocused } from '@react-navigation/native';
+import {Modalize} from 'react-native-modalize';
+import {Portal} from 'react-native-portalize';
+import {useIsFocused} from '@react-navigation/native';
 import {
   createReaction,
   getReactions,
   deleteReactions,
   EditReaction,
-
 } from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
 
@@ -49,10 +48,10 @@ const CommentModal = ({
 }) => {
   const reportCommentModalRef = useRef(null);
   const authContext = useContext(AuthContext);
-  const isMyPost = useMemo(() => item?.actor?.id === authContext?.entity?.uid, [
-    authContext?.entity?.uid,
-    item?.actor?.id,
-  ]);
+  const isMyPost = useMemo(
+    () => item?.actor?.id === authContext?.entity?.uid,
+    [authContext?.entity?.uid, item?.actor?.id],
+  );
   const isFocused = useIsFocused();
   const writeCommentTextInputRef = useRef(null);
 
@@ -61,10 +60,8 @@ const CommentModal = ({
   const [editData, setEditData] = useState();
 
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
-  const [
-    showBottomWriteCommentSection,
-    setShowBottomWriteCommentSection,
-  ] = useState(false);
+  const [showBottomWriteCommentSection, setShowBottomWriteCommentSection] =
+    useState(false);
   const [selectedCommentData, setSelectedCommentData] = useState(null);
 
   useEffect(() => {
@@ -152,8 +149,8 @@ const CommentModal = ({
         reportCommentModalRef.current.open();
       } else if (key === 'edit') {
         console.log('Edited item:=>', data);
-          setCommentText(data.data.text)
-          setEditData(data)
+        setCommentText(data.data.text);
+        setEditData(data);
       } else {
         console.log('Delete item:=>', data);
         deleteReactions(data.id, authContext)
@@ -179,12 +176,13 @@ const CommentModal = ({
   );
 
   const renderComments = useCallback(
-    ({ item: data }) => (
+    ({item: data}) => (
       <SwipeableRow
         scaleEnabled={false}
         showLabel={true}
         buttons={getButtons(data)}
-        onPress={(key) => onCommentOptionsPress(key, data)}>
+        onPress={(key) => onCommentOptionsPress(key, data)}
+      >
         <WriteCommentItems data={data} onProfilePress={onProfilePress} />
       </SwipeableRow>
     ),
@@ -238,12 +236,12 @@ const CommentModal = ({
     setCommentText('');
     EditReaction(editData?.id, bodyParams, authContext)
       .then((response) => {
-          console.log('Edit comment res:=>', response);
-          setEditData()
-          const arr = commentData
-          const foundIndex = arr.findIndex((x) => x.id === response?.payload?.id);
-          arr[foundIndex] = response?.payload;
-          setCommentData(arr)
+        console.log('Edit comment res:=>', response);
+        setEditData();
+        const arr = commentData;
+        const foundIndex = arr.findIndex((x) => x.id === response?.payload?.id);
+        arr[foundIndex] = response?.payload;
+        setCommentData(arr);
       })
       .catch((e) => {
         Alert.alert('', e.messages);
@@ -253,13 +251,14 @@ const CommentModal = ({
   const FooterComponent = () => (
     <SafeAreaView
       pointerEvents={showBottomWriteCommentSection ? 'none' : 'auto'}
-      style={styles.bottomSafeAreaStyle}>
+      style={styles.bottomSafeAreaStyle}
+    >
       <View style={styles.bottomImgView}>
         <View style={styles.commentReportView}>
           <Image
-            source={userImage ? { uri: userImage } : images.profilePlaceHolder}
+            source={userImage ? {uri: userImage} : images.profilePlaceHolder}
             resizeMode={'cover'}
-            style={{ width: 36, height: 36, borderRadius: 40 / 2 }}
+            style={{width: 36, height: 36, borderRadius: 40 / 2}}
           />
         </View>
         <View style={styles.onlyMeViewStyle}>
@@ -285,14 +284,16 @@ const CommentModal = ({
               maxHeight: hp(20),
             }}
           />
-          {commentTxt.trim().length > 0 && (
-            !editData ? <TouchableOpacity onPress={onSendPress}>
-              <Text style={styles.sendTextStyle}>SEND</Text>
-            </TouchableOpacity>
-            : <TouchableOpacity onPress={onSavePress}>
-              <Text style={styles.sendTextStyle}>SAVE</Text>
-            </TouchableOpacity>
-          )}
+          {commentTxt.trim().length > 0 &&
+            (!editData ? (
+              <TouchableOpacity onPress={onSendPress}>
+                <Text style={styles.sendTextStyle}>SEND</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={onSavePress}>
+                <Text style={styles.sendTextStyle}>SAVE</Text>
+              </TouchableOpacity>
+            ))}
         </View>
       </View>
     </SafeAreaView>
@@ -324,7 +325,8 @@ const CommentModal = ({
         setTimeout(() => {
           writeCommentTextInputRef.current.focus(true);
         }, 1000);
-      }}>
+      }}
+    >
       {showBottomWriteCommentSection && <FooterComponent />}
     </TouchableOpacity>
   );
@@ -336,12 +338,12 @@ const CommentModal = ({
           onOpen={() => setShowBottomWriteCommentSection(true)}
           snapPoint={hp(50)}
           withHandle={false}
-          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+          overlayStyle={{backgroundColor: 'rgba(255,255,255,0.2)'}}
           modalStyle={{
             borderTopRightRadius: 25,
             borderTopLeftRadius: 25,
             shadowColor: colors.blackColor,
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.3,
             shadowRadius: 10,
             elevation: 10,
@@ -381,7 +383,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1.5 },
+    shadowOffset: {width: 0, height: 1.5},
     shadowOpacity: 0.16,
     shadowRadius: 3,
     elevation: 3,
@@ -393,7 +395,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: wp('2%'),
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 0.5 },
+    shadowOffset: {width: 0, height: 0.5},
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 1,
@@ -407,7 +409,7 @@ const styles = StyleSheet.create({
   bottomSafeAreaStyle: {
     backgroundColor: colors.whiteColor,
     shadowOpacity: 0.16,
-    shadowOffset: { height: 0, width: 0 },
+    shadowOffset: {height: 0, width: 0},
     shadowRadius: 3,
     shadowColor: colors.blackColor,
     width: '100%',

@@ -33,7 +33,6 @@ export default function ChangeOtherListScreen({navigation, route}) {
   const [removedGroups, setremovedGroups] = useState([]);
   const [userSetting, setUserSetting] = useState();
 
-
   const onDonePress = useCallback(() => {
     setLoading(true);
     if (addedGroups.length > 0) {
@@ -56,6 +55,7 @@ export default function ChangeOtherListScreen({navigation, route}) {
           Alert.alert('', e.messages);
         });
     } else {
+      setLoading(false);
       Alert.alert('Please select any of the group.');
     }
   }, [addedGroups, authContext, navigation]);
@@ -67,7 +67,8 @@ export default function ChangeOtherListScreen({navigation, route}) {
           onPress={() => {
             route?.params?.onBackClick(true);
             navigation.goBack();
-          }}>
+          }}
+        >
           <Image source={images.backArrow} style={styles.backImageStyle} />
         </TouchableOpacity>
       ),
@@ -135,7 +136,8 @@ export default function ChangeOtherListScreen({navigation, route}) {
                 removedGroups.push(temp);
                 setremovedGroups([...removedGroups]);
               }}
-              style={{alignSelf: 'center'}}>
+              style={{alignSelf: 'center'}}
+            >
               <Image
                 source={images.removeSportList}
                 style={styles.addIconStyle}
@@ -187,7 +189,8 @@ export default function ChangeOtherListScreen({navigation, route}) {
                   );
                 }
               }}
-              style={{alignSelf: 'center'}}>
+              style={{alignSelf: 'center'}}
+            >
               <Image source={images.addSportList} style={styles.addIconStyle} />
             </TouchableOpacity>
             {/* <FastImage

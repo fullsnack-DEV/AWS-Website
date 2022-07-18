@@ -28,7 +28,6 @@ export default function NavigationMainContainer() {
   const [appInitialize, setAppInitialize] = useState(false);
   const [loading, setLoading] = useState(false);
 
-
   const resetApp = useCallback(async () => {
     QBLogout();
     firebase.auth().signOut();
@@ -41,20 +40,18 @@ export default function NavigationMainContainer() {
 
   const getRefereshToken = () =>
     new Promise((resolve, reject) => {
-      
-
       const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
         unsubscribe();
         if (user) {
           user
             .getIdTokenResult(true)
             .then((refreshedToken) => {
-              setLoading(false)
+              setLoading(false);
               console.log('refreshedToken', refreshedToken);
               resolve(refreshedToken);
             })
             .catch(() => {
-              setLoading(false)
+              setLoading(false);
 
               reject();
             });
@@ -65,9 +62,7 @@ export default function NavigationMainContainer() {
     });
 
   const checkToken = useCallback(async () => {
-    getQBSetting().then( (setting) => {
-     
-
+    getQBSetting().then((setting) => {
       if (setting) {
         authContext.setQBCredential(setting);
         QB.settings
@@ -77,13 +72,13 @@ export default function NavigationMainContainer() {
             authSecret: setting.quickblox.authSecret,
             accountKey: setting.quickblox.accountKey,
           })
-          .then( () => {
-            setLoading(false)
+          .then(() => {
+            setLoading(false);
 
             QB.settings.enableAutoReconnect({enable: true});
           })
           .catch((e) => {
-            setLoading(false)
+            setLoading(false);
 
             console.log('QB ERROR:=>', e);
             // Some error occured, look at the exception message for more details

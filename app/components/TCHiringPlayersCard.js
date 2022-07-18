@@ -49,10 +49,7 @@ const TCHiringPlayerCard = ({
         sportText = getSportName(filterdData[0], authContext);
       }
       if (filterdData.length === 2) {
-        sportText = `${getSportName(
-          filterdData[0],
-          authContext,
-        )}`;
+        sportText = `${getSportName(filterdData[0], authContext)}`;
       }
       if (filterdData.length > 2) {
         sportText = `${getSportName(filterdData[0], authContext)} and  ${
@@ -75,7 +72,8 @@ const TCHiringPlayerCard = ({
               justifyContent: 'space-between',
               marginRight: 10,
               marginLeft: 10,
-            }}>
+            }}
+          >
             <Image
               source={
                 data?.thumbnail
@@ -88,7 +86,6 @@ const TCHiringPlayerCard = ({
               <Text style={styles.entityTitle} numberOfLines={2}>
                 {entityName}
               </Text>
-             
             </View>
           </View>
           <View

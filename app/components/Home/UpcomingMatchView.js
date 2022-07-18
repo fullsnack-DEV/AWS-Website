@@ -1,18 +1,12 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import moment from 'moment';
-import colors from '../../Constants/Colors'
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import MatchBetweenUpcomingView from './MatchBetweenUpcomingView';
 import images from '../../Constants/ImagePath';
 
-export default function UpcomingMatchView({
-  data,
-}) {
+export default function UpcomingMatchView({data}) {
   let startDate = '';
   if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
@@ -21,22 +15,46 @@ export default function UpcomingMatchView({
   if (data && data.end_datetime) {
     endDate = new Date(data.end_datetime * 1000);
   }
-  return (
-    data === null ? <View style={styles.backgroundView}>
+  return data === null ? (
+    <View style={styles.backgroundView}>
       <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
-    </View> : <View style={styles.backgroundView}>
+    </View>
+  ) : (
+    <View style={styles.backgroundView}>
       <View style={styles.timeCityViewStyle}>
-        <Text style={styles.dateTextStyle}>{moment(startDate).format('MMM DD.')}</Text>
-        <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
+        <Text style={styles.dateTextStyle}>
+          {moment(startDate).format('MMM DD.')}
+        </Text>
+        <Text style={styles.eventTime}>{`${moment(startDate).format(
+          'LT',
+        )} - `}</Text>
         <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
         <View style={styles.citydeviderStyle} />
-        <Text style={[styles.eventTime, { width: '40%' }]}>{data && data.venue ? data.venue.address : ''}</Text>
+        <Text style={[styles.eventTime, {width: '40%'}]}>
+          {data && data.venue ? data.venue.address : ''}
+        </Text>
       </View>
       <MatchBetweenUpcomingView
-        firstUserImage={data.home_team && data.home_team.thumbnail ? { uri: data.home_team.thumbnail } : images.team_ph}
-        firstText={data.home_team ? data.home_team.full_name || data.home_team.group_name : ''}
-        secondUserImage={data.away_team && data.away_team.thumbnail ? { uri: data.away_team.thumbnail } : images.team_ph}
-        secondText={data.away_team ? data.away_team.full_name || data.away_team.group_name : ''}
+        firstUserImage={
+          data.home_team && data.home_team.thumbnail
+            ? {uri: data.home_team.thumbnail}
+            : images.team_ph
+        }
+        firstText={
+          data.home_team
+            ? data.home_team.full_name || data.home_team.group_name
+            : ''
+        }
+        secondUserImage={
+          data.away_team && data.away_team.thumbnail
+            ? {uri: data.away_team.thumbnail}
+            : images.team_ph
+        }
+        secondText={
+          data.away_team
+            ? data.away_team.full_name || data.away_team.group_name
+            : ''
+        }
       />
     </View>
   );
@@ -48,7 +66,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     elevation: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     marginTop: 10,

@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
-import {
-  View, StyleSheet, Image, Text,
-} from 'react-native';
+import React, {useEffect} from 'react';
+import {View, StyleSheet, Image, Text} from 'react-native';
 import ImageSequence from 'react-native-image-sequence';
 import images from '../../../Constants/ImagePath';
-import colors from '../../../Constants/Colors'
-import fonts from '../../../Constants/Fonts'
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
 
-export default function AlterRequestSent({ navigation }) {
+export default function AlterRequestSent({navigation}) {
   const imagesSet = [
     images.emailSent1,
     images.emailSent2,
@@ -17,10 +15,9 @@ export default function AlterRequestSent({ navigation }) {
   ];
   useEffect(() => {
     const timer = setInterval(() => {
-      navigation.popToTop()
-    },
-    4000);
-    return () => clearInterval(timer)
+      navigation.popToTop();
+    }, 4000);
+    return () => clearInterval(timer);
   }, []);
   return (
     <View style={styles.mainContainer}>
@@ -30,13 +27,13 @@ export default function AlterRequestSent({ navigation }) {
       <View style={styles.mailContainer}>
         <View style={styles.imageContainer}>
           <ImageSequence
-                    images={imagesSet}
-                    framesPerSecond={2.5}
-                    loop={true}
-                    style={styles.rotateImage} />
+            images={imagesSet}
+            framesPerSecond={2.5}
+            loop={true}
+            style={styles.rotateImage}
+          />
         </View>
-        <Text style={styles.invitationText}>{ 'Alteration Request sent'}</Text>
-
+        <Text style={styles.invitationText}>{'Alteration Request sent'}</Text>
       </View>
 
       {/* {route && route.params && route.params.teamObj && <TCBorderButton
@@ -93,4 +90,4 @@ const styles = StyleSheet.create({
     height: 146,
     resizeMode: 'contain',
   },
-})
+});

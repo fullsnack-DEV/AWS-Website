@@ -246,10 +246,8 @@
 // export default memo(ChallengerInOutView);
 
 /* eslint-disable consistent-return */
-import React, { memo, useEffect, useContext } from 'react';
-import {
- StyleSheet, View, Text, Image,
- } from 'react-native';
+import React, {memo, useEffect, useContext} from 'react';
+import {StyleSheet, View, Text, Image} from 'react-native';
 
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -258,7 +256,7 @@ import AuthContext from '../../auth/context';
 import strings from '../../Constants/String';
 
 let entity = {};
-function ChallengerInOutView({ data }) {
+function ChallengerInOutView({data}) {
   const authContext = useContext(AuthContext);
   useEffect(() => {
     entity = authContext.entity;
@@ -270,10 +268,10 @@ function ChallengerInOutView({ data }) {
       }
       return strings.requester;
     }
-      if (data.challenger === entity.uid) {
-        return strings.challengee;
-      }
-      return strings.challenger;
+    if (data.challenger === entity.uid) {
+      return strings.challengee;
+    }
+    return strings.challenger;
   };
   const getEntityObject = () => {
     if (data?.referee || data?.scorekeeper) {
@@ -282,28 +280,42 @@ function ChallengerInOutView({ data }) {
       }
       return strings.requester;
     }
-      if (data.challenger === entity.uid) {
-        if (data?.challengee === data?.home_team?.user_id || data?.challengee === data?.home_team?.group_id) {
-          return {
-            name: data?.home_team?.first_name ? `${data.home_team.first_name} ${data.home_team.last_name}` : `${data?.home_team?.group_name}`,
-            thumbnail: data?.home_team?.thumbnail,
-          }
-        }
-          return {
-            name: data?.away_team?.first_name ? `${data.away_team.first_name} ${data.away_team.last_name}` : `${data?.away_team?.group_name}`,
-            thumbnail: data?.away_team?.thumbnail,
-          }
-      }
-      if (data?.challenger === data?.home_team?.user_id || data?.challenger === data?.home_team?.group_id) {
+    if (data.challenger === entity.uid) {
+      if (
+        data?.challengee === data?.home_team?.user_id ||
+        data?.challengee === data?.home_team?.group_id
+      ) {
         return {
-          name: data?.home_team?.first_name ? `${data.home_team.first_name} ${data.home_team.last_name}` : `${data?.home_team?.group_name}`,
+          name: data?.home_team?.first_name
+            ? `${data.home_team.first_name} ${data.home_team.last_name}`
+            : `${data?.home_team?.group_name}`,
           thumbnail: data?.home_team?.thumbnail,
-        }
+        };
       }
-        return {
-          name: data?.away_team?.first_name ? `${data.away_team.first_name} ${data.away_team.last_name}` : `${data?.away_team?.group_name}`,
-          thumbnail: data?.away_team?.thumbnail,
-        }
+      return {
+        name: data?.away_team?.first_name
+          ? `${data.away_team.first_name} ${data.away_team.last_name}`
+          : `${data?.away_team?.group_name}`,
+        thumbnail: data?.away_team?.thumbnail,
+      };
+    }
+    if (
+      data?.challenger === data?.home_team?.user_id ||
+      data?.challenger === data?.home_team?.group_id
+    ) {
+      return {
+        name: data?.home_team?.first_name
+          ? `${data.home_team.first_name} ${data.home_team.last_name}`
+          : `${data?.home_team?.group_name}`,
+        thumbnail: data?.home_team?.thumbnail,
+      };
+    }
+    return {
+      name: data?.away_team?.first_name
+        ? `${data.away_team.first_name} ${data.away_team.last_name}`
+        : `${data?.away_team?.group_name}`,
+      thumbnail: data?.away_team?.thumbnail,
+    };
 
     // if (data?.responsible_to_secure_venue) {
     //   if (data?.invited_by === entity.uid) {
@@ -430,36 +442,33 @@ function ChallengerInOutView({ data }) {
     // }
   };
   return (
-
     <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          margin: 15,
-        }}>
+      style={{
+        flex: 1,
+        flexDirection: 'row',
+        margin: 15,
+      }}
+    >
       <Image
-          source={
-            getChallengerOrChallengee() === strings.challenger
-            || getChallengerOrChallengee() === strings.requester
-              ? images.requestIn
-              : images.requestOut
-          }
-          style={styles.inOutImageView}
-        />
+        source={
+          getChallengerOrChallengee() === strings.challenger ||
+          getChallengerOrChallengee() === strings.requester
+            ? images.requestIn
+            : images.requestOut
+        }
+        style={styles.inOutImageView}
+      />
       <View style={styles.entityView}>
         {getEntityObject()?.thumbnail ? (
           <Image
-              source={{ uri: getEntityObject()?.thumbnail }}
-              style={styles.profileImage}
-            />
-          ) : (
-            <Image
-              source={images.teamPlaceholder}
-              style={styles.profileImage}
-            />
-          )}
-        <View style={{ flex: 0.75, flexDirection: 'row' }}>
-          <Text style={styles.entityName} numberOfLines={1} >
+            source={{uri: getEntityObject()?.thumbnail}}
+            style={styles.profileImage}
+          />
+        ) : (
+          <Image source={images.teamPlaceholder} style={styles.profileImage} />
+        )}
+        <View style={{flex: 0.75, flexDirection: 'row'}}>
+          <Text style={styles.entityName} numberOfLines={1}>
             {`${getEntityObject()?.name}   `}
           </Text>
           <Text
@@ -467,12 +476,13 @@ function ChallengerInOutView({ data }) {
               styles.requesterText,
               {
                 color:
-                  getChallengerOrChallengee() === strings.challenger
-                  || getChallengerOrChallengee() === strings.requester
+                  getChallengerOrChallengee() === strings.challenger ||
+                  getChallengerOrChallengee() === strings.requester
                     ? colors.themeColor
                     : colors.greeColor,
               },
-            ]}>
+            ]}
+          >
             {getChallengerOrChallengee()}
           </Text>
         </View>
@@ -504,14 +514,13 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   entityName: {
-
     fontSize: 16,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     marginLeft: 5,
   },
   requesterText: {
-   marginLeft: 10,
+    marginLeft: 10,
     fontSize: 14,
     fontFamily: fonts.RRegular,
   },

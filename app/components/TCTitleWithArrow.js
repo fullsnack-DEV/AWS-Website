@@ -1,9 +1,7 @@
 import React from 'react';
-import {
-View, StyleSheet, Text, Image,
-} from 'react-native';
+import {View, StyleSheet, Text, Image} from 'react-native';
 
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
@@ -30,7 +28,7 @@ function TCTitleWithArrow({
         </Text>
         {showArrow && (
           <Image source={images.nextArrow} style={styles.arrowStyle} />
-      )}
+        )}
       </View>
     </TouchableWithoutFeedback>
   );

@@ -341,7 +341,8 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}>
+            }}
+          >
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.requestOut} style={styles.reqOutImage} />
@@ -381,7 +382,8 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     color: colors.lightBlackColor,
-                  }}>
+                  }}
+                >
                   {bodyParams.invited_by ===
                   (bodyParams.home_team.group_id ??
                     bodyParams.home_team.user_id)
@@ -504,37 +506,39 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
             (bodyParams.status === ReservationStatus.accepted ||
               bodyParams.status === ReservationStatus.restored ||
               bodyParams.status === ReservationStatus.requestcancelled) && (
-                <View>
-                  <Text
+              <View>
+                <Text
                   style={[
                     styles.challengeMessage,
                     {color: colors.greenGradientStart},
-                  ]}>
-                    RESERVATION CONFIRMED
-                  </Text>
-                  <Text style={styles.challengeText}>
-                    {singlePlayerText()} has the confirmed match reservation
-                    against {getTeamName(bodyParams)}.
-                  </Text>
-                </View>
+                  ]}
+                >
+                  RESERVATION CONFIRMED
+                </Text>
+                <Text style={styles.challengeText}>
+                  {singlePlayerText()} has the confirmed match reservation
+                  against {getTeamName(bodyParams)}.
+                </Text>
+              </View>
             )}
           {checkSenderOrReceiver(bodyParams) === 'receiver' &&
             (bodyParams.status === ReservationStatus.accepted ||
               bodyParams.status === ReservationStatus.restored ||
               bodyParams.status === ReservationStatus.requestcancelled) && (
-                <View>
-                  <Text
+              <View>
+                <Text
                   style={[
                     styles.challengeMessage,
                     {color: colors.greenGradientStart},
-                  ]}>
-                    RESERVATION CONFIRMED
-                  </Text>
-                  <Text style={styles.challengeText}>
-                    {getTeamName(bodyParams)} has the confirmed match reservation
-                    against {singlePlayerText()}.
-                  </Text>
-                </View>
+                  ]}
+                >
+                  RESERVATION CONFIRMED
+                </Text>
+                <Text style={styles.challengeText}>
+                  {getTeamName(bodyParams)} has the confirmed match reservation
+                  against {singlePlayerText()}.
+                </Text>
+              </View>
             )}
 
           {/* Status declined */}
@@ -542,10 +546,8 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
             bodyParams.status === ReservationStatus.declined && (
               <View>
                 <Text
-                  style={[
-                    styles.challengeMessage,
-                    {color: colors.googleColor},
-                  ]}>
+                  style={[styles.challengeMessage, {color: colors.googleColor}]}
+                >
                   RESERVATION REQUEST DECLINED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -558,10 +560,8 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
             bodyParams.status === ReservationStatus.declined && (
               <View>
                 <Text
-                  style={[
-                    styles.challengeMessage,
-                    {color: colors.googleColor},
-                  ]}>
+                  style={[styles.challengeMessage, {color: colors.googleColor}]}
+                >
                   RESERVATION REQUEST DECLINED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -576,10 +576,8 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
             bodyParams.status === ReservationStatus.cancelled && (
               <View>
                 <Text
-                  style={[
-                    styles.challengeMessage,
-                    {color: colors.googleColor},
-                  ]}>
+                  style={[styles.challengeMessage, {color: colors.googleColor}]}
+                >
                   RESERVATION CANCELLED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -592,10 +590,8 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
             bodyParams.status === ReservationStatus.cancelled && (
               <View>
                 <Text
-                  style={[
-                    styles.challengeMessage,
-                    {color: colors.googleColor},
-                  ]}>
+                  style={[styles.challengeMessage, {color: colors.googleColor}]}
+                >
                   RESERVATION CANCELLED
                 </Text>
                 <Text style={styles.challengeText}>
@@ -857,8 +853,8 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
           {(bodyParams.status === ReservationStatus.accepted ||
             bodyParams.status === ReservationStatus.restored ||
             bodyParams.status === ReservationStatus.requestcancelled) && (
-              <View>
-                <TCBorderButton
+            <View>
+              <TCBorderButton
                 title={strings.alterReservation}
                 textColor={colors.grayColor}
                 borderColor={colors.grayColor}
@@ -885,7 +881,7 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
                   }
                 }}
               />
-                <TCBorderButton
+              <TCBorderButton
                 title={strings.cancelMatch}
                 textColor={colors.whiteColor}
                 borderColor={colors.grayColor}
@@ -918,7 +914,7 @@ export default function AcceptDeclineChallengeScreen({navigation, route}) {
                   }
                 }}
               />
-              </View>
+            </View>
           )}
           {bodyParams.status === ReservationStatus.pendingpayment && (
             <TCBorderButton

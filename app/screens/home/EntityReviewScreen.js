@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   View,
@@ -8,10 +8,7 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
-import {
-   
-    heightPercentageToDP as hp,
-  } from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 
@@ -26,19 +23,16 @@ import fonts from '../../Constants/Fonts';
 
 // const entity = {};
 export default function EntityReviewScreen({navigation, route}) {
-
   const [averageTeamReview] = useState(route?.params?.averageTeamReview);
   const [teamReviewData] = useState(route?.params?.teamReviewData);
   const [userID] = useState(route?.params?.userID);
 
-
-  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(
-    false,
-  );
+  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] =
+    useState(false);
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={{flex:1}}>
+      <View style={{flex: 1}}>
         <ReviewSection
           isTeamReviewSection={true}
           reviewsData={averageTeamReview}
@@ -67,23 +61,27 @@ export default function EntityReviewScreen({navigation, route}) {
           }}
           hasBackdrop
           onBackdropPress={() => setReviewerDetailModalVisible(false)}
-          backdropOpacity={0}>
+          backdropOpacity={0}
+        >
           <SafeAreaView
             style={[
               styles.modalContainerViewStyle,
               {backgroundColor: colors.whiteColor},
-            ]}>
+            ]}
+          >
             <View>
               <LinearGradient
                 colors={[colors.orangeColor, colors.yellowColor]}
                 end={{x: 0.0, y: 0.25}}
                 start={{x: 1, y: 0.5}}
-                style={styles.gradiantHeaderViewStyle}></LinearGradient>
+                style={styles.gradiantHeaderViewStyle}
+              ></LinearGradient>
               <Header
                 mainContainerStyle={styles.headerMainContainerStyle}
                 leftComponent={
                   <TouchableOpacity
-                    onPress={() => setReviewerDetailModalVisible(false)}>
+                    onPress={() => setReviewerDetailModalVisible(false)}
+                  >
                     <Image
                       source={images.backArrow}
                       style={styles.cancelImageStyle}
@@ -103,7 +101,8 @@ export default function EntityReviewScreen({navigation, route}) {
                 }
                 rightComponent={
                   <TouchableOpacity
-                    onPress={() => setReviewerDetailModalVisible(false)}>
+                    onPress={() => setReviewerDetailModalVisible(false)}
+                  >
                     <Image
                       source={images.cancelWhite}
                       style={styles.cancelImageStyle}
@@ -143,38 +142,37 @@ export default function EntityReviewScreen({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
-    modalContainerViewStyle: {
-        height: hp('94%'),
-        backgroundColor: colors.whiteColor,
-        borderTopLeftRadius: 15,
-        borderTopRightRadius: 15,
-      },
-      gradiantHeaderViewStyle: {
-        position: 'absolute',
-        width: '100%',
-        height: 50,
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
-      },
-      headerMainContainerStyle: {
-        borderTopLeftRadius: 15,
-        borderTopRightRadius: 14,
-        paddingVertical: 15,
-      },
-      cancelImageStyle: {
-        height: 17,
-        width: 17,
-        tintColor: colors.lightBlackColor,
-      },
-      playInTextStyle: {
-        fontSize: 16,
-        fontFamily: fonts.RBold,
-        color: colors.lightBlackColor,
-      },
-      refereesImageStyle: {
-        height: 30,
-        width: 30,
-        marginHorizontal: 10,
-      },
-  
+  modalContainerViewStyle: {
+    height: hp('94%'),
+    backgroundColor: colors.whiteColor,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  gradiantHeaderViewStyle: {
+    position: 'absolute',
+    width: '100%',
+    height: 50,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  headerMainContainerStyle: {
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 14,
+    paddingVertical: 15,
+  },
+  cancelImageStyle: {
+    height: 17,
+    width: 17,
+    tintColor: colors.lightBlackColor,
+  },
+  playInTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+  },
+  refereesImageStyle: {
+    height: 30,
+    width: 30,
+    marginHorizontal: 10,
+  },
 });

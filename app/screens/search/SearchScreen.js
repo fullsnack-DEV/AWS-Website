@@ -17,9 +17,6 @@ const SearchScreen = ({navigation, route}) => {
   const [entityType] = useState(route?.params?.entityType);
   const [entityID] = useState(route?.params?.entityID);
 
-  
-
-
   const [sports, setSports] = useState([]);
 
   useEffect(() => {

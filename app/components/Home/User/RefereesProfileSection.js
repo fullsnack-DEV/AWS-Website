@@ -44,7 +44,8 @@ export default function RefereesProfileSection({
             <TouchableOpacity
               onPress={() => {
                 actionSheetSettingRef.current.show();
-              }}>
+              }}
+            >
               <FastImage
                 resizeMode={'contain'}
                 source={images.SettingPrivacy}
@@ -57,19 +58,25 @@ export default function RefereesProfileSection({
       {bookRefereeButtonVisible && (
         <TouchableOpacity onPress={onBookRefereePress} style={{marginTop: 15}}>
           <LinearGradient
-            colors={isReferee ? [colors.darkThemeColor, colors.themeColor] : [colors.blueGradiantStart, colors.blueGradiantEnd]}
+            colors={
+              isReferee
+                ? [colors.darkThemeColor, colors.themeColor]
+                : [colors.blueGradiantStart, colors.blueGradiantEnd]
+            }
             style={[
               styles.containerStyle,
               {
                 justifyContent: 'center',
               },
-            ]}>
+            ]}
+          >
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}>
+              }}
+            >
               <Text style={styles.challengeButtonTitle}>
                 {isReferee ? 'Book Referee' : 'Book Scorekeeper'}
                 <Text>{` $${feesCount} CAD / hour`}</Text>
@@ -152,7 +159,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RLight,
     color: colors.lightBlackColor,
   },
- 
+
   containerStyle: {
     flexDirection: 'row',
     height: 25,

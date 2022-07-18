@@ -5,36 +5,43 @@ import {
   Text,
   View,
   FlatList,
-
   TouchableOpacity,
 } from 'react-native';
 
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
-import images from '../Constants/ImagePath'
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
+import images from '../Constants/ImagePath';
 
-export default function TCTags({ dataSource, titleKey, onTagCancelPress }) {
-  const renderTags = ({ item, index }) => (
+export default function TCTags({dataSource, titleKey, onTagCancelPress}) {
+  const renderTags = ({item, index}) => (
     <>
-      {item.isChecked && <View style={styles.textContainer} onPress={() => onTagCancelPress({ item, index })}>
-        <Text style={styles.tagTitleText}>{item[titleKey]}</Text>
-        <Image source={images.tagDivider} style={styles.dividerImage}/>
-        <TouchableOpacity style={styles.closeButton} onPress={() => onTagCancelPress({ item, index })}>
-          <Image source={images.cancelImage} style={styles.closeButton}/>
-        </TouchableOpacity>
-      </View>}
+      {item.isChecked && (
+        <View
+          style={styles.textContainer}
+          onPress={() => onTagCancelPress({item, index})}
+        >
+          <Text style={styles.tagTitleText}>{item[titleKey]}</Text>
+          <Image source={images.tagDivider} style={styles.dividerImage} />
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => onTagCancelPress({item, index})}
+          >
+            <Image source={images.cancelImage} style={styles.closeButton} />
+          </TouchableOpacity>
+        </View>
+      )}
     </>
   );
   return (
     <View>
       <FlatList
-                  data={dataSource}
-                  renderItem={renderTags}
-                  keyExtractor={(item, index) => index.toString()}
-                  style={styles.tagListStyle}
-                  horizontal={true}
-                  showsHorizontalScrollIndicator={false}
-                  />
+        data={dataSource}
+        renderItem={renderTags}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.tagListStyle}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+      />
     </View>
   );
 }
@@ -49,7 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 13,
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 3,

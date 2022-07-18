@@ -3,19 +3,15 @@ import {
   StyleSheet,
   View,
   Text,
-
   Image,
   TouchableWithoutFeedback,
   TouchableOpacity,
 } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
 import images from '../../Constants/ImagePath';
-import colors from '../../Constants/Colors'
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import EventBetweenUserItem from './EventBetweenUserItem';
 // import EventOfItem from './EventOfItem';
@@ -108,15 +104,32 @@ export default function EventInCalender({
   return (
     <TouchableWithoutFeedback style={styles.backgroundView} onPress={onPress}>
       <View style={styles.backgroundView} onPress={onPress}>
-        <View style={[styles.colorView, { backgroundColor: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]}>
-          <Text style={styles.hourTextStyle}>{moment(startDate).format('h')}
-            <Text style={styles.minuteTextStyle}>{moment(startDate).format(':mm')}</Text>
+        <View
+          style={[
+            styles.colorView,
+            {
+              backgroundColor:
+                eventColor[0] !== '#' ? `#${eventColor}` : eventColor,
+            },
+          ]}
+        >
+          <Text style={styles.hourTextStyle}>
+            {moment(startDate).format('h')}
+            <Text style={styles.minuteTextStyle}>
+              {moment(startDate).format(':mm')}
+            </Text>
           </Text>
           <Text style={styles.dateText}>{moment(startDate).format('a')}</Text>
         </View>
         <View style={styles.eventText}>
           <View style={styles.eventTitlewithDot}>
-            <Text style={[styles.eventTitle, { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]} numberOfLines={1}>
+            <Text
+              style={[
+                styles.eventTitle,
+                {color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor},
+              ]}
+              numberOfLines={1}
+            >
               {title}
             </Text>
             <TouchableOpacity onPress={onThreeDotPress}>
@@ -127,17 +140,31 @@ export default function EventInCalender({
             {description} {description2}
           </Text>
           <View style={styles.bottomView}>
-            <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
-            <Text style={styles.eventTime}>{`${moment(endDate).format('LT')} - `}</Text>
-            <Text style={[styles.eventTime, { marginHorizontal: 5 }]}> | </Text>
-            <Text style={[styles.eventTime, { width: wp('45%') }]}>{location !== '' ? location : venue}</Text>
+            <Text style={styles.eventTime}>{`${moment(startDate).format(
+              'LT',
+            )} - `}</Text>
+            <Text style={styles.eventTime}>{`${moment(endDate).format(
+              'LT',
+            )} - `}</Text>
+            <Text style={[styles.eventTime, {marginHorizontal: 5}]}> | </Text>
+            <Text style={[styles.eventTime, {width: wp('45%')}]}>
+              {location !== '' ? location : venue}
+            </Text>
           </View>
-          {eventBetweenSection && <EventBetweenUserItem
-            firstUserImage={homeTeamImage ? { uri: homeTeamImage } : images.team_ph}
-            firstText={homeTeamName !== '' ? homeTeamName : 'Newyork City FC'}
-            secondUserImage={awayTeamImage ? { uri: awayTeamImage } : images.team_ph}
-            secondText={awayTeamName !== '' ? awayTeamName : 'Vancouver Whitecaps'}
-          />}
+          {eventBetweenSection && (
+            <EventBetweenUserItem
+              firstUserImage={
+                homeTeamImage ? {uri: homeTeamImage} : images.team_ph
+              }
+              firstText={homeTeamName !== '' ? homeTeamName : 'Newyork City FC'}
+              secondUserImage={
+                awayTeamImage ? {uri: awayTeamImage} : images.team_ph
+              }
+              secondText={
+                awayTeamName !== '' ? awayTeamName : 'Vancouver Whitecaps'
+              }
+            />
+          )}
           {/* {eventOfSection && <EventOfItem
             eventOfText={'Referee'}
             countryIcon={refereeImage ? { uri: refereeImage } : images.commentReport}
@@ -157,7 +184,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 15,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: wp('94%'),

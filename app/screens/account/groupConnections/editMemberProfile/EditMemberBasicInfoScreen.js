@@ -42,7 +42,6 @@ import DateTimePickerView from '../../../../components/Schedule/DateTimePickerMo
 let entity = {};
 
 export default function EditMemberBasicInfoScreen({navigation, route}) {
-
   const monthNames = [
     'January',
     'February',
@@ -94,7 +93,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     console.log('Max date', maxdate);
   }, []);
 
-
   useEffect(() => {
     setPhoneNumber(
       route.params.memberInfo.phone_numbers || [
@@ -116,8 +114,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         route?.params?.state &&
         route?.params?.country
       ) {
-      
-
         setMemberInfo({
           ...memberInfo,
           city: route?.params?.city,
@@ -156,7 +152,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         <Text
           style={styles.nextButtonStyle}
           onPress={() => {
-            console.log('memberInfomemberInfo',memberInfo);
+            console.log('memberInfomemberInfo', memberInfo);
             if (checkValidation()) {
               editMemberBasicInfo();
               // if (entity.role === 'team') {
@@ -165,7 +161,8 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
               //   navigation.navigate('CreateMemberProfileClubForm2', { form1: memberInfo })
               // }
             }
-          }}>
+          }}
+        >
           Done
         </Text>
       ),
@@ -317,7 +314,8 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <View style={{...styles.halfMatchFeeView, shadowStyle}}>
           <TextInput
             placeholder={'Height'}
@@ -397,7 +395,8 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           marginLeft: 15,
           marginRight: 15,
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <View style={{...styles.halfMatchFeeView, ...shadowStyle}}>
           <TextInput
             placeholder={'Weight'}
@@ -467,43 +466,47 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     </View>
   );
 
-const sendRequestForBasicInfo=()=>{
-setloading(true)
-const membersIds = []
-membersIds.push(memberInfo.user_id)
-sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
-  setloading(false);
+  const sendRequestForBasicInfo = () => {
+    setloading(true);
+    const membersIds = [];
+    membersIds.push(memberInfo.user_id);
+    sendBasicInfoRequest(entity.uid, membersIds, authContext)
+      .then((response) => {
+        setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, 'Request sent successfully.');
         }, 10);
-  console.log('sendBasicInfoRequest',response);
-
-  }) .catch((e) => {
+        console.log('sendBasicInfoRequest', response);
+      })
+      .catch((e) => {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-}
+  };
 
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
-      
+
       {memberInfo.connected && (
         <View>
           <TouchableOpacity
             onPress={() => {
               console.log('OK');
               // navigation.navigate('RequestBasicInfoScreen', {memberInfo});
-              sendRequestForBasicInfo()
+              sendRequestForBasicInfo();
             }}
-            style={styles.outerContainerStyle}>
+            style={styles.outerContainerStyle}
+          >
             <LinearGradient
               colors={[colors.whiteColor, colors.whiteColor]}
-              style={styles.containerStyle}>
+              style={styles.containerStyle}
+            >
               <Text
-                style={[styles.buttonText, {color: colors.lightBlackColor}]}>
+                style={[styles.buttonText, {color: colors.lightBlackColor}]}
+              >
                 {'Send request for basic info'}
               </Text>
             </LinearGradient>
@@ -588,25 +591,25 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
           keyboardType={'default'}
         />
       </View>
-      
+
       <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('SearchLocationScreen', {
-              comeFrom: 'EditMemberBasicInfoScreen',
-            })
-          }>
+        onPress={() =>
+          navigation.navigate('SearchLocationScreen', {
+            comeFrom: 'EditMemberBasicInfoScreen',
+          })
+        }
+      >
         <TextInput
-            placeholder={strings.searchCityPlaceholder}
-            placeholderTextColor={colors.userPostTimeColor}
-            style={[styles.matchFeeTxt, {marginBottom: 5}]}
-            value={location}
-            editable={false}
-            pointerEvents="none"></TextInput>
+          placeholder={strings.searchCityPlaceholder}
+          placeholderTextColor={colors.userPostTimeColor}
+          style={[styles.matchFeeTxt, {marginBottom: 5}]}
+          value={location}
+          editable={false}
+          pointerEvents="none"
+        ></TextInput>
       </TouchableOpacity>
-       
 
       <View>
-          
         <TCTextField
           value={memberInfo.postal_code}
           onChangeText={(text) => {
@@ -621,7 +624,6 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
       </View>
       <View style={{marginBottom: 20}} />
 
-      
       {showDate && (
         <View>
           <DateTimePickerView
@@ -637,7 +639,6 @@ sendBasicInfoRequest(entity.uid,membersIds ,authContext).then((response)=>{
         </View>
       )}
     </TCKeyboardView>
-    
   );
 }
 const styles = StyleSheet.create({

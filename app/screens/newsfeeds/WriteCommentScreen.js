@@ -1,6 +1,4 @@
-import React, {
- useEffect, useState, useContext, useCallback,
-} from 'react';
+import React, {useEffect, useState, useContext, useCallback} from 'react';
 import {
   View,
   Text,
@@ -20,9 +18,9 @@ import {
 } from 'react-native-responsive-screen';
 import WriteCommentItems from '../../components/newsFeed/WriteCommentItems';
 
-import { createReaction, getReactions } from '../../api/NewsFeeds';
+import {createReaction, getReactions} from '../../api/NewsFeeds';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import AuthContext from '../../auth/context'
+import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
@@ -30,14 +28,14 @@ import colors from '../../Constants/Colors';
 export default function WriteCommentScreen({
   navigation,
   route: {
-    params: { data, onDonePress = () => {}, onSuccessSent = () => {} },
+    params: {data, onDonePress = () => {}, onSuccessSent = () => {}},
   },
 }) {
   const [commentTxt, setCommentText] = useState('');
   const [commentData, setCommentData] = useState([]);
   const [loading, setloading] = useState(true);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   useEffect(() => {
     const entity = authContext.entity;
     setCurrentUserDetail(entity.obj || entity.auth.user);
@@ -51,7 +49,7 @@ export default function WriteCommentScreen({
         setloading(false);
       })
       .catch((e) => {
-        Alert.alert('', e.messages)
+        Alert.alert('', e.messages);
         setloading(false);
       });
   }, []);
@@ -61,104 +59,125 @@ export default function WriteCommentScreen({
     userImage = currentUserDetail.thumbnail;
   }
 
-  const renderComments = useCallback(({ item }) => <WriteCommentItems data={ item } />, [])
+  const renderComments = useCallback(
+    ({item}) => <WriteCommentItems data={item} />,
+    [],
+  );
   return (
     <KeyboardAvoidingView
-      style={ { flex: 1 } }
-      behavior={ Platform.OS === 'ios' ? 'padding' : null }>
-      <ActivityLoader visible={ loading } />
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+    >
+      <ActivityLoader visible={loading} />
       <SafeAreaView>
-        <View style={ styles.containerStyle }>
+        <View style={styles.containerStyle}>
           <TouchableOpacity
-              style={{ alignItems: 'center', justifyContent: 'center' }}
-              onPress={ () => {
-                navigation.goBack();
-                if (onDonePress) onDonePress({ count: commentData?.length ?? 0, id: data?.id });
-              }}
+            style={{alignItems: 'center', justifyContent: 'center'}}
+            onPress={() => {
+              navigation.goBack();
+              if (onDonePress)
+                onDonePress({count: commentData?.length ?? 0, id: data?.id});
+            }}
           >
             <Image style={styles.backButtonImage} source={images.backArrow} />
           </TouchableOpacity>
-          <View style={ styles.writePostViewStyle }>
-            <Text style={ styles.writePostTextStyle }>{commentData.length > 0 ? ((commentData.length === 1 && `${commentData.length} Comment`) || (commentData.length > 1 && `${commentData.length} Comments`)) : 'Write Comments'}</Text>
+          <View style={styles.writePostViewStyle}>
+            <Text style={styles.writePostTextStyle}>
+              {commentData.length > 0
+                ? (commentData.length === 1 &&
+                    `${commentData.length} Comment`) ||
+                  (commentData.length > 1 && `${commentData.length} Comments`)
+                : 'Write Comments'}
+            </Text>
           </View>
-          <View style={ styles.doneViewStyle }>
+          <View style={styles.doneViewStyle}>
             <Text
-              style={ styles.doneTextStyle }
-              onPress={ () => {
+              style={styles.doneTextStyle}
+              onPress={() => {
                 navigation.goBack();
-                if (onDonePress) onDonePress({ count: commentData?.length ?? 0, id: data?.id });
-              } }>
+                if (onDonePress)
+                  onDonePress({count: commentData?.length ?? 0, id: data?.id});
+              }}
+            >
               Done
             </Text>
           </View>
         </View>
       </SafeAreaView>
-      <View style={ styles.sperateLine } />
+      <View style={styles.sperateLine} />
 
       {commentData ? (
         <FlatList
-          data={ commentData }
+          data={commentData}
           renderItem={renderComments}
-          keyExtractor={ (item, index) => index.toString() }
+          keyExtractor={(item, index) => index.toString()}
         />
       ) : (
-        <View style={ { flex: 1 } } />
+        <View style={{flex: 1}} />
       )}
 
-      <SafeAreaView style={ styles.bottomSafeAreaStyle }>
+      <SafeAreaView style={styles.bottomSafeAreaStyle}>
         {/* <View style={styles.bottomSperateLine} /> */}
-        <View style={ styles.bottomImgView }>
-          <View style={ styles.commentReportView }>
+        <View style={styles.bottomImgView}>
+          <View style={styles.commentReportView}>
             <Image
-              source={ userImage ? { uri: userImage } : images.profilePlaceHolder }
-              resizeMode={ 'cover' }
-              style={ { width: 40, height: 40, borderRadius: 40 / 2 } }
+              source={userImage ? {uri: userImage} : images.profilePlaceHolder}
+              resizeMode={'cover'}
+              style={{width: 40, height: 40, borderRadius: 40 / 2}}
             />
           </View>
-          <View style={ styles.onlyMeViewStyle }>
+          <View style={styles.onlyMeViewStyle}>
             <TextInput
-                        placeholder={ 'Write a comment' }
-                        placeholderTextColor={ colors.userPostTimeColor }
-                        multiline={ true }
-                        textAlignVertical={'top'}
-                        value={ commentTxt }
-                        onChangeText={ (text) => setCommentText(text) }
-                        style={ {
-                          textAlignVertical: 'center',
-                          fontSize: 14,
-                          lineHeight: 14,
-                          width: wp('66%'),
-                          marginHorizontal: '2%',
-                          color: colors.lightBlackColor,
-                          fontFamily: fonts.RRegular,
-                          paddingVertical: 0,
-                          paddingLeft: 8,
-                          alignSelf: 'center',
-                          maxHeight: hp(20),
-                        } }
-                      />
-            {commentTxt.trim().length > 0 && <TouchableOpacity onPress={() => {
-              const bodyParams = {
-                reaction_type: 'comment',
-                activity_id: data.id,
-                data: {
-                  text: commentTxt,
-                },
-              }
-              createReaction(bodyParams, authContext)
-                .then((response) => {
-                  const dataOfComment = [...commentData];
-                  dataOfComment.push(response.payload);
-                  setCommentData(dataOfComment);
-                  setCommentText('');
-                  if (onSuccessSent) onSuccessSent({ count: dataOfComment?.length ?? 0, id: data?.id })
-                })
-                .catch((e) => {
-                  console.log(e);
-                });
-            }}>
-              <Text style={ styles.sendTextStyle }>SEND</Text>
-            </TouchableOpacity>}
+              placeholder={'Write a comment'}
+              placeholderTextColor={colors.userPostTimeColor}
+              multiline={true}
+              textAlignVertical={'top'}
+              value={commentTxt}
+              onChangeText={(text) => setCommentText(text)}
+              style={{
+                textAlignVertical: 'center',
+                fontSize: 14,
+                lineHeight: 14,
+                width: wp('66%'),
+                marginHorizontal: '2%',
+                color: colors.lightBlackColor,
+                fontFamily: fonts.RRegular,
+                paddingVertical: 0,
+                paddingLeft: 8,
+                alignSelf: 'center',
+                maxHeight: hp(20),
+              }}
+            />
+            {commentTxt.trim().length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  const bodyParams = {
+                    reaction_type: 'comment',
+                    activity_id: data.id,
+                    data: {
+                      text: commentTxt,
+                    },
+                  };
+                  createReaction(bodyParams, authContext)
+                    .then((response) => {
+                      const dataOfComment = [...commentData];
+                      dataOfComment.push(response.payload);
+                      setCommentData(dataOfComment);
+                      setCommentText('');
+                      if (onSuccessSent)
+                        onSuccessSent({
+                          count: dataOfComment?.length ?? 0,
+                          id: data?.id,
+                        });
+                    })
+                    .catch((e) => {
+                      console.log(e);
+                    });
+                }}
+              >
+                <Text style={styles.sendTextStyle}>SEND</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </SafeAreaView>
@@ -208,7 +227,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: wp('2%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 0.5,
     width: wp('80%'),

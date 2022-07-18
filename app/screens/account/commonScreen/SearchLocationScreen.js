@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -6,7 +6,7 @@ import {
   Image,
   TextInput,
   FlatList,
-  Keyboard
+  Keyboard,
 } from 'react-native';
 
 import {
@@ -14,17 +14,20 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import Separator from '../../../components/Separator';
-import AuthContext from '../../../auth/context'
+import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
-import fonts from '../../../Constants/Fonts'
-import { searchCityState, searchLocationPlaceDetail } from '../../../api/External';
+import fonts from '../../../Constants/Fonts';
+import {
+  searchCityState,
+  searchLocationPlaceDetail,
+} from '../../../api/External';
 
-export default function SearchLocationScreen({ navigation, route }) {
-  const authContext = useContext(AuthContext)
+export default function SearchLocationScreen({navigation, route}) {
+  const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -53,70 +56,60 @@ export default function SearchLocationScreen({ navigation, route }) {
             locationName: item.description,
             locationDetail: response.result.geometry.location,
           });
-        }
-        else if (route.params.comeFrom === 'EditEventScreen') {
+        } else if (route.params.comeFrom === 'EditEventScreen') {
           navigation.navigate('EditEventScreen', {
             locationName: item.description,
             locationDetail: response.result.geometry.location,
           });
-        }
-        else if (route.params.comeFrom === 'HomeScreen') {
+        } else if (route.params.comeFrom === 'HomeScreen') {
           navigation.navigate('HomeScreen', {
             locationName: item.description,
             locationDetail: response.result.geometry.location,
             locationCity: item.structured_formatting.main_text,
           });
-        }
-        else if (route.params.comeFrom === 'CreateTeamForm1') {
+        } else if (route.params.comeFrom === 'CreateTeamForm1') {
           navigation.navigate('CreateTeamForm1', {
             city: item?.terms?.[0]?.value ?? '',
             state: item?.terms?.[1]?.value ?? '',
             country: item?.terms?.[2]?.value ?? '',
           });
-        } 
-        else if (route.params.comeFrom === 'CreateClubForm1') {
+        } else if (route.params.comeFrom === 'CreateClubForm1') {
           navigation.navigate('CreateClubForm1', {
             city: item?.terms?.[0]?.value ?? '',
             state: item?.terms?.[1]?.value ?? '',
             country: item?.terms?.[2]?.value ?? '',
           });
-        } 
-        else if (route.params.comeFrom === 'PersonalInformationScreen') {
+        } else if (route.params.comeFrom === 'PersonalInformationScreen') {
           navigation.navigate('PersonalInformationScreen', {
             city: item?.terms?.[0]?.value ?? '',
             state: item?.terms?.[1]?.value ?? '',
             country: item?.terms?.[2]?.value ?? '',
           });
-        } 
-        else if (route.params.comeFrom === 'EditPersonalProfileScreen') {
+        } else if (route.params.comeFrom === 'EditPersonalProfileScreen') {
           navigation.navigate(route.params.comeFrom, {
             city: item?.terms?.[0]?.value ?? '',
             state: item?.terms?.[1]?.value ?? '',
             country: item?.terms?.[2]?.value ?? '',
           });
-        } 
-        else if (route.params.comeFrom === 'EditGroupProfileScreen') {
+        } else if (route.params.comeFrom === 'EditGroupProfileScreen') {
           navigation.navigate('EditGroupProfileScreen', {
             city: item?.terms?.[0]?.value ?? '',
             state: item?.terms?.[1]?.value ?? '',
             country: item?.terms?.[2]?.value ?? '',
           });
-        }
-        else if (route.params.comeFrom === 'CreateMemberProfileForm1') {
+        } else if (route.params.comeFrom === 'CreateMemberProfileForm1') {
           navigation.navigate('CreateMemberProfileForm1', {
             city: item?.terms?.[0]?.value ?? '',
             state: item?.terms?.[1]?.value ?? '',
             country: item?.terms?.[2]?.value ?? '',
           });
-        }
-        else if (route.params.comeFrom === 'EditMemberBasicInfoScreen') {
+        } else if (route.params.comeFrom === 'EditMemberBasicInfoScreen') {
           navigation.navigate('EditMemberBasicInfoScreen', {
             city: item?.terms?.[0]?.value ?? '',
             state: item?.terms?.[1]?.value ?? '',
             country: item?.terms?.[2]?.value ?? '',
           });
-        }
-        else if (route.params.comeFrom === 'RequestBasicInfoScreen') {
+        } else if (route.params.comeFrom === 'RequestBasicInfoScreen') {
           navigation.navigate('RequestBasicInfoScreen', {
             city: item?.terms?.[0]?.value ?? '',
             state: item?.terms?.[1]?.value ?? '',
@@ -127,41 +120,42 @@ export default function SearchLocationScreen({ navigation, route }) {
     });
   };
 
-  const renderItem = ({ item, index }) => {
-    console.log('Location item:=>',item);
+  const renderItem = ({item, index}) => {
+    console.log('Location item:=>', item);
     return (
       <TouchableWithoutFeedback
-          style={ styles.listItem }
-          onPress={ () => getTeamsData(item) }>
-        <Text style={ styles.cityList }>{cityData[index].description}</Text>
+        style={styles.listItem}
+        onPress={() => getTeamsData(item)}
+      >
+        <Text style={styles.cityList}>{cityData[index].description}</Text>
         <Separator />
       </TouchableWithoutFeedback>
-    )
+    );
   };
 
   return (
-    <View style={ styles.mainContainer }>
-      <Image style={ styles.background } source={ images.orangeLayer } />
-      <Image style={ styles.background } source={ images.bgImage } />
-      <Text style={ styles.LocationText }>{strings.locationText}</Text>
-      <View style={ styles.sectionStyle }>
-        <Image source={ images.searchLocation } style={ styles.searchImg } />
+    <View style={styles.mainContainer}>
+      <Image style={styles.background} source={images.orangeLayer} />
+      <Image style={styles.background} source={images.bgImage} />
+      <Text style={styles.LocationText}>{strings.locationText}</Text>
+      <View style={styles.sectionStyle}>
+        <Image source={images.searchLocation} style={styles.searchImg} />
         <TextInput
-          style={ styles.textInput }
-          placeholder={ strings.locationPlaceholderText }
+          style={styles.textInput}
+          placeholder={strings.locationPlaceholderText}
           clearButtonMode="always"
-          placeholderTextColor={ colors.themeColor }
-          onChangeText={ (text) => setSearchText(text) }
+          placeholderTextColor={colors.themeColor}
+          onChangeText={(text) => setSearchText(text)}
         />
       </View>
       {noData && (
-        <Text style={ styles.noDataText }>
+        <Text style={styles.noDataText}>
           Please enter atleast 3 characters to see city
         </Text>
       )}
       <FlatList
-        data={ cityData }
-        renderItem={ renderItem }
+        data={cityData}
+        renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         onScroll={Keyboard.dismiss}
       />
@@ -232,7 +226,7 @@ const styles = StyleSheet.create({
     paddingRight: 5,
 
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 5,

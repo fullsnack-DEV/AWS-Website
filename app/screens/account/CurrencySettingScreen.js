@@ -78,7 +78,8 @@ export default function CurrencySettingScreen({navigation}) {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-      }}>
+      }}
+    >
       <Text>{item.label}</Text>
       <Image
         source={
@@ -105,7 +106,8 @@ export default function CurrencySettingScreen({navigation}) {
               color: colors.lightBlackColor,
               textAlign: 'center',
               fontFamily: fonts.RBold,
-            }}>
+            }}
+          >
             Currency
           </Text>
         }
@@ -116,7 +118,8 @@ export default function CurrencySettingScreen({navigation}) {
                 fontSize: 16,
                 fontFamily: fonts.RMedium,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Done
             </Text>
           </TouchableOpacity>

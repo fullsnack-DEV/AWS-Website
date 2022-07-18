@@ -21,7 +21,8 @@ const MessageNavigator = () => (
   <Stack.Navigator
     screenOptions={{
       headerBackTitleVisible: false,
-    }}>
+    }}
+  >
     <Stack.Screen
       name="MessageMainScreen"
       component={MessageMainScreen}
@@ -72,8 +73,6 @@ const MessageNavigator = () => (
         },
       }}
     />
-
-
 
     <Stack.Screen
       name="MessageInviteScreen"
@@ -183,7 +182,6 @@ const MessageNavigator = () => (
         },
       }}
     />
-   
   </Stack.Navigator>
 );
 

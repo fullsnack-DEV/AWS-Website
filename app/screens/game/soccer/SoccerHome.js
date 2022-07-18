@@ -93,14 +93,10 @@ const SoccerHome = ({navigation, route}) => {
 
   const [starAttributesForReferee, setStarAttributesForReferee] = useState([]);
 
-  const [
-    sliderAttributesForScorekeeper,
-    setSliderAttributesForScorekeeper,
-  ] = useState([]);
-  const [
-    starAttributesForScorekeeper,
-    setStarAttributesForScorekeeper,
-  ] = useState([]);
+  const [sliderAttributesForScorekeeper, setSliderAttributesForScorekeeper] =
+    useState([]);
+  const [starAttributesForScorekeeper, setStarAttributesForScorekeeper] =
+    useState([]);
 
   const [isShowReviewRow, setIsShowReviewRow] = useState(false);
   const [referee, setReferee] = useState([]);
@@ -573,7 +569,8 @@ const SoccerHome = ({navigation, route}) => {
           } else {
             resetGameDetail(soccerGameId);
           }
-        }}>
+        }}
+      >
         <TCScrollableProfileTabs
           tabItem={TAB_ITEMS}
           onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
@@ -922,7 +919,10 @@ const SoccerHome = ({navigation, route}) => {
       getRefereeReservation(soccerGameId).then((res) => {
         const refData = res?.payload?.filter(
           (item) =>
-            ![RefereeReservationStatus.cancelled,RefereeReservationStatus.approved].includes(item?.status),
+            ![
+              RefereeReservationStatus.cancelled,
+              RefereeReservationStatus.approved,
+            ].includes(item?.status),
         );
         const cloneRefData = [];
         refData.map((item) => {
@@ -957,7 +957,10 @@ const SoccerHome = ({navigation, route}) => {
       console.log('Scorekeeper reservation::=>', res);
       const refData = res?.payload?.filter(
         (item) =>
-          ![ScorekeeperReservationStatus.cancelled,ScorekeeperReservationStatus.approved].includes(item?.status),
+          ![
+            ScorekeeperReservationStatus.cancelled,
+            ScorekeeperReservationStatus.approved,
+          ].includes(item?.status),
       );
       const cloneRefData = [];
       refData.map((item) => {
@@ -1344,14 +1347,16 @@ const SoccerHome = ({navigation, route}) => {
           </View>
         }
         withHandle={false}
-        overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
+        overlayStyle={{backgroundColor: 'rgba(0,0,0,0.5)'}}
+      >
         <Text
           style={{
             fontSize: 16,
             fontFamily: fonts.RBold,
             color: colors.lightBlackColor,
             textAlign: 'center',
-          }}>
+          }}
+        >
           Please leave a review.
         </Text>
         <Text
@@ -1361,7 +1366,8 @@ const SoccerHome = ({navigation, route}) => {
             color: colors.darkThemeColor,
             textAlign: 'center',
             marginTop: 15,
-          }}>
+          }}
+        >
           {`The review period will be expires within ${reviewExpiredDate(
             gameData?.review_expired_period,
           )}.`}
@@ -1374,7 +1380,8 @@ const SoccerHome = ({navigation, route}) => {
             textAlign: 'left',
             margin: 30,
             marginTop: 15,
-          }}>
+          }}
+        >
           Your reviews will be displayed after the review period expires or all
           teams, referees, scorekeepers complete their reviews.
         </Text>
@@ -1414,17 +1421,19 @@ const SoccerHome = ({navigation, route}) => {
                 </View>
               )}
 
-              {!isScorekeeperAdmin && !isRefereeAdmin && scorekeeper.length > 0 && (
-                <View>
-                  <Text style={styles.scorekeeperTitle}>Scorekeepers</Text>
+              {!isScorekeeperAdmin &&
+                !isRefereeAdmin &&
+                scorekeeper.length > 0 && (
+                  <View>
+                    <Text style={styles.scorekeeperTitle}>Scorekeepers</Text>
 
-                  <FlatList
-                    data={scorekeeper}
-                    renderItem={renderScorekeepers}
-                    keyExtractor={(item, index) => index.toString()}
-                  />
-                </View>
-              )}
+                    <FlatList
+                      data={scorekeeper}
+                      renderItem={renderScorekeepers}
+                      keyExtractor={(item, index) => index.toString()}
+                    />
+                  </View>
+                )}
             </View>
           )}
         </SafeAreaView>

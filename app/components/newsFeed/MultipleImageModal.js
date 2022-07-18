@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   StyleSheet,
@@ -19,7 +19,7 @@ import colors from '../../Constants/Colors';
 import CustomVideoPlayer from '../CustomVideoPlayer';
 import TCZoomableImage from '../TCZoomableImage';
 
-export default function MultipleImageModal({ backBtnPress, attachedImages }) {
+export default function MultipleImageModal({backBtnPress, attachedImages}) {
   const carouselRef = useRef(0);
   const [isLandScape, setIsLandScape] = useState(false);
   const [scroll, setScroll] = useState(true);
@@ -41,112 +41,124 @@ export default function MultipleImageModal({ backBtnPress, attachedImages }) {
     }
   };
 
-  const renderMultipleImagePostView = ({ item: multiAttachItem }) => {
+  const renderMultipleImagePostView = ({item: multiAttachItem}) => {
     let portraitImgWidth = wp('100%');
     let portraitImgHeight = hp('50%');
     let landscapeImgWidth = hp('50%');
     let landscapeImgHeight = wp('100%');
     if (!isLandScape) {
-        if (multiAttachItem.media_height > multiAttachItem.media_width) {
-            portraitImgWidth = wp('100%');
-            portraitImgHeight = hp('72%');
-        } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
-            portraitImgWidth = wp('100%');
-            portraitImgHeight = hp('28%');
-        } else {
-            portraitImgWidth = wp('100%');
-            portraitImgHeight = hp('50%');
-        }
+      if (multiAttachItem.media_height > multiAttachItem.media_width) {
+        portraitImgWidth = wp('100%');
+        portraitImgHeight = hp('72%');
+      } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
+        portraitImgWidth = wp('100%');
+        portraitImgHeight = hp('28%');
+      } else {
+        portraitImgWidth = wp('100%');
+        portraitImgHeight = hp('50%');
+      }
     }
     if (isLandScape) {
-        if (multiAttachItem.media_height > multiAttachItem.media_width) {
-            landscapeImgWidth = hp('100%');
-            landscapeImgHeight = wp('100%');
-        } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
-            landscapeImgWidth = hp('100%');
-            landscapeImgHeight = wp('100%');
-        } else {
-            landscapeImgWidth = hp('100%');
-            landscapeImgHeight = wp('100%');
-        }
+      if (multiAttachItem.media_height > multiAttachItem.media_width) {
+        landscapeImgWidth = hp('100%');
+        landscapeImgHeight = wp('100%');
+      } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
+        landscapeImgWidth = hp('100%');
+        landscapeImgHeight = wp('100%');
+      } else {
+        landscapeImgWidth = hp('100%');
+        landscapeImgHeight = wp('100%');
+      }
     }
     if (multiAttachItem.type === 'image') {
-        return (
-          <View style={{
-                alignItems: 'center',
-                justifyContent: 'center',
+      return (
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: isLandScape ? wp(100) : hp(100),
+            zIndex: 100,
+          }}
+        >
+          <TCZoomableImage
+            source={{uri: multiAttachItem.url}}
+            style={[
+              styles.uploadedImage,
+              {
+                width: isLandScape ? landscapeImgWidth : portraitImgWidth,
                 height: isLandScape ? wp(100) : hp(100),
-                zIndex: 100,
-          }}>
-            <TCZoomableImage
-                    source={{ uri: multiAttachItem.url }}
-                    style={[styles.uploadedImage, {
-                        width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                        height: isLandScape ? wp(100) : hp(100),
-                    }]}
-                />
-          </View>
-        );
+              },
+            ]}
+          />
+        </View>
+      );
     }
     if (multiAttachItem.type === 'video') {
-        return (
-          <View style={{
-                height: isLandScape ? wp(100) : hp(100),
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 100,
-          }}>
-            <Image
-                    source={isLandScape ? images.landscapeVideoImage : images.portraitVideoImage}
-                    resizeMode={'cover'}
-                    style={{
-                        width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                        height: isLandScape ? landscapeImgHeight : portraitImgHeight,
-                    }}
-                />
-            <CustomVideoPlayer
-                    isLandscape={isLandScape}
-                    onPlayerStatusChanged={(shouldVideoScroll) => {
-                        setScroll(shouldVideoScroll);
-                    }}
-                    sourceURL={multiAttachItem?.url}
-                    containerStyle={{
-                        ...styles.singleImageDisplayStyle,
-                        height: isLandScape ? landscapeImgHeight : portraitImgHeight,
-                        width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                        position: 'absolute',
-                    }}
-                    videoStyle={{
-                        ...styles.singleImageDisplayStyle,
-                        height: isLandScape ? landscapeImgHeight : portraitImgHeight,
-                        width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                    }}
-                />
-          </View>
-        );
+      return (
+        <View
+          style={{
+            height: isLandScape ? wp(100) : hp(100),
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 100,
+          }}
+        >
+          <Image
+            source={
+              isLandScape
+                ? images.landscapeVideoImage
+                : images.portraitVideoImage
+            }
+            resizeMode={'cover'}
+            style={{
+              width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+              height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+            }}
+          />
+          <CustomVideoPlayer
+            isLandscape={isLandScape}
+            onPlayerStatusChanged={(shouldVideoScroll) => {
+              setScroll(shouldVideoScroll);
+            }}
+            sourceURL={multiAttachItem?.url}
+            containerStyle={{
+              ...styles.singleImageDisplayStyle,
+              height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+              width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+              position: 'absolute',
+            }}
+            videoStyle={{
+              ...styles.singleImageDisplayStyle,
+              height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+              width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+            }}
+          />
+        </View>
+      );
     }
     return <View />;
-}
+  };
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: colors.blackColor }}
-      behavior={ Platform.OS === 'ios' ? 'padding' : null }>
-      <View style={{ flex: 1 }}>
+      style={{flex: 1, backgroundColor: colors.blackColor}}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+    >
+      <View style={{flex: 1}}>
         <Carousel
-            ref={carouselRef}
-            data={attachedImages}
-            renderItem={renderMultipleImagePostView}
-            contentContainerCustomStyle={{ alignSelf: 'center' }}
-            inactiveSlideScale={1}
-            inactiveSlideOpacity={1}
-            scrollEnabled={scroll}
-            sliderWidth={isLandScape ? hp(100) : wp(100)}
-            itemWidth={isLandScape ? hp(100) : wp(100)}
+          ref={carouselRef}
+          data={attachedImages}
+          renderItem={renderMultipleImagePostView}
+          contentContainerCustomStyle={{alignSelf: 'center'}}
+          inactiveSlideScale={1}
+          inactiveSlideOpacity={1}
+          scrollEnabled={scroll}
+          sliderWidth={isLandScape ? hp(100) : wp(100)}
+          itemWidth={isLandScape ? hp(100) : wp(100)}
         />
       </View>
-      <View style={ { position: 'absolute', right: 15, top: 45 } }>
+      <View style={{position: 'absolute', right: 15, top: 45}}>
         <TouchableOpacity onPress={backBtnPress}>
-          <Image source={ images.cancelImage } style={ styles.backImage } />
+          <Image source={images.cancelImage} style={styles.backImage} />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

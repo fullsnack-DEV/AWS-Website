@@ -36,7 +36,8 @@ import {
 import TCGameCard from '../../../../TCGameCard';
 import {getGroupList, getUserList} from '../../../../../api/elasticSearch';
 
-const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
+const urlRegex =
+  /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
 const tagRegex = /(?!\w)@\w+/gim;
 
@@ -288,7 +289,8 @@ export default function WriteReviewScreen({navigation, route}) {
         style={{
           ...styles.username,
           color: colors.greeColor,
-        }}>{`${matchingString}`}</Text>
+        }}
+      >{`${matchingString}`}</Text>
     ),
     [],
   );
@@ -297,7 +299,8 @@ export default function WriteReviewScreen({navigation, route}) {
     ({item}) => (
       <TouchableOpacity
         onPress={() => onTagPress(item)}
-        style={styles.userListStyle}>
+        style={styles.userListStyle}
+      >
         <Image
           source={
             item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
@@ -310,9 +313,8 @@ export default function WriteReviewScreen({navigation, route}) {
             : `${item.first_name} ${item.last_name}`}
         </Text>
         <Text
-          style={
-            styles.locationTextStyle
-          }>{`${item.city}, ${item.state_abbr}`}</Text>
+          style={styles.locationTextStyle}
+        >{`${item.city}, ${item.state_abbr}`}</Text>
       </TouchableOpacity>
     ),
     [onTagPress],
@@ -346,7 +348,7 @@ export default function WriteReviewScreen({navigation, route}) {
                 tagData = tagData?.map((tag) => {
                   return {
                     ...tag,
-                    entity_type: 'timeline',
+                    entity_type: 'publictimeline',
                   };
                 });
                 const format_tagged_data = JSON.parse(
@@ -399,7 +401,8 @@ export default function WriteReviewScreen({navigation, route}) {
                   setloading(false);
                 }, uploadTimeout);
               }
-            }}>
+            }}
+          >
             <Text style={styles.doneTextStyle}>Done</Text>
           </TouchableOpacity>
         </View>
@@ -433,7 +436,8 @@ export default function WriteReviewScreen({navigation, route}) {
           style={[
             styles.userListContainer,
             {marginTop: searchFieldHeight + 20},
-          ]}>
+          ]}
+        >
           <FlatList
             showsVerticalScrollIndicator={false}
             data={[...users, ...groups]}
@@ -627,7 +631,8 @@ export default function WriteReviewScreen({navigation, route}) {
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}>
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+    >
       <ActivityLoader visible={loading} />
       {renderHeader}
       <View style={styles.sperateLine} />
@@ -651,10 +656,12 @@ export default function WriteReviewScreen({navigation, route}) {
           onChangeText={setSearchText}
           style={styles.textInputField}
           multiline={true}
-          textAlignVertical={'top'}>
+          textAlignVertical={'top'}
+        >
           <ParsedText
             parse={[{pattern: tagRegex, renderText: renderTagText}]}
-            childrenProps={{allowFontScaling: false}}>
+            childrenProps={{allowFontScaling: false}}
+          >
             {searchText}
           </ParsedText>
         </TextInput>

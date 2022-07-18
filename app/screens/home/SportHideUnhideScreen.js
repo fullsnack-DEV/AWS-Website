@@ -78,7 +78,8 @@ export default function SportHideUnhideScreen({navigation}) {
             fontFamily: fonts.RLight,
             color: colors.lightBlackColor,
             marginRight: 15,
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
@@ -90,7 +91,6 @@ export default function SportHideUnhideScreen({navigation}) {
     setloading(true);
     const body = {
       ...authObject,
-     
     };
 
     console.log('userObj::::=>', body);
@@ -138,33 +138,42 @@ export default function SportHideUnhideScreen({navigation}) {
               isOn={!!(item?.is_hide && item?.is_hide === true)}
               onToggle={() => {
                 console.log('ITTTm??', item);
-                let finalObject = []
+                let finalObject = [];
                 if (
                   authObject?.sport_setting?.activity_order &&
                   authObject?.sport_setting?.activity_order?.length > 0
                 ) {
-                  if(item?.type === 'player'){
-                     finalObject =
-                    authObject?.sport_setting?.activity_order.map((obj) => {
-                      if (obj.sport === item.sport && obj.sport_type === item.sport_type && obj.type === item.type) {
-                        return {
-                          ...obj,
-                          is_hide: !obj?.is_hide,
-                        };
-                      }
-                      return obj;
-                    });
-                  }else{
-                     finalObject =
-                    authObject?.sport_setting?.activity_order.map((obj) => {
-                      if (obj.sport === item.sport && obj.type === item.type) {
-                        return {
-                          ...obj,
-                          is_hide: !obj?.is_hide,
-                        };
-                      }
-                      return obj;
-                    });
+                  if (item?.type === 'player') {
+                    finalObject = authObject?.sport_setting?.activity_order.map(
+                      (obj) => {
+                        if (
+                          obj.sport === item.sport &&
+                          obj.sport_type === item.sport_type &&
+                          obj.type === item.type
+                        ) {
+                          return {
+                            ...obj,
+                            is_hide: !obj?.is_hide,
+                          };
+                        }
+                        return obj;
+                      },
+                    );
+                  } else {
+                    finalObject = authObject?.sport_setting?.activity_order.map(
+                      (obj) => {
+                        if (
+                          obj.sport === item.sport &&
+                          obj.type === item.type
+                        ) {
+                          return {
+                            ...obj,
+                            is_hide: !obj?.is_hide,
+                          };
+                        }
+                        return obj;
+                      },
+                    );
                   }
                   console.log('final object::', finalObject);
                   const tempOrder = {...authObject};
@@ -193,16 +202,16 @@ export default function SportHideUnhideScreen({navigation}) {
                     const tempOrder = {...authObject};
                     tempOrder.registered_sports = temp;
                     setAuthObject({...tempOrder});
-                    setActivityList(
-                      [...temp,
+                    setActivityList([
+                      ...temp,
                       ...authObject?.referee_data,
-                      ...authObject?.scorekeeper_data,]
-                    );
-                    setActivityOrder(
-                     [ ...temp,
+                      ...authObject?.scorekeeper_data,
+                    ]);
+                    setActivityOrder([
+                      ...temp,
                       ...authObject?.referee_data,
-                      ...authObject?.scorekeeper_data],
-                    );
+                      ...authObject?.scorekeeper_data,
+                    ]);
                   } else if (item.type === 'referee') {
                     const temp = authObject?.referee_data?.filter(
                       (obj) =>
@@ -214,16 +223,16 @@ export default function SportHideUnhideScreen({navigation}) {
                     tempOrder.referee_data = temp;
                     setAuthObject({...tempOrder});
 
-                    setActivityList(
-                      [...authObject?.registered_sports,
+                    setActivityList([
+                      ...authObject?.registered_sports,
                       ...temp,
-                      ...authObject?.scorekeeper_data,]
-                    );
-                    setActivityOrder(
-                     [ ...authObject?.registered_sports,
+                      ...authObject?.scorekeeper_data,
+                    ]);
+                    setActivityOrder([
+                      ...authObject?.registered_sports,
                       ...temp,
-                      ...authObject?.scorekeeper_data,]
-                    );
+                      ...authObject?.scorekeeper_data,
+                    ]);
                   } else {
                     const temp = authObject?.scorekeeper_data?.filter(
                       (obj) =>
@@ -234,16 +243,16 @@ export default function SportHideUnhideScreen({navigation}) {
                     const tempOrder = {...authObject};
                     tempOrder.scorekeeper_data = temp;
                     setAuthObject({...tempOrder});
-                    setActivityList(
-                     [ ...authObject?.registered_sports,
+                    setActivityList([
+                      ...authObject?.registered_sports,
                       ...authObject?.referee_data,
-                      ...temp,]
-                    );
-                    setActivityOrder(
-                     [ ...authObject?.registered_sports,
+                      ...temp,
+                    ]);
+                    setActivityOrder([
+                      ...authObject?.registered_sports,
                       ...authObject?.referee_data,
-                      ...temp,]
-                    );
+                      ...temp,
+                    ]);
                   }
                 }
               }}
@@ -297,50 +306,45 @@ export default function SportHideUnhideScreen({navigation}) {
       </View>
       <ScrollView style={{flex: 1}}>
         {authObject?.registered_sports?.filter(
-          (obj) =>
-            obj.type === 'player' && obj.is_active === true
+          (obj) => obj.type === 'player' && obj.is_active === true,
         )?.length > 0 && (
           <View>
             <Text style={styles.listTitle}>Playing</Text>
             <FlatList
               showsHorizontalScrollIndicator={false}
-              data={authObject?.registered_sports?.filter(
-                (obj) => obj.type === 'player',
-              ).sort((a, b) => a.sport.localeCompare(b.sport))}
+              data={authObject?.registered_sports
+                ?.filter((obj) => obj.type === 'player')
+                .sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={renderSportsActivityView}
             />
           </View>
         )}
         {authObject?.referee_data?.filter(
-          (obj) =>
-            obj.type === 'referee'
-            && obj.is_active === true
+          (obj) => obj.type === 'referee' && obj.is_active === true,
         )?.length > 0 && (
           <View>
             <Text style={styles.listTitle}>Refereeing</Text>
             <FlatList
               showsHorizontalScrollIndicator={false}
-              data={authObject?.referee_data?.filter(
-                (obj) => obj.type === 'referee',
-              ).sort((a, b) => a.sport.localeCompare(b.sport))}
+              data={authObject?.referee_data
+                ?.filter((obj) => obj.type === 'referee')
+                .sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={renderSportsActivityView}
             />
           </View>
         )}
         {authObject?.scorekeeper_data?.filter(
-          (obj) =>
-            obj.type === 'scorekeeper' &&
-            obj.is_active === true
+          (obj) => obj.type === 'scorekeeper' && obj.is_active === true,
         )?.length > 0 && (
           <View>
             <Text style={styles.listTitle}>Scorekeeper</Text>
             <FlatList
               showsHorizontalScrollIndicator={false}
-              data={authObject?.scorekeeper_data?.filter(
-                (obj) => obj.type === 'scorekeeper',
-              ).sort((a, b) => a.sport.localeCompare(b.sport))}
+              data={authObject?.scorekeeper_data
+                ?.filter((obj) => obj.type === 'scorekeeper')
+                .sort((a, b) => a.sport.localeCompare(b.sport))}
               keyExtractor={keyExtractor}
               renderItem={renderSportsActivityView}
             />

@@ -1,19 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
-import {
-  TouchableOpacity,
-  StyleSheet, View, Text, Image,
-} from 'react-native';
+import {TouchableOpacity, StyleSheet, View, Text, Image} from 'react-native';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 
-function ScorekeeperReservationItem({
-  data,
-  onPressButton,
-}) {
+function ScorekeeperReservationItem({data, onPressButton}) {
   console.log('Scorekeeper Data:::=>?', data);
   let scorekeeperImage = null;
   let scorekeeperName = '';
@@ -53,17 +47,27 @@ function ScorekeeperReservationItem({
   }
   return (
     <TouchableOpacity style={styles.containerStyle} onPress={onPressButton}>
-
       <View style={styles.refereeDataViewStyle}>
         <Image
-            source={scorekeeperImage ? { uri: scorekeeperImage } : images.profilePlaceHolder}
-            style={styles.refereeImageStyle}
+          source={
+            scorekeeperImage
+              ? {uri: scorekeeperImage}
+              : images.profilePlaceHolder
+          }
+          style={styles.refereeImageStyle}
         />
-        <View style={{ marginLeft: 10 }}>
+        <View style={{marginLeft: 10}}>
           <Text style={styles.refereeNameTextStyle}>{scorekeeperName}</Text>
-          <Text style={[styles.statusTextStyle, {
-            color: statusColor,
-          }]}>{status}</Text>
+          <Text
+            style={[
+              styles.statusTextStyle,
+              {
+                color: statusColor,
+              },
+            ]}
+          >
+            {status}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>

@@ -81,7 +81,8 @@ export default function FollowTeams({route, navigation}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}>
+          }}
+        >
           <Image
             source={images.backArrow}
             style={{
@@ -196,7 +197,8 @@ export default function FollowTeams({route, navigation}) {
             style={{
               flex: 0.8,
               paddingHorizontal: 0,
-            }}>
+            }}
+          >
             <Text style={styles.teamNameText}>
               {teams[index].group_name ?? teams[index].full_name}
             </Text>
@@ -209,7 +211,8 @@ export default function FollowTeams({route, navigation}) {
             <TouchableWithoutFeedback
               onPress={() => {
                 followUnfollowClicked({item, index});
-              }}>
+              }}
+            >
               {teams[index].follow ? (
                 <View style={styles.followBtn}>
                   <Text style={styles.followText}>Following</Text>
@@ -371,7 +374,8 @@ export default function FollowTeams({route, navigation}) {
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+      style={styles.mainContainer}
+    >
       <ActivityLoader visible={loading} />
       <FastImage
         resizeMode={'stretch'}

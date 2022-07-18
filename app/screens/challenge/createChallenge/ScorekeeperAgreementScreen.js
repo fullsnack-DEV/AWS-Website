@@ -15,8 +15,7 @@ export default function ScorekeeperAgreementScreen({navigation, route}) {
   const [groupObj] = useState(route?.params?.groupObj);
   const [type] = useState(route?.params?.type);
 
-  console.log('challengeObj scorekeeper agree screen : ',challengeObj);
-
+  console.log('challengeObj scorekeeper agree screen : ', challengeObj);
 
   return (
     <View style={styles.mainContainer}>

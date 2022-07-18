@@ -1,15 +1,8 @@
-import React, {
+import React from 'react';
+import {Text, View, StyleSheet} from 'react-native';
 
-} from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-
-} from 'react-native';
-
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
 import strings from '../Constants/String';
 
 export default function TCInfoField({
@@ -22,10 +15,13 @@ export default function TCInfoField({
 }) {
   return (
     <View style={[styles.fieldView, Props]}>
-      <Text style={[styles.fieldTitle, titleStyle]} numberOfLines={2}>{title}</Text>
-      <Text style={[styles.fieldValue, valueStyle, { color }]} numberOfLines={3} >{value}</Text>
+      <Text style={[styles.fieldTitle, titleStyle]} numberOfLines={2}>
+        {title}
+      </Text>
+      <Text style={[styles.fieldValue, valueStyle, {color}]} numberOfLines={3}>
+        {value}
+      </Text>
     </View>
-
   );
 }
 const styles = StyleSheet.create({
@@ -36,13 +32,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     alignItems: 'center',
-
   },
   fieldTitle: {
     fontSize: 16,
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
-    flex: 0.30,
+    flex: 0.3,
     // paddingTop: 4,
   },
   fieldValue: {

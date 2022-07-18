@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-} from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 import colors from '../Constants/Colors';
@@ -17,29 +13,46 @@ const TCGreenSwitcher = ({
   selectedTab, // 1 OR 2
 }) => (
   <View style={styles.eventPrivacyContianer}>
-
     <LinearGradient
-       colors={selectedTab === 1 ? [colors.greenGradientStart, colors.greenGradientEnd] : [colors.lightgrayColor, colors.lightgrayColor]}
-       style={selectedTab === 1 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
-       >
+      colors={
+        selectedTab === 1
+          ? [colors.greenGradientStart, colors.greenGradientEnd]
+          : [colors.lightgrayColor, colors.lightgrayColor]
+      }
+      style={
+        selectedTab === 1
+          ? styles.activeEventPricacy
+          : styles.inactiveEventPricacy
+      }
+    >
       <Text
-      onPress={onFirstTabPress}
-      style={selectedTab === 1 ? styles.whiteTextColor : styles.grayTextColor}>
+        onPress={onFirstTabPress}
+        style={selectedTab === 1 ? styles.whiteTextColor : styles.grayTextColor}
+      >
         {firstTabText}
       </Text>
     </LinearGradient>
     <LinearGradient
-       colors={selectedTab === 2 ? [colors.greenGradientStart, colors.greenGradientEnd] : [colors.lightgrayColor, colors.lightgrayColor]}
-       style={selectedTab === 2 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
-       >
+      colors={
+        selectedTab === 2
+          ? [colors.greenGradientStart, colors.greenGradientEnd]
+          : [colors.lightgrayColor, colors.lightgrayColor]
+      }
+      style={
+        selectedTab === 2
+          ? styles.activeEventPricacy
+          : styles.inactiveEventPricacy
+      }
+    >
       <Text
-      onPress={onSecondTabPress}
-      style={selectedTab === 2 ? styles.whiteTextColor : styles.grayTextColor}>
+        onPress={onSecondTabPress}
+        style={selectedTab === 2 ? styles.whiteTextColor : styles.grayTextColor}
+      >
         {secondTabText}
       </Text>
     </LinearGradient>
   </View>
-)
+);
 
 const styles = StyleSheet.create({
   eventPrivacyContianer: {
@@ -67,8 +80,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  whiteTextColor:
-  {
+  whiteTextColor: {
     fontSize: 12,
     fontFamily: fonts.RBold,
     color: colors.whiteColor,

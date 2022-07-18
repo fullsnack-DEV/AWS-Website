@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
 import PATH from '../../Constants/ImagePath';
 import GroupIconImage from './GroupIconImage';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-function NotificationProfileItem({ data, indexNumber, selectedIndex }) {
+function NotificationProfileItem({data, indexNumber, selectedIndex}) {
   let entityName = '';
   let entityImage = '';
   let placeHolder = '';
@@ -31,7 +31,8 @@ function NotificationProfileItem({ data, indexNumber, selectedIndex }) {
         style={[
           styles.container,
           indexNumber === selectedIndex ? styles.containerActive : '',
-        ]}>
+        ]}
+      >
         <GroupIconImage
           entityName={entityName}
           entityImg={entityImage}
@@ -47,7 +48,8 @@ function NotificationProfileItem({ data, indexNumber, selectedIndex }) {
                 ? styles.entityNameTextStyleActive
                 : '',
             ]}
-            numberOfLines={2}>
+            numberOfLines={2}
+          >
             {entityName}
           </Text>
         </View>
@@ -60,7 +62,6 @@ function NotificationProfileItem({ data, indexNumber, selectedIndex }) {
 }
 const styles = StyleSheet.create({
   container: {
-
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
   selectedTab: {
     backgroundColor: colors.whiteColor,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: -2 },
+    shadowOffset: {width: 0, height: -2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 3,

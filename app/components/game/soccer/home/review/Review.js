@@ -1,38 +1,33 @@
 /* eslint-disable brace-style */
 /* eslint-disable no-unused-vars */
-import React, {
-  Fragment, useEffect, useState, useContext, useRef,
-} from 'react';
-import {
-  Text, StyleSheet, View, Alert,
-} from 'react-native';
+import React, {Fragment, useEffect, useState, useContext, useRef} from 'react';
+import {Text, StyleSheet, View, Alert} from 'react-native';
 import moment from 'moment';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import fonts from '../../../../../Constants/Fonts';
 import RatingForTeams from './RatingForTeams';
 import colors from '../../../../../Constants/Colors';
-import { getGameReview, getSportsList } from '../../../../../api/Games';
+import {getGameReview, getSportsList} from '../../../../../api/Games';
 import RatingForReferees from './RatingForReferees';
 import ReviewsList from './ReviewsList';
 import TCGradientButton from '../../../../TCGradientButton';
-import { heightPercentageToDP as hp } from '../../../../../utils';
+import {heightPercentageToDP as hp} from '../../../../../utils';
 import TCInnerLoader from '../../../../TCInnerLoader';
-import AuthContext from '../../../../../auth/context'
+import AuthContext from '../../../../../auth/context';
 import {
   checkReviewExpired,
-  getGameDateTimeInDHMformat, REVIEW_EXPIRY_DAYS,
+  getGameDateTimeInDHMformat,
+  REVIEW_EXPIRY_DAYS,
 } from '../../../../../utils/gameUtils';
 
 import strings from '../../../../../Constants/String';
 
-const Review = ({
-  navigation, gameData, isAdmin, getSoccerGameReview,
-}) => {
+const Review = ({navigation, gameData, isAdmin, getSoccerGameReview}) => {
   const isFocused = useIsFocused();
   const reviewOpetions = useRef();
 
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [reviewsData, setReviewsData] = useState([]);
   const [sliderAttributes, setSliderAttributes] = useState([]);
@@ -50,139 +45,166 @@ const Review = ({
   useEffect(() => {
     if (isFocused) {
       setLoading(true);
-      getSoccerGameReview(gameData?.game_id).then((res) => {
-        setReviewsData({ ...res.payload })
-      }).catch((error) => {
-        console.log(error);
-      });
+      getSoccerGameReview(gameData?.game_id)
+        .then((res) => {
+          setReviewsData({...res.payload});
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-        const soccerSportData = authContext?.sports?.length && authContext?.sports?.filter((item) => item.sport === gameData?.sport)[0]
-        const teamReviewProp = soccerSportData?.team_review_properties ?? []
-        const playerReviewProp = soccerSportData?.player_review_properties ?? [];
-        const refereeReviewProp = soccerSportData?.referee_review_properties ?? [];
-        const sliderReviewProp = [];
-        const starReviewProp = [];
-        const sliderReviewPropForPlayer = [];
-        const starReviewPropForPlayer = [];
-        const sliderReviewPropForReferee = [];
-        const starReviewPropForReferee = [];
-        if (teamReviewProp?.length) {
-          teamReviewProp.filter((item) => {
-            if (item.type === 'slider') sliderReviewProp.push(item?.name.toLowerCase())
-            else if (item.type === 'star') starReviewProp.push(item?.name.toLowerCase())
-            return true;
-          })
-          setSliderAttributes([...sliderReviewProp]);
-          setStarAttributes([...starReviewProp]);
-        }
-        if (playerReviewProp?.length) {
-          playerReviewProp.filter((item) => {
-            if (item.type === 'slider') { sliderReviewPropForPlayer.push(item?.name.toLowerCase()); } else if (item.type === 'star') { starReviewPropForPlayer.push(item?.name.toLowerCase()); }
-            return true;
-          });
-          setSliderAttributesForPlayer([...sliderReviewPropForPlayer]);
-          setStarAttributesForPlayer([...starReviewPropForPlayer]);
-        }
-        if (refereeReviewProp?.length) {
-          refereeReviewProp.filter((item) => {
-            if (item.type === 'topstar') { sliderReviewPropForReferee.push(item?.name.toLowerCase()); } else if (item.type === 'star') { starReviewPropForReferee.push(item?.name.toLowerCase()); }
-            return true;
-          });
-          setSliderAttributesForReferee([...sliderReviewPropForReferee]);
-          setStarAttributesForReferee([...starReviewPropForReferee]);
-        }
+      const soccerSportData =
+        authContext?.sports?.length &&
+        authContext?.sports?.filter(
+          (item) => item.sport === gameData?.sport,
+        )[0];
+      const teamReviewProp = soccerSportData?.team_review_properties ?? [];
+      const playerReviewProp = soccerSportData?.player_review_properties ?? [];
+      const refereeReviewProp =
+        soccerSportData?.referee_review_properties ?? [];
+      const sliderReviewProp = [];
+      const starReviewProp = [];
+      const sliderReviewPropForPlayer = [];
+      const starReviewPropForPlayer = [];
+      const sliderReviewPropForReferee = [];
+      const starReviewPropForReferee = [];
+      if (teamReviewProp?.length) {
+        teamReviewProp.filter((item) => {
+          if (item.type === 'slider')
+            sliderReviewProp.push(item?.name.toLowerCase());
+          else if (item.type === 'star')
+            starReviewProp.push(item?.name.toLowerCase());
+          return true;
+        });
+        setSliderAttributes([...sliderReviewProp]);
+        setStarAttributes([...starReviewProp]);
+      }
+      if (playerReviewProp?.length) {
+        playerReviewProp.filter((item) => {
+          if (item.type === 'slider') {
+            sliderReviewPropForPlayer.push(item?.name.toLowerCase());
+          } else if (item.type === 'star') {
+            starReviewPropForPlayer.push(item?.name.toLowerCase());
+          }
+          return true;
+        });
+        setSliderAttributesForPlayer([...sliderReviewPropForPlayer]);
+        setStarAttributesForPlayer([...starReviewPropForPlayer]);
+      }
+      if (refereeReviewProp?.length) {
+        refereeReviewProp.filter((item) => {
+          if (item.type === 'topstar') {
+            sliderReviewPropForReferee.push(item?.name.toLowerCase());
+          } else if (item.type === 'star') {
+            starReviewPropForReferee.push(item?.name.toLowerCase());
+          }
+          return true;
+        });
+        setSliderAttributesForReferee([...sliderReviewPropForReferee]);
+        setStarAttributesForReferee([...starReviewPropForReferee]);
+      }
     }
-  }, [isFocused])
+  }, [isFocused]);
 
-  const Seperator = () => (
-    <View style={styles.separator}/>
-  )
+  const Seperator = () => <View style={styles.separator} />;
   const getGameReviewsData = () => {
-    setLoading(true)
-    getGameReview(gameData?.game_id, gameData?.review_id, authContext).then((response) => {
-      navigation.navigate('LeaveReview', {
-        gameData,
-        gameReviewData: response.payload,
-        sliderAttributes,
-        starAttributes,
+    setLoading(true);
+    getGameReview(gameData?.game_id, gameData?.review_id, authContext)
+      .then((response) => {
+        navigation.navigate('LeaveReview', {
+          gameData,
+          gameReviewData: response.payload,
+          sliderAttributes,
+          starAttributes,
+        });
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
       });
-      setLoading(false)
-    }).catch((error) => {
-      setLoading(false);
-      setTimeout(() => Alert.alert('TownsCup', error?.message), 100)
-    })
-  }
+  };
   return (
     <View style={styles.mainContainer}>
-
       {/*  Leave Review Section */}
-      {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && !isAdmin && (
-        <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
-          <View>
-            <TCGradientButton
-              onPress={() => {
-                reviewOpetions.current.show();
-              }}
-                    startGradientColor={colors.yellowColor}
-                    endGradientColor={colors.themeColor}
-                    title={'LEAVE REVIEW'}
-                    style={{
-                      borderRadius: 5,
-                    }}
-                    outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
-                />
-
+      {gameData?.status === 'ended' &&
+        !checkReviewExpired(gameData?.actual_enddatetime) &&
+        !isAdmin && (
+          <View style={{backgroundColor: colors.whiteColor, padding: 10}}>
+            <View>
+              <TCGradientButton
+                onPress={() => {
+                  reviewOpetions.current.show();
+                }}
+                startGradientColor={colors.yellowColor}
+                endGradientColor={colors.themeColor}
+                title={'LEAVE REVIEW'}
+                style={{
+                  borderRadius: 5,
+                }}
+                outerContainerStyle={{
+                  marginHorizontal: 5,
+                  marginTop: 5,
+                  marginBottom: 0,
+                }}
+              />
+            </View>
           </View>
-        </View>
-      )}
+        )}
       {gameData?.status === 'ended' && !isAdmin && (
-        <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, marginLeft: 10 }}>
+        <View
+          style={{
+            marginBottom: hp(1),
+            backgroundColor: colors.whiteColor,
+            marginLeft: 10,
+          }}
+        >
           {!checkReviewExpired(gameData?.actual_enddatetime) ? (
             <Text style={styles.reviewPeriod}>
               The review period will be expired within{' '}
-              <Text style={{ fontFamily: fonts.RBold }}>
+              <Text style={{fontFamily: fonts.RBold}}>
                 {getGameDateTimeInDHMformat(
-                  (moment(gameData?.actual_enddatetime * 1000)
-                    .add(REVIEW_EXPIRY_DAYS, 'days')) / 1000,
+                  moment(gameData?.actual_enddatetime * 1000).add(
+                    REVIEW_EXPIRY_DAYS,
+                    'days',
+                  ) / 1000,
                 )}
               </Text>
             </Text>
           ) : (
-            <Text style={{
-              ...styles.reviewPeriod,
-              marginVertical: 10,
-            }}>
+            <Text
+              style={{
+                ...styles.reviewPeriod,
+                marginVertical: 10,
+              }}
+            >
               The review period is{' '}
-              <Text style={{ fontFamily: fonts.RBold }}>
-                expired
-              </Text>
+              <Text style={{fontFamily: fonts.RBold}}>expired</Text>
             </Text>
           )}
-
         </View>
       )}
-      {!isAdmin && <Seperator/>}
+      {!isAdmin && <Seperator />}
 
-      <TCInnerLoader visible={loading} size={50}/>
+      <TCInnerLoader visible={loading} size={50} />
       {!loading && (
         <Fragment>
-
           {/* Rating For Team Section */}
           <RatingForTeams
-              sliderAttributes={sliderAttributes}
-              starAttributes={starAttributes}
-              gameData={gameData}
-              reviewsData={reviewsData}
+            sliderAttributes={sliderAttributes}
+            starAttributes={starAttributes}
+            gameData={gameData}
+            reviewsData={reviewsData}
           />
-          <Seperator/>
+          <Seperator />
 
           {/* Rating For Referees Section */}
-          <RatingForReferees refreeData={gameData?.referees ?? []}/>
-          <Seperator/>
+          <RatingForReferees refreeData={gameData?.referees ?? []} />
+          <Seperator />
 
           {/* Review List Section */}
-          <ReviewsList gameData={gameData}/>
-          <Seperator/>
+          <ReviewsList gameData={gameData} />
+          <Seperator />
         </Fragment>
       )}
       <ActionSheet
@@ -190,16 +212,17 @@ const Review = ({
         options={
           gameData?.review_id
             ? [
-              strings.editReviewForTeams,
-              // strings.reviewForPlayers,
-              strings.reviewForReferees,
-              strings.cancel,
-            ]
+                strings.editReviewForTeams,
+                // strings.reviewForPlayers,
+                strings.reviewForReferees,
+                strings.cancel,
+              ]
             : [
-              strings.reviewForTeams,
-              // strings.reviewForPlayers,
-              strings.reviewForReferees,
-              strings.cancel]
+                strings.reviewForTeams,
+                // strings.reviewForPlayers,
+                strings.reviewForReferees,
+                strings.cancel,
+              ]
         }
         cancelButtonIndex={2}
         onPress={(index, sections) => {
@@ -207,7 +230,7 @@ const Review = ({
           if (index === 0) {
             console.log('gameData?.review_id:=>', gameData?.review_id);
             if (gameData?.review_id) {
-              getGameReviewsData()
+              getGameReviewsData();
             } else {
               navigation.navigate('LeaveReview', {
                 gameData,
@@ -233,8 +256,8 @@ const Review = ({
         }}
       />
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -252,5 +275,5 @@ const styles = StyleSheet.create({
     color: colors.themeColor,
     fontFamily: fonts.RRegular,
   },
-})
+});
 export default Review;

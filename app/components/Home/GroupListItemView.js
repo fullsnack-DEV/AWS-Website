@@ -1,62 +1,80 @@
 import React from 'react';
-import {
-  Text, View, StyleSheet, Image, TouchableOpacity,
-} from 'react-native';
+import {Text, View, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-export default function GroupListItemView({
-  groupData,
-  onPress,
-}) {
-  const placeholder = groupData?.entity_type === 'club' ? images.clubPlaceholder : images.teamPlaceholder
+export default function GroupListItemView({groupData, onPress}) {
+  const placeholder =
+    groupData?.entity_type === 'club'
+      ? images.clubPlaceholder
+      : images.teamPlaceholder;
 
   return (
-    <TouchableOpacity onPress={() => { onPress(groupData) }} style={{ marginTop: 15, marginHorizontal: 15, marginBottom: 3 }}>
+    <TouchableOpacity
+      onPress={() => {
+        onPress(groupData);
+      }}
+      style={{marginTop: 15, marginHorizontal: 15, marginBottom: 3}}
+    >
       {groupData && (
         <View style={styles.topViewContainer}>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{flexDirection: 'row'}}>
             <View style={styles.profileView}>
               <Image
                 source={
-                  groupData.thumbnail
-                    ? { uri: groupData.thumbnail }
-                    : placeholder
+                  groupData.thumbnail ? {uri: groupData.thumbnail} : placeholder
                 }
                 style={styles.profileImage}
               />
-              {!groupData.thumbnail && <Text style={styles.oneCharacterText}>
-                {groupData.group_name.charAt(0).toUpperCase()}
-              </Text>}
-              <View style={styles.sportlogoView}>
-                <Image
-                source={images.goalsImage}
-                style={styles.sportImage}
-              />
-                {!groupData.thumbnail && <Text style={styles.oneCharacterText}>
+              {!groupData.thumbnail && (
+                <Text style={styles.oneCharacterText}>
                   {groupData.group_name.charAt(0).toUpperCase()}
-                </Text>}
+                </Text>
+              )}
+              <View style={styles.sportlogoView}>
+                <Image source={images.goalsImage} style={styles.sportImage} />
+                {!groupData.thumbnail && (
+                  <Text style={styles.oneCharacterText}>
+                    {groupData.group_name.charAt(0).toUpperCase()}
+                  </Text>
+                )}
               </View>
             </View>
 
             <View style={styles.textContainer}>
-              <View style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'flex-start',
-              }}>
-                <Text style={styles.nameText} numberOfLines={1}>{groupData.group_name}</Text>
-                <Image source={ groupData.entity_type === 'team' ? images.teamT : images.clubC} style={ styles.logoImage } />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <Text style={styles.nameText} numberOfLines={1}>
+                  {groupData.group_name}
+                </Text>
+                <Image
+                  source={
+                    groupData.entity_type === 'team'
+                      ? images.teamT
+                      : images.clubC
+                  }
+                  style={styles.logoImage}
+                />
               </View>
-              <View style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'flex-start',
-              }}>
-                <Text style={styles.locationText} numberOfLines={1}>{`${groupData.city}, ${groupData.state_abbr}`}</Text>
-                <Text style={styles.sportText} >{groupData.sport}</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <Text
+                  style={styles.locationText}
+                  numberOfLines={1}
+                >{`${groupData.city}, ${groupData.state_abbr}`}</Text>
+                <Text style={styles.sportText}>{groupData.sport}</Text>
               </View>
             </View>
           </View>
@@ -85,7 +103,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 10,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 3,
@@ -98,7 +116,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,
@@ -155,5 +173,4 @@ const styles = StyleSheet.create({
     color: colors.greeColor,
     fontFamily: fonts.RLight,
   },
-
 });

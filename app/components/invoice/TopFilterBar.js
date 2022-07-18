@@ -13,7 +13,11 @@ import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 
 export default function TopFilterBar({
- data, onFilterPress, onChangeText, searchValue, searchSubmit,
+  data,
+  onFilterPress,
+  onChangeText,
+  searchValue,
+  searchSubmit,
 }) {
   console.log(data);
   return (
@@ -24,15 +28,15 @@ export default function TopFilterBar({
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
-      }}>
+      }}
+    >
       <TextInput
         style={styles.searchTxt}
-        returnKeyType='search'
+        returnKeyType="search"
         onChangeText={onChangeText}
         value={searchValue}
         textAlignVertical={'top'}
         onSubmitEditing={searchSubmit}
-
         placeholder={strings.searchText}
         placeholderTextColor={colors.userPostTimeColor}
       />
@@ -43,7 +47,8 @@ export default function TopFilterBar({
           marginTop: 8,
           position: 'absolute',
           right: 0,
-        }}>
+        }}
+      >
         <Image source={images.settingInvoice} style={styles.settingIcon} />
       </TouchableOpacity>
     </View>
@@ -70,7 +75,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 80,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,

@@ -87,7 +87,8 @@ const LeaveReviewTennis = ({navigation, route}) => {
       route?.params?.gameReviewData,
     );
     if (route?.params?.gameReviewData) {
-      const reviewObj = route?.params?.gameReviewData ??
+      const reviewObj =
+        route?.params?.gameReviewData ??
         JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
           ?.playerReview ??
         JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
@@ -136,7 +137,8 @@ const LeaveReviewTennis = ({navigation, route}) => {
         <TouchableOpacity
           onPress={() =>
             currentForm === 1 ? navigation.goBack() : setCurrentForm(1)
-          }>
+          }
+        >
           <Image
             source={images.backArrow}
             style={{
@@ -200,11 +202,11 @@ const LeaveReviewTennis = ({navigation, route}) => {
   };
   const createReview = () => {
     console.log('Review Data::=>', JSON.stringify(reviewsData));
-      if (isValidReview()) {
-        uploadMediaForTeam();
-      } else {
-        Alert.alert('Please, complete all ratings before moving to the next.');
-      } 
+    if (isValidReview()) {
+      uploadMediaForTeam();
+    } else {
+      Alert.alert('Please, complete all ratings before moving to the next.');
+    }
   };
 
   const patchOrAddReview = () => {
@@ -349,7 +351,7 @@ const LeaveReviewTennis = ({navigation, route}) => {
     );
     navigation.goBack();
   };
-  
+
   const setTeamReview = (teamNo = 0, key = '', value = '') => {
     console.log(`key::${key}value::${value}`);
     if (reviewsData[key] !== value) {
@@ -365,7 +367,8 @@ const LeaveReviewTennis = ({navigation, route}) => {
           <TouchableOpacity
             onPress={() =>
               currentForm === 1 ? navigation.goBack() : navigation.pop(1)
-            }>
+            }
+          >
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
         }

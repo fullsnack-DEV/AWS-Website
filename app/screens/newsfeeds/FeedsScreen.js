@@ -546,7 +546,8 @@ const FeedsScreen = ({navigation}) => {
       <ActivityLoader visible={loading} />
       <View
         style={{opacity: isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}>
+        pointerEvents={pointEvent}
+      >
         {renderTopHeader}
       </View>
       {isAccountDeactivated && (
@@ -593,7 +594,8 @@ const FeedsScreen = ({navigation}) => {
       )}
       <View
         style={{flex: 1, opacity: isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}>
+        pointerEvents={pointEvent}
+      >
         {firstTimeLoading ? <NewsFeedShimmer /> : renderNewsFeedList}
         {renderImageProgress}
       </View>

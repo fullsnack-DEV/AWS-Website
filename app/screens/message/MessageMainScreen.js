@@ -248,9 +248,7 @@ const MessageMainScreen = ({navigation}) => {
     () => (
       <Header
         showBackgroundColor={true}
-        leftComponent={
-          <Text style={styles.eventTextStyle}>Chat</Text>
-        }
+        leftComponent={<Text style={styles.eventTextStyle}>Chats</Text>}
         rightComponent={
           authContext?.entity?.QB && (
             <View style={{flexDirection: 'row'}}>
@@ -261,7 +259,8 @@ const MessageMainScreen = ({navigation}) => {
                 style={{marginRight: 10}}
                 onPress={() => {
                   navigation.navigate('MessageInviteScreen');
-                }}>
+                }}
+              >
                 <FastImage
                   source={
                     pressStatus === 'messageButton'
@@ -278,7 +277,8 @@ const MessageMainScreen = ({navigation}) => {
                 onPressOut={() => setPressStatus(null)}
                 onPress={() => {
                   navigation.navigate('MessageSearchScreen');
-                }}>
+                }}
+              >
                 <FastImage
                   source={
                     pressStatus === 'searchButton'
@@ -290,7 +290,7 @@ const MessageMainScreen = ({navigation}) => {
                 />
               </TouchableOpacity>
             </View>
-        )
+          )
         }
       />
     ),
@@ -362,7 +362,8 @@ const MessageMainScreen = ({navigation}) => {
     <View style={styles.mainContainer}>
       <View
         style={{opacity: isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}>
+        pointerEvents={pointEvent}
+      >
         {renderHeader}
         <View style={styles.separateLine} />
       </View>
@@ -410,7 +411,8 @@ const MessageMainScreen = ({navigation}) => {
       )}
       <View
         style={{flex: 1, opacity: isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}>
+        pointerEvents={pointEvent}
+      >
         {/* eslint-disable-next-line no-nested-ternary */}
         {loading ? (
           <UserListShimmer />
@@ -448,7 +450,7 @@ const styles = StyleSheet.create({
   eventTextStyle: {
     fontSize: 20,
     fontFamily: fonts.RBold,
-    width: 60
+    width: 60,
   },
   separateLine: {
     borderColor: colors.writePostSepratorColor,

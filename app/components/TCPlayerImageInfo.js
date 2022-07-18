@@ -1,7 +1,5 @@
 import React from 'react';
-import {
- Text, View, StyleSheet, Image,
- } from 'react-native';
+import {Text, View, StyleSheet, Image} from 'react-native';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -21,30 +19,42 @@ export default function TCPlayerImageInfo({
       <Text style={styles.fieldTitle} numberOfLines={2}>
         {title}
       </Text>
-      <View style={{ flex: 0.68 }}>
+      <View style={{flex: 0.68}}>
         <View style={styles.fieldValue}>
-          <Image source={player1Image ? { uri: player1Image } : images.profilePlaceHolder} style={styles.imageView} />
+          <Image
+            source={
+              player1Image ? {uri: player1Image} : images.profilePlaceHolder
+            }
+            style={styles.imageView}
+          />
           <Text
-          style={{
-            marginLeft: 5,
-            fontFamily: fonts.RMedium,
-            fontSize: 16,
-            color,
-          }}
-          numberOfLines={1}>
+            style={{
+              marginLeft: 5,
+              fontFamily: fonts.RMedium,
+              fontSize: 16,
+              color,
+            }}
+            numberOfLines={1}
+          >
             {player1Name}
           </Text>
         </View>
-        <View style={[styles.fieldValue, { marginTop: 10 }]}>
-          <Image source={player2Image ? { uri: player2Image } : images.profilePlaceHolder} style={styles.imageView} />
+        <View style={[styles.fieldValue, {marginTop: 10}]}>
+          <Image
+            source={
+              player2Image ? {uri: player2Image} : images.profilePlaceHolder
+            }
+            style={styles.imageView}
+          />
           <Text
-          style={{
-            marginLeft: 5,
-            fontFamily: fonts.RMedium,
-            fontSize: 16,
-            color,
-          }}
-          numberOfLines={1}>
+            style={{
+              marginLeft: 5,
+              fontFamily: fonts.RMedium,
+              fontSize: 16,
+              color,
+            }}
+            numberOfLines={1}
+          >
             {player2Name}
           </Text>
         </View>

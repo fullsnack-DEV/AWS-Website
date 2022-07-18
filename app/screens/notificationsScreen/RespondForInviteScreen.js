@@ -36,10 +36,9 @@ export default function RespondForInviteScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [groupObject, setGroupObject] = useState();
-  const [membersList,setMembersList] = useState();
+  const [membersList, setMembersList] = useState();
   const [hideScore, SetHideScore] = useState();
 
- 
   useEffect(() => {
     setTimeout(() => {
       SetHideScore(true);
@@ -55,19 +54,21 @@ export default function RespondForInviteScreen({navigation, route}) {
       .then((response) => {
         console.log('group api res:=>', response.payload);
         setGroupObject(response.payload);
-        getGroupMembers(JSON.parse(groupObj.activities[0].object).group.group_id, authContext)
-        .then((members) => {
-          setMembersList(members.payload);
-          console.log('members.payload',members.payload);
-          setLoading(false);
-        })
-        .catch((e) => {
+        getGroupMembers(
+          JSON.parse(groupObj.activities[0].object).group.group_id,
+          authContext,
+        )
+          .then((members) => {
+            setMembersList(members.payload);
+            console.log('members.payload', members.payload);
             setLoading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-        
+          })
+          .catch((e) => {
+            setLoading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
       })
       .catch((e) => {
         setLoading(false);
@@ -76,13 +77,23 @@ export default function RespondForInviteScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext, groupObj.activities, groupObj.group.group_id, route.params?.groupID]);
+  }, [
+    authContext,
+    groupObj.activities,
+    groupObj.group.group_id,
+    route.params?.groupID,
+  ]);
 
   const renderMembersList = ({item}) => {
     console.log('aa');
     return (
       <View style={styles.backgroundView}>
-        <Image source={item?.thumnail ? {uri: item?.thumnail} : images.profilePlaceHolder} style={styles.profileImage} />
+        <Image
+          source={
+            item?.thumnail ? {uri: item?.thumnail} : images.profilePlaceHolder
+          }
+          style={styles.profileImage}
+        />
       </View>
     );
   };
@@ -120,18 +131,17 @@ export default function RespondForInviteScreen({navigation, route}) {
       });
   };
 
-
-
   const renderBackground = () => {
     if (groupObject?.background_thumbnail) {
       return (
-        <View style={{marginLeft: 10, marginRight: 10,marginTop:10}}>
+        <View style={{marginLeft: 10, marginRight: 10, marginTop: 10}}>
           <FastImage
             source={{uri: groupObject?.background_thumbnail}}
             resizeMode={'cover'}
-            style={styles.bgImageStyle}>
-            
-            {!hideScore && <ImageBackground
+            style={styles.bgImageStyle}
+          >
+            {!hideScore && (
+              <ImageBackground
                 source={images.profileLevel}
                 style={{
                   height: 58,
@@ -139,49 +149,53 @@ export default function RespondForInviteScreen({navigation, route}) {
                   resizeMode: 'contain',
                   alignItems: 'center',
                   justifyContent: 'center',
-                }}>
-              <View
+                }}
+              >
+                <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginBottom: 8,
-                  }}>
-                <FastImage
+                  }}
+                >
+                  <FastImage
                     source={images.tc_message_top_icon}
                     resizeMode={'contain'}
                     style={{height: 35, width: 35}}
                   />
-                <View style={{flexDirection: 'column', alignItems: 'center'}}>
-                  <Text
+                  <View style={{flexDirection: 'column', alignItems: 'center'}}>
+                    <Text
                       style={{
                         fontFamily: fonts.RBold,
                         fontSize: 16,
                         color: colors.lightBlackColor,
-                      }}>
-                    {0}
-                  </Text>
-                  <Text
+                      }}
+                    >
+                      {0}
+                    </Text>
+                    <Text
                       style={{
                         fontFamily: fonts.RMedium,
                         fontSize: 10,
                         color: colors.lightBlackColor,
-                      }}>
-                    POINTS
-                  </Text>
+                      }}
+                    >
+                      POINTS
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            </ImageBackground>}
-            
+              </ImageBackground>
+            )}
           </FastImage>
         </View>
       );
     }
     return (
-      <View style={{marginLeft: 10, marginRight: 10,marginTop:10}}>
+      <View style={{marginLeft: 10, marginRight: 10, marginTop: 10}}>
         <View style={styles.bgImageStyle}>
-         
-          {!hideScore && <ImageBackground
+          {!hideScore && (
+            <ImageBackground
               source={images.profileLevel}
               style={{
                 height: 58,
@@ -189,46 +203,49 @@ export default function RespondForInviteScreen({navigation, route}) {
                 resizeMode: 'contain',
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}>
-            <View
+              }}
+            >
+              <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 8,
-                }}>
-              <FastImage
+                }}
+              >
+                <FastImage
                   source={images.tc_message_top_icon}
                   resizeMode={'contain'}
                   style={{height: 35, width: 35}}
                 />
-              <View style={{flexDirection: 'column', alignItems: 'center'}}>
-                <Text
+                <View style={{flexDirection: 'column', alignItems: 'center'}}>
+                  <Text
                     style={{
                       fontFamily: fonts.RBold,
                       fontSize: 16,
                       color: colors.lightBlackColor,
-                    }}>
-                  {0}
-                </Text>
-                <Text
+                    }}
+                  >
+                    {0}
+                  </Text>
+                  <Text
                     style={{
                       fontFamily: fonts.RMedium,
                       fontSize: 10,
                       color: colors.lightBlackColor,
-                    }}>
-                  POINTS
-                </Text>
+                    }}
+                  >
+                    POINTS
+                  </Text>
+                </View>
               </View>
-            </View>
-          </ImageBackground>}
-          
+            </ImageBackground>
+          )}
         </View>
       </View>
     );
   };
 
-  
   return (
     <SafeAreaView>
       <ActivityLoader visible={loading} />
@@ -241,10 +258,16 @@ export default function RespondForInviteScreen({navigation, route}) {
               height: 60,
               width: 60,
             }}
-            source={entityObject?.thumbnail ? {uri: groupObject?.thumbnail} : images.clubPlaceholder}/>
+            source={
+              entityObject?.thumbnail
+                ? {uri: groupObject?.thumbnail}
+                : images.clubPlaceholder
+            }
+          />
 
           <View
-            style={{flexDirection: 'row', alignSelf: 'center', marginTop: 5}}>
+            style={{flexDirection: 'row', alignSelf: 'center', marginTop: 5}}
+          >
             <Text style={styles.nameText} numberOfLines={5}>
               {groupObject?.group_name}
             </Text>
@@ -279,13 +302,15 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 30,
               marginTop: 0,
               marginBottom: 15,
-            }}>
+            }}
+          >
             <Text
               style={{
                 fontSize: 20,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               {groupObject?.group_name}
             </Text>{' '}
             invited you to join the team.
@@ -299,7 +324,8 @@ export default function RespondForInviteScreen({navigation, route}) {
                 margin: 15,
                 marginTop: 0,
                 marginBottom: 0,
-              }}>
+              }}
+            >
               {groupObject?.bio}
             </Text>
             <Text
@@ -309,7 +335,8 @@ export default function RespondForInviteScreen({navigation, route}) {
                 color: colors.lightBlackColor,
                 marginLeft: 15,
                 marginRight: 15,
-              }}>
+              }}
+            >
               Signed up in{' '}
               {new Date(groupObject?.createdAt * 1000).getFullYear()}
             </Text>
@@ -320,7 +347,8 @@ export default function RespondForInviteScreen({navigation, route}) {
               flexDirection: 'row',
               margin: 15,
               justifyContent: 'space-between',
-            }}>
+            }}
+          >
             <Text style={styles.lightTextStyle}>Sports</Text>
             <Text style={styles.regularTextStyle}>{groupObject?.sport}</Text>
           </View>
@@ -331,7 +359,8 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 15,
               marginTop: 0,
               justifyContent: 'space-between',
-            }}>
+            }}
+          >
             <Text style={styles.lightTextStyle}>Member’s age</Text>
             <Text style={styles.regularTextStyle}>
               Min {groupObject?.min_age} Max {groupObject?.max_age}
@@ -344,7 +373,8 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 15,
               marginTop: 0,
               justifyContent: 'space-between',
-            }}>
+            }}
+          >
             <Text style={styles.lightTextStyle}>Language</Text>
             <Text style={styles.regularTextStyle}>
               {groupObject?.languages?.toString()}
@@ -357,7 +387,8 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 15,
               marginTop: 0,
               justifyContent: 'space-between',
-            }}>
+            }}
+          >
             <Text style={styles.lightTextStyle}>Office</Text>
             <Text style={styles.regularTextStyle} numberOfLines={3}>
               {groupObject?.office_address}
@@ -372,7 +403,8 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 15,
               marginTop: 0,
               justifyContent: 'space-between',
-            }}>
+            }}
+          >
             <Text style={styles.lightTextStyle}>
               Membership registration fee
             </Text>
@@ -387,7 +419,8 @@ export default function RespondForInviteScreen({navigation, route}) {
               margin: 15,
               marginTop: 0,
               justifyContent: 'space-between',
-            }}>
+            }}
+          >
             <Text style={styles.lightTextStyle}>Membership fee</Text>
             <Text style={styles.regularTextStyle} numberOfLines={3}>
               ${groupObject?.membership_fee} CAD /{' '}
@@ -472,7 +505,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 5,
     marginBottom: 5,
-    marginLeft:10
+    marginLeft: 10,
   },
   profileImage: {
     resizeMode: 'cover',

@@ -1,7 +1,9 @@
+import Config from 'react-native-config';
+
 // AsyncConstants
 export const authToken = 'authToken';
 export const token_details = 'token_details';
-export const Google_API_Key = 'AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4';
+export const Google_API_Key = Config.GOOGLE_PLACE_KEY;
 
 export const monthsSelectionData = [
   {label: 'Past 3 Months', value: 'Past 3 Months'},
@@ -106,7 +108,7 @@ export const gameData = {
     following_count: 4,
   },
   pause_datetime: 0,
- 
+
   gameId: 'da7f9ff0-c5e5-40bc-a0b2-137eb1c97317',
   game_id: 'da7f9ff0-c5e5-40bc-a0b2-137eb1c97317',
   start_datetime: 1630414600,

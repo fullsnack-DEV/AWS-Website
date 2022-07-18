@@ -136,7 +136,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
           }}
           onPress={() => {
             onSaveButtonClicked();
-          }}>
+          }}
+        >
           {strings.save}
         </Text>
       ),
@@ -307,7 +308,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
       style={styles.listItem}
       onPress={() => {
         isIconCheckedOrNot({item, index});
-      }}>
+      }}
+    >
       <View style={{height: 60, justifyContent: 'center'}}>
         <Text style={styles.languageList}>{item.language}</Text>
         <View style={styles.checkbox}>
@@ -333,14 +335,16 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
     <TouchableWithoutFeedback
       onPress={() => {
         isIconCheckedOrNotSport({item, index});
-      }}>
+      }}
+    >
       <View
         style={{
           // padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>
           {Utility.getSportName(item, authContext)}
         </Text>
@@ -362,11 +366,7 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
         {/* Sport */}
         <View>
           <View style={{flexDirection: 'row'}}>
-            <TCLabel
-              title={'Sport'}
-              style={styles.titleStyle}
-            />
-           
+            <TCLabel title={'Sport'} style={styles.titleStyle} />
           </View>
           {groupData.entity_type === 'club' && (
             <TouchableOpacity style={styles.languageView} onPress={toggleModal}>
@@ -376,7 +376,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
                     ? styles.languageText
                     : styles.languagePlaceholderText
                 }
-                numberOfLines={50}>
+                numberOfLines={50}
+              >
                 {sportsName || 'Sports'}
               </Text>
             </TouchableOpacity>
@@ -436,7 +437,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
               flexDirection: 'row',
               marginHorizontal: 15,
               justifyContent: 'space-between',
-            }}>
+            }}
+          >
             <View style={{width: '49%'}}>
               <RNPickerSelect
                 placeholder={{
@@ -518,7 +520,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
               flexDirection: 'row',
               marginHorizontal: 15,
               justifyContent: 'space-between',
-            }}>
+            }}
+          >
             <View style={{width: '49%'}}>
               <RNPickerSelect
                 placeholder={{
@@ -576,7 +579,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
         isVisible={isModalVisible}
         backdropColor="black"
         backdropOpacity={0.1}
-        style={{margin: 0}}>
+        style={{margin: 0}}
+      >
         <View style={styles.modalViewContainer}>
           <ImageButton
             source={images.cancelImage}
@@ -615,20 +619,22 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
         animationInTiming={300}
         animationOutTiming={800}
         backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}>
-        <View
-          style={styles.modalViewContainer}>
+        backdropTransitionOutTiming={800}
+      >
+        <View style={styles.modalViewContainer}>
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={Utility.getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
+              onPress={() => setVisibleSportsModal(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -638,7 +644,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Sports
             </Text>
             <TouchableOpacity
@@ -646,7 +653,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
                 const filterChecked = sportList.filter((obj) => obj.isChecked);
                 setSelectedSports(filterChecked);
                 toggleModal();
-              }}>
+              }}
+            >
               <Text
                 style={{
                   alignSelf: 'center',
@@ -654,7 +662,8 @@ export default function EditGroupBasicInfoScreen({navigation, route}) {
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
-                }}>
+                }}
+              >
                 Apply
               </Text>
             </TouchableOpacity>
@@ -821,7 +830,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     resizeMode: 'contain',
   },
-  modalViewContainer:{
+  modalViewContainer: {
     width: '100%',
     height: Dimensions.get('window').height / 1.3,
     backgroundColor: 'white',
@@ -835,5 +844,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 15,
- }
+  },
 });

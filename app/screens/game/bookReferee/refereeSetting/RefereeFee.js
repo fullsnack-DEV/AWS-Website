@@ -1,6 +1,16 @@
 /* eslint-disable no-unsafe-optional-chaining */
 import React, {useState, useLayoutEffect, useContext} from 'react';
-import {StyleSheet, View, Text, TextInput, Alert, FlatList, TouchableOpacity, Image, Dimensions} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  Alert,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
 
@@ -19,8 +29,7 @@ import images from '../../../../Constants/ImagePath';
 export default function RefereeFee({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
-  
-  
+
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -29,12 +38,11 @@ export default function RefereeFee({navigation, route}) {
       ? route?.params?.settingObj?.game_fee?.fee
       : 0,
   );
-  const [currencyType,setCurruencyType] = useState(
+  const [currencyType, setCurruencyType] = useState(
     route?.params?.settingObj?.game_fee
       ? route?.params?.settingObj?.game_fee?.currency_type
       : authContext?.entity?.obj?.currency_type ?? strings.defaultCurrency,
   );
-
 
   const [visibleCurrencyModal, setVisibleCurrencyModal] = useState(false);
 
@@ -45,7 +53,8 @@ export default function RefereeFee({navigation, route}) {
           style={styles.saveButtonStyle}
           onPress={() => {
             onSavePressed();
-          }}>
+          }}
+        >
           Save
         </Text>
       ),
@@ -75,7 +84,7 @@ export default function RefereeFee({navigation, route}) {
       const refereeSetting = (
         authContext?.entity?.obj?.referee_data ?? []
       ).filter((obj) => obj.sport === sportName)?.[0]?.setting;
-  
+
       const modifiedSetting = {
         ...refereeSetting,
         sport: sportName,
@@ -86,9 +95,10 @@ export default function RefereeFee({navigation, route}) {
         },
       };
       setloading(true);
-      const registerdRefereeData = authContext?.entity?.obj?.referee_data?.filter(
-        (obj) => obj?.sport !== sportName,
-      );
+      const registerdRefereeData =
+        authContext?.entity?.obj?.referee_data?.filter(
+          (obj) => obj?.sport !== sportName,
+        );
 
       let selectedSport = authContext?.entity?.obj?.referee_data?.filter(
         (obj) => obj?.sport === sportName,
@@ -137,11 +147,11 @@ export default function RefereeFee({navigation, route}) {
         });
     }
   };
-  
+
   const renderCurrencyType = ({item}) => (
     <TouchableOpacity
       onPress={() => {
-        setCurruencyType(item?.value)
+        setCurruencyType(item?.value);
         setTimeout(() => {
           setVisibleCurrencyModal(false);
         }, 300);
@@ -152,8 +162,9 @@ export default function RefereeFee({navigation, route}) {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-      }}>
-      <Text style={{marginTop:15, marginBottom:15}}>{item.label}</Text>
+      }}
+    >
+      <Text style={{marginTop: 15, marginBottom: 15}}>{item.label}</Text>
       <Image
         source={
           currencyType === item?.value
@@ -179,14 +190,16 @@ export default function RefereeFee({navigation, route}) {
             }
           }}
           value={basicFee.toString()}
-          keyboardType={'decimal-pad'}></TextInput>
+          keyboardType={'decimal-pad'}
+        ></TextInput>
         <Text style={styles.curruency}>{currencyType}</Text>
       </View>
       <Text
-          style={[styles.changeCurruency, {textDecorationLine: 'underline'}]}
-          onPress={() => {
-            setVisibleCurrencyModal(true);
-          }}>
+        style={[styles.changeCurruency, {textDecorationLine: 'underline'}]}
+        onPress={() => {
+          setVisibleCurrencyModal(true);
+        }}
+      >
         {'Change currency'}
       </Text>
       <Modal
@@ -200,7 +213,8 @@ export default function RefereeFee({navigation, route}) {
         backdropTransitionOutTiming={10}
         style={{
           margin: 0,
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -216,18 +230,21 @@ export default function RefereeFee({navigation, route}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={Utility.getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleCurrencyModal(false)}>
+              onPress={() => setVisibleCurrencyModal(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -237,7 +254,8 @@ export default function RefereeFee({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Currency Setting
             </Text>
 
@@ -248,7 +266,8 @@ export default function RefereeFee({navigation, route}) {
                 fontSize: 16,
                 fontFamily: fonts.RRegular,
                 color: colors.themeColor,
-              }}></Text>
+              }}
+            ></Text>
           </View>
           <View style={styles.separatorLine} />
           <FlatList
@@ -279,7 +298,7 @@ const styles = StyleSheet.create({
 
     marginTop: 12,
     paddingHorizontal: 15,
-   
+
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
@@ -291,7 +310,7 @@ const styles = StyleSheet.create({
     fontSize: wp('3.8%'),
     height: 40,
     width: '90%',
-    textAlign:'center'
+    textAlign: 'center',
   },
   curruency: {
     alignSelf: 'center',
@@ -299,7 +318,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    
   },
   saveButtonStyle: {
     fontFamily: fonts.RMedium,
@@ -323,12 +341,11 @@ const styles = StyleSheet.create({
     width: wp('100%'),
   },
   changeCurruency: {
-    
-    textAlign:'right',
-     fontSize: 14,
-     fontFamily: fonts.RLight,
-     color: colors.lightBlackColor,
-     marginRight:15,
-     marginTop:10
-   },
+    textAlign: 'right',
+    fontSize: 14,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+    marginRight: 15,
+    marginTop: 10,
+  },
 });

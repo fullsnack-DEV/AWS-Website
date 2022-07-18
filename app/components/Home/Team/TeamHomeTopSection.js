@@ -14,8 +14,7 @@ export default function UserTeamTopSection({
   loggedInEntity,
   onAction,
 }) {
-  console.log('teamDetailsteamDetails',teamDetails);
-  
+  console.log('teamDetailsteamDetails', teamDetails);
 
   return (
     <View style={{marginTop: !isAdmin ? 0 : 15, marginBottom: 15}}>
@@ -90,9 +89,8 @@ export default function UserTeamTopSection({
                     height: 28,
                     width: '100%',
                     borderRadius: 5,
-                  
                   }}
-                  textStyle={{fontSize:10,color: colors.lightBlackColor}}
+                  textStyle={{fontSize: 10, color: colors.lightBlackColor}}
                   title={'•••'}
                   onPress={() => {
                     onAction('dot');
@@ -111,7 +109,9 @@ export default function UserTeamTopSection({
                   rightImage={images.check}
                   imageStyle={styles.checkMarkStyle}
                   textStyle={styles.buttonTextStyle}
-                  onPressProfile={() => Alert.alert('Please ask to team for leave your club.')}
+                  onPressProfile={() =>
+                    Alert.alert('Please ask to team for leave your club.')
+                  }
                 />
               )}
               {!teamDetails?.parent_groups?.includes(loggedInEntity.uid) && (

@@ -90,14 +90,16 @@ export default function RegisterScorekeeper({navigation}) {
       style={styles.listItem}
       onPress={() => {
         isIconCheckedOrNot({item, index});
-      }}>
+      }}
+    >
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>{item.language}</Text>
         <View style={styles.checkbox}>
           {languages[index].isChecked ? (
@@ -115,7 +117,14 @@ export default function RegisterScorekeeper({navigation}) {
       Alert.alert(strings.appName, 'Sports cannot be blank');
       return false;
     }
-
+    if (selectedLanguages.length <= 0) {
+      Alert.alert(strings.appName, 'Language cannot be blank');
+      return false;
+    }
+    if (description === '') {
+      Alert.alert(strings.appName, 'Description cannot be blank');
+      return false;
+    }
     const isExist = scorekeepersData?.filter((item) => item?.sport === sports);
     if (isExist?.length) {
       Alert.alert(
@@ -129,14 +138,16 @@ export default function RegisterScorekeeper({navigation}) {
   const renderSports = ({item}) => (
     <TouchableWithoutFeedback
       style={styles.listItem}
-      onPress={() => setSportsSelection(item)}>
+      onPress={() => setSportsSelection(item)}
+    >
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>
           {getSportName(item, authContext)}
         </Text>
@@ -186,12 +197,12 @@ export default function RegisterScorekeeper({navigation}) {
           <TCFormProgress totalSteps={2} curruentStep={1} />
 
           <View>
-            <TCLabel title={strings.whichSportScorekeeper} required={false} />
+            <TCLabel title={strings.whichSport} required={true} />
             <TouchableOpacity onPress={() => setVisibleSportsModal(true)}>
               <View style={styles.searchView}>
                 <TextInput
                   style={styles.searchTextField}
-                  placeholder={strings.selectSportPlaceholder}
+                  placeholder={strings.selectSportPlaceholderScorekeeper}
                   value={getSportName(sportsSelection, authContext)}
                   editable={false}
                   pointerEvents="none"
@@ -201,7 +212,7 @@ export default function RegisterScorekeeper({navigation}) {
           </View>
 
           <View>
-            <TCLabel title={strings.whichLanguage} required={false} />
+            <TCLabel title={strings.whichLanguage} required={true} />
             <TouchableOpacity onPress={toggleModal}>
               <View style={styles.searchView}>
                 <TextInput
@@ -216,7 +227,7 @@ export default function RegisterScorekeeper({navigation}) {
           </View>
 
           <View style={{marginBottom: 10}}>
-            <TCLabel title={strings.describeSelf} required={false} />
+            <TCLabel title={strings.describeSelf} required={true} />
             <TextInput
               style={styles.descriptionTxt}
               onChangeText={(text) => onChangeText(text)}
@@ -232,7 +243,11 @@ export default function RegisterScorekeeper({navigation}) {
 
       <SafeAreaView>
         <TCGradientButton
-          isDisabled={sports === '' || selectedLanguages?.length <= 0}
+          isDisabled={
+            sports === '' ||
+            selectedLanguages?.length <= 0 ||
+            description === ''
+          }
           title={strings.nextTitle}
           style={{marginBottom: 5}}
           onPress={nextOnPress}
@@ -249,7 +264,8 @@ export default function RegisterScorekeeper({navigation}) {
         animationInTiming={300}
         animationOutTiming={800}
         backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}>
+        backdropTransitionOutTiming={800}
+      >
         <View
           style={{
             width: '100%',
@@ -265,18 +281,21 @@ export default function RegisterScorekeeper({navigation}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setModalVisible(false)}>
+              onPress={() => setModalVisible(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -286,7 +305,8 @@ export default function RegisterScorekeeper({navigation}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Languages
             </Text>
             <TouchableOpacity
@@ -298,7 +318,8 @@ export default function RegisterScorekeeper({navigation}) {
                 }
                 setSelectedLanguages(selectedLanguage);
                 toggleModal();
-              }}>
+              }}
+            >
               <Text
                 style={{
                   alignSelf: 'center',
@@ -306,7 +327,8 @@ export default function RegisterScorekeeper({navigation}) {
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
-                }}>
+                }}
+              >
                 Apply
               </Text>
             </TouchableOpacity>
@@ -331,7 +353,8 @@ export default function RegisterScorekeeper({navigation}) {
         backdropTransitionOutTiming={800}
         style={{
           margin: 0,
-        }}>
+        }}
+      >
         <View
           style={{
             width: '100%',
@@ -347,18 +370,21 @@ export default function RegisterScorekeeper({navigation}) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
             elevation: 15,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
               paddingHorizontal: 15,
               justifyContent: 'space-between',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <TouchableOpacity
               hitSlop={getHitSlop(15)}
               style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
+              onPress={() => setVisibleSportsModal(false)}
+            >
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -368,14 +394,16 @@ export default function RegisterScorekeeper({navigation}) {
                 fontSize: 16,
                 fontFamily: fonts.RBold,
                 color: colors.lightBlackColor,
-              }}>
+              }}
+            >
               Sports
             </Text>
             <TouchableOpacity
               onPress={() => {
                 setSports(sportsSelection.sport);
                 setVisibleSportsModal(false);
-              }}>
+              }}
+            >
               <Text
                 style={{
                   alignSelf: 'center',
@@ -383,7 +411,8 @@ export default function RegisterScorekeeper({navigation}) {
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
-                }}>
+                }}
+              >
                 Apply
               </Text>
             </TouchableOpacity>
@@ -416,27 +445,23 @@ const styles = StyleSheet.create({
   checkbox: {},
   searchView: {
     alignSelf: 'center',
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    elevation: 3,
     flexDirection: 'row',
     height: 40,
 
-    marginTop: 12,
+    marginTop: 10,
     paddingLeft: 15,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
 
     width: wp('92%'),
   },
   searchTextField: {
     alignSelf: 'center',
-    color: colors.blackColor,
     flex: 1,
-    fontSize: wp('3.8%'),
     width: wp('80%'),
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
 
   listItem: {
@@ -452,22 +477,19 @@ const styles = StyleSheet.create({
   },
 
   descriptionTxt: {
-    height: 120,
-    fontSize: wp('3.8%'),
+    height: 100,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+
     width: wp('92%'),
     alignSelf: 'center',
     marginTop: 12,
     paddingVertical: 12,
     paddingHorizontal: 15,
-    color: 'black',
     paddingRight: 30,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
   },
 
   checkboxImg: {

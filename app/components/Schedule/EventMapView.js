@@ -1,22 +1,21 @@
 import React from 'react';
-import {
-  StyleSheet,
-} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, {Marker} from 'react-native-maps';
 
-function EventMapView({ region, coordinate, style }) {
+function EventMapView({region, coordinate, style}) {
   return (
     <MapView
-    // mapType={Platform.OS === 'android' ? 'none' : 'standard'}
-    // provider={PROVIDER_GOOGLE}
-    region={region}
+      // mapType={Platform.OS === 'android' ? 'none' : 'standard'}
+      // provider={PROVIDER_GOOGLE}
+      region={region}
       scrollEnabled={false}
       zoomEnabled={false}
-      style={[styles.mapViewStyle, style]}>
+      style={[styles.mapViewStyle, style]}
+    >
       <Marker coordinate={coordinate} />
     </MapView>
   );

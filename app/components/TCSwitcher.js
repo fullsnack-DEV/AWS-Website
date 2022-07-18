@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -24,23 +19,27 @@ const TCSwitcher = ({
   borderColor = colors.yellowColor,
   style = {},
 }) => (
-  <View style={{ ...styles.eventPrivacyContianer, borderColor }}>
+  <View style={{...styles.eventPrivacyContianer, borderColor}}>
     {tabs.map((item, index) => (
-
       <TouchableOpacity
-          activeOpacity={0.8}
-          key={index}
-            onPress={() => onTabPress(index)}
-          style={{ flex: 1, ...style }}
-        >
+        activeOpacity={0.8}
+        key={index}
+        onPress={() => onTabPress(index)}
+        style={{flex: 1, ...style}}
+      >
         <LinearGradient
-              key={index?.toString()}
-              colors={
-                selectedTab === index ? focusedTabColors : unFocusedTabColors
-              }
-              style={styles.gradiantContainer}>
+          key={index?.toString()}
+          colors={selectedTab === index ? focusedTabColors : unFocusedTabColors}
+          style={styles.gradiantContainer}
+        >
           <Text
-              style={{ ...styles.tabText, color: selectedTab === index ? focusedTabTextColor : unFocusedTabTextColor }}
+            style={{
+              ...styles.tabText,
+              color:
+                selectedTab === index
+                  ? focusedTabTextColor
+                  : unFocusedTabTextColor,
+            }}
           >
             {item}
           </Text>
@@ -48,7 +47,7 @@ const TCSwitcher = ({
       </TouchableOpacity>
     ))}
   </View>
-)
+);
 
 const styles = StyleSheet.create({
   eventPrivacyContianer: {

@@ -1,10 +1,11 @@
+import Config from 'react-native-config';
+
 const api = {
   auth: {
     userDetail: 'users/',
     addUser: 'users',
     sportsList: 'games/sports',
-    locationSearch:
-      'https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(cities)&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4&input=',
+    locationSearch: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(cities)&key=${Config.GOOGLE_PLACE_KEY}&input=`,
     groupSearch: '/groups/search?',
   },
   // NewsFeed Constants
@@ -31,7 +32,6 @@ const api = {
   // Notification Constants
   notification: {
     notificationsList: 'notifications',
-
   },
   // Account Constants
   account: {

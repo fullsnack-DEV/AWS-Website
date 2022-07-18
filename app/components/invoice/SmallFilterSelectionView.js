@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Image, View } from 'react-native';
+import {StyleSheet, Image, View} from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
 import colors from '../../Constants/Colors';
@@ -27,13 +27,11 @@ export default function SmallFilterSelectionView({
         onDonePress={onDonePress}
         useNativeAndroidPickerStyle={false}
         textInputProps={{
-          style: { ...styles.inputStyle },
+          style: {...styles.inputStyle},
         }}
         value={value}
         Icon={() => (
-
           <Image source={images.dropDownArrow} style={styles.downArrow} />
-
         )}
       />
     </View>
@@ -56,7 +54,7 @@ const styles = StyleSheet.create({
 
     elevation: 10,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
     paddingLeft: 15,

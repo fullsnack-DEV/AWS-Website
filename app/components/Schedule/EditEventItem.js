@@ -1,11 +1,9 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text, TouchableOpacity, Image,
-} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import { getHitSlop } from '../../utils';
+import {getHitSlop} from '../../utils';
 
 function EditEventItem({
   title,
@@ -14,20 +12,21 @@ function EditEventItem({
   onEditPress,
   subTitle,
   editButtonVisible = true,
-  
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <View style={styles.titleAndEditViewStyle}>
-        <Text style={styles.headerTextStyle}>{title}
-          {subTitle && <Text style={styles.subHeaderText} >{subTitle}</Text>}</Text>
+        <Text style={styles.headerTextStyle}>
+          {title}
+          {subTitle && <Text style={styles.subHeaderText}>{subTitle}</Text>}
+        </Text>
         {editButtonVisible && (
           <TouchableOpacity onPress={onEditPress} hitSlop={getHitSlop(15)}>
             <Image
-            source={images.editSection}
-            style={styles.editImageStyle}
-            resizeMode={'contain'}
-          />
+              source={images.editSection}
+              style={styles.editImageStyle}
+              resizeMode={'contain'}
+            />
           </TouchableOpacity>
         )}
       </View>

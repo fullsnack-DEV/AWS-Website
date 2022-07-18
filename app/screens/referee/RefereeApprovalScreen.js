@@ -1,9 +1,7 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable consistent-return */
 /* eslint-disable react/no-unescaped-entities */
-import React, {
- useEffect, useState, useContext, useCallback,
- } from 'react';
+import React, {useEffect, useState, useContext, useCallback} from 'react';
 import {
   StyleSheet,
   View,
@@ -14,8 +12,8 @@ import {
   SafeAreaView,
 } from 'react-native';
 import moment from 'moment';
-import { useIsFocused } from '@react-navigation/native';
-import { acceptDeclineReservation } from '../../api/Challenge';
+import {useIsFocused} from '@react-navigation/native';
+import {acceptDeclineReservation} from '../../api/Challenge';
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
@@ -30,19 +28,19 @@ import TCLabel from '../../components/TCLabel';
 import TCInfoField from '../../components/TCInfoField';
 import EventMapView from '../../components/Schedule/EventMapView';
 import TCGameCard from '../../components/TCGameCard';
-import { getGameFromToDateDiff, getGameHomeScreen } from '../../utils/gameUtils';
+import {getGameFromToDateDiff, getGameHomeScreen} from '../../utils/gameUtils';
 import TCChallengeTitle from '../../components/TCChallengeTitle';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 
 let entity = {};
 
-export default function RefereeApprovalScreen({ navigation, route }) {
+export default function RefereeApprovalScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [bodyParams, setbodyParams] = useState();
-  const { reservationObj, type } = route.params ?? {};
+  const {reservationObj, type} = route.params ?? {};
 
   useEffect(() => {
     entity = authContext.entity;
@@ -67,11 +65,19 @@ export default function RefereeApprovalScreen({ navigation, route }) {
 
   const approveReservation = (reservationID) => {
     setloading(true);
-    acceptDeclineReservation('referees', reservationID, authContext.entity.uid, reservationObj.version, type, {}, authContext)
+    acceptDeclineReservation(
+      'referees',
+      reservationID,
+      authContext.entity.uid,
+      reservationObj.version,
+      type,
+      {},
+      authContext,
+    )
       .then((response) => {
         setloading(false);
         console.log('referee approve request :=>', response);
-        navigation.goBack()
+        navigation.goBack();
       })
       .catch((e) => {
         setloading(false);
@@ -83,11 +89,19 @@ export default function RefereeApprovalScreen({ navigation, route }) {
 
   const disApproveReservation = (reservationID) => {
     setloading(true);
-    acceptDeclineReservation('referees', reservationID, authContext.entity.uid, reservationObj.version, 'decline', {}, authContext)
+    acceptDeclineReservation(
+      'referees',
+      reservationID,
+      authContext.entity.uid,
+      reservationObj.version,
+      'decline',
+      {},
+      authContext,
+    )
       .then((response) => {
         setloading(false);
         console.log('referee disapprove request :=>', response);
-        navigation.goBack()
+        navigation.goBack();
       })
       .catch((e) => {
         setloading(false);
@@ -97,10 +111,10 @@ export default function RefereeApprovalScreen({ navigation, route }) {
       });
   };
 
-  const Title = ({ text, required }) => (
+  const Title = ({text, required}) => (
     <Text style={styles.titleText}>
       {text}
-      {required && <Text style={{ color: colors.redDelColor }}> * </Text>}
+      {required && <Text style={{color: colors.redDelColor}}> * </Text>}
     </Text>
   );
 
@@ -111,7 +125,7 @@ export default function RefereeApprovalScreen({ navigation, route }) {
     return `${startDate} - ${endDate} (${duration})`;
   };
 
-  const Seperator = ({ height = 7 }) => (
+  const Seperator = ({height = 7}) => (
     <View
       style={{
         width: '100%',
@@ -122,32 +136,34 @@ export default function RefereeApprovalScreen({ navigation, route }) {
     />
   );
 
-  const getRequester = useCallback(
-    (param) => {
-      if ((entity.uid === param?.game?.home_team?.group_id || entity.uid === param?.game?.home_team?.user_id)) {
-        return param?.game?.away_team;
-      }
-      return param?.game?.home_team;
-    }, [],
-)
-const approveDisapproveButton = () => (<View>
-  <TCGradientButton
+  const getRequester = useCallback((param) => {
+    if (
+      entity.uid === param?.game?.home_team?.group_id ||
+      entity.uid === param?.game?.home_team?.user_id
+    ) {
+      return param?.game?.away_team;
+    }
+    return param?.game?.home_team;
+  }, []);
+  const approveDisapproveButton = () => (
+    <View>
+      <TCGradientButton
         title={strings.approveTitle}
         textColor={colors.grayColor}
-        textStyle={{ fontSize: 16 }}
+        textStyle={{fontSize: 16}}
         startGradientColor={colors.yellowColor}
         endGradientColor={colors.themeColor}
         height={40}
         shadow={true}
         marginTop={15}
         onPress={() => {
-          approveReservation(reservationObj.reservation_id)
+          approveReservation(reservationObj.reservation_id);
           // Alert.alert(
           //   'Please modify atleast one field for alter request.',
           // );
         }}
       />
-  <Text
+      <Text
         style={{
           margin: 15,
           fontSize: 16,
@@ -155,34 +171,37 @@ const approveDisapproveButton = () => (<View>
           color: colors.lightBlackColor,
           textAlign: 'center',
           textDecorationLine: 'underline',
-        }} onPress={() => {
-          disApproveReservation(reservationObj.reservation_id)
-        }}>
-    {'DISAPPROVE'}
-  </Text>
-</View>)
+        }}
+        onPress={() => {
+          disApproveReservation(reservationObj.reservation_id);
+        }}
+      >
+        {'DISAPPROVE'}
+      </Text>
+    </View>
+  );
   console.log('Referee bodyparams:', bodyParams);
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
-      <ScrollView style={{ flex: 1 }}>
-
+      <ScrollView style={{flex: 1}}>
         {bodyParams && (
           <View>
             <Text
-          style={{
-            fontSize: 20,
-            fontFamily: fonts.RRegular,
-            color: colors.lightBlackColor,
-            margin: 15,
-          }}>
-              {
-            `${getRequester(bodyParams).group_id
-              ? `${getRequester(bodyParams).group_name}`
-              : `${getRequester(bodyParams).first_name} ${
-                  getRequester(bodyParams).last_name
-                }`} wants to hire a referee for a game between you and them at their own cost. Would you like to approve this referee for the game?`
-          }
+              style={{
+                fontSize: 20,
+                fontFamily: fonts.RRegular,
+                color: colors.lightBlackColor,
+                margin: 15,
+              }}
+            >
+              {`${
+                getRequester(bodyParams).group_id
+                  ? `${getRequester(bodyParams).group_name}`
+                  : `${getRequester(bodyParams).first_name} ${
+                      getRequester(bodyParams).last_name
+                    }`
+              } wants to hire a referee for a game between you and them at their own cost. Would you like to approve this referee for the game?`}
             </Text>
             <View
               style={{
@@ -190,7 +209,8 @@ const approveDisapproveButton = () => (<View>
                 // flexDirection: 'row',
                 justifyContent: 'space-between',
                 margin: 15,
-              }}>
+              }}
+            >
               <View style={styles.challengerView}>
                 <View style={styles.teamView}>
                   <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -202,7 +222,7 @@ const approveDisapproveButton = () => (<View>
                     <Image
                       source={
                         getRequester(bodyParams).thumbnail
-                          ? { uri: getRequester(bodyParams).thumbnail }
+                          ? {uri: getRequester(bodyParams).thumbnail}
                           : images.teamPlaceholder
                       }
                       style={styles.profileImage}
@@ -217,7 +237,7 @@ const approveDisapproveButton = () => (<View>
                   </Text>
                 </View>
               </View>
-              <View style={[styles.challengeeView, { marginTop: 10 }]}>
+              <View style={[styles.challengeeView, {marginTop: 10}]}>
                 <View style={styles.teamView}>
                   <Image source={images.refIcon} style={styles.reqOutImage} />
                   <Text style={styles.challengeeText}>Referee</Text>
@@ -236,7 +256,7 @@ const approveDisapproveButton = () => (<View>
                     <Image
                       source={
                         bodyParams?.referee?.full_image
-                          ? { uri: bodyParams?.referee?.full_image }
+                          ? {uri: bodyParams?.referee?.full_image}
                           : images.profilePlaceHolder
                       }
                       style={styles.profileImage}
@@ -249,52 +269,64 @@ const approveDisapproveButton = () => (<View>
                       fontSize: 16,
                       color: colors.lightBlackColor,
                       width: '80%',
-                    }}>
+                    }}
+                  >
                     {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
                   </Text>
                 </View>
               </View>
             </View>
 
-            {type === RefereeReservationStatus.accepted && <Text
-                    style={{
-                      marginLeft: 15,
-                      marginBottom: 15,
-                      fontFamily: fonts.RMedium,
-                      fontSize: 16,
-                      color: colors.greenColorCard,
-                    }}>
-              {'Approved'}
-            </Text>}
-            {type === RefereeReservationStatus.declined && <Text
-                    style={{
-                      marginLeft: 15,
-                      marginBottom: 15,
-                      fontFamily: fonts.RMedium,
-                      fontSize: 16,
-                      color: colors.lightBlackColor,
-                    }}>
-              {'Declined'}
-            </Text>}
-            {type === 'expired' && <Text
-                    style={{
-                      marginLeft: 15,
-                      marginBottom: 15,
-                      fontFamily: fonts.RMedium,
-                      fontSize: 16,
-                      color: colors.greenColorCard,
-                    }}>
-              {'Expired'}
-            </Text>}
+            {type === RefereeReservationStatus.accepted && (
+              <Text
+                style={{
+                  marginLeft: 15,
+                  marginBottom: 15,
+                  fontFamily: fonts.RMedium,
+                  fontSize: 16,
+                  color: colors.greenColorCard,
+                }}
+              >
+                {'Approved'}
+              </Text>
+            )}
+            {type === RefereeReservationStatus.declined && (
+              <Text
+                style={{
+                  marginLeft: 15,
+                  marginBottom: 15,
+                  fontFamily: fonts.RMedium,
+                  fontSize: 16,
+                  color: colors.lightBlackColor,
+                }}
+              >
+                {'Declined'}
+              </Text>
+            )}
+            {type === 'expired' && (
+              <Text
+                style={{
+                  marginLeft: 15,
+                  marginBottom: 15,
+                  fontFamily: fonts.RMedium,
+                  fontSize: 16,
+                  color: colors.greenColorCard,
+                }}
+              >
+                {'Expired'}
+              </Text>
+            )}
 
-            {type === 'accept' || type === 'approve' ? approveDisapproveButton() : null}
+            {type === 'accept' || type === 'approve'
+              ? approveDisapproveButton()
+              : null}
             <TCThickDivider />
 
             {bodyParams && (
               <View>
                 <TCLabel
                   title="Game"
-                  style={{ marginLeft: 15, marginBottom: 15, marginTop: 15 }}
+                  style={{marginLeft: 15, marginBottom: 15, marginTop: 15}}
                 />
                 {bodyParams?.game && (
                   <TCGameCard
@@ -318,10 +350,10 @@ const approveDisapproveButton = () => (<View>
                       <TCInfoField
                         title={'Date'}
                         value={
-                          bodyParams?.start_datetime
-                          && moment(bodyParams?.start_datetime * 1000).format(
+                          bodyParams?.start_datetime &&
+                          moment(bodyParams?.start_datetime * 1000).format(
                             'MMM DD, YYYY',
-                        )
+                          )
                         }
                         titleStyle={{
                           alignSelf: 'flex-start',
@@ -369,19 +401,19 @@ const approveDisapproveButton = () => (<View>
                       <EventMapView
                         coordinate={{
                           latitude:
-                            bodyParams?.game?.venue?.coordinate?.latitude
-                            ?? 0.0,
+                            bodyParams?.game?.venue?.coordinate?.latitude ??
+                            0.0,
                           longitude:
-                            bodyParams?.game?.venue?.coordinate?.longitude
-                            ?? 0.0,
+                            bodyParams?.game?.venue?.coordinate?.longitude ??
+                            0.0,
                         }}
                         region={{
                           latitude:
-                            bodyParams?.game?.venue?.coordinate?.latitude
-                            ?? 0.0,
+                            bodyParams?.game?.venue?.coordinate?.latitude ??
+                            0.0,
                           longitude:
-                            bodyParams?.game?.venue?.coordinate?.longitude
-                            ?? 0.0,
+                            bodyParams?.game?.venue?.coordinate?.longitude ??
+                            0.0,
                           latitudeDelta: 0.0922,
                           longitudeDelta: 0.0421,
                         }}
@@ -396,14 +428,17 @@ const approveDisapproveButton = () => (<View>
             <Text style={styles.rulesDetail}>
               {bodyParams?.game?.general_rules}
             </Text>
-            <View style={{ marginBottom: 10 }} />
+            <View style={{marginBottom: 10}} />
             <Text style={styles.rulesTitle}>Special Rules</Text>
-            <Text style={[styles.rulesDetail, { marginBottom: 10 }]}>
+            <Text style={[styles.rulesDetail, {marginBottom: 10}]}>
               {bodyParams?.game?.special_rules}
             </Text>
             <TCThickDivider />
 
-            <SafeAreaView>{type === 'accept' || type === 'approved' ? approveDisapproveButton() : null}
+            <SafeAreaView>
+              {type === 'accept' || type === 'approved'
+                ? approveDisapproveButton()
+                : null}
             </SafeAreaView>
           </View>
         )}
@@ -473,7 +508,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,

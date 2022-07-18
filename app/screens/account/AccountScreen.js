@@ -110,12 +110,12 @@ export default function AccountScreen({navigation}) {
   const userMenu = [
     {key: 'Reservations'},
     {key: 'Playing', member: [{opetions: 'Add a sport'}]},
-    {key: 'Refereeing', member: [{opetions: 'Register as a referee'}]},
-    {key: 'Scorekeeping', member: [{opetions: 'Register as a scorekeeper'}]},
+    {key: 'Refereeing', member: [{opetions: 'Register as Referee'}]},
+    {key: 'Scorekeeping', member: [{opetions: 'Register as Scorekeeper'}]},
     {key: 'Teams', member: [{opetions: 'Create Team'}]},
     {key: 'Clubs', member: [{opetions: 'Create Club'}]},
     // {key: 'My Leagues', member:[{opetions: 'Create a League'}]},
-    // {key: 'Register as a Referee'},
+    // {key: 'Register as Referee'},
     // {key: 'Register as a personal player'},
     // {key: 'Create Group'},
     // {key: 'Reservations'},
@@ -192,26 +192,30 @@ export default function AccountScreen({navigation}) {
     () => (
       <View
         style={{opacity: isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}>
+        pointerEvents={pointEvent}
+      >
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('NotificationsListScreen');
           }}
-          hitSlop={Utility.getHitSlop(15)}>
+          hitSlop={Utility.getHitSlop(15)}
+        >
           <ImageBackground
             source={
               notificationCounter > 0
                 ? images.notificationBell
                 : images.tab_notification
             }
-            style={styles.headerRightImg}>
+            style={styles.headerRightImg}
+          >
             {notificationCounter > 0 && (
               <View
                 style={
                   notificationCounter > 9
                     ? styles.eclipseBadge
                     : styles.roundBadge
-                }>
+                }
+              >
                 <Text style={styles.notificationCounterStyle}>
                   {notificationCounter > 9 ? '9+' : notificationCounter}
                 </Text>
@@ -661,11 +665,11 @@ export default function AccountScreen({navigation}) {
       navigation.navigate('ReservationNavigator', {
         screen: 'ReservationScreen',
       });
-    } else if (section === 'Register as a Referee') {
+    } else if (section === 'Register as Referee') {
       navigation.navigate('RegisterReferee');
     } else if (section === 'Register as a personal player') {
       navigation.navigate('RegisterPlayer');
-    } else if (section === 'Register as a scorekeeper') {
+    } else if (section === 'Register as Scorekeeper') {
       navigation.navigate('RegisterScorekeeper');
     } else if (section === 'Create Club') {
       navigation.navigate('CreateClubForm1');
@@ -741,9 +745,9 @@ export default function AccountScreen({navigation}) {
   const handleOptions = useCallback(
     (options) => {
       // navigation.closeDrawer();
-      if (options === 'Register as a referee') {
+      if (options === 'Register as Referee') {
         navigation.navigate('RegisterReferee');
-      } else if (options === 'Register as a scorekeeper') {
+      } else if (options === 'Register as Scorekeeper') {
         navigation.navigate('RegisterScorekeeper');
       } else if (options === 'Add a sport') {
         navigation.navigate('RegisterPlayer');
@@ -800,7 +804,8 @@ export default function AccountScreen({navigation}) {
             type: 'player',
             sport: item,
           });
-        }}>
+        }}
+      >
         <View style={styles.entityTextContainer}>
           <Image
             source={getSportIcon(item.sport)}
@@ -826,7 +831,8 @@ export default function AccountScreen({navigation}) {
             type: 'referee',
             sport: item,
           });
-        }}>
+        }}
+      >
         <View style={styles.entityTextContainer}>
           <Image
             source={getSportIcon(item.sport)}
@@ -852,7 +858,8 @@ export default function AccountScreen({navigation}) {
             type: 'scorekeeper',
             sport: item,
           });
-        }}>
+        }}
+      >
         <View style={styles.entityTextContainer}>
           <Image
             source={getSportIcon(item.sport)}
@@ -876,7 +883,8 @@ export default function AccountScreen({navigation}) {
         style={styles.switchProfileListContainer}
         onPress={() => {
           onSwitchProfile({item});
-        }}>
+        }}
+      >
         <View>
           {item.entity_type === 'player' && (
             <View style={styles.placeholderView}>
@@ -967,12 +975,14 @@ export default function AccountScreen({navigation}) {
                         top: 10,
                       },
                     ]
-              }>
+              }
+            >
               <Text
                 style={{
                   ...styles.badgeCounter,
                   ...(item.unread > 9 ? {paddingHorizontal: 5} : {width: 15}),
-                }}>
+                }}
+              >
                 {item.unread > 9 ? `+${9}` : item.unread}
               </Text>
             </View>
@@ -1015,7 +1025,8 @@ export default function AccountScreen({navigation}) {
                   item?.entity_type === 'player' ? 'user' : item?.entity_type,
               });
             }
-          }}>
+          }}
+        >
           <View style={styles.entityTextContainer}>
             <View style={styles.smallProfileContainer}>
               {item?.entity_type === 'team' && (
@@ -1046,7 +1057,8 @@ export default function AccountScreen({navigation}) {
                   ? [styles.entityName, {width: wp('50%')}]
                   : styles.entityName
               }
-              numberOfLines={1}>
+              numberOfLines={1}
+            >
               {item?.group_name}
             </Text>
             <Text style={styles.teamSportView}>
@@ -1058,7 +1070,8 @@ export default function AccountScreen({navigation}) {
         </TouchableWithoutFeedback>
         {!item?.group_id && (
           <TouchableWithoutFeedback
-            onPress={() => oncalcelTeamRequest('cancel', item?.request_id)}>
+            onPress={() => oncalcelTeamRequest('cancel', item?.request_id)}
+          >
             <View style={styles.buttonView}>
               <Text style={styles.textStyle} numberOfLines={1}>
                 Cancel request
@@ -1083,7 +1096,8 @@ export default function AccountScreen({navigation}) {
             backButtonVisible: true,
             menuBtnVisible: false,
           });
-        }}>
+        }}
+      >
         <View style={styles.entityTextContainer}>
           <View style={styles.smallProfileContainer}>
             <Image
@@ -1099,7 +1113,8 @@ export default function AccountScreen({navigation}) {
               item.entity_type === 'team'
                 ? styles.teamSportView
                 : styles.clubSportView
-            }>
+            }
+          >
             {' '}
             {item.sport}
           </Text>
@@ -1206,17 +1221,18 @@ export default function AccountScreen({navigation}) {
             style={styles.listContainer}
             onPress={() => {
               handleOptions(rowItem.opetions);
-            }}>
+            }}
+          >
             {rowItem.opetions === 'Add a sport' && (
               <Image source={images.addSport} style={styles.subMenuItem} />
             )}
-            {rowItem.opetions === 'Register as a referee' && (
+            {rowItem.opetions === 'Register as Referee' && (
               <Image
                 source={images.registerReferee}
                 style={styles.subMenuItem}
               />
             )}
-            {rowItem.opetions === 'Register as a scorekeeper' && (
+            {rowItem.opetions === 'Register as Scorekeeper' && (
               <Image
                 source={images.registerScorekeeper}
                 style={styles.subMenuItem}
@@ -1339,14 +1355,16 @@ export default function AccountScreen({navigation}) {
             });
           }
         }, 300);
-      }}>
+      }}
+    >
       <View
         style={{
           padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-        }}>
+        }}
+      >
         <Text style={styles.languageList}>
           {Utility.getSportName(item, authContext)}
         </Text>
@@ -1485,19 +1503,22 @@ export default function AccountScreen({navigation}) {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-          }}>
+          }}
+        >
           {parentGroup ? (
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-              }}>
+              }}
+            >
               <Image source={images.clubLable} style={styles.clubLableView} />
               <View
                 style={{
                   flexDirection: 'row',
                   marginLeft: 10,
-                }}>
+                }}
+              >
                 <TCNavigationHeader
                   name={parentGroup?.group_name}
                   groupType={'club'}
@@ -1525,7 +1546,8 @@ export default function AccountScreen({navigation}) {
                   : images?.ImageBackground
               }
               style={styles.profileView}
-              blurRadius={10}>
+              blurRadius={10}
+            >
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('HomeScreen', {
@@ -1539,7 +1561,8 @@ export default function AccountScreen({navigation}) {
                   flexDirection: 'row',
                   marginLeft: 25,
                   marginRight: 25,
-                }}>
+                }}
+              >
                 <View style={styles.profileImageContainer}>
                   <Image
                     source={
@@ -1554,13 +1577,15 @@ export default function AccountScreen({navigation}) {
                   style={{
                     marginLeft: 15,
                     width: Dimensions.get('window').width / 1.6,
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
                       marginRight: 10,
-                    }}>
+                    }}
+                  >
                     <MarqueeText
                       style={
                         authContext?.entity?.obj?.background_thumbnail
@@ -1607,7 +1632,8 @@ export default function AccountScreen({navigation}) {
                               color: colors.lightBlackColor,
                             },
                           ]
-                    }>
+                    }
+                  >
                     {authContext?.entity?.obj?.city || ''},{' '}
                     {authContext?.entity?.obj?.state_abbr || ''}
                   </Text>
@@ -1626,7 +1652,8 @@ export default function AccountScreen({navigation}) {
                   : images.ImageBackground
               }
               style={styles.profileView}
-              blurRadius={10}>
+              blurRadius={10}
+            >
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('HomeScreen', {
@@ -1641,7 +1668,8 @@ export default function AccountScreen({navigation}) {
                   marginLeft: 20,
                   marginRight: 20,
                   alignContent: 'center',
-                }}>
+                }}
+              >
                 <View style={styles.profileImageContainer}>
                   {authContext?.entity?.obj?.thumbnail ? (
                     <Image
@@ -1655,7 +1683,8 @@ export default function AccountScreen({navigation}) {
                         width: '100%',
                         alignItems: 'center',
                         justifyContent: 'center',
-                      }}>
+                      }}
+                    >
                       <Image
                         source={placeHolder}
                         style={{...styles.profileImg, resizeMode: 'contain'}}
@@ -1670,7 +1699,8 @@ export default function AccountScreen({navigation}) {
                           bottom: 0,
                           right: 0,
                           left: 0,
-                        }}>
+                        }}
+                      >
                         <Text
                           style={{
                             marginTop: -5,
@@ -1678,7 +1708,8 @@ export default function AccountScreen({navigation}) {
                             color: colors.whiteColor,
                             fontFamily: fonts.RBold,
                             fontSize: 16,
-                          }}>
+                          }}
+                        >
                           {authContext?.entity?.obj?.group_name[0]}
                         </Text>
                       </View>
@@ -1689,13 +1720,15 @@ export default function AccountScreen({navigation}) {
                   style={{
                     marginLeft: 15,
                     width: Dimensions.get('window').width / 1.6,
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
                       marginRight: 10,
-                    }}>
+                    }}
+                  >
                     <MarqueeText
                       style={
                         authContext?.entity?.obj?.background_thumbnail
@@ -1710,7 +1743,8 @@ export default function AccountScreen({navigation}) {
                       }
                       duration={3000}
                       marqueeOnStart
-                      loop={true}>
+                      loop={true}
+                    >
                       {authContext?.entity?.obj?.group_name}
                     </MarqueeText>
 
@@ -1752,7 +1786,8 @@ export default function AccountScreen({navigation}) {
                               color: colors.lightBlackColor,
                             },
                           ]
-                    }>
+                    }
+                  >
                     {authContext?.entity?.obj?.city},{' '}
                     {authContext?.entity?.obj?.state_abbr}
                   </Text>
@@ -1782,19 +1817,22 @@ export default function AccountScreen({navigation}) {
                 style={{
                   opacity:
                     isAccountDeactivated && section !== 'Settings' ? 0.5 : 1,
-                }}>
+                }}
+              >
                 <TouchableWithoutFeedback
                   disabled={isAccountDeactivated && section !== 'Settings'}
                   style={styles.listContainer}
                   onPress={() => {
                     handleSections(section);
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       alignSelf: 'center',
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}>
+                    }}
+                  >
                     {section === 'Reservations' && (
                       <Image
                         source={images.accountMySchedule}
@@ -1922,7 +1960,8 @@ export default function AccountScreen({navigation}) {
           style={{flexDirection: 'row'}}
           onPress={() => {
             handleLogOut();
-          }}>
+          }}
+        >
           <Image source={images.logoutIcon} style={styles.switchAccountIcon} />
           <Text style={styles.switchAccount}>Log out</Text>
         </TouchableWithoutFeedback>
@@ -1938,7 +1977,8 @@ export default function AccountScreen({navigation}) {
           backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-          }}>
+          }}
+        >
           <SafeAreaView
             style={{
               height: Dimensions.get('window').height / 1.7,
@@ -1954,14 +1994,16 @@ export default function AccountScreen({navigation}) {
               shadowOpacity: 0.5,
               shadowRadius: 5,
               elevation: 15,
-            }}>
+            }}
+          >
             <View
               style={{
                 flexDirection: 'row',
                 paddingHorizontal: 15,
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}>
+              }}
+            >
               <Text
                 style={{
                   alignSelf: 'center',
@@ -1969,7 +2011,8 @@ export default function AccountScreen({navigation}) {
                   fontSize: 16,
                   fontFamily: fonts.RBold,
                   color: colors.lightBlackColor,
-                }}>
+                }}
+              >
                 {createEntity === 'club' ? 'Create Club' : 'Create Team'}
               </Text>
             </View>
@@ -2009,7 +2052,8 @@ export default function AccountScreen({navigation}) {
           backdropTransitionOutTiming={800}
           style={{
             margin: 0,
-          }}>
+          }}
+        >
           <View
             style={{
               width: '100%',
@@ -2025,18 +2069,21 @@ export default function AccountScreen({navigation}) {
               shadowOpacity: 0.5,
               shadowRadius: 5,
               elevation: 15,
-            }}>
+            }}
+          >
             <View
               style={{
                 flexDirection: 'row',
                 paddingHorizontal: 15,
                 justifyContent: 'space-between',
                 alignItems: 'center',
-              }}>
+              }}
+            >
               <TouchableOpacity
                 hitSlop={Utility.getHitSlop(15)}
                 style={styles.closeButton}
-                onPress={() => setVisibleSportsModal(false)}>
+                onPress={() => setVisibleSportsModal(false)}
+              >
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text
@@ -2046,7 +2093,8 @@ export default function AccountScreen({navigation}) {
                   fontSize: 16,
                   fontFamily: fonts.RBold,
                   color: colors.lightBlackColor,
-                }}>
+                }}
+              >
                 Sports
               </Text>
 
@@ -2057,7 +2105,8 @@ export default function AccountScreen({navigation}) {
                   fontSize: 16,
                   fontFamily: fonts.RRegular,
                   color: colors.themeColor,
-                }}></Text>
+                }}
+              ></Text>
             </View>
             <View style={styles.separatorLine} />
             <FlatList

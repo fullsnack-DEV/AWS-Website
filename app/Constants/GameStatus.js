@@ -7,4 +7,4 @@ const GameStatus = {
   reset: 'reset',
 };
 
-export default GameStatus
+export default GameStatus;

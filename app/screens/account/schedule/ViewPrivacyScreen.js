@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,12 +9,9 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
 
-
-import {
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import Header from '../../../components/Home/Header';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import RadioBtnItem from '../../../components/Schedule/RadioBtnItem';
@@ -41,11 +38,14 @@ const schedule_Data = [
   },
 ];
 
-export default function ViewPrivacyScreen({ navigation }) {
+export default function ViewPrivacyScreen({navigation}) {
   const [scheduleData, setScheduleData] = useState(schedule_Data);
 
   return (
-    <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
+    <KeyboardAvoidingView
+      style={styles.mainContainerStyle}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+    >
       <Header
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -56,25 +56,29 @@ export default function ViewPrivacyScreen({ navigation }) {
           <Text style={styles.eventTextStyle}>View Privacy</Text>
         }
         rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={() => navigation.goBack()}>
-            <Text style={{fontFamily:fonts.RMedium, fontSize: 16,}}>Save</Text>
+          <TouchableOpacity
+            style={{padding: 2}}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={{fontFamily: fonts.RMedium, fontSize: 16}}>Save</Text>
           </TouchableOpacity>
         }
       />
-      <View style={ styles.sperateLine } />
+      <View style={styles.sperateLine} />
       <SafeAreaView>
         <EventItemRender
-            title={strings.whoCanSeeShcedule}
-            containerStyle={{ marginTop: 10 }}
-          >
+          title={strings.whoCanSeeShcedule}
+          containerStyle={{marginTop: 10}}
+        >
           <FlatList
-              data={scheduleData}
-              style={{ marginTop: 20 }}
-              ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
-              renderItem={ ({ item }) => <RadioBtnItem
+            data={scheduleData}
+            style={{marginTop: 20}}
+            ItemSeparatorComponent={() => <View style={{height: 15}} />}
+            renderItem={({item}) => (
+              <RadioBtnItem
                 titleName={item.title}
                 selected={item.isSelected}
-                touchRadioBtnStyle={{ marginRight: 5 }}
+                touchRadioBtnStyle={{marginRight: 5}}
                 onRadioBtnPress={() => {
                   scheduleData.map((scheduleItem) => {
                     const schedule = scheduleItem;
@@ -84,12 +88,12 @@ export default function ViewPrivacyScreen({ navigation }) {
                       schedule.isSelected = false;
                     }
                     return null;
-                  })
-                  setScheduleData([...scheduleData])
+                  });
+                  setScheduleData([...scheduleData]);
                 }}
               />
-              }
-              keyExtractor={ (item, index) => index.toString() }
+            )}
+            keyExtractor={(item, index) => index.toString()}
           />
         </EventItemRender>
       </SafeAreaView>

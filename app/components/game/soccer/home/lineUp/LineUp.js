@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   FlatList,
   Image,
@@ -9,9 +9,9 @@ import {
   Linking,
   Alert,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import ActivityLoader from '../../../../loader/ActivityLoader';
-import { getGameLineUp } from '../../../../../api/Games';
+import {getGameLineUp} from '../../../../../api/Games';
 import GameStatus from '../../../../../Constants/GameStatus';
 import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
@@ -23,10 +23,10 @@ import TCThickDivider from '../../../../TCThickDivider';
 import LineUpPlayerView from './LineUpPlayerView';
 import AuthContext from '../../../../../auth/context';
 import strings from '../../../../../Constants/String';
-import { getHitSlop } from '../../../../../utils';
+import {getHitSlop} from '../../../../../utils';
 
 let entity = {};
-export default function LineUp({ navigation, gameData }) {
+export default function LineUp({navigation, gameData}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -55,7 +55,8 @@ export default function LineUp({ navigation, gameData }) {
   };
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+    let delta =
+      Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
     const days = Math.floor(delta / 86400);
     delta -= days * 86400;
@@ -67,9 +68,9 @@ export default function LineUp({ navigation, gameData }) {
     delta -= minutes * 60;
 
     return (
-      (days > 0 && `${days}d ${hours}h ${minutes}m left`)
-      || (hours > 0 && `${hours}h ${minutes}m left`)
-      || (minutes > 0 && `${minutes}m left`)
+      (days > 0 && `${days}d ${hours}h ${minutes}m left`) ||
+      (hours > 0 && `${hours}h ${minutes}m left`) ||
+      (minutes > 0 && `${minutes}m left`)
     );
   };
   const getLineUpOfTeams = (teamID, gameID) => {
@@ -92,63 +93,67 @@ export default function LineUp({ navigation, gameData }) {
       console.log(JSON.stringify(response.payload));
     });
   };
-  const renderRoster = ({ item }) => (
+  const renderRoster = ({item}) => (
     <LineUpPlayerView
       buttonType={
-        (item.member_id === entity?.auth?.user_id && 'nobutton')
-        || (entity.role === 'team'
-          && selected === 1
-          && gameData?.home_team?.group_id === entity.uid
-          && item?.profile?.connected
-          && 'message')
-        || (entity.role === 'team'
-          && selected === 1
-          && gameData?.home_team?.group_id === entity.uid
-          && !item?.profile?.connected
-          && 'email')
-        || (entity.role === 'team'
-          && selected === 2
-          && gameData.away_team.group_id === entity.uid
-          && item.profile.connected
-          && 'message')
-        || (entity.role === 'team'
-          && selected === 2
-          && gameData.away_team.group_id === entity.uid
-          && !item.profile.connected
-          && 'email')
-        || (entity.role === 'club'
-          && gameData.status === GameStatus.ended
-          && addDaysinDate(gameData?.actual_enddatetime, 5) < new Date().getTime()
-          && item.review_id
-          && 'editreview')
-        || (entity.role === 'club'
-          && gameData.status === GameStatus.ended
-          && addDaysinDate(gameData?.actual_enddatetime, 5) < new Date().getTime()
-          && !item.review_id
-          && 'review')
-        || (entity.role === 'user'
-          && gameData.status === GameStatus.ended
-          && addDaysinDate(gameData?.actual_enddatetime, 5) < new Date().getTime()
-          && item.review_id
-          && item.member_id !== entity?.auth?.user_id
-          && 'editreview')
-        || (entity.role === 'user'
-          && gameData.status === GameStatus.ended
-          && addDaysinDate(gameData?.actual_enddatetime, 5) < new Date().getTime()
-          && !item.review_id
-          && item.member_id !== entity?.auth?.user_id
-          && 'review')
-        || (entity.role === 'user'
-          && item.is_following
-          && item.profile.connected
-          && item.member_id !== entity?.auth?.user_id
-          && 'following')
-        || (entity.role === 'user'
-          && !item.is_following
-          && item.profile.connected
-          && item.member_id !== entity?.auth?.user_id
-          && 'follow')
-        || 'nobutton'
+        (item.member_id === entity?.auth?.user_id && 'nobutton') ||
+        (entity.role === 'team' &&
+          selected === 1 &&
+          gameData?.home_team?.group_id === entity.uid &&
+          item?.profile?.connected &&
+          'message') ||
+        (entity.role === 'team' &&
+          selected === 1 &&
+          gameData?.home_team?.group_id === entity.uid &&
+          !item?.profile?.connected &&
+          'email') ||
+        (entity.role === 'team' &&
+          selected === 2 &&
+          gameData.away_team.group_id === entity.uid &&
+          item.profile.connected &&
+          'message') ||
+        (entity.role === 'team' &&
+          selected === 2 &&
+          gameData.away_team.group_id === entity.uid &&
+          !item.profile.connected &&
+          'email') ||
+        (entity.role === 'club' &&
+          gameData.status === GameStatus.ended &&
+          addDaysinDate(gameData?.actual_enddatetime, 5) <
+            new Date().getTime() &&
+          item.review_id &&
+          'editreview') ||
+        (entity.role === 'club' &&
+          gameData.status === GameStatus.ended &&
+          addDaysinDate(gameData?.actual_enddatetime, 5) <
+            new Date().getTime() &&
+          !item.review_id &&
+          'review') ||
+        (entity.role === 'user' &&
+          gameData.status === GameStatus.ended &&
+          addDaysinDate(gameData?.actual_enddatetime, 5) <
+            new Date().getTime() &&
+          item.review_id &&
+          item.member_id !== entity?.auth?.user_id &&
+          'editreview') ||
+        (entity.role === 'user' &&
+          gameData.status === GameStatus.ended &&
+          addDaysinDate(gameData?.actual_enddatetime, 5) <
+            new Date().getTime() &&
+          !item.review_id &&
+          item.member_id !== entity?.auth?.user_id &&
+          'review') ||
+        (entity.role === 'user' &&
+          item.is_following &&
+          item.profile.connected &&
+          item.member_id !== entity?.auth?.user_id &&
+          'following') ||
+        (entity.role === 'user' &&
+          !item.is_following &&
+          item.profile.connected &&
+          item.member_id !== entity?.auth?.user_id &&
+          'follow') ||
+        'nobutton'
       }
       userData={item}
       onButtonPress={(bType) => {
@@ -171,10 +176,10 @@ export default function LineUp({ navigation, gameData }) {
             });
         }
         if (bType === 'message') {
-          console.log('item?.profile?.user_id',item?.profile);
+          console.log('item?.profile?.user_id', item?.profile);
           navigation.navigate('MessageChat', {
             screen: 'MessageChat',
-            params: { userId: item?.profile?.user_id },
+            params: {userId: item?.profile?.user_id},
           });
         }
         console.log('ITEM BTYPE::', bType);
@@ -202,7 +207,8 @@ export default function LineUp({ navigation, gameData }) {
         tabs={
           gameData && [
             gameData.home_team.group_name,
-            gameData.away_team.group_name]
+            gameData.away_team.group_name,
+          ]
         }
         selectedTab={selected === 1 ? 0 : 1}
         onTabPress={(index) => {
@@ -215,8 +221,9 @@ export default function LineUp({ navigation, gameData }) {
           }
         }}
       />
-      {gameData.status === GameStatus.ended
-        && addDaysinDate(gameData?.actual_enddatetime, 5) < new Date().getTime() && (
+      {gameData.status === GameStatus.ended &&
+        addDaysinDate(gameData?.actual_enddatetime, 5) <
+          new Date().getTime() && (
           <Text style={styles.reviewText}>
             Review period:{' '}
             <Text style={styles.reviewTime}>
@@ -226,29 +233,31 @@ export default function LineUp({ navigation, gameData }) {
               )}
             </Text>
           </Text>
-      )}
+        )}
       {segmentUpdated && (
         <View>
           <View style={styles.editableView}>
             <TCLabel title={'Roster'} />
-            {((selected === 1
-              && gameData.home_team.group_id === entity.uid
-              && (gameData.status === GameStatus.accepted
-                || gameData.status === GameStatus.reset))
-              || (selected === 2
-                && gameData.away_team.group_id === entity.uid
-                && (gameData.status === GameStatus.accepted
-                  || gameData.status === GameStatus.reset))) && (
-                    <TouchableOpacity
+            {((selected === 1 &&
+              gameData.home_team.group_id === entity.uid &&
+              (gameData.status === GameStatus.accepted ||
+                gameData.status === GameStatus.reset)) ||
+              (selected === 2 &&
+                gameData.away_team.group_id === entity.uid &&
+                (gameData.status === GameStatus.accepted ||
+                  gameData.status === GameStatus.reset))) && (
+              <TouchableOpacity
                 style={styles.editTouchArea}
                 hitSlop={getHitSlop(15)}
-                onPress={() => navigation.navigate('EditLineUpScreen', {
-                  gameObj: gameData,
-                  selectedTeam: selected === 1 ? 'home' : 'away',
-                })
-                }>
-                      <Image source={images.editSection} style={styles.editButton} />
-                    </TouchableOpacity>
+                onPress={() =>
+                  navigation.navigate('EditLineUpScreen', {
+                    gameObj: gameData,
+                    selectedTeam: selected === 1 ? 'home' : 'away',
+                  })
+                }
+              >
+                <Image source={images.editSection} style={styles.editButton} />
+              </TouchableOpacity>
             )}
           </View>
           <Text
@@ -257,7 +266,8 @@ export default function LineUp({ navigation, gameData }) {
               fontSize: 16,
               color: colors.lightBlackColor,
               marginLeft: 25,
-            }}>
+            }}
+          >
             Starting
           </Text>
 
@@ -269,7 +279,8 @@ export default function LineUp({ navigation, gameData }) {
                 color: colors.grayColor,
                 marginLeft: 35,
                 marginTop: 10,
-              }}>
+              }}
+            >
               No Player
             </Text>
           ) : (
@@ -288,7 +299,8 @@ export default function LineUp({ navigation, gameData }) {
               color: colors.lightBlackColor,
               marginLeft: 25,
               marginTop: 20,
-            }}>
+            }}
+          >
             Subs
           </Text>
 
@@ -300,7 +312,8 @@ export default function LineUp({ navigation, gameData }) {
                 color: colors.grayColor,
                 marginLeft: 35,
                 marginTop: 10,
-              }}>
+              }}
+            >
               No Player
             </Text>
           ) : (
@@ -329,24 +342,26 @@ export default function LineUp({ navigation, gameData }) {
           <TCThickDivider marginTop={25} />
           <View style={styles.editableView}>
             <TCLabel title={'Coaches'} />
-            {((selected === 1
-              && gameData.home_team.group_id === entity.uid
-              && (gameData.status === GameStatus.accepted
-                || gameData.status === GameStatus.reset))
-              || (selected === 2
-                && gameData.away_team.group_id === entity.uid
-                && (gameData.status === GameStatus.accepted
-                  || gameData.status === GameStatus.reset))) && (
-                    <TouchableOpacity
+            {((selected === 1 &&
+              gameData.home_team.group_id === entity.uid &&
+              (gameData.status === GameStatus.accepted ||
+                gameData.status === GameStatus.reset)) ||
+              (selected === 2 &&
+                gameData.away_team.group_id === entity.uid &&
+                (gameData.status === GameStatus.accepted ||
+                  gameData.status === GameStatus.reset))) && (
+              <TouchableOpacity
                 style={styles.editTouchArea}
                 hitSlop={getHitSlop(15)}
-                onPress={() => navigation.navigate('EditLineUpCoachScreen', {
-                  gameObj: gameData,
-                  selectedTeam: selected === 1 ? 'home' : 'away',
-                })
-                }>
-                      <Image source={images.editSection} style={styles.editButton} />
-                    </TouchableOpacity>
+                onPress={() =>
+                  navigation.navigate('EditLineUpCoachScreen', {
+                    gameObj: gameData,
+                    selectedTeam: selected === 1 ? 'home' : 'away',
+                  })
+                }
+              >
+                <Image source={images.editSection} style={styles.editButton} />
+              </TouchableOpacity>
             )}
           </View>
 
@@ -358,7 +373,8 @@ export default function LineUp({ navigation, gameData }) {
                 color: colors.grayColor,
                 marginLeft: 35,
                 marginTop: 10,
-              }}>
+              }}
+            >
               No Coach
             </Text>
           ) : (

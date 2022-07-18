@@ -1,54 +1,85 @@
-import React, {
-
-} from 'react';
+import React from 'react';
 import {
-  Text, View, StyleSheet, Image, TouchableWithoutFeedback,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 
-import colors from '../../Constants/Colors'
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-export default function ProfileCheckView({ isChecked, onPress, playerDetail }) {
-  console.log('player detail :=>',playerDetail);
+export default function ProfileCheckView({isChecked, onPress, playerDetail}) {
+  console.log('player detail :=>', playerDetail);
   return (
     <>
-      {isChecked
-        ? <TouchableWithoutFeedback onPress = {onPress}>
+      {isChecked ? (
+        <TouchableWithoutFeedback onPress={onPress}>
           <LinearGradient
-       colors={[colors.whiteColor, colors.whiteColor]}
-       style={styles.topViewContainer}>
-            <View style={{ flexDirection: 'row' }}>
+            colors={[colors.whiteColor, colors.whiteColor]}
+            style={styles.topViewContainer}
+          >
+            <View style={{flexDirection: 'row'}}>
               <View style={styles.profileView}>
-                <Image source={ playerDetail.thumbnail ? { uri: playerDetail.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage } />
+                <Image
+                  source={
+                    playerDetail.thumbnail
+                      ? {uri: playerDetail.thumbnail}
+                      : images.profilePlaceHolder
+                  }
+                  style={styles.profileImage}
+                />
               </View>
               <View style={styles.topTextContainer}>
-                <Text style={styles.whiteNameText} numberOfLines={1}>{playerDetail.full_name}</Text>
-                <Text style={styles.whiteLocationText} numberOfLines={1}>{playerDetail.city}</Text>
+                <Text style={styles.whiteNameText} numberOfLines={1}>
+                  {playerDetail.full_name}
+                </Text>
+                <Text style={styles.whiteLocationText} numberOfLines={1}>
+                  {playerDetail.city}
+                </Text>
               </View>
             </View>
-            <Image source={images.orangeCheckBox} style={styles.checkGreenImage}/>
-          </LinearGradient></TouchableWithoutFeedback> : <TouchableWithoutFeedback onPress = {onPress}>
-            <View style={styles.topViewContainer}>
-              <View style={{ flexDirection: 'row' }}>
-                <View style={styles.profileView}>
-                  <Image source={ playerDetail.thumbnail ? { uri: playerDetail.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage } />
-                </View>
-                <View style={styles.topTextContainer}>
-                  <Text style={styles.mediumNameText} numberOfLines={1}>{playerDetail.full_name}</Text>
-                  <Text style={styles.locationText} numberOfLines={1}>{playerDetail.city}</Text>
-                </View>
+            <Image
+              source={images.orangeCheckBox}
+              style={styles.checkGreenImage}
+            />
+          </LinearGradient>
+        </TouchableWithoutFeedback>
+      ) : (
+        <TouchableWithoutFeedback onPress={onPress}>
+          <View style={styles.topViewContainer}>
+            <View style={{flexDirection: 'row'}}>
+              <View style={styles.profileView}>
+                <Image
+                  source={
+                    playerDetail.thumbnail
+                      ? {uri: playerDetail.thumbnail}
+                      : images.profilePlaceHolder
+                  }
+                  style={styles.profileImage}
+                />
               </View>
-              <Image source={images.whiteUncheck} style={styles.checkImage}/>
+              <View style={styles.topTextContainer}>
+                <Text style={styles.mediumNameText} numberOfLines={1}>
+                  {playerDetail.full_name}
+                </Text>
+                <Text style={styles.locationText} numberOfLines={1}>
+                  {playerDetail.city}
+                </Text>
+              </View>
             </View>
-          </TouchableWithoutFeedback>}
+            <Image source={images.whiteUncheck} style={styles.checkImage} />
+          </View>
+        </TouchableWithoutFeedback>
+      )}
     </>
   );
 }
 const styles = StyleSheet.create({
-
   profileImage: {
     alignSelf: 'center',
     height: 36,
@@ -60,7 +91,7 @@ const styles = StyleSheet.create({
   topViewContainer: {
     flexDirection: 'row',
     height: 60,
-    width: ('90%'),
+    width: '90%',
     alignSelf: 'center',
     justifyContent: 'space-between',
     paddingRight: 10,
@@ -68,7 +99,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
 
     borderRadius: 10,
- 
   },
   profileView: {
     backgroundColor: colors.whiteColor,
@@ -78,7 +108,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 3,
@@ -114,7 +144,6 @@ const styles = StyleSheet.create({
     width: 22,
     resizeMode: 'contain',
     alignSelf: 'center',
-
   },
   checkGreenImage: {
     height: 22,
@@ -122,4 +151,4 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-})
+});

@@ -1,75 +1,76 @@
-import React, { useRef, useState } from 'react';
-import {
-  StyleSheet, View, Text, TouchableOpacity, Image,
-} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import Video from 'react-native-video';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
-import images from '../../Constants/ImagePath'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
+import images from '../../Constants/ImagePath';
 
-function EditSelectedImages({
-  data, onItemPress, itemNumber, totalItemNumber,
-}) {
+function EditSelectedImages({data, onItemPress, itemNumber, totalItemNumber}) {
   const videoPlayerRef = useRef();
   const [showExtraButtons, setShowExtraButtons] = useState(false);
   return (
-    <View style={ styles.uploadedImage }>
+    <View style={styles.uploadedImage}>
       {data?.type === 'image' || data?.mime?.includes('image') ? (
         <FastImage
-              onLoad={() => setShowExtraButtons(true)}
-              style={ styles.uploadedImage }
-              source={ { uri: data.thumbnail ? data.thumbnail : data.path } }
-              resizeMode={ FastImage.resizeMode.cover }
-          />
+          onLoad={() => setShowExtraButtons(true)}
+          style={styles.uploadedImage}
+          source={{uri: data.thumbnail ? data.thumbnail : data.path}}
+          resizeMode={FastImage.resizeMode.cover}
+        />
       ) : (
         <View>
-          <View style={{
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'absolute',
-          }}>
+          <View
+            style={{
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'absolute',
+            }}
+          >
             <FastImage
-                source={images.videoPlayBtn}
-                tintColor={'white'}
-                resizeMode={'contain'}
-                style={{
-                  height: 30,
-                  width: 30,
-                }}/>
+              source={images.videoPlayBtn}
+              tintColor={'white'}
+              resizeMode={'contain'}
+              style={{
+                height: 30,
+                width: 30,
+              }}
+            />
           </View>
           <Video
-              ref={videoPlayerRef}
-              paused={true}
-              muted={true}
-              source={{ uri: data.thumbnail ? data.thumbnail : data.path }}
-              style={styles.uploadedImage}
-              resizeMode={'cover'}
-              onLoad={() => {
-                videoPlayerRef.current.seek(0);
-              }}
+            ref={videoPlayerRef}
+            paused={true}
+            muted={true}
+            source={{uri: data.thumbnail ? data.thumbnail : data.path}}
+            style={styles.uploadedImage}
+            resizeMode={'cover'}
+            onLoad={() => {
+              videoPlayerRef.current.seek(0);
+            }}
           />
         </View>
       )}
 
-      {showExtraButtons && <TouchableOpacity style={ styles.cancelBtnView } onPress={ onItemPress }>
-        <Image source={ images.cancelImage } style={ styles.cancelImageStyle } />
-      </TouchableOpacity>}
-      {showExtraButtons && <View style={ styles.lengthViewStyle }>
-        <Text style={ styles.lengthTextStyle }>
-          {itemNumber}
-          {'/'}
-          {totalItemNumber}
-        </Text>
-      </View>}
+      {showExtraButtons && (
+        <TouchableOpacity style={styles.cancelBtnView} onPress={onItemPress}>
+          <Image source={images.cancelImage} style={styles.cancelImageStyle} />
+        </TouchableOpacity>
+      )}
+      {showExtraButtons && (
+        <View style={styles.lengthViewStyle}>
+          <Text style={styles.lengthTextStyle}>
+            {itemNumber}
+            {'/'}
+            {totalItemNumber}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

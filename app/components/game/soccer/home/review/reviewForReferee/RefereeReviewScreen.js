@@ -167,15 +167,14 @@ export default function RefereeReviewScreen({navigation, route}) {
     starAttributesForReferee?.map((star) => {
       starKeys.push(star?.name);
     });
-    const includeKey = [...starKeys,...sliderAttributesForReferee]
+    const includeKey = [...starKeys, ...sliderAttributesForReferee];
     let isValid = true;
     const reviews = _.cloneDeep(reviewsData);
     Object.keys(reviews).map((key) => {
       if (includeKey.includes(key) && isValid) {
-        if(Number(reviews?.[key]) <= 0){
+        if (Number(reviews?.[key]) <= 0) {
           isValid = false;
         }
-        
       }
       return key;
     });
@@ -355,7 +354,8 @@ export default function RefereeReviewScreen({navigation, route}) {
                         marginVertical: 10,
                         flexDirection: 'row',
                       }}
-                      key={index}>
+                      key={index}
+                    >
                       <Text style={styles.starText}>
                         {item.charAt(0).toUpperCase() + item.slice(1)}
                       </Text>
@@ -420,7 +420,8 @@ export default function RefereeReviewScreen({navigation, route}) {
                         reviewsData?.format_tagged_data ||
                         [],
                     });
-                  }}>
+                  }}
+                >
                   <View>
                     {reviewsData?.comment?.length > 0 ? (
                       <NewsFeedDescription
@@ -443,7 +444,8 @@ export default function RefereeReviewScreen({navigation, route}) {
                           fontFamily: fonts.RRegular,
                           fontSize: 16,
                           color: colors.grayColor,
-                        }}>
+                        }}
+                      >
                         {`Describe what you thought and felt about ${userData?.first_name} ${userData?.last_name} while watching or playing the game.`}
                       </Text>
                     )}

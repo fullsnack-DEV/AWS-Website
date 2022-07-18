@@ -22,7 +22,7 @@ export const getFeeds = async (entityType, entityId, idLt, authContext) =>
     url: `${Config.BASE_URL}/newsfeeds?entity_type=${entityType}&entity_id=${entityId}&id_lt=${idLt}`,
     authContext,
   });
-  export const getTimeline = async (entityType,entityId, idLt, authContext) =>
+export const getTimeline = async (entityType, entityId, idLt, authContext) =>
   makeAPIRequest({
     method: 'get',
     url: `${Config.BASE_URL}${entityType}/timeline/${entityId}`,
@@ -107,7 +107,7 @@ export const getAllGames = async (teamId, authContext) =>
     authContext,
   });
 
-  export const createRePost = async (bodyParams, authContext) =>
+export const createRePost = async (bodyParams, authContext) =>
   makeAPIRequest({
     method: 'post',
     url: `${Config.BASE_URL}/posts/repost`,

@@ -11,7 +11,6 @@ import React, {
 import {
   View,
   StyleSheet,
-
   Alert,
   TouchableOpacity,
   Text,
@@ -29,13 +28,12 @@ import TagItemView from '../../components/newsFeed/TagItemView';
 import SelectedTagList from '../../components/newsFeed/SelectedTagList';
 import ScrollableTabs from '../../components/ScrollableTabs';
 import TagMatches from './TagMatches';
-import { getAllGames} from '../../api/NewsFeeds';
+import {getAllGames} from '../../api/NewsFeeds';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 
 let stopFetchMore = true;
 
 export default function UserTagSelectionListScreen({navigation, route}) {
-
   const [searchText, setSearchText] = useState('');
   const [currentTab, setCurrentTab] = useState(0);
   const [currentGrpupTab, setCurrentGroupTab] = useState('team');
@@ -66,7 +64,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                 selectedTagList: selectedUsers,
               });
             }
-          }}>
+          }}
+        >
           Done
         </Text>
       ),
@@ -81,13 +80,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
     userData,
     groupData,
     searchText,
-    loading
+    loading,
   ]);
-
-  
-
-  
-
 
   const getUsersData = useCallback(
     (text = '') => {
@@ -116,11 +110,9 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
       // Referee query
       const userAddData = [];
-      setLoading(true)
+      setLoading(true);
       getUserIndex(userQuery)
         .then((response) => {
-          
-
           if (response.length > 0) {
             let fullName = '';
             response.map((userItem) => {
@@ -141,11 +133,11 @@ export default function UserTagSelectionListScreen({navigation, route}) {
             setUserData([...userData, ...userAddData]);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
-            setLoading(false)
+            setLoading(false);
           }
         })
         .catch((e) => {
-          setLoading(false)
+          setLoading(false);
           console.log('eeeee Get Users :-', e.response);
           Alert.alert('', e.messages);
         });
@@ -179,7 +171,6 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       const userAddData = [];
       getGroupIndex(groupQuery)
         .then((response) => {
-
           if (response.length > 0) {
             let fullName = '';
             response.map((groupItem) => {
@@ -215,16 +206,13 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   }, [currentGrpupTab]);
 
   useEffect(() => {
-
     getAllGames(authContext.entity.uid, authContext)
       .then((res) => {
-
-        console.log('All games:=>',res);
+        console.log('All games:=>', res);
         setGamesData([...res?.payload]);
         console.log(res);
       })
       .catch((error) => {
-
         console.log(error);
       });
   }, []);
@@ -337,17 +325,20 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       return (
         <View>
           <FlatList
-           ListEmptyComponent={
-             !loading && <Text
-              style={{
-                textAlign: 'center',
-                marginTop: hp(2),
-                color: colors.userPostTimeColor,
-              }}>
-               No Records Found
-             </Text>
-          }
-            data={Array.from(new Set(userData))}// Array.from(new Set(userData))
+            ListEmptyComponent={
+              !loading && (
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    marginTop: hp(2),
+                    color: colors.userPostTimeColor,
+                  }}
+                >
+                  No Records Found
+                </Text>
+              )
+            }
+            data={Array.from(new Set(userData))} // Array.from(new Set(userData))
             ListHeaderComponent={() => <View style={{height: 8}} />}
             ListFooterComponent={() => (
               <View style={{height: 8, marginBottom: 50}} />
@@ -361,7 +352,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
             onScrollBeginDrag={() => {
               stopFetchMore = false;
             }}
-          /> 
+          />
         </View>
       );
     }
@@ -373,7 +364,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
               flexDirection: 'row',
               borderBottomColor: colors.lightgrayColor,
               borderBottomWidth: 1,
-            }}>
+            }}
+          >
             {['team', 'club', 'league'].map((item) => (
               <TouchableOpacity
                 key={item}
@@ -383,7 +375,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                   setPageFrom(0);
                   setGroupData([]);
                   getGroupsData('');
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     color:
@@ -392,7 +385,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                         : colors.lightBlackColor,
                     fontFamily:
                       item === currentGrpupTab ? fonts.RBold : fonts.RRegular,
-                  }}>
+                  }}
+                >
                   {_.startCase(item)}
                 </Text>
               </TouchableOpacity>
@@ -406,7 +400,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                   textAlign: 'center',
                   marginTop: hp(2),
                   color: colors.userPostTimeColor,
-                }}>
+                }}
+              >
                 No Records Found
               </Text>
             }
@@ -504,7 +499,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1,}}>
+    <SafeAreaView style={{flex: 1}}>
       {renderSearchBox}
       {renderSelectedEntity}
       <ScrollableTabs
@@ -513,7 +508,6 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         currentTab={currentTab}
       />
       {renderTabContain}
-     
     </SafeAreaView>
   );
 }

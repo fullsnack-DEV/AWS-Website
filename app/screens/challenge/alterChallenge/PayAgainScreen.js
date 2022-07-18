@@ -1,12 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
-import {
-  StyleSheet, View, Text, Alert,
-} from 'react-native';
+import React, {useEffect, useState, useContext} from 'react';
+import {StyleSheet, View, Text, Alert} from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../auth/context';
-import { payAgainAlter, payAgain } from '../../../api/Challenge';
-import { paymentMethods } from '../../../api/Users';
+import {payAgainAlter, payAgain} from '../../../api/Challenge';
+import {paymentMethods} from '../../../api/Users';
 import ReservationStatus from '../../../Constants/ReservationStatus';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -21,27 +19,26 @@ import GameFeeCard from '../../../components/challenge/GameFeeCard';
 
 let entity = {};
 
-export default function PayAgainScreen({ navigation, route }) {
+export default function PayAgainScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   entity = authContext.entity;
 
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [challengeObj, setChallengeObj] = useState();
-  const [sorceScreen, setSourceScreen] = useState()
+  const [sorceScreen, setSourceScreen] = useState();
   const [defaultCard, setDefaultCard] = useState();
   const [body] = useState(route.params?.body);
   const [status] = useState(route.params?.status);
 
-
   useEffect(() => {
     if (isFocused) {
       setSourceScreen(status);
-      setChallengeObj(body)
+      setChallengeObj(body);
       if (route?.params?.paymentMethod) {
         setDefaultCard(route?.params?.paymentMethod);
       } else {
-        getPaymentMethods(body?.source)
+        getPaymentMethods(body?.source);
       }
 
       console.log('Body Object of pay again screen: ', JSON.stringify(body));
@@ -69,46 +66,50 @@ export default function PayAgainScreen({ navigation, route }) {
       });
   };
   const payAgainForAlterRequest = () => {
-    setloading(true)
-    const bodyParams = {}
+    setloading(true);
+    const bodyParams = {};
     if (defaultCard !== {} || defaultCard !== undefined) {
       bodyParams.source = defaultCard.id;
       bodyParams.payment_method_type = 'card';
 
-      bodyParams.total_game_fee= challengeObj?.total_game_fee;
-      bodyParams.total_service_fee1= challengeObj?.total_service_fee1;
-      bodyParams.total_service_fee2= challengeObj?.total_service_fee2;
+      bodyParams.total_game_fee = challengeObj?.total_game_fee;
+      bodyParams.total_service_fee1 = challengeObj?.total_service_fee1;
+      bodyParams.total_service_fee2 = challengeObj?.total_service_fee2;
       bodyParams.international_card_fee = challengeObj?.international_card_fee;
-      bodyParams.total_stripe_fee= challengeObj?.total_stripe_fee;
-      bodyParams.total_payout= challengeObj?.total_payout;
-      bodyParams.total_amount= challengeObj?.total_amount;
+      bodyParams.total_stripe_fee = challengeObj?.total_stripe_fee;
+      bodyParams.total_payout = challengeObj?.total_payout;
+      bodyParams.total_amount = challengeObj?.total_amount;
 
       console.log('body params::', bodyParams);
       if (sorceScreen === ReservationStatus.pendingrequestpayment) {
-        payAgainAlter(challengeObj.challenge_id, bodyParams, authContext).then(() => {
-          setloading(false)
-          navigation.navigate('NotificationsListScreen')
-        }).catch((e) => {
-          setloading(false)
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        })
+        payAgainAlter(challengeObj.challenge_id, bodyParams, authContext)
+          .then(() => {
+            setloading(false);
+            navigation.navigate('NotificationsListScreen');
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
       } else {
-        payAgain(challengeObj.challenge_id, bodyParams, authContext).then(() => {
-          setloading(false)
-          navigation.navigate('NotificationsListScreen')
-        }).catch((e) => {
-          setloading(false)
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        })
+        payAgain(challengeObj.challenge_id, bodyParams, authContext)
+          .then(() => {
+            setloading(false);
+            navigation.navigate('NotificationsListScreen');
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
       }
     } else {
-      Alert.alert(strings.selectPaymentText)
+      Alert.alert(strings.selectPaymentText);
     }
-  }
+  };
 
   //   const getFeeDetail = () => {
   //     console.log('FEE CALLED:');
@@ -168,18 +169,18 @@ export default function PayAgainScreen({ navigation, route }) {
           senderOrReceiver={'sender'}
         /> */}
         <GameFeeCard
-        feeObject={{
-          total_game_fee: challengeObj?.total_game_fee,
-          total_service_fee1: challengeObj?.total_service_fee1,
-          total_service_fee2: challengeObj?.total_service_fee2,
-          international_card_fee: challengeObj?.international_card_fee,
-          total_stripe_fee: challengeObj?.total_stripe_fee,
-          total_payout: challengeObj?.total_payout,
-          total_amount: challengeObj?.total_amount,
-        }}
-        currency={challengeObj?.game_fee?.currency_type}
-        isChallenger={challengeObj?.challenger === entity.uid}
-      />
+          feeObject={{
+            total_game_fee: challengeObj?.total_game_fee,
+            total_service_fee1: challengeObj?.total_service_fee1,
+            total_service_fee2: challengeObj?.total_service_fee2,
+            international_card_fee: challengeObj?.international_card_fee,
+            total_stripe_fee: challengeObj?.total_stripe_fee,
+            total_payout: challengeObj?.total_payout,
+            total_amount: challengeObj?.total_amount,
+          }}
+          currency={challengeObj?.game_fee?.currency_type}
+          isChallenger={challengeObj?.challenger === entity.uid}
+        />
       </View>
 
       <View style={styles.viewMarginStyle}>
@@ -192,8 +193,8 @@ export default function PayAgainScreen({ navigation, route }) {
                 : strings.addOptionMessage
             }
             subTitle={
-              (defaultCard && defaultCard?.card?.last4)
-              ?? defaultCard?.card?.last4
+              (defaultCard && defaultCard?.card?.last4) ??
+              defaultCard?.card?.last4
             }
             showNextArrow={true}
             onPress={() => {
@@ -216,12 +217,12 @@ export default function PayAgainScreen({ navigation, route }) {
           also agree to pay the total amount shown above.
         </Text>
       </View>
-      <View style={{ flex: 1 }} />
-      <View style={{ marginBottom: 10 }}>
+      <View style={{flex: 1}} />
+      <View style={{marginBottom: 10}}>
         <TCGradientButton
           title={strings.confirmAndPayTitle}
           onPress={() => {
-            payAgainForAlterRequest()
+            payAgainForAlterRequest();
           }}
         />
       </View>

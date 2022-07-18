@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text, Image,
-} from 'react-native';
+import {StyleSheet, View, Text, Image} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -16,15 +14,25 @@ function MatchBetweenUpcomingView({
     <View style={[styles.containerStyle, containerStyle]}>
       <View style={styles.firstUserViewStyle}>
         <View style={styles.eventImageViewStyle}>
-          <Image source={firstUserImage} style={styles.imageStyle} resizeMode={'cover'} />
+          <Image
+            source={firstUserImage}
+            style={styles.imageStyle}
+            resizeMode={'cover'}
+          />
         </View>
-        <Text style={[styles.textStyle, { marginLeft: 8 }]}>{firstText}</Text>
+        <Text style={[styles.textStyle, {marginLeft: 8}]}>{firstText}</Text>
       </View>
       <Text style={styles.vsTextStyle}>{'VS'}</Text>
       <View style={styles.firstUserViewStyle}>
-        <Text style={[styles.textStyle, { textAlign: 'right', marginRight: 8 }]}>{secondText}</Text>
+        <Text style={[styles.textStyle, {textAlign: 'right', marginRight: 8}]}>
+          {secondText}
+        </Text>
         <View style={styles.eventImageViewStyle}>
-          <Image source={secondUserImage} style={styles.imageStyle} resizeMode={'cover'} />
+          <Image
+            source={secondUserImage}
+            style={styles.imageStyle}
+            resizeMode={'cover'}
+          />
         </View>
       </View>
     </View>

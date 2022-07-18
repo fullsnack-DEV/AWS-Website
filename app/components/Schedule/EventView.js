@@ -1,13 +1,7 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import colors from '../../Constants/Colors'
+import {StyleSheet, View, Text} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 export default function EventView({
@@ -28,11 +22,15 @@ export default function EventView({
         <Text style={styles.dateText}>{date}</Text>
       </View>
       <View>
-        <Text style={[styles.eventTitle, eventTitle]} numberOfLines={1}>{title}</Text>
-        <Text style={styles.eventDescription} numberOfLines={2}>{description}</Text>
+        <Text style={[styles.eventTitle, eventTitle]} numberOfLines={1}>
+          {title}
+        </Text>
+        <Text style={styles.eventDescription} numberOfLines={2}>
+          {description}
+        </Text>
         <View style={styles.bottomView}>
           <Text style={styles.eventTime}>{eventTime}</Text>
-          <Text style={[styles.eventTime, { marginHorizontal: 5 }]}> | </Text>
+          <Text style={[styles.eventTime, {marginHorizontal: 5}]}> | </Text>
           <Text style={styles.eventTime}>{eventLocation}</Text>
         </View>
       </View>
@@ -47,7 +45,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     elevation: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: wp('94%'),

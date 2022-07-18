@@ -94,98 +94,98 @@ export default function AlterScorekeeperScreen({navigation, route}) {
   }, [navigation, bodyParams]);
   useEffect(() => {
     entity = authContext.entity;
-    if(isFocused){
-    if (reservationObj.length > 0) {
-      setIsPendingRequestPayment(true);
-      for (let i = 0; i < reservationObj.length; i++) {
-        if (
-          reservationObj[i].status === ScorekeeperReservationStatus.accepted
-        ) {
-          if (isOld === false) {
-            setbodyParams(reservationObj[0]);
-            setOldVersion(reservationObj[i]);
-            setIsOld(true);
-          } else {
-            setbodyParams(reservationObj[0]);
-          }
-
+    if (isFocused) {
+      if (reservationObj.length > 0) {
+        setIsPendingRequestPayment(true);
+        for (let i = 0; i < reservationObj.length; i++) {
           if (
-            (reservationObj[0]?.game?.away_team?.group_id ??
-              reservationObj[0]?.game?.away_team?.user_id) === entity.uid
+            reservationObj[i].status === ScorekeeperReservationStatus.accepted
           ) {
-            setHomeTeam(reservationObj[0]?.game?.away_team);
-            setAwayTeam(reservationObj[0]?.game?.home_team);
-          } else {
-            setHomeTeam(reservationObj[0]?.game?.home_team);
-            setAwayTeam(reservationObj[0]?.game?.away_team);
+            if (isOld === false) {
+              setbodyParams(reservationObj[0]);
+              setOldVersion(reservationObj[i]);
+              setIsOld(true);
+            } else {
+              setbodyParams(reservationObj[0]);
+            }
+
+            if (
+              (reservationObj[0]?.game?.away_team?.group_id ??
+                reservationObj[0]?.game?.away_team?.user_id) === entity.uid
+            ) {
+              setHomeTeam(reservationObj[0]?.game?.away_team);
+              setAwayTeam(reservationObj[0]?.game?.home_team);
+            } else {
+              setHomeTeam(reservationObj[0]?.game?.home_team);
+              setAwayTeam(reservationObj[0]?.game?.away_team);
+            }
+            break;
           }
-          break;
         }
-      }
-      if (!paymentCard) {
-        setPaymentCard({
-          start_datetime: reservationObj[0]?.start_datetime,
-          end_datetime: reservationObj[0]?.end_datetime,
-          currency_type: reservationObj[0]?.currency_type,
-          payment_method_type: reservationObj[0]?.payment_method_type,
-          total_game_fee: reservationObj[0]?.total_game_fee,
-          total_service_fee1: reservationObj[0]?.total_service_fee1,
-          total_service_fee2: reservationObj[0]?.total_service_fee2,
-          international_card_fee: reservationObj[0]?.international_card_fee,
-          total_amount: reservationObj[0]?.total_amount,
-          total_stripe_fee: reservationObj[0]?.total_stripe_fee,
-          total_payout: reservationObj[0]?.total_payout,
-          hourly_game_fee: reservationObj[0]?.hourly_game_fee,
-          manual_fee: reservationObj[0]?.manual_fee,
-        });
-      }
-      console.log('challenge Object::', reservationObj[0]);
+        if (!paymentCard) {
+          setPaymentCard({
+            start_datetime: reservationObj[0]?.start_datetime,
+            end_datetime: reservationObj[0]?.end_datetime,
+            currency_type: reservationObj[0]?.currency_type,
+            payment_method_type: reservationObj[0]?.payment_method_type,
+            total_game_fee: reservationObj[0]?.total_game_fee,
+            total_service_fee1: reservationObj[0]?.total_service_fee1,
+            total_service_fee2: reservationObj[0]?.total_service_fee2,
+            international_card_fee: reservationObj[0]?.international_card_fee,
+            total_amount: reservationObj[0]?.total_amount,
+            total_stripe_fee: reservationObj[0]?.total_stripe_fee,
+            total_payout: reservationObj[0]?.total_payout,
+            hourly_game_fee: reservationObj[0]?.hourly_game_fee,
+            manual_fee: reservationObj[0]?.manual_fee,
+          });
+        }
+        console.log('challenge Object::', reservationObj[0]);
 
-      console.log('Payment Object::', paymentCard);
-    } else {
-      if (isOld === false) {
-        setbodyParams(reservationObj);
-        // oldVersion = { ...body };
-        setOldVersion(reservationObj);
-        setIsOld(true);
+        console.log('Payment Object::', paymentCard);
       } else {
-        setbodyParams(reservationObj);
+        if (isOld === false) {
+          setbodyParams(reservationObj);
+          // oldVersion = { ...body };
+          setOldVersion(reservationObj);
+          setIsOld(true);
+        } else {
+          setbodyParams(reservationObj);
+        }
+
+        if (
+          (reservationObj?.game?.away_team?.group_id ??
+            reservationObj?.game?.away_team?.user_id) === entity.uid
+        ) {
+          setHomeTeam(reservationObj?.game?.away_team);
+          setAwayTeam(reservationObj?.game?.home_team);
+        } else {
+          setHomeTeam(reservationObj?.game?.home_team);
+          setAwayTeam(reservationObj?.game.away_team);
+        }
+        if (!paymentCard) {
+          setPaymentCard({
+            start_datetime: reservationObj?.start_datetime,
+            end_datetime: reservationObj?.end_datetime,
+            currency_type: reservationObj?.currency_type,
+            payment_method_type: reservationObj?.payment_method_type,
+            total_game_fee: reservationObj?.total_game_fee,
+            total_service_fee1: reservationObj?.total_service_fee1,
+            total_service_fee2: reservationObj?.total_service_fee1,
+            international_card_fee: reservationObj?.international_card_fee,
+            total_amount: reservationObj?.total_amount,
+            total_stripe_fee: reservationObj?.total_stripe_fee,
+            total_payout: reservationObj?.total_payout,
+            hourly_game_fee: reservationObj?.hourly_game_fee,
+            manual_fee: reservationObj?.manual_fee,
+          });
+        }
+        console.log('challenge Object::', reservationObj);
+
+        console.log('Payment Object::', paymentCard);
       }
 
-      if (
-        (reservationObj?.game?.away_team?.group_id ??
-          reservationObj?.game?.away_team?.user_id) === entity.uid
-      ) {
-        setHomeTeam(reservationObj?.game?.away_team);
-        setAwayTeam(reservationObj?.game?.home_team);
-      } else {
-        setHomeTeam(reservationObj?.game?.home_team);
-        setAwayTeam(reservationObj?.game.away_team);
-      }
-      if (!paymentCard) {
-        setPaymentCard({
-          start_datetime: reservationObj?.start_datetime,
-          end_datetime: reservationObj?.end_datetime,
-          currency_type: reservationObj?.currency_type,
-          payment_method_type: reservationObj?.payment_method_type,
-          total_game_fee: reservationObj?.total_game_fee,
-          total_service_fee1: reservationObj?.total_service_fee1,
-          total_service_fee2: reservationObj?.total_service_fee1,
-          international_card_fee: reservationObj?.international_card_fee,
-          total_amount: reservationObj?.total_amount,
-          total_stripe_fee: reservationObj?.total_stripe_fee,
-          total_payout: reservationObj?.total_payout,
-          hourly_game_fee: reservationObj?.hourly_game_fee,
-          manual_fee: reservationObj?.manual_fee,
-        });
-      }
-      console.log('challenge Object::', reservationObj);
-
-      console.log('Payment Object::', paymentCard);
+      getPaymentMethods(reservationObj[0] ?? reservationObj);
     }
-
-    getPaymentMethods(reservationObj[0] ?? reservationObj);
-  }
   }, []);
 
   useLayoutEffect(() => {
@@ -735,7 +735,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
             <TouchableOpacity onPress={() => console.log('OK')}>
               <LinearGradient
                 colors={[colors.yellowColor, colors.themeColor]}
-                style={styles.containerStyle}>
+                style={styles.containerStyle}
+              >
                 <Text style={styles.buttonText}>
                   Please edit the reservation details below before you send the
                   alteration request.
@@ -750,7 +751,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
               alignItems: 'flex-end',
               marginLeft: 15,
               marginRight: 15,
-            }}>
+            }}
+          >
             <ReservationNumber reservationNumber={bodyParams?.reservation_id} />
           </View>
 
@@ -760,7 +762,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
-            }}>
+            }}
+          >
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.reqIcon} style={styles.reqOutImage} />
@@ -819,7 +822,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                     width: '80%',
-                  }}>
+                  }}
+                >
                   {`${bodyParams?.scorekeeper?.first_name} ${bodyParams?.scorekeeper?.last_name}`}
                 </Text>
               </View>
@@ -835,7 +839,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
           {bodyParams?.scorekeeper?.user_id !== entity.uid &&
             bodyParams.status ===
               ScorekeeperReservationStatus.pendingrequestpayment && (
-                <TCGradientButton
+              <TCGradientButton
                 title={strings.tryToPayText}
                 onPress={() => {
                   navigation.navigate('PayAgainScorekeeperScreen', {
@@ -850,7 +854,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
           {bodyParams?.scorekeeper?.user_id === entity.uid &&
             bodyParams.status ===
               ScorekeeperReservationStatus.pendingrequestpayment && (
-                <TCGradientButton
+              <TCGradientButton
                 title={strings.restorePreviousText}
                 onPress={() => {
                   let callerId = '';
@@ -880,7 +884,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                  }}>
+                  }}
+                >
                   <Title text={'Game'} />
 
                   {!isPendingRequestPayment && (
@@ -889,7 +894,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                       hitSlop={getHitSlop(15)}
                       onPress={() =>
                         navigation.navigate('ScorekeeperSelectMatch')
-                      }>
+                      }
+                    >
                       <Image
                         source={images.editSection}
                         style={styles.editButton}
@@ -922,7 +928,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                         bodyParams?.timestamp &&
                         moment(bodyParams?.game?.start_datetime * 1000).format(
                           'MMM DD, YYYY',
-                      )
+                        )
                       }
                       titleStyle={{
                         alignSelf: 'flex-start',
@@ -1009,7 +1015,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
               title={'Refund Policy'}
               value={bodyParams?.refund_policy}
               tooltipText={
-              '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
+                '-Cancellation 24 hours in advance- Free cancellation until 24 hours before the game starting time.  -Cancellation less than 24 hours in advance-If the challenge sender cancels  less than 24 hours before the game starting time the match fee and service fee are not refunded.'
               }
               tooltipHeight={heightPercentageToDP('18%')}
               tooltipWidth={widthPercentageToDP('50%')}
@@ -1024,7 +1030,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-              }}>
+              }}
+            >
               <TCLabel
                 title={
                   checkSenderForPayment(bodyParams) === 'sender'
@@ -1036,7 +1043,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('ScorekeeperSelectMatch');
-                }}></TouchableOpacity>
+                }}
+              ></TouchableOpacity>
             </View>
             {!isPendingRequestPayment && (
               <TouchableOpacity
@@ -1047,7 +1055,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     editableAlter: true,
                     body: bodyParams,
                   })
-                }>
+                }
+              >
                 <Image source={images.editSection} style={styles.editButton} />
               </TouchableOpacity>
             )}
@@ -1062,10 +1071,10 @@ export default function AlterScorekeeperScreen({navigation, route}) {
             bodyParams?.total_game_fee > 0) ||
             (bodyParams?.total_game_fee > 0 &&
               checkSenderForPayment(bodyParams) === 'sender')) && (
-                <View style={styles.contentContainer}>
-                  <Title text={'Payment Method'} />
-                  <View style={{marginTop: 10}}>
-                    <TCTouchableLabel
+            <View style={styles.contentContainer}>
+              <Title text={'Payment Method'} />
+              <View style={{marginTop: 10}}>
+                <TCTouchableLabel
                   title={
                     defaultCard
                       ? Utility.capitalize(defaultCard.card.brand)
@@ -1079,8 +1088,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     });
                   }}
                 />
-                  </View>
-                </View>
+              </View>
+            </View>
           )}
 
           {editPayment && (
@@ -1096,7 +1105,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                 <Text style={styles.diffenceAmount}>{`$${parseFloat(
                   bodyParams?.total_game_fee - oldVersion?.total_game_fee,
                 ).toFixed(2)} ${
-                  bodyParams.currency_type.toUpperCase() || strings.defaultCurrency
+                  bodyParams.currency_type.toUpperCase() ||
+                  strings.defaultCurrency
                 }`}</Text>
                 {/* <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text> */}
               </View>
@@ -1105,8 +1115,8 @@ export default function AlterScorekeeperScreen({navigation, route}) {
           {checkSenderOrReceiver(bodyParams) === 'sender' &&
             bodyParams.status ===
               ScorekeeperReservationStatus.changeRequest && (
-                <View style={{marginTop: 15}}>
-                  <TCBorderButton
+              <View style={{marginTop: 15}}>
+                <TCBorderButton
                   title={strings.cancelAlterRequest}
                   textColor={colors.grayColor}
                   borderColor={colors.grayColor}
@@ -1124,7 +1134,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                     );
                   }}
                 />
-                </View>
+              </View>
             )}
 
           {checkSenderOrReceiver(bodyParams) === 'receiver' &&
@@ -1147,7 +1157,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                       total_service_fee1: paymentCard?.total_service_fee1,
                       total_service_fee2: paymentCard?.total_service_fee2,
                       international_card_fee:
-                      paymentCard?.international_card_fee,
+                        paymentCard?.international_card_fee,
                       total_stripe_fee: paymentCard?.total_stripe_fee,
                       total_payout: paymentCard?.total_payout,
                       total_amount: paymentCard?.total_amount,
@@ -1157,7 +1167,7 @@ export default function AlterScorekeeperScreen({navigation, route}) {
                       callerId,
                       bodyParams.version,
                       'accept',
-                     paymentObj
+                      paymentObj,
                     );
                   }}
                   marginBottom={15}

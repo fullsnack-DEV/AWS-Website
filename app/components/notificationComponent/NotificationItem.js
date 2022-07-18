@@ -1,60 +1,118 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  View, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback,
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import fonts from '../../Constants/Fonts';
-import colors from '../../Constants/Colors'
-import strings from '../../Constants/String'
-import TCProfileImage from '../TCProfileImage'
-import { parseNotification } from '../../screens/notificationsScreen/PRNotificationParser';
+import colors from '../../Constants/Colors';
+import strings from '../../Constants/String';
+import TCProfileImage from '../TCProfileImage';
+import {parseNotification} from '../../screens/notificationsScreen/PRNotificationParser';
+import NotificationType from '../../Constants/NotificationType';
 
 function NotificationItem({
-  data, onPressFirstEntity, onPressSecondEntity, onPressCard,
+  data,
+  onPressFirstEntity,
+  onPressSecondEntity,
+  onPressCard,
+  isTrash = false,
+  entityType = 'user',
 }) {
-  const [dataDictionary, setDataDictionary] = useState()
-console.log('Normal Notification data:=>', data);
+  const [dataDictionary, setDataDictionary] = useState();
+
+  console.log('Noti data;;;', data);
   useEffect(() => {
     parseNotification(data).then((response) => {
-      setDataDictionary(response)
-      console.log('RESPONSE:=>', response);
-    })
+      setDataDictionary(response);
+      console.log('RESPONSE=-=-=-=:=>', response);
+    });
   }, []);
 
   return (
-    <View style={{ backgroundColor: colors.whiteColor }}>
-      {dataDictionary && <TouchableOpacity onPress={onPressCard}>
-        <View style={styles.viewFirstStyle}>
-          <TouchableOpacity onPress={() => {
-            onPressFirstEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
-          }}>
-            <TCProfileImage
-              entityType={dataDictionary.entityType}
-              source={ { uri: dataDictionary.imgName }}
-              containerStyle={styles.imageContainer}
-              intialChar={dataDictionary?.firstTitle?.charAt(0)?.toUpperCase()}
+    <View style={{backgroundColor: colors.whiteColor}}>
+      {dataDictionary && (
+        <TouchableOpacity onPress={onPressCard}>
+          <View style={styles.viewFirstStyle}>
+            <TouchableOpacity
+              onPress={() => {
+                onPressFirstEntity({
+                  entityType: dataDictionary.entityType,
+                  entityId: dataDictionary.entityId,
+                });
+              }}
+            >
+              <TCProfileImage
+                entityType={dataDictionary.entityType}
+                source={{uri: dataDictionary.imgName}}
+                containerStyle={styles.imageContainer}
+                intialChar={dataDictionary?.firstTitle
+                  ?.charAt(0)
+                  ?.toUpperCase()}
               />
-          </TouchableOpacity>
-          <View style={styles.textContentStyle}>
-            <Text style={styles.textContainerStyle}>
-              <TouchableWithoutFeedback onPress={() => {
-                onPressFirstEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
-              }}>
-                <Text style={styles.boldTextStyle}>
-                  {`${dataDictionary.firstTitle} `}
+            </TouchableOpacity>
+            <View style={styles.textContentStyle}>
+              <Text style={styles.textContainerStyle}>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    onPressFirstEntity({
+                      entityType: dataDictionary.entityType,
+                      entityId: dataDictionary.entityId,
+                    });
+                  }}
+                >
+                  <Text style={styles.boldTextStyle}>
+                    {`${dataDictionary.firstTitle} `}
+                  </Text>
+                </TouchableWithoutFeedback>
+                {dataDictionary.secondTitle && <Text>{`${strings.and} `}</Text>}
+                {dataDictionary.secondTitle && (
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      onPressSecondEntity({
+                        entityType: dataDictionary.entityType1,
+                        entityId: dataDictionary.entityId1,
+                      });
+                    }}
+                  >
+                    <Text
+                      style={styles.boldTextStyle}
+                    >{`${dataDictionary.secondTitle} `}</Text>
+                  </TouchableWithoutFeedback>
+                )}
+                <Text>{`${dataDictionary.text} `}</Text>
+                {!isTrash && (
+                  <Text style={styles.timeStyle}>
+                    {dataDictionary.notificationTime}
+                  </Text>
+                )}
+              </Text>
+              {isTrash && entityType === 'user' && (
+                <Text style={styles.timeStyle}>
+                  {(NotificationType.deleted && 'Deleted') ||
+                    (NotificationType.accepted && 'Accepted') ||
+                    (NotificationType.declined && 'declined')}{' '}
+                  <Text>{dataDictionary.notificationTime}</Text>
                 </Text>
-              </TouchableWithoutFeedback>
-              {dataDictionary.secondTitle && <Text>{`${strings.and} `}</Text>}
-              {dataDictionary.secondTitle && <TouchableWithoutFeedback onPress={() => {
-                onPressSecondEntity({ entityType: dataDictionary.entityType1, entityId: dataDictionary.entityId1 })
-              }}>
-                <Text style={styles.boldTextStyle}>{`${dataDictionary.secondTitle} `}</Text>
-              </TouchableWithoutFeedback>}
-              <Text>{`${dataDictionary.text} `}</Text>
-              <Text style={styles.timeStyle}>{dataDictionary.notificationTime}</Text>
-            </Text>
+              )}
+              {isTrash && entityType === 'group' && (
+                <Text style={styles.timeStyle}>
+                  {(NotificationType.deleted && 'Deleted') ||
+                    (NotificationType.accepted && 'Accepted') ||
+                    (NotificationType.declined && 'Declined')}
+                  <Text>
+                    {' '}
+                    by {data.activities[0].remove_by?.data?.full_name}{' '}
+                    {dataDictionary.notificationTime}
+                  </Text>
+                </Text>
+              )}
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>}
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-} from 'react-native';
+import {StyleSheet} from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors';
@@ -14,18 +12,17 @@ export default function TCGradientDivider({
 }) {
   return (
     <LinearGradient
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={{ ...styles.bigDivider, height, width }}
-          colors={ [startGradiantColor, endGradiantColor] }/>
+      start={{x: 0, y: 0}}
+      end={{x: 1, y: 0}}
+      style={{...styles.bigDivider, height, width}}
+      colors={[startGradiantColor, endGradiantColor]}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-
   bigDivider: {
     marginTop: 0,
     alignSelf: 'center',
   },
-
 });

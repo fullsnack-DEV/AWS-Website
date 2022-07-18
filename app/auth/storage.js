@@ -14,15 +14,15 @@ const storeData = async (key, value) => {
 };
 
 const retriveData = async (key) => {
-  let value
+  let value;
   try {
     value = await AsyncStorage.getItem(key);
-    value = JSON.parse(value)
+    value = JSON.parse(value);
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
   value = await AsyncStorage.getItem(key);
-  return value
+  return value;
 };
 
 const removeData = async (key) => {
@@ -33,4 +33,4 @@ const removeData = async (key) => {
   }
 };
 
-export default { storeData, retriveData, removeData };
+export default {storeData, retriveData, removeData};
